@@ -39,6 +39,8 @@ import com.cannontech.database.db.stars.appliance.ApplianceChiller;
 import com.cannontech.database.db.stars.appliance.ApplianceDualStageAirCond;
 import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
@@ -58,7 +60,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * Window>Preferences>Java>Code Generation.
  */
 public class StarsLiteFactory {
-
+    private static final LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean("hardwareEventDao", LMHardwareEventDao.class);
 	public static LiteBase createLite( com.cannontech.database.db.DBPersistent db ) {
 		LiteBase lite = null;
 		
@@ -221,21 +223,6 @@ public class StarsLiteFactory {
 	public static void setLiteStarsLMHardware(LiteStarsLMHardware liteHw, com.cannontech.database.data.stars.hardware.LMHardwareBase hw) {
 		setLiteInventoryBase( liteHw, hw.getInventoryBase() );
 		
-        /*
-         * If there were non-LM inventory item events being stored in this table, 
-         * such as MCT events, then this will need to be moved back to setLiteInventoryBase;
-         * not sure why it was originally put there, though.  This should be LMHardware specific.
-         */
-        List invHist = liteHw.getInventoryHistory();
-        invHist.clear();
-    
-        com.cannontech.database.data.stars.event.LMHardwareEvent[] events =
-                com.cannontech.database.data.stars.event.LMHardwareEvent.getAllLMHardwareEvents( new Integer(liteHw.getInventoryID()) );
-        for (int i = 0; i < events.length; i++) {
-            LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) createLite( events[i] );
-            invHist.add( liteEvent );
-        }
-        
         liteHw.updateDeviceStatus();
         
 		liteHw.setManufacturerSerialNumber( hw.getLMHardwareBase().getManufacturerSerialNumber() );
@@ -1802,8 +1789,9 @@ public class StarsLiteFactory {
 		starsInv.setNotes( StarsUtils.forceNotNull(liteInv.getNotes()) );
 		
 		StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
-		for (int i = 0; i < liteInv.getInventoryHistory().size(); i++) {
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) liteInv.getInventoryHistory().get(i);
+		List<LiteLMHardwareEvent> list = hardwareEventDao.getByInventoryId(liteInv.getLiteID());
+		for (int i = 0; i < list.size(); i++) {
+			LiteLMCustomerEvent liteEvent = list.get(i);
 			StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
 			setStarsLMCustomerEvent( starsEvent, liteEvent );
 			hwHist.addStarsLMHardwareEvent( starsEvent );

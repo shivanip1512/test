@@ -533,8 +533,6 @@ public class CreateLMHardwareAction implements ActionBase {
 				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 						Transaction.createTransaction( Transaction.INSERT, event ).execute();
 				
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-				liteInv.getInventoryHistory().add( liteEvent );
 				liteInv.updateDeviceStatus();
 				
 				if (createHw.getDeviceStatus() != null) {
@@ -599,8 +597,6 @@ public class CreateLMHardwareAction implements ActionBase {
 						}
 						
 						if (event != null) {
-							liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-							liteInv.getInventoryHistory().add( liteEvent );
 							liteInv.updateDeviceStatus();
 						}
 					}

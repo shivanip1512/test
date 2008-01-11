@@ -32,6 +32,7 @@ import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -68,7 +69,7 @@ import com.cannontech.util.ServletUtil;
  * Window>Preferences>Java>Code Generation.
  */
 public class ProgramOptOutAction implements ActionBase {
-	
+	private static final LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean("hardwareEventDao", LMHardwareEventDao.class);
 	public static final int REPEAT_LAST = -1;
 
 	/**
@@ -385,9 +386,10 @@ public class ProgramOptOutAction implements ActionBase {
 		int futureActID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_FUTURE_ACTIVATION ).getEntryID();
 		
 		try {
-			Iterator it = liteHw.getInventoryHistory().iterator();
+		    List<LiteLMHardwareEvent> list = hardwareEventDao.getByInventoryId(liteHw.getLiteID());
+			Iterator<LiteLMHardwareEvent> it = list.iterator();
 			while (it.hasNext()) {
-				LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) it.next();
+				LiteLMHardwareEvent liteEvent = it.next();
 				if (liteEvent.getActionID() == futureActID) {
 					com.cannontech.database.data.stars.event.LMHardwareEvent event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 							StarsLiteFactory.createDBPersistent( liteEvent );
@@ -661,19 +663,14 @@ public class ProgramOptOutAction implements ActionBase {
 		multiDB = (com.cannontech.database.data.multi.MultiDBPersistent)
 				Transaction.createTransaction( Transaction.INSERT, multiDB ).execute();
 		
-		// Update lite objects and create response
-		for (int j = 0; j < multiDB.getDBPersistentVector().size(); j++) {
-			hwEvent = (com.cannontech.database.data.stars.event.LMHardwareEvent) multiDB.getDBPersistentVector().get(j);
-			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) StarsLiteFactory.createLite( hwEvent );
-			liteHw.getInventoryHistory().add( liteEvent );
-		}
 		liteHw.updateDeviceStatus();
 		
 		StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 		hwHist.setInventoryID( liteHw.getInventoryID() );
 		
-		for (int j = 0; j < liteHw.getInventoryHistory().size(); j++) {
-			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) liteHw.getInventoryHistory().get(j);
+		List<LiteLMHardwareEvent> list = hardwareEventDao.getByInventoryId(liteHw.getLiteID());
+		for (int j = 0; j < list.size(); j++) {
+			LiteLMHardwareEvent liteEvent = list.get(j);
 			StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
 			StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );
 			hwHist.addStarsLMHardwareEvent( starsEvent );
@@ -681,7 +678,7 @@ public class ProgramOptOutAction implements ActionBase {
 		
 		// Add "Temp Opt Out" and "Future Activation" to program events
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+			LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
 			if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
 				LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 				

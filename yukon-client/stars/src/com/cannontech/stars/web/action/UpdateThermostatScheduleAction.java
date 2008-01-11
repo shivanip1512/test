@@ -356,11 +356,9 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 						Transaction.createTransaction( Transaction.INSERT, event ).execute();
     			
-				LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-				liteHw.getInventoryHistory().add( liteEvent );
-    			
 				// The response message only need to be set once
 				if (resp == null) {
+				    LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
 					resp = updateThermostatSchedule( updateSched, liteHw.getThermostatSettings().getThermostatSchedule(), energyCompany );
 					StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
 					StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteEvent );

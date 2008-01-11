@@ -6,7 +6,6 @@
  */
 package com.cannontech.database.data.lite.stars;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
@@ -14,7 +13,8 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteBase;
-import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.InventoryUtils;
 
 /**
@@ -24,7 +24,7 @@ import com.cannontech.stars.util.InventoryUtils;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class LiteInventoryBase extends LiteBase {
-
+    private static final LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean("hardwareEventDao", LMHardwareEventDao.class);
 	private int accountID = CtiUtilities.NONE_ZERO_ID;
 	private int categoryID = CtiUtilities.NONE_ZERO_ID;
 	private int installationCompanyID = CtiUtilities.NONE_ZERO_ID;
@@ -39,7 +39,6 @@ public class LiteInventoryBase extends LiteBase {
     private int currentStateID = CtiUtilities.NONE_ZERO_ID;
 	
 	// Extended fields
-	private List inventoryHistory = null;		// List of LiteLMHardwareEvent
 	private int deviceStatus = CtiUtilities.NONE_ZERO_ID;
 	
 	private boolean extended = false;
@@ -216,24 +215,6 @@ public class LiteInventoryBase extends LiteBase {
 	}
 
 	/**
-	 * Returns the hardwareHistory.
-	 * @return com.cannontech.stars.xml.serialize.StarsLMHardwareHistory
-	 */
-	public List getInventoryHistory() {
-		if (inventoryHistory == null)
-			inventoryHistory = new ArrayList();
-		return inventoryHistory;
-	}
-
-	/**
-	 * Sets the hardwareHistory.
-	 * @param hardwareHistory The hardwareHistory to set
-	 */
-	public void setInventoryHistory(List inventoryHistory) {
-		this.inventoryHistory = inventoryHistory;
-	}
-
-	/**
 	 * Returns the deviceStatus.
 	 * @return int
 	 */
@@ -243,9 +224,16 @@ public class LiteInventoryBase extends LiteBase {
 		return deviceStatus;
 	}
 	
+	public void setDeviceStatus(int deviceStatus) {
+	    this.deviceStatus = deviceStatus;
+	}
+	
 	public void updateDeviceStatus() {
-		List invHist = getInventoryHistory();
-		
+	    List<LiteLMHardwareEvent> invHist = hardwareEventDao.getByInventoryId(this.getLiteID());
+	    updateDeviceStatus(invHist);
+	}
+	    
+	public void updateDeviceStatus(final List<LiteLMHardwareEvent> invHist) {
 		boolean isSA = false;
 		if (this instanceof LiteStarsLMHardware) {
 			int hwConfigType = InventoryUtils.getHardwareConfigType( ((LiteStarsLMHardware)this).getLmHardwareTypeID() );
@@ -253,7 +241,7 @@ public class LiteInventoryBase extends LiteBase {
 		}
 		
 		for (int i = invHist.size() - 1; i >= 0; i--) {
-			LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) invHist.get(i);
+			LiteLMHardwareEvent liteEvent = invHist.get(i);
 			YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( liteEvent.getActionID() );
 			
 			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED

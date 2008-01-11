@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Timer;
 import java.util.TimerTask;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,7 +25,6 @@ import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -41,7 +39,6 @@ import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.SwitchCommandQueue;
 import com.cannontech.stars.util.WebClientException;
-import com.cannontech.stars.util.SwitchCommandQueue.SwitchCommand;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsConfig;
@@ -348,8 +345,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 					Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-			liteHw.getInventoryHistory().add( liteEvent );
 			liteHw.updateDeviceStatus();
 		}
 		catch (TransactionException e) {
@@ -439,8 +434,6 @@ public class YukonSwitchCommandAction implements ActionBase {
 			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 					Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-			liteHw.getInventoryHistory().add( liteEvent );
 			liteHw.updateDeviceStatus();
 		}
 		catch (TransactionException e) {
@@ -548,8 +541,7 @@ public class YukonSwitchCommandAction implements ActionBase {
 			event = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 					Transaction.createTransaction( Transaction.INSERT, event ).execute();
 			
-			LiteLMCustomerEvent liteEvent = (LiteLMCustomerEvent) StarsLiteFactory.createLite( event );
-			liteHw.getInventoryHistory().add( liteEvent );
+			liteHw.updateDeviceStatus();
 		}
 		catch (TransactionException e) {
 			CTILogger.error( e.getMessage(), e );

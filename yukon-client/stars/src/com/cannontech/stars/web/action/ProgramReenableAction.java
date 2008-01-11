@@ -2,6 +2,7 @@ package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -25,6 +26,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -58,7 +60,7 @@ import com.cannontech.util.ServletUtil;
  * Window>Preferences>Java>Code Generation.
  */
 public class ProgramReenableAction implements ActionBase {
-
+    private static final LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean("hardwareEventDao", LMHardwareEventDao.class);
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
@@ -277,16 +279,14 @@ public class ProgramReenableAction implements ActionBase {
 		hwEvent = (com.cannontech.database.data.stars.event.LMHardwareEvent)
 				Transaction.createTransaction( Transaction.INSERT, hwEvent ).execute();
 		
-		// Update lite objects and create response
-		LiteLMHardwareEvent liteHwEvent = (LiteLMHardwareEvent) StarsLiteFactory.createLite( hwEvent );
-		liteHw.getInventoryHistory().add( liteHwEvent );
 		liteHw.updateDeviceStatus();
 		
 		StarsLMHardwareHistory hwHist = new StarsLMHardwareHistory();
 		hwHist.setInventoryID( liteHw.getInventoryID() );
 		
-		for (int k = 0; k < liteHw.getInventoryHistory().size(); k++) {
-			liteHwEvent = (LiteLMHardwareEvent) liteHw.getInventoryHistory().get(k);
+		List<LiteLMHardwareEvent> list = hardwareEventDao.getByInventoryId(liteHw.getLiteID());
+		for (int k = 0; k < list.size(); k++) {
+		    LiteLMHardwareEvent liteHwEvent = list.get(k);
 			StarsLMHardwareEvent starsEvent = new StarsLMHardwareEvent();
 			StarsLiteFactory.setStarsLMCustomerEvent( starsEvent, liteHwEvent );
 			hwHist.addStarsLMHardwareEvent( starsEvent );
@@ -294,7 +294,7 @@ public class ProgramReenableAction implements ActionBase {
         
 		// Add "Activation Completed" to program events
 		for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
-			LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
+			LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(i);
 			if (liteApp.getInventoryID() == liteHw.getInventoryID() && liteApp.getProgramID() > 0) {
 				LiteStarsLMProgram liteProg = ProgramSignUpAction.getLMProgram( liteAcctInfo, liteApp.getProgramID() );
 	        	

@@ -17,7 +17,6 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
-import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -254,23 +253,6 @@ public class SendOptOutNotificationAction implements ActionBase {
 		}
         
 		return text.toString();
-	}
-	
-	private static LiteLMHardwareEvent findLastOptOutEvent(LiteStarsLMHardware liteHw, LiteStarsEnergyCompany energyCompany) {
-		int tempTermID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_TEMP_TERMINATION ).getEntryID();
-		
-		try {
-			for (int i = liteHw.getInventoryHistory().size() - 1; i >= 0; i--) {
-				LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) liteHw.getInventoryHistory().get(i);
-				if (liteEvent.getActionID() == tempTermID)
-					return liteEvent;
-			}
-		}
-		catch (Exception e) {
-			CTILogger.error( e.getMessage(), e );
-		}
-		
-		return null;
 	}
 	
 	public static String getOptOutNotifMessage(

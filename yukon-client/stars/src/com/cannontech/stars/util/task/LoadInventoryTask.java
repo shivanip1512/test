@@ -24,6 +24,7 @@ import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
@@ -254,9 +255,14 @@ public class LoadInventoryTask extends TimeConsumingTask {
         
         if (invEventMap != null) {
             List<LiteLMHardwareEvent> events = invEventMap.get(inventoryId);
-            if (events != null) liteInv.setInventoryHistory(events);
+            if (events != null) {
+                liteInv.updateDeviceStatus(events);
+            } else {
+                liteInv.setDeviceStatus(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL);
+            }
+            return;
         }
-        
+
         liteInv.updateDeviceStatus();
     }
 

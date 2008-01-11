@@ -1,6 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -14,7 +13,6 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
@@ -24,6 +22,8 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.ObjectInOtherEnergyCompanyException;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -54,7 +54,7 @@ import com.cannontech.stars.xml.util.StarsConstants;
  * Window>Preferences>Java>Code Generation.
  */
 public class UpdateLMHardwareAction implements ActionBase {
-
+    private static final LMHardwareEventDao hardwareEventDao = YukonSpringHook.getBean("hardwareEventDao", LMHardwareEventDao.class);
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
@@ -281,9 +281,9 @@ public class UpdateLMHardwareAction implements ActionBase {
 			// Update the "install" event if necessary
 			int installEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL).getEntryID();
 			
-			List hwHist = liteInv.getInventoryHistory();
+			List<LiteLMHardwareEvent> hwHist = hardwareEventDao.getByInventoryId(liteInv.getLiteID());
 			for (int i = hwHist.size() - 1; i >= 0; i--) {
-				LiteLMHardwareEvent liteEvent = (LiteLMHardwareEvent) hwHist.get(i);
+				LiteLMHardwareEvent liteEvent = hwHist.get(i);
 				
 				if (liteEvent.getActionID() == installEntryID) {
 					if (updateHw.getInstallDate() != null &&
