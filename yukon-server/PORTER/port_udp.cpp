@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/01/08 22:05:30 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/01/11 15:52:08 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2201,15 +2201,15 @@ void UDPInterface::sendResults( void )
 
                         statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->work.status, om->MessageFlags );
 
-                        OutEchoToIN(dr->work.outbound.front(), &im);
+                        OutEchoToIN(om, &im);
 
                         dr->device->sendCommResult(&im);
 
                         //  This method may delete the om!
-                        ReturnResultMessage(dr->work.status, &im, dr->work.outbound.front());
+                        ReturnResultMessage(dr->work.status, &im, om);
                     }
 
-                    delete dr->work.outbound.front();
+                    delete om;
 
                     dr->work.outbound.pop();
                 }
