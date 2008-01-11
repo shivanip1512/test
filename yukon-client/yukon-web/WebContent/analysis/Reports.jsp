@@ -371,13 +371,13 @@ function checkDates(){
                 			<%if (objects != null) {
                     			for (Object object : objects) {
                         			if( object instanceof String) {%>
-                                    	<option value='<%=object.toString()%>'><%=object.toString()%></option>
+                                    	<option value='<c:out value="<%=object.toString()%>" />'><c:out value="<%=object.toString()%>" /></option>
                         			<%}else if (object instanceof LiteYukonPAObject) {%>
-                                    	<option value='<%=((LiteYukonPAObject)object).getYukonID()%>'><%=((LiteYukonPAObject)object).getPaoName()%></option>
+                                    	<option value='<c:out value="<%=((LiteYukonPAObject)object).getYukonID()%>" />'><c:out value="<%=((LiteYukonPAObject)object).getPaoName()%>" /></option>
                         			<%}else if (object instanceof LiteDeviceMeterNumber){%>
-                                    	<option value='<%=((LiteDeviceMeterNumber)object).getDeviceID()%>'><%=((LiteDeviceMeterNumber)object).getMeterNumber()%></option>
+                                    	<option value='<c:out value="<%=((LiteDeviceMeterNumber)object).getDeviceID()%>" />'><c:out value="<%=((LiteDeviceMeterNumber)object).getMeterNumber()%>" /></option>
                         			<%}else if (object instanceof DeviceReadJobLog){%>
-                                    	<option value='<%=((DeviceReadJobLog)object).getDeviceReadJobLogID()%>'><%=((DeviceReadJobLog)object).toString()%></option>
+                                    	<option value='<c:out value="<%=((DeviceReadJobLog)object).getDeviceReadJobLogID()%>" />'><c:out value="<%=((DeviceReadJobLog)object).toString()%>" /></option>
                         		<%}
                     			}
                 			}%>
