@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/01/11 15:52:08 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/01/11 15:53:52 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2209,7 +2209,7 @@ void UDPInterface::sendResults( void )
                         ReturnResultMessage(dr->work.status, &im, om);
                     }
 
-                    delete om;
+                    delete dr->work.outbound.front();
 
                     dr->work.outbound.pop();
                 }
