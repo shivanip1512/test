@@ -611,18 +611,18 @@ msg_div.innerHTML = cmd_name + ":" + msg;
 var timeout = 0;
 if (color == "red") {
 	$("outerDiv").style.display = 'block';
-	Effect.Pulsate('outerDiv', {duration: 8});
+    $('outerDiv').show();
 	timeout = 8000;
 	}
  else {
- 	Effect.Appear('outerDiv');
+ 	$('outerDiv').show();
 	timeout = 2000;
 	}
 	setTimeout ('hideMsgDiv()', timeout);	
 }
 
 function hideMsgDiv() {
-	Effect.Fade('outerDiv');
+    $('outerDiv').hide();
 }
 
 function getMoveBackMenu() {
