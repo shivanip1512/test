@@ -29,6 +29,7 @@ import com.cannontech.util.ServletUtil;
 
 public class LoginFilter implements Filter {
     private static final String[] excludedFilePaths;
+    private static final String[] excludedRedirectedPaths;
     private WebApplicationContext context;
     private LoginService loginService;
     private LoginCookieHelper loginCookieHelper;
@@ -54,6 +55,12 @@ public class LoginFilter implements Filter {
             "/**/*.jpg", 
             "/**/*.html",
             "/jws/*.jar"};
+        
+        excludedRedirectedPaths = new String[] {
+            "/capcontrol/**",
+            "/operator/**",
+            "/user/**"
+        };
     }
 
     @Override
@@ -69,7 +76,7 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        boolean excludedRequest = isExcludedRequest(request);
+        boolean excludedRequest = isExcludedRequest(request, excludedFilePaths);
         if (excludedRequest) {
             chain.doFilter(req, resp);
             return;
@@ -117,10 +124,10 @@ public class LoginFilter implements Filter {
         return;
     }
 
-    private boolean isExcludedRequest(HttpServletRequest request) {
+    private boolean isExcludedRequest(HttpServletRequest request, String... patterns) {
         String pathWithinApplication = urlPathHelper.getPathWithinApplication(request);
         
-        for (String pattern : excludedFilePaths) {
+        for (String pattern : patterns) {
             if (pathMatcher.match(pattern, pathWithinApplication)) {
                 return true;
             }
@@ -130,6 +137,9 @@ public class LoginFilter implements Filter {
     }
 
     private String getRedirectedFrom(HttpServletRequest request) {
+        boolean isExcludedRedirectedFromRequest = isExcludedRequest(request, excludedRedirectedPaths);
+        if (isExcludedRedirectedFromRequest) return "";
+        
         String url = request.getRequestURL().toString();
         String urlParams = request.getQueryString();
         String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
