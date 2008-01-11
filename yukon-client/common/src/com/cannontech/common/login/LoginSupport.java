@@ -4,11 +4,9 @@
 package com.cannontech.common.login;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Properties;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
@@ -34,11 +32,10 @@ class LoginSupport {
 		HttpURLConnection conn = null;
 		HttpURLConnection.setFollowRedirects(false);
 		
-		InputStream in = null;
 		try {			
 			conn = (HttpURLConnection) url.openConnection();
 			
-			in = conn.getInputStream();
+			conn.getInputStream();
 			
 			String cookie = conn.getHeaderField("Set-Cookie");
 			CTILogger.debug("LoginController returned 'Set-Cookie' = " + cookie);
@@ -69,7 +66,8 @@ class LoginSupport {
 		try {
 			HttpURLConnection conn = (HttpURLConnection) url.openConnection();
 			conn.setRequestProperty("Cookie", sessionID);
-			conn.getContent();
+			HttpURLConnection.setFollowRedirects(true);
+			conn.connect();
 		} catch (IOException e1) {
 			throw new RuntimeException(e1.getMessage());
 		}
