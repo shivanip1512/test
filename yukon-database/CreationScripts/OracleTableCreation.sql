@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/11/2008 2:31:33 PM                         */
+/* Created on:     1/11/2008 3:27:57 PM                         */
 /*==============================================================*/
 
 
@@ -3392,7 +3392,7 @@ create table DeviceRTC  (
 create table DeviceRoutes  (
    DEVICEID             NUMBER                          not null,
    ROUTEID              NUMBER                          not null,
-   constraint PK_DEVICEROUTES primary key (DEVICEID, ROUTEID)
+   constraint PK_DEVICEROUTES primary key (DEVICEID)
 );
 
 /*==============================================================*/

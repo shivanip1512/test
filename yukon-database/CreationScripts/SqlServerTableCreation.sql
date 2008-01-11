@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/11/2008 2:29:32 PM                         */
+/* Created on:     1/11/2008 3:29:23 PM                         */
 /*==============================================================*/
 
 
@@ -5774,7 +5774,7 @@ go
 create table DeviceRoutes (
    DEVICEID             numeric              not null,
    ROUTEID              numeric              not null,
-   constraint PK_DEVICEROUTES primary key (DEVICEID, ROUTEID)
+   constraint PK_DEVICEROUTES primary key (DEVICEID)
 )
 go
 

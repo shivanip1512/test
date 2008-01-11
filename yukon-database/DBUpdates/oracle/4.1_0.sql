@@ -13,6 +13,14 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 /* @error ignore-end */ 
 /* End YUK-5103*/
 
+/* Start YUK-5123 */
+ALTER TABLE DEVICEROUTES
+ DROP PRIMARY KEY CASCADE;
+ALTER TABLE DEVICEROUTES
+ ADD CONSTRAINT PK_DEVICEROUTES
+ PRIMARY KEY
+ (DEVICEID);
+/* End YUK-5123 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
