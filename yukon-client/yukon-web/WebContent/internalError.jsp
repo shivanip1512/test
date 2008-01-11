@@ -106,7 +106,7 @@ function showStack( chkBox ) {
 <div id="errorImg"><a href="<%=homeUrl%>"><img style="border:none;" src="<%=request.getContextPath()%><%= logo %>"></a></div>
 <% if (friendlyExceptionMessage != null) { %>
 <br/>
-<div id="errorFriendly"><c:out value="<%=friendlyExceptionMessage %>" /></div>
+<div id="errorFriendly"><%=friendlyExceptionMessage %></div>
 <br/>
 <% } else{%>
 <div id="errorMain">An error occurred while processing your request</div>
