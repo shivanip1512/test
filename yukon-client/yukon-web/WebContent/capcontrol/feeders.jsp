@@ -566,7 +566,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					if (CBCUtils.isTwoWay(obj)) {
 					%>					
 					<a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', 'cbcPointTimestamps.jsp?cbcID=<%=obj.getLiteID()%>', 500, 600)" >
-						<img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestmap information.<br>for the cap bank controller device');" />
+						<img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestamp information.<br>for the cap bank controller device');" />
 					</a>
 					<%
 					}
