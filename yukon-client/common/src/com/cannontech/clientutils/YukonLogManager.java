@@ -100,7 +100,7 @@ public class YukonLogManager {
      * @param hostname the IP address of the host
      * @param port the connection port number
      */
-    public static synchronized void initialize(String hostname, int port) {
+    public static synchronized void initialize(String hostname, int port, String sessionId) {
         
         //path to the servlet that has the logging config file
         String path = "http://" + hostname + ":" + port + "/servlet/LoggingServlet";
@@ -128,6 +128,7 @@ public class YukonLogManager {
         // if that worked, setup YukonRemoteAppender
         YukonRemoteAppender.setHostName(hostname);
         YukonRemoteAppender.setPortNumber(Integer.toString(port));
+        YukonRemoteAppender.setSessionId(sessionId);
         YukonRemoteAppender.configureLogger();
         getMyLogger().info("The remote logging config file was found under: " + path);
     }

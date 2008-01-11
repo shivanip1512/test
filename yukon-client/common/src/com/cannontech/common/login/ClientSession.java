@@ -162,7 +162,7 @@ public class ClientSession {
             success = doRemoteLogin(parent);
 			localLogin = !success;
             if (success) {
-                YukonLogManager.initialize(host, port);
+                YukonLogManager.initialize(host, port, sessionID);
             }
                 
 		}			

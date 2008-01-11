@@ -4,9 +4,9 @@ import org.apache.log4j.AppenderSkeleton;
 import org.apache.log4j.spi.LoggingEvent;
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
-import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.spring.SimpleSessionHttpInvokerRequestExecutor;
 
 /**
  * YukonRemoteAppender is a custom appender used for
@@ -20,6 +20,7 @@ public class YukonRemoteAppender extends AppenderSkeleton {
     private static RemoteLogger remoteLogger;
     private static String hostName;
     private static String portNumber;
+    private static String sessionId;
     private static String applicationName;
     private static String clientId;
     
@@ -56,7 +57,8 @@ public class YukonRemoteAppender extends AppenderSkeleton {
      */
     public static void configureLogger() {
         HttpInvokerClientInterceptor interceptor = new HttpInvokerClientInterceptor();
-        SimpleHttpInvokerRequestExecutor requestExecutor = new SimpleHttpInvokerRequestExecutor();
+        SimpleSessionHttpInvokerRequestExecutor requestExecutor = new SimpleSessionHttpInvokerRequestExecutor();
+        requestExecutor.setSessionId(sessionId);
         interceptor.setHttpInvokerRequestExecutor(requestExecutor);
         interceptor.setServiceUrl("http://" + hostName + ":" + portNumber + "/remote/RemoteLogger");
         remoteLogger = (RemoteLogger) ProxyFactory.getProxy(RemoteLogger.class, interceptor);
@@ -122,6 +124,14 @@ public class YukonRemoteAppender extends AppenderSkeleton {
     public static void setHostName(String hostName) {
         YukonRemoteAppender.hostName = hostName;
     }
+    
+    public static String getSessionId() {
+		return sessionId;
+	}
+    
+    public static void setSessionId(String sessionId) {
+		YukonRemoteAppender.sessionId = sessionId;
+	}
 
     /**
      * @return The port number the client connects to
