@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/01/14 17:23:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,7 +83,7 @@ CtiSignalManager& CtiSignalManager::operator=(const CtiSignalManager& aRef)
     return *this;
 }
 
-CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)                                               // The manager adds an active and unacknowledged alarm on this condition for this point.
+CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool dontMarkDirty) 
 {
     try
     {
@@ -104,7 +104,10 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
             {
                 if(sig.getSignalCategory() >= SignalEvent)
                 {
-                    setDirty(true);
+                    if( !dontMarkDirty )
+                    {
+                        setDirty(true, sig.getId());
+                    }
 
                     SigMgrMap_t::key_type key = make_pair( sig.getId(), sig.getCondition() );
                     pair< SigMgrMap_t::iterator, bool > ip = _map.insert( make_pair( key, (CtiSignalMsg*)sig.replicateMessage() ) );
@@ -149,6 +152,10 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig)          
                                 }
                             }
                         }
+                    }
+                    else
+                    {
+                        _pointMap.insert(make_pair(sig.getId(), ip.first->second));
                     }
                 }
             }
@@ -197,7 +204,7 @@ CtiSignalMsg * CtiSignalManager::clearAlarms(long pointid)
             if(tags == 0)
             {
                 // This guy has already been acknowledged and now has been cleared.  Get it out of the table!
-                _map.erase( itr );
+                removeFromMaps(pointid, i);
                 CtiTableDynamicPointAlarming::Delete(pointid, i);
                 pOriginalSig = 0;
             }
@@ -247,7 +254,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
             {
                 if( ((pOriginalSig->getTags() & (TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM)) != 0) != active )     // We must be changing it!
                 {
-                    setDirty(true);
+                    setDirty(true, pOriginalSig->getId());
 
                     if(active)
                     {
@@ -270,7 +277,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmActive(long pointid, int alarm_conditio
                         didit = true;
 
                         // This guy has already been acknowledged and now has been cleared.  Get it out of the table!
-                        _map.erase( itr );
+                        removeFromMaps(pointid, alarm_condition);
                         pSig = pOriginalSig;        // Just return the original.
                         pOriginalSig = 0;
 
@@ -327,7 +334,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
             {
                 if( ((pOriginalSig->getTags() & TAG_UNACKNOWLEDGED_ALARM) != 0) == acked )     // We must be changing it!
                 {
-                    setDirty(true);
+                    setDirty(true, pOriginalSig->getId());
 
                     if(acked)
                     {
@@ -345,7 +352,7 @@ CtiSignalMsg*  CtiSignalManager::setAlarmAcknowledged(long pointid, int alarm_co
                         didit = true;
 
                         // This guy has already cleared and now been acknowledged.  Get it out of the table!
-                        _map.erase( itr );
+                        removeFromMaps(pointid, alarm_condition);
                         pSig = pOriginalSig;        // Just return the original.
                         pOriginalSig = 0;
 
@@ -470,21 +477,25 @@ UINT CtiSignalManager::getTagMask(long pointid) const // Returns the bitwise OR 
     UINT mask = 0x00000000;
 
     // Look through all pending alarms until both bits are set or until all alarms are studied.
-    SigMgrMap_t::const_iterator itr;
+    PointSignalMap_t::const_iterator itr;
+    itr = _pointMap.find(pointid);
 
-    for(itr = _map.begin(); itr != _map.end(); itr++)
+    if( itr != _pointMap.end() )
     {
-        SigMgrMap_t::value_type     vt      = *itr;
-        SigMgrMap_t::key_type       key     = vt.first;
-        CtiSignalMsg                *pSig   = vt.second;
-
-        if(pSig && key.first == pointid)
+        for(; itr != _pointMap.end() && itr->first == pointid; itr++)
         {
-            mask |= (pSig->getTags() & SIGNAL_MANAGER_MASK);
-
-            if(mask == SIGNAL_MANAGER_MASK)
+            PointSignalMap_t::value_type     vt      = *itr;
+            PointSignalMap_t::key_type       key     = vt.first;
+            CtiSignalMsg                     *pSig   = vt.second;
+    
+            if(pSig && key == pointid)
             {
-                break;      // No point in looking any further.  We have ack and active already indicated for this pointid.
+                mask |= (pSig->getTags() & SIGNAL_MANAGER_MASK);
+    
+                if(mask == SIGNAL_MANAGER_MASK)
+                {
+                    break;      // No point in looking any further.  We have ack and active already indicated for this pointid.
+                }
             }
         }
     }
@@ -550,35 +561,39 @@ CtiMultiMsg* CtiSignalManager::getPointSignals(long pointid) const
 
     CtiMultiMsg *pMulti = new CtiMultiMsg;
     CtiSignalMsg *pSig = 0;
-    SigMgrMap_t::const_iterator itr;
+    PointSignalMap_t::const_iterator itr;
 
-    try
+    itr = _pointMap.find(pointid);
+    if( itr != _pointMap.end() )
     {
-        for(itr = _map.begin(); itr != _map.end(); itr++)
+        try
         {
-            SigMgrMap_t::value_type vt = *itr;
-            SigMgrMap_t::key_type   key = vt.first;
-            CtiSignalMsg *pOriginalSig = vt.second;
-
-            if(key.first == pointid && pOriginalSig)
+            for(; itr != _pointMap.end() && itr->first == pointid; itr++)
             {
-                pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
-                pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
-
-                if(pMulti)
+                PointSignalMap_t::value_type vt = *itr;
+                PointSignalMap_t::key_type   key = vt.first;
+                CtiSignalMsg *pOriginalSig = vt.second;
+    
+                if(key == pointid && pOriginalSig)
                 {
-                    pMulti->insert(pSig);
+                    pSig = (CtiSignalMsg*)(pOriginalSig->replicateMessage());
+                    pSig->setText( TrimAlarmTagText((string &)pSig->getText())+ AlarmTagsToString(pSig->getTags()) );
+    
+                    if(pMulti)
+                    {
+                        pMulti->insert(pSig);
+                    }
                 }
             }
         }
-    }
-    catch(...)
-    {
-        delete pSig;
-        pSig = 0;
+        catch(...)
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            delete pSig;
+            pSig = 0;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
     }
 
@@ -684,7 +699,9 @@ bool CtiSignalManager::dirty() const
     return _dirty;
 }
 
-void CtiSignalManager::setDirty(bool set)
+//This is still a "global" dirty flag, there is no individual resetting of dirty.
+//You should never ever call setDirty(false, <anything but 0>)
+void CtiSignalManager::setDirty(bool set, long paoID)
 {
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
     while(!tlg.isAcquired())
@@ -694,6 +711,15 @@ void CtiSignalManager::setDirty(bool set)
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
         tlg.tryAcquire(5000);
+    }
+
+    if( set == true )
+    {
+        _dirtySignals.insert(paoID);
+    }
+    else
+    {
+        _dirtySignals.clear();
     }
 
     _dirty = set;
@@ -729,6 +755,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
             {
                 conn.beginTransaction(dpa.c_str());
 
+                CtiTime start;
                 for(itr = _map.begin(); conn.isValid() && itr != _map.end(); itr++)
                 {
                     SigMgrMap_t::value_type vt = *itr;
@@ -736,7 +763,7 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
 
                     pSig = vt.second;
 
-                    if(pSig)
+                    if(pSig && _dirtySignals.find(pSig->getId()) != _dirtySignals.end())
                     {
                         CtiTableDynamicPointAlarming ptAlm;
 
@@ -761,9 +788,17 @@ UINT CtiSignalManager::writeDynamicSignalsToDB()
                 }
 
                 conn.commitTransaction(dpa.c_str());
+                CtiTime stop;
+
+                if((stop.seconds() - start.seconds()) > 5)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Writing dynamic signals took " << (stop.seconds() - start.seconds()) 
+                         << " Seconds and wrote " << count << " entries." << endl;
+                }
             }
 
-            setDirty(false);
+            setDirty(false, 0);
         }
     }
     catch(...)
@@ -822,4 +857,31 @@ CtiMultiMsg* CtiSignalManager::getCategorySignals(unsigned category) const
     }
 
     return pMulti;
+}
+
+void CtiSignalManager::removeFromMaps(long pointID, int categoryID)
+{
+    SigMgrMap_t::iterator itr = _map.find(make_pair(pointID, categoryID));
+    if( itr != _map.end() )
+    {
+        _map.erase( itr );
+    }
+
+    PointSignalMap_t::iterator pointIter = _pointMap.find(pointID);
+    if( pointIter != _pointMap.end() )
+    {
+        do
+        {
+            CtiSignalMsg* pSignal = pointIter->second;
+            if( pSignal && pSignal->getSignalCategory() == categoryID )
+            {
+                pointIter = _pointMap.erase(pointIter);
+            }
+            else
+            {
+                pointIter++;
+            }
+
+        } while(pointIter != _pointMap.end() && pointIter->first == pointID);
+    }
 }

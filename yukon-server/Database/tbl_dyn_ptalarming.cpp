@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2007/04/02 19:04:52 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/01/14 17:23:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -421,14 +421,14 @@ UINT CtiTableDynamicPointAlarming::getTags() const
 UINT CtiTableDynamicPointAlarming::setTags(UINT tags)
 {
     setDirty(TRUE);
-    _tags |= (tags & MASK_ANY_ALARM);
+    _tags |= tags;
     return _tags;
 }
 UINT CtiTableDynamicPointAlarming::resetTags(UINT mask)
 {
     setDirty(TRUE);
     _tags &= ~mask;
-    return (_tags & MASK_ANY_ALARM);
+    return _tags;
 }
 
 LONG CtiTableDynamicPointAlarming::getLogID() const

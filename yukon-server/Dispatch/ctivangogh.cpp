@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.175 $
-* DATE         :  $Date: 2008/01/02 20:59:08 $
+* REVISION     :  $Revision: 1.176 $
+* DATE         :  $Date: 2008/01/14 17:23:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3143,7 +3143,7 @@ INT CtiVanGogh::loadPendingSignals()
             sig.setLogType(dynAlarm.getLogType());   // FIX FIX FIX CGP ... think about these two lines.
             // sig.setLogType( AlarmCategoryLogType );
 
-            _signalManager.addSignal( sig );
+            _signalManager.addSignal( sig, true );
         }
     }
 
@@ -3228,11 +3228,11 @@ void CtiVanGogh::writeSignalsToDB(bool justdoit)
                     dout << CtiTime() << " SystemLog transaction complete. Inserted " << panicCounter << " signal messages.  " << _signalMsgQueue.entries() << " left on queue." << endl;
                 }
             }
+        }
 
-            if(!_signalManager.empty() && _signalManager.dirty())
-            {
-                _signalManager.writeDynamicSignalsToDB();
-            }
+        if((justdoit == true || !(dumpCounter % SANITY_RATE)) && !_signalManager.empty() && _signalManager.dirty())//use sanity rate to slow us down
+        {
+            _signalManager.writeDynamicSignalsToDB();
         }
 
         {
@@ -3484,7 +3484,7 @@ void CtiVanGogh::purifyClientConnectionList()
 void CtiVanGogh::updateRuntimeDispatchTable(bool force)
 {
     static UINT callCounter = 0;
-
+    callCounter++;
     try
     {
         if(force || !(callCounter % UPDATERTDB_RATE) )    // Only chase the queue once per CONFRONT_RATE seconds.
@@ -3492,11 +3492,16 @@ void CtiVanGogh::updateRuntimeDispatchTable(bool force)
             unsigned long delay = force ? 30000 : 2500;
 
             CtiServerExclusion server_guard(_server_exclusion, delay);      // Get a lock on it.
-
+            CtiTime start;
             if(server_guard.isAcquired())
             {
                 PointMgr.storeDirtyRecords();
-                ++callCounter;
+            }
+            CtiTime stop;
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << "Writing dispatch dynamic table, took: " << stop.seconds() - start.seconds() << " seconds. " << endl;
             }
         }
     }
@@ -3889,15 +3894,14 @@ INT CtiVanGogh::commandMsgUpdateFailedHandler(CtiCommandMsg *pCmd, CtiMultiWrapp
 
     if( Op[1] == OP_DEVICEID )    // All points on a device must be marked as nonUpdated
     {
+        vector<CtiPointSPtr> points;
+        vector<CtiPointSPtr>::iterator pointIter;
         LONG did = Op[(size_t)2];
+        PointMgr.getEqualByPAO(did, points);
 
-        CtiServerExclusion pmguard(_server_exclusion);
-        CtiPointManager::spiterator itr = PointMgr.begin();
-        CtiPointManager::spiterator end = PointMgr.end();
-
-        for( ; itr != end; itr++ )
+        for( pointIter = points.begin(); pointIter != points.end(); pointIter++ )
         {
-            CtiPointSPtr pPoint = itr->second;
+            CtiPointSPtr pPoint = *pointIter;
 
             if(pPoint && pPoint->getDeviceID() == did)      // We know this point.. AND it is our device!
             {

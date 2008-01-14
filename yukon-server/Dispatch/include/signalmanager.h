@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/10/24 14:51:29 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/01/14 17:23:09 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #define __SIGNALMANAGER_H__
 
 #include <map>
+#include <set>
 #include <utility>
 using std::map;
 using std::pair;
@@ -35,15 +36,18 @@ class IM_EX_CTIVANGOGH CtiSignalManager
 public:
 
     typedef map< pair< long, int >, CtiSignalMsg* > SigMgrMap_t;
+    typedef std::multimap< long, CtiSignalMsg* > PointSignalMap_t; // Calls that target a point need to be fast
 
 protected:
 
     SigMgrMap_t _map;
+    PointSignalMap_t _pointMap;
+    std::set<long> _dirtySignals; //Managed by the setDirty call, used by writeDynamicSignalsToDB
     bool _dirty;
     mutable CtiMutex _mux;
 
 private:
-
+    void removeFromMaps(long pointID, int categoryID);
 public:
 
     CtiSignalManager();
@@ -54,7 +58,7 @@ public:
 
     CtiSignalManager& operator=(const CtiSignalManager& aRef);
 
-    CtiSignalManager& addSignal(const CtiSignalMsg &sig);                   // The manager adds an active and unacknowledged alarm on this condition for this point.
+    CtiSignalManager& addSignal(const CtiSignalMsg &sig, bool dontMarkDirty = false);                   // The manager adds an active and unacknowledged alarm on this condition for this point.
 
     CtiSignalMsg* setAlarmActive(long pointid, int alarm_condition, bool active = true);
     CtiSignalMsg* setAlarmAcknowledged(long pointid, int alarm_condition, bool acked = true);
@@ -78,6 +82,6 @@ public:
     UINT writeDynamicSignalsToDB();
 
     bool dirty() const;
-    void setDirty(bool set = true);
+    void setDirty(bool set, long paoID);
 };
 #endif // #ifndef __SIGNALMANAGER_H__
