@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/09/04 17:10:16 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/01/14 19:29:59 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -228,11 +228,13 @@ void CCU721::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selecto
 
     selector.where( (keyTable["type"] == "CCU-721") && selector.where() );
 
+    /*
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint - \"" << selector.asString() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-    
+    */
+
 }
 
 
