@@ -38,7 +38,8 @@ public class ReferrerPageFilter implements Filter {
         excludedPages = new String[] {
             "/capcontrol/cbcPointTimestamps.jsp", // aka /login.jsp
             "/capcontrol/tempmove.jsp",
-            "/spring/capcontrol/capAddInfo"};
+            "/spring/capcontrol/capAddInfo",
+            "/capcontrol/charts.jsp"};
     }
     /**
      * @see javax.servlet.Filter#init(FilterConfig)
