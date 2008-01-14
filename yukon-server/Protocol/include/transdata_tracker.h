@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2005/12/20 17:20:02 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/01/14 20:09:35 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -33,9 +33,9 @@
 class IM_EX_PROT CtiTransdataTracker
 {
    public:
-      
+
       #pragma pack( push, 1 )
-      
+
       struct lpRecord
       {
          BYTE     rec[2];
@@ -63,6 +63,7 @@ class IM_EX_PROT CtiTransdataTracker
       bool decode( CtiXfer &xfer, int status );
       bool decodeYModem( CtiXfer &xfer, int status );
       bool decodeLink( CtiXfer &xfer, int status );
+      bool decodeLogoff( CtiXfer &xfer, int status );
       bool processComms( BYTE *data, int bytes );
       bool processData( BYTE *data, int bytes );
       bool isTransactionComplete( void );
@@ -83,7 +84,7 @@ class IM_EX_PROT CtiTransdataTracker
       void destroy( void );
       int calcLPRecs( void );
       int countChannels( void );
-      int calcAcks( int recs );
+      int calcPackets( int recs );
       string formatRecNums( int recs );
       CtiTime timeAdjust( CtiTime meter );
 
@@ -111,6 +112,7 @@ class IM_EX_PROT CtiTransdataTracker
          doProt2,
 
          //disconnect
+         doReadPrompt,
          doLogoff
       };
 
@@ -123,9 +125,9 @@ class IM_EX_PROT CtiTransdataTracker
       enum Sizes
       {
          Command_size   = 30,
-         Recs_Fitable   = 512,
          Storage_size   = 4500,
          Meter_size     = 50000,
+         Record_size    = 2,
          Max_lp_recs    = 9999
       };
 
@@ -183,10 +185,6 @@ class IM_EX_PROT CtiTransdataTracker
       bool                 _moveAlong;
       bool                 _finished;
       bool                 _goodCRC;
-      bool                 _ymodemsTurn;
-      bool                 _first;
-      bool                 _sec;
-      bool                 _dataIsExpected;
       bool                 _didRecordCheck;
       bool                 _didLoadProfile;
       bool                 _didBilling;
@@ -197,7 +195,7 @@ class IM_EX_PROT CtiTransdataTracker
       int                  _meterBytes;
       int                  _failCount;
       int                  _error;
-      int                  _neededAcks;
+      int                  _packetsExpected;
       int                  _dataBytes;
 
       BYTE                 *_storage;
@@ -205,7 +203,7 @@ class IM_EX_PROT CtiTransdataTracker
       BYTE                 *_lastCommandSent;
 
       ULONG                _lastLPTime;
-      
+
       mark_v_lp            *_lp;
 
       CtiTransdataDatalink _datalink;
