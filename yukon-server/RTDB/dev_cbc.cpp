@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2007/11/12 17:06:18 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/01/14 19:34:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -435,6 +435,7 @@ void CtiDeviceCBC::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &
                     rwdbUpper(keyTable["type"]) != RWDBExpr( "CBC 7022" ) &&
                     rwdbUpper(keyTable["type"]) != RWDBExpr( "CBC 7023" ) &&
                     rwdbUpper(keyTable["type"]) != RWDBExpr( "CBC 7024" ) &&
+                    rwdbUpper(keyTable["type"]) != RWDBExpr( "CBC DNP" ) &&
                     selector.where() );
 }
 
