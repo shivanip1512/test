@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2006/01/03 20:23:38 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/01/14 20:00:40 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -109,8 +109,8 @@ bool CtiTransdataDatalink::readMsg( CtiXfer &xfer, int status )
       //tack on the new byte(s) we got from the meter
       _received.insert( _offset, ( const char*)xfer.getInBuffer(), xfer.getInCountActual() );
       _offset += xfer.getInCountActual();
-   
-      if( _received.find(_lookFor) )
+
+      if( _received.find(_lookFor) != string::npos )
       {
          memcpy( _storage, _received.c_str(), _received.length() );
          _bytesReceived += _received.length();
