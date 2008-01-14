@@ -15,6 +15,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.log4j.Logger;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -22,12 +23,13 @@ import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.UrlPathHelper;
 
-import com.cannontech.clientutils.CTILogger;
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.util.ServletUtil;
 
 public class LoginFilter implements Filter {
+    private Logger log = YukonLogManager.getLogger(LoginFilter.class);
     private static final String[] excludedFilePaths;
     private static final String[] excludedRedirectedPaths;
     private WebApplicationContext context;
@@ -78,6 +80,7 @@ public class LoginFilter implements Filter {
 
         boolean excludedRequest = isExcludedRequest(request, excludedFilePaths);
         if (excludedRequest) {
+            log.debug("Proceeding with request that passes exclusion filter");
             chain.doFilter(req, resp);
             return;
         }
@@ -91,14 +94,16 @@ public class LoginFilter implements Filter {
 
                 boolean success = loginService.login(request, holder.getUsername(), holder.getPassword());
                 if (success) {
+                    log.info("Proceeding with request after successful Remember Me login");
                     chain.doFilter(req, resp);
                     return;
                 }
+                log.info("Remember Me login failed");
 
                 //cookie login failed, remove cookie and go on to second try.
                 ServletUtil.deleteAllCookies(request, response);
             } catch (GeneralSecurityException e) {
-                CTILogger.error("Unable to decrypt cookie value", e);
+                log.error("Unable to decrypt cookie value", e);
                 ServletUtil.deleteAllCookies(request, response);
             }
         }
@@ -109,10 +114,13 @@ public class LoginFilter implements Filter {
         if (username != null && password != null) {
             boolean success = loginService.login(request, username, password);
             if (success) {
+                log.debug("Proceeding with request after sucessful request parameter login");
                 chain.doFilter(req, resp);
                 return;
             }
         }
+        
+        log.debug("All login attempts failed, returning error");
 
         // okay, if we got here, they weren't authenticated
         boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
