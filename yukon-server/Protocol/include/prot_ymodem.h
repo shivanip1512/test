@@ -1,8 +1,3 @@
-
-#pragma warning( disable : 4786)
-#ifndef __PROT_YMODEM_H__
-#define __PROT_YMODEM_H__
-
 /*---------------------------------------------------------------------------------*
 *
 * File:   prot_ymodem
@@ -14,13 +9,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/01/14 19:43:26 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
-
-#include <windows.h>
+#pragma warning( disable : 4786)
+#ifndef __PROT_YMODEM_H__
+#define __PROT_YMODEM_H__
 
 #include "xfer.h"
 #include "dllbase.h"
@@ -32,45 +28,54 @@ class IM_EX_PROT CtiProtocolYmodem
       CtiProtocolYmodem();
       ~CtiProtocolYmodem();
 
-      bool generate( CtiXfer &xfer, int reqAcks );
+      bool generate( CtiXfer &xfer, int packets );
       bool decode( CtiXfer &xfer, int status );
-      void setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool block, ULONG time );
 
       bool isTransactionComplete( void );
-
-      unsigned short calcCRC( BYTE *ptr, int count );
-      unsigned short updateCRC( BYTE c, unsigned short crc );
 
       void retreiveData( BYTE *data, int *bytes );
       bool isCrcValid( void );
       void destroy( void );
       void reinitalize( void );
       void setError( void );
-      int getError( void );
-      void setStart( bool doSet );
-      int getAcks( void );
-      void setAcks( int acks );
+      int  getError( void );
+      void setStart( void );
+      int  packetsReceived( void );
+
+      enum Sizes
+      {
+          Packet_data_length = 1024
+      };
 
    protected:
 
+      void outputAck ( CtiXfer &xfer, BYTE ack );
+      void readPacket( CtiXfer &xfer );
+      void readEot( CtiXfer &xfer );
+
+      unsigned short calcCRC( BYTE *ptr, int count );
+      unsigned short updateCRC( BYTE c, unsigned short crc );
+
    private:
-      
+
       enum Signals
       {
-         //http://www.bsdg.org/swag/COMM/0084.PAS.html
-         //Ahh The Rosetta Stone.
+         Signal_SOH    = 0x01,
+         Signal_STX    = 0x02,
+         Signal_BRK    = 0x03,
+         Signal_EOT    = 0x04,
+         Signal_ENQ    = 0x05,
+         Signal_ACK    = 0x06,
 
-         Soh       = 0x01,
-         Stx,
-         Brk,
-         Eot,
-         Enq,
-         Ack,
-         Nak       = 0x15,
-         Can       = 0x18,
-         Crcnak    = 0x43,
-         Ygnak     = 0x47,
-         Zdle      = 0x18
+         Signal_NAK    = 0x15,
+
+         Signal_CAN    = 0x18,
+
+         Signal_CRCNAK = 0x43,
+
+         Signal_YGNak  = 0x47,
+
+         Signal_ZDLE   = 0x18
       };
 
       enum Errors
@@ -82,27 +87,26 @@ class IM_EX_PROT CtiProtocolYmodem
       enum States
       {
          doStart,
-         doAck
+         doReadPacket,
+         doSendPacketAck,
+         doReadEOT,
+         doSendEOTAck,
+         doComplete
       };
 
       enum
       {
-         Packet_size    = 1029,
-         Storage_size   = 4500
+         Packet_size    = 1029
       };
 
-      bool        _finished;
-      bool        _start;
+      int    _state;
+      int    _failCount;
+      int    _error;
+      int    _bytesReceived;
+      int    _packetsReceived;
+      int    _packetsExpected;
 
-      int         _failCount;
-      int         _error;
-      int         _lastState;
-      int         _bytesReceived;
-      int         _bytesExpected;
-      int         _acks;
-      int         _reqAcks;
-
-      BYTE        *_storage;
+      BYTE  *_storage;
 };
 
 #endif // #ifndef __PROT_YMODEM_H__

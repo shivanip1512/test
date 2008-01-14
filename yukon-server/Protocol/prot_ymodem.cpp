@@ -1,6 +1,3 @@
-
-#pragma warning( disable : 4786)
-
 /*-----------------------------------------------------------------------------*
 *
 * File:   prot_ymodem
@@ -11,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/01/14 19:43:26 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -20,6 +17,7 @@
          the transdata mk-V meter needs.  if you need more, you'll have to fill in
          some more
 *-----------------------------------------------------------------------------*/
+#pragma warning( disable : 4786)
 
 #include "yukon.h"
 #include "guard.h"
@@ -60,44 +58,60 @@ void CtiProtocolYmodem::destroy( void )
 
 void CtiProtocolYmodem::reinitalize( void )
 {
-   _lastState     = doStart;
-
    _failCount     = 0;
    _bytesReceived = 0;
-   _acks          = 0;
-   _reqAcks       = 0;
+   _packetsReceived = 0;
+   _packetsExpected = 0;
 
-   _finished      = false;
-   _start         = true;
+   setStart();
 
    if( _storage != NULL )
    {
       delete [] _storage;
    }
 
-   _storage = CTIDBG_new BYTE[Storage_size];
+   _storage = CTIDBG_new BYTE[Packet_size];
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-bool CtiProtocolYmodem::generate( CtiXfer &xfer, int reqAcks )
+bool CtiProtocolYmodem::generate( CtiXfer &xfer, int packetsExpected )
 {
-   _bytesExpected = Packet_size;
-   
-   if( _start )
+   switch( _state )
    {
-      setXfer( xfer, Crcnak, _bytesExpected, false, 0 );
-      setAcks( reqAcks );     //when we start the protocol, set how many times we think we'll need to ack
-      _acks = 0;
-      _start = false;
+      case doStart:
+      {
+         _packetsExpected = packetsExpected;  //  when we start the protocol, set how many packets we expect
+         _packetsReceived = 0;
+
+         //  start the exchange
+         outputAck( xfer, Signal_CRCNAK );
+         break;
+      }
+      case doReadPacket:
+      {
+         readPacket( xfer );
+         break;
+      }
+      case doReadEOT:
+      {
+         readEot( xfer );
+         break;
+      }
+      case doSendPacketAck:
+      case doSendEOTAck:
+      {
+         outputAck( xfer, Signal_ACK );
+         break;
+      }
+      default:
+      {
+         setError();
+         break;
+      }
    }
-   else
-   {
-      setXfer( xfer, Ack, _bytesExpected, false, 0 );
-      _acks++; 
-   }
-   
+
    return( false );
 }
 
@@ -106,27 +120,79 @@ bool CtiProtocolYmodem::generate( CtiXfer &xfer, int reqAcks )
 
 bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
 {
-   if( xfer.getInCountActual() >= _bytesExpected )
+   switch( _state )
    {
-      if( _bytesExpected < Storage_size )
+      case doStart:
+      case doSendPacketAck:
+      case doSendEOTAck:
       {
-         memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
-         _bytesReceived = xfer.getInCountActual();
+         _state++;
+         break;
       }
-      else
+      case doReadPacket:
       {
-         if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
+         if( xfer.getInCountActual() < Packet_size )
          {
-             CtiLockGuard<CtiLogger> doubt_guard(dout);
-             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            setError();
          }
+         else
+         {
+            unsigned char *buf = xfer.getInBuffer();
+
+            if( buf[0] == Signal_STX &&
+                buf[1] == (_packetsReceived + 1) &&
+                buf[2] == (0xff - _packetsReceived - 1) )
+            {
+               _packetsReceived++;
+               memcpy( _storage, xfer.getInBuffer(), xfer.getInCountActual() );
+               _bytesReceived = xfer.getInCountActual();
+
+               _state++;
+            }
+            else if( buf[0] == Signal_STX &&
+                     buf[1] == (_packetsReceived) &&
+                     buf[2] == (0xff - _packetsReceived) )
+            {
+               //  don't pull in the data - this will make isCrcValid() return false, and we'll just cruise
+               //    over this repeated packet...  also, we're still (re-)sending the ack like we should
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard(dout);
+                  dout << CtiTime() << " **** Checkpoint - duplicate YMODEM packet received **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               }
+
+               _state++;
+            }
+            else
+            {
+               if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
+               {
+                  CtiLockGuard<CtiLogger> doubt_guard(dout);
+                  dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+               }
+
+               setError();
+            }
+         }
+         break;
       }
-      
-      _finished = true;
-   }
-   else
-   {
-      setError();
+      case doReadEOT:
+      {
+         if( xfer.getInCountActual() >= 1 &&
+             xfer.getInBuffer()[0] == Signal_EOT )
+         {
+            _state++;
+         }
+         else
+         {
+            setError();
+         }
+         break;
+      }
+      default:
+      {
+         setError();
+         break;
+      }
    }
 
    return( false );
@@ -137,7 +203,20 @@ bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
 
 bool CtiProtocolYmodem::isTransactionComplete( void )
 {
-   return( _finished );
+   bool complete = false;
+
+   if( _packetsReceived >= _packetsExpected )
+   {
+      //  if we've received and ACKed the last expected packet, we need to receive and ACK the EOT char at the end
+      complete = _state > doSendEOTAck;
+   }
+   else
+   {
+      //  otherwise, we just need to send the ACK after receiving the packet
+      complete = _state > doSendPacketAck;
+   }
+
+   return complete || (_error == Failed);
 }
 
 //=====================================================================================================================
@@ -151,10 +230,13 @@ void CtiProtocolYmodem::retreiveData( BYTE *data, int *bytes )
       memcpy( data, _storage + 3, _bytesReceived - 5 );
       *bytes = _bytesReceived - 5;
 
-      memset( _storage, '\0', Storage_size );
+      memset( _storage, 0, Packet_size );
 
       _bytesReceived = 0;
-      _finished = false;
+
+      //  the only place besides setStart() that initializes our state
+      //  gets us ready to read the next packet
+      _state = doReadPacket;
    }
 }
 
@@ -213,12 +295,12 @@ bool CtiProtocolYmodem::isCrcValid( void )
 
    if( _bytesReceived > 1020 )
    {
-      memset( temp, '\0', sizeof( temp ) );
+      memset( temp, 0, sizeof( temp ) );
       memcpy( temp, ( void *)_storage, _bytesReceived - 2 );
 
       crc.ch[0] = _storage[_bytesReceived - 1];
       crc.ch[1] = _storage[_bytesReceived - 2];
-      
+
       if( crc.sh == calcCRC( temp + 3, _bytesReceived - 3 ))    //fixme.. should not use hardcoded stuff if pos.
       {
          isOk = true;
@@ -231,14 +313,38 @@ bool CtiProtocolYmodem::isCrcValid( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiProtocolYmodem::setXfer( CtiXfer &xfer, BYTE dataOut, int bytesIn, bool block, ULONG time )
+void CtiProtocolYmodem::outputAck( CtiXfer &xfer, BYTE ack )
 {
-   xfer.getOutBuffer()[0] = dataOut;
-   xfer.setMessageStart( true );
-   xfer.setOutCount( sizeof( dataOut ) );
-   xfer.setInCountExpected( bytesIn );
-   xfer.setInTimeout( time );
-   xfer.setNonBlockingReads( block );
+   xfer.getOutBuffer()[0] = ack;
+   xfer.setMessageStart(true);
+   xfer.setOutCount(1);
+   xfer.setInCountExpected(0);
+   xfer.setInTimeout(0);
+   xfer.setNonBlockingReads(false);
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiProtocolYmodem::readPacket( CtiXfer &xfer )
+{
+   xfer.setMessageStart(true);
+   xfer.setOutCount(0);
+   xfer.setInCountExpected(Packet_size);
+   xfer.setInTimeout(0);
+   xfer.setNonBlockingReads(false);
+}
+
+//=====================================================================================================================
+//=====================================================================================================================
+
+void CtiProtocolYmodem::readEot( CtiXfer &xfer )
+{
+   xfer.setMessageStart(true);
+   xfer.setOutCount(0);
+   xfer.setInCountExpected(1);
+   xfer.setInTimeout(0);
+   xfer.setNonBlockingReads(false);
 }
 
 //=====================================================================================================================
@@ -263,23 +369,16 @@ int CtiProtocolYmodem::getError( void )
 //=====================================================================================================================
 //=====================================================================================================================
 
-void CtiProtocolYmodem::setStart( bool doSet )
+void CtiProtocolYmodem::setStart( void )
 {
-   _start = doSet;
+   _state = doStart;
 }
 
 //=====================================================================================================================
 //=====================================================================================================================
 
-int CtiProtocolYmodem::getAcks( void )
+int CtiProtocolYmodem::packetsReceived( void )
 {
-   return( _acks );
+   return _packetsReceived;
 }
 
-//=====================================================================================================================
-//=====================================================================================================================
-
-void CtiProtocolYmodem::setAcks( int acks )
-{
-   _reqAcks = acks;
-}
