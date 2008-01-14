@@ -8899,10 +8899,6 @@ alter table POINT
    add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
 go
 
-alter table POINT
-   add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET)
-go
-
 /*==============================================================*/
 /* Index: Indx_PointStGrpID                                     */
 /*==============================================================*/

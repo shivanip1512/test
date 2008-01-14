@@ -6357,9 +6357,6 @@ INSERT into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', '
 alter table POINT
    add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID);
 
-alter table POINT
-   add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET);
-
 /*==============================================================*/
 /* Index: Indx_PointStGrpID                                     */
 /*==============================================================*/
