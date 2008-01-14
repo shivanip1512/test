@@ -15,7 +15,16 @@
   <h2>${user.username}</h2>
   <tags:widgetContainer userId="${param.userId}" width="550px" identify="true">
   
+    <br><br>
+  	<div style="width: 550px;">
+  		Use this permission for Load Management.  Select the objects to ALLOW access to for the user.
+  	</div>
     <tags:widget bean="userPermissionEditorWidget" constraint="com.cannontech.common.search.criteria.LMDeviceCriteria" permission="LM_VISIBLE" allow="true"/>
+    
+    <br><br>
+  	<div style="width: 550px;">
+	    Use this permission for Cap Control.  Select the objects to DENY access to for the user.
+  	</div>
     <tags:widget bean="userPermissionEditorWidget" constraint="com.cannontech.common.search.criteria.CBCDeviceCriteria" permission="PAO_VISIBLE" allow="false"/>
 
   </tags:widgetContainer>

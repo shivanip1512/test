@@ -51,6 +51,19 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
     public void setEditorService(PaoPermissionEditorService<T> editorService) {
         this.editorService = editorService;
     }
+    
+    @Override
+    public ModelAndView identity(HttpServletRequest request,
+    		HttpServletResponse response) throws Exception {
+    	
+    	ModelAndView mav = super.identity(request, response);
+    	
+    	Permission permission = getPermission(request);
+    	
+    	mav.addObject("permission", permission);
+    	
+    	return mav;
+    }
 
     public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("userGroupPermissionEditor/render.jsp");
@@ -59,6 +72,14 @@ public abstract class UserGroupPermissionEditorWidget<T> extends WidgetControlle
 //        mav.addObject("group", group);
 
         putPaosInModel(request, mav, group);
+        
+        Permission permission = getPermission(request);
+        String instructionText = "should";
+        if(permission.getDefault()) {
+        	instructionText = "should not";
+        }
+        
+        mav.addObject("instructionText", instructionText);
 
         return mav;
     }

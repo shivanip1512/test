@@ -15,8 +15,17 @@
 	<h2>${group.groupName}</h2>
     <tags:widgetContainer groupId="${param.groupId}" width="550px" identify="true">
     
-      <tags:widget bean="groupPermissionEditorWidget" constraint="com.cannontech.common.search.criteria.LMDeviceCriteria" permission="LM_VISIBLE" allow="true"/>
-      <tags:widget bean="groupPermissionEditorWidget" constraint="com.cannontech.common.search.criteria.CBCDeviceCriteria" permission="PAO_VISIBLE" allow="false"/>
+		<br><br>
+	  	<div style="width: 550px;">
+	  		Use this permission for Load Management.  Select the objects to ALLOW access to for the group.
+	  	</div>
+		<tags:widget bean="groupPermissionEditorWidget" constraint="com.cannontech.common.search.criteria.LMDeviceCriteria" permission="LM_VISIBLE" allow="true"/>
+		
+		<br><br>
+	  	<div style="width: 550px;">
+		    Use this permission for Cap Control.  Select the objects to DENY access to for the group.
+	  	</div>
+		<tags:widget bean="groupPermissionEditorWidget" constraint="com.cannontech.common.search.criteria.CBCDeviceCriteria" permission="PAO_VISIBLE" allow="false"/>
   
     </tags:widgetContainer>
 
