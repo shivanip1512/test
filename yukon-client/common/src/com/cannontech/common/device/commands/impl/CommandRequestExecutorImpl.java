@@ -17,7 +17,6 @@ import org.springframework.core.style.ToStringCreator;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
@@ -192,6 +191,12 @@ public class CommandRequestExecutorImpl implements CommandRequestExecutor {
             LiteYukonUser user) throws PaoAuthorizationException {
         
         log.debug("Executing " + commands.size() + " for " + callback);
+        
+        if (commands.isEmpty()) {
+            log.debug("Skipping execution because there were no commands");
+            callback.complete();
+            return;
+        }
 
         // build up a list of command requests
         final List<Request> commandRequests = new ArrayList<Request>(commands.size());
