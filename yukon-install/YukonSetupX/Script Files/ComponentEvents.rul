@@ -176,6 +176,7 @@ DeleteFile(TomcatPath + "\\webapps\\bin\\java.dll");
 DeleteFile(TomcatPath + "\\webapps\\bin\\verify.dll");
 DeleteFile(TomcatPath + "\\webapps\\bin\\zip.dll");
 DeleteFile(TomcatPath + "\\webapps\\bin\\jli.dll");
+DeleteFile(TomcatPath + "\\webapps\\bin\\msvcr71.dll");
 DeleteDir (TomcatPath + "\\webapps\\bin\\client", ALLCONTENTS );
 DeleteDir (TomcatPath + "\\webapps\\lib", ALLCONTENTS );
 /*****/

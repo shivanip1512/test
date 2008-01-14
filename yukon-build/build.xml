@@ -307,7 +307,7 @@
 
         <!-- Yukon Web Deployment Component -->
         <copy todir="${install.bag}/Yukon Web Deployment/bin" preservelastmodified="true">
-            <fileset dir="${module.name}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll,jli.dll" />
+            <fileset dir="${module.name}/yukon-install/JRE/bin" includes="jar.exe,hpi.dll,java.dll,verify.dll,zip.dll,jli.dll,msvcr71.dll" />
             <fileset file="${client.bag}/yukon.war" />
         </copy>
         <copy todir="${install.bag}/Yukon Web Deployment/bin/client" file="${module.name}/yukon-install/JRE/bin/client/jvm.dll" preservelastmodified="true"/>
