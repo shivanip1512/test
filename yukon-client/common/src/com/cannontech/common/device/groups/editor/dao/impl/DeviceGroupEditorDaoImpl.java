@@ -1,11 +1,13 @@
 package com.cannontech.common.device.groups.editor.dao.impl;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -18,6 +20,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MappingList;
@@ -86,10 +89,10 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
         sql.append("from DeviceGroup dg");
-        sql.append("where dg.Type != 'STATIC'");
+        sql.append("where dg.Type != ?");
         sql.append("and DeviceGroupId != ?");
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
-        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, group.getId());
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, DeviceGroupType.STATIC.name(), group.getId());
         
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(group);
@@ -128,7 +131,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("where Type = ?");
         sql.append("and DeviceGroupId != ?");
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
-        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, "STATIC", group.getId());
+        List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), mapper, DeviceGroupType.STATIC.name(), group.getId());
         
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(group);
@@ -354,10 +357,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("select dg.*");
         sql.append("from DeviceGroup dg");
         sql.append("where dg.devicegroupid = ?");
-        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
-        PartialDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, groupId);
         
-        StoredDeviceGroup storedDeviceGroup = resolver.resolvePartial(group);
+        StoredDeviceGroup storedDeviceGroup = queryForDeviceGroup(sql.toString(), groupId);
         
         return storedDeviceGroup;
     }
@@ -372,6 +373,53 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         
         Set<PartialDeviceGroup> result = new HashSet<PartialDeviceGroup>(groups);
         return result;
+    }
+    
+    public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum) {
+        String groupName = systemGroupEnum.getFullPath();
+        
+        Validate.isTrue(groupName.startsWith("/"), "Group name isn't valid, must start with '/': ", groupName);
+        groupName = groupName.substring(1);
+        
+        if (StringUtils.isEmpty(groupName)) {
+            return getRootGroup();
+        }
+        
+        String[] strings = groupName.split("/");
+        List<String> names = Arrays.asList(strings);
+        Collections.reverse(names);
+        Object[] reversedNames = names.toArray();
+        String sql = getRelativeGroupSql(names.size(), false);
+        
+        StoredDeviceGroup result = queryForDeviceGroup(sql, reversedNames);
+        return result;
+    }
+
+    private StoredDeviceGroup queryForDeviceGroup(String sql, Object... arguments) {
+        PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
+        PartialDeviceGroup group = jdbcTemplate.queryForObject(sql.toString(), mapper, arguments);
+        PartialGroupResolver resolver = new PartialGroupResolver(this);
+        StoredDeviceGroup result = resolver.resolvePartial(group);
+        return result;
+    }
+
+    public String getRelativeGroupSql(int count, boolean justId) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        
+        if (justId) {
+            sql.append("select dg.deviceGroupId");
+        } else {
+            sql.append("select dg.*");
+        }
+        sql.append("from DeviceGroup dg");
+        if (count == 0) {
+            sql.append("where dg.parentdevicegroupid is null");
+        } else {
+            sql.append("where dg.groupname = ?");
+            sql.append(" and dg.parentdevicegroupid = (", getRelativeGroupSql(count - 1, true), ")");
+        }
+        
+        return sql.toString();
     }
 
     @Required

@@ -4,8 +4,6 @@ import java.util.Collection;
 import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.core.dao.NotFoundException;
@@ -85,13 +83,5 @@ public interface DeviceGroupService {
      * @return The hierarchy
      */
     public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root);
-
-    /**
-     * 
-     * 
-     * @param group
-     * @return
-     */
-    public StoredDeviceGroup getGroup(SystemGroupEnum group);
 
 }

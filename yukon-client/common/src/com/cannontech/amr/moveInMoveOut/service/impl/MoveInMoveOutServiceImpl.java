@@ -25,10 +25,10 @@ import com.cannontech.amr.moveInMoveOut.tasks.MoveOutTask;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceEventEnum;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
@@ -49,7 +49,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private YukonJobDefinition<MoveOutTask> moveOutDefinition = null;
     private AuthDao authDao;
     private CalculatedPointService calculatedPointService;
-    private DeviceGroupService deviceGroupService;
+    private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupProviderDao deviceGroupDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DynamicDataSource dynamicDataSource;
@@ -223,13 +223,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
         Meter newMeter = moveInResultObj.getNewMeter();
 
-        StoredDeviceGroup disconnectGroup = deviceGroupService.getGroup(SystemGroupEnum.DISCONNECTSTATUS);
+        StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DISCONNECTSTATUS);
         if (deviceGroupDao.isDeviceInGroup(disconnectGroup, newMeter)) {
             deviceGroupMemberEditorDao.removeDevices(disconnectGroup, newMeter);
             moveInResultObj.getDeviceGroupsRemoved().add(disconnectGroup);
         }
 
-        StoredDeviceGroup usageMonitoringGroup = deviceGroupService.getGroup(SystemGroupEnum.USAGEMONITORING);
+        StoredDeviceGroup usageMonitoringGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.USAGEMONITORING);
         if (deviceGroupDao.isDeviceInGroup(usageMonitoringGroup, newMeter)) {
             deviceGroupMemberEditorDao.removeDevices(usageMonitoringGroup,
                                                      newMeter);
@@ -240,13 +240,13 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private void addServiceDeviceGroups(MoveOutResult moveOutResultObj) {
         Meter oldMeter = moveOutResultObj.getPreviousMeter();
 
-        StoredDeviceGroup disconnectGroup = deviceGroupService.getGroup(SystemGroupEnum.DISCONNECTSTATUS);
+        StoredDeviceGroup disconnectGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.DISCONNECTSTATUS);
         if (!deviceGroupDao.isDeviceInGroup(disconnectGroup, oldMeter)) {
             deviceGroupMemberEditorDao.addDevices(disconnectGroup, oldMeter);
             moveOutResultObj.getDeviceGroupsAdded().add(disconnectGroup);
         }
 
-        StoredDeviceGroup usageMonitoringGroup = deviceGroupService.getGroup(SystemGroupEnum.USAGEMONITORING);
+        StoredDeviceGroup usageMonitoringGroup = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.USAGEMONITORING);
         if (!deviceGroupDao.isDeviceInGroup(usageMonitoringGroup, oldMeter)) {
             deviceGroupMemberEditorDao.addDevices(usageMonitoringGroup,
                                                   oldMeter);
@@ -402,8 +402,8 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     }
 
     @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
+    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
+        this.deviceGroupEditorDao = deviceGroupEditorDao;
     }
 
 }

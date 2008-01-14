@@ -24,6 +24,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -94,6 +95,7 @@ public class Multispeak implements MessageListener {
     private DeviceDao deviceDao;
     private MspObjectDao mspObjectDao;
     private DeviceGroupService deviceGroupService;
+    private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private DeviceGroupProviderDao deviceGroupDao;
     private MeterDao meterDao;
@@ -1049,7 +1051,7 @@ public class Multispeak implements MessageListener {
         YukonDevice templateYukonDevice = new YukonDevice(templatePaobject.getYukonID(), templatePaobject.getType());
 
         String groupName = "Default";
-        StoredDeviceGroup deviceGroup = deviceGroupService.getGroup(groupEnum);
+        StoredDeviceGroup deviceGroup = deviceGroupEditorDao.getSystemGroup(groupEnum);
         Set<? extends DeviceGroup> deviceGroups = deviceGroupDao.getGroupMembership(deviceGroup, templateYukonDevice);
         if( deviceGroups.isEmpty())
             logMSPActivity("addImportData", "Template '" + templatePaobject.getPaoName() + 

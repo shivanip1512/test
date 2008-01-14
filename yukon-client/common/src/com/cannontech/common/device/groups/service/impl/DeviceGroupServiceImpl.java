@@ -16,8 +16,6 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
@@ -161,13 +159,6 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         }
 
         hierarchy.setChildGroupList(childGroupList);
-    }
-
-    public StoredDeviceGroup getGroup(SystemGroupEnum systemGroupEnum) {
-        String groupName = systemGroupEnum.getFullPath();
-        DeviceGroup deviceGroup = resolveGroupName(groupName);
-        StoredDeviceGroup storedDeviceGroup = (StoredDeviceGroup)deviceGroup;
-        return storedDeviceGroup;
     }
 
 }

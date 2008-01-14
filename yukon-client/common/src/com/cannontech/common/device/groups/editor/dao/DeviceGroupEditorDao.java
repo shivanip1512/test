@@ -46,4 +46,14 @@ public interface DeviceGroupEditorDao {
     public StoredDeviceGroup getGroupById(int groupId);
     
     public void updateGroup(StoredDeviceGroup group);
+    
+    /**
+     * This method will return the StoredDeviceGroup for a SystemGroupEnum.
+     * If only a DeviceGroup is needed, simply call 
+     *   DeviceGroupService.resolveGroupName(systemGroupEnum.getFullPath())
+     * as that method uses a cache and this will hit the database every time.
+     * @param systemGroupEnum
+     * @return
+     */
+    public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum);
 }

@@ -31,7 +31,7 @@
         <property name="authDao" ref="authDao" />
         <property name="calculatedPointService"
             ref="calculatedPointService" />
-        <property name="deviceGroupService" ref="deviceGroupService" />
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupDao" ref="deviceGroupDao" />
         <property name="deviceGroupMemberEditorDao"
             ref="deviceGroupMemberEditorDao" />
