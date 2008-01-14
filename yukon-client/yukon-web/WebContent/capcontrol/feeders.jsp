@@ -161,7 +161,7 @@ String css = "tableCell";
 			%>
 			<tr class="altTableCell" id="tr_substation_<%=substation.getCcId()%>">
 				<td id="anc_<%=substation.getCcId()%>">
-					<input type="checkbox" name="cti_chkbxSubs" value="<%=substation.getCcId()%>"/>
+					<input type="checkbox" name="cti_chkbxSubStation" value="<%=substation.getCcId()%>"/>
 					<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%> 
 					<% if(substation.getSpecialAreaEnabled()){
 					 	String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId());
@@ -228,7 +228,7 @@ for( SubBus subBus: subBuses ) {
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 %>
 			<tr class="<%=css%>" id="tr_sub_<%=subBus.getCcId()%>">
-				<td id="anc_<%=subBus.getCcId()%>"><input type="checkbox" name="cti_chkbxSubs" value="<%=subBus.getCcId()%>"/>
+				<td id="anc_<%=subBus.getCcId()%>"><input type="checkbox" name="cti_chkbxSubBuses" value="<%=subBus.getCcId()%>"/>
 					<input type="image" id="showSnap<%=subBus.getCcId()%>" src="images/nav-plus.gif" onclick="showRowElems( 'subSnapShot<%=subBus.getCcId()%>', 'showSnap<%=subBus.getCcId()%>'); return false;"/>
 				</td>
 				<td id="subName">

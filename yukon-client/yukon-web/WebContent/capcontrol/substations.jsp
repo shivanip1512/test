@@ -91,7 +91,7 @@ if(special){
             <table id="subHeaderTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
               <tr class="columnHeader lAlign">              
                 <td>
-                <input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubs');"/>
+                <input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubStation');"/>
                 Sub Name</td>
                 <td>State</td>
                 <td>Available<br/> kVARS</td>
@@ -117,7 +117,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 
 	        <tr class="<%=css%>">
 				<td>
-				<input type="checkbox" name="cti_chkbxSubs" value="<%=substation.getCcId()%>" />
+				<input type="checkbox" name="cti_chkbxSubStation" value="<%=substation.getCcId()%>" />
 				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', <%=substation.getCcId()%>)" id="anc_<%=substation.getCcId()%>">
 				<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%>
 				</a>

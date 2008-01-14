@@ -461,13 +461,15 @@ function getUrlType( selElems, type ) {
 function editorPost()
 {
     var elemAreas = document.getElementsByName('cti_chkbxAreas');	
-    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemSubStation = document.getElementsByName('cti_chkbxSubStation');
+    var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
     var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
     var validElems = new Array();
     getValidChecks( elemAreas, validElems );
+    getValidChecks( elemSubStation, validElems );
     getValidChecks( elemSubs, validElems );
     getValidChecks( elemFdrs, validElems );
     getValidChecks( elemBanks, validElems );
