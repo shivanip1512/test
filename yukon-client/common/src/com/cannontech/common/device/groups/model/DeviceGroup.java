@@ -128,6 +128,6 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
 
     public int compareTo(DeviceGroup dg) {
         NaturalOrderComparator naturalOrderComparator = new NaturalOrderComparator();
-        return naturalOrderComparator.compare(this.getFullName(),dg.getFullName());
+        return naturalOrderComparator.compare(this.getFullName().toLowerCase(),dg.getFullName().toLowerCase());
     }
 }
