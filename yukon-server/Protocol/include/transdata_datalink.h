@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/10/30 14:08:30 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/01/14 19:57:31 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -35,7 +35,7 @@ class IM_EX_PROT CtiTransdataDatalink
       CtiTransdataDatalink();
       ~CtiTransdataDatalink();
 
-      std::string buildMsg( std::string command, std::string wantToGet );
+      std::string buildMsg( std::string command = "", std::string wantToGet = "" );
       bool readMsg( CtiXfer &xfer, int status );
       bool isTransactionComplete( void );
 
