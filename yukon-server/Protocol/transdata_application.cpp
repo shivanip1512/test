@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/01/14 19:56:02 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ CtiTransdataApplication::~CtiTransdataApplication()
 bool CtiTransdataApplication::generate( CtiXfer &xfer )
 {
    _finished = false;
-   
+
    switch( _lastState )
    {
    case DoLogOn:
@@ -61,17 +61,17 @@ bool CtiTransdataApplication::generate( CtiXfer &xfer )
             checkRecs();
          }
 
-         switch( _command )   
+         switch( _command )
          {
          case General:
             {
-               _tracker.billing( xfer );    
+               _tracker.billing( xfer );
             }
             break;
 
          case LoadProfile:
             {
-               _tracker.loadProfile( xfer );    
+               _tracker.loadProfile( xfer );
             }
             break;
          }
@@ -81,7 +81,6 @@ bool CtiTransdataApplication::generate( CtiXfer &xfer )
    case DoLogOff:
       {
          _tracker.logOff( xfer );
-         _loggedOff = true;
       }
       break;
    }
@@ -97,15 +96,15 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
    _tracker.decode( xfer, status );
 
    if( _tracker.isTransactionComplete() )
-   {  
+   {
       if( _tracker.getError() == Failed )
       {
          setError( Failed );
          _finished = true;
       }
-      else 
+      else
       {
-         if( _tracker.haveData() )   
+         if( _tracker.haveData() )
          {
             if( _storage )
             {
@@ -115,10 +114,15 @@ bool CtiTransdataApplication::decode( CtiXfer &xfer, int status )
          }
 
          if( _lastState == DoLogOn )
+         {
             _connected = true;
+         }
 
          if( _lastState == DoLogOff )
-            _finished = true;
+         {
+            _finished  = true;
+            _loggedOff = true;
+         }
 
          setNextState();
       }
@@ -185,7 +189,7 @@ void CtiTransdataApplication::reinitalize( void )
    _tracker.reinitalize();
 
    _lastState     = DoLogOn;
-   
+
    _numBytes      = 0;
    _error         = 0;
 
