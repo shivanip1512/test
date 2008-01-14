@@ -1356,6 +1356,11 @@ insert into yukonroleproperty values(-70018,-700, 'Modify Comments', 'false', 'A
 update DeviceGroup set GroupName = ' ' where GroupName is null or GroupName = '' or DeviceGroupID = 0;
 /* End YUK-4844, YUK-5114 */
 
+/* Start YUK-5152 */
+update YukonRoleProperty set keyName = 'Load Management Reports Group', Description = 'Access to Load Management group reports.' where rolepropertyid = -10906;
+update YukonRoleProperty set keyName = 'Load Management Reports Group Label' where rolepropertyid = -10916;
+/* End YUK-5152 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

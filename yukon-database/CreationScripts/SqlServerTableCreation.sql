@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/11/2008 3:29:23 PM                         */
+/* Created on:     1/14/2008 1:37:27 PM                         */
 /*==============================================================*/
 
 
@@ -11395,7 +11395,7 @@ insert into YukonRoleProperty values(-10902,-109,'Download Reports Default Filen
 insert into YukonRoleProperty values(-10903,-109,'Admin Reports Group','true','Access to administrative group reports.');
 insert into YukonRoleProperty values(-10904,-109,'AMR Reports Group','true','Access to AMR group reports.');
 insert into YukonRoleProperty values(-10905,-109,'Statistical Reports Group','true','Access to statistical group reports.');
-insert into YukonRoleProperty values(-10906,-109,'Load Managment Reports Group','false','Acces to Load Management group reports.');
+insert into YukonRoleProperty values(-10906,-109,'Load Management Reports Group','false','Acces to Load Management group reports.');
 insert into YukonRoleProperty values(-10907,-109,'Cap Control Reports Group','false','Access to Cap Control group reports.');
 insert into YukonRoleProperty values(-10908,-109,'Database Reports Group','true','Access to Database group reports.');
 insert into YukonRoleProperty values(-10909,-109,'Stars Reports Group','true','Access to Stars group reports.');
@@ -11404,7 +11404,7 @@ insert into YukonRoleProperty values(-10910,-109,'Other Reports Group','true','A
 insert into YukonRoleProperty values(-10913,-109,'Admin Reports Group Label','Administrator','Label (header) for administrative group reports.');
 insert into YukonRoleProperty values(-10914,-109,'AMR Reports Group Label','Metering','Label (header) for AMR group reports.');
 insert into YukonRoleProperty values(-10915,-109,'Statistical Reports Group Label','Statistical','Label (header) for statistical group reports.');
-insert into YukonRoleProperty values(-10916,-109,'Load Managment Reports Group Label','Load Management','Label (header) for Load Management group reports.');
+insert into YukonRoleProperty values(-10916,-109,'Load Management Reports Group Label','Load Management','Label (header) for Load Management group reports.');
 insert into YukonRoleProperty values(-10917,-109,'Cap Control Reports Group Label','Cap Control','Label (header) for Cap Control group reports.');
 insert into YukonRoleProperty values(-10918,-109,'Database Reports Group Label','Database','Label (header) for Database group reports.');
 insert into YukonRoleProperty values(-10919,-109,'Stars Reports Group Label','Stars','Label (header) for Stars group reports.');
