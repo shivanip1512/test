@@ -9,7 +9,7 @@
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 
-<cti:standardPage title="Cap Bank Comments" module="capcontrol">
+<cti:standardPage title="Cap Control Comments" module="capcontrol">
 <cti:standardMenu/>
 
 <c:url var="commentUpdatePage" value="/capcontrol/commentUpdate.jsp"/>
@@ -22,9 +22,11 @@
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 
 	//Coming into this page, we get the paoId of the capbank.
-	int paoId = ParamUtil.getInteger(request,"capbankID",-1);
-	CapBankDevice bank = filterCapControlCache.getCapBankDevice(paoId);
-	String name = bank.getCcName();
+	int paoId = ParamUtil.getInteger(request,"paoID",-1);
+	
+	StreamableCapObject obj = filterCapControlCache.getCapControlPAO(paoId);
+	
+	String name = obj.getCcName();
 	
 	CapControlCommentDao dao = YukonSpringHook.getBean("capCommentDao", CapControlCommentDao.class);
 	YukonUserDao yukonUserDao = (YukonUserDao) YukonSpringHook.getBean("yukonUserDao");
@@ -137,27 +139,27 @@ function unHighlightAllRows(){
 		
 				<table id="innerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 					<tr class="columnHeader lAlign">
-						<% if ( modifyPermission || addPermission ) { %>
 						<td>Edit</td>
-						<% } %>
 						<td>Comment</td>
 						<td>By User</td>
 						<td>Time</td>
 						<td>Altered</td>
 					</tr>
-					<% if ( addPermission || modifyPermission) { %>
+					
 					<tr class="altTableCell" id="addCommentRow" >
 						<td>
-						
-						<img src="/editor/images/edit_item.gif" border="0" height="15" width="15" onclick="selectComment(-1);unHighlightAllRows();"/>
-
+						<% if ( addPermission ) { %>
+							<img src="/editor/images/edit_item.gif" border="0" height="15" width="15" onclick="selectComment(-1);unHighlightAllRows();"/>
+						<% } else { %>
+							<img src="/editor/images/edit_item_gray.gif" border="0" height="15" width="15" onclick=""/>
+						<% } %>
 						</td>
 						<td>Click the edit button to add or edit a comment.</td>
 						<td/>
 						<td/>
 						<td/>
 					</tr>
-						<% } %>
+						
 					<!-- Loops for each comment here. -->
 					<%
 					    for( CapControlComment c : comments ){
@@ -169,18 +171,27 @@ function unHighlightAllRows(){
 				    			style = "onelineTableCell";
 					%>
 					<tr id="commentRow_<%= c.getId() %>" class=<%=style %>>
-						<% if ( modifyPermission || addPermission ) { %>
 						<td>
-							<% if ( b && modifyPermission) { %>
-							<img src="/editor/images/edit_item.gif" border="0" height="15" width="15"  onclick="selectComment(<%=c.getId() %>);highlightRow('commentRow_<%= c.getId() %>');"/>
-							<img src="/editor/images/delete_item.gif" border="0" height="15" width="15" onclick="setCommentValue(<%=c.getId() %>);setDelete(1);submit();" />
+						<% if (modifyPermission) { %>
+								<img src="/editor/images/edit_item.gif" border="0" height="15" width="15"  onclick="selectComment(<%=c.getId() %>);highlightRow('commentRow_<%= c.getId() %>');"/>
+								<img src="/editor/images/delete_item.gif" border="0" height="15" width="15" onclick="setCommentValue(<%=c.getId() %>);setDelete(1);submit();" />
+							<% } else { %>
+								<img src="/editor/images/edit_item_gray.gif" border="0" height="15" width="15"  onclick=""/>
+								<img src="/editor/images/delete_item_gray.gif" border="0" height="15" width="15" onclick="" />							
 							<% } %>
 						</td>
+						<% if(b){ %>
+							<td><%= c.getComment() %></td>
+						<% }else{ %>
+							<td><%= "System: " + c.getComment() %></td>
 						<% } %>
-						<td><%= c.getComment() %></td>
 						<td><%= yukonUserDao.getLiteYukonUser(c.getUserId()).getUsername() %></td>
 						<td><%= formatter.format(c.getTime()) %></td>
-						<td><%= c.isAltered() %></td>
+						<% if( c.isAltered() ){ %>
+							<td> Yes </td>
+						<% }else{ %>
+							<td> No </td>
+						<% } %>
 					</tr>
 					<% } %>
 				</table>

@@ -122,8 +122,10 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     public StreamableCapObject getCapControlPAO( Integer paoID ) {
         StreamableCapObject retObj = getSubBus(paoID);
+        if( retObj == null ) retObj = getSubstation(paoID);
         if( retObj == null ) retObj = getFeeder(paoID);
         if( retObj == null ) retObj = getCapBankDevice(paoID);
+        if( retObj == null ) retObj = getCBCArea(paoID);
         
         return retObj;
     }

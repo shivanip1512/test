@@ -64,20 +64,16 @@ public class CapBankHiddenStates extends AbstractHiddenStates {
         boolean isTwoWay = CBCUtils.isTwoWay( lite );
         stateInfo.addProperty("scanOptionDis", "" + !isTwoWay);
 
-        /*Start*************************/
-            //Adding The last 5 comments to the Pop-up.
+        //Adding The last 5 comments to the Pop-up.
         List<CapControlComment> lastFive = commentDao.getUserCommentsByPaoId(parent.getPaoId(), 5);
         
         StringBuilder fiveToAdd = new StringBuilder("");
         for (final CapControlComment comment : lastFive) {
             String text = comment.getComment();
             fiveToAdd.append(text);
-          //TODO going to want to use a delimeter and escapes... later.
             fiveToAdd.append(";");
         }
-        
-        stateInfo.addProperty("capbankComments", fiveToAdd.toString());
-        /*End*************************/
+        stateInfo.addProperty("capControlComments", fiveToAdd.toString());
         
         graph.add(stateInfo);
 

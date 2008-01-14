@@ -146,6 +146,9 @@ function createCapInfoMenu (capID) {
 }
 
 function createFeederTagMenu(feederID) {
+
+ 	var comments = getState("FeederState_" + feederID, "capControlComments");
+    
     //Disable
     var allFdrCmds;
     var feederState;
@@ -204,6 +207,15 @@ function createFeederTagMenu(feederID) {
 	str+='>'; 	
 	str+='				    <font color="white">Disable OVUV<\/font><\/><\/br>';
 	str += generateReasonSpan ((isOVUVDis == "true"), disFeederOVUVTag.createName() + 'ReasonSpan', disableOVUVReason);
+    
+  	//***********COMMENTS****************//
+	str+='<a href="/capcontrol/capcontrolcomments.jsp?paoID=' + feederID + '&returnURL=' + window.location +'"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
+	str+='<font color="white">';
+	str+= generateCommentField("commentField_" + feederID, comments );
+	str+='</font>';
+	str += '<br>';
+	//************************	
+    
     str += '            </span>\n';
 	str+='			</td>';
 	str+='		</tr>';	
@@ -221,6 +233,8 @@ function createFeederTagMenu(feederID) {
 
 function createSubTagMenu() {
 	var paoId = getSubId();
+
+	var comments = getState("SubState_" + paoId, "capControlComments");
 
 	//Disable
 	var allSubCmds;
@@ -283,6 +297,15 @@ function createSubTagMenu() {
 	str += '>'; 	
 	str += '               <font color="white">Disable OVUV<\/font><\/br>';
 	str += generateReasonSpan ((isOVUVDis == "true"), disSubOVUVTag.createName() + 'ReasonSpan', disableOVUVReason);
+    
+    //***********COMMENTS****************//
+	str+='<a href="/capcontrol/capcontrolcomments.jsp?paoID=' + paoId + '&returnURL=' + window.location +'"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
+	str+='<font color="white">';
+	str+= generateCommentField("commentField_" + paoId, comments );
+	str+='</font>';
+	str += '<br>';
+	//************************	
+    
     str += '           <\/span>\n';
 	str += '       <\/td>\n';
 	str += '   <\/tr>\n';
@@ -299,7 +322,7 @@ function createSubTagMenu() {
 
 function createCapTagMenu (paoID) {
 	//state var	
-	var comments = getState("CapState_" + paoID, "capbankComments");
+	var comments = getState("CapState_" + paoID, "capControlComments");
 	
     //variables pushed from the server
 	var paoName = getState("CapState_" + paoID, "paoName"); //name of the capbank
@@ -401,12 +424,12 @@ function createCapTagMenu (paoID) {
     str += generateReasonSpan (true, aloneCapTag.createName() + 'ReasonSpan', aloneReason);
 
 	//***********COMMENTS****************//
-	str+='<a href="/capcontrol/capbankcomments.jsp?capbankID=' + paoID + '&returnURL=' + window.location +'"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
+	str+='<a href="/capcontrol/capcontrolcomments.jsp?paoID=' + paoID + '&returnURL=' + window.location +'"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
 	str+='<font color="white">';
-	str+= generateCommentField("commentField_" + paoID, comments );	//str += generateReasonSpan ((isStandalone == "true"), aloneCap.createName() + 'ReasonSpan', aloneReason);
+	str+= generateCommentField("commentField_" + paoID, comments );
 	str+='</font>';
 	str += '<br>';
-	//************************	
+	//************************
 	str+='				</span>';
 	str+='			</td>';
 	str+='		</tr>';

@@ -1,6 +1,9 @@
 package com.cannontech.cbc.oneline.model.sub;
 
+import java.util.List;
+
 import com.cannontech.cbc.dao.CommentAction;
+import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
 import com.cannontech.cbc.oneline.model.AbstractHiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
@@ -34,6 +37,17 @@ public class SubHiddenStates extends AbstractHiddenStates {
         
         String disableOVUVReason = getReason(paoId, CommentAction.DISABLED_OVUV, CapControlTypes.CAP_CONTROL_SUBBUS);
         stateInfo.addProperty("subDisableOVUVReason", disableOVUVReason);
+        
+        //Adding The last 5 comments to the Pop-up.
+	    List<CapControlComment> lastFive = commentDao.getUserCommentsByPaoId(parent.getPaoId(), 5);
+	    
+	    StringBuilder fiveToAdd = new StringBuilder("");
+	    for (final CapControlComment comment : lastFive) {
+	        String text = comment.getComment();
+	        fiveToAdd.append(text);
+	        fiveToAdd.append(";");
+	    }
+	    stateInfo.addProperty("capControlComments", fiveToAdd.toString());
         
         graph.add( stateInfo);
 
