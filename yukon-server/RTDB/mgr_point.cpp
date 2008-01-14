@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2007/11/09 20:14:36 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2008/01/14 17:23:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1035,7 +1035,7 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
 
         // Find it in our list and decode it.
         pPt = _smartMap.find(pID);
-        if(pPt && pPt->hasAlarming())
+        if(pPt)
         {
             pPt->DecodeAlarmingDatabaseReader(rdr);
         }
@@ -1122,10 +1122,11 @@ void CtiPointManager::refreshPointProperties(LONG pntID, LONG paoID)
 {
     refreshPointLimits(pntID, paoID);
 
-    if(_smartMap.find(findHasAlarming, NULL)) // If there is at least one point with alarming data available.
+    //This was removed from here and is now ONLY called from Dispatch.
+    /*if(_smartMap.find(findHasAlarming, NULL)) // If there is at least one point with alarming data available.
     {
         refreshAlarming(pntID, paoID);
-    }
+    }*/
 }
 
 void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)

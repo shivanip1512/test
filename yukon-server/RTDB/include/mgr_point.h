@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2007/11/02 20:11:44 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/01/14 17:23:09 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -55,7 +55,6 @@ private:
     // These are properties of already collected points.
     void refreshPointProperties(LONG pntID = 0, LONG paoID = 0);
     void refreshPointLimits(LONG pntID = 0, LONG paoID = 0);
-    void refreshAlarming(LONG pntID = 0, LONG paoID = 0);
 
     struct pao_offset_t
     {
@@ -82,6 +81,7 @@ private:
 protected:
 
     virtual void removePoint(ptr_type pTempCtiPoint);
+    void refreshAlarming(LONG pntID = 0, LONG paoID = 0);
 
 public:
 
