@@ -27,7 +27,7 @@
 	<classpathentry kind="lib" path="/third-party/mx4j-tools.jar"/>
 	<classpathentry kind="lib" path="/third-party/ejb3-persistence.jar"/>
 	<classpathentry kind="lib" path="/third-party/hibernate3.jar" sourcepath="Z:/java/Third-Party Sources/hibernate-3.2.1.ga.zip"/>
-	<classpathentry exported="true" kind="lib" path="/third-party/spring.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.0.1-with-dependencies.zip"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/spring.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.1-with-dependencies.zip"/>
 	<classpathentry kind="lib" path="/third-party/commons-collections-3.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/junit-4.1.jar" sourcepath="Z:/java/Third-Party Sources/junit-4.1-src.jar"/>
 	<classpathentry kind="lib" path="/third-party/lucene-core-2.0.0.jar"/>

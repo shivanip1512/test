@@ -36,5 +36,6 @@
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/esub"/>
 	<classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
+	<classpathentry kind="lib" path="/third-party/spring-webmvc.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.1-with-dependencies.zip"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
