@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2006/10/04 15:56:45 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/01/14 19:40:08 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,7 +28,8 @@
 CtiProtocolTransdata::CtiProtocolTransdata():
    _storage( NULL ),
    _billingBytes( NULL ),
-   _lpBytes( NULL )
+   _lpBytes( NULL ),
+   _lastLPTime( CtiTime::now() - 31 * 86400 )  //  31 days ago;  for startup conditions
 {
    reinitalize();
 }
@@ -220,29 +221,29 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
 
    if(_lastLPTime <= lp->lastLP && lp->lastLP <= _lastLPTime.now() + 86400)
    {
-   _lastLPTime = lp->lastLP;
-   ptr += sizeof( lp );
+       _lastLPTime = lp->lastLP;
+       ptr += sizeof( lp );
 
-   if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
-   {
-       CtiLockGuard<CtiLogger> doubt_guard(dout);
-       dout << CtiTime() << " Scanner thinks last lp time is = " << _lastLPTime << endl;
-   }
+       if( getDebugLevel() & DEBUGLEVEL_ACTIVITY_INFO )
+       {
+           CtiLockGuard<CtiLogger> doubt_guard(dout);
+           dout << CtiTime() << " Scanner thinks last lp time is = " << _lastLPTime << endl;
+       }
 
        while( *ptr != NULL && ptr < pEND )
        {
-      converted = CTIDBG_new CtiTransdataData( ptr );
+          converted = CTIDBG_new CtiTransdataData( ptr );
 
-      // Do we need to NULL the converted ptr???
+          // Do we need to NULL the converted ptr???
 
-      transVector.push_back( converted );
+          transVector.push_back( converted );
 
-      if( ptr != NULL )
-      {
-         ptr = ( unsigned char*)strchr(( const char*)ptr, '\n' );
-         ptr++;
-      }
-   }
+          if( ptr != NULL )
+          {
+             ptr = ( unsigned char*)strchr(( const char*)ptr, '\n' );
+             ptr++;
+          }
+       }
    }
    else
    {
