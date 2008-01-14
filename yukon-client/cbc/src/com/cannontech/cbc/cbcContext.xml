@@ -46,6 +46,8 @@
       <property name="capbankDao" ref="capbankDao"/>
   </bean>
   
+  <alias alias="capControlCache" name="cbcCache"/>
+  
   <bean id="filterCacheFactory" class="com.cannontech.cbc.cache.FilterCacheFactory">
     <property name="cache" ref="cbcCache"/>
   </bean> 

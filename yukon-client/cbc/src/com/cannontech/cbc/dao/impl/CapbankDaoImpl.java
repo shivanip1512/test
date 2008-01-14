@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -21,6 +22,7 @@ public class CapbankDaoImpl implements CapbankDao {
     private static final String updateSql;
     private static final String selectAllSql;
     private static final String selectByIdSql;
+    private static final String selectByControlDeviceIdSql;
     
     private static final ParameterizedRowMapper<Capbank> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -42,6 +44,8 @@ public class CapbankDaoImpl implements CapbankDao {
             "MaxDailyOps,MaxOpDisable FROM capbank";
             
             selectByIdSql = selectAllSql + " WHERE DeviceID = ?";
+            
+            selectByControlDeviceIdSql = selectAllSql + " WHERE CONTROLDEVICEID = ?";
             
             rowMapper = CapbankDaoImpl.createRowMapper();
         }
@@ -122,6 +126,12 @@ public class CapbankDaoImpl implements CapbankDao {
         return c;
     }
 
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Capbank getByControlDeviceId(final int controlDeviceId) throws DataRetrievalFailureException {
+        Capbank capBank = simpleJdbcTemplate.queryForObject(selectByControlDeviceIdSql, rowMapper, controlDeviceId);
+        return capBank;
+    }
+    
     /**
      * This method returns all the CapBank IDs that are not assigned
      *  to a Feeder.

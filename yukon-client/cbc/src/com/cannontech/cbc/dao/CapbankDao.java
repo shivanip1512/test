@@ -2,6 +2,7 @@ package com.cannontech.cbc.dao;
 
 import java.util.List;
 
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.cbc.model.Capbank;
@@ -14,6 +15,8 @@ public interface CapbankDao {
     public boolean update( Capbank bank );
     
     public Capbank getById( int id );
+    
+    public Capbank getByControlDeviceId(int controlDeviceId) throws DataRetrievalFailureException;
     
     /**
      * This method returns all the CapBank IDs that are not assigned

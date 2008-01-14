@@ -782,16 +782,15 @@ function bind (str)
 }
 
 function showPointTimestamps (cbcID) {
-	
-	new Ajax.Request ('/spring/capcontrol/pointdata', 
-					{method:'post', 
-					parameters: 'cbcID=' + cbcID, 
-					onSuccess: function (t) { 
-					showPopup(t.responseText);
-					},
-					onFailure: function () { alert ("Could not reach server!")}, 
-					asynchronous:true });
-	
+	var pointDataUrl = '/spring/capcontrol/pointdata';
+	new Ajax.Request (pointDataUrl, {
+        method: 'POST', 
+        parameters: 'cbcID=' + cbcID, 
+	    onSuccess: function (transport) {
+            var html = transport.responseText;  
+		    showPopup(html);
+		}
+	});
 }
 
 //function borrowed from cbc_funcs.js to align oneline popup

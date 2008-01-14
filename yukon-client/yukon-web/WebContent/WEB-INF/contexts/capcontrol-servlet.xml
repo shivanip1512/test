@@ -64,6 +64,8 @@
 	<bean id="ccPointTimestampController"
 		class="com.cannontech.web.editor.CCPointTimestampServlet">
 		<property name="cbcDao" ref="cbcDao" />
+        <property name="capControlCache" ref="capControlCache"/>
+        <property name="capbankDao" ref="capbankDao"/>
 		<property name="requireSession" value="true"/> 
 	</bean>
 	<bean id="capBankAdditionalController"

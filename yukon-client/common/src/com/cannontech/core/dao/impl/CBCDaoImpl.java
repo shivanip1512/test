@@ -56,18 +56,18 @@ public class CBCDaoImpl  implements CBCDao{
     /* (non-Javadoc)
      * @see com.cannontech.cbc.daoimpl.CBCDao#getCBCPointTimeStamps(java.lang.Integer)
      */
-    public List getCBCPointTimeStamps (Integer cbcID) {
-        List<CBCPointTimestampParams> pointList = new ArrayList<CBCPointTimestampParams>(10);
+    public List<CBCPointTimestampParams> getCBCPointTimeStamps (Integer cbcID) {
+        final List<CBCPointTimestampParams> pointList = new ArrayList<CBCPointTimestampParams>(10);
         
-        List points = pointDao.getLitePointsByPaObjectId(cbcID.intValue());
-        for (int i = 0; i < points.size(); i++) {       
+        List<LitePoint> points = pointDao.getLitePointsByPaObjectId(cbcID.intValue());
+        for (final LitePoint point : points) {
+            if (point == null) continue;
+
             CBCPointTimestampParams pointTimestamp = new CBCPointTimestampParams();
-            LitePoint point = (LitePoint) points.get(i);
-            if (point != null) {
-                pointTimestamp.setPointId(new Integer (point.getLiteID()));
-                pointTimestamp.setPointName(point.getPointName());
-            }
-            //wait for the point data to initialize
+            pointTimestamp.setPointId(new Integer (point.getLiteID()));
+            pointTimestamp.setPointName(point.getPointName());
+
+                //wait for the point data to initialize
             PointValueHolder pointData = new PointData();
             try {
                 pointData = dynamicDataSource.getPointValue(point.getLiteID());
@@ -133,9 +133,9 @@ public class CBCDaoImpl  implements CBCDao{
     public List<LiteYukonPAObject> getAllSubsForUser(LiteYukonUser user) {
         List<LiteYukonPAObject> subList = new ArrayList<LiteYukonPAObject>(10);
         
-        List temp = paoDao.getAllCapControlSubBuses();
-        for (Iterator iter = temp.iterator(); iter.hasNext();) {
-            LiteYukonPAObject element = (LiteYukonPAObject) iter.next();
+        List<LiteYukonPAObject> temp = paoDao.getAllCapControlSubBuses();
+        for (Iterator<LiteYukonPAObject> iter = temp.iterator(); iter.hasNext();) {
+            LiteYukonPAObject element = iter.next();
             
             if (authDao.userHasAccessPAO(user, element.getLiteID())) {
                 subList.add(element);
