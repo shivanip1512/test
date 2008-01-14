@@ -51,7 +51,8 @@ public class CtiNavActionListener implements ActionListener {
 				    // it preserves the return point since it will fall off of our 2 page history in CtiNav
 				    ctiNav.setCurrentPage(ctiNav.getPreservedAddress());
                     ctiNav.setPreservedAddress(null);
-                }
+                }else
+                    ctiNav.setNavigation(red);
 			    
 				context.getExternalContext().redirect( red );
                 context.responseComplete();
