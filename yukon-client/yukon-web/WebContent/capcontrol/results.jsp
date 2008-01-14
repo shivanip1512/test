@@ -91,7 +91,7 @@ for( int i = 0; i < items.length; i++ )
 	        <tr class="<%=css%>">
 				<td>
 		<% if( item.getLiteType() == LiteTypes.YUKON_PAOBJECT ) { %>
-				<input type="checkbox" name="cti_chkbxSubs" value="<%=item.getItemID()%>"/>
+				<input type="checkbox" name="cti_chkbxSubBuses" value="<%=item.getItemID()%>"/>
 		<% } else { %>
 				<input type="checkbox" name="cti_chkbxPoints" value="<%=item.getItemID()%>"/>
 		<% }  %>

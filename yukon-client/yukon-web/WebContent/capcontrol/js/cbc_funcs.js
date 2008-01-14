@@ -382,7 +382,7 @@ function showPopUpChkBoxes( baseUrl ) {
     if( baseUrl == null ){
         return;
 	}
-    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var validElems = new Array();
     getValidChecks( elemSubs, validElems );
@@ -402,7 +402,7 @@ function showRecentCmds( baseUrl )
     if( baseUrl == null )
         return;
 
-    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
 
@@ -441,8 +441,8 @@ function getUrlType( selElems, type ) {
 
         elemName = selElems[0].getAttribute('name');
 
-        if( elemName == 'cti_chkbxAreas' ||elemName == 'cti_chkbxSubs' || elemName == 'cti_chkbxFdrs'
-                || elemName == 'cti_chkbxBanks' ) {
+        if( elemName == 'cti_chkbxAreas' || elemName == 'cti_chkbxSubBuses' || elemName == 'cti_chkbxFdrs'
+                || elemName == 'cti_chkbxBanks' || elemName == 'cti_chkbxSubStation' ) {
             return '/servlet/CBCServlet?type=nav&pageType='+type+'&modType=capcontrol';
         }
         else if( elemName == 'cti_chkbxPoints' ) {
@@ -493,7 +493,8 @@ function editorPost()
 function copyPost()
 {
 	var elemAreas = document.getElementsByName('cti_chkbxAreas');
-    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemSubs = document.getElementsByName('cti_chkbxSubStation');
+    var elemSubs = document.getElementsByName('cti_chkbxSubbuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
     var elemPoints = document.getElementsByName('cti_chkbxPoints');
@@ -529,7 +530,8 @@ function copyPost()
 function deletePost()
 {
     var elemAreas = document.getElementsByName('cti_chkbxAreas');
-    var elemSubs = document.getElementsByName('cti_chkbxSubs');
+    var elemSubs = document.getElementsByName('cti_chkbxSubStation');
+    var elemSubs = document.getElementsByName('cti_chkbxSubbuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
     var elemPoints = document.getElementsByName('cti_chkbxPoints');
@@ -868,7 +870,7 @@ return false;
 //old method that goes to retrieve the static SVG file
 function showStaticOneLine () {
 
-   var elemSubs = document.getElementsByName('cti_chkbxSubs');
+   var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
    var validElems = new Array();
    getValidChecks( elemSubs, validElems );
    if ( validElems.length <= 0 ) {
@@ -894,7 +896,7 @@ function showStaticOneLine () {
 }
 function showOneLine () {
    var currLoc = window.location.href;
-   var elemSubs = document.getElementsByName('cti_chkbxSubs');
+   var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
    var validElems = new Array();
    getValidChecks( elemSubs, validElems );
    if ( validElems.length <= 0 ) {
