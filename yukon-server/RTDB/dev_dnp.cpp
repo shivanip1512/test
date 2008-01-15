@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2007/11/12 17:06:44 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2008/01/15 22:08:44 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -603,7 +603,7 @@ int DNP::sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList )
         OutMessage->Destination   = _dnp_address.getSlaveAddress();
         OutMessage->EventCode     = RESULT;
         OutMessage->MessageFlags |= _dnp.commandRequiresRequeueOnFail() ? MessageFlag_RequeueCommandOnceOnFail : 0;
-        OutMessage->Retry         = _dnp.commandRetries();
+        OutMessage->Retry         = 0;  //  _dnp.commandRetries();
 
         //  give it a higher priority if it's a time sync or a control command
         switch( _pil_info.protocol_command )
