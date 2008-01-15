@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2008/01/11 15:53:52 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2008/01/15 20:43:51 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2205,11 +2205,12 @@ void UDPInterface::sendResults( void )
 
                         dr->device->sendCommResult(&im);
 
-                        //  This method may delete the om!
+                        //  This method may delete the OM!
                         ReturnResultMessage(dr->work.status, &im, om);
-                    }
 
-                    delete dr->work.outbound.front();
+                        //  If ReturnResultMessage doesn't delete the OM (i.e. wasn't an error condition), then we'll delete it
+                        delete om;
+                    }
 
                     dr->work.outbound.pop();
                 }
