@@ -43,5 +43,6 @@ public interface CBCOnelineSettingsRole {
     public static final int CAP_TIMESTAMP = CAP_ONELINE_PROPID_BASE - 3;
     public static final int CAP_DAILY_TOTAL_OPCNT = CAP_ONELINE_PROPID_BASE - 4;
     public static final int CAP_BANK_FIXED_TEXT = CAP_ONELINE_PROPID_BASE - 5;
+    public static final int CAP_DAILY_MAX_TOTAL_OPCNT = CAP_ONELINE_PROPID_BASE -6;
 
 }

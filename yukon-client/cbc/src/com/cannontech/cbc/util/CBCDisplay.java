@@ -59,6 +59,7 @@ public class CBCDisplay {
     public static final int CB_STATUS_POPUP = 10;
     public static final int CB_WARNING_IMAGE = 11;
     public static final int CB_WARNING_POPUP = 12;
+    public static final int CB_DAILY_MAX_TOTAL_OP_COLUMN = 13;
 
     // Column numbers for the Feeder display
     public static final int FDR_NAME_COLUMN = 0;
@@ -239,7 +240,9 @@ public class CBCDisplay {
         case CB_DAILY_TOTAL_OP_COLUMN: {
             return new String(capBank.getCurrentDailyOperations() + " / " + capBank.getTotalOperations());
         }
-        
+        case CB_DAILY_MAX_TOTAL_OP_COLUMN: {
+            return new String(capBank.getCurrentDailyOperations() +" / " + capBank.getMaxDailyOperation() + " / " + capBank.getTotalOperations());
+        }
         case CB_CONTROLLER:{
             return controllerName;
         }

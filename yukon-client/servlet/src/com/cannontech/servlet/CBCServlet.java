@@ -440,7 +440,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         String[] optParams = {
             /*param0*/CBCDisplay.getHTMLFgColor(capBank),
             /*param1*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN, user).toString(),
-            /*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN, user).toString(),
+            /*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN, user).toString(),
             /*param3*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN, user).toString(),
             /*param4*/ovuvEnabled,
             /*param5*/liteStates,

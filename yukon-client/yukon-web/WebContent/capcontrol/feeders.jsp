@@ -495,7 +495,7 @@ if( hasControl ) {
                 <td>Date/Time</td>
                 <td>Bank Size</td>
                 <td>Parent Feeder</td>
-                <td>Daily/Total Op</td>
+                <td>Daily/Max/Total Op</td>
 			</tr>              
 <%
 css = "tableCell";
@@ -623,7 +623,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                     </td>
 					<td>
 						<a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
-						<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN, user)%></a>
+						<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN, user)%></a>
 					</td>
 				</tr>
 				<% } %>
