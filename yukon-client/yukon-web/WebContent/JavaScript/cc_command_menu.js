@@ -277,7 +277,7 @@ function generate_CB_Move_Back (id, name, red) {
  return html;			  
 }
 
-function generateAreaMenu (id, name, enable) {
+function generateAreaMenu (id, name, enable, showOVUV) {
 	
     //start and end of div html
     var div_start_tag = "<HTML><BODY><div id='area" + id + "'";
@@ -300,8 +300,10 @@ function generateAreaMenu (id, name, enable) {
 	}
     table_body += add_AJAX_Function('area', id, 29, 'Open_All_CapBanks');
  	table_body += add_AJAX_Function('area', id, 30, 'Close_All_CapBanks');
- 	table_body += add_AJAX_Function('area', id, 31, 'Enable_OV/UV');
-	table_body += add_AJAX_Function('area', id, 32, 'Disable_OV/UV');
+ 	if (showOVUV == 'true') {
+	 	table_body += add_AJAX_Function('area', id, 31, 'Enable_OV/UV');
+		table_body += add_AJAX_Function('area', id, 32, 'Disable_OV/UV');
+	}
 	table_body += add_AJAX_Function('area', id, 33, 'Scan_All_2way_CBCs');
 	table_body += add_AJAX_Function('area', id, 34, 'Send_All_TimeSync');
      

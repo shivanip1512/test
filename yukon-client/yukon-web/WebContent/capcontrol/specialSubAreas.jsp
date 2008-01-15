@@ -143,12 +143,12 @@ if ($('systemCommandLink')) {
 	    method:'post', 
 	    asynchronous:true, 
 	    frequency: 5, 
-	    onFailure: shitHappened,
+	    onFailure: badThingsHappened,
 	    onSuccess: allIsWell});
 	});
 }
 
-function shitHappened() {
+function badThingsHappened() {
   $('bigFatErrorDiv').show();
 }
 
@@ -175,17 +175,18 @@ function updateAreaMenu (resp) {
     var areaname = msgs[0];
     var areaId = msgs[1];
     var areastate = new String(msgs[2]);
+    var showOVUV = new String(msgs[3]);
     //update state
     var stateElem = document.getElementById ('area_state_' + areaId);
     stateElem.innerHTML = areastate;
     //update menu
     if (areastate == 'ENABLED' || areastate == 'ENABLED-V') {
-        var html = generateAreaMenu(areaId,areaname, 0);
+        var html = generateAreaMenu(areaId,areaname, 0, showOVUV);
         var elem = document.getElementById('cmd_area_' + areaId); 
         elem.value = html;
         stateElem.style.color = '#3C8242';
     } else if (areastate == 'DISABLED' || areastate == 'DISABLED-V') {
-        var html = generateAreaMenu(areaId,areaname, 1);
+        var html = generateAreaMenu(areaId,areaname, 1, showOVUV);
         var elem = document.getElementById('cmd_area_' + areaId); 
         elem.value = html;
         stateElem.style.color = '#FF0000';

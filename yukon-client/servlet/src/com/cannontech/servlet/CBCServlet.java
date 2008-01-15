@@ -124,9 +124,9 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                 try {
                     Writer writer = resp.getWriter();
                     if (areaId != -1){
-                        updateSubAreaMenu(areaId, writer);
+                        updateSubAreaMenu(areaId, writer, user);
                     }else if(specialAreaId != -1){
-                        updateSubSpecialAreaMenu(specialAreaId, writer);
+                        updateSubSpecialAreaMenu(specialAreaId, writer, user);
                     }else if( commentID != 0){
                         processComment(commentID,req,user);
                     } else {
@@ -189,24 +189,28 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         }
     }
 
-    private void updateSubAreaMenu(Integer areaId, Writer writer) throws IOException {
+    private void updateSubAreaMenu(Integer areaId, Writer writer, LiteYukonUser user) throws IOException {
+        String ovuvEnabled = getOvUvEnabled(user);
         CBCArea area = cbcCache.getCBCArea(areaId);
         String msg = area.getPaoName() + ":" + areaId + ":";
         msg += (area.getDisableFlag()) ? "DISABLED" : "ENABLED";
         if (area.getOvUvDisabledFlag()) {
             msg += "-V";
         }
+        msg+= ":" + ovuvEnabled;
         writer.write (msg);
         writer.flush();
     }
 
-    private void updateSubSpecialAreaMenu(Integer areaId, Writer writer) throws IOException {
+    private void updateSubSpecialAreaMenu(Integer areaId, Writer writer, LiteYukonUser user) throws IOException {
+        String ovuvEnabled = getOvUvEnabled(user);
         CBCSpecialArea area = cbcCache.getCBCSpecialArea(areaId);
         String msg = area.getPaoName() + ":" + areaId + ":";
         msg += (area.getDisableFlag())? "DISABLED" : "ENABLED";
         if (area.getOvUvDisabledFlag()) { 
             msg += "-V";
         }
+        msg+= ":" + ovuvEnabled;
         writer.write (msg);
         writer.flush();
     }
