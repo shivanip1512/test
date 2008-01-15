@@ -1361,6 +1361,10 @@ update YukonRoleProperty set keyName = 'Load Management Reports Group', Descript
 update YukonRoleProperty set keyName = 'Load Management Reports Group Label' where rolepropertyid = -10916;
 /* End YUK-5152 */
 
+/* Start YUK-5173 */
+delete from dynamicpointalarming where tags=0;
+/* End YUK-5173 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
