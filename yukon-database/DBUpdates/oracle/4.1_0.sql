@@ -25,4 +25,4 @@ ALTER TABLE DEVICEROUTES
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('4.0', 'David', '07-Dec-2007', 'Latest Update', 0 );
+insert into CTIDatabase values('4.1', 'David', '07-Dec-2007', 'Latest Update', 0 );
