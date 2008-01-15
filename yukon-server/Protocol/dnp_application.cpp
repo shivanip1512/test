@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2007/02/22 21:55:01 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2008/01/15 22:14:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -373,10 +373,10 @@ int Application::decode( CtiXfer &xfer, int status )
 
     if( retVal = _transport.decode(xfer, status) )
     {
-        if( ++_comm_errors < gDNPInternalRetries )  // CommRetries )
+        if( ++_comm_errors <= gDNPInternalRetries )  // CommRetries )
         {
             _ioState = _retryState;
-            retVal = NoError;
+            //  retVal = NoError;
         }
         else
         {
