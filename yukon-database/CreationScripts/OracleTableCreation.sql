@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/14/2008 1:41:00 PM                         */
+/* Created on:     1/15/2008 4:53:35 PM                         */
 /*==============================================================*/
 
 
@@ -8779,7 +8779,7 @@ insert into YukonRoleProperty values(-10902,-109,'Download Reports Default Filen
 insert into YukonRoleProperty values(-10903,-109,'Admin Reports Group','true','Access to administrative group reports.');
 insert into YukonRoleProperty values(-10904,-109,'AMR Reports Group','true','Access to AMR group reports.');
 insert into YukonRoleProperty values(-10905,-109,'Statistical Reports Group','true','Access to statistical group reports.');
-insert into YukonRoleProperty values(-10906,-109,'Load Management Reports Group','false','Acces to Load Management group reports.');
+insert into YukonRoleProperty values(-10906,-109,'Load Management Reports Group','false','Access to Load Management group reports.');
 insert into YukonRoleProperty values(-10907,-109,'Cap Control Reports Group','false','Access to Cap Control group reports.');
 insert into YukonRoleProperty values(-10908,-109,'Database Reports Group','true','Access to Database group reports.');
 insert into YukonRoleProperty values(-10909,-109,'Stars Reports Group','true','Access to Stars group reports.');
@@ -9094,7 +9094,7 @@ insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'is targe
 insert into YukonRoleProperty values(-100200, -1002, 'Total Op Count', 'true', 'display Total Operation Count');
 insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');
 insert into YukonRoleProperty values(-100202, -1002, 'CBC Name', 'true', 'display CBC Name');
-insert into YukonRoleProperty VALUES(-100204, -1002, 'Daily/Total Operation Count', 'true', 'is Daily/Total Operation Count displayed');
+insert into YukonRoleProperty VALUES(-100204, -1002, 'Daily/Total Operation Count', 'false', 'is Daily/Total Operation Count displayed');
 
 
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');
@@ -9102,6 +9102,7 @@ insert into yukonroleproperty values (-100012,-1000, 'Substation Last Update Tim
 insert into yukonroleproperty values (-100106,-1001, 'Feeder Last Update Timestamp', 'true', 'is last update timestamp shown for feeders');
 insert into yukonroleproperty values (-100203,-1002, 'CapBank Last Update Timestamp', 'true', 'is last update timestamp shown for capbanks');
 insert into YukonRoleProperty values (-100205,-1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');
+insert into yukonroleproperty values (-100206,-1002, 'Daily/Max/Total Operation Count', 'true', 'is Daily/Max/Total Operation Count displayed.');
 
 /*==============================================================*/
 /* Table: YukonSelectionList                                    */

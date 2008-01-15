@@ -1365,6 +1365,11 @@ update YukonRoleProperty set keyName = 'Load Management Reports Group Label' whe
 delete from dynamicpointalarming where tags=0;
 /* End YUK-5173 */
 
+/* Start YUK-5164 */
+insert into yukonroleproperty values( -100206, -1002, 'Daily/Max/Total Operation Count', 'true', 'is Daily/Max/Total Operation Count displayed.');
+update yukonroleproperty SET DefaultValue = 'false' where RolePropertyID = -100204;
+/* End YUK-5164 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
