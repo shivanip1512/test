@@ -4,9 +4,11 @@
 package com.cannontech.common.login;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
@@ -16,16 +18,27 @@ import com.cannontech.common.constants.LoginController;
  * @author aaron
  */
 class LoginSupport {
-	static String getSessionID(String yukonHost, int port, String username, String password) throws RuntimeException {
+	
+	static String getSessionID(String yukonHost, int port, String username,
+			String password) throws RuntimeException {
 		
 		URL url;
 		try {
-			//TODO Fully qualify the context!
+			
+			String encodedUsername = null;
+			String encodedPassword = null;
+			try {
+				encodedUsername = URLEncoder.encode(username, "UTF-8");
+				encodedPassword = URLEncoder.encode(password, "UTF-8");
+			} catch (UnsupportedEncodingException e) {
+				throw new RuntimeException("There was a problem encoding the username or password.", e);
+			}
+			
 			url = new URL("http", yukonHost, port, "/servlet/LoginController?" + 
-				LoginController.USERNAME + "=" + username + "&" + LoginController.PASSWORD + "=" +
-				password + "&" + LoginController.ACTION + "=" + LoginController.CLIENT_LOGIN);
-		}
-		catch(MalformedURLException e) {
+				LoginController.USERNAME + "=" + encodedUsername + "&" + LoginController.PASSWORD + "=" +
+				encodedPassword + "&" + LoginController.ACTION + "=" + LoginController.CLIENT_LOGIN);
+		
+		} catch(MalformedURLException e) {
 			throw new RuntimeException("Bad URL", e);			
 		}
 		
