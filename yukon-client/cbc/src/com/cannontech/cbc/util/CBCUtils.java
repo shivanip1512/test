@@ -292,11 +292,16 @@ public final class CBCUtils {
     }
 
     public static String getAreaNameFromSubStationId(int subID) {	
+    	String ret = "(none)";
     	SubStation station  = ccCache.getSubstation(subID);
-    	int areaId = station.getParentID();
-    	CBCArea area = ccCache.getCBCArea(areaId);
-
-        return area.getCcName();
+    	if( station != null ) {
+    		int areaId = station.getParentID();
+    		CBCArea area = ccCache.getCBCArea(areaId);
+    		if( area != null ) {
+    			ret = area.getCcName();
+    		}
+    	}
+        return ret;
     }
 
     public static Integer getStateGroupIDByGroupName(String groupName) {
