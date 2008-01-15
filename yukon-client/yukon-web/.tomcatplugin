@@ -85,6 +85,7 @@
         <webClassPathEntry>/third-party/quartz-all-1.6.0.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/rwav.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/saaj.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/spring-webmvc.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/spring.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/struts.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/wsdl4j.jar</webClassPathEntry>
