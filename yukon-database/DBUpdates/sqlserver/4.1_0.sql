@@ -23,11 +23,11 @@ insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonack
 /* End YUK-5103*/
 
 /* Start YUK-5123 */
-ALTER TABLE [dbo].[DeviceRoutes]
+ALTER TABLE [DeviceRoutes]
 DROP CONSTRAINT [PK_DEVICEROUTES];
 GO
 
-ALTER TABLE [dbo].[DeviceRoutes]
+ALTER TABLE [DeviceRoutes]
 ADD CONSTRAINT [PK_DEVICEROUTES] PRIMARY KEY CLUSTERED ([DEVICEID]);
 GO
 /* End YUK-5123 */
