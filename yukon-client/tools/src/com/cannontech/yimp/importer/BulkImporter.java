@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -238,14 +239,15 @@ public void runImport(List<ImportData> imps) {
 
     DeviceGroupService deviceGroupService = (DeviceGroupService) YukonSpringHook.getBean("deviceGroupService");
     DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = (DeviceGroupMemberEditorDao) YukonSpringHook.getBean("deviceGroupMemberEditorDao");
+    DeviceGroupEditorDao deviceGroupEditorDao = (DeviceGroupEditorDao) YukonSpringHook.getBean("deviceGroupEditorDao");
     
-    StoredDeviceGroup alternateGroupBase = deviceGroupService.getGroup(SystemGroupEnum.ALTERNATE);
-    StoredDeviceGroup billingGroupBase = deviceGroupService.getGroup(SystemGroupEnum.BILLING);
-    StoredDeviceGroup collectionGroupBase = deviceGroupService.getGroup(SystemGroupEnum.COLLECTION);
+    StoredDeviceGroup alternateGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ALTERNATE);
+    StoredDeviceGroup billingGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
+    StoredDeviceGroup collectionGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.COLLECTION);
 
-    StoredDeviceGroup alternateGroup = deviceGroupService.getGroup(SystemGroupEnum.ALTERNATE);
-    StoredDeviceGroup billingGroup = deviceGroupService.getGroup(SystemGroupEnum.BILLING);
-    StoredDeviceGroup collectionGroup = deviceGroupService.getGroup(SystemGroupEnum.COLLECTION);
+    StoredDeviceGroup alternateGroup = alternateGroupBase;
+    StoredDeviceGroup billingGroup = billingGroupBase;
+    StoredDeviceGroup collectionGroup = collectionGroupBase;
     
 	for(int j = 0; j < imps.size(); j++) {
 		updateDeviceID = null;
