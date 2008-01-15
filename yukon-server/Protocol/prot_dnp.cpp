@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2007/12/03 15:20:11 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2008/01/15 22:11:57 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -382,7 +382,9 @@ int DNPInterface::decode( CtiXfer &xfer, int status )
 
     const TimeCTO *cto = 0;
 
-    if( retVal = _app_layer.decode(xfer, status) )
+    retVal = _app_layer.decode(xfer, status);
+
+    if( _app_layer.errorCondition() )
     {
         _string_results.push_back(CTIDBG_new string("Operation failed"));
         setCommand(Command_Complete);
