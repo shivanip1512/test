@@ -263,36 +263,30 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     /**
-     * This method will return a list of assigned subs
+     * This method will return a list of assigned subbuses
      * for Areas or SpecialAreas.
      * @return SubBus[]
      * @param areaId Integer
      */
     public  List<SubBus> getSubBusesByArea(Integer areaId) {
         if(getCBCArea(areaId) != null) {
-            List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(areaId);
-            List<Integer>intList = CCSubAreaAssignment.getAsIntegerList(allAreaSubs);
-            List<SubBus> subList = new ArrayList<SubBus>();
-            for (Integer id : intList) {
-                SubBus sub = subBusMap.get(id);
-                if (sub != null) {
-                    subList.add(sub);
-                }
+            List<SubBus> subsForArea = new ArrayList<SubBus>();
+            List<SubStation> allAreaSubstations = getSubstationsByArea(areaId);
+            for(SubStation substation : allAreaSubstations) {
+                List<SubBus> subbuses = getSubBusesBySubStation(substation);
+                subsForArea.addAll(subbuses);
             }
-            Collections.sort(subList,CBCUtils.CCNAME_COMPARATOR );
-            return subList;
+            Collections.sort(subsForArea,CBCUtils.CCNAME_COMPARATOR );
+            return subsForArea;
         }else if(getCBCSpecialArea(areaId) != null) {
-            List<CCSubSpecialAreaAssignment> allAreaSubs = CCSubSpecialAreaAssignment.getAllSpecialAreaSubs(areaId);
-            List<Integer>intList = CCSubSpecialAreaAssignment.getAsIntegerList(allAreaSubs);
-            List<SubBus> subList = new ArrayList<SubBus>();
-            for (Integer id : intList) {
-                SubBus sub = subBusMap.get(id);
-                if (sub != null) {
-                    subList.add(sub);
-                }
+            List<SubBus> subsForArea = new ArrayList<SubBus>();
+            List<SubStation> allAreaSubstations = getSubstationsBySpecialArea(areaId);
+            for(SubStation substation : allAreaSubstations) {
+                List<SubBus> subbuses = getSubBusesBySubStation(substation);
+                subsForArea.addAll(subbuses);
             }
-            Collections.sort(subList,CBCUtils.CCNAME_COMPARATOR );
-            return subList;
+            Collections.sort(subsForArea,CBCUtils.CCNAME_COMPARATOR );
+            return subsForArea;
         }else {
             return null;
         }

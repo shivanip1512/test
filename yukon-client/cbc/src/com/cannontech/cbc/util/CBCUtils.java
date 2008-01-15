@@ -359,6 +359,10 @@ public final class CBCUtils {
         for (CapBankDevice capBank : capBanks) {
             Integer controlStatus = capBank.getControlStatus();
             String operationalState = capBank.getOperationalState();
+            Boolean disabled = capBank.getCcDisableFlag();
+            if(disabled) {
+                operationalState = "Disabled";
+            }
             String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
             if(availableStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
@@ -375,6 +379,10 @@ public final class CBCUtils {
         for (CapBankDevice capBank : capBanks) {
             Integer controlStatus = capBank.getControlStatus();
             String operationalState = capBank.getOperationalState();
+            Boolean disabled = capBank.getCcDisableFlag();
+            if(disabled) {
+                operationalState = "Disabled";
+            }
             String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
             if(unavailableStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
@@ -397,6 +405,10 @@ public final class CBCUtils {
         for (CapBankDevice capBank : capBanks) {
             Integer controlStatus = capBank.getControlStatus();
             String operationalState = capBank.getOperationalState();
+            Boolean disabled = capBank.getCcDisableFlag();
+            if(disabled) {
+                operationalState = "Disabled";
+            }
             String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
             if(trippedStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
@@ -419,6 +431,10 @@ public final class CBCUtils {
         for (CapBankDevice capBank : capBanks) {
             Integer controlStatus = capBank.getControlStatus();
             String operationalState = capBank.getOperationalState();
+            Boolean disabled = capBank.getCcDisableFlag();
+            if(disabled) {
+                operationalState = "Disabled";
+            }
             String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
             if(closedStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
@@ -453,7 +469,7 @@ public final class CBCUtils {
     
 //  must be a better way to do this
     public static List<String> getTrippedStatesList(LiteYukonUser user){
-        String trippedStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.CLOSED_DEFINITION);
+        String trippedStatesString = authDao.getRolePropertyValue(user, CBCSettingsRole.TRIPPED_DEFINITION);
         String[] array = trippedStatesString.split(",");
         List<String> list = Arrays.asList(array);
         return list;
