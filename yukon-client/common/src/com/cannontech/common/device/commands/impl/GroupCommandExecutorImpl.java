@@ -77,6 +77,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         for (final Integer id : deviceIds) {
             CommandRequest request = new CommandRequest();
             request.setDeviceId(id);
+            request.setBackgroundPriority(true);
             
             final String commandStr = command + " update" + " noqueue";
             request.setCommand(commandStr);
