@@ -3,7 +3,20 @@
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 
-
+<f:verbatim>
+<script type="text/javascript">
+function updateSubScheduleTextField( selectElem, input ) {
+	var str = selectElem.id;
+	var inputId = str.substring(0,str.lastIndexOf(":")+1);
+	inputId += input;
+	
+	var selectedId = selectElem.selectedIndex;
+	var array = selectElem.options;
+	
+	$(inputId).value = array[selectedId].value;
+}
+</script>
+</f:verbatim>
 
 <f:subview id="subSchedSetup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}" >
 
@@ -44,28 +57,15 @@
 								title="The command this schedule will send" />
 					</f:facet>
 					<x:selectOneMenu id="schedCmd" disabled="#{paoSched.scheduleID == -1}"
-							value="#{paoSched.command}" >
+							value="#{paoSched.command}" 
+							onchange="updateSubScheduleTextField(this,'schedCmdText');">
 						<f:selectItems value="#{selLists.scheduleCmds}"/>
 					</x:selectOneMenu>
+					<x:outputText value=" "></x:outputText>
+					<x:inputText size="70" id="schedCmdText" value="#{paoSched.command}" disabled="#{paoSched.scheduleID == -1}"></x:inputText>
+					
 				</h:column>               
-	
-	
-				<h:column>
-					<f:facet name="header">
-						<x:outputText value="Info" title="Detailed information for the selected schedule" />
-					</f:facet>
-					<x:popup id="schedDesc" closePopupOnExitingElement="true" closePopupOnExitingPopup="true"
-							displayAtDistanceX="5" displayAtDistanceY="5" styleClass="selLists" >
-			            <h:outputText id="desc" value="Info" />
-			            <f:facet name="popup">
-			                <h:panelGroup>
-			                    <h:panelGrid columns="1" >
-			                    	<h:outputText value="Popup Text 1"/>
-			                    </h:panelGrid>
-			                </h:panelGroup>
-			            </f:facet>			
-					</x:popup>
-				</h:column>	
+
 	        </h:dataTable>
 
 			<f:verbatim><br/></f:verbatim>
