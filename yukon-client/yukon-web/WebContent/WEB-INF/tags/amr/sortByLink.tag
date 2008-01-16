@@ -18,32 +18,19 @@
 	</c:forEach>
 </c:url>
 
-<table style="width: 100%;" cellspacing="0px">
-	<tr>
+<c:choose>
+	<c:when test="${orderBy.field == field.name}">
+		<a href="${url}"><jsp:doBody/></a>
 		<c:choose>
-			<c:when test="${orderBy.field == field.name}">
-				<td style="border: 0px; padding: 0px;">
-					<a href="${url}"><jsp:doBody/></a>
-				</td>
-				<td style="border: 0px; width: 1em; padding: 0px;">
-					<c:choose>
-						<c:when test="${!orderBy.descending}">
-							<span title="Sorted ascending">&#9650;</span>
-						</c:when>
-						<c:otherwise>
-							<span title="Sorted descending">&#9660;</span>
-						</c:otherwise>
-					</c:choose>
-				</td>
+			<c:when test="${!orderBy.descending}">
+				<span title="Sorted ascending">&#9650;</span>
 			</c:when>
 			<c:otherwise>
-				<td style="border: 0px; padding: 0px;">
-					<a href="${url}"><jsp:doBody/></a>
-				</td>
-				<td style="border: 0px; width: 1em; padding: 0px;">
-					&nbsp;
-				</td>
+				<span title="Sorted descending">&#9660;</span>
 			</c:otherwise>
 		</c:choose>
-	</tr>
-</table>
+	</c:when>
+	<c:otherwise>
+			<a href="${url}"><jsp:doBody/></a>
+	</c:otherwise>
+</c:choose>

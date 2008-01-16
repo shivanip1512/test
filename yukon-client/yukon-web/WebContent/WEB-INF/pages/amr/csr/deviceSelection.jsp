@@ -107,7 +107,7 @@
 	
 			<!-- Output column headers -->
 			<c:forEach var="field" items="${orderByFields}">
-			    <th>
+			    <th nowrap>
 			    	<amr:sortByLink 
 			    		field="${field}" 
 			    		results="${results}" 
