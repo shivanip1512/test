@@ -11,7 +11,9 @@ public enum SystemGroupEnum {
     FLAGS("/Meters/Flags/"), 
     INVENTORY("/Meters/Flags/Inventory/"), 
     DISCONNECTSTATUS("/Meters/Flags/DisconnectedStatus/"), 
-    USAGEMONITORING("/Meters/Flags/UsageMonitoring/");
+    USAGEMONITORING("/Meters/Flags/UsageMonitoring/"),
+    SYSTEM("/System/"),
+    ;
 
     private String fullPath;
 
