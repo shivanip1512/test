@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2008/01/15 20:43:51 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/01/16 16:14:06 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2029,13 +2029,18 @@ void UDPInterface::processInbounds( void )
                                                 {
                                                     CtiPointDataMsg *pdm = CTIDBG_new CtiPointDataMsg(point->getID(), 0.0, NormalQuality, AnalogPointType, "", TAG_POINT_MUST_ARCHIVE);
 
-                                                    for( int i = count - 1; i >= 0; i-- )
+                                                    //  get the timestamp ready
+                                                    time -= rate * count;
+
+                                                    for( int i = 0; i < count; i++ )
                                                     {
+                                                        time += rate;
+
                                                         reading = p->data[pos + (i * 2)] << 8 |
                                                                   p->data[pos + (i * 2) + 1];
 
                                                         pdm->setValue(reading);
-                                                        pdm->setTime(time - (rate * i));
+                                                        pdm->setTime(time);
 
                                                         m->insert(pdm->replicateMessage());
                                                     }
