@@ -369,7 +369,9 @@ void CtiCapController::controlLoop()
                                 }
                                 else
                                     currentSubstationBus->setLikeDayControlFlag(FALSE);
-                            }  
+                            }
+                            else
+                                currentSubstationBus->setLikeDayControlFlag(FALSE);
 
                             if (currentSubstationBus->isMultiVoltBusAnalysisNeeded(currentDateTime))
                             {                      
@@ -633,6 +635,11 @@ void CtiCapController::controlLoop()
                                             stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::ManualOnlyControlMethod) )//intentionally left the ! off
                                         {
                                             currentSubstationBus->checkForAndProvideNeededFallBackControl(currentDateTime, pointChanges, ccEvents, pilMessages);
+                                        }
+                                        else if ( !currentSubstationBus->getDisableFlag() &&
+                                            !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
+                                        {
+                                            currentSubstationBus->checkForAndProvideNeededTimeOfDayControl(currentDateTime, pointChanges, ccEvents, pilMessages);
                                         }
                                         else if( !currentSubstationBus->getDisableFlag() &&
                                             !currentSubstationBus->getWaiveControlFlag() &&
@@ -2543,6 +2550,9 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                                    eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                    getCCEventMsgQueueHandle().write(eventMsg);
                                    currentCapBank->setLastStatusChangeTime(CtiTime());
+
+                                   //SYNC with what CBC is reporting.
+                                   currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
                                 }
                             }
                             if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
@@ -2788,7 +2798,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                             }
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - Porter Return caused a Cap Bank to go into Failed State!  Bus: " << currentSubstationBus->getPAOName() << ", Feeder: " << currentFeeder->getPAOName()<< ", CapBank: " << currentCapBank->getPAOName() << endl;
+                                dout << CtiTime() << " - Porter Return caused a Cap Bank to go into Failed State! STATUS:"<<status <<" Bus: " << currentSubstationBus->getPAOName() << ", Feeder: " << currentFeeder->getPAOName()<< ", CapBank: " << currentCapBank->getPAOName() << endl;
                             }
 
                             if( currentCapBank->getStatusPointId() > 0 )

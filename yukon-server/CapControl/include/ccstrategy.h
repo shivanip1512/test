@@ -85,7 +85,10 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     LONG getIntegratePeriod() const;
     BOOL getLikeDayFallBack() const;
 
-    CtiTODC_SVector& getTimeOfDayControllers(){return _todc;};
+
+    CtiTODC_SVector& getTimeOfDayControllers();
+    void  dumpTimeOfDayControllers();
+
 
 
     CtiCCStrategy& setStrategyId(LONG id);

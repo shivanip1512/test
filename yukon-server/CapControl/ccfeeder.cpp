@@ -2444,7 +2444,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
     Creates a CtiRequestMsg to close the next cap bank to decrease the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createLikeDayVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action)
+CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action, string typeOfControl)
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
@@ -2466,12 +2466,14 @@ CtiRequestMsg* CtiCCFeeder::createLikeDayVarRequest(CtiCCCapBank* capBank, CtiMu
         action == CtiCCCapBank::CloseFail )
     {
         capBank->setControlStatus(CtiCCCapBank::Close);
-        textInfo += "Close sent, LikeDay Control";
+        textInfo += "Close sent, ";
+        textInfo += typeOfControl;
     }
     else
     {
         capBank->setControlStatus(CtiCCCapBank::Open);
-        textInfo += "Open sent, LikeDay Control";
+        textInfo += "Open sent, ";
+        textInfo += typeOfControl;
     }
     capBank->setControlStatusQuality(CC_AbnormalQuality);
     _currentdailyoperations++;
@@ -2546,6 +2548,7 @@ CtiRequestMsg* CtiCCFeeder::createLikeDayVarRequest(CtiCCCapBank* capBank, CtiMu
 
     return reqMsg;
 }
+
 
 /*---------------------------------------------------------------------------
     figureEstimatedVarLoadPointValue
@@ -3492,7 +3495,8 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         ratioB < minConfirmPercent*.01 || 
                         ratioC < minConfirmPercent*.01  )
                     {
-                        if( ratioA < failurePercent*.01 && failurePercent != 0 && minConfirmPercent != 0 )
+                        if( (ratioA < failurePercent*.01 && ratioB < failurePercent*.01 && ratioC < failurePercent*.01) &&
+                             failurePercent != 0 && minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
                             currentCapBank->setControlStatusQuality(CC_Normal);
@@ -3502,21 +3506,21 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
                             if (ratioA < minConfirmPercent*.01)
                             {
-                                if (ratioB >= minConfirmPercent*.01 && ratioC >= minConfirmPercent*.01 ) 
+                                if (ratioB < failurePercent*.01 && ratioC < failurePercent*.01 ) 
                                     currentCapBank->setControlStatusQuality(CC_Partial);
                                 else
                                     currentCapBank->setControlStatusQuality(CC_Significant);
                             }
                             else if (ratioB < minConfirmPercent*.01)
                             {
-                                if (ratioA >= minConfirmPercent*.01 && ratioC >= minConfirmPercent*.01 ) 
+                                if (ratioA < failurePercent*.01 && ratioC < failurePercent*.01 ) 
                                     currentCapBank->setControlStatusQuality(CC_Partial);
                                 else
                                     currentCapBank->setControlStatusQuality(CC_Significant);
                             }
                             else if (ratioC < minConfirmPercent*.01)
                             {
-                                if (ratioA >= minConfirmPercent*.01 && ratioB >= minConfirmPercent*.01 ) 
+                                if (ratioA < failurePercent*.01 && ratioB < failurePercent*.01 ) 
                                     currentCapBank->setControlStatusQuality(CC_Partial);
                                 else
                                     currentCapBank->setControlStatusQuality(CC_Significant);
@@ -3540,7 +3544,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
 
                     currentCapBank->setBeforeVarsString(createPhaseVarText(varAValueBeforeControl, varBValueBeforeControl, varCValueBeforeControl,1.0));
                     currentCapBank->setAfterVarsString(createPhaseVarText(varAValue, varBValue, varCValue,1.0));
-                    currentCapBank->setPercentChangeString(createPhaseVarText(ratioA, ratioB, ratioC,100.0));
+                    currentCapBank->setPercentChangeString(createPhaseRatioText(ratioA, ratioB, ratioC,100.0));
                 }
                 else
                 {
@@ -3588,21 +3592,21 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
                             if (ratioA < minConfirmPercent*.01)
                             {
-                                if (ratioB >= minConfirmPercent*.01 && ratioC >= minConfirmPercent*.01 ) 
+                                if (ratioB < failurePercent*.01 && ratioC < failurePercent*.01 ) 
                                     currentCapBank->setControlStatusQuality(CC_Partial);
                                 else
                                     currentCapBank->setControlStatusQuality(CC_Significant);
                             }
                             else if (ratioB < minConfirmPercent*.01)
                             {
-                                if (ratioA >= minConfirmPercent*.01 && ratioC >= minConfirmPercent*.01 ) 
+                                if (ratioA < failurePercent*.01 && ratioC < failurePercent*.01 ) 
                                     currentCapBank->setControlStatusQuality(CC_Partial);
                                 else
                                     currentCapBank->setControlStatusQuality(CC_Significant);
                             }
                             else if (ratioC < minConfirmPercent*.01)
                             {
-                                if (ratioA >= minConfirmPercent*.01 && ratioB >= minConfirmPercent*.01 ) 
+                                if (ratioA < failurePercent*.01 && ratioB < failurePercent*.01 ) 
                                     currentCapBank->setControlStatusQuality(CC_Partial);
                                 else
                                     currentCapBank->setControlStatusQuality(CC_Significant);
@@ -3627,7 +3631,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
 
                     currentCapBank->setBeforeVarsString(createPhaseVarText(varAValueBeforeControl, varBValueBeforeControl, varCValueBeforeControl,1.0));
                     currentCapBank->setAfterVarsString(createPhaseVarText(varAValue, varBValue, varCValue,1.0));
-                    currentCapBank->setPercentChangeString(createPhaseVarText(ratioA, ratioB, ratioC,100.0));
+                    currentCapBank->setPercentChangeString(createPhaseRatioText(ratioA, ratioB, ratioC,100.0));
                 }
                 else
                 {
@@ -6849,8 +6853,24 @@ string CtiCCFeeder::createPhaseVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValu
     text += CtiNumStr(bValue*multiplier, 2).toString();
     text += " : ";
     text += CtiNumStr(cValue*multiplier, 2).toString();
+    text += " : ";
+    text += CtiNumStr((aValue+bValue+cValue)*multiplier, 2).toString();
     return text;
 }
+string CtiCCFeeder::createPhaseRatioText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier)
+{
+    string text = ("");
+    text += CtiNumStr(aValue*multiplier, 2).toString();
+    text += " : ";
+    text += CtiNumStr(bValue*multiplier, 2).toString();
+    text += " : ";
+    text += CtiNumStr(cValue*multiplier, 2).toString();
+    text += " : ";
+    DOUBLE totalRatio = (aValue+bValue+cValue) / 3;
+    text += CtiNumStr(totalRatio*multiplier, 2).toString();
+    return text;
+}
+
 string CtiCCFeeder::createVarText(DOUBLE aValue,FLOAT multiplier)
 {
     string text = ("");
@@ -7152,7 +7172,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& current
             {
                 if (bank->getParentId() == getPAOId())
                 {
-                    request = createLikeDayVarRequest(bank, pointChanges, ccEvents, iter->second);
+                    request = createForcedVarRequest(bank, pointChanges, ccEvents, iter->second, "LikeDay Control");
 
                     if( request != NULL )
                     {

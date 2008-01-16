@@ -1758,7 +1758,11 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                         subIter++;
                         if (currentStation != NULL)
                         {
-                        
+                            if (_command->getCommand() == CtiCCCommand::SEND_ALL_ENABLE_OVUV) 
+                                currentStation->setOvUvDisabledFlag(FALSE);
+                            if (_command->getCommand() == CtiCCCommand::SEND_ALL_DISABLE_OVUV) 
+                                currentStation->setOvUvDisabledFlag(TRUE);
+
                             CtiCCSubstationBus_vec& ccSubstationBuses = *store->getCCSubstationBuses(CtiTime().seconds());
                             for(LONG i=0;i<ccSubstationBuses.size();i++)
                             {
@@ -5323,7 +5327,7 @@ void CtiCCPointDataMsgExecutor::Execute()
                             text+= currentCapBank->getPAOName();
                             text += " Operation Count Change";
                             string additional = "Value = ";
-                            _snprintf(tempchar,80,"%.*f",1,currentCapBank->getTotalOperations());
+                            _snprintf(tempchar,80,"%.*f",1,value);
                             additional += tempchar;
 
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), text, _pointDataMsg->getUser() )); 

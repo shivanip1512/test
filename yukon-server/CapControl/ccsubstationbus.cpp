@@ -70,6 +70,12 @@ CtiCCSubstationBus::~CtiCCSubstationBus()
     try
     {   delete_vector(_ccfeeders);
         _ccfeeders.clear();
+
+        if (!_todControls.empty())
+        {    
+            delete_vector(_todControls);
+            _todControls.clear();
+        }
     }
     catch (...)
     {
@@ -212,8 +218,7 @@ LONG CtiCCSubstationBus::getIntegratePeriod() const
 
     Returns the LikeDayFallBack of the substation
 ---------------------------------------------------------------------------*/
-BOOL CtiCCSubstationBus::
-getLikeDayFallBack() const
+BOOL CtiCCSubstationBus::getLikeDayFallBack() const
 {
     return _likedayfallback;
 }
@@ -1150,7 +1155,15 @@ CtiFeeder_vec& CtiCCSubstationBus::getCCFeeders()
     return _ccfeeders;
 }
 
+/*---------------------------------------------------------------------------
+    getCCFeeders
 
+    Returns the list of feeders in the substation
+---------------------------------------------------------------------------*/
+CtiTODC_SVector& CtiCCSubstationBus::getTODControls()
+{
+    return _todControls;
+}
 /*---------------------------------------------------------------------------
     setPAOId
 
@@ -1912,6 +1925,21 @@ CtiCCSubstationBus& CtiCCSubstationBus::setDecimalPlaces(LONG places)
     return *this;
 }
 
+LONG CtiCCSubstationBus::getNextTODStartTime()
+{
+    LONG retVal = 0;
+    for (LONG i = 0; i < _todControls.size(); i++)
+    {
+        if (retVal <= ((CtiTimeOfDayController*)_todControls[i])->_secsFromMidnight)
+        {
+            retVal = ((CtiTimeOfDayController*)_todControls[i])->_secsFromMidnight;
+            _percentToClose = ((CtiTimeOfDayController*)_todControls[i])->_percentToClose;
+        }
+        else
+            break;
+    }
+    return retVal;
+}
 /*---------------------------------------------------------------------------
     figureNextCheckTime
 
@@ -1924,6 +1952,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
     if (getLikeDayControlFlag())
     {
         _nextchecktime = CtiTime(currenttime.seconds() + 60);
+    }
+    else if (!stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod))
+    {
+        _nextchecktime = CtiTime(CtiTime(0, 0, 0).seconds() + getNextTODStartTime());
     }
     else if( _controlinterval != 0 )
     {
@@ -3012,7 +3044,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         }
                         else
                         {
-                            DOUBLE controlValue = ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                            DOUBLE controlValue = ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getIVControl());
                             string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue,  getCurrentVarLoadPointValue()) ;
 
                             request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue());
@@ -3117,7 +3149,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
                     if (!currentFeeder->getDisableFlag())
                     {    
-                        DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() :  getIVControl());
+                        DOUBLE controlValue = (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getIVControl());
                         string text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue()) ;
                         request = currentFeeder->createIncreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue());
                     }
@@ -3509,7 +3541,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                             }
                             else
                             {
-                                DOUBLE controlValue = ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
+                                DOUBLE controlValue = ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getIVControl());
                                 string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue()); 
                                 request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue());
                                 lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
@@ -3734,7 +3766,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                                 }
                                 else
                                 {
-                                    string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(getControlMethod(), CtiCCCapBank::Close, getCurrentVarLoadPointValue(), ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue()); 
+                                    string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(getControlMethod(), CtiCCCapBank::Close, getIVControl(), ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue()); 
                                     request = ((CtiCCFeeder*)varSortedFeeders[j])->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue());
                                 }
                             }
@@ -4127,7 +4159,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                     currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries) )
                 {
 
-                    if (getUsePhaseData())
+                    if (currentFeeder->getUsePhaseData())
                     {
                         currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent, 
                                                            failPercent, currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(),
@@ -4667,7 +4699,8 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
 {
     BOOL returnBoolean = FALSE;
 
-    if( getControlInterval() > 0 || getLikeDayControlFlag())
+    if( getControlInterval() > 0 || getLikeDayControlFlag() ||
+             !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod))
     {
         returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
     }
@@ -8429,6 +8462,199 @@ BOOL CtiCCSubstationBus::isBusAnalysisNeeded(const CtiTime& currentDateTime)
 
     return retVal;
 }
+
+CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime, 
+                        CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
+{   
+    CtiRequestMsg* request = NULL;
+    
+    map <long, long> controlid_action_map;
+    controlid_action_map.clear();
+
+    if( !getDisableFlag() &&
+        currentDateTime.seconds() >= getLastOperationTime().seconds() + getControlDelayTime() )
+    {
+
+        LONG currentNumClosed = 0;
+        LONG numOfBanks = 0;
+        for(LONG i=0;i<_ccfeeders.size();i++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
+       
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+            for(LONG j=0;j<ccCapBanks.size();j++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState))
+                {
+                    numOfBanks += 1;
+                    if (currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
+                        currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ||
+                        currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
+                        currentCapBank->getControlStatus() == CtiCCCapBank::CloseFail )
+                    {
+                        currentNumClosed += 1;
+                    }
+                }
+            }
+        }
+
+        int targetNumClose = _percentToClose / numOfBanks;
+        int targetNumOpen =  numOfBanks - targetNumClose;
+        int currentNumOpen = numOfBanks - currentNumClosed;
+        CtiCCFeeder* currentFeeder = NULL;
+        CtiCCCapBank* capBank =  NULL;
+        if (targetNumClose >= currentNumClosed)
+        {
+            LONG currentPosition = getLastFeederControlledPosition();
+            while (currentNumClosed < targetNumClose)
+            {
+                if( currentPosition >= _ccfeeders.size()-1 )
+                {
+                    currentPosition = 0;
+                }
+                else
+                {
+                    currentPosition++;
+                }
+                currentFeeder = (CtiCCFeeder*)_ccfeeders[currentPosition];
+                if( !currentFeeder->getDisableFlag() &&
+                    !currentFeeder->getWaiveControlFlag() &&
+                    currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
+                {
+                    capBank = currentFeeder->findCapBankToChangeVars(-1);  //close 
+                }
+                if (capBank != NULL)
+                {
+                    string text = "";
+                    request = currentFeeder->createForcedVarRequest(capBank, pointChanges, ccEvents, CtiCCCapBank::Close, "TimeOfDay Control");
+
+                    if( request != NULL )
+                    {
+                        pilMessages.push_back(request);
+                        setLastOperationTime(currentDateTime);
+                        setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                        //setLastFeederControlledPosition(currentPosition);
+                        currentFeeder->setLastOperationTime(currentDateTime);
+                        setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                    }
+                    setBusUpdatedFlag(TRUE);
+                    
+                    currentNumClosed += 1;
+                }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " No more banks available to close on subBus: "<<getPAOName()<< endl;
+                    }
+
+                    /*try
+                    {
+                        CtiCCCapBank* currentCapBank = NULL;
+                        CtiCCFeeder* currentFeeder = NULL;
+                        for(int i=0;i<_ccfeeders.size();i++)
+                        {
+                            {
+                                currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+                                dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
+                            }
+                            CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
+                            for(int j=0;j<ccCapBanks.size();j++)
+                            {
+                                currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                                dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
+                            }
+                        }
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                    }  */
+                    break;
+                }
+            }
+        }
+        else
+        {
+            if (targetNumOpen >= currentNumOpen)
+            {   
+                LONG currentPosition = getLastFeederControlledPosition();
+                while (currentNumOpen < targetNumOpen)
+                {
+                    if( currentPosition >= _ccfeeders.size()-1 )
+                    {
+                        currentPosition = 0;
+                    }
+                    else
+                    {
+                        currentPosition++;
+                    }
+                    currentFeeder = (CtiCCFeeder*)_ccfeeders[currentPosition];
+                    if( !currentFeeder->getDisableFlag() &&
+                        !currentFeeder->getWaiveControlFlag() &&
+                        currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
+                    {
+                        capBank = currentFeeder->findCapBankToChangeVars(1);  //close 
+                    }
+                    if (capBank != NULL)
+                    {
+                        string text = "";
+                        request = currentFeeder->createForcedVarRequest(capBank, pointChanges, ccEvents, CtiCCCapBank::Open, "TimeOfDay Control");
+                   
+                        if( request != NULL )
+                        {
+                            pilMessages.push_back(request);
+                            setLastOperationTime(currentDateTime);
+                            setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                            //setLastFeederControlledPosition(currentPosition);
+                            currentFeeder->setLastOperationTime(currentDateTime);
+                            setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                        }
+                        setBusUpdatedFlag(TRUE);
+                        
+                        currentNumOpen += 1;
+                    }
+                    else
+                    {
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " No more banks available to open on subBus: "<<getPAOName()<< endl;
+                        }
+                   
+                        /*try
+                        {
+                            CtiCCCapBank* currentCapBank = NULL;
+                            CtiCCFeeder* currentFeeder = NULL;
+                            for(int i=0;i<_ccfeeders.size();i++)
+                            {
+                                {
+                                    currentFeeder = (CtiCCFeeder*)_ccfeeders[i];
+                                    dout << "Feeder: " << currentFeeder->getPAOName() << " ControlDelay: " << currentFeeder->getControlDelayTime() << " DisableFlag: " << (currentFeeder->getDisableFlag()?"TRUE":"FALSE") << endl;
+                                }
+                                CtiCCCapBank_SVector& ccCapBanks = ((CtiCCFeeder*)_ccfeeders[i])->getCCCapBanks();
+                                for(int j=0;j<ccCapBanks.size();j++)
+                                {
+                                    currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
+                                    dout << "CapBank: " << currentCapBank->getPAOName() << " ControlStatus: " << currentCapBank->getControlStatus() << " OperationalState: " << currentCapBank->getOperationalState() << " DisableFlag: " << (currentCapBank->getDisableFlag()?"TRUE":"FALSE") << " ControlInhibitFlag: " << (currentCapBank->getControlInhibitFlag()?"TRUE":"FALSE") << endl;
+                                }
+                            }
+                        }
+                        catch(...)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                        }   */
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    return *this;
+}
+
 CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime, 
                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages)
 {   
@@ -8495,7 +8721,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
                             if (feed->getParentId() == getPAOId())
                             {
                                 string text = "";
-                                request = feed->createLikeDayVarRequest(bank, pointChanges, ccEvents, iter->second);
+                                request = feed->createForcedVarRequest(bank, pointChanges, ccEvents, iter->second, "LikeDay Control");
 
                                 if( request != NULL )
                                 {
@@ -9017,10 +9243,21 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _displayOrder = right._displayOrder;
 
         _ccfeeders.clear();
-        for(LONG i=0;i<right._ccfeeders.size();i++)
+        LONG i=0;
+        for(i=0;i<right._ccfeeders.size();i++)
         {
             _ccfeeders.push_back(((CtiCCFeeder*)right._ccfeeders.at(i))->replicate());
         }
+
+        _todControls.clear();
+        for(i=0;i<right._todControls.size();i++)
+        {
+            CtiTimeOfDayController* tmp = new CtiTimeOfDayController;
+            tmp->_percentToClose = ((CtiTimeOfDayController*)right._todControls[i])->_percentToClose;
+            tmp->_secsFromMidnight = ((CtiTimeOfDayController*)right._todControls[i])->_secsFromMidnight;
+            _todControls.push_back(tmp);
+        }
+        _percentToClose = right._percentToClose;
     }
     return *this;
 }
@@ -9213,8 +9450,10 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setPhaseCValueBeforeControl(0);
 
     setLastWattPointTime(gInvalidCtiTime);
-    setLastVoltPointTime(gInvalidCtiTime);
+    setLastVoltPointTime(gInvalidCtiTime); 
 
+    _todControls.clear();
+    _percentToClose = 0;
 }
 
 void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
@@ -9249,7 +9488,26 @@ void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
     _integrateperiod = strategy->getIntegratePeriod();
     _likedayfallback = strategy->getLikeDayFallBack();
 
+    setTODControls(strategy);
+
 }
+
+void CtiCCSubstationBus::setTODControls(CtiCCStrategyPtr strategy)
+{
+    CtiTODC_SVector tmpVec = strategy->getTimeOfDayControllers();
+    _todControls.clear();
+    for(LONG i=0;i<tmpVec.size();i++)
+    {
+        CtiTimeOfDayController* tmp = new CtiTimeOfDayController;
+        tmp->_percentToClose = ((CtiTimeOfDayController*)tmpVec[i])->_percentToClose;
+        tmp->_secsFromMidnight = ((CtiTimeOfDayController*)tmpVec[i])->_secsFromMidnight;
+        _todControls.push_back(tmp);
+    }
+
+    strategy->dumpTimeOfDayControllers();
+
+}
+
 
 void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
 {   

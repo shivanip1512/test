@@ -182,6 +182,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const CtiTime& getLastVoltPointTime() const;
 
     CtiFeeder_vec& getCCFeeders();
+    CtiTODC_SVector& CtiCCSubstationBus::getTODControls();
     void deleteCCFeeder(long feederId);
 
     CtiCCSubstationBus& setPAOId(LONG id);
@@ -313,6 +314,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& checkForAndProvideNeededControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& checkForAndProvideNeededFallBackControl(const CtiTime& currentDateTime, 
                         CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
+    CtiCCSubstationBus& checkForAndProvideNeededTimeOfDayControl(const CtiTime& currentDateTime, 
+                            CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void regularSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     void optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE leadLevel, const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     CtiCCSubstationBus& figureEstimatedVarLoadPointValue();
@@ -361,6 +364,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
     CtiCCSubstationBus& addAllSubPointsToMsg(CtiCommandMsg *pointAddMsg);
     CtiCCSubstationBus& verifyControlledStatusFlags();
+    LONG getNextTODStartTime();
 
     list <LONG>* getPointIds() {return &_pointIds;};
 
@@ -381,6 +385,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
     void setDynamicData(RWDBReader& rdr);
     void setStrategyValues(CtiCCStrategyPtr strategy);
+    void setTODControls(CtiCCStrategyPtr strategy);
 
     vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
@@ -494,7 +499,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     string _additionalFlags;
     LONG _currentVerificationCapBankId;
     LONG _currentVerificationFeederId; 
-    std:: vector <CtiCCFeeder*> _ccfeeders;
+    std::vector <CtiCCFeeder*> _ccfeeders;
+    CtiTODC_SVector _todControls;
+    int _percentToClose;
 
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;

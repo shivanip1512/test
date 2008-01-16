@@ -90,7 +90,6 @@ private:
     long paoid;
     CtiTime timestamp;
 };
-
 class CtiCCSubstationBusStore : public RWMonitor< RWRecursiveLock< RWMutexLock > >
 {
 public:   
@@ -256,6 +255,7 @@ public:
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
     void addSubstationObjectsToList(list <LONG> *substationIds, CtiMultiMsg_vec &modifiedSubsList);
+    void updateSubstationObjectList(LONG substationId, CtiMultiMsg_vec &modifiedStationsList);
     void clearDBReloadList();
     void setRegMask(LONG mask);
     LONG getRegMask(void);

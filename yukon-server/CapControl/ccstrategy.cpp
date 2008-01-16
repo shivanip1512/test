@@ -38,7 +38,7 @@ RWDEFINE_COLLECTABLE( CtiCCStrategy, CTICCSTRATEGY_ID )
 ---------------------------------------------------------------------------*/
 CtiCCStrategy::CtiCCStrategy()
 {      
-    _todc.clear();
+    //_todc.clear();
 }
 
 CtiCCStrategy::CtiCCStrategy(RWDBReader& rdr)
@@ -189,7 +189,36 @@ void CtiCCStrategy::setTimeAndCloseValues(RWDBReader &rdr)
     _todc.push_back(todc);
 
     return;
-}   
+}                         
+
+CtiTODC_SVector& CtiCCStrategy::getTimeOfDayControllers()
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - getTimeOfDayControllers " <<  endl;
+    }
+
+    dumpTimeOfDayControllers();
+    return _todc;
+}
+void  CtiCCStrategy::dumpTimeOfDayControllers()
+{
+
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - DUMPING todc settings. " <<  endl;
+    }
+    for(LONG i=0;i<_todc.size();i++)
+    {
+        CtiTimeOfDayController* tempCtrl = (CtiTimeOfDayController*)_todc[i];
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << "\t\t - %Close: " <<tempCtrl->_percentToClose 
+                << " SecsFromMid: "<<tempCtrl->_secsFromMidnight<< endl;
+        }
+    }
+    
+}
 
 void CtiCCStrategy::restore(RWDBReader &rdr)
 {

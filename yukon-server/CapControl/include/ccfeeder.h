@@ -321,7 +321,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     bool removeMaxKvar( long bankId );
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
-    CtiRequestMsg* createLikeDayVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action);
+    CtiRequestMsg* createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action, string typeOfControl);
     BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
     BOOL capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, 
                                                      LONG failurePercent, //DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, 
@@ -331,6 +331,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
                                                   DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC);
     string createControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue, DOUBLE ratioA);
     string createPhaseVarText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier);
+    string createPhaseRatioText(DOUBLE aValue,DOUBLE bValue, DOUBLE cValue, FLOAT multiplier);
     string createVarText(DOUBLE aValue, FLOAT multiplier);
     BOOL isPeakDay();
     BOOL isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxConfirmTime, LONG feederRetries);
