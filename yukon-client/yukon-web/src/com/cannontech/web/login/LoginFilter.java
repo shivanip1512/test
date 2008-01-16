@@ -61,6 +61,7 @@ public class LoginFilter implements Filter {
         excludedRedirectedPaths = new String[] {
             "/capcontrol/**",
             "/operator/**",
+            "/editor/**",
             "/user/**"
         };
     }
