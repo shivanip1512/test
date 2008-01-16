@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/15/2008 4:53:35 PM                         */
+/* Created on:     1/16/2008 10:14:54 AM                        */
 /*==============================================================*/
 
 
@@ -6350,12 +6350,15 @@ INSERT into point values( -4,  'System', 'Macs', 0, 'Default', 0, 'N', 'N', 'S',
 INSERT into point values( -5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N', 'S', 5  ,'None', 0);
 INSERT into point values( -6,  'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6  ,'None', 0);
 INSERT into point values( -10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
-INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
+INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 100 ,'None', 0);
 insert into point values( 100,'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 INSERT into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', 'N', 'S', 110 ,'None', 0);
 
 alter table POINT
    add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID);
+
+alter table POINT
+   add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET);
 
 /*==============================================================*/
 /* Index: Indx_PointStGrpID                                     */

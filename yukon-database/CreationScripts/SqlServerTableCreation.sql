@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/15/2008 4:37:41 PM                         */
+/* Created on:     1/16/2008 10:11:54 AM                        */
 /*==============================================================*/
 
 
@@ -8891,12 +8891,16 @@ INSERT into point values( -4,  'System', 'Macs', 0, 'Default', 0, 'N', 'N', 'S',
 INSERT into point values( -5,  'System', 'Cap Control', 0, 'Default', 0, 'N', 'N', 'S', 5  ,'None', 0);
 INSERT into point values( -6,  'System', 'Notifcation', 0, 'Default', 0, 'N', 'N', 'S', 6  ,'None', 0);
 INSERT into point values( -10, 'System', 'Load Management' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
-INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 10 ,'None', 0);
+INSERT into point values( -100, 'System', 'Threshold' , 0, 'Default', 0, 'N', 'N', 'S', 100 ,'None', 0);
 insert into point values( 100,'Analog','Porter Work Count',0,'Default',0,'N','N','R',1500,'None',0);
 INSERT into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', 'N', 'S', 110 ,'None', 0);
 
 alter table POINT
    add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID)
+go
+
+alter table POINT
+   add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET)
 go
 
 /*==============================================================*/
@@ -11710,7 +11714,7 @@ insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'is targe
 insert into YukonRoleProperty values(-100200, -1002, 'Total Op Count', 'true', 'display Total Operation Count');
 insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');
 insert into YukonRoleProperty values(-100202, -1002, 'CBC Name', 'true', 'display CBC Name');
-insert into YukonRoleProperty VALUES(-100204, -1002, 'Daily/Total Operation Count', 'true', 'is Daily/Total Operation Count displayed');
+insert into YukonRoleProperty VALUES(-100204, -1002, 'Daily/Total Operation Count', 'false', 'is Daily/Total Operation Count displayed');
 
 
 insert into yukonroleproperty values (-100011,-1000, 'Daily/Max Operation Count', 'true', 'is Daily/Max Operation stat displayed');

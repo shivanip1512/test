@@ -1280,6 +1280,12 @@ insert into yukonroleproperty values( -100206, -1002, 'Daily/Max/Total Operation
 update yukonroleproperty SET DefaultValue = 'false' where RolePropertyID = -100204;
 /* End YUK-5164 */
 
+/* Start YUK-5113 */
+Update point set pointoffset = 100 where pointid = -100;
+alter table POINT
+   add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET);
+/* End YUK-5113 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
