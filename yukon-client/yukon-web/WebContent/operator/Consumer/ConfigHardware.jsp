@@ -292,10 +292,12 @@ function changeProgSelection(chkBox) {
    		//-------------------------------------------------------------------------------
 		List<Integer> inventoryIds = partialOptOutMap.get(program.getProgramID());
 		String programStatus = program.getStatus();
-		for(Integer invenId : inventoryIds) {
-			if(invenId == inventory.getInventoryID() && program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
-				programStatus = "In Service";
-				break;
+		if(inventoryIds != null) {
+			for(Integer invenId : inventoryIds) {
+				if(invenId == inventory.getInventoryID() && program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
+					programStatus = "In Service";
+					break;
+				}
 			}
 		}
 		//-------------------------------------------------------------------------------
