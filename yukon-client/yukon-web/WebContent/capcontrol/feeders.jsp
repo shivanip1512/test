@@ -616,7 +616,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 	                    onmouseout = <%=nd%> 
                     <% } else { %>
                         onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
-                        onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)','tempmove.jsp?bankid='+<%=capBank.getCcId()%>, 500, 700, onGreyBoxClose);"
+                        onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)','tempmove.jsp?bankid='+<%=capBank.getCcId()%>, 500, 710, onGreyBoxClose);"
                     <% } %>
                     	><span><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN, user)%></span>
                     	</a>                    

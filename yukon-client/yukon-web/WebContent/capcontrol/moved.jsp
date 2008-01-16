@@ -3,7 +3,7 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 
-<cti:standardPage title="CapBank Moved" module="capcontrol_internal">
+<cti:standardPage title="CapBank Moved" module="blank">
 <%@include file="cbc_inc.jspf"%>
 
 <%
@@ -26,10 +26,14 @@
 	}
 %>
 
+<% if( subbusID != null ) {%>
+	<cti:standardMenu/>
+<%} %>
+
 <div >
  <form id="capbankmoved" action="/capcontrol/moved.jsp" method="post">
 	
-	<div class="capbankMoved" >CapBank moved to <%= feederName %> on <%= subName %>. </div>
+	<div style="text-align: center;font-weight: bold;">CapBank moved to <%= feederName %> on <%= subName %>. </div>
 	<% if( subbusID != null ) {%>
 		<div style="text-align: center;"><a href="/capcontrol/oneline/OnelineCBCServlet?id=<%=subbusID %>&redirectURL=/capcontrol/feeders.jsp">Return to OneLine</a></div>
 

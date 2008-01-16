@@ -6,7 +6,25 @@
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
 
-<cti:standardPage title="Temp CapBank Move" module="capcontrol_internal">
+<!-- Layout CSS files -->
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/CannonStyle.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/InnerStyles.css" >
+
+<!-- Module CSS files from module_config.xml -->
+<link rel="stylesheet" type="text/css" href="css/base.css" >
+
+<!-- Individual files from includeCss tag on the request page -->
+<!--  (none)  -->
+
+<!-- Login Group specific style sheets (WebClientRole.STD_PAGE_STYLE_SHEET)-->
+<!--  (none)  -->
+
+<!-- Consolidated Script Files -->
+<script type="text/javascript" src="/JavaScript/prototype.js" ></script>
+
+
 <%@include file="cbc_inc.jspf"%>
 
 <%
@@ -82,7 +100,7 @@ Event.observe(window, 'load', updateFeederBankInfo );
 	<input type="hidden" name="opt"> <!--Trip Order-->
 	<input type="hidden" name="selectedFeeder" value=<%=oldfdrid%> id="selectedFeeder">
 
-   <table id="innerTable" width="95%" border="0" cellspacing="0" cellpadding="0">
+   <table id="innerTable" style="margin-left: 5%; margin-right: 5%;" border="0" cellspacing="0" cellpadding="0">
 <tr class="columnHeader lAlign">
 	<td>Select Feeder Below</td>
 	<td></td>
@@ -101,11 +119,11 @@ Event.observe(window, 'load', updateFeederBankInfo );
 
 </table>   
 
-<div id="ControlOrders" style="margin-left: 10%; margin-right: 10%;height:25%;max-height:25%;margin-bottom:2%;margin-top:2%;">
+<div id="ControlOrders" style="margin-left: 5%; margin-right: 5%;height:25%;max-height:25%;margin-bottom:2%;margin-top:2%;">
 
 </div>
 
-      <div style="margin-left: 10%; margin-right: 10%;" >
+      <div style="margin-left: 5%; margin-right: 5%;" >
 <cti:titledContainer title="Feeders Eligible for the Move" >
 
 <div style=" height: 275px; overflow: auto">
@@ -176,4 +194,3 @@ for( CBCArea area : allAreas )
 </form>
 </div>
 
-</cti:standardPage>

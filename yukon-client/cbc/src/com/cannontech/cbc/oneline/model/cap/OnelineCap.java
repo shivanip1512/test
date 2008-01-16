@@ -125,7 +125,7 @@ public class OnelineCap implements OnelineObject {
         
         if( !getStreamable().isBankMoved() ){
             capBankName.setPaint(OnelineUtil.PURPLISH);
-            capBankName.setLinkTo("/capcontrol/tempmove.jsp?bankid=" + getStreamable().getCcId() + "&oneline=" + "true");
+            capBankName.setLinkTo("/capcontrol/tempmoveWrapper.jsp?bankid=" + getStreamable().getCcId() + "&oneline=" + "true");
         }
         else{//if moved
             capBankName.setPaint(OnelineUtil.ORANGE);
