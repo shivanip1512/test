@@ -583,7 +583,6 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 						href="javascript:void(0);"
 					    onclick ="getCapBankSystemMenu('<%=capBank.getCcId()%>');"
 					    onmouseout = "hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');"
-					    onmouseover = "showDynamicPopup($('capBankStatusPopup_<%=capBank.getCcId()%>'))"
 					    >
 					<%
 					} else {
@@ -603,7 +602,9 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					  <span type="param6" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP, user)%></span>
 					</div>
 				</td>
-				<td><a type="param1" name="cti_dyn" id="<%=capBank.getCcId()%>">
+				<td><a type="param1" name="cti_dyn" id="<%=capBank.getCcId()%>"
+				    onmouseover = "showDynamicPopup($('capBankStatusPopup_<%=capBank.getCcId()%>'))"
+				    onmouseout = "hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');">
 					<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN, user)%></a>
 				</td>
 				<td><%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_SIZE_COLUMN, user)%></td>
