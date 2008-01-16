@@ -2538,9 +2538,6 @@ private void setRemoteBaseValue( RemoteBase rBase, int intType )
 
 			String slaveAddress = ((IEDBase)rBase).getDeviceIED().getSlaveAddress();
 			getSlaveAddressComboBox().setSelectedItem(slaveAddress);
-            
-            getPasswordLabel().setVisible(false);
-            getPasswordTextField().setVisible(false);
 		}
         else if( rBase instanceof RTM )
 		{
