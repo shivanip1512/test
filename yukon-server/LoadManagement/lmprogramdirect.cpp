@@ -4234,7 +4234,8 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                 else if( !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::TimeRefreshMethod) ||
                          !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::MasterCycleMethod) ||
                          !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::RotationMethod) ||
-                         !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) )
+                         !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) ||
+                         !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
                 {
                     if( !stringCompareIgnoreCase(tempMethodStopType,CtiLMProgramDirectGear::RestoreStopType) ||
                         /* fugly.  Only manually active programs can ramp out.  If this program is actually controlling
@@ -4271,7 +4272,8 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                             LONG offTimeInSeconds = currentGearObject->getMethodPeriod() * (currentGearObject->getMethodRate() / 100.0);
                             timeToTimeIn.addMinutes(offTimeInSeconds/60);
                         }
-                        else if( !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) )
+                        else if( !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::ThermostatRampingMethod) ||
+                                 !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::SimpleThermostatRampingMethod) )
                         {
                             timeToTimeIn = currentLMGroup->getLastControlSent();
                             CtiLMProgramThermoStatGear* thermostatGear = (CtiLMProgramThermoStatGear*)currentGearObject;
