@@ -69,7 +69,6 @@ a.submenuLink:hover, legend, .editorHeader, .legendLikeLabel {
 	overflow: auto;
 	height: 32px;
 	width: 100%;
-	border: solid 1px;
 	padding-left: 3px;
 	padding-right: 3px;
 }
