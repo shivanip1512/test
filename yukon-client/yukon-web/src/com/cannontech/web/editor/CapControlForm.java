@@ -143,7 +143,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private EditorDataModel dataModel = null;
     private EditorDataModel currentStratModel = null;
     private SeasonScheduleDao seasonScheduleDao;
-    private Integer scheduleId = -1;
+    private Integer scheduleId = -1000;
     private CCStrategyTimeOfDaySet strategyTimeOfDay = null;
     
     private static CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
@@ -170,7 +170,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
      * Returns the scheduleID of the current pao.
      */
     public Integer getScheduleId() {
-        if(scheduleId == -1) {
+        if(scheduleId < -1) {
             Integer paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
             scheduleId = seasonScheduleDao.getScheduleForPao(paoId).getScheduleId();
         }
@@ -518,7 +518,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		if (retrieveDBPersistent() == null) {
 			return;
         }
-        scheduleId = -1;
+        scheduleId = -1000;
 		// decide what editor type should be used
 		if (getDbPersistent() instanceof YukonPAObject) {
 			itemID = ((YukonPAObject) getDbPersistent()).getPAObjectID().intValue();
@@ -600,7 +600,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		kwkvarPoints = null;
 		editingController = false;
         assignedStratMap = null;
-        scheduleId = -1;
+        scheduleId = -1000;
 
         initItem();
 	}
