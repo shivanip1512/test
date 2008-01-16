@@ -1670,8 +1670,8 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                             {
                                 if( period != 0 )
                                 {
-                                    LONG tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
-                                    if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                    LONG tempCycleCount = (getDirectStopTime().seconds() - CtiTime().seconds()) / period;
+                                    if( ((getDirectStopTime().seconds() - CtiTime().seconds()) % period) > 0 )
                                     {
                                         tempCycleCount++;
                                     }
@@ -1694,24 +1694,25 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                             }
                             else
                             {
-                                RWDBDateTime tempDateTime;
-                                RWDBDateTime compareDateTime(tempDateTime.year(),tempDateTime.month(),tempDateTime.dayOfMonth(),0,0,0,0);
+                                CtiTime tempDateTime;
+                                CtiDate tempDate = tempDateTime.date();
+                                CtiTime compareDateTime(tempDate,0,0,0);
                                 compareDateTime.addDays(1);
                                 LONG tempCycleCount = cycleCount;
                                 if( period != 0 )
                                 {
                                     if( getDirectStopTime().seconds() > compareDateTime.seconds() )
                                     {
-                                        tempCycleCount = (compareDateTime.seconds() - RWDBDateTime().seconds()) / period;
-                                        if( ((compareDateTime.seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                        tempCycleCount = (compareDateTime.seconds() - CtiTime().seconds()) / period;
+                                        if( ((compareDateTime.seconds() - CtiTime().seconds()) % period) > 0 )
                                         {
                                             tempCycleCount++;
                                         }
                                     }
                                     else
                                     {
-                                        tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
-                                        if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                        tempCycleCount = (getDirectStopTime().seconds() - CtiTime().seconds()) / period;
+                                        if( ((getDirectStopTime().seconds() - CtiTime().seconds()) % period) > 0 )
                                         {
                                             tempCycleCount++;
                                         }
@@ -3800,8 +3801,8 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                             {
                                 if( maxCycleCount > 0 || cycleCount == 0 )
                                 {
-                                    LONG tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
-                                    if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                    LONG tempCycleCount = (getDirectStopTime().seconds() - CtiTime().seconds()) / period;
+                                    if( ((getDirectStopTime().seconds() - CtiTime().seconds()) % period) > 0 )
                                     {
                                         tempCycleCount++;
                                     }
@@ -3818,22 +3819,23 @@ BOOL CtiLMProgramDirect::refreshStandardProgramControl(ULONG secondsFrom1901, Ct
                                 }
                                 else
                                 {
-                                    RWDBDateTime tempDateTime;
-                                    RWDBDateTime compareDateTime(tempDateTime.year(),tempDateTime.month(),tempDateTime.dayOfMonth(),0,0,0,0);
+                                    CtiTime tempDateTime;
+                                    CtiDate tempDate = tempDateTime.date();
+                                    CtiTime compareDateTime(tempDate,0,0,0);
                                     compareDateTime.addDays(1);
                                     LONG tempCycleCount = cycleCount;
                                     if( getDirectStopTime().seconds() > compareDateTime.seconds() )
                                     {
-                                        tempCycleCount = (compareDateTime.seconds() - RWDBDateTime().seconds()) / period;
-                                        if( ((compareDateTime.seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                        tempCycleCount = (compareDateTime.seconds() - CtiTime().seconds()) / period;
+                                        if( ((compareDateTime.seconds() - CtiTime().seconds()) % period) > 0 )
                                         {
                                             tempCycleCount++;
                                         }
                                     }
                                     else
                                     {
-                                        tempCycleCount = (getDirectStopTime().seconds() - RWDBDateTime().seconds()) / period;
-                                        if( ((getDirectStopTime().seconds() - RWDBDateTime().seconds()) % period) > 0 )
+                                        tempCycleCount = (getDirectStopTime().seconds() - CtiTime().seconds()) / period;
+                                        if( ((getDirectStopTime().seconds() - CtiTime().seconds()) % period) > 0 )
                                         {
                                             tempCycleCount++;
                                         }
