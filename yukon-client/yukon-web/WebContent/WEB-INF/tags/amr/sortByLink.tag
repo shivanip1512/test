@@ -10,7 +10,7 @@
 	<c:param name="startIndex" value="${results.startIndex}" />
 	<c:param name="count" value="${results.count}" />
 	<c:param name="orderBy" value="${field.name}" />
-	<c:if test="${orderByField == field.name && !orderBy.descending}">
+	<c:if test="${orderBy.field == field.name && !orderBy.descending}">
 		<c:param name="descending" value="true"/>
 	</c:if>
 	<c:forEach var="filter" items="${filterByList}">
@@ -18,19 +18,32 @@
 	</c:forEach>
 </c:url>
 
-<c:choose>
-	<c:when test="${orderBy.field == field.name}">
-		<a href="${url}"><jsp:doBody/></a>
+<table style="width: 100%;" cellspacing="0px">
+	<tr>
 		<c:choose>
-			<c:when test="${!orderBy.descending}">
-				<span title="Sorted ascending">&#9650;</span>
+			<c:when test="${orderBy.field == field.name}">
+				<td style="border: 0px; padding: 0px;">
+					<a href="${url}"><jsp:doBody/></a>
+				</td>
+				<td style="border: 0px; width: 1em; padding: 0px;">
+					<c:choose>
+						<c:when test="${!orderBy.descending}">
+							<span title="Sorted ascending">&#9650;</span>
+						</c:when>
+						<c:otherwise>
+							<span title="Sorted descending">&#9660;</span>
+						</c:otherwise>
+					</c:choose>
+				</td>
 			</c:when>
 			<c:otherwise>
-				<span title="Sorted descending">&#9660;</span>
+				<td style="border: 0px; padding: 0px;">
+					<a href="${url}"><jsp:doBody/></a>
+				</td>
+				<td style="border: 0px; width: 1em; padding: 0px;">
+					&nbsp;
+				</td>
 			</c:otherwise>
 		</c:choose>
-	</c:when>
-	<c:otherwise>
-		<a href="${url}"><jsp:doBody/></a>
-	</c:otherwise>
-</c:choose>
+	</tr>
+</table>
