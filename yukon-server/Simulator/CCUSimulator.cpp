@@ -17,6 +17,7 @@
 #include <windows.h>
 #include <iostream>
 #include <vector>
+#include <list>
 
 #include <boost/thread/thread.hpp>
 #include <boost/thread/mutex.hpp>
@@ -94,6 +95,15 @@ int main(int argc, char *argv[])
 {
     vector<boost::thread *> threadVector;
 
+    cout<<"\nUsage:  ccu_simulator.exe  <beginning port number>  <end port number> <optional strategy>\n"<<endl;
+
+    cout<<"Beginning and end port numbers specify a range of ports.\n"<<endl;
+
+    cout<<"The optional strategy can be set to 1 or 3:\n"<<endl;
+
+    cout<<"1.    Returns invalid D words."<<endl;
+    cout<<"3.    Returns messages with bad BCH codes\n"<<endl;
+
     if( argc==4 )
     {   // Specify port number
         cout << "Port range " << argv[1] << " - " << argv[2] << endl;
@@ -155,6 +165,154 @@ int main(int argc, char *argv[])
     CTISleep(10000);
     return 0;
 }
+
+
+
+
+//Create this function to check if mct from list is in db, if not, add it and modify map.  If so, modify map.
+void CheckDBListMap(std::map <int, mctStruct> & mctAddressMap, std::list <int> & neededAddresses, RWDBDatabase db, RWDBTable table, RWDBConnection conn)
+{
+    //iterator loop for each element in list
+    for( std::list <int> ::iterator ci = neededAddresses.begin(); ci != neededAddresses.end(); ++ci )
+    {
+        //select from db
+        RWDBSelector selector  = db.selector();
+
+        selector << table["MCTADDRESS"] << table["KWHVALUE"]<< table["TIMESTAMP"];
+
+        selector.from( table );
+
+        selector.where( selector["MCTADDRESS"] == *ci);
+
+        //reader valid copy to map
+
+        RWDBReader  rdr = selector.reader( conn );
+
+        int readMCTaddress = 0;
+        double readKWHvalue = 0;
+        RWDBDateTime readTimestamp;
+        readTimestamp.now();
+        bool isMCTFound = 0;
+
+
+        //  The mct is in the DB so copy it into the map
+        while( rdr() )
+        {
+            isMCTFound = 1;
+            rdr>>readMCTaddress>>readKWHvalue>>readTimestamp;
+            //cout<<"Found MCT in DB, copying to memory"<<endl;
+            //cout<<"MCTADDRESS "<<readMCTaddress<<endl;
+            //cout<<"KWHVALUE "<<readKWHvalue<<endl;
+            //cout<<"TIMESTAMP"<<readTimestamp.asString()<<endl;
+
+            mctStruct temp;
+
+            temp.setmctAddress(readMCTaddress);
+            temp.setKwhValue(readKWHvalue);
+            temp.setTime(readTimestamp);
+
+            mctAddressMap[readMCTaddress]=temp;
+        }
+
+        //  If the mct is not in the DB, insert it
+        if( isMCTFound == 0 )
+        {
+            RWDBInserter inserter  = table.inserter();
+
+            RWDBStatus::ErrorCode err;
+
+            // initialize random seed:
+            srand ( CtiTime::now().second() );
+            // generate random number:
+            double inKWHvalue = (rand() % 100)/4 ;
+            RWDBDateTime inTimestamp;
+            inserter<<*ci<<inKWHvalue<<inTimestamp;
+            if( err =  ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
+            {
+                cout << " **** Checkpoint - error \"" << err << "\" while inserting in METERDATA **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+            else
+            {
+                cout<<"No error inserting "<<*ci<<endl;
+
+                mctStruct temp;
+
+                temp.setmctAddress(*ci);
+                temp.setKwhValue(inKWHvalue);
+                temp.setTime(inTimestamp);
+
+                mctAddressMap[*ci]=temp;
+            }
+        }
+    }
+}
+
+//  update kwh and timestamp for ALL map entries to the second in memory, update ONLY the ones requested in the list in db
+void updateKWH(std::map <int, mctStruct> & mctAddressMap, std::list <int> & neededAddresses, RWDBDatabase db, RWDBTable table, RWDBConnection conn)
+{
+    //  update kwh and timestamp for ALL map entries to the second in memory
+    std::map <int, mctStruct> ::iterator itr;
+    for( itr=mctAddressMap.begin(); itr!=mctAddressMap.end(); itr++ )
+    {
+        RWDBDateTime Timestamp;
+        double KWHvalue = 0;
+        RWDBDuration timeElapsed = Timestamp-itr->second.getTimestamp();
+        KWHvalue = itr->second.getKwhValue() + timeElapsed.asSeconds()*(1.6/700);
+        itr->second.setKwhValue(KWHvalue);
+        itr->second.setTime(Timestamp);
+    }
+
+    //  update ONLY the ones requested in the list in db
+    for( std::list <int> ::iterator ci = neededAddresses.begin(); ci != neededAddresses.end(); ++ci )
+    {
+        RWDBUpdater update = table.updater();
+        RWDBColumn kwhCol = table["KWHVALUE"];
+        RWDBColumn timeCol = table["TIMESTAMP"];
+
+        update << kwhCol.assign(mctAddressMap[*ci].getKwhValue()) << timeCol.assign(mctAddressMap[*ci].getTimestamp());
+        update.where(table["MCTADDRESS"] == *ci);
+
+        update.execute(conn);
+
+        //cout<<"\nMct updated in DB: "<<*ci<<endl;
+        //cout<<"Time = "<<mctAddressMap[*ci].getTimestamp().asString()<<endl;
+    }
+}
+
+//  This function returns the first mct kwhvalue found in the DB or a random value
+double getfirstDBValue(RWDBDatabase db, RWDBTable table, RWDBConnection conn)
+{
+    //select from db
+    RWDBSelector selector  = db.selector();
+
+    selector << table["MCTADDRESS"] << table["KWHVALUE"]<< table["TIMESTAMP"];
+
+    selector.from( table );
+
+    selector.where( selector["MCTADDRESS"] != -1);
+
+    //reader valid copy to map
+
+    RWDBReader  rdr = selector.reader( conn );
+
+    int readMCTaddress = 0;
+    double readKWHvalue = 0;
+    RWDBDateTime readTimestamp;
+    readTimestamp.now();
+    bool isMCTFound = 0;
+
+
+    //  The mct is in the DB so copy it into the map
+    if( rdr() )
+    {
+        rdr>>readMCTaddress>>readKWHvalue>>readTimestamp;
+    }
+    else
+        readKWHvalue = 7;  //  There's nothing in the DB yet so just return a small value
+
+    return readKWHvalue;
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////
 ///////  MOVE THIS INTO IT'S OWN FILE/////////////////////////////////////////////
@@ -247,7 +405,7 @@ void CCUThread(const int& s, const int& strtgy)
     RWDBTable    table     = db.table("METERDATA");
     if( table.exists() )
     {
-        cout<<"Table "<<table.name()<<" exists"<<endl;
+        cout<<"Table "<<table.name()<<" already exists"<<endl;
         //cout<<"DB status: "<<(db.status()).errorCode()<<endl;
     }
     else
@@ -274,8 +432,6 @@ void CCUThread(const int& s, const int& strtgy)
         }
     }
 
-    cout<<"Num cols: "<<table.numberOfColumns()<<endl;
-
     if( strategy==2 )
     {
         if( !db.isValid() )
@@ -288,10 +444,10 @@ void CCUThread(const int& s, const int& strtgy)
         }
     }
 
-    RWDBDeleter deleter = table.deleter();
+    //RWDBDeleter deleter = table.deleter();
     //deleter.where(autoParts["name"] == "hubcap" &&
     //              autoParts["color"] == "red");
-    deleter.execute();
+    //deleter.execute();
 
 //**************************************DONE CREATING TABLE***************************************
 
@@ -333,6 +489,8 @@ void CCUThread(const int& s, const int& strtgy)
     CCU710 aCCU710;
     aCCU710.setStrategy(strategy);
 
+    //  This map store all the data on mcts including address, kwhvalue, and timestamp
+    std::map <int, mctStruct> mctAddressMap;
 
     while( !globalCtrlCFlag )
     {
@@ -349,12 +507,12 @@ void CCUThread(const int& s, const int& strtgy)
 
         if( TempBuffer[0]==0x7e )
         {
-
+            //  It's a 711 IDLC message
             CCU711 *aCCU711;
             if( ccuList.find(addressFound) == ccuList.end() )
             {
                 boost::mutex::scoped_lock lock(io_mutex);
-                std::cout<<'\n'<<addressFound<<" is not in the map!";
+                //std::cout<<'\n'<<addressFound<<" is not in the map!";
                 aCCU711 = new CCU711(addressFound);
                 ccuList[addressFound] = aCCU711;
                 aCCU711->setStrategy(strategy);
@@ -362,12 +520,12 @@ void CCUThread(const int& s, const int& strtgy)
             else
             {
                 boost::mutex::scoped_lock lock(io_mutex);
-                std::cout<<addressFound<<" is in the map";
+                //std::cout<<addressFound<<" is in the map";
                 aCCU711 = ccuList[addressFound];
             }
 
 
-            //  It's a 711 IDLC message
+            std::list<int> neededAddresses;
             CtiTime AboutToRead;
             unsigned char ReadBuffer[300];
             int BytesToFollow;
@@ -430,132 +588,47 @@ void CCUThread(const int& s, const int& strtgy)
 
 
                     int mctAddressArray[50];
-                    memset(mctAddressArray, 0, 50);
-                    aCCU711->getNeededAddresses(mctAddressArray);  // ask the CCU711 which mct addresses it needs values from the db for
 
-                    int i = 0;
-                    while( (mctAddressArray[i] != 0) )
+                    aCCU711->getNeededAddresses(mctAddressMap, neededAddresses);  // ask the CCU711 which mct addresses it needs values from the db for
+
+                    //Print the needed addresses from the list
+                    for (std::list <int> ::iterator ci = neededAddresses.begin(); ci != neededAddresses.end(); ++ci)
                     {
-                        cout<<"\nMct: "<<mctAddressArray[i]<<endl;
-                        i++;
+                            //cout<<"\nMct in list: "<<*ci<<endl;
                     }
+
+                    //If the mct is not in the map (and therefore is in the list), check to see if it's in the db, if not, add it to the db
+                    for (std::list <int> ::iterator cit = neededAddresses.begin(); cit != neededAddresses.end(); ++cit)
+                    {
+                            CheckDBListMap(mctAddressMap, neededAddresses, db, table, conn);
+                    }
+
+
+                    updateKWH(mctAddressMap, neededAddresses, db, table, conn);
 
                     // This will be used to store the mct data tuples from the DB
-                    mctStruct structArray[100];
-                    int structCounter = 0;
+                    mctStruct structArray[500];
 
-  ////////////  COMMENT THIS SECTION OUT UNTIL DB WORKS /////////////////////////
-
-                    RWDBSelector selector  = db.selector();
-
-                    selector << table["MCTADDRESS"] << table["KWHVALUE"]<< table["TIMESTAMP"];
-
-                    selector.from( table );
-
-                    selector.where( selector["KWHVALUE"] != -1);
-
-                    RWDBReader  rdr = selector.reader( conn );
-
-                    int readMCTaddress = 0;
-                    double readKWHvalue = 0;
-                    RWDBDateTime readTimestamp;
-                    readTimestamp.now();
-
-                    if( !rdr.isValid() )
+                    //  Print the addresses in the map
+                    std::map <int, mctStruct> ::iterator itr;
+                    int Counter = 0;
+                    for (itr=mctAddressMap.begin(); itr!=mctAddressMap.end(); itr++)
                     {
-                        cout<<"RDR(): No such entry!"<<endl;
-                    }
-                    else
-                    {
-                        //  iterate through the components
-                        while( rdr() )
-                        {
-                            rdr>>readMCTaddress>>readKWHvalue>>readTimestamp;
-                            cout<<"MCTADDRESS "<<readMCTaddress<<endl;
-                            cout<<"KWHVALUE "<<readKWHvalue<<endl;
-                            cout<<"TIMESTAMP"<<readTimestamp.asString()<<endl;
-                            i = 0;
-                            int matchAtIndex = -1;
-                            while( (mctAddressArray[i] != 0) )
-                            {
-                                if( mctAddressArray[i]==readMCTaddress )
-                                {
-                                    matchAtIndex=i;
-                                }
-                                i++;
-                            }
-                            //If the address is already in the DB
-                            if( matchAtIndex!=-1 )
-                            {
-                                //Update the kwh value and timestamp if the mct is already in the DB
-                                RWDBUpdater updater = table.updater();
-
-                                RWDBColumn kwhvalue = table["KWHVALUE"];
-                                RWDBColumn timestamp = table["TIMESTAMP"];
-                                //Add ~7kwh per hour since last timestamp to the value
-                                RWDBDateTime currentTime;
-                                currentTime.now();
-                                cout<<"\nTime difference "<<(currentTime-readTimestamp).asMinutes()<<endl;
-                                int timeDifference = (currentTime-readTimestamp).asMinutes();
-                                int addKwh = 0;
-                                addKwh = (timeDifference/60);  //  Add 7 kwh per hour
-                                updater << kwhvalue.assign(kwhvalue + (.28*addKwh));//(.28*addKwh));
-                                if( addKwh>0 )
-                                {
-                                    updater << timestamp.assign(currentTime);
-                                }
-                                updater.where(table["MCTADDRESS"] == mctAddressArray[matchAtIndex]);
-                                updater.execute(conn);
-
-                                //Crossing off match
-                                mctAddressArray[matchAtIndex]=-1;
-                            }
-
-                            //Store the tuple of mct data just read from the DB into an array of structs to be passed to CCU-711
-                            mctStruct tempStruct;
-                            tempStruct.setKwhValue(readKWHvalue);
-                            tempStruct.setmctAddress(readMCTaddress);
-                            tempStruct.setTime(readTimestamp);
-                            structArray[structCounter]=tempStruct;
-                            structCounter++;
-                        }
-
+                        mctStruct temp = itr->second;
+                        //cout<<"\nMct in map: "<<temp.getmctAddress()<<endl;
+                        //cout<<"KWH VAL "<<temp.getKwhValue()<<endl;
+                        structArray[Counter]=temp;
+                        Counter++;
                     }
 
-
-
-                    //RWDBDeleter deleter = table.deleter();
-                    //deleter.where(autoParts["name"] == "hubcap" &&
-                    //              autoParts["color"] == "red");
-                    //deleter.execute();
-
-                    RWDBInserter inserter  = table.inserter();
-
-                    RWDBStatus::ErrorCode err;
-
-                    i = 0;
-                    while( (mctAddressArray[i] != 0) )
+                    //  If there's nothing in the map, but a kwh value is still needed
+                    if(mctAddressMap.begin()==mctAddressMap.end())
                     {
-                        //If the address was not crossed off as a match with -1, insert it into the Db
-                        if( mctAddressArray[i]!=-1 )
-                        {
-                            // initialize random seed:
-                            CtiTime seedValue;
-                            srand ( seedValue.second() );
-                            // generate secret number:
-                            double inKWHvalue = (rand() % 100)/4 ;
-                            RWDBDateTime inTimestamp;
-                            inserter<<mctAddressArray[i]<<inKWHvalue<<inTimestamp;
-                            if( err =  ExecuteInserter(conn,inserter,__FILE__,__LINE__).errorCode() )
-                            {
-                                cout << " **** Checkpoint - error \"" << err << "\" while inserting in METERDATA **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                            else
-                                cout<<"No error inserting "<<mctAddressArray[i]<<endl;
-                        }
-                        i++;
+                        mctStruct temp;
+                        temp.setKwhValue(getfirstDBValue(db, table, conn));
+                        structArray[0]=temp;
                     }
-/////////////////////////  DB SECTION ENDS HERE  /////////////////////////////////////////////
+
                     aCCU711->ReceiveMore(ReadBuffer, counter, structArray);
                     aCCU711->PrintInput();
                 }
@@ -604,7 +677,6 @@ void CCUThread(const int& s, const int& strtgy)
                 cout<<"Error: Two IDLC messages overlapped since bytes 0 and 1 are both 0x7e"<<endl;
                 SET_FOREGROUND_WHITE;
             }
-
         }
         else if( TempBuffer[0] != 0x00) //& 0x04 )
         {   //  It's a 710 message
@@ -756,9 +828,6 @@ void CCUThread(const int& s, const int& strtgy)
     newSocket->CTINexusClose();
     return;
 }
-
-
-
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

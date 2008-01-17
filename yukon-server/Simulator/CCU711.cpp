@@ -790,6 +790,11 @@ void CCU711::CreateQueuedMsg(mctStruct structArray[])
         {
             structCounter++;
         }
+        //  If there's no matching mct address, just reset the counter
+        if(structCounter>999)
+        {
+            structCounter=0;
+        }
         DBValue = structArray[structCounter].getKwhValue();
         CreateQueuedResponse(DBValue);//  <-----  USE THE RIGHT DB VALUE FOR THIS ADDRESS
         Offset = _messageData[6 + Offset];
@@ -826,6 +831,7 @@ void CCU711::CreateQueuedResponse(int DBValue)
                 Data[ctr++] = 0x00; // "  "
                 long int mctAddress = _messageQueue.back().getmctAddress();
 
+                //This is used for the getkwh call
                 getData(DBValue, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
@@ -1111,6 +1117,9 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     mctaddress = _messageData[12] << 16 |
                  _messageData[13] <<  8 |
                  _messageData[14];
+////
+////  THIS IS ONLY THE FIRST MCT ADDRESS,  THAT IS WHY MULTIPLE MCTS ARE CREATING PROBLEMS
+////
 }
 
 
@@ -1130,24 +1139,30 @@ unsigned char CCU711::getFrame(int frameCount)
 }
 
 
-void CCU711::getNeededAddresses(int addressArray[])
+void CCU711::getNeededAddresses(const std::map <int, mctStruct> & addressMap, std::list<int> & neededAddresses)
 {
     //Insert the needed addresses
     deque <_queueMessage> ::iterator itr;
-    int i = 0;
-    for (itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++) {
+    for (itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++)
+    {
         _queueMessage temp = *itr;
         _qmessagesReady += temp.isReady();
-        if (temp.isReady()) {
-            addressArray[i] = temp.getmctAddress();
-        }
+        //if (temp.isReady()) {
+            mctStruct tempStruct;
+            //Check if the mct is already in the map, if not, push on to list
+            if(addressMap.find(temp.getmctAddress())==addressMap.end())
+            {
+                neededAddresses.push_back(temp.getmctAddress());
+            }
+       // }
     }
-
 }
 
 void CCU711::getData(long int DBValue, int function, int ioType, int bytesToReturn)
 {
-    _data[1]= (DBValue);
+    _data[0] = (DBValue >> 16) & 0xff;
+    _data[1] = (DBValue >>  8) & 0xff;
+    _data[2]=   DBValue & 0xff;
 }
 
 void CCU711::setStrategy(int strategy)

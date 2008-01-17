@@ -14,12 +14,16 @@
 *****************************************************************************/
 #ifndef  __CCU711_H__
 #define  __CCU711_H__
-#include "Winsock2.h"
+
+#include <queue>
+#include <list>
 #include <iostream>
+#include "Winsock2.h"
+
 #include "CCU710.h"
 #include "ctiTime.h"
 #include "mctStruct.h"
-#include <queue>
+
 
 
 class CCU711
@@ -162,8 +166,7 @@ public:
     //  Allows serverNexus to set the current strategy
     void setStrategy(int strategy);
     //  Return the mct addresses from the current message group
-    void getNeededAddresses(int addressArray[]);
-
+    void getNeededAddresses(const std::map <int, mctStruct> & addressMap, std::list<int> & neededAddresses);
 
 
 private:
