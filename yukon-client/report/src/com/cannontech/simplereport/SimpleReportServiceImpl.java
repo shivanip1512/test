@@ -73,6 +73,10 @@ public class SimpleReportServiceImpl implements SimpleReportService {
      */
     public String formatData(String format, Object data, LiteYukonUser user, PointFormattingService cachedPointFormatter) {
         
+        if(data == null) {
+            return "";
+        }
+        
         String formattedData = data.toString();
         
         if(StringUtils.isBlank(format)) {

@@ -1,8 +1,9 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
-<%@page import="com.cannontech.roles.capcontrol.CBCOnelineSettingsRole"%>
+<%@ page import="com.cannontech.roles.capcontrol.CBCOnelineSettingsRole"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <cti:standardPage title="Feeders" module="capcontrol">
 <%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.common.constants.LoginController" %>
@@ -93,6 +94,27 @@ if(special){
 			}
 		}
 	}
+    
+    // gathers ids of selected subbuses and feeders, appendeds to url as target param
+    // triggers call to greybox containing point chart(s)
+    function loadPointChartGreyBox(title, url) {
+        
+        var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
+        var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
+        var validElems = new Array();
+        getValidChecks( elemSubs, validElems );
+        getValidChecks( elemFdrs, validElems );
+        
+        var targets = new Array()
+        for (var i = 0; i < validElems.length; i++) {
+            targets.push(validElems[i].getAttribute('value'))
+        }
+        
+        url += '&targets=' + targets.join(',');
+        
+        GB_showFullScreen(title, url, null);
+        return void(0);
+    }
 
 	//returned when a cap bank menu is triggered to appear
 	function popupWithHiLite (html, width, height, offsetx, offsety, rowID, color) {

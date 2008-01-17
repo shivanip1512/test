@@ -131,19 +131,19 @@
         <sublinks>
           <option name="Today kVAR/Watt">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
-            <script>showPopUpChkBoxes('charts.jsp?type=VW&amp;period=Today')</script>
+            <script>loadPointChartGreyBox('Today kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')</script>
           </option>
           <option name="Today PF">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
-            <script>showPopUpChkBoxes('charts.jsp?type=PF&amp;period=Today')</script>
+            <script>loadPointChartGreyBox('Today PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')</script>
           </option>
           <option name="30 Day kVAR/Watt">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
-            <script>showPopUpChkBoxes('charts.jsp?type=VW')</script>
+            <script>loadPointChartGreyBox('30 Day kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')</script>
           </option>
           <option name="30 Day PF">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
-            <script>showPopUpChkBoxes('charts.jsp?type=PF')</script>
+            <script>loadPointChartGreyBox('30 Day PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')</script>
           </option>
         </sublinks>
       </option>

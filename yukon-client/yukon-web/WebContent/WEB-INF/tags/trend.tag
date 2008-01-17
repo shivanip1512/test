@@ -55,7 +55,8 @@
 <c:url var="expressInstallSrc" scope="page" value="/JavaScript/expressinstall.swf" />
 <cti:includeScript link="/JavaScript/swfobject.js"/>
 
-<div id="flashcontent">
+<cti:uniqueIdentifier var="uniqueId" prefix="flashDiv_"/>
+<div id="${uniqueId}">
     <div style="width:90%;text-align:center;">
         <br>
         <br>
@@ -72,5 +73,5 @@
 <script type="text/javascript">
    var so = new SWFObject("${amSrc}", "dataGraph", "100%", "100%", "8", "#FFFFFF");
    so.useExpressInstall('${expressInstallSrc}');
-   so.write("flashcontent");
+   so.write("${uniqueId}");
 </script>
