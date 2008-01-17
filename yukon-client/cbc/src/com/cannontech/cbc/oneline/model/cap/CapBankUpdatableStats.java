@@ -10,6 +10,7 @@ import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -29,9 +30,9 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     private UpdatableTextList cbcName = new UpdatableTextList(CBCOnelineSettingsRole.CAP_CBC_NAME, this);
     private UpdatableTextList totalDailyOpCount = new UpdatableTextList(CBCOnelineSettingsRole.CAP_DAILY_TOTAL_OPCNT, this);
     private UpdatableTextList totalMaxDailyOpCount = new UpdatableTextList(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT, this);
-    
-    public LxAbstractGraph graph;
-    public OnelineCap parentCap;
+    private LxAbstractGraph graph;
+    private OnelineCap parentCap;
+    private LiteYukonUser user;
     private Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
     private Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();
     private List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
@@ -39,6 +40,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     public CapBankUpdatableStats(LxAbstractGraph g, OnelineObject p) {
         graph = g;
         parentCap = (OnelineCap) p;
+        user = p.getUser();
         initPropColumnMap();
         initPropLabelMap();
         initAllStats();
@@ -91,10 +93,12 @@ public class CapBankUpdatableStats extends LxAbstractView implements
         this.parentCap = (OnelineCap) p;
     }
 
+    @Override
     public LxAbstractGraph getGraph() {
         return graph;
     }
 
+    @Override
     public void setGraph(LxAbstractGraph graph) {
         this.graph = graph;
     }
@@ -126,7 +130,8 @@ public class CapBankUpdatableStats extends LxAbstractView implements
             UpdatableTextList pair = manager.adjustPosition(allStats,
                                                             dummy,
                                                             0,
-                                                            getStreamable());
+                                                            getStreamable(),
+                                                            user);
             copy.add(pair);
 
         }
@@ -136,7 +141,8 @@ public class CapBankUpdatableStats extends LxAbstractView implements
                 UpdatableTextList pair = manager.adjustPosition(allStats,
                                                                 prevEl.getFirstElement(),
                                                                 i,
-                                                                getStreamable());
+                                                                getStreamable(),
+                                                                user);
                 copy.add(pair);
             }
         }

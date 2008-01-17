@@ -11,6 +11,7 @@ import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.yukon.cbc.Feeder;
@@ -48,6 +49,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
 
     private LxGraph graph;
     private OnelineFeeder parent;
+    private LiteYukonUser user;
     private Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();
     private Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
     private List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
@@ -55,6 +57,7 @@ public class FeederUpdatableStats extends LxAbstractView implements
     public FeederUpdatableStats(LxGraph graph, OnelineFeeder parent) {
         this.graph = graph;
         this.parent = parent;
+        this.user = parent.getUser();
         initPropColumnMap();
         initPropLabelMap();
         initAllStats();
@@ -113,11 +116,13 @@ public class FeederUpdatableStats extends LxAbstractView implements
         parent = (OnelineFeeder) p;
     }
 
+    @Override
     public LxAbstractGraph getGraph() {
         return graph;
 
     }
 
+    @Override
     public void setGraph(LxAbstractGraph g) {
         graph = (LxGraph) g;
     }
@@ -146,7 +151,8 @@ public class FeederUpdatableStats extends LxAbstractView implements
             UpdatableTextList pair = manager.adjustPosition(allStats,
                                                             prevComp,
                                                             0,
-                                                            getStreamable());
+                                                            getStreamable(),
+                                                            user);
             copy.add(pair);
 
         }
@@ -156,7 +162,8 @@ public class FeederUpdatableStats extends LxAbstractView implements
                 UpdatableTextList pair = manager.adjustPosition(allStats,
                                                                 prevEl.getFirstElement(),
                                                                 i,
-                                                                getStreamable());
+                                                                getStreamable(),
+                                                                user);
                 copy.add(pair);
             }
         }

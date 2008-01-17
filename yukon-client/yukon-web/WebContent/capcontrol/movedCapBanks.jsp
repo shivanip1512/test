@@ -26,7 +26,8 @@
 <%
 String nd = "\"return nd();\"";
 CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
-LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);			
+LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+final CBCDisplay cbcDisplay = new CBCDisplay(user);
 String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 if (popupEvent == null) popupEvent = "onmouseover";
 List areas = capControlCache.getCbcAreas();
@@ -68,7 +69,7 @@ for( int i = 0; i < movedCaps.size(); i++ )
 			          			STICKY, WIDTH,155, HEIGHT,50, OFFSETX,-15,OFFSETY,-15, MOUSEOFF, FULLHTML);"
 
 										onmouseout = <%=nd %> >
-										<%=CBCUtils.CBC_DISPLAY.getCapBankValueAt(cap, CBCDisplay.CB_PARENT_COLUMN, user)%>
+										<%=cbcDisplay.getCapBankValueAt(cap, CBCDisplay.CB_PARENT_COLUMN)%>
 						</a>					
 					</td>
 					<td><%=DaoFactory.getPaoDao().getYukonPAOName( cap.getOrigFeederID() )%></td>

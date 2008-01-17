@@ -8,7 +8,8 @@
 <%@include file="cbc_inc.jspf"%>
     <%
             FilterCacheFactory filterCacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
-			LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
+			LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+			final CBCDisplay cbcDisplay = new CBCDisplay(user);
 			CapControlCache filterCapControlCache = filterCacheFactory.createUserAccessFilteredCache(user);
 		    String nd = "\"return nd();\"";
 		    String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
@@ -98,7 +99,7 @@ if (allowCtlVal!=null) {
 				<td><%=closedVars%></td>
 				<td><%=trippedVars%></td>
 				<td><a type="param1" name="cti_dyn" id="<%=area.getPaoID()%>">
-                <%=CBCUtils.CBC_DISPLAY.getAreaValueAt(area, CBCDisplay.AREA_POWER_FACTOR_COLUMN)%></a>
+                <%=cbcDisplay.getAreaValueAt(area, CBCDisplay.AREA_POWER_FACTOR_COLUMN)%></a>
                 </td>
 			</tr>
 			<tr>
@@ -113,7 +114,7 @@ if (areaStations.size() > 0) {
 		cssSub = ("tableCell".equals(cssSub) ? "altTableCell" : "tableCell");
 %>
 				        <tr class="<%=cssSub%>" style="display: none;">
-							<td width="20%"><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
+							<td width="20%"><font class="lIndent"><%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
 							<td align="left"><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
 						</tr>
 <% 		} %>

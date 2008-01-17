@@ -19,7 +19,8 @@
 <%
     PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
     FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
-    LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
+    LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+    final CBCDisplay cbcDisplay = new CBCDisplay(user);
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
     String nd = "\"return nd();\"";
     String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
@@ -119,7 +120,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 				<td>
 				<input type="checkbox" name="cti_chkbxSubStation" value="<%=substation.getCcId()%>" />
 				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', <%=substation.getCcId()%>)" id="anc_<%=substation.getCcId()%>">
-				<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%>
+				<%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%>
 				</a>
 				<% if(substation.getSpecialAreaEnabled()){
 					String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId()); %>
@@ -134,17 +135,17 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 				<!--Create  popup menu html-->
 				<input id="cmd_substation_<%=substation.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />
 				<a type="state" name="cti_dyn" id="<%=substation.getCcId()%>"
-					style="color: <%=CBCDisplay.getHTMLFgColor(substation)%>;"
+					style="color: <%=cbcDisplay.getHTMLFgColor(substation)%>;"
 					href="javascript:void(0);"
 					<%=popupEvent%>="getSubstationMenu('<%=substation.getCcId()%>');">
 			<%
 			} else {
 			%>
-				<a type="state" name="cti_dyn" id="<%=substation.getCcId()%>" style="color: <%=CBCDisplay.getHTMLFgColor(substation)%>;" >
+				<a type="state" name="cti_dyn" id="<%=substation.getCcId()%>" style="color: <%=cbcDisplay.getHTMLFgColor(substation)%>;" >
 			<%
 			}
 			%>
-			<%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
+			<%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
 			</a>
 				</td>
 				<td><%=varsAvailable %> </td>
@@ -152,7 +153,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
                 <td><%=closedVars %> </td>
                 <td><%=trippedVars %> </td>
                 <td><a type="param2" name="cti_dyn" id="<%=substation.getCcId()%>">
-                <%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_POWER_FACTOR_COLUMN)%></a>
+                <%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_POWER_FACTOR_COLUMN)%></a>
                 </td>
             </tr>
 <% } %>

@@ -39,6 +39,7 @@ public class CapBankTagView extends LxAbstractView implements TagView {
 
     }
 
+    @Override
     public LxGraph getGraph() {
         return graph;
     }

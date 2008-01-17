@@ -1,28 +1,20 @@
 package com.cannontech.cbc.util;
 
 import java.awt.Color;
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.text.NumberFormat;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.gui.util.Colors;
-import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.PoolManager;
+import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.database.data.capcontrol.CapBank;
-import com.cannontech.database.data.capcontrol.CapControlSubBus;
-import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.PointUnits;
-import com.cannontech.database.db.DBPersistent;
-import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ColorUtil;
@@ -37,7 +29,7 @@ import com.cannontech.yukon.cbc.SubStation;
  * @author rneuharth
  */
 public class CBCDisplay {
-    
+
     public static final String SYMBOL_SIGNAL_QUALITY = "(*)";
     public static final String STR_NA = "  NA";
     public static final String DASH_LINE = "  ----";
@@ -79,7 +71,7 @@ public class CBCDisplay {
     public static final int FDR_VAR_LOAD_POPUP = 13;
     public static final int FDR_WARNING_IMAGE = 14;
     public static final int FDR_WARNING_POPUP = 15;
-    
+
     // Column numbers for the SubBus display
     public static final int SUB_AREA_NAME_COLUMN = 0;
     public static final int SUB_NAME_COLUMN = 1;
@@ -90,7 +82,7 @@ public class CBCDisplay {
     public static final int SUB_POWER_FACTOR_COLUMN = 6;
     public static final int SUB_TIME_STAMP_COLUMN = 7;
     public static final int SUB_DAILY_OPERATIONS_COLUMN = 8;
-    
+
     public static final int SUB_ONELINE_CONTROL_METHOD_COLUMN = 9;
     public static final int SUB_ONELINE_KVAR_LOAD_COLUMN = 10;
     public static final int SUB_ONELINE_KVAR_ESTMATED_COLUMN = 11;
@@ -108,47 +100,36 @@ public class CBCDisplay {
     public static final int SUB_VAR_LOAD_POPUP = 23;
     public static final int SUB_WARNING_IMAGE = 24;
     public static final int SUB_WARNING_POPUP = 25;
-    
+
     public static final int AREA_POWER_FACTOR_COLUMN = 0;
-    
+
     // The color schemes - based on the schedule status
     private static final Color[] _DEFAULT_COLORS = {
-    // Enabled subbus (Green like color)
-            new Color(60, 130, 66),
-            // Disabled subbus
-            Color.RED,
-            // Pending subbus (Yellow like color)
-            new Color(240, 145, 0) };
+        // Enabled subbus (Green like color)
+        new Color(60, 130, 66),
+        // Disabled subbus
+        Color.RED,
+        // Pending subbus (Yellow like color)
+        new Color(240, 145, 0) };
 
-    public CBCDisplay() {
-        this(ModifiedDate.FRMT_DEFAULT);
-    }
+    private final LiteYukonUser user;
 
-    public CBCDisplay(short formatInt) {
-        super();
-        dateTimeFormat = formatInt;
-    }
-
-    /**
-     * The text of capbanks states. This can change since is based on a state
-     * group
-     */
-    public static LiteState[] getCBCStateNames() {
-        return DaoFactory.getStateDao()
-                         .getLiteStates(StateGroupUtils.STATEGROUPID_CAPBANK);
+    public CBCDisplay(final LiteYukonUser user) {
+        this.user = user;
     }
 
     /**
      * getValueAt method for CapBanks.
      */
-    public synchronized Object getCapBankValueAt(CapBankDevice capBank, int col, LiteYukonUser user) {
+    public Object getCapBankValueAt(CapBankDevice capBank, int col) {
+        if (capBank == null) return "";
+
         String fixedCapbankLabel = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCOnelineSettingsRole.CAP_BANK_FIXED_TEXT);
         if (fixedCapbankLabel == null) fixedCapbankLabel = "Fixed";
-        if (capBank == null) {
-            return "";
-        }
+
         Integer controlDeviceID = capBank.getControlDeviceID();
         String controllerName = (controlDeviceID != 0) ? DaoFactory.getPaoDao().getYukonPAOName(controlDeviceID) : DASH_LINE;
+
         switch (col) {
         case CB_NAME_COLUMN: {
             NumberFormat num = NumberFormat.getNumberInstance();
@@ -157,53 +138,50 @@ public class CBCDisplay {
             return capBank.getCcName() + " (" + num.format(capBank.getControlOrder()) + ")";
         }
 
-
         case CB_STATUS_COLUMN: {
             boolean capBankInUnknownState = capBank.getControlStatus().intValue() < 0 || capBank.getControlStatus()
-                                                                                .intValue() >= getCBCStateNames().length;
-           int controlStatus = capBank.getControlStatus().intValue();                                                                    
+            .intValue() >= CBCUtils.getCBCStateNames().length;
+            int controlStatus = capBank.getControlStatus().intValue();                                                                    
             if (capBankInUnknownState) {
                 CTILogger.info("*** A CapBank state was found that has no corresponding status.");
-                
                 return STR_UNKNOWN + " (" + controlStatus + ")";
-            } else {
-                boolean isCapBankDisabled = capBank.getCcDisableFlag().booleanValue() == true;
-                boolean isFixedState = capBank.getOperationalState().equalsIgnoreCase(CapBank.FIXED_OPSTATE);
-                boolean isStandaloneState = capBank.getOperationalState().equalsIgnoreCase(CapBank.STANDALONE_OPSTATE);
-                String currentState = getCBCStateNames()[controlStatus].getStateText();
-                boolean showIgnoreReason = capBank.isIgnoreFlag();
-                
-                if (isCapBankDisabled) {
+            }    
 
-                    String disStateString = "DISABLED : " + (isFixedState ? fixedCapbankLabel 
-                                                : currentState);
-                    disStateString += capBank.getControlStatusQualityString();                    
-                    if (capBank.getOvUVDisabled()){
-                    	disStateString += "-V";
-                    }
-                    
-                    disStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
-                    return disStateString;
-                } else {
+            boolean isCapBankDisabled = capBank.getCcDisableFlag().booleanValue() == true;
+            boolean isFixedState = capBank.getOperationalState().equalsIgnoreCase(CapBank.FIXED_OPSTATE);
+            boolean isStandaloneState = capBank.getOperationalState().equalsIgnoreCase(CapBank.STANDALONE_OPSTATE);
+            String currentState = CBCUtils.getCBCStateNames()[controlStatus].getStateText();
+            boolean showIgnoreReason = capBank.isIgnoreFlag();
 
-                    String EnStateString = "";
-                    if (isFixedState){
-                    	EnStateString = fixedCapbankLabel + " : ";
-                    }
-                    else if (isStandaloneState ){
-                    	EnStateString = CapBank.STANDALONE_OPSTATE + " : ";
-                    }
-                   
-                    EnStateString += currentState;
-                    EnStateString += capBank.getControlStatusQualityString();           
-                    
-                    if (capBank.getOvUVDisabled()){
-                    	EnStateString += "-V";
-                    }
-                    EnStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
-                    return EnStateString;
+            if (isCapBankDisabled) {
+
+                String disStateString = "DISABLED : " + (isFixedState ? fixedCapbankLabel 
+                        : currentState);
+                disStateString += capBank.getControlStatusQualityString();                    
+                if (capBank.getOvUVDisabled()){
+                    disStateString += "-V";
                 }
+
+                disStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
+                return disStateString;
+            } 
+
+            String enStateString = "";
+            if (isFixedState){
+                enStateString = fixedCapbankLabel + " : ";
             }
+            else if (isStandaloneState ){
+                enStateString = CapBank.STANDALONE_OPSTATE + " : ";
+            }
+
+            enStateString += currentState;
+            enStateString += capBank.getControlStatusQualityString();           
+
+            if (capBank.getOvUVDisabled()){
+                enStateString += "-V";
+            }
+            enStateString += (showIgnoreReason ? "<br/>" + CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()) : "");
+            return enStateString;
         }
 
         case CB_OP_COUNT_COLUMN: {
@@ -217,73 +195,78 @@ public class CBCDisplay {
         case CB_TIME_STAMP_COLUMN: {
             if (capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
-            else
-                return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), dateTimeFormat).toString();
+
+            return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), dateTimeFormat).toString();
         }
+
         case CB_SHORT_TIME_STAMP_COLUMN: {
             if (capBank.getLastStatusChangeTime().getTime() <= CtiUtilities.get1990GregCalendar().getTime().getTime())
                 return DASH_LINE;
-            else
-                return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), shortTimeFormat).toString();
+
+            return new ModifiedDate(capBank.getLastStatusChangeTime().getTime(), shortTimeFormat).toString();
         }
+
         case CB_PARENT_COLUMN: {
             LiteYukonPAObject paoParent = DaoFactory.getPaoDao()
-                                                    .getLiteYukonPAO(capBank.getParentID());
-            if (paoParent != null)
-                return paoParent;
-            else
-                return DASH_LINE;
+            .getLiteYukonPAO(capBank.getParentID());
+            if (paoParent != null) return paoParent;
+
+            return DASH_LINE;
         }
+
         case CB_CURRENT_DAILY_OP_COLUMN: {
             return capBank.getCurrentDailyOperations();
         }
+
         case CB_DAILY_TOTAL_OP_COLUMN: {
             return new String(capBank.getCurrentDailyOperations() + " / " + capBank.getTotalOperations());
         }
+
         case CB_DAILY_MAX_TOTAL_OP_COLUMN: {
             return new String(capBank.getCurrentDailyOperations() +" / " + capBank.getMaxDailyOperation() + " / " + capBank.getTotalOperations());
         }
+
         case CB_CONTROLLER:{
             return controllerName;
         }
+
         case CB_WARNING_IMAGE:{
-            
-            if( capBank.getMaxDailyOperationHitFlag() || capBank.getOvuvSituationFlag()  )
+            if (capBank.getMaxDailyOperationHitFlag() || capBank.getOvuvSituationFlag())
                 return "true";
-            else
-                return "false";
+
+            return "false";
         }
+
         case CB_WARNING_POPUP:{
             String warningText = "Alerts:";
-            
-            if( capBank.getMaxDailyOperationHitFlag() )
+
+            if (capBank.getMaxDailyOperationHitFlag())
                 warningText += " Max Daily Operations" ;
-            if( capBank.getOvuvSituationFlag() )
+
+            if (capBank.getOvuvSituationFlag())
                 warningText += " OVUV Situation" ;
 
             return warningText;
         }
+
         case CB_STATUS_POPUP: {
             String before = capBank.getBeforeVars();
             String after = capBank.getAfterVars();
             String change = capBank.getPercentChange();
             return new String(" Before: "+before+ " <br/> After: " + after + " <br/> % Change: "+ change);
         }
-        default:
-            return null;
+
+        default: return null;
         }
     }
-    
+
     /**
      * getValueAt method for Substations
      */
-    public synchronized Object getSubstationValueAt(SubStation substation, int col) {
-        if (substation == null) {
-            return "";
-        }
-        
+    public Object getSubstationValueAt(SubStation substation, int col) {
+        if (substation == null) return "";
+
         switch (col) {
-        
         case SUB_NAME_COLUMN: {
             return substation.getCcName();
         }
@@ -293,50 +276,47 @@ public class CBCDisplay {
         }
 
         case SUB_CURRENT_STATE_COLUMN: {
-            String state = null;
-            if (substation.getCcDisableFlag().booleanValue()) {
-                state = "DISABLED";
-            } else {
-                state = "ENABLED";
-            }
-            if (substation.getOvuvDisableFlag().booleanValue()) {
-                state += "-V";
-            }
+            boolean isDisabled = substation.getCcDisableFlag().booleanValue();
+            String state = (isDisabled) ? "DISABLED" : "ENABLED";
+
+            boolean isDisabledOVUV = substation.getOvuvDisableFlag().booleanValue();
+            if (isDisabledOVUV) state += "-V";
+
             return state;
         }
-        
+
         case SUB_POWER_FACTOR_COLUMN: {
             String pf =  getPowerFactorText(substation.getPowerFactorValue().doubleValue(), true)     
-                + " / " + getPowerFactorText(substation.getEstimatedPFValue().doubleValue(), true);
+            + " / " + getPowerFactorText(substation.getEstimatedPFValue().doubleValue(), true);
             return pf;
         }
-        
-        default:
-            return null;
+
+        default: return null;
+        }
+    }
+
+    public Object getAreaValueAt(CBCArea area, int col) {
+        if (area == null) return "";
+
+        switch (col) {
+        case AREA_POWER_FACTOR_COLUMN: {
+            String text = getPowerFactorText(area.getPowerFactorValue().doubleValue(), true) +
+            " / " + getPowerFactorText(area.getEstimatedPFValue().doubleValue(), true); 
+            return text;
         }
 
-    }
-    
-    public synchronized Object getAreaValueAt(CBCArea area, int col) {
-        switch (col) {
-        
-            case AREA_POWER_FACTOR_COLUMN: {
-                return getPowerFactorText(area.getPowerFactorValue().doubleValue(), true) + " / " + getPowerFactorText(area.getEstimatedPFValue().doubleValue(), true);
-             }
-            
-            default:
-                return null;
+        default: return null;
         }
     }
 
     /**
      * getValueAt method for SubBuses
      */
-    public synchronized Object getSubBusValueAt(SubBus subBus, int col) {
-        if (subBus == null)
-            return "";
-        
+    public Object getSubBusValueAt(SubBus subBus, int col) {
+        if (subBus == null) return "";
+
         int decPlaces = subBus.getDecimalPlaces().intValue();
+
         switch (col) {
         case SUB_NAME_COLUMN: {
             return subBus.getCcName();
@@ -358,12 +338,11 @@ public class CBCDisplay {
                     state = "PENDING"; // we only know its pending for sure
                 }
 
-            } else if (subBus.getSwitchOverStatus().booleanValue() && isDualBusEnabled(subBus)) {
+            } else if (subBus.getSwitchOverStatus().booleanValue() && CBCUtils.isDualBusEnabled(subBus)) {
                 state = "ENABLED - ALT BUS";
-            }
-
-            else
+            } else {
                 state = "ENABLED";
+            }
 
             // show waived with a W at the end of the state
             if (subBus.getWaiveControlFlag().booleanValue())
@@ -371,7 +350,6 @@ public class CBCDisplay {
             if (subBus.getOvUvDisabledFlag().booleanValue())
                 state += "-V";
             return state;
-
         }
 
         case SUB_TARGET_COLUMN: {
@@ -379,52 +357,52 @@ public class CBCDisplay {
             NumberFormat num = NumberFormat.getNumberInstance();
             num.setMaximumFractionDigits(1);
             num.setMinimumFractionDigits(1);
-            
+
             if (subBus.getPeakTimeFlag().booleanValue()) {
 
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + "%C : " 
-                            + num.format(subBus.getPeakPFSetPoint() ) + " : " 
-                            + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) + "%T";
+                    + num.format(subBus.getPeakPFSetPoint() ) + " : " 
+                    + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
-                            + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
+                    + " to " + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
             } else {
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
-                            + "%C : " + num.format(subBus.getOffpeakPFSetPoint()) 
-                            + " : " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%T";
+                    + "%C : " + num.format(subBus.getOffpeakPFSetPoint()) 
+                    + " : " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) 
-                            + " to " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
+                    + " to " + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
             }
 
         }
-        
+
         case SUB_TARGET_POPUP: {
             NumberFormat num = NumberFormat.getNumberInstance();
             num.setMaximumFractionDigits(3);
             num.setMinimumFractionDigits(0);
-            
+
             return "Target Var: " + num.format( subBus.getTargetvarvalue() );
         }
-        
+
         case SUB_VAR_LOAD_POPUP: {
             NumberFormat num = NumberFormat.getNumberInstance();
             num.setMaximumFractionDigits(2);
             num.setMinimumFractionDigits(0);
             String str = "Phase A:" + num.format( subBus.getPhaseA() ) 
-                + " Phase B:" + num.format( subBus.getPhaseB() )
-                + " Phase C:" + num.format( subBus.getPhaseC() );
+            + " Phase B:" + num.format( subBus.getPhaseB() )
+            + " Phase C:" + num.format( subBus.getPhaseC() );
             return str;
         }
-        
+
         case SUB_DAILY_OPERATIONS_COLUMN: {
             return new String(subBus.getCurrentDailyOperations() + " / " + (subBus.getMaxDailyOperation()
-                                                                                  .intValue() <= 0 ? STR_NA
-                    : subBus.getMaxDailyOperation().toString()));
+                    .intValue() <= 0 ? STR_NA
+                            : subBus.getMaxDailyOperation().toString()));
         }
 
         case SUB_VAR_LOAD_COLUMN: {
@@ -434,7 +412,7 @@ public class CBCDisplay {
                 retVal = DASH_LINE;
             else {
                 retVal = CommonUtils.formatDecimalPlaces(subBus.getCurrentVarLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
             }
 
@@ -450,7 +428,7 @@ public class CBCDisplay {
                 retVal += DASH_LINE;
             else {
                 retVal += CommonUtils.formatDecimalPlaces(subBus.getEstimatedVarLoadPointValue()
-                                                                .doubleValue(),
+                                                          .doubleValue(),
                                                           decPlaces);
             }
 
@@ -459,9 +437,9 @@ public class CBCDisplay {
 
         case SUB_POWER_FACTOR_COLUMN: {
             return getPowerFactorText(subBus.getPowerFactorValue()
-                                            .doubleValue(), true) + " / " + getPowerFactorText(subBus.getEstimatedPFValue()
-                                                                                                     .doubleValue(),
-                                                                                               true);
+                                      .doubleValue(), true) + " / " + getPowerFactorText(subBus.getEstimatedPFValue()
+                                                                                         .doubleValue(),
+                                                                                         true);
         }
 
         case SUB_WATTS_COLUMN: {
@@ -471,7 +449,7 @@ public class CBCDisplay {
                 retVal = DASH_LINE;
             else {
                 retVal = CommonUtils.formatDecimalPlaces(subBus.getCurrentWattLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
             }
 
@@ -485,7 +463,7 @@ public class CBCDisplay {
                 retVal += DASH_LINE;
             else {
                 retVal += CommonUtils.formatDecimalPlaces(subBus.getCurrentVoltLoadPointValue()
-                                                                .doubleValue(),
+                                                          .doubleValue(),
                                                           decPlaces);
             }
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS))
@@ -509,55 +487,23 @@ public class CBCDisplay {
             else
                 return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat).toString();
         }
-        
+
         case SUB_WARNING_POPUP: {
             return "Operating in like-day history control.";
         }
-        
+
         case SUB_WARNING_IMAGE:{
-            
+
             if( subBus.getLikeDayControlFlag() ) {
                 return "true";
             } else {
                 return "false";
             }
         }
-        
+
         default:
             return null;
         }
-
-    }
-
-
-    /**
-     * @param subBus
-     * @return
-     */
-    public boolean isDualBusEnabled(SubBus subBus) {
-        DBPersistent pao = PAOFactory.createPAObject(subBus.getCcId()
-                                                           .intValue());
-        Connection conn = null;
-
-        try {
-            conn = PoolManager.getInstance()
-                              .getConnection(CtiUtilities.getDatabaseAlias());
-            pao.setDbConnection(conn);
-            pao.retrieve();
-        } catch (SQLException sql) {
-            CTILogger.error("Unable to retrieve DB Object", sql);
-        } finally {
-            pao.setDbConnection(null);
-
-            try {
-                if (conn != null)
-                    conn.close();
-            } catch (java.sql.SQLException e2) {}
-        }
-        CapControlSubBus capControlSubBus1 = ((CapControlSubBus) pao);
-        CapControlSubBus capControlSubBus = capControlSubBus1;
-        String dualBusEnabled = capControlSubBus.getCapControlSubstationBus().getDualBusEnabled();
-        return (dualBusEnabled.equalsIgnoreCase("Y")) ? true : false;
 
     }
 
@@ -573,10 +519,10 @@ public class CBCDisplay {
                 CapBankDevice capBank = feeder.getCcCapBanks().elementAt(j);
 
                 if (capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING)
-                    return getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
+                    return CBCUtils.getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
 
                 if (capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING)
-                    return getCBCStateNames()[CapControlConst.BANK_OPEN_PENDING].getStateText();
+                    return CBCUtils.getCBCStateNames()[CapControlConst.BANK_OPEN_PENDING].getStateText();
             }
 
         }
@@ -586,31 +532,12 @@ public class CBCDisplay {
     }
 
     /**
-     * Discovers if the given Feeder is in any Pending state
-     */
-    public String getFeederPendingState(Feeder feeder) {
-        int size = feeder.getCcCapBanks().size();
-        for (int j = 0; j < size; j++) {
-            CapBankDevice capBank = feeder.getCcCapBanks().elementAt(j);
-
-            if (capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING)
-                return getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
-
-            if (capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING)
-                return getCBCStateNames()[CapControlConst.BANK_OPEN_PENDING].getStateText();
-        }
-
-        // we are not pending
-        return null;
-    }
-
-    /**
      * getValueAt method for Feeders
      */
-    public synchronized Object getFeederValueAt(Feeder feeder, int col) {
+    public Object getFeederValueAt(Feeder feeder, int col) {
         if (feeder == null)
             return "";
-        
+
         int decPlaces = feeder.getDecimalPlaces();
         switch (col) {
         case FDR_NAME_COLUMN: {
@@ -623,11 +550,11 @@ public class CBCDisplay {
             if (feeder.getCcDisableFlag().booleanValue()) {
                 state = "DISABLED";
             } else if (feeder.getRecentlyControlledFlag().booleanValue()) {
-                state = getFeederPendingState(feeder);
+                state = CBCUtils.getFeederPendingState(feeder);
 
                 if (state == null) {
                     state = "PENDING"; // we dont know what Pending state its
-                                        // in
+                    // in
                 }
 
             } else
@@ -647,35 +574,35 @@ public class CBCDisplay {
             NumberFormat num = NumberFormat.getNumberInstance();
             num.setMaximumFractionDigits(1);
             num.setMinimumFractionDigits(1);
-            
+
             if (feeder.getPeakTimeFlag().booleanValue()) {
 
                 if (CBCUtils.isPowerFactorControlled(feeder.getControlUnits())) {
 
                     return CommonUtils.formatDecimalPlaces(feeder.getPeakLag()
-                                                                 .doubleValue(),
+                                                           .doubleValue(),
                                                            0) + "%C : " + num.format( feeder.getPeakPFSetPoint() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getPeakLead()
-                                                                                                                    .doubleValue(),
-                                                                                                              0) + "%T";
+                                                                                                                                                             .doubleValue(),
+                                                                                                                                                             0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(feeder.getPeakLead()
-                                                                 .doubleValue(),
+                                                           .doubleValue(),
                                                            0) + " to " + CommonUtils.formatDecimalPlaces(feeder.getPeakLag()
-                                                                                                               .doubleValue(),
+                                                                                                         .doubleValue(),
                                                                                                          0) + " Pk";
             } else {
                 if (CBCUtils.isPowerFactorControlled(feeder.getControlUnits())) {
 
                     return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag()
-                                                                 .doubleValue(),
+                                                           .doubleValue(),
                                                            0) + "%C : " + num.format( feeder.getOffpeakPFSetPoint() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead()
-                                                                                                                    .doubleValue(),
-                                                                                                              0) + "%T";
+                                                                                                                                                                .doubleValue(),
+                                                                                                                                                                0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(feeder.getOffPkLead()
-                                                                 .doubleValue(),
+                                                           .doubleValue(),
                                                            0) + " to " + CommonUtils.formatDecimalPlaces(feeder.getOffPkLag()
-                                                                                                               .doubleValue(),
+                                                                                                         .doubleValue(),
                                                                                                          0) + " OffPk";
             }
 
@@ -684,7 +611,7 @@ public class CBCDisplay {
             NumberFormat num = NumberFormat.getNumberInstance();
             num.setMaximumFractionDigits(3);
             num.setMinimumFractionDigits(0);
-            
+
             return "Target Var: " + num.format( feeder.getTargetvarvalue() );
         }
         case FDR_VAR_LOAD_POPUP: {
@@ -692,21 +619,21 @@ public class CBCDisplay {
             num.setMaximumFractionDigits(2);
             num.setMinimumFractionDigits(0);
             String str = "Phase A:" + num.format( feeder.getPhaseA() ) 
-                + " Phase B:" + num.format( feeder.getPhaseB() )
-                + " Phase C:" + num.format( feeder.getPhaseC() );
+            + " Phase B:" + num.format( feeder.getPhaseB() )
+            + " Phase C:" + num.format( feeder.getPhaseC() );
             return str;
         }
         case FDR_POWER_FACTOR_COLUMN: {
             return getPowerFactorText(feeder.getPowerFactorValue()
-                                            .doubleValue(), true) + " / " + getPowerFactorText(feeder.getEstimatedPFValue()
-                                                                                                     .doubleValue(),
-                                                                                               true);
+                                      .doubleValue(), true) + " / " + getPowerFactorText(feeder.getEstimatedPFValue()
+                                                                                         .doubleValue(),
+                                                                                         true);
         }
 
         case FDR_DAILY_OPERATIONS_COLUMN: {
             return new String(feeder.getCurrentDailyOperations() + " / " + (feeder.getMaxDailyOperation()
-                                                                                  .intValue() <= 0 ? STR_NA
-                    : feeder.getMaxDailyOperation().toString()));
+                    .intValue() <= 0 ? STR_NA
+                            : feeder.getMaxDailyOperation().toString()));
         }
 
         case FDR_VAR_LOAD_COLUMN: {
@@ -716,19 +643,19 @@ public class CBCDisplay {
                 retVal = DASH_LINE;
             else
                 retVal = CommonUtils.formatDecimalPlaces(feeder.getCurrentVarLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR))
             {
                 retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
-            
+
             retVal += " / ";
             if (feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
                 retVal += DASH_LINE;
             else
                 retVal += CommonUtils.formatDecimalPlaces(feeder.getEstimatedVarLoadPointValue()
-                                                                .doubleValue(),
+                                                          .doubleValue(),
                                                           decPlaces);
 
             return retVal;
@@ -741,10 +668,10 @@ public class CBCDisplay {
                 retVal = DASH_LINE;
             else {
                 retVal = CommonUtils.formatDecimalPlaces(feeder.getCurrentWattLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
             }
-            
+
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW))
             {
                 retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
@@ -756,7 +683,7 @@ public class CBCDisplay {
                 retVal += DASH_LINE;
             else {
                 retVal += CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue()
-                                                                .doubleValue(),
+                                                          .doubleValue(),
                                                           decPlaces);
             }
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS))
@@ -788,7 +715,7 @@ public class CBCDisplay {
                 retVal = DASH_LINE;
             else {
                 retVal = CommonUtils.formatDecimalPlaces(feeder.getCurrentWattLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
             }
             return retVal;
@@ -799,7 +726,7 @@ public class CBCDisplay {
 
             if (feeder.getCurrentVoltLoadPointID().intValue() > PointTypes.SYS_PID_SYSTEM) {
                 retVal = CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
             }
 
@@ -812,24 +739,24 @@ public class CBCDisplay {
                 retVal = DASH_LINE;
             else
                 retVal = CommonUtils.formatDecimalPlaces(feeder.getCurrentVarLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
-            
+
             retVal += " / ";
             if (feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
                 retVal += DASH_LINE;
             else
                 retVal += CommonUtils.formatDecimalPlaces(feeder.getEstimatedVarLoadPointValue()
-                                                                .doubleValue(),
+                                                          .doubleValue(),
                                                           decPlaces);
 
             return retVal;
         }
-        
+
         case FDR_WARNING_POPUP: {
             return "Operating in like-day history control.";
         }
-        
+
         case FDR_WARNING_IMAGE:{
             if( feeder.getLikeDayControlFlag() ) {
                 return "true";
@@ -849,44 +776,48 @@ public class CBCDisplay {
      * @param compute
      * @return
      */
-    public static String getPowerFactorText(double value, boolean compute) {
-        int decPlaces = 1;
+    public String getPowerFactorText(double value, boolean compute) {
+        int decPlaces;
         try {
-            decPlaces = Integer.parseInt(ClientSession.getInstance().getRolePropertyValue(CBCSettingsRole.PFACTOR_DECIMAL_PLACES, "1"));
-        } catch (Exception e) {}
+            String propertyValue = DaoFactory.getAuthDao().getRolePropertyValueEx(user, CBCSettingsRole.PFACTOR_DECIMAL_PLACES);
+            decPlaces = Integer.parseInt(propertyValue);
+        } catch (UnknownRolePropertyException e) {
+            CTILogger.warn(e);
+            decPlaces = 1;
+        }
 
         if (value <= CapControlConst.PF_INVALID_VALUE) {
             return STR_NA;
-        }else {
-            return CommonUtils.formatDecimalPlaces(value * (compute ? 100 : 1), decPlaces) + "%";
         }
+
+        return CommonUtils.formatDecimalPlaces(value * (compute ? 100 : 1), decPlaces) + "%";
     }
-    
-    public static synchronized String getHTMLFgColor(SubStation subBus) {
+
+    public String getHTMLFgColor(SubStation subBus) {
         Color rc = getSubstationFgColor(subBus, Color.BLACK);
         return ColorUtil.getHex(new int[] { rc.getRed(), rc.getGreen(),
                 rc.getBlue() });
     }
 
-    public static synchronized String getHTMLFgColor(SubBus subBus) {
+    public String getHTMLFgColor(SubBus subBus) {
         Color rc = getSubFgColor(subBus, Color.BLACK);
         return ColorUtil.getHex(new int[] { rc.getRed(), rc.getGreen(),
                 rc.getBlue() });
     }
 
-    public static synchronized String getHTMLFgColor(Feeder feeder) {
+    public String getHTMLFgColor(Feeder feeder) {
         Color rc = getFeederFgColor(feeder, Color.BLACK);
         return ColorUtil.getHex(new int[] { rc.getRed(), rc.getGreen(),
                 rc.getBlue() });
     }
 
-    public static synchronized String getHTMLFgColor(CapBankDevice capBank) {
+    public String getHTMLFgColor(CapBankDevice capBank) {
         Color rc = getCapBankFGColor(capBank, Color.BLACK);
         return ColorUtil.getHex(new int[] { rc.getRed(), rc.getGreen(),
                 rc.getBlue() });
     }
-    
-    public static synchronized Color getSubstationFgColor(SubStation substation, Color defColor) {
+
+    public Color getSubstationFgColor(SubStation substation, Color defColor) {
         Color retColor = defColor;
 
         if (substation != null) {
@@ -900,7 +831,7 @@ public class CBCDisplay {
         return retColor;
     }
 
-    public static synchronized Color getSubFgColor(SubBus subBus, Color defColor) {
+    public Color getSubFgColor(SubBus subBus, Color defColor) {
         Color retColor = defColor;
 
         if (subBus != null) {
@@ -916,21 +847,17 @@ public class CBCDisplay {
         return retColor;
     }
 
-    public static synchronized Color getCapBankFGColor(CapBankDevice capBank,
-            Color defColor) {
+    public Color getCapBankFGColor(CapBankDevice capBank, Color defColor) {
         Color retColor = defColor;
         int status = capBank.getControlStatus().intValue();
 
-        synchronized (CBCDisplay.getCBCStateNames()) {
-            if (status >= 0 && status < CBCDisplay.getCBCStateNames().length)
-                retColor = Colors.getColor(CBCDisplay.getCBCStateNames()[status].getFgColor());
-        }
+        if (status >= 0 && status < CBCUtils.getCBCStateNames().length)
+            retColor = Colors.getColor(CBCUtils.getCBCStateNames()[status].getFgColor());
 
         return retColor;
     }
 
-    public static synchronized Color getFeederFgColor(Feeder feeder,
-            Color defColor) {
+    public Color getFeederFgColor(Feeder feeder, Color defColor) {
         Color retColor = defColor;
 
         if (feeder != null) {
@@ -957,7 +884,7 @@ public class CBCDisplay {
 
     public String getOnelineSubBusValueAt(SubBus subBus, Integer col) 
     {
-        
+
         if (subBus == null)
             return "";
 
@@ -976,28 +903,28 @@ public class CBCDisplay {
             NumberFormat num = NumberFormat.getNumberInstance();
             num.setMaximumFractionDigits(1);
             num.setMinimumFractionDigits(1);
-            
+
             if (subBus.getPeakTimeFlag().booleanValue()) {
-                
+
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) 
-                                                           + "%C : " + num.format(subBus.getPeakPFSetPoint()) + " : " 
-                                                           + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),1) + "%T";
+                    + "%C : " + num.format(subBus.getPeakPFSetPoint()) + " : " 
+                    + CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),1) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getPeakLead().doubleValue(),0) 
-                                                           + " to " 
-                                                           + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
+                    + " to " 
+                    + CommonUtils.formatDecimalPlaces(subBus.getPeakLag().doubleValue(),0) + " Pk";
             } else {
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) 
-                                                           + "%C : " + num.format(subBus.getOffpeakPFSetPoint()) + " : " 
-                                                           + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%T";
+                    + "%C : " + num.format(subBus.getOffpeakPFSetPoint()) + " : " 
+                    + CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(),0) + "%T";
                 } else
                     return CommonUtils.formatDecimalPlaces(subBus.getOffPkLead().doubleValue(), 0)
-                                                           + " to " 
-                                                           + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
+                    + " to " 
+                    + CommonUtils.formatDecimalPlaces(subBus.getOffPkLag().doubleValue(),0) + " OffPk";
             }
 
         }
@@ -1014,7 +941,7 @@ public class CBCDisplay {
         case SUB_ONELINE_DAILY_MAX_OPCNT_COLUMN: {
             String retStr = (subBus.getCurrentDailyOperations().toString() + " / " + (subBus.getMaxDailyOperation().intValue() <= 0 ? STR_NA
                     : subBus.getMaxDailyOperation().toString()) );
-            
+
             return retStr;
         }
         case SUB_ONELINE_KVAR_LOAD_COLUMN: {
@@ -1024,7 +951,7 @@ public class CBCDisplay {
                 retVal = DASH_LINE;
             else {
                 retVal = CommonUtils.formatDecimalPlaces(subBus.getCurrentVarLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
             }
             return retVal;
@@ -1036,7 +963,7 @@ public class CBCDisplay {
                 retVal = DASH_LINE;
             else {
                 retVal = CommonUtils.formatDecimalPlaces(subBus.getEstimatedVarLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
             }
 
@@ -1045,11 +972,11 @@ public class CBCDisplay {
 
         case SUB_ONELINE_PF_COLUMN: {
             return getPowerFactorText(subBus.getPowerFactorValue()
-                                            .doubleValue(), true);
+                                      .doubleValue(), true);
         }
         case SUB_ONELINE_EST_PF_COLUMN: {
             return getPowerFactorText(subBus.getEstimatedPFValue()
-                                            .doubleValue(), true);
+                                      .doubleValue(), true);
         }
 
         case SUB_ONELINE_WATT_COLUMN: {
@@ -1059,7 +986,7 @@ public class CBCDisplay {
                 retVal = DASH_LINE;
             else {
                 retVal = CommonUtils.formatDecimalPlaces(subBus.getCurrentWattLoadPointValue()
-                                                               .doubleValue(),
+                                                         .doubleValue(),
                                                          decPlaces);
             }
             return retVal;

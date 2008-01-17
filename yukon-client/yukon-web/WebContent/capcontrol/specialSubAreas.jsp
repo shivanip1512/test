@@ -8,7 +8,8 @@
 
 	<%
         FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
-		LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
+		LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+		final CBCDisplay cbcDisplay = new CBCDisplay(user);
 		CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 			    String nd = "\"return nd();\"";
 			    String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
@@ -70,8 +71,8 @@ if (allowCtlVal!=null) {
 		String varsUnavailable =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStations(areaStations, user) );
 		String closedVars = CBCUtils.format( CBCUtils.calcVarsClosedForCapBanks(areaCapBanks, user) );
 		String trippedVars = CBCUtils.format( CBCUtils.calcVarsTrippedForCapBanks(areaCapBanks, user) );
-		String currPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
-		String estPF = CBCDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
+		String currPF = cbcDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
+		String estPF = cbcDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
 		String areaState = (area.getDisableFlag()) ? "DISABLED" : "ENABLED";
 		if( area.getOvUvDisabledFlag() ) {
 			areaState += "-V";
@@ -116,7 +117,7 @@ if (allowCtlVal!=null) {
 		cssSub = ("tableCell".equals(cssSub) ? "altTableCell" : "tableCell");
 %>
 				        <tr class="<%=cssSub%>" style="display: none;">
-							<td width="20%"><font class="lIndent"><%=CBCUtils.CBC_DISPLAY.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
+							<td width="20%"><font class="lIndent"><%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
 							<td align="left"><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
 						</tr>
 		<%}%>

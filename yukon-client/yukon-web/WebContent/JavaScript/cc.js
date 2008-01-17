@@ -177,13 +177,19 @@ function handleOpcountRequest(command, paoId, cmd_name, newOpcntVal) {
 			});
 }
 function updateDrawing() {
-	id = getSubId();
-		new Ajax.Request("/capcontrol/oneline/OnelineCBCServlet", {method:"post", parameters:"id=" + id, onSuccess:function (t) {
-			updateHTML(t.responseXML);
+    var id = getSubId();
+    var url = '/capcontrol/oneline/OnelineCBCServlet';
+    
+	new Ajax.Request(url, { method:'POST', parameters:'id=' + id, 
+        onSuccess:function (t) {
+			var html = t.responseXML;
+            updateHTML(html);
 			callback();
-		}, onFailure:function () {
-			say("Remote call failed");
-		}, asynchronous:true});
+		},
+        onFailure:function () {
+          window.location.reload();
+		}
+    });
 }
 function callback() {
 	setTimeout("updateDrawing()", UPDATE_EVERY);
@@ -265,15 +271,19 @@ function updateCaps(xml) {
 
 function updateVisibleText(prefix, xml) {
     var textEls = document.getElementsByTagName("text");
+    var xmlDynamicEls = xml.getElementsByTagName("text");
+    
     for (var i = 0; i < textEls.length; i++) {
-        textEl = textEls.item(i);
+        var textEl = textEls.item(i);
         var id = textEl.getAttribute("id");
-        if (textEl.getAttribute("id").split("_")[0] == prefix) {
-            xmlDynamicEls = xml.getElementsByTagName("text");
-            xmlText = xmlDynamicEls.item(i);
-            xmlID = xmlText.getAttribute("id");
+        
+        if (id.split("_")[0] == prefix) {
+            var xmlText = xmlDynamicEls.item(i);
+            var xmlID = xmlText.getAttribute("id");
             if (xmlID == id) {
-                textEl.getFirstChild().setData(xmlText.text);
+                var firstChild = textEl.getFirstChild();
+                if (firstChild == null) continue;
+                firstChild.setData(xmlText.text);
                 color = xmlText.getAttribute("style");
 			    textEl.setAttribute("style", color);
 			}

@@ -8,10 +8,8 @@ package com.cannontech.cbc.oneline.view;
 import java.awt.Dimension;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import com.cannontech.cbc.oneline.OneLineParams;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.yukon.cbc.Feeder;
@@ -42,10 +40,6 @@ public class CapControlOnelineCanvas {
     }
 
     public Drawing createDrawing(SubBus subBusMessage, String fileName) {
-        return this.createDrawing(subBusMessage, fileName, null);
-    }
-    
-    public Drawing createDrawing(SubBus subBusMessage, String fileName, Map<Integer,List<LitePoint>> pointCache) {
         boolean isSingleFeeder = subBusMessage.getCcFeeders().size() == 1;
         if (layoutParams == null) {
             layoutParams = new OneLineParams(drawingHeight,
@@ -53,15 +47,10 @@ public class CapControlOnelineCanvas {
                                              isSingleFeeder);
             layoutParams.setUser (user);
         }
-        if (fileName != null)
-            drawing = new OneLineDrawing(layoutParams, fileName);
-        else
-            drawing = new OneLineDrawing(layoutParams);
-
-        if (pointCache != null) {
-            drawing.setPointCache(pointCache);
-        }
         
+        drawing = (fileName != null) ? 
+                new OneLineDrawing(layoutParams, user, fileName) : new OneLineDrawing(layoutParams, user);
+
         drawing.addLogos();
         drawing.addSub(subBusMessage);
         drawing.addNavigationPanel();
@@ -94,8 +83,8 @@ public class CapControlOnelineCanvas {
         this.layoutParams = layoutParams;
     }
 
-    public void setUser(LiteYukonUser u) {
-        user = u;        
+    public void setUser(LiteYukonUser user) {
+        this.user = user;        
     }
 
 

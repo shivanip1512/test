@@ -90,6 +90,7 @@ public class SubTagView extends LxAbstractView implements TagView {
         parent = (OnelineSub) p;
     }
 
+    @Override
     public LxGraph getGraph() {
         return graph;
 

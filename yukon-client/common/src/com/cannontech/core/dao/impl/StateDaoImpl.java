@@ -2,6 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import com.cannontech.clientutils.CTILogger;
@@ -18,91 +19,68 @@ import com.cannontech.yukon.IDatabaseCache;
  * @author: 
  */
 
-public final class StateDaoImpl implements StateDao 
-{
+public final class StateDaoImpl implements StateDao {
     private IDatabaseCache databaseCache;
-    
-	/**
-	 * StateFuncs constructor comment.
-	 */
-	public StateDaoImpl() 
-	{
-		super();
-	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.StateDao#getLiteState(int, int)
-     */
-	public LiteState getLiteState(int stateGroupID, int rawState) 
-	{
-		LiteStateGroup stateGroup = getLiteStateGroup( stateGroupID );
-		for( int j = 0; j < stateGroup.getStatesList().size(); j++ )
-		{
-			if( rawState == ((LiteState)stateGroup.getStatesList().get(j)).getStateRawState() )
-				return (LiteState)stateGroup.getStatesList().get(j);
-		}
-	
-		//this is a internal error
-		CTILogger.error("Unable to find the state for StateGroupID=" + stateGroupID +
-			" and rawState=" + rawState );
+    public StateDaoImpl() {
 
-		return null;
-	}
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.StateDao#getLiteStateGroup(int)
-     */
-	public LiteStateGroup getLiteStateGroup(int stateGroupID) 
-	{
-		return (LiteStateGroup)
-			databaseCache.getAllStateGroupMap().get( new Integer(stateGroupID) );
-	}
+    }
 
-    @SuppressWarnings("unchecked")
-    public LiteStateGroup getLiteStateGroup(String stateGroupName) 
-	{
-	    Map allStateGroupMap = databaseCache.getAllStateGroupMap();
-        Collection<LiteStateGroup> stateGroups = allStateGroupMap.values();
-        for(LiteStateGroup group : stateGroups){
-            if(stateGroupName.equals(group.getStateGroupName())){
-                return group;
+    public LiteState getLiteState(int stateGroupID, int rawState) {
+        LiteStateGroup stateGroup = getLiteStateGroup( stateGroupID );
+
+        List<LiteState> stateList = stateGroup.getStatesList();
+        for (final LiteState state : stateList) {
+            if (rawState == state.getStateRawState()) return state;
+        }
+
+        //this is a internal error
+        CTILogger.error("Unable to find the state for StateGroupID=" + stateGroupID +
+                        " and rawState=" + rawState );
+
+        return null;
+    }
+
+    public LiteStateGroup getLiteStateGroup(int stateGroupID) {
+        synchronized (databaseCache) {
+            LiteStateGroup liteStateGroup = databaseCache.getAllStateGroupMap().get(stateGroupID);
+            return liteStateGroup;
+        }
+    }
+
+    public LiteStateGroup getLiteStateGroup(String stateGroupName) {
+        synchronized (databaseCache) {
+            Map<Integer,LiteStateGroup> allStateGroupMap = databaseCache.getAllStateGroupMap();
+            Collection<LiteStateGroup> stateGroups = allStateGroupMap.values();
+            for(LiteStateGroup group : stateGroups){
+                if(stateGroupName.equals(group.getStateGroupName())){
+                    return group;
+                }
             }
         }
-        
         throw new NotFoundException("State group '" + stateGroupName + "' doesn't exist");
-	}
-	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.StateDao#getLiteStates(int)
-     */
-	public LiteState[] getLiteStates(int stateGroupID)
-	{
-		LiteStateGroup lsg = null;
-		lsg = getLiteStateGroup(stateGroupID);
-		
-		LiteState[] ls = new LiteState[lsg.getStatesList().size()];
-		lsg.getStatesList().toArray(ls);
-		return ls;
-	}
+    }
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.StateDao#getAllStateGroups()
-     */
-	public LiteStateGroup[] getAllStateGroups()
-	{
-		LiteStateGroup[] stateGroups = null;
+    public LiteState[] getLiteStates(int stateGroupID) {
+        LiteStateGroup lsg = null;
+        lsg = getLiteStateGroup(stateGroupID);
 
-		synchronized(databaseCache)
-		{			
-			stateGroups =
-				(LiteStateGroup[])databaseCache.getAllStateGroupMap().values().toArray(
-					new LiteStateGroup[databaseCache.getAllStateGroupMap().values().size()] );
+        LiteState[] ls = new LiteState[lsg.getStatesList().size()];
+        lsg.getStatesList().toArray(ls);
+        return ls;
+    }
 
-			Arrays.sort( stateGroups, LiteComparators.liteStringComparator );
-		}
-		
-		return stateGroups;
-	}
+    public LiteStateGroup[] getAllStateGroups() {
+        LiteStateGroup[] stateGroups = null;
+
+        synchronized (databaseCache) {
+            Collection<LiteStateGroup> values = databaseCache.getAllStateGroupMap().values();
+            stateGroups = values.toArray(new LiteStateGroup[values.size()]);
+            Arrays.sort(stateGroups, LiteComparators.liteStringComparator);
+        }
+
+        return stateGroups;
+    }
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;

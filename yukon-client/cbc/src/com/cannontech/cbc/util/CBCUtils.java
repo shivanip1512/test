@@ -1,5 +1,6 @@
 package com.cannontech.cbc.util;
 
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
@@ -14,12 +15,15 @@ import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController701x;
+import com.cannontech.database.data.capcontrol.CapControlSubBus;
 import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteState;
@@ -27,12 +31,14 @@ import com.cannontech.database.data.lite.LiteStateGroup;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
+import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.cbc.CBCArea;
@@ -51,7 +57,6 @@ import com.cannontech.yukon.cbc.SubStation;
 public final class CBCUtils {
     public static final int TEMP_MOVE_REFRESH = 1000;
     // responsible for how to render data for CBC displays
-    public static final CBCDisplay CBC_DISPLAY = new CBCDisplay();
     public static CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
     public static AuthDao authDao = DaoFactory.getAuthDao();
 
@@ -319,7 +324,7 @@ public final class CBCUtils {
 
     public static String getAllManualCapStates() {
         String liteStates = "";
-        LiteState[] cbcStates = CBCDisplay.getCBCStateNames();
+        LiteState[] cbcStates = CBCUtils.getCBCStateNames();
         // create a comma separated string of all states
         // "Any:-1,Open:0,Close:1"
         for (int i = 0; i < cbcStates.length; i++) {
@@ -646,6 +651,64 @@ public final class CBCUtils {
            return false;
        }
         return true;
+    }
+    
+    /**
+     * The text of capbanks states. This can change since is based on a state
+     * group
+     */
+    public static LiteState[] getCBCStateNames() {
+        return DaoFactory.getStateDao()
+                         .getLiteStates(StateGroupUtils.STATEGROUPID_CAPBANK);
+    }
+    
+    /**
+     * @param subBus
+     * @return
+     */
+    public static boolean isDualBusEnabled(SubBus subBus) {
+        DBPersistent pao = PAOFactory.createPAObject(subBus.getCcId()
+                                                     .intValue());
+        Connection conn = null;
+
+        try {
+            conn = PoolManager.getInstance()
+            .getConnection(CtiUtilities.getDatabaseAlias());
+            pao.setDbConnection(conn);
+            pao.retrieve();
+        } catch (SQLException sql) {
+            CTILogger.error("Unable to retrieve DB Object", sql);
+        } finally {
+            pao.setDbConnection(null);
+
+            try {
+                if (conn != null)
+                    conn.close();
+            } catch (java.sql.SQLException e2) {}
+        }
+        CapControlSubBus capControlSubBus1 = ((CapControlSubBus) pao);
+        CapControlSubBus capControlSubBus = capControlSubBus1;
+        String dualBusEnabled = capControlSubBus.getCapControlSubstationBus().getDualBusEnabled();
+        return (dualBusEnabled.equalsIgnoreCase("Y")) ? true : false;
+    }
+    
+    /**
+     * Discovers if the given Feeder is in any Pending state
+     */
+    public static String getFeederPendingState(Feeder feeder) {
+        int size = feeder.getCcCapBanks().size();
+        for (int j = 0; j < size; j++) {
+            CapBankDevice capBank = feeder.getCcCapBanks().elementAt(j);
+
+            if (capBank.getControlStatus().intValue() == CapControlConst.BANK_CLOSE_PENDING)
+                return CBCUtils.getCBCStateNames()[CapControlConst.BANK_CLOSE_PENDING].getStateText();
+
+            if (capBank.getControlStatus().intValue() == CapControlConst.BANK_OPEN_PENDING)
+                return CBCUtils.getCBCStateNames()[CapControlConst.BANK_OPEN_PENDING].getStateText();
+        }
+
+        // we are not pending
+        return null;
     }
 
 }

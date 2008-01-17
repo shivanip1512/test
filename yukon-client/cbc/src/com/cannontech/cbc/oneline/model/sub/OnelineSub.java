@@ -3,8 +3,6 @@ package com.cannontech.cbc.oneline.model.sub;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Point2D;
-import java.util.List;
-import java.util.Map;
 
 import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
@@ -17,7 +15,6 @@ import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.states.SubImgState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
-import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
@@ -26,38 +23,27 @@ import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 
-public class OnelineSub implements OnelineObject {
+public class OnelineSub extends OnelineObject {
     public static final String SUB_TAG = "SubTag_";
     public static final String SUB_TRANSFORMER_IMG = "sub_TransformerImg";
-    // elements
-    public OneLineDrawing drawing = null;
-    private SubBus subBusMsg = null;
     private StaticText name = null;
     private SubDynamicImage transformerImg = null;
     private DynamicLineElement injectionLine;
     private DynamicLineElement distributionLn;
-    public Integer paoId;
     private StaticImage editorImage;
-    private Map<Integer,List<LitePoint>> pointCache;
-
-    public Map<Integer, List<LitePoint>> getPointCache() {
-        return pointCache;
-    }
-
-    public void setPointCache(Map<Integer, List<LitePoint>> pointCache) {
-        this.pointCache = pointCache;
-    }
 
     public OnelineSub(SubBus subBusMessage) {
         subBusMsg = subBusMessage;
         paoId = subBusMsg.getCcId();
     }
 
+    @Override
     public void addDrawing(OneLineDrawing old) {
         drawing = old;
         draw();
     }
 
+    @Override
     public void draw() {
         Drawing d = drawing.getDrawing();
         LxGraph graph = d.getLxGraph();
@@ -135,14 +121,7 @@ public class OnelineSub implements OnelineObject {
         return name;
     }
 
-    public OneLineDrawing getDrawing() {
-        return drawing;
-    }
-
-    public SubBus getSubBusMsg() {
-        return subBusMsg;
-    }
-
+    @Override
     public LxLine getRefLnBelow() {
         LxLine ln = new LxLine();
         Point2D injLnPt1 = getInjectionLine().getPoint1();
@@ -152,6 +131,7 @@ public class OnelineSub implements OnelineObject {
         return ln;
     }
 
+    @Override
     public LxLine getRefLnAbove() {
         LxLine ln = new LxLine();
         StaticImage ccLogo = drawing.getLogos().getCcLogo();
@@ -159,10 +139,6 @@ public class OnelineSub implements OnelineObject {
         ln.setPoint1(0, lnY);
         ln.setPoint2(drawing.getLayoutParams().getWidth(), lnY);
         return ln;
-    }
-
-    public Integer getPaoId() {
-        return paoId;
     }
 
     public DynamicLineElement getDistributionLn() {

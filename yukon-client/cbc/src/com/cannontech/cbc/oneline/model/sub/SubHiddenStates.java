@@ -7,6 +7,7 @@ import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
 import com.cannontech.cbc.oneline.model.AbstractHiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxGraph;
@@ -16,10 +17,12 @@ public class SubHiddenStates extends AbstractHiddenStates {
     private SubBus subBusMsg;
     private LxGraph graph;
     private OnelineSub parent;
+    private LiteYukonUser user;
     
     public SubHiddenStates(LxGraph g, OnelineObject o) {
         graph = g;
         parent = (OnelineSub) o;
+        this.user = o.getUser();
         subBusMsg = parent.getSubBusMsg();
     }
 

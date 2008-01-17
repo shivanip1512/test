@@ -11,6 +11,7 @@ import com.cannontech.cbc.oneline.util.PointQualCheckUpdatTextList;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.AdjustablePosition;
 import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
@@ -73,9 +74,10 @@ public class SubUpdatableStats extends LxAbstractView implements
     public UpdatableTextList ctlMethod = new UpdatableTextList(CBCOnelineSettingsRole.SUB_CTL_METHOD,
                                                                this);
 
-    public OnelineSub parent;
+    private OnelineSub parent;
     private LxGraph graph;
-    public SubBus subBusMsg;
+    private SubBus subBusMsg;
+    private LiteYukonUser user;
     public static Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
     public static Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();;
     public List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
@@ -84,6 +86,7 @@ public class SubUpdatableStats extends LxAbstractView implements
         super();
         this.parent = parent;
         this.graph = graph;
+        this.user = parent.getUser();
         subBusMsg = parent.getSubBusMsg();
         initPropColumnMap();
         initPropLabelMap();
@@ -168,7 +171,8 @@ public class SubUpdatableStats extends LxAbstractView implements
             UpdatableTextList pair = manager.adjustPosition(allStats,
                                                             prevComp,
                                                             0,
-                                                            subBusMsg);
+                                                            subBusMsg,
+                                                            user);
             copy.add(pair);
 
         }
@@ -178,7 +182,8 @@ public class SubUpdatableStats extends LxAbstractView implements
                 UpdatableTextList pair = manager.adjustPosition(allStats,
                                                                 prevEl.getFirstElement(),
                                                                 i,
-                                                                subBusMsg);
+                                                                subBusMsg,
+                                                                user);
                 copy.add(pair);
             }
         }
@@ -245,11 +250,13 @@ public class SubUpdatableStats extends LxAbstractView implements
         parent = (OnelineSub) p;
     }
 
+    @Override
     public LxAbstractGraph getGraph() {
         return graph;
 
     }
 
+    @Override
     public void setGraph(LxAbstractGraph g) {
         graph = (LxGraph) g;
 

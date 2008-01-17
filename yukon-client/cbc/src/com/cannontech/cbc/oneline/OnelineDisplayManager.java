@@ -26,6 +26,7 @@ public class OnelineDisplayManager {
     public static OnelineDisplayManager me;
     public static Hashtable<Integer, String> propPrefixMap = new Hashtable<Integer, String>();
 
+    @SuppressWarnings("static-access")
     private OnelineDisplayManager() {
         propPrefixMap.put(PAOGroups.CAP_CONTROL_SUBBUS, "SubStat_");
         propPrefixMap.put(PAOGroups.CAP_CONTROL_FEEDER, "FeederStat_");
@@ -60,35 +61,30 @@ public class OnelineDisplayManager {
     }
 
     public String getDisplayValue(StreamableCapObject stream, int rolePropID,
-            UpdatableStats stats) {
+            UpdatableStats stats, LiteYukonUser user) {
         
-        CBCDisplay oldWebDisplay = new CBCDisplay();
+        CBCDisplay oldWebDisplay = new CBCDisplay(user);
         Integer dispCol = stats.getPropColumnMap().get(rolePropID);
 
-        //if (roleID == CBCOnelineSettingsRole.SUB_ROLEID) {
-        if (stream instanceof SubBus)    
-        {
-            return oldWebDisplay.getOnelineSubBusValueAt((SubBus) stream,
-                                                         dispCol);
-        } 
-        else if (stream instanceof Feeder) {
-            return (String) oldWebDisplay.getFeederValueAt((Feeder) stream,
-                                                           dispCol);
+        if (stream instanceof SubBus) {
+            
+            return oldWebDisplay.getOnelineSubBusValueAt((SubBus) stream, dispCol);
+            
+        } else if (stream instanceof Feeder) {
+            
+            return (String) oldWebDisplay.getFeederValueAt((Feeder) stream, dispCol);
+            
         } else if (stream instanceof CapBankDevice) {
-            OnelineObject parentOnelineObject = stats.getParentOnelineObject();
-            if (parentOnelineObject != null) {
-                LiteYukonUser user = parentOnelineObject.getDrawing().getLayoutParams().getUser();
-                if (user != null) {
-                    return oldWebDisplay.getCapBankValueAt((CapBankDevice) stream, dispCol.intValue(), user).toString();
-                }
-            }
-        }
-        return "(none)";
-
+            
+            return oldWebDisplay.getCapBankValueAt((CapBankDevice) stream, dispCol).toString();
+            
+        } else {
+            return "(none)";
+        }    
     }
 
     public UpdatableTextList adjustPosition(List<UpdatableTextList> allStats,
-            LxComponent prevComp, int pos, StreamableCapObject stream) {
+            LxComponent prevComp, int pos, StreamableCapObject stream, LiteYukonUser user) {
         UpdatableTextList temp = allStats.get(pos);
 
         UpdatableStats stats = temp.getStats();
@@ -97,7 +93,7 @@ public class OnelineDisplayManager {
                                                              OnelineUtil.getStartPoint(prevComp),
                                                              null,
                                                              new Integer((int) prevComp.getHeight() + 10));
-        String text = getDisplayValue(stream, temp.getRolePropID(), stats);
+        String text = getDisplayValue(stream, temp.getRolePropID(), stats, user);
 
         StaticText content = OnelineUtil.createTextElement(text,
                                                            OnelineUtil.getStartPoint(label),

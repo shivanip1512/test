@@ -68,7 +68,6 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
     public static final String TYPE_CAPBANK = "CAPBANK_TYPE";
     public static final String TYPE_AREA = "AREA_TYPE";
     private String ovuvEnabled = "false";
-    private LiteYukonUser user = null;
     private CapControlCache cbcCache;
 
     /**
@@ -253,7 +252,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                 } else {
                     Writer writer = resp.getWriter();
                     //by default, treat this as a XML request
-                    writer.write( createXMLResponse(req, resp) );
+                    writer.write( createXMLResponse(req, resp, user) );
                     writer.flush();
                 }
             } catch( Exception e ) {
@@ -280,7 +279,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
     /**
      * Forms the response for an XML request of data
      */
-    private String createXMLResponse(HttpServletRequest req, HttpServletResponse resp) {
+    private String createXMLResponse(HttpServletRequest req, HttpServletResponse resp, LiteYukonUser user) {
         resp.setHeader("Content-Type", "text/xml");
         //force this request not to be cached
         resp.setHeader("Pragma", "no-cache");
@@ -292,8 +291,9 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         String[] allIds = ParamUtil.getStrings( req, "id" );
         Date timeFrame = new Date(ParamUtil.getLong(req, "lastUpdate"));
         
-        user = getUser(req);
         ovuvEnabled = getOvUvEnabled(user);
+        
+        final CBCDisplay cbcDisplay = new CBCDisplay(user);
 
         // Only add content into the XML response message that has changed since "lastUpdate".
         WebUpdatedDAO<Integer> updatedObjMap = cbcCache.getUpdatedObjMap();
@@ -307,16 +307,16 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                 
                 final String updatedId = updatedIds.get(i).toString();
                 //go get the XML data for the specific type of element
-                if(handleSubstationGET(updatedId, xmlMsgs, i)){
+                if(handleSubstationGET(updatedId, xmlMsgs, i, cbcDisplay)){
                     continue;
                 }
-                if(handleSubGET(updatedId, xmlMsgs, i)) {
+                if(handleSubGET(updatedId, xmlMsgs, i, cbcDisplay)) {
                     continue;
                 }
-                if (handleFeederGET(updatedId, xmlMsgs, i)) {
+                if (handleFeederGET(updatedId, xmlMsgs, i, cbcDisplay)) {
                     continue;
                 }
-                if (handleCapBankGET(updatedId, xmlMsgs, i)) {
+                if (handleCapBankGET(updatedId, xmlMsgs, i, cbcDisplay)) {
                     continue;
                 }
             }
@@ -338,23 +338,23 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * id is a SubBus id, else returns false.
      *  
      */
-    private boolean handleSubstationGET( String ids, ResultXML[] xmlMsgs, int indx ) {
+    private boolean handleSubstationGET( String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
         SubStation sub = cbcCache.getSubstation( new Integer(ids) );
         if( sub == null ) {
             return false;
         }
 
         String[] optParams = {
-            /*param0*/CBCDisplay.getHTMLFgColor(sub),
-            /*param1*/CBCUtils.CBC_DISPLAY.getSubstationValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
-            /*param2*/CBCUtils.CBC_DISPLAY.getSubstationValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString(),
+            /*param0*/cbcDisplay.getHTMLFgColor(sub),
+            /*param1*/cbcDisplay.getSubstationValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
+            /*param2*/cbcDisplay.getSubstationValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString(),
             /*param3*/(sub.getVerificationFlag().booleanValue())? "true" : "false",
             /*param4*/ovuvEnabled
         };
 
         xmlMsgs[indx] = new ResultXML(
             sub.getCcId().toString(),
-            CBCUtils.CBC_DISPLAY.getSubstationValueAt(sub, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString(),     
+            cbcDisplay.getSubstationValueAt(sub, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString(),     
             optParams );
 
         return true;
@@ -365,32 +365,32 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * id is a SubBus id, else returns false.
      *  
      */
-    private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx ) {
+    private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
         SubBus sub = cbcCache.getSubBus( new Integer(ids) );
         if( sub == null ) {
             return false;
         }
 
         String[] optParams = {
-            /*param0*/CBCDisplay.getHTMLFgColor(sub),
-            /*param1*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_COLUMN).toString(),
-            /*param2*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_COLUMN).toString(),
-            /*param3*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TIME_STAMP_COLUMN).toString(),
-            /*param4*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString(),
-            /*param5*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_WATTS_COLUMN).toString(),
-            /*param6*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN).toString(),
+            /*param0*/cbcDisplay.getHTMLFgColor(sub),
+            /*param1*/cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_COLUMN).toString(),
+            /*param2*/cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_COLUMN).toString(),
+            /*param3*/cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_TIME_STAMP_COLUMN).toString(),
+            /*param4*/cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_POWER_FACTOR_COLUMN).toString(),
+            /*param5*/cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_WATTS_COLUMN).toString(),
+            /*param6*/cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN).toString(),
             /*param7*/(sub.getVerificationFlag().booleanValue())? "true" : "false",
-            /*param8*/CBCUtils.CBC_DISPLAY.getSubBusValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
-            /*param9*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_POPUP).toString(),
-            /*param10*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_POPUP).toString(),
-            /*param11*/CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_WARNING_POPUP).toString(),
+            /*param8*/cbcDisplay.getSubBusValueAt (sub, CBCDisplay.SUB_NAME_COLUMN).toString(),
+            /*param9*/cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_TARGET_POPUP).toString(),
+            /*param10*/cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_VAR_LOAD_POPUP).toString(),
+            /*param11*/cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_WARNING_POPUP).toString(),
             /*param12*/ovuvEnabled
         };
 
         xmlMsgs[indx] = new ResultXML( sub.getCcId().toString(),
-            CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString(),		
+                                       cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_CURRENT_STATE_COLUMN).toString(),		
             optParams );
-        xmlMsgs[indx].setWarning(CBCUtils.CBC_DISPLAY.getSubBusValueAt(sub, CBCDisplay.SUB_WARNING_IMAGE).toString());
+        xmlMsgs[indx].setWarning(cbcDisplay.getSubBusValueAt(sub, CBCDisplay.SUB_WARNING_IMAGE).toString());
         return true;
     }
 
@@ -399,31 +399,31 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * id is a Feeder id, else returns false.
      *  
      */
-    private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx ) {
+    private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
         Feeder fdr = cbcCache.getFeeder( new Integer(ids) );
         if( fdr == null ) {
             return false;
         }
         String[] optParams = {
-            /*param0*/CBCDisplay.getHTMLFgColor(fdr),
-            /*param1*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_TARGET_COLUMN).toString(),
-            /*param2*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_VAR_LOAD_COLUMN).toString(),
-            /*param3*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_TIME_STAMP_COLUMN).toString(),
-            /*param4*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_POWER_FACTOR_COLUMN).toString(),
-            /*param5*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_WATTS_COLUMN).toString(),
-            /*param6*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN).toString(),
-            /*param7*/CBCUtils.CBC_DISPLAY.getFeederValueAt (fdr, CBCDisplay.FDR_NAME_COLUMN).toString(),
-            /*param8*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_TARGET_POPUP).toString(),
-            /*param9*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_VAR_LOAD_POPUP).toString(),
-            /*param10*/CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_WARNING_POPUP).toString(),
+            /*param0*/cbcDisplay.getHTMLFgColor(fdr),
+            /*param1*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_TARGET_COLUMN).toString(),
+            /*param2*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_VAR_LOAD_COLUMN).toString(),
+            /*param3*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_TIME_STAMP_COLUMN).toString(),
+            /*param4*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_POWER_FACTOR_COLUMN).toString(),
+            /*param5*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_WATTS_COLUMN).toString(),
+            /*param6*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN).toString(),
+            /*param7*/cbcDisplay.getFeederValueAt (fdr, CBCDisplay.FDR_NAME_COLUMN).toString(),
+            /*param8*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_TARGET_POPUP).toString(),
+            /*param9*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_VAR_LOAD_POPUP).toString(),
+            /*param10*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_WARNING_POPUP).toString(),
             /*param11*/ovuvEnabled
         };
 
         xmlMsgs[indx] = new ResultXML(
             fdr.getCcId().toString(),
-            CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_CURRENT_STATE_COLUMN).toString(),
+            cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_CURRENT_STATE_COLUMN).toString(),
             optParams );
-        xmlMsgs[indx].setWarning(CBCUtils.CBC_DISPLAY.getFeederValueAt(fdr, CBCDisplay.FDR_WARNING_IMAGE).toString());
+        xmlMsgs[indx].setWarning(cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_WARNING_IMAGE).toString());
 
         return true;
     }
@@ -434,7 +434,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * @param req 
      *  
      */
-    private boolean handleCapBankGET(String ids, ResultXML[] xmlMsgs, int indx ) {
+    private boolean handleCapBankGET(String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
         CapBankDevice capBank = cbcCache.getCapBankDevice( new Integer(ids) );
         String liteStates = init_All_Manual_Cap_States();
         if( capBank == null ) {
@@ -442,43 +442,31 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         }
         //get all the system states and concat them into a string
         String[] optParams = {
-            /*param0*/CBCDisplay.getHTMLFgColor(capBank),
-            /*param1*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN, user).toString(),
-            /*param2*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN, user).toString(),
-            /*param3*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN, user).toString(),
+            /*param0*/cbcDisplay.getHTMLFgColor(capBank),
+            /*param1*/cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN).toString(),
+            /*param2*/cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN).toString(),
+            /*param3*/cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN).toString(),
             /*param4*/ovuvEnabled,
             /*param5*/liteStates,
-            /*param6*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP, user).toString(),
-            /*param7*/CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_POPUP, user).toString()
+            /*param6*/cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP).toString(),
+            /*param7*/cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_POPUP).toString()
         };
 
         xmlMsgs[indx] = new ResultXML(
             capBank.getCcId().toString(),
-            CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN, user).toString(),
+            cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN).toString(),
             optParams );
-        xmlMsgs[indx].setWarning(CBCUtils.CBC_DISPLAY.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE, user).toString());
+        xmlMsgs[indx].setWarning(cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE).toString());
 
         return true;
     }
     
-    /*
-     * Get the current lite yukon user.
-     */
-    private LiteYukonUser getUser(HttpServletRequest req) {
-        HttpSession session = req.getSession( false );
-        LiteYukonUser user = new LiteYukonUser();
-        if (session != null) {
-            user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
-        }
-        return user;
-    }
-
     /**
      * @return
      */
     private String init_All_Manual_Cap_States() {
         String liteStates = "";
-        LiteState[] cbcStates = CBCDisplay.getCBCStateNames();
+        LiteState[] cbcStates = CBCUtils.getCBCStateNames();
         //create a comma separated string of all states
         //"Any:-1,Open:0,Close:1"
         for (int i = 0; i < cbcStates.length; i++) {

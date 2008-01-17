@@ -29,7 +29,8 @@
 
 <%
     FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
-	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);	
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+	final CBCDisplay cbcDisplay = new CBCDisplay(user);
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 
 	int bankid = ParamUtil.getInteger(request, "bankid");
@@ -165,7 +166,7 @@ for( CBCArea area : allAreas )
 				<input class="llIndent" type="image" id="chkBxSub<%=subBus.getCcId()%>"
 					src="images/nav-plus.gif"
 					onclick="showDiv( 'subId<%=subBus.getCcId()%>' );toggleImg('chkBxSub<%=subBus.getCcId()%>'); return false;">
-					<%=CBCUtils.CBC_DISPLAY.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %></input>
+					<%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN) %></input>
 				
 				<div class="altTableCell" style="display:none" id="subId<%=subBus.getCcId()%>" >
 			<%
@@ -176,7 +177,7 @@ for( CBCArea area : allAreas )
 			%>
 					<div>
 					<input class="capbankTempMoveLink" type="radio" name="feeder" id="feederId<%=feeder.getCcId()%>" onclick="selectFeeder(<%=feeder.getCcId()%>);" >
-					<%=CBCUtils.CBC_DISPLAY.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %></input>
+					<%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN) %></input>
 					</div>			
 			<%	} %>
 				</div></div>

@@ -1,26 +1,46 @@
 package com.cannontech.cbc.oneline.model;
 
-import java.util.List;
-import java.util.Map;
-
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
-import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxLine;
 
-public interface OnelineObject {
-
-    public void setPointCache(Map<Integer,List<LitePoint>> pointCache);
+public abstract class OnelineObject {
+    protected LiteYukonUser user;
+    protected Integer paoId;
+    protected SubBus subBusMsg;
+    protected OneLineDrawing drawing;
     
-    public Map<Integer,List<LitePoint>> getPointCache();
+    public abstract LxLine getRefLnBelow();
     
-    OneLineDrawing getDrawing();
-    SubBus getSubBusMsg();
-    LxLine getRefLnBelow();
-    Integer getPaoId();
-    LxLine getRefLnAbove();
-    void draw();
-    void addDrawing(OneLineDrawing d);
+    public abstract LxLine getRefLnAbove();
+    
+    public abstract void draw();
+    
+    public abstract void addDrawing(OneLineDrawing d);
 
+    public final OneLineDrawing getDrawing() {
+        return drawing;
+    }
+    
+    public final SubBus getSubBusMsg() {
+        return subBusMsg;
+    }
+    
+    public final Integer getPaoId() {
+        return paoId;
+    }
+    
+    public final void setPaoId(Integer paoId) {
+        this.paoId = paoId;
+    }
+
+    public final void setUser(final LiteYukonUser user) {
+        this.user = user;
+    }
+    
+    public final LiteYukonUser getUser() {
+        return user;
+    }
 
 }

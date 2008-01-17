@@ -95,6 +95,7 @@ public class FeederTagView extends LxAbstractView implements TagView {
         parent = (OnelineFeeder) p;
     }
 
+    @Override
     public LxGraph getGraph() {
         return graph;
 

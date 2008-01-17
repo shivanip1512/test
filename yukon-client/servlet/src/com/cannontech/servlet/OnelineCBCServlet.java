@@ -2,6 +2,7 @@ package com.cannontech.servlet;
 
 import java.awt.Dimension;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -27,19 +28,15 @@ import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.cbc.SubBus;
 
 @SuppressWarnings("serial")
 public class OnelineCBCServlet extends HttpServlet {
+    private static final int MAX_RETRY = 3;
     private static final String separator = System.getProperty("file.separator");
     public static final String TAGHANDLER = "TAGHANDLER";
-    private Integer currentSubId;
     private static final CapControlCache cache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
-    private CapControlSVGGenerator svgGenerator;
-
-    public Integer getCurrentSubId() {
-        return currentSubId;
-    }
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -47,7 +44,7 @@ public class OnelineCBCServlet extends HttpServlet {
         ServletContext config = req.getSession().getServletContext();
         LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
         String redirectURL;
-        currentSubId = ParamUtil.getInteger(req, "id");
+        Integer currentSubId = ParamUtil.getInteger(req, "id");
         if( currentSubId == 0)
         {
             //This will be coming from a move back request in oneline.
@@ -70,22 +67,35 @@ public class OnelineCBCServlet extends HttpServlet {
 
     private String createSubBusDrawing(String redirectURL, SubBus subBusMsg, String absPath, LiteYukonUser user) {
         String subName = subBusMsg.getCcName();
-        //create lay out params
-        Dimension d = OnelineUtil.getDrawingDimension(subBusMsg);
-        boolean isSingleFeeder = subBusMsg.getCcFeeders().size() == 1;
-        int height = (int)d.getHeight();
-        int width = (int)d.getWidth();
-        OneLineParams param = new OneLineParams(height, width, isSingleFeeder);
-        param.setUser(user);
-        param.setRedirectURL(redirectURL);
-        //create drawing
-        CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(d);
-        emptyCanvas.setLayoutParams(param);
-        emptyCanvas.createDrawing(subBusMsg,
-                                  CBCWebUtils.ONE_LINE_DIR + subName.trim() + ".html");
-
-        String dirAndFileExt = absPath + separator + subName;
-        OnelineUtil.createHTMLFile(dirAndFileExt, emptyCanvas);
+        
+        for (int count = 0; count < MAX_RETRY; count++) {
+            try {
+                //create lay out params
+                Dimension d = OnelineUtil.getDrawingDimension(subBusMsg);
+                boolean isSingleFeeder = subBusMsg.getCcFeeders().size() == 1;
+                int height = (int)d.getHeight();
+                int width = (int)d.getWidth();
+                OneLineParams param = new OneLineParams(height, width, isSingleFeeder);
+                param.setUser(user);
+                param.setRedirectURL(redirectURL);
+                //create drawing
+                CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(d);
+                emptyCanvas.setUser(user);
+                emptyCanvas.setLayoutParams(param);
+                emptyCanvas.createDrawing(subBusMsg,
+                                          CBCWebUtils.ONE_LINE_DIR + subName.trim() + ".html");
+                
+                String dirAndFileExt = absPath + separator + subName;
+                OnelineUtil.createHTMLFile(dirAndFileExt, emptyCanvas);
+                break;
+            } catch (RuntimeException e) {
+                if (count < MAX_RETRY) {
+                    CTILogger.warn("Failure generating OneLine drawing: " + e.getClass());
+                    continue; 
+                }
+                throw e;
+            }
+        }
         return subName;
     }
 
@@ -93,9 +103,10 @@ public class OnelineCBCServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp)
     throws ServletException, IOException {
 
-        currentSubId = ParamUtil.getInteger(req, "id");
+        resp.setContentType("text/xml");
 
-        LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
+        Integer currentSubId = ParamUtil.getInteger(req, "id");
+        LiteYukonUser user = ServletUtil.getYukonUser(req);
 
         SubBus msg = cache.getSubBus(currentSubId);
 
@@ -110,17 +121,38 @@ public class OnelineCBCServlet extends HttpServlet {
         htmlFile = StringUtils.substringAfter(htmlFile,
                                               CBCWebUtils.ONE_LINE_DIR);
 
-        CapControlOnelineCanvas view = new CapControlOnelineCanvas();
-        view.setUser (user);
-        Drawing d = view.createDrawing(msg, CBCWebUtils.ONE_LINE_DIR + htmlFile);
-        resp.setContentType("text/xml");
+        for (int count = 0; count < MAX_RETRY; count++) {
+            try {
+                CapControlOnelineCanvas view = new CapControlOnelineCanvas();
+                view.setUser(user);
+                Drawing d = view.createDrawing(msg, CBCWebUtils.ONE_LINE_DIR + htmlFile);
 
-        svgGenerator = new CapControlSVGGenerator(getSVGOptions(), d);
-        CapControlDrawingUpdater drawingUpdater = svgGenerator.getDrawingUpdater();
-        drawingUpdater.setOnelineDrawing(view.getDrawing());
-        drawingUpdater.setSubBusMsg(msg);
-        svgGenerator.generate(resp.getWriter(), d);
-        resp.getWriter().flush();
+                CapControlSVGGenerator svgGenerator = new CapControlSVGGenerator(getSVGOptions(), d);
+                CapControlDrawingUpdater drawingUpdater = svgGenerator.getDrawingUpdater();
+                drawingUpdater.setOnelineDrawing(view.getDrawing());
+                drawingUpdater.setSubBusMsg(msg);
+
+
+                PrintWriter writer = null;
+                try {
+                    writer = resp.getWriter();
+                    svgGenerator.generate(writer, d);
+                } finally {    
+                    if (writer != null) {
+                        writer.flush();
+                        writer.close();
+                    }
+                }    
+                break;
+
+            } catch (RuntimeException e) {
+                if (count < MAX_RETRY) {
+                    CTILogger.warn("Failure generating OneLine drawing: " + e.getClass());
+                    continue; 
+                }
+                throw e;
+            }
+        }
     }
 
     private SVGOptions getSVGOptions() {

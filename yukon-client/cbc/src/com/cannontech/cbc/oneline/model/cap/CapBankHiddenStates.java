@@ -10,19 +10,20 @@ import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.loox.jloox.LxGraph;
 
 @SuppressWarnings("serial")
 public class CapBankHiddenStates extends AbstractHiddenStates {
-
-    LxGraph graph;
-    OnelineCap parent;
-    
+    private LxGraph graph;
+    private OnelineCap parent;
+    private LiteYukonUser user;
 
     public CapBankHiddenStates(LxGraph g, OnelineObject p) {
-        graph = g;
-        parent = (OnelineCap) p;
+        this.graph = g;
+        this.parent = (OnelineCap) p;
+        this.user = p.getUser();
     }
 
     public OnelineObject getParentOnelineObject() {

@@ -7,19 +7,21 @@ import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.oneline.elements.HiddenTextElement;
 import com.cannontech.cbc.oneline.model.AbstractHiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.yukon.cbc.Feeder;
 import com.loox.jloox.LxGraph;
 
 @SuppressWarnings("serial")
 public class FeederHiddenStates extends AbstractHiddenStates {
-
     private LxGraph graph;
     private OnelineFeeder parent;
+    private LiteYukonUser user;
 
     public FeederHiddenStates(LxGraph graph, OnelineFeeder parent) {
         this.graph = graph;
         this.parent = parent;
+        this.user = parent.getUser();
     }
 
     public void addStateInfo() {
