@@ -235,10 +235,9 @@ public class ServletUtils {
 	}
 	
 	public static StarsLMControlHistory getControlHistory(StarsLMProgram program, StarsAppliances appliances,
-		StarsCtrlHistPeriod period, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser)
+		StarsCtrlHistPeriod period, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser, int accountId)
 	{
         Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, energyCompany.getDefaultTimeZone() );
-		int accountId = -1;
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
 		/*
          * GRE and similar systems
@@ -250,7 +249,6 @@ public class ServletUtils {
 				StarsAppliance app = appliances.getStarsAppliance(i);
 				if (app.getProgramID() == program.getProgramID() && app.getInventoryID() > 0) {
 					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) energyCompany.getInventory( app.getInventoryID(), true );
-					accountId = liteHw.getAccountID();
 					int[] grpIDs = null;
 					if (liteHw.getLMConfiguration() != null)
 						grpIDs = LMControlHistoryUtil.getControllableGroupIDs( liteHw.getLMConfiguration(), app.getLoadNumber() );

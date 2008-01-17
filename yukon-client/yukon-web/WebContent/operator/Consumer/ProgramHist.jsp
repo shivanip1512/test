@@ -64,7 +64,7 @@
 			}
 		}
 		
-		StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( program, appliances, StarsCtrlHistPeriod.PASTDAY, liteEC, lYukonUser );
+		StarsLMControlHistory ctrlHistToday = ServletUtils.getControlHistory( program, appliances, StarsCtrlHistPeriod.PASTDAY, liteEC, lYukonUser, account.getAccountID() );
 		ControlSummary summary = ctrlHistToday.getControlSummary();
 		
 		// New enrollment, opt out, and control history tracking

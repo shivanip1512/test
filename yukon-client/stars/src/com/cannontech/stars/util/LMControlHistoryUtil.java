@@ -691,7 +691,7 @@ public class LMControlHistoryUtil {
         
         for(LMHardwareControlGroup enrollmentEntry : enrollments) {
             //wasn't enrolled at all at the time
-            if(enrollmentEntry.getGroupEnrollStop().getTime() < periodStart.getTime() || enrollmentEntry.getGroupEnrollStart().getTime() > periodStop.getTime())
+            if(enrollmentEntry.getGroupEnrollStop() != null && (enrollmentEntry.getGroupEnrollStop().getTime() < periodStart.getTime() || enrollmentEntry.getGroupEnrollStart().getTime() > periodStop.getTime()))
                 continue;
             //enrollment started after the beginning of the period, subtract the difference
             if(enrollmentEntry.getGroupEnrollStart().getTime() > periodStart.getTime()) 
