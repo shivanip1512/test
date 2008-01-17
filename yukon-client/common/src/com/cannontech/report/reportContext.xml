@@ -353,5 +353,128 @@
         </property>
     </bean>
     
+    <!-- kVar Watt Report -->
+   <bean id="kVarWattRPHModel" class="com.cannontech.analysis.tablemodel.KVarWattRPHModel"
+         scope="prototype">
+        <property name="rphDao" ref="rphDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="dateFormattingService" ref="dateFormattingService"/>
+    </bean>
+    
+    <bean id="kVarWattRPHDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="kVarWattRPHModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="targetId"/>
+                    <property name="displayName" value="Target ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="currentVarLoadPointId"/>
+                    <property name="displayName" value="Current Var Load Point ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="estimatedVarLoadPointId"/>
+                    <property name="displayName" value="Estimated Var Load Point ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="currentWattLoadPointId"/>
+                    <property name="displayName" value="Current Watt Load Point ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="startDate"/>
+                    <property name="displayName" value="Start Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateMillisType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="stopDate"/>
+                    <property name="displayName" value="Stop Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateMillisType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.KVarWattRPHReportLayoutData"/>
+        </property>
+    </bean>
+    
+    <!-- Power Factort Report -->
+   <bean id="powerFactorRPHModel" class="com.cannontech.analysis.tablemodel.PowerFactorRPHModel"
+         scope="prototype">
+        <property name="rphDao" ref="rphDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="dateFormattingService" ref="dateFormattingService"/>
+    </bean>
+    
+    <bean id="powerFactorRPHDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="powerFactorRPHModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="targetId"/>
+                    <property name="displayName" value="Target ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="powerFactorPointId"/>
+                    <property name="displayName" value="Power Factor Point ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="estimatedPowerFactorPointId"/>
+                    <property name="displayName" value="Estimated Power Factor Point ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="startDate"/>
+                    <property name="displayName" value="Start Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateMillisType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="stopDate"/>
+                    <property name="displayName" value="Stop Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateMillisType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.PowerFactorRPHReportLayoutData"/>
+        </property>
+    </bean>
+    
 </beans>
 

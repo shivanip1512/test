@@ -47,8 +47,16 @@ public class SimpleReportLinkFromNameTag extends YukonTagSupport implements Dyna
         InputRoot inputRoot = reportDefinition.getInputs();
         
         // extract properties from dynamic attributes
-        Map<String,String> propertiesMap = simpleReportService.extractPropertiesFromAttributesMap(inputRoot, identifierAttributes);
-
+        Map<String,String> propertiesMap = null;
+        if(identifierAttributes.containsKey("parameterAttributes")) {
+            Map<String, Object> parameterAttributes = (Map<String, Object>)identifierAttributes.get("parameterAttributes");
+            propertiesMap = simpleReportService.extractPropertiesFromAttributesMap(inputRoot, parameterAttributes);
+        }
+        else {
+            propertiesMap = simpleReportService.extractPropertiesFromAttributesMap(inputRoot, identifierAttributes);
+        }
+        
+        
         // other optional attributes
         Map<String, String> optionalAttributeDefaults = new HashMap<String, String>();
         optionalAttributeDefaults.put("module", "blank");
