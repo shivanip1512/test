@@ -63,7 +63,7 @@ public class SimpleReportLinkFromModelTag extends YukonTagSupport implements Dyn
         String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap);
         
         // complete URL
-        String url = "/spring/reports/simple/" + viewType + "?def=" + definitionName + queryString;
+        String url = "/spring/reports/simple/" + viewType + "?def=" + definitionName + "&" + queryString;
         url = ServletUtil.createSafeUrl(httpRequest, url);
         url = StringEscapeUtils.escapeHtml(url);
         

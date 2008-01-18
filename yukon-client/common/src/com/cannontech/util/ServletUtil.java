@@ -1158,10 +1158,6 @@ public static Date roundToMinute(Date toRound) {
 
         String queryString = StringUtils.join(parameterPairs, "&");
 
-        if(!StringUtils.isBlank(queryString)){
-            queryString = "&" + queryString;
-        }
-
         return queryString;
     }
     

@@ -298,7 +298,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         if(port > 0) {
             url += ":" + port;
         }
-        url += "/spring/reports/simple/" + viewType + "?def=" + definitionName + queryString;
+        url += "/spring/reports/simple/" + viewType + "?def=" + definitionName + "&" + queryString;
 
         url = ServletUtil.createSafeUrl(httpRequest, url);
         url = StringEscapeUtils.escapeHtml(url);
