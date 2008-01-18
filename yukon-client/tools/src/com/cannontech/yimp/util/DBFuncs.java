@@ -62,11 +62,11 @@ public class DBFuncs {
 		Integer routeID = -12;
 		
         try {
-            String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-                + name + "' AND PAOCLASS = 'ROUTE'";
+            String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = ? " + 
+            " AND PAOCLASS = 'ROUTE'";
             
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            routeID = jdbcOps.queryForInt(stmt);
+            routeID = jdbcOps.queryForInt(stmt, new String[] {name});
             return routeID;
         } catch (IncorrectResultSizeDataAccessException e) {
             return routeID;
@@ -82,12 +82,12 @@ public class DBFuncs {
 		template410.setDeviceID(-12);
         Integer id = null;
         
-		String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-			+ name + "' AND TYPE LIKE 'MCT-4%'";
+		String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = ? " +  
+			" AND TYPE LIKE 'MCT-4%'";
         
         try {
             JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-            id = jdbcOps.queryForInt(stmt);
+            id = jdbcOps.queryForInt(stmt, new String[] {name});
             if(id != null && id > 0) {
                 template410.setDeviceID(id);
                 template410 = (MCT400SeriesBase) Transaction.createTransaction(Transaction.RETRIEVE, template410).execute();
@@ -101,13 +101,13 @@ public class DBFuncs {
 	}
 	
 	public static boolean IsDuplicateName(String name) {
-		String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = '" 
-			+ name + "' AND TYPE LIKE 'MCT-4%'";
+		String stmt = "SELECT PAOBJECTID FROM YUKONPAOBJECT WHERE PAONAME = ? " + 
+			" AND TYPE LIKE 'MCT-4%'";
 		
 		try {
 		    Integer paoID = 0;
 		    JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-		    paoID = jdbcOps.queryForInt(stmt);
+		    paoID = jdbcOps.queryForInt(stmt, new String[] {name});
             return paoID > 0;
         } 
         catch (IncorrectResultSizeDataAccessException e) {
