@@ -4,7 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 
-<cti:standardPage title="${title}" module="amr">
+<cti:standardPage title="${title}" module="capcontrol">
 
 	<cti:includeScript link="/JavaScript/swfobject.js"/>
 	
