@@ -10,9 +10,11 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -26,11 +28,8 @@ public class DeviceActivationController extends MultiActionController {
     private CustomerAccountDao customerAccountDao;
     private ContactDao contactDao;
     private AddressDao addressDao;
+    private CustomerDao customerDao;
     
-    public void setAddressDao(AddressDao addressDao) {
-        this.addressDao = addressDao;
-    }
-
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         mav.setViewName("hardware/deviceactivation/Activation.jsp");
@@ -55,7 +54,8 @@ public class DeviceActivationController extends MultiActionController {
         }
         
         CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber);
-        LiteContact contact = contactDao.getContact(account.getCustomerId());
+        LiteCustomer customer = customerDao.getLiteCustomer(account.getCustomerId());
+        LiteContact contact = contactDao.getContact(customer.getPrimaryContactID());
         LiteAddress address = addressDao.getByAddressId(contact.getAddressID());
 
         boolean emptyContactName = isEmptyValue(contact.getContFirstName()) && isEmptyValue(contact.getContLastName()); 
@@ -115,4 +115,13 @@ public class DeviceActivationController extends MultiActionController {
     public void setContactDao(ContactDao contactDao) {
         this.contactDao = contactDao;
     }
+
+    public void setCustomerDao(CustomerDao customerDao) {
+        this.customerDao = customerDao;
+    }
+    
+    public void setAddressDao(AddressDao addressDao) {
+        this.addressDao = addressDao;
+    }
+
 }

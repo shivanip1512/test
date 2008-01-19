@@ -59,6 +59,7 @@
         <property name="customerAccountDao" ref="customerAccountDao"/>
         <property name="contactDao" ref="contactDao"/>
         <property name="addressDao" ref="addressDao"/>
+        <property name="customerDao" ref="customerDao"/>
 	</bean>
     
     <bean id="deviceVerificationController" class="com.cannontech.web.stars.dr.hardware.DeviceVerificationController">
