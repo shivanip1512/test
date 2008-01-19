@@ -29,6 +29,11 @@
           parent="starsInventoryActionController">
 		<property name="checkInventory" ref="inventoryCheckInventory"/>
 	</bean>
+    
+    <bean id="inventoryCreateHardware" class="com.cannontech.web.stars.action.inventory.CreateHardwareController"
+          parent="starsInventoryActionController">
+        <property name="switchContextService" ref="switchContextService"/>
+    </bean>
 	
 	<bean id="inventoryUpdateLMHardware" class="com.cannontech.web.stars.action.inventory.UpdateLMHardwareController"
           parent="starsInventoryActionController">
