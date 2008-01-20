@@ -33,7 +33,6 @@
 
 	<bean id="lmHardwareControlInformationService" class="com.cannontech.stars.dr.hardware.service.impl.LMHardwareControlInformationServiceImpl">
 		<property name="lmHardwareControlGroupDao" ref="lmHardwareControlGroupDao"/>
-		    <property name="dateFormattingService" ref="dateFormattingService"/>
 	</bean>
 	
 	<bean id="lmHardwareControlGroupDao"

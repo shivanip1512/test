@@ -6,10 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang.Validate;
 import org.apache.log4j.Logger;
-import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
@@ -19,20 +17,15 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     
     private Logger logger = YukonLogManager.getLogger(LMHardwareControlInformationServiceImpl.class);
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
-    private DateFormattingService dateFormattingService;
 
     /*@SuppressWarnings("unused")*/
     public boolean startEnrollment(int inventoryId, int loadGroupId, int accountId, int relay, LiteYukonUser currentUser) {
-        Validate.notNull(inventoryId, "InventoryID cannot be null");
-        Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
-        Validate.notNull(accountId, "AccountID cannot be null");
         Validate.notNull(currentUser, "CurrentUser cannot be null");
-        Validate.notNull(relay, "Relay cannot be null");
         List<LMHardwareControlGroup> controlInformationList;
         /*Shouldn't already be an entry, but this might be a repeat enrollment.  Check for existence*/
         try {
             controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
-            Date now = dateFormattingService.getCalendar(currentUser).getTime();
+            Date now = new Date();
             /*If there is an existing enrollment that is using this same device, load group, and potentially, the same relay
              * we need to then stop enrollment for that before starting the existing.
              * We need to allow this method to do stops as well as starts to help migrate from legacy STARS systems and to
@@ -61,14 +54,11 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     }
     
     public boolean stopEnrollment(int inventoryId, int loadGroupId, int accountId, int relay, LiteYukonUser currentUser) {
-        Validate.notNull(inventoryId, "InventoryID cannot be null");
-        Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
-        Validate.notNull(accountId, "AccountID cannot be null");
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         List<LMHardwareControlGroup> controlInformationList;
         try {
             controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
-            Date now = dateFormattingService.getCalendar(currentUser).getTime();
+            Date now = new Date();
             /*Should be an entry with a start date but no stop date.*/
             if(controlInformationList.size() > 0) {
                 for(LMHardwareControlGroup controlInformation : controlInformationList) {
@@ -99,13 +89,10 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     }
     
     public boolean startOptOut(int inventoryId, int loadGroupId, int accountId, LiteYukonUser currentUser) {
-        Validate.notNull(inventoryId, "InventoryID cannot be null");
-        Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
-        Validate.notNull(accountId, "AccountID cannot be null");
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         
         try {
-            Date now = dateFormattingService.getCalendar(currentUser).getTime();
+            Date now = new Date();
             LMHardwareControlGroup controlInformation = new LMHardwareControlGroup(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY, currentUser.getUserID());
             controlInformation.setOptOutStart(now);
             lmHardwareControlGroupDao.add(controlInformation);
@@ -117,15 +104,12 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     }
     
     public boolean stopOptOut(int inventoryId, int loadGroupId, int accountId, LiteYukonUser currentUser) {
-        Validate.notNull(inventoryId, "InventoryID cannot be null");
-        Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
-        Validate.notNull(accountId, "AccountID cannot be null");
         Validate.notNull(currentUser, "CurrentUser cannot be null");
         
         List<LMHardwareControlGroup> controlInformationList;
         try {
             controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY);
-            Date now = dateFormattingService.getCalendar(currentUser).getTime();
+            Date now = new Date();
             /*Should be an entry with a start date but no stop date.*/
             if(controlInformationList.size() > 0) {
                 for(LMHardwareControlGroup controlInformation : controlInformationList) {
@@ -147,9 +131,6 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     }
     
     public List<Integer> getInventoryNotOptedOut(int inventoryId, int loadGroupId, int accountId) {
-        Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
-        Validate.notNull(accountId, "AccountID cannot be null");
-        
         List<LMHardwareControlGroup> controlInformationList;
         List<Integer> inventoryIds = new ArrayList<Integer>();
         try {
@@ -176,14 +157,6 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
     public void setLmHardwareControlGroupDao(
             LMHardwareControlGroupDao lmHardwareControlGroupDao) {
         this.lmHardwareControlGroupDao = lmHardwareControlGroupDao;
-    }
-
-    public DateFormattingService getDateFormattingService() {
-        return dateFormattingService;
-    }
-
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
     }
 
 }
