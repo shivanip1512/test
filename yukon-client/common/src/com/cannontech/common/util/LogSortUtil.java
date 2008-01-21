@@ -2,7 +2,6 @@ package com.cannontech.common.util;
 
 import java.io.File;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -15,10 +14,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang.StringUtils;
-
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.PointFormattingService;
-import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 
 public final class LogSortUtil {
 
@@ -90,9 +85,9 @@ public final class LogSortUtil {
             
                 /* DateFormat is the time at the local instance.  Keep in mind no timezones are 
                  * used since we want the time to be consistent with the time the log files are 
-                 * being writen.
+                 * being written.
                  */
-                DateFormat df = new SimpleDateFormat(DateFormattingService.DateFormatEnum.DATE.getFormat());
+                DateFormat df = DateFormat.getDateInstance();
          
                 String lastMod = null;
                 if( lastModDate != null) {
