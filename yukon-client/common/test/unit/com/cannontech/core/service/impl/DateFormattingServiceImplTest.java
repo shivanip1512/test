@@ -1,29 +1,18 @@
 package com.cannontech.core.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.core.dynamic.AsyncDynamicDataSource;
-import com.cannontech.core.dynamic.PointDataListener;
-import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.SignalListener;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteContact;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.message.dispatch.message.Signal;
+import com.cannontech.user.SystemUserContext;
 
 public class DateFormattingServiceImplTest {
     
@@ -35,26 +24,6 @@ public class DateFormattingServiceImplTest {
     @Before
     public void setUp() throws Exception {
         impl = new DateFormattingServiceImpl();
-        impl.setYukonUserDao(new YukonUserDao() {
-
-            public LiteContact getLiteContact(int userID_) {
-                throw new UnsupportedOperationException();
-            }
-
-            public LiteYukonUser getLiteYukonUser(int userID_) {
-                throw new UnsupportedOperationException();
-            }
-
-            public LiteYukonUser getLiteYukonUser(String userName_) {
-                throw new UnsupportedOperationException();
-            }
-
-            public TimeZone getUserTimeZone(LiteYukonUser user) {
-                return TimeZone.getDefault();
-            }
-            
-        });
-        
 
     }
 
@@ -90,7 +59,7 @@ public class DateFormattingServiceImplTest {
         
         for (DatePair pair : pairs) {
             try {
-                Date date = impl.flexibleDateParser(pair.userInput, new LiteYukonUser());
+                Date date = impl.flexibleDateParser(pair.userInput, new SystemUserContext());
                 assertEquals(pair.userInput + " doesn't match expected value", pair.fullDate, date);
             } catch (ParseException e) {
                 fail("unable to parse date: " + pair.userInput);

@@ -1,6 +1,6 @@
 package com.cannontech.core.service.impl;
 
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,6 +36,8 @@ import com.cannontech.message.util.ConnectionException;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.user.SystemUserContext;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class LongLoadProfileServiceImplTest {
@@ -92,6 +94,8 @@ public class LongLoadProfileServiceImplTest {
     private int successRan = 0;
     private int failureRan = 0;
     private int cancelRan = 0;
+    private YukonUserContext userContext = new SystemUserContext();
+    
     private LongLoadProfileService.CompletionCallback incrementingRunner = new LongLoadProfileServiceEmailCompletionCallbackImpl(null, null, null) {
         public void onFailure(int returnStatus, String resultString) {
             failureRan++;
@@ -187,7 +191,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
         Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
-        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
         
         // get message that was written
         Message message = porterConnection.writtenOut.remove();
@@ -209,7 +213,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
-        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
         
         // check that outQueue has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
@@ -260,7 +264,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
         
         // check that outQueue has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
@@ -269,18 +273,18 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("runner should not have run", 0, successRan);
         
         // attempt to request again
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
         
         // check that outQueue still has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
         
         // attempt to request for device 2
-        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
         
         Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
         
         // attempt to request again for device 1
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
         
         // check that outQueue still has two messages
         Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
@@ -335,7 +339,7 @@ public class LongLoadProfileServiceImplTest {
         porterConnection.failMode = true;
         
         try {
-            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
+            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
             fail("should have thrown an exception");
         } catch (RuntimeException e) {
             // expected
@@ -347,7 +351,7 @@ public class LongLoadProfileServiceImplTest {
         // this should not fail and it shouldn't cause the service to hold the message
         // because its deviceId is the same as the previous
         try {
-            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
+            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
         } catch (RuntimeException e) {
             fail("should have not thrown an exception");
         }
@@ -373,10 +377,10 @@ public class LongLoadProfileServiceImplTest {
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
 
 
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
-        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, new LiteYukonUser());
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, new LiteYukonUser());
-        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, new LiteYukonUser());
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
         Assert.assertEquals("wrong number of messages reached out queue", 2, porterConnection.writtenOut.size());
         Assert.assertEquals("messages weren't queued", 2, service.getPendingLongLoadProfileRequests(myDevice1).size());
         Assert.assertEquals("messages weren't queued", 2, service.getPendingLongLoadProfileRequests(myDevice2).size());
