@@ -6,11 +6,26 @@
 <cti:standardPage title="Energy Services Operations Center" module="stars" htmlLevel="quirks">
 	
 	<!-- FILTER TYPES (will be accessible with JSTL tags after they are declared) -->
- 	<%pageContext.setAttribute("filterServiceCompany", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMPANY).toString());%>
- 	<%pageContext.setAttribute("filterDesignationCodes", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMP_CODES).toString());%>
- 	<%pageContext.setAttribute("filterServiceType", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE).toString());%>
- 	<%pageContext.setAttribute("filterServiceStatus", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS).toString());%>
- 	<%pageContext.setAttribute("filterCICustomerType", new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE).toString());%>
+ 	<%
+ 	    pageContext.setAttribute("filterServiceCompany",
+ 	                             new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMPANY).toString());
+ 	%>
+ 	<%
+ 	    pageContext.setAttribute("filterDesignationCodes",
+ 	                             new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_COMP_CODES).toString());
+ 	%>
+ 	<%
+ 	    pageContext.setAttribute("filterServiceType",
+ 	                             new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_SRV_TYPE).toString());
+ 	%>
+ 	<%
+ 	    pageContext.setAttribute("filterServiceStatus",
+ 	                             new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_STATUS).toString());
+ 	%>
+ 	<%
+ 	    pageContext.setAttribute("filterCICustomerType",
+ 	                             new Integer(YukonListEntryTypes.YUK_DEF_ID_SO_FILTER_BY_CUST_TYPE).toString());
+ 	%>
 
 	<cti:includeCss link="/include/PurpleStyles.css"/>
 	<div class="headerbar">
@@ -20,16 +35,25 @@
  	
     <!--  Need to do a little dance here.  JSTL won't see scriptlet (non-String) vars unless they
 		are present in page, session, etc. as an attribute. -->
-	<%pageContext.setAttribute("liteEC",liteEC);%>
+	<%
+	    pageContext.setAttribute("liteEC", liteEC);
+	%>
 	<c:set target="${filterBean}" property="energyCompany" value="${liteEC}" />
-	<%pageContext.setAttribute("currentUser", lYukonUser);%>
+	<%
+	    pageContext.setAttribute("currentUser", lYukonUser);
+	%>
 	<c:set target="${filterBean}" property="currentUser" value="${currentUser}" />
  	<c:set target="${filterBean}" property="assignedFilters" value="${sessionScope.WorkOrderFilters}" />
-	<%pageContext.setAttribute("filterListName", YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY);%>
+	<%
+	    pageContext.setAttribute("filterListName",
+	                             YukonSelectionListDefs.YUK_LIST_NAME_SO_FILTER_BY);
+	%>
 	<c:set target="${filterBean}" property="filterListName" value="${filterListName}" />
 
 	<div class="standardpurplesidebox"> 
-		<% String pageName = "WOFilter.jsp"; %>
+		<%
+ 		    String pageName = "WOFilter.jsp";
+ 		%>
 		<div align="right">
 			<%@ include file="include/Nav.jspf" %>
 		</div>
@@ -37,9 +61,14 @@
 
 	<div class="standardcentralwhitebody">
 		<div align="center"> <br>
-            <% String header = "FILTER CHOICES"; %>
+            <%
+                String header = "FILTER CHOICES";
+            %>
             <%@ include file="include/SearchBar.jspf" %>
-    		<% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
+    		<%
+    		    if (errorMsg != null)
+    		        out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>");
+    		%>
     		<br clear="all">
     	</div>
 <!-- Java script needed for the Calender Function--->
@@ -124,13 +153,11 @@
 	                </td>
 	           	</tr>
         	</table>
-        	<br>
-            <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
+            <table align="center" width="75%" class="TableCell">
               <tr>
-                <td colspan="3" align="center">* To view archived Service Status Events, select a date range below.  
-                </td>
+                <td colspan="2" style="font-align: center;">* To view archived Service Status Events, select a date range below.</td>
               </tr>
-              <tr>
+              <tr style="font-weight: bold;">
                 <%
                     Date startDate;
                     Date stopDate;
@@ -138,64 +165,69 @@
                     String stopDateSelected;
                     String startDateDivDisabled;
                     String stopDateDivDisabled;
-                    
+
                     if (workOrderBean.getStartDate() != null) {
                         startDate = workOrderBean.getStartDate();
                         startDateSelected = "checked";
                         startDateDivDisabled = "";
-                    } else { 
+                    } else {
                         startDate = ServletUtil.getToday();
                         startDateSelected = "";
                         startDateDivDisabled = "disabled";
                     }
-                    
+
                     if (workOrderBean.getStopDate() != null) {
                         stopDate = workOrderBean.getStopDate();
                         stopDateSelected = "checked";
                         stopDateDivDisabled = "";
                     } else {
-                        stopDate = ServletUtil.getYesterday();
+                        stopDate = ServletUtil.getTomorrow();
                         stopDateSelected = "";
                         stopDateDivDisabled = "disabled";
                     }
-                    
+
                     String formattedStartDate = datePart.format(startDate);
                     String formattedStopDate = datePart.format(stopDate);
                 %>
-  			    <td align="right" width="47%"><INPUT id="enableStart" type="checkbox" name="enableStart" onclick="enableStartDate('<%=formattedStartDate%>');" <%=startDateSelected%>/>Start Date: 
-				<div id='startDateDiv' <%=startDateDivDisabled%>>
-                <input id="startCal" type="text" name="start" value="<%=formattedStartDate%>" size="8">
-                  <a id="startCalHRef" href="javascript:;" style="cursor:default"
-                      onMouseOver="window.status='Start Date Calendar';return true;"
-			          onMouseOut="window.status='';return true;"> 
-                <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0">
-                </a></div></td>
-                <td>&nbsp;</td>
-                <td width="47%"><INPUT id="enableStop" type="checkbox" name="enableStop" onclick="enableStopDate('<%=formattedStopDate%>');" <%=stopDateSelected%>/>Stop Date: 
-   				<div id='stopDateDiv' <%=stopDateDivDisabled%>> 
-                <input id="stopCal" type="text" name="stop" value="<%=formattedStopDate%>" size="8">
-                  <a id="stopCalHRef" href="javascript:;" style="cursor:default"
-                      onMouseOver="window.status='Stop Date Calendar';return true;"
-			          onMouseOut="window.status='';return true;"> 
-                <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"> 
-                </a></div></td>
+  			    <td><input id="enableStart" type="checkbox" name="enableStart" onclick="enableStartDate('<%=formattedStartDate%>');" <%=startDateSelected%>/>Start Date</td>
+                <td><input id="enableStop" type="checkbox" name="enableStop" onclick="enableStopDate('<%=formattedStopDate%>');" <%=stopDateSelected%>/>Stop Date</td>
               </tr>
+              <tr>
+                <td><span class='NavText'>* Greater than 00:00, not inclusive</span></td>
+                <td><span class='NavText'>* Less than or equal to 00:00, inclusive</span></td>
+              </tr>
+              <tr>
+                <td>
+                    <div id='startDateDiv' <%=startDateDivDisabled%>>
+                        <input id="startCal" type="text" name="start" value="<%=formattedStartDate%>" size="8">
+                            <a id="startCalHRef" href="javascript:;" style="cursor: default" 
+                               onMouseOver="window.status='Start Date Calendar';return true;"
+                               onMouseOut="window.status='';return true;"> <img
+                               src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif"
+                               width="20" height="15" align="ABSMIDDLE" border="0"/>
+                            </a>
+                        </input>
+                    </div>
+                </td>
+                <td>
+                    <div id='stopDateDiv' <%=stopDateDivDisabled%>> 
+                        <input id="stopCal" type="text" name="stop" value="<%=formattedStopDate%>" size="8">
+                            <a id="stopCalHRef" href="javascript:;" style="cursor:default"
+                               onMouseOver="window.status='Stop Date Calendar';return true;"
+                               onMouseOut="window.status='';return true;"> 
+                                <img src="<%=request.getContextPath()%>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="ABSMIDDLE" border="0"/> 
+                            </a>
+                        </input>    
+                        </div>    
+                    </td>
+                </tr>
             </table>
-			<br>        	
-        	<table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
-            	<tr>
-                	<td width="290" align="right"> 
-                    	<input id="submitbutton" type="submit" name="Submit" value="Query Work Orders">
-                  	</td>
-                  	<td width="205"> 
-                    	<input type="reset" name="Reset" value="Reset" onclick="location.reload()">
-                  	</td>
-                  	<td width="75" align="right"> 
-                    	<input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='WorkOrder.jsp'">
-                  	</td>
-              	</tr>
-        	</table>
-        	<br>
+            <br>
+            <div style="float: right;">
+                <input style="margin-right: 0.1cm" id="submitbutton" type="submit" name="Submit" value="Query Work Orders">
+                <input style="margin-right: 5.5cm" type="reset" name="Reset" value="Reset" onclick="location.reload()">
+                <input style="margin-right: 0.2cm" type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='WorkOrder.jsp'">
+            </div>   
 		</form>
     </div>
     
