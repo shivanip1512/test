@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2007/09/04 17:10:16 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/01/21 20:47:44 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,8 @@ private:
     typedef CtiDeviceRemote Inherited;
 
     CtiTableDeviceAddress _address;
+
+    OUTMESS _current_outmessage;
 
 protected:
 
@@ -57,6 +59,8 @@ public:
 
     INT  queuedWorkCount() const;
     bool hasQueuedWork()   const;
+
+    virtual LONG getAddress() const;
 
     INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
     bool getOutMessage(CtiOutMessage *&OutMessage);
