@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/yukon.h-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2007/09/25 22:02:12 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2008/01/21 20:40:34 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -290,6 +290,12 @@ enum YukonError_t
     ErrorDeviceIPUnknown,
 
     ErrorMACSTimeout,
+
+    ErrorInvalidFrozenReadingParity,    //  MCT freeze-related errors
+    ErrorInvalidFrozenPeakTimestamp,
+    ErrorInvalidFreezeCounter,
+
+    ErrorInvalidData,           //  If any MCT reading (that will be stored to a point) is invalid, we fail the read
 
     FinalError
 };
