@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2007/12/03 22:19:41 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2008/01/21 21:01:49 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3548,8 +3548,8 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                                         ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                ReturnMsg->setResultString("Freeze counter mismatch error (" + CtiNumStr(pi_freezecount.value) + ") < (" + CtiNumStr(_freeze_counter) + ")");
-                status = NOTNORMAL;
+                ReturnMsg->setResultString("Invalid freeze counter (" + CtiNumStr(pi_freezecount.value) + ") < (" + CtiNumStr(_freeze_counter) + ")");
+                status = ErrorInvalidFreezeCounter;
             }
 
             if( kw_time.seconds() >= getDynamicInfo(key_peak_timestamp) )
@@ -3589,8 +3589,8 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                         }
 
                         valid_data = false;
-                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(_expected_freeze).toString() + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
-                        status = NOTNORMAL;
+                        ReturnMsg->setResultString("Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(_expected_freeze).toString() + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
+                        status = ErrorInvalidFrozenReadingParity;
                     }
                 }
                 else
@@ -3602,8 +3602,8 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                         dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is before KW freeze time \"" << CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    ReturnMsg->setResultString("Peak time after freeze (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + ")");
-                    status = NOTNORMAL;
+                    ReturnMsg->setResultString("Peak timestamp before freeze  (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + ")");
+                    status = ErrorInvalidFrozenPeakTimestamp;
                 }
             }
             else
@@ -3615,8 +3615,8 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                     dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << CtiTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                ReturnMsg->setResultString("New KW peak earlier than old KW peak (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(key_peak_timestamp)).asString() + ")");
-                status = NOTNORMAL;
+                ReturnMsg->setResultString("New peak is before old peak (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(key_peak_timestamp)).asString() + ")");
+                status = ErrorInvalidFrozenPeakTimestamp;
             }
         }
         else

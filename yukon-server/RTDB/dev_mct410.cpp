@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.151 $
-* DATE         :  $Date: 2007/12/28 14:50:34 $
+* REVISION     :  $Revision: 1.152 $
+* DATE         :  $Date: 2008/01/21 21:01:48 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2439,8 +2439,8 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                                         ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                ReturnMsg->setResultString("Freeze counter mismatch error (" + CtiNumStr(pi_freezecount.value) + ") < (" + CtiNumStr(_freeze_counter) + ")");
-                status = NOTNORMAL;
+                ReturnMsg->setResultString("Invalid freeze counter (" + CtiNumStr(pi_freezecount.value) + ") < (" + CtiNumStr(_freeze_counter) + ")");
+                status = ErrorInvalidFreezeCounter;
             }
         }
 
@@ -2500,8 +2500,8 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                         }
 
                         valid_data = false;
-                        ReturnMsg->setResultString("Freeze parity check failed (" + CtiNumStr(pi.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp)).asString());
-                        status = NOTNORMAL;
+                        ReturnMsg->setResultString("Invalid freeze parity (" + CtiNumStr(pi.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp)).asString());
+                        status = ErrorInvalidFrozenReadingParity;
                     }
                 }
 
@@ -2519,7 +2519,8 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                     //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
                     if( pi.quality == InvalidQuality && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
                     {
-                        status = NOTNORMAL;
+                        ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1));
+                        status = ErrorInvalidData;
                     }
                 }
             }
