@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/10/31 20:50:43 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/01/21 20:41:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,7 @@ public:
     virtual int recvCommRequest( OUTMESS *OutMessage );
 
     virtual bool isTransactionComplete( void ) const;
+    virtual bool errorCondition( void ) const;
 
     virtual int generate( CtiXfer &xfer );
     virtual int decode  ( CtiXfer &xfer, int status );
