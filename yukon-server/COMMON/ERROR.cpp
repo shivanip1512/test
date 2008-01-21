@@ -194,30 +194,36 @@ ERRSTRUCT CTIErrors[] = {
     { ErrPortSimulated,             "Port is simulated, no inbound data available", ERRTYPEPROTOCOL, " N/A"},
     { ErrPortEchoResponse,          "Port echoed request bytes",                    ERRTYPECOMM,     " N/A"},
 
-    { RETRY_SUBMITTED,                  "Retry Resubmitted",                ERRTYPESYSTEM, " N/A"},
-    { SCAN_ERROR_DEVICE_INHIBITED,      "Scanned device is inhibited",      ERRTYPESYSTEM, " N/A"},
-    { SCAN_ERROR_GLOBAL_ADDRESS,        "Illegal scan of global device",    ERRTYPESYSTEM, " N/A"},
-    { SCAN_ERROR_DEVICE_WINDOW_CLOSED,  "Device window is closed",          ERRTYPESYSTEM, " N/A"},
+    { RETRY_SUBMITTED,                  "Retry Resubmitted",                        ERRTYPESYSTEM, " N/A"},
+    { SCAN_ERROR_DEVICE_INHIBITED,      "Scanned device is inhibited",              ERRTYPESYSTEM, " N/A"},
+    { SCAN_ERROR_GLOBAL_ADDRESS,        "Illegal scan of global device",            ERRTYPESYSTEM, " N/A"},
+    { SCAN_ERROR_DEVICE_WINDOW_CLOSED,  "Device window is closed",                  ERRTYPESYSTEM, " N/A"},
     { ErrorPageRS,          "Invalid transaction, typ. bad pager id or password",   ERRTYPESYSTEM, " N/A"},
     { ErrorPageNAK,         "TAP Repeat Requested, but retries exhausted",          ERRTYPESYSTEM, " N/A"},
     { ErrorPageNoResponse,  "No response from TAP terminal",                        ERRTYPESYSTEM, " N/A"},
 
-    { ErrorHttpResponse,    "Invalid or unsuccessful HTTP response",        ERRTYPESYSTEM, " N/A"},
-    { ErrorXMLParser,       "XML parser initialization failed",             ERRTYPESYSTEM, " N/A"},
-    { ErrorWctpResponse,    "Invalid WCTP response format",                 ERRTYPESYSTEM, " N/A"},
-    { ErrorWctpTimeout,     "Time out when receiving WCTP response",        ERRTYPESYSTEM, " N/A"},
-    { ErrorWctp300Series,   "Protocol Error 300 Series",                    ERRTYPESYSTEM, " N/A"},
-    { ErrorWctp400Series,   "Protocol Error 400 Series",                    ERRTYPESYSTEM, " N/A"},
-    { ErrorWctp500Series,   "Protocol Error 500 Series",                    ERRTYPESYSTEM, " N/A"},
-    { ErrorWctp600Series,   "Protocol Error 600 Series",                    ERRTYPESYSTEM, " N/A"},
+    { ErrorHttpResponse,    "Invalid or unsuccessful HTTP response",            ERRTYPESYSTEM, " N/A"},
+    { ErrorXMLParser,       "XML parser initialization failed",                 ERRTYPESYSTEM, " N/A"},
+    { ErrorWctpResponse,    "Invalid WCTP response format",                     ERRTYPESYSTEM, " N/A"},
+    { ErrorWctpTimeout,     "Time out when receiving WCTP response",            ERRTYPESYSTEM, " N/A"},
+    { ErrorWctp300Series,   "Protocol Error 300 Series",                        ERRTYPESYSTEM, " N/A"},
+    { ErrorWctp400Series,   "Protocol Error 400 Series",                        ERRTYPESYSTEM, " N/A"},
+    { ErrorWctp500Series,   "Protocol Error 500 Series",                        ERRTYPESYSTEM, " N/A"},
+    { ErrorWctp600Series,   "Protocol Error 600 Series",                        ERRTYPESYSTEM, " N/A"},
 
     { ErrorQueuePurged,     "Queue purged to limit memory usage",               ERRTYPESYSTEM, " N/A"},
     { ErrorDeviceIPUnknown, "Device has not reported in, outbound IP unknown",  ERRTYPESYSTEM, " N/A"},
 
-    { ErrorMACSTimeout,     "MACS timed out on this message",               ERRTYPESYSTEM, " N/A"},
+    { ErrorMACSTimeout,     "MACS timed out on this message",                   ERRTYPESYSTEM, " N/A"},
 
-    { CtiInvalidRequest,    "Invalid/Incomplete Request",                   ERRTYPESYSTEM, " N/A"},
-    { UnknownError,         "Unknown Error",                                ERRTYPESYSTEM, " N/A"},
+    { ErrorInvalidFrozenReadingParity,  "The freeze check bit in the frozen reading does not match the last recorded freeze sent to the device.", ERRTYPEPROTOCOL, " N/A"},
+    { ErrorInvalidFrozenPeakTimestamp,  "The frozen peak timestamp is outside of the expected range.",  ERRTYPEPROTOCOL, " N/A"},
+    { ErrorInvalidFreezeCounter,        "The freeze counter is less than the expected value.",          ERRTYPEPROTOCOL, " N/A"},
+
+    { ErrorInvalidData,     "Invalid data was was received for one or more data points.",               ERRTYPEPROTOCOL, " N/A"},
+
+    { CtiInvalidRequest,    "Invalid/Incomplete Request",                       ERRTYPESYSTEM, " N/A"},
+    { UnknownError,         "Unknown Error",                                    ERRTYPESYSTEM, " N/A"},
 
 };
 
