@@ -5,7 +5,7 @@
   <xsl:output doctype-public="-//W3C//DTD HTML 4.01//EN" />
   <xsl:output doctype-system="http://www.w3.org/TR/html4/strict.dtd" />
   <xsl:key name="list" match="device" use="displayGroup/@value" />
-  <xsl:template match="deviceDefinition">
+  <xsl:template match="deviceDefinitions">
     <html>
       <head>
         <title>Yukon Device Definitions</title>
