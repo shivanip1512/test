@@ -204,9 +204,11 @@
         for(Integer invenId : inventoryNotOptedOut) {
         	if(currentApp.getInventoryID() == invenId) {
         		List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
-        		if(progInventory == null) 
-        			partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>(2));
-        		else
+        		if(progInventory == null) {
+        			partialOptOutMap.put(currentApp.getProgramID(), new ArrayList<Integer>());
+        			progInventory = partialOptOutMap.get(currentApp.getProgramID());
+        		}
+        		if(! progInventory.contains(invenId))
         			progInventory.add(invenId);
         	}
         }
