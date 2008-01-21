@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/10/31 20:51:03 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/01/21 20:54:00 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,25 +38,54 @@ namespace Protocol  {
 class IM_EX_PROT Klondike : public Interface
 {
     enum Command;
-    enum ProtocolWrap;
+    //enum ProtocolWrap;
+    enum Errors;
 
 private:
+
+    struct command_mapping_t : public map<int, Command>
+    {
+        command_mapping_t();
+    };
+
+    struct error_mapping_t : public map<Errors, int>
+    {
+        error_mapping_t();
+    };
 
     unsigned short _masterAddress,
                    _slaveAddress;
 
     Command _command;
+    static const command_mapping_t _command_mapping;
 
-    BSTRUCT _dtran_bstruct;  //  the information needed for a direct transmission
+    BSTRUCT _dtran_bstruct;  //  the outbound information for a direct transmission
+    unsigned char _d_words[DWORDLEN * 3];  //  the response (if any) from a direct transmission
+    unsigned char _response_length;
 
-    unsigned char _outbound[255];
-
-    int _comm_errors;
+    int _protocol_errors;
     int _sequence;
+
+    void processResponse_DirectMessage(unsigned char *inbound, unsigned char inbound_length);
+
+    enum NAK_Errors
+    {
+        NAK_DTran_DTranBusy = 0x00,
+        NAK_DTran_NoRoutes,
+        NAK_DTran_InvalidSEQ,
+        NAK_DTran_InvalidBUS,
+        NAK_DTran_BUSDisabled,
+        NAK_DTran_InvalidDLCType,
+    };
+
+    int _error_code;
+
+    static const error_mapping_t _error_mapping;
 
     enum MiscNumeric
     {
-        CommErrorMaximum = 2
+        ProtocolErrorsMaximum =   3,
+        WrapLengthMaximum     = 255,
     };
 
     enum IO_State
@@ -71,6 +100,7 @@ private:
     } _io_state;
 
     void doOutput(void);
+    static bool response_expected(Command command);
 
     Klondike(const Klondike &aRef);
     Klondike &operator=(const Klondike &aRef);
@@ -88,21 +118,28 @@ public:
     virtual ~Klondike();
 
     void setAddresses(unsigned short slaveAddress, unsigned short masterAddress);
-    void setWrap(ProtocolWrap w);
+    //void setWrap(ProtocolWrap w);
 
     bool setCommand(int command);
-    void setDirectTransmissionInfo(BSTRUCT &BSt);
+    bool setCommandDirectTransmission(const BSTRUCT &BSt);
+
+    void getResultDirectTransmission(unsigned char *buf, int buf_length, unsigned char &input_length);
 
     int generate(CtiXfer &xfer);
     int decode  (CtiXfer &xfer, int status);
 
     bool isTransactionComplete(void) const;
 
-    enum ProtocolWrap
+    bool errorCondition() const;
+    int  errorCode();
+
+    static int decodeDWords(unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt);
+
+    /*enum ProtocolWrap
     {
         ProtocolWrap_IDLC,
         ProtocolWrap_DNP,
-    };
+    };*/
 
     enum Command
     {
