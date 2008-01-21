@@ -1,3 +1,4 @@
+<%@page import="com.cannontech.clientutils.CTILogger"%>
 <jsp:directive.page import="com.cannontech.common.version.VersionTools"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/><%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -40,8 +41,9 @@
 			// Stars user doesn't match the yukon user, clear it
 			user = null;
 		}
-		else if (user != StarsDatabaseCache.getInstance().getStarsYukonUser(lYukonUser)) {
+		else if (!user.equals(StarsDatabaseCache.getInstance().getStarsYukonUser(lYukonUser))) {
 			// User login no longer valid
+            CTILogger.error("Stars User login no longer valid");
 			response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
 			return;
 		}

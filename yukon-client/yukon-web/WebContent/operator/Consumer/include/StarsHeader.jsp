@@ -41,6 +41,7 @@
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@page import="com.cannontech.clientutils.CTILogger"%>
 <jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
 <jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
@@ -59,8 +60,9 @@
 			// Stars user doesn't match the yukon user, clear it
 			user = null;
 		}
-		else if (user != StarsDatabaseCache.getInstance().getStarsYukonUser(lYukonUser)) {
+		else if (!user.equals(StarsDatabaseCache.getInstance().getStarsYukonUser(lYukonUser))) {
 			// User login no longer valid
+            CTILogger.error("Stars User login no longer valid");
 			response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");
 			return;
 		}

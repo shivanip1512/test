@@ -1,5 +1,7 @@
 package com.cannontech.stars.web;
 
+import java.util.Vector;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -54,10 +56,10 @@ public class StarsYukonUser {
 	 */
 	public int[] getCustomerAccountIDs() {
 		if (customer != null) {
-			java.util.Vector acctIDs = customer.getAccountIDs();
+			Vector<Integer> acctIDs = customer.getAccountIDs();
 			int[] accountIDs = new int[ acctIDs.size() ];
 			for (int i = 0; i < acctIDs.size(); i++)
-				accountIDs[i] = ((Integer) acctIDs.get(i)).intValue();
+				accountIDs[i] = acctIDs.get(i).intValue();
 			
 			return accountIDs;
 		}
@@ -84,4 +86,40 @@ public class StarsYukonUser {
 			energyCompanyID = customer.getEnergyCompanyID();
 		}
 	}
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((customer == null) ? 0 : customer.hashCode());
+        result = prime * result + energyCompanyID;
+        result = prime * result + ((yukonUser == null) ? 0
+                : yukonUser.hashCode());
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final StarsYukonUser other = (StarsYukonUser) obj;
+        if (customer == null) {
+            if (other.customer != null)
+                return false;
+        } else if (!customer.equals(other.customer))
+            return false;
+        if (energyCompanyID != other.energyCompanyID)
+            return false;
+        if (yukonUser == null) {
+            if (other.yukonUser != null)
+                return false;
+        } else if (!yukonUser.equals(other.yukonUser))
+            return false;
+        return true;
+    }
+    
 }
