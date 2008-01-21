@@ -17,13 +17,13 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
 import com.cannontech.jobs.model.ScheduledOneTimeJob;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.user.YukonUserContext;
 
 public class ToggleProfilingServiceImpl implements ToggleProfilingService {
 
@@ -48,18 +48,17 @@ public class ToggleProfilingServiceImpl implements ToggleProfilingService {
 
     }
     
-    public void scheduleToggleProfilingForDevice(int deviceId, int channelNum, boolean newToggleVal, Date toggleDate, LiteYukonUser user) {
+    public void scheduleToggleProfilingForDevice(int deviceId, int channelNum, boolean newToggleVal, Date toggleDate, YukonUserContext userContext) {
         
         ToggleProfilingTask toggleProfilingTask = toggleProfilingDefinition.createBean();
         toggleProfilingTask.setDeviceId(deviceId);
         toggleProfilingTask.setChannelNum(channelNum);
         toggleProfilingTask.setNewToggleVal(newToggleVal);
-        toggleProfilingTask.setRunAsUser(user);
 
         jobManager.scheduleJob(toggleProfilingDefinition,
                                toggleProfilingTask,
                                toggleDate,
-                               user);
+                               userContext);
 
         logger.info("Toggle profiling scheduled for deviceId/channel " + deviceId + "/" + channelNum + " on " + toggleDate + ".");
 

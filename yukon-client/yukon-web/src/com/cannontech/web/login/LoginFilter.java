@@ -26,7 +26,10 @@ import org.springframework.web.util.UrlPathHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.NotLoggedInException;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.util.YukonUserContextResolver;
 
 public class LoginFilter implements Filter {
     private Logger log = YukonLogManager.getLogger(LoginFilter.class);
@@ -35,6 +38,7 @@ public class LoginFilter implements Filter {
     private WebApplicationContext context;
     private LoginService loginService;
     private LoginCookieHelper loginCookieHelper;
+    private YukonUserContextResolver userContextResolver;
     private PathMatcher pathMatcher = new AntPathMatcher();
     private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -72,6 +76,15 @@ public class LoginFilter implements Filter {
 
         final HttpServletRequest request = (HttpServletRequest) req;
         final HttpServletResponse response = (HttpServletResponse) resp;
+        
+        // try to attach the user to the request
+        try {
+            YukonUserContext resolveContext = userContextResolver.resolveContext(request);
+            request.setAttribute(YukonUserContextUtils.userContextAttrName, resolveContext);
+        } catch(RuntimeException e) {
+            request.setAttribute(YukonUserContextUtils.userContextAttrName, e);
+            log.debug("Unable to attach YukonUserContext to request", e);
+        }
 
         boolean loggedIn = isLoggedIn(request);
         if (loggedIn) {
@@ -180,6 +193,7 @@ public class LoginFilter implements Filter {
         context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
         loginService = (LoginService) context.getBean("loginService", LoginService.class);
         loginCookieHelper = (LoginCookieHelper) context.getBean("loginCookieHelper", LoginCookieHelper.class);
+        userContextResolver = (YukonUserContextResolver) context.getBean("userContextResolver", YukonUserContextResolver.class);
     }
 
     @Override

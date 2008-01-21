@@ -4,17 +4,17 @@ import java.util.Map;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.user.YukonUserContext;
 
 public class YukonJob {
     private Integer id;
     private String beanName;
     private boolean disabled;
-    private LiteYukonUser runAsUser;
     private Map<String,String> jobProperties;
     private YukonJobDefinition<? extends YukonTask> jobDefinition;
+    private YukonUserContext userContext;
 
 
     public Integer getId() {
@@ -35,11 +35,11 @@ public class YukonJob {
     public void setDisabled(boolean disabled) {
         this.disabled = disabled;
     }
-    public LiteYukonUser getRunAsUser() {
-        return runAsUser;
+    public void setUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
     }
-    public void setRunAsUser(LiteYukonUser runAsUser) {
-        this.runAsUser = runAsUser;
+    public YukonUserContext getUserContext() {
+        return userContext;
     }
     public Map<String, String> getJobProperties() {
         return jobProperties;
@@ -83,7 +83,7 @@ public class YukonJob {
         tsc.append("id", id);
         tsc.append("beanName", beanName);
         tsc.append("disabled", disabled);
-        tsc.append("runAsUser", runAsUser);
+        tsc.append("userContext", userContext);
         tsc.append("jobProperties", jobProperties);
         return tsc.toString();
     }

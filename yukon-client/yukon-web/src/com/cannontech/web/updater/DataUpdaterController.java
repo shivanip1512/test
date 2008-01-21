@@ -15,8 +15,8 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 public class DataUpdaterController extends AbstractController {
     private DataUpdaterService dataUpdaterService;
@@ -40,10 +40,10 @@ public class DataUpdaterController extends AbstractController {
             surSet.add(id);
         }
         
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        UpdateResponse updates = dataUpdaterService.getUpdates(surSet, fromDate, user);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        UpdateResponse updates = dataUpdaterService.getUpdates(surSet, fromDate, userContext);
         
-        // I could use the JsonView here, but this feels more symetric
+        // I could use the JsonView here, but this feels more symmetric
         JSONObject jsonUpdates = new JSONObject();
         jsonUpdates.put("toDate", updates.asOfTime);
         JSONObject jsonValueHash = new JSONObject();

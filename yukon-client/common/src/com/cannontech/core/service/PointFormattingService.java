@@ -1,9 +1,8 @@
 package com.cannontech.core.service;
 
-import java.util.TimeZone;
-
+import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * This service is responsible for formatting PointValueHolder objects (which currently
@@ -19,19 +18,15 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public interface PointFormattingService {
     
     static public enum Format {
-        FULL("{default} {status||{unit}} {time|MM/dd/yyyy HH:mm:ss z}"),
-        SHORT("{default} {status||{unit}}"),
-        SHORTDATE("{default} {status||{unit}} {time|MM/dd/yyyy}"),
-        DATE("{time|MM/dd/yyyy HH:mm:ss z}");
+        FULL,
+        SHORT,
+        SHORTDATE,
+        DATE;
         
-        private final String format;
+        private final static String keyPrefix = "yukon.common.pointFormatting.";
 
-        private Format(String format) {
-            this.format = format;
-        }
-        
-        public String getFormat() {
-            return format;
+        public String getFormatKey() {
+            return keyPrefix + name();
         }
     }
 
@@ -47,7 +42,7 @@ public interface PointFormattingService {
      * @param format
      * @return
      */
-    public String getValueString(PointValueHolder value, Format format);
+    public String getValueString(PointValueHolder value, Format format); // used in move in/out
     
     /**
      * Gets the time zone for user and then delegates to
@@ -60,46 +55,7 @@ public interface PointFormattingService {
      * @param user
      * @return
      */
-    public String getValueString(PointValueHolder value, Format format, LiteYukonUser user);
-    
-    /**
-     * This method looks up the format string using the Format enum. For the time being the 
-     * format is stored in the Enum itself, but this probably isn't the approach that would
-     * be taken in the long term. For instance, the enums could refer to role properties that
-     * contain the actual format string.
-     * 
-     * @param value
-     * @param format
-     * @param timeZone
-     * @return
-     */
-    public String getValueString(PointValueHolder value, Format format, TimeZone timeZone);
-
-    /**
-     * This method determines a time zone and then delegates to
-     *   getValueString(PointValueHolder, String, TimeZone);
-     *   
-     * This method should not be used if it is possible to use one of the
-     * other two versions. This may make sense to use in log files, but
-     * never for display on a web page.
-     * 
-     * @param value
-     * @param format
-     * @return
-     */
-    public String getValueString(PointValueHolder value, String format);
-    
-    /**
-     * Gets the time zone for user and then delegates to
-     *   getValueString(PointValueHolder, String, TimeZone);
-     *   
-     * 
-     * @param value
-     * @param format
-     * @param user
-     * @return
-     */
-    public String getValueString(PointValueHolder value, String format, LiteYukonUser user);
+    public String getValueString(PointValueHolder value, Format format, YukonUserContext userContext);
     
     /**
      * Formats a PointValueHolder with a given format and timezone. The SimpleTemplateProcessor
@@ -125,9 +81,10 @@ public interface PointFormattingService {
      * @param value the value to format
      * @param format a SimpleTemplateProcessor compatible template
      * @param timeZone time zone to be used for formatting dates
+     * @see FormattingTemplateProcessor
      * @return
      */
-    public String getValueString(PointValueHolder value, String format, TimeZone timeZone);
+    public String getValueString(PointValueHolder value, String format, YukonUserContext userContext);
     
     public PointFormattingService getCachedInstance();
 

@@ -24,7 +24,7 @@ public class PointValueTag extends YukonTagSupport {
             throw new JspException("pointId must be set");
         }
         
-        UpdateValue value = registrationService.getLatestValue(pointId, format, getYukonUser());
+        UpdateValue value = registrationService.getLatestValue(pointId, format, getUserContext());
         
         JspWriter out = getJspContext().getOut();
         out.print("<span title=\"pointId:" + pointId + "\" cannonUpdater=\"" + value.getFullIdentifier() + "\" class=\"pointValueTagSpan\" >");

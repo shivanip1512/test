@@ -1,24 +1,25 @@
 package com.cannontech.core.service.impl;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.util.SimpleTemplateProcessor;
-import com.cannontech.common.util.TemplateProcessor;
+import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.user.YukonUserContext;
 
 
 public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLoadProfileService.CompletionCallback {
@@ -27,9 +28,9 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     private EmailService emailService = null;
     private DateFormattingService dateFormattingService = null;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao = null;
-    private DefaultEmailMessage successMessage = new DefaultEmailMessage();
-    private DefaultEmailMessage failureMessage = new DefaultEmailMessage();
-    private DefaultEmailMessage cancelMessage = new DefaultEmailMessage();
+    private Map<String, Object> msgData;
+    private String email;
+    private YukonUserContext userContext;
     
     private final String baseSubjectFormat = "Profile data collection for {formattedDeviceName} from {startDate} - {stopDate} {status}";
 
@@ -43,9 +44,16 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     private final String success_template_html = base_template_html + "Data is now available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
     private final String failure_template_html = base_template_html + "Partial data may be available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
     private final String cancel_template_html  = base_template_html + "Partial data may be available online.<br/>View Report: <a href=\"{reportHtmlUrl}\">HTML</a> | <a href=\"{reportCsvUrl}\">CSV</a> | <a href=\"{reportPdfUrl}\">PDF</a><br/><br/>";
-
-    private DefaultEmailMessage getEmailer(String email, String subject, String body, String htmlBody){
+    
+    private DefaultEmailMessage getEmailer(String bodyTemplate, String htmlBodyTemplate, Map<String, Object> extraData) {
+        Map<String, Object> data = new HashMap<String, Object>(msgData);
+        data.putAll(extraData);
         
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        String subject = tp.process(baseSubjectFormat, data);
+        String body = tp.process(bodyTemplate, data);
+        String htmlBody = tp.process(htmlBodyTemplate, data);
+
         DefaultEmailMessage emailer = new DefaultEmailMessage();
         emailer.setRecipient(email);
         emailer.setSubject(subject);
@@ -62,46 +70,6 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
     }
     
-    public void setSuccessMessage(Map<String, Object> msgData) {
-        
-        msgData.put("status", "completed");
-        msgData.put("statusMsg", "Your profile data collection request has completed.");
-
-        TemplateProcessor tp = new SimpleTemplateProcessor();
-        String subject = tp.process(baseSubjectFormat, msgData);
-        String body = tp.process(success_template_plain, msgData);
-        String htmlBody = tp.process(success_template_html, msgData);
-        
-        this.successMessage = getEmailer((String)msgData.get("email"), subject, body, htmlBody);
-    }
-    
-    public void setFailureMessage(Map<String, Object> msgData) {
-        
-        msgData.put("status", "failed");
-        msgData.put("statusMsg", "Your profile data collection request has encountered an error.");
-
-        TemplateProcessor tp = new SimpleTemplateProcessor();
-        String subject = tp.process(baseSubjectFormat, msgData);
-        String body = tp.process(failure_template_plain, msgData);
-        String htmlBody = tp.process(failure_template_html, msgData);
-        
-        this.failureMessage = getEmailer((String)msgData.get("email"), subject, body, htmlBody);
-        
-    }
-    
-    public void setCancelMessage(Map<String, Object> msgData) {
-        
-        msgData.put("status", "canceled");
-        msgData.put("statusMsg", "Your profile data collection was canceled.");
-
-        TemplateProcessor tp = new SimpleTemplateProcessor();
-        String subject = tp.process(baseSubjectFormat, msgData);
-        String body = tp.process(cancel_template_plain, msgData);
-        String htmlBody = tp.process(cancel_template_html, msgData);
-        
-        this.cancelMessage = getEmailer((String)msgData.get("email"), subject, body, htmlBody);
-    }
-
     //  onFailure
     public void onFailure(int returnStatus, String resultString) {
         try {
@@ -129,8 +97,13 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
                 errorHtmlReason += "Error Reason:<br/>" + resultString;
             }
             
+            Map<String, Object> extraData = new HashMap<String, Object>();
+            extraData.put("status", "failed");
+            extraData.put("statusMsg", "Your profile data collection request has encountered an error.");
+            
+            DefaultEmailMessage failureMessage = getEmailer(failure_template_plain, failure_template_html, extraData);
             if (!StringUtils.isBlank(errorReason)) {
-                String originalBody = failureMessage.getBody();
+                String originalBody = failureMessage .getBody();
                 String newBody = originalBody + "\n\n" + errorReason;
                 failureMessage.setBody(newBody);
 
@@ -150,8 +123,13 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     public void onSuccess(String successInfo) {
         try {
             
+            Map<String, Object> extraData = new HashMap<String, Object>();
+            extraData.put("status", "completed");
+            extraData.put("statusMsg", "Your profile data collection request has completed.");
+            
+            DefaultEmailMessage successMessage = getEmailer(success_template_plain, success_template_html, extraData);
             if (!StringUtils.isBlank(successInfo)) {
-                String originalBody = successMessage.getBody();
+                String originalBody = successMessage .getBody();
                 String newBody = originalBody + "\n\n" + successInfo;
                 successMessage.setBody(newBody);
                 
@@ -177,12 +155,17 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
             if (cancelUser != null) {
                 Date now = new Date();
                 cancelInfo = "Canceled by " + cancelUserName + " (" + cancelUserID + ")" 
-                            + " on " + dateFormattingService.formatDate(now, DateFormattingService.DateFormatEnum.DATE, cancelUser) 
-                            + " at " + dateFormattingService.formatDate(now, DateFormattingService.DateFormatEnum.TIME, cancelUser) + ".";
+                            + " on " + dateFormattingService.formatDate(now, DateFormattingService.DateFormatEnum.DATE, userContext) 
+                            + " at " + dateFormattingService.formatDate(now, DateFormattingService.DateFormatEnum.TIME, userContext) + ".";
             }
             
+            Map<String, Object> extraData = new HashMap<String, Object>();
+            extraData.put("status", "canceled");
+            extraData.put("statusMsg", "Your profile data collection was canceled.");
+            
+            DefaultEmailMessage cancelMessage = getEmailer(cancel_template_plain, cancel_template_html, extraData);
             if (!StringUtils.isBlank(cancelInfo)) {
-                String originalBody = cancelMessage.getBody();
+                String originalBody = cancelMessage .getBody();
                 String newBody = originalBody + "\n\n" + cancelInfo;
                 cancelMessage.setBody(newBody);
                 
@@ -199,16 +182,19 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     }
     
     public String toString(){
-        return successMessage.getRecipient();
+        return email;
     }
 
-    public DateFormattingService getDateFormattingService() {
-        return dateFormattingService;
+    public void setMessageData(Map<String, Object> msgData) {
+        this.msgData = Collections.unmodifiableMap(msgData);
     }
 
-    @Required
-    public void setDateFormattingService(DateFormattingService dateFormattingService) {
-        this.dateFormattingService = dateFormattingService;
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public void setUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
     }
 
     

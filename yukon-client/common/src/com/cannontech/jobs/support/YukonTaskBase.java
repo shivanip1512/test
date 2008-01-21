@@ -1,17 +1,14 @@
 package com.cannontech.jobs.support;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public abstract class YukonTaskBase implements YukonTask {
-    private LiteYukonUser user;
+    private YukonUserContext userContext;
     
-    public void setRunAsUser(LiteYukonUser user) {
-        this.user = user;
+    public void setUserContext(YukonUserContext userContext) {
+        this.userContext = userContext;
     }
-    
-    public LiteYukonUser getRunAsUser() {
-        return user;
+    public YukonUserContext getUserContext() {
+        return userContext;
     }
-
-
 }

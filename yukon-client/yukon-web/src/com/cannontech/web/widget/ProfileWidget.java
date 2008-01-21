@@ -39,11 +39,11 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.device.DeviceLoadProfile;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.tools.email.EmailService;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -154,16 +154,16 @@ public class ProfileWidget extends WidgetControllerBase {
         return availableChannels;
     }
     
-    private void addFutureScheduleDateToMav(ModelAndView mav, LiteYukonUser user) {
+    private void addFutureScheduleDateToMav(ModelAndView mav, YukonUserContext userContext) {
         
         mav.addObject("futureScheduleDate",
                       dateFormattingService.formatDate(DateUtils.addDays(new Date(),
                                                                          7),
                                                        DateFormattingService.DateFormatEnum.DATE,
-                                                       user));
+                                                       userContext));
         List<Map<String, String>> hours = new ArrayList<Map<String, String>>();
         for (Integer i = 1; i <= 24; i++) {
-            
+            //i18n this needs to be fixed
             Map<String, String> h = new HashMap<String, String>();
             
             String dispval = "";
@@ -187,7 +187,7 @@ public class ProfileWidget extends WidgetControllerBase {
 
         ModelAndView mav = new ModelAndView("profileWidget/render.jsp");
 
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
                                                                      "deviceId");
@@ -212,18 +212,18 @@ public class ProfileWidget extends WidgetControllerBase {
                           dateFormattingService.formatDate(DateUtils.addDays(new Date(),
                                                                              -5),
                                                            DateFormattingService.DateFormatEnum.DATE,
-                                                           user));
+                                                           userContext));
             mav.addObject("stopDateStr",
                           dateFormattingService.formatDate(new Date(),
                                                            DateFormattingService.DateFormatEnum.DATE,
-                                                           user));
+                                                           userContext));
         }
 
-        // init furture schedule date
-        addFutureScheduleDateToMav(mav, user);
+        // init future schedule date
+        addFutureScheduleDateToMav(mav, userContext);
         
         // user email address
-        LiteContact contact = yukonUserDao.getLiteContact(user.getUserID());
+        LiteContact contact = yukonUserDao.getLiteContact(userContext.getYukonUser().getUserID());
         String email = "";
         if (contact != null) {
             String[] allEmailAddresses = contactDao.getAllEmailAddresses(contact.getContactID());
@@ -234,7 +234,7 @@ public class ProfileWidget extends WidgetControllerBase {
         mav.addObject("email", email);
         
         // pending requests
-        List<Map<String, String>> pendingRequests = getPendingRequests(device, user);
+        List<Map<String, String>> pendingRequests = getPendingRequests(device, userContext);
         mav.addObject("pendingRequests", pendingRequests);
         
         mav.addObject("deviceId", deviceId);
@@ -249,7 +249,7 @@ public class ProfileWidget extends WidgetControllerBase {
             HttpServletResponse response) throws Exception {
 
 
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
                                                                      "deviceId");
@@ -258,8 +258,8 @@ public class ProfileWidget extends WidgetControllerBase {
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
 
-        loadProfileService.removePendingLongLoadProfileRequest(device, requestId, user);
-        List<Map<String, String>> pendingRequests = getPendingRequests(device, user);
+        loadProfileService.removePendingLongLoadProfileRequest(device, requestId, userContext);
+        List<Map<String, String>> pendingRequests = getPendingRequests(device, userContext);
         
         ModelAndView mav = render(request, response);
 
@@ -294,7 +294,7 @@ public class ProfileWidget extends WidgetControllerBase {
         "");
         try {
 
-            LiteYukonUser user = ServletUtil.getYukonUser(request);
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
 
             mav.addObject("startDateStr", startDateStr);
@@ -302,11 +302,11 @@ public class ProfileWidget extends WidgetControllerBase {
 
             Date startDate = dateFormattingService.flexibleDateParser(startDateStr,
                                                                       DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                      user);
+                                                                      userContext);
 
             Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr,
                                                                      DateFormattingService.DateOnlyMode.END_OF_DAY,
-                                                                     user);
+                                                                     userContext);
 
             boolean datesOk = false;
 
@@ -318,12 +318,13 @@ public class ProfileWidget extends WidgetControllerBase {
                 dateErrorMessage = "Stop Date Required";
             } else {
 
+                //TEM DateUtils.round() should do this for you
                 String todayStr = dateFormattingService.formatDate(new Date(),
                                                                    DateFormattingService.DateFormatEnum.DATE,
-                                                                   user);
+                                                                   userContext);
                 Date today = dateFormattingService.flexibleDateParser(todayStr,
                                                                       DateFormattingService.DateOnlyMode.END_OF_DAY,
-                                                                      user);
+                                                                      userContext);
 
                 if (startDate.after(stopDate)) {
                     datesOk = false;
@@ -386,9 +387,9 @@ public class ProfileWidget extends WidgetControllerBase {
                 LongLoadProfileServiceEmailCompletionCallbackImpl callback = 
                     new LongLoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, deviceErrorTranslatorDao);
                 
-                callback.setSuccessMessage(msgData);
-                callback.setFailureMessage(msgData);
-                callback.setCancelMessage(msgData);
+                callback.setUserContext(userContext);
+                callback.setEmail(email);
+                callback.setMessageData(msgData);
                 
                 // will throw InitiateLoadProfileRequestException if connection problem
                 loadProfileService.initiateLongLoadProfile(device,
@@ -396,13 +397,13 @@ public class ProfileWidget extends WidgetControllerBase {
                                                            startDate,
                                                            stopDate,
                                                            callback,
-                                                           user);
+                                                           userContext);
 
                 dateErrorMessage = "";
                 mav.addObject("channel", channel);
                 
                 // reload pending request
-                List<Map<String, String>> pendingRequests = getPendingRequests(device, user);
+                List<Map<String, String>> pendingRequests = getPendingRequests(device, userContext);
                 mav.addObject("pendingRequests", pendingRequests);
             }
 
@@ -419,7 +420,7 @@ public class ProfileWidget extends WidgetControllerBase {
             HttpServletResponse response) throws Exception {
 
         String toggleErrorMsg = null;
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // get parameters
         int channelNum = WidgetParameterHelper.getRequiredIntParameter(request, "channelNum");
@@ -461,7 +462,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 // validate scheduled start date
                 Date today = DateUtils.round(new Date(), Calendar.MINUTE);
                 try {
-                    scheduledStartDate = dateFormattingService.flexibleDateParser(startDate, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
+                    scheduledStartDate = dateFormattingService.flexibleDateParser(startDate, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
                     scheduledStartDate = DateUtils.addHours(scheduledStartDate, startHour);
                     scheduledStartDate = DateUtils.addMinutes(scheduledStartDate, 0);
                     if (scheduledStartDate == null) {
@@ -477,7 +478,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
                     toggleProfilingService.disableScheduledJob(deviceId, channelNum, true);
-                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, true, scheduledStartDate, user);
+                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, true, scheduledStartDate, userContext);
                     scheduledStartOk = true;
                 }
             }
@@ -495,7 +496,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 // validate schedule date
                 Date today = DateUtils.round(new Date(), Calendar.MINUTE);
                 try {
-                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
+                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
                     scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour);
                     scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
                     if (scheduledStopDate == null) {
@@ -519,7 +520,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
                     toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
-                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false, scheduledStopDate, user);
+                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false, scheduledStopDate, userContext);
                 }
                 
             }
@@ -548,7 +549,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 // validate schedule date
                 Date today = DateUtils.round(new Date(), Calendar.MINUTE);
                 try {
-                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
+                    scheduledStopDate = dateFormattingService.flexibleDateParser(stopDate, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
                     scheduledStopDate = DateUtils.addHours(scheduledStopDate, stopHour);
                     scheduledStopDate = DateUtils.addMinutes(scheduledStopDate, 0);
                     if (scheduledStopDate == null) {
@@ -564,7 +565,7 @@ public class ProfileWidget extends WidgetControllerBase {
                 // schedule it!, already scheduled? cancel it
                 if (toggleErrorMsg == null) {
                     toggleProfilingService.disableScheduledJob(deviceId, channelNum, false);
-                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false, scheduledStopDate, user);
+                    toggleProfilingService.scheduleToggleProfilingForDevice(deviceId, channelNum, false, scheduledStopDate, userContext);
                 }
             }
             
@@ -591,13 +592,13 @@ public class ProfileWidget extends WidgetControllerBase {
         List<Map<String, Object>> availableChannels = getAvailableChannelInfo(deviceId);
         mav.addObject("availableChannels", availableChannels);
         
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        addFutureScheduleDateToMav(mav, user);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        addFutureScheduleDateToMav(mav, userContext);
         
         return mav;
     }
     
-    private List<Map<String, String>> getPendingRequests(LiteYukonPAObject device,  LiteYukonUser user){
+    private List<Map<String, String>> getPendingRequests(LiteYukonPAObject device,  YukonUserContext userContext) {
     
         //  pending past profiles
         List<Map<String, String>> pendingRequests = new ArrayList<Map<String, String>>();
@@ -609,12 +610,12 @@ public class ProfileWidget extends WidgetControllerBase {
             data.put("from",
                      dateFormattingService.formatDate(info.from,
                                                       DateFormattingService.DateFormatEnum.DATE,
-                                                      user));
+                                                      userContext));
             data.put("to",
                      dateFormattingService.formatDate(DateUtils.addDays(info.to,
                                                                         -1),
                                                                         DateFormattingService.DateFormatEnum.DATE,
-                                                                        user));
+                                                                        userContext));
             data.put("command", info.request.getCommandString());
             data.put("requestId", Long.toString(info.request.getUserMessageID()));
             data.put("channel", ((Integer) info.channel).toString());

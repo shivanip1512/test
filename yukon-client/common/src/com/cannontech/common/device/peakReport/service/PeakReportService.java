@@ -6,6 +6,7 @@ import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface PeakReportService {
 
@@ -20,10 +21,10 @@ public interface PeakReportService {
      * @param startDate
      * @param stopDate
      * @param persist
-     * @param user
+     * @param userContext
      * @return
      */
-    public PeakReportResult requestPeakReport(int deviceId, PeakReportPeakType peakType, PeakReportRunType runType, int channel, Date startDate, Date stopDate, boolean persist, LiteYukonUser user);
+    public PeakReportResult requestPeakReport(int deviceId, PeakReportPeakType peakType, PeakReportRunType runType, int channel, Date startDate, Date stopDate, boolean persist, YukonUserContext userContext);
 
     /**
      * Find last saved peak report result for a given device and run type. Process result into a PeakReportResult and return it if found.

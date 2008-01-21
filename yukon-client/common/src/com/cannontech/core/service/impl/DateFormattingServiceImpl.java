@@ -6,26 +6,31 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.user.YukonUserContext;
 
 public class DateFormattingServiceImpl implements DateFormattingService {
+    private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    private YukonUserDao yukonUserDao;
-
+    @Autowired
+    public void setMessageSourceResolver(YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
+    }
+    
     private DateFormatSymbols apSymbols;
     {
         apSymbols = new DateFormatSymbols();
         apSymbols.setAmPmStrings(new String[] { "A", "P" });
     }
 
+    //i18n
     private DateFormat dateTimeFormat[] = {
             new SimpleDateFormat("MM/dd/yy hh:mma", apSymbols),
             new SimpleDateFormat("MM/dd/yyyy hh:mma", apSymbols),
@@ -41,11 +46,11 @@ public class DateFormattingServiceImpl implements DateFormattingService {
     private DateFormat dateFormat[] = { new SimpleDateFormat("MM/dd/yy"),
             new SimpleDateFormat("MM/dd/yyyy"), };
 
-    public String formatDate(Date date, DateFormatEnum type, LiteYukonUser user)
+    public String formatDate(Date date, DateFormatEnum type, YukonUserContext userContext)
             throws IllegalArgumentException {
-        final TimeZone zone = yukonUserDao.getUserTimeZone(user);
+        final TimeZone zone = userContext.getTimeZone();
     
-        DateFormat df = getDateFormatter(type, user);
+        DateFormat df = getDateFormatter(type, userContext);
         df.setTimeZone(zone);
         if (date != null) {
             return df.format(date);
@@ -54,21 +59,20 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         }
     }
 
-    public DateFormat getDateFormatter(DateFormatEnum type, LiteYukonUser user)
+    public DateFormat getDateFormatter(DateFormatEnum type, YukonUserContext userContext)
             throws IllegalArgumentException {
 
-        return new SimpleDateFormat(type.getFormat());
+        String format = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(type.getFormatKey());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, userContext.getLocale());
+        
+        return simpleDateFormat;
 
-    }
-
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
     }
 
     public synchronized Date flexibleDateParser(String dateStr,
-            DateOnlyMode mode, LiteYukonUser user) throws ParseException {
+            DateOnlyMode mode, YukonUserContext userContext) throws ParseException {
 
-        TimeZone timeZone = yukonUserDao.getUserTimeZone(user);
+        TimeZone timeZone = userContext.getTimeZone();
 
         if (StringUtils.isBlank(dateStr))
             return null;
@@ -92,13 +96,13 @@ public class DateFormattingServiceImpl implements DateFormattingService {
         throw new ParseException(dateStr, 0);
     }
 
-    public Date flexibleDateParser(String dateStr, LiteYukonUser user)
+    public Date flexibleDateParser(String dateStr, YukonUserContext userContext)
             throws ParseException {
-        return flexibleDateParser(dateStr, DateOnlyMode.START_OF_DAY, user);
+        return flexibleDateParser(dateStr, DateOnlyMode.START_OF_DAY, userContext);
     }
 
-    public Calendar getCalendar(LiteYukonUser user) {
-        return Calendar.getInstance(yukonUserDao.getUserTimeZone(user));
+    public Calendar getCalendar(YukonUserContext userContext) {
+        return Calendar.getInstance(userContext.getTimeZone());
     }
 
 }

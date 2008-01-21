@@ -8,18 +8,16 @@ import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
-import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.jobs.support.YukonTaskBase;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
-public class ToggleProfilingTask implements YukonTask {
+public class ToggleProfilingTask extends YukonTaskBase {
 
     private Logger logger = YukonLogManager.getLogger(ToggleProfilingTask.class);
 
     // Injected variables
-    private LiteYukonUser liteYukonUser = null;
     private int deviceId;
     private boolean newToggleVal;
     private int channelNum;
@@ -33,7 +31,7 @@ public class ToggleProfilingTask implements YukonTask {
     }
     
     private void startTask(){
-        logger.info("Starting toggle profiling task scheduled by " + liteYukonUser.getUsername() + ".");
+        logger.info("Starting toggle profiling task scheduled by " + getUserContext().getYukonUser().getUsername() + ".");
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(device);
@@ -49,7 +47,7 @@ public class ToggleProfilingTask implements YukonTask {
     }
 
     public void stop() throws UnsupportedOperationException {
-        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     // Setters for injected parameters
@@ -75,14 +73,6 @@ public class ToggleProfilingTask implements YukonTask {
 
     public void setChannelNum(int channelNum) {
         this.channelNum = channelNum;
-    }
-
-    public void setRunAsUser(LiteYukonUser user) {
-        this.liteYukonUser = user;
-    }
-    
-    public LiteYukonUser getRunAsUser() {
-        return liteYukonUser;
     }
 
     // Setters for injected services and daos

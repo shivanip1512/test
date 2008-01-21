@@ -2,10 +2,10 @@ package com.cannontech.web.updater;
 
 import java.util.Set;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface DataUpdaterService {
     
-    public UpdateResponse getUpdates(Set<String> tokens, long afterDate, LiteYukonUser user);
-    public UpdateValue getFirstValue(String identifier, LiteYukonUser user);
+    public UpdateResponse getUpdates(Set<String> tokens, long afterDate, YukonUserContext userContext);
+    public UpdateValue getFirstValue(String identifier, YukonUserContext userContext);
 }

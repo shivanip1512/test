@@ -23,8 +23,8 @@ import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -68,7 +68,7 @@ public class TrendWidget extends WidgetControllerBase {
 
         ModelAndView mav = new ModelAndView();
 
-        LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         // Get lite pao
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -103,7 +103,7 @@ public class TrendWidget extends WidgetControllerBase {
             int pointId = point.getPointID();
 
             // default start date (one year ago from today)
-            Calendar startDateCal = dateFormattingService.getCalendar(yukonUser);
+            Calendar startDateCal = dateFormattingService.getCalendar(userContext);
             Date startDate = new Date();
             startDateCal.setTime(startDate);
 
@@ -127,7 +127,7 @@ public class TrendWidget extends WidgetControllerBase {
             ChartPeriod period = ChartPeriod.valueOf(periodString);
 
             // default end date (today)
-            Calendar endDateCal = dateFormattingService.getCalendar(yukonUser);
+            Calendar endDateCal = dateFormattingService.getCalendar(userContext);
             Date endDate = new Date();
             endDateCal.setTime(endDate);
 
@@ -147,10 +147,10 @@ public class TrendWidget extends WidgetControllerBase {
             // init start end date as strings
             String startDateStr = dateFormattingService.formatDate(startDateCal.getTime(),
                                                                    DateFormattingService.DateFormatEnum.DATE,
-                                                                   yukonUser);
+                                                                   userContext);
             String endDateStr = dateFormattingService.formatDate(endDateCal.getTime(),
                                                                  DateFormattingService.DateFormatEnum.DATE,
-                                                                 yukonUser);
+                                                                 userContext);
 
             // if no period, re adjust
             if (periodString.equals("NOPERIOD")) {
@@ -166,22 +166,22 @@ public class TrendWidget extends WidgetControllerBase {
 
                     startDate = dateFormattingService.flexibleDateParser(startDateParam,
                                                                          DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                         yukonUser);
+                                                                         userContext);
                     startDateCal.setTime(startDate);
                     startDateStr = dateFormattingService.formatDate(startDateCal.getTime(),
                                                                     DateFormattingService.DateFormatEnum.DATE,
-                                                                    yukonUser);
+                                                                    userContext);
                 }
 
                 if (!endDateParam.equals("")) {
 
                     endDate = dateFormattingService.flexibleDateParser(endDateParam,
                                                                        DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                       yukonUser);
+                                                                       userContext);
                     endDateCal.setTime(endDate);
                     endDateStr = dateFormattingService.formatDate(endDateCal.getTime(),
                                                                   DateFormattingService.DateFormatEnum.DATE,
-                                                                  yukonUser);
+                                                                  userContext);
                 }
             }
 

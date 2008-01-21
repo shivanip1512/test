@@ -7,7 +7,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.cannontech.common.util.TimeSource;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public class DefaultDataUpdaterService implements DataUpdaterService {
     private TimeSource timeSource;
@@ -15,13 +15,13 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
     
     private Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
     
-    public UpdateResponse getUpdates(Set<String> requests, long afterDate, LiteYukonUser user) {
+    public UpdateResponse getUpdates(Set<String> requests, long afterDate, YukonUserContext userContext) {
         UpdateResponse response = new UpdateResponse();
         response.asOfTime = timeSource.getCurrentMillis();
         Set<UpdateValue> result = new HashSet<UpdateValue>();
         for (String request : requests) {
 
-            UpdateValue updateValue = getValue(request, afterDate, user);
+            UpdateValue updateValue = getValue(request, afterDate, userContext);
             if (updateValue != null) {
                 result.add(updateValue);
             }
@@ -31,7 +31,7 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
         return response;
     }
     
-    protected UpdateValue getValue(String fullIdentifier, long afterDate, LiteYukonUser user) {
+    protected UpdateValue getValue(String fullIdentifier, long afterDate, YukonUserContext userContext) {
         Matcher m = idSplitter.matcher(fullIdentifier);
         if (m.matches() && m.groupCount() == 2) {
             String typeStr = m.group(1);
@@ -39,7 +39,7 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
             DataType type = DataType.valueOf(typeStr);
         
             UpdateBackingService back = backs.get(type);
-            String value = back.getLatestValue(remainder, afterDate, user);
+            String value = back.getLatestValue(remainder, afterDate, userContext);
             if (value != null) {
                 UpdateValue updateValue = new UpdateValue(fullIdentifier, value);
                 return updateValue;
@@ -48,8 +48,8 @@ public class DefaultDataUpdaterService implements DataUpdaterService {
         return null;
     }
     
-    public UpdateValue getFirstValue(String identifier, LiteYukonUser user) {
-        return getValue(identifier, 0 , user);
+    public UpdateValue getFirstValue(String identifier, YukonUserContext userContext) {
+        return getValue(identifier, 0 , userContext);
     }
     
     public void setBacks(Map<DataType, ? extends UpdateBackingService> backs) {

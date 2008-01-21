@@ -1,7 +1,6 @@
 package com.cannontech.loadcontrol;
 
 import java.awt.Color;
-import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -12,8 +11,6 @@ import java.util.List;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -33,7 +30,6 @@ import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
 
 
@@ -397,7 +393,7 @@ public class LCUtils
 	 * getValueAt method comment.
 	 * @param currentUser TODO
 	 */
-	public static synchronized Object getControlAreaValueAt(LMControlArea lmCntrArea, int col, LiteYukonUser currentUser) 
+	public static synchronized Object getControlAreaValueAt(LMControlArea lmCntrArea, int col) 
 	{
 	
 		switch( col )
@@ -429,7 +425,7 @@ public class LCUtils
 								: lmCntrArea.getDefDailyStartTime().intValue()),
 							(lmCntrArea.getCurrentDailyStartTime() == null
 								? LMControlArea.INVALID_INT
-								: lmCntrArea.getCurrentDailyStartTime().intValue()), currentUser ) +
+								: lmCntrArea.getCurrentDailyStartTime().intValue())) +
 					" - " +
 					getTimeString(
 							lmCntrArea,
@@ -438,7 +434,7 @@ public class LCUtils
 								: lmCntrArea.getDefDailyStopTime().intValue()),
 							(lmCntrArea.getCurrentDailyStopTime() == null
 								? LMControlArea.INVALID_INT
-								: lmCntrArea.getCurrentDailyStopTime().intValue()), currentUser ); 
+								: lmCntrArea.getCurrentDailyStopTime().intValue())); 
 					 
 			}
 			
@@ -470,9 +466,8 @@ public class LCUtils
 	}
 
 
-	private static synchronized String getTimeString( LMControlArea row, int defSecs, int currSecs, LiteYukonUser currentUser )
+	private static synchronized String getTimeString( LMControlArea row, int defSecs, int currSecs)
 	{
-        DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
         String retStr = null;
 		GregorianCalendar currTime = null;
         GregorianCalendar tempTime = null;
@@ -488,15 +483,11 @@ public class LCUtils
 			}
 			else
 			{
+			    //i18n This isn't correct, the old implementation did pass in the user, but it was 
+			    // always null so I just removed it wouldn't appear to be correct.
 				//set our time to todays date
-                if(currentUser != null) {
-                    currTime = (GregorianCalendar)dateFormattingService.getCalendar(currentUser);
-                    tempTime = (GregorianCalendar)dateFormattingService.getCalendar(currentUser);
-                }
-                else {
-                    currTime = new GregorianCalendar();
-                    tempTime = new GregorianCalendar();
-                }    
+                currTime = new GregorianCalendar();
+                tempTime = new GregorianCalendar();
                 
                 currTime.setTime( new java.util.Date() );
 										

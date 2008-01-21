@@ -24,8 +24,12 @@ public class JobDaoBase implements InitializingBean {
             p.addValue("beanName", beanNaem);
             String disabled = String.valueOf(CtiUtilities.getBooleanCharacter(job.isDisabled()));
             p.addValue("disabled", disabled);
-            int userId = job.getRunAsUser().getLiteID();
+            int userId = job.getUserContext().getYukonUser().getLiteID();
             p.addValue("userId", userId);
+            String locale = job.getUserContext().getLocale().toString();
+            p.addValue("locale", locale);
+            String timeZone = job.getUserContext().getTimeZone().getDisplayName();
+            p.addValue("timezone", timeZone);
         }
 
         public Number getPrimaryKey(YukonJob job) {

@@ -38,6 +38,7 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class LongLoadProfileServiceImpl implements LongLoadProfileService {
@@ -76,7 +77,7 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
         });
     }
     
-    public synchronized void initiateLongLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LongLoadProfileService.CompletionCallback runner, LiteYukonUser user) {
+    public synchronized void initiateLongLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LongLoadProfileService.CompletionCallback runner, YukonUserContext userContext) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
         Validate.isTrue(DeviceTypesFuncs.isLoadProfile4Channel(device.getType()), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
@@ -118,10 +119,10 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
             minutesPerInterval = voltageDemandRate / 60;
         }
         
-        Calendar startCal = dateFormattingService.getCalendar(user);
+        Calendar startCal = dateFormattingService.getCalendar(userContext);
         startCal.setTime(start);
         
-        Calendar stopCal = dateFormattingService.getCalendar(user);
+        Calendar stopCal = dateFormattingService.getCalendar(userContext);
         stopCal.setTime(stop);
         
         long minutesBetween = (stopCal.getTimeInMillis() - startCal.getTimeInMillis()) / 60000;
@@ -140,11 +141,11 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
         info.runner = runner;
         info.requestId = requestId;
         info.channel = channel;
-        info.userName = user.getUsername();
+        info.userName = userContext.getYukonUser().getUsername();
         info.percentDone = 0.00;
         
         // activity log
-        activityLoggerService.logEvent(user.getUserID(), ActivityLogActions.INITIATE_PROFILE_REQUEST_ACTION, req.getCommandString());
+        activityLoggerService.logEvent(userContext.getYukonUser().getUserID(), ActivityLogActions.INITIATE_PROFILE_REQUEST_ACTION, req.getCommandString());
         
         // pass off to handleOutgoingMessage
         handleOutgoingMessage(info);
@@ -342,13 +343,13 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     
 
     
-    public synchronized boolean removePendingLongLoadProfileRequest(LiteYukonPAObject device, long requestId, LiteYukonUser user) {
+    public synchronized boolean removePendingLongLoadProfileRequest(LiteYukonPAObject device, long requestId, YukonUserContext userContext) {
         
         boolean removed = false;
         int deviceId = device.getLiteID();
-        final LiteYukonUser cancelUser = user;
+        final LiteYukonUser cancelUser = userContext.getYukonUser();
         
-        // first place to to look is the currect device request, if it is there we will have to send kill command to porter and clean up
+        // first place to to look is the correct device request, if it is there we will have to send kill command to porter and clean up
         final ProfileRequestInfo info = currentDeviceRequests.get(deviceId);
         if(info != null){
 

@@ -5,38 +5,40 @@ import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface DateFormattingService {
 
     static public enum DateFormatEnum {
-        TIME("HH:mm"), DATE("MM/dd/yyyy"), BOTH("MM/dd/yyyy HH:mm:ss z"), DATEHM("MM/dd/yyyy HH:mm z"), DATEH_AP("MM/dd/yyyy ha z");
+        TIME, 
+        DATE, 
+        BOTH, 
+        DATEHM, 
+        DATEH_AP,
+        ;
 
-        private final String format;
+        private final static String keyPrefix = "yukon.common.dateFormatting.";
 
-        private DateFormatEnum(String format) {
-            this.format = format;
+        public String getFormatKey() {
+            return keyPrefix + name();
         }
 
-        public String getFormat() {
-            return format;
-        }
     }
 
     public static enum DateOnlyMode {
         START_OF_DAY, END_OF_DAY
     };
 
-    public String formatDate(Date date, DateFormatEnum type, LiteYukonUser user);
+    public String formatDate(Date date, DateFormatEnum type, YukonUserContext userContext);
 
-    public DateFormat getDateFormatter(DateFormatEnum type, LiteYukonUser user);
+    public DateFormat getDateFormatter(DateFormatEnum type, YukonUserContext userContext);
 
     public Date flexibleDateParser(String dateStr, DateOnlyMode mode,
-            LiteYukonUser user) throws ParseException;
+                                   YukonUserContext userContext) throws ParseException;
 
-    public Date flexibleDateParser(String dateStr, LiteYukonUser user)
+    public Date flexibleDateParser(String dateStr, YukonUserContext userContext)
             throws ParseException;
 
-    public Calendar getCalendar(LiteYukonUser user);
+    public Calendar getCalendar(YukonUserContext userContext);
 
 }

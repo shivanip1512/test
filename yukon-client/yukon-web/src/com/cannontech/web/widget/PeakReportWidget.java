@@ -28,8 +28,8 @@ import com.cannontech.common.device.peakReport.model.PeakReportRunType;
 import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -50,7 +50,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView("peakReportWidget/render.jsp");
         
         // user
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         // deviceId
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -120,17 +120,17 @@ public class PeakReportWidget extends WidgetControllerBase {
         mav.addObject("availablePeakTypes", availablePeakTypes);
         
         // initialize dates/times
-        mav = setDefaultMavDateTime(request, mav, user);
+        mav = setDefaultMavDateTime(request, mav, userContext);
        
         // get previous peak report
-        PeakReportResult peakResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.SINGLE, user);
+        PeakReportResult peakResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.SINGLE, userContext.getYukonUser());
         
         if(peakResult != null){
             mav.addObject("peakResult", peakResult);
-            addParsedPeakResultValuesToMav(peakResult, mav, user, deviceId, prevChannel);
+            addParsedPeakResultValuesToMav(peakResult, mav, userContext, deviceId, prevChannel);
         }
         
-        boolean readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
+        boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
         mav.addObject("readable", readable);
 
         return mav;
@@ -140,7 +140,7 @@ public class PeakReportWidget extends WidgetControllerBase {
             HttpServletResponse response) throws Exception {
 
         // user
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         // deviceId
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
@@ -173,11 +173,11 @@ public class PeakReportWidget extends WidgetControllerBase {
             }
             else{
             
-                startDate = dateFormattingService.flexibleDateParser(startDateStr, user);
-                stopDate = dateFormattingService.flexibleDateParser(stopDateStr, user);
+                startDate = dateFormattingService.flexibleDateParser(startDateStr, userContext);
+                stopDate = dateFormattingService.flexibleDateParser(stopDateStr, userContext);
             
-                String todayStr = dateFormattingService.formatDate(new Date(), DateFormattingService.DateFormatEnum.BOTH, user);
-                Date today = dateFormattingService.flexibleDateParser(todayStr, DateFormattingService.DateOnlyMode.END_OF_DAY, user);
+                String todayStr = dateFormattingService.formatDate(new Date(), DateFormattingService.DateFormatEnum.BOTH, userContext);
+                Date today = dateFormattingService.flexibleDateParser(todayStr, DateFormattingService.DateOnlyMode.END_OF_DAY, userContext);
                 datesOk = true;
 
                 if(datesOk){
@@ -201,7 +201,7 @@ public class PeakReportWidget extends WidgetControllerBase {
         // init mav
         ModelAndView mav = new ModelAndView("peakReportWidget/peakSummaryReportResult.jsp");
         
-        boolean readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
+        boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
         mav.addObject("readable", readable);
         
         // bad date, return mav with redisplay dates and error msg
@@ -216,29 +216,29 @@ public class PeakReportWidget extends WidgetControllerBase {
         }
             
         // request report from service
-        PeakReportResult peakResult = peakReportService.requestPeakReport(deviceId, peakType, PeakReportRunType.SINGLE, channel, startDate, stopDate, true, user);
+        PeakReportResult peakResult = peakReportService.requestPeakReport(deviceId, peakType, PeakReportRunType.SINGLE, channel, startDate, stopDate, true, userContext);
         
         mav.addObject("peakResult", peakResult);
         
         // special formatting of peakResult dates for display purposes
         if(!peakResult.isNoData()) {
-            addParsedPeakResultValuesToMav(peakResult, mav, user, deviceId, channel);
+            addParsedPeakResultValuesToMav(peakResult, mav, userContext, deviceId, channel);
         }
         
         return mav;
     }
 
     
-   private void addParsedPeakResultValuesToMav(PeakReportResult peakResult, ModelAndView mav, LiteYukonUser user, int deviceId, int channel) {
+   private void addParsedPeakResultValuesToMav(PeakReportResult peakResult, ModelAndView mav, YukonUserContext userContext, int deviceId, int channel) {
        
        // special formatting of peakResult dates for display purposes
-       String runDateDisplay = dateFormattingService.formatDate(peakResult.getRunDate(), DateFormattingService.DateFormatEnum.DATEHM, user);
+       String runDateDisplay = dateFormattingService.formatDate(peakResult.getRunDate(), DateFormattingService.DateFormatEnum.DATEHM, userContext);
        mav.addObject("runDateDisplay", runDateDisplay);
        
-       String periodStartDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, user);
+       String periodStartDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
        mav.addObject("periodStartDateDisplay", periodStartDateDisplay);
        
-       String periodStopDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, user);
+       String periodStopDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
        mav.addObject("periodStopDateDisplay", periodStopDateDisplay);
        
        mav.addObject("displayName", peakResult.getPeakType().getDisplayName());
@@ -246,7 +246,7 @@ public class PeakReportWidget extends WidgetControllerBase {
        
        String peakValueStr = "";
        if(peakResult.getPeakType() == PeakReportPeakType.DAY) {
-           peakValueStr = dateFormattingService.formatDate(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, user);
+           peakValueStr = dateFormattingService.formatDate(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
        }
        else if(peakResult.getPeakType() == PeakReportPeakType.HOUR) {
            peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());
@@ -273,7 +273,7 @@ public class PeakReportWidget extends WidgetControllerBase {
        mav.addObject("peakValueStr", peakValueStr);
    }
  
-    private ModelAndView setDefaultMavDateTime(HttpServletRequest request, ModelAndView mav, LiteYukonUser user){
+    private ModelAndView setDefaultMavDateTime(HttpServletRequest request, ModelAndView mav, YukonUserContext userContext){
         
         String startDateStr = WidgetParameterHelper.getStringParameter(request, "startDateStr", "");
         String stopDateStr = WidgetParameterHelper.getStringParameter(request, "stopDateStr", "");
@@ -284,7 +284,7 @@ public class PeakReportWidget extends WidgetControllerBase {
                           dateFormattingService.formatDate(DateUtils.addDays(new Date(),
                                                                              -5),
                                                            DateFormattingService.DateFormatEnum.DATE,
-                                                           user));
+                                                           userContext));
         }
         else {
             mav.addObject("startDateStr", startDateStr);
@@ -295,7 +295,7 @@ public class PeakReportWidget extends WidgetControllerBase {
             mav.addObject("stopDateStr",
                           dateFormattingService.formatDate(new Date(),
                                                            DateFormattingService.DateFormatEnum.DATE,
-                                                           user));
+                                                           userContext));
         }
         else {
             mav.addObject("stopDateStr", stopDateStr);

@@ -36,7 +36,9 @@ import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.JsonView;
 
@@ -68,14 +70,14 @@ public class LoadProfileController extends MultiActionController {
         
         try {
             
-            LiteYukonUser user = ServletUtil.getYukonUser(request);
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
             
             String email = ServletRequestUtils.getRequiredStringParameter(request, "email");
             int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
             String startDateStr = ServletRequestUtils.getStringParameter(request, "startDate", "");
-            Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, user);
+            Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
             String stopDateStr = ServletRequestUtils.getStringParameter(request, "stopDate", "");
-            Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.END_OF_DAY, user);
+            Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.END_OF_DAY, userContext);
             String profileRequestOrigin = ServletRequestUtils.getRequiredStringParameter(request, "profileRequestOrigin");
             
             Validate.isTrue(startDate == null || stopDate == null || startDate.before(stopDate), 
@@ -96,7 +98,6 @@ public class LoadProfileController extends MultiActionController {
             
             // general body
             Map<String, Object> msgData = new HashMap<String, Object>();
-            msgData.put("email", email);
             msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
             msgData.put("deviceName", device.getPaoName());
             msgData.put("meterNumber", meterNum.getMeterNumber());
@@ -109,11 +110,11 @@ public class LoadProfileController extends MultiActionController {
             LongLoadProfileServiceEmailCompletionCallbackImpl callback = 
                 new LongLoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, deviceErrorTranslatorDao);
             
-            callback.setSuccessMessage(msgData);
-            callback.setFailureMessage(msgData);
-            callback.setCancelMessage(msgData);
+            callback.setUserContext(userContext);
+            callback.setEmail(email);
+            callback.setMessageData(msgData);
             
-            loadProfileService.initiateLongLoadProfile(device, 1, startDate, stopDate, callback, user);
+            loadProfileService.initiateLongLoadProfile(device, 1, startDate, stopDate, callback, userContext);
             
             mav.addObject("success", true);
             
@@ -133,6 +134,7 @@ public class LoadProfileController extends MultiActionController {
 
         int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
         
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
         
         LiteContact contact = yukonUserDao.getLiteContact(yukonUser.getUserID());
@@ -151,8 +153,8 @@ public class LoadProfileController extends MultiActionController {
         if(StringUtils.isNotBlank(startDateStr) && StringUtils.isNotBlank(stopDateStr)){
             
             try {
-                Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, yukonUser);
-                Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, yukonUser);
+                Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+                Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
             
                 SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
                 
@@ -189,6 +191,7 @@ public class LoadProfileController extends MultiActionController {
         try{
             
 
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
             LiteYukonUser user = ServletUtil.getYukonUser(request);
 
             long requestId = ServletRequestUtils.getRequiredLongParameter(request, "requestId");
@@ -196,7 +199,7 @@ public class LoadProfileController extends MultiActionController {
             LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
 
             // remove
-            loadProfileService.removePendingLongLoadProfileRequest(device, requestId, user);
+            loadProfileService.removePendingLongLoadProfileRequest(device, requestId, userContext);
             
             // re-get pending
             List<Map<String, String>> pendingRequests = getPendingRequests(device, user);

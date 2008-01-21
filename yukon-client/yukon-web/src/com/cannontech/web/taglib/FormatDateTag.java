@@ -1,4 +1,4 @@
-package com.cannontech.web.util;
+package com.cannontech.web.taglib;
 
 import java.io.IOException;
 import java.util.Date;
@@ -9,8 +9,6 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.web.taglib.YukonTagSupport;
 
 @Configurable("formatDateTagPrototype")
 public class FormatDateTag extends YukonTagSupport {
@@ -23,15 +21,13 @@ public class FormatDateTag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
-        final LiteYukonUser user = this.getYukonUser();
-      
         enumValue = DateFormattingService.DateFormatEnum.valueOf(type);
         
         String formattedDate ="";
         if (value != null) {
             formattedDate = dateFormattingService.formatDate(value,
                                                              enumValue,
-                                                             user);
+                                                             getUserContext());
         }else{
             getJspContext().getOut().print("Date doesn't exist");
         }

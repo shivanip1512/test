@@ -1,8 +1,5 @@
 package com.cannontech.core.dao.impl;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -10,15 +7,11 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.util.SimpleTemplateProcessor;
-import com.cannontech.common.util.TemplateProcessor;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**

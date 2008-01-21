@@ -61,5 +61,9 @@ public final class UserUtils
 		else
 			return STATUS_DISABLED.equalsIgnoreCase(liteYukonUser.getStatus());
 	}
+	
+	public static LiteYukonUser getYukonUser() {
+	    return new LiteYukonUser(USER_YUKON_ID, "yukon", STATUS_ENABLED);
+	}
 
 }

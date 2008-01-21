@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+<entry key="yukon.web.layout.standard.upperrightlogo">/WebConfig/yukon/YukonBW.gif</entry>
+<entry key="yukon.web.layout.standard.hello">Hello</entry>
+<entry key="yukon.web.layout.standard.yukonVersion">Yukon Version {0}</entry>
+<entry key="yukon.web.layout.standard.copyright">Copyright © 2002-2008, Cannon Technologies. All rights reserved.</entry>
+
+</properties>

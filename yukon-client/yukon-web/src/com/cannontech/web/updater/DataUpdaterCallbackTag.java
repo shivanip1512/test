@@ -26,7 +26,7 @@ public class DataUpdaterCallbackTag extends YukonTagSupport implements DynamicAt
         LiteYukonUser user = getYukonUser();
         Map<String,String> identifierValues = new HashMap<String, String>();
         for(String identifierName : identifierAttributes.keySet()) {
-            UpdateValue identifierValue = dataUpdaterService.getFirstValue((String)identifierAttributes.get(identifierName), user);
+            UpdateValue identifierValue = dataUpdaterService.getFirstValue((String)identifierAttributes.get(identifierName), getUserContext());
             identifierValues.put(identifierName, identifierValue.getValue());
         }
         

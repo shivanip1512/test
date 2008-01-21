@@ -3,7 +3,11 @@ package com.cannontech.jobs.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Locale;
+import java.util.TimeZone;
 
+import org.apache.commons.lang.LocaleUtils;
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcTemplate;
 
@@ -15,9 +19,9 @@ import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonJobDefinitionFactory;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.spring.SeparableRowMapper;
+import com.cannontech.user.SimpleYukonUserContext;
 
 final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
-
 
     private JdbcTemplate jdbcTemplate;
     private YukonUserDao yukonUserDao;
@@ -38,7 +42,26 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
         job.setDisabled(CtiUtilities.isTrue(rs.getString("disabled").charAt(0)));
         int userId = rs.getInt("userId");
         LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(userId);
-        job.setRunAsUser(liteYukonUser);
+        String localeStr = rs.getString("locale");
+        Locale locale = LocaleUtils.toLocale(localeStr);
+        String timezoneStr = rs.getString("timezone");
+        // Because this table was expanded to include a timezone column (YUK-5204),
+        // we must handle the default case where timezone is blank.
+        
+        // I considered not storing the time zone. In that case I would
+        // just get it off of the YukonUserDao every time. This gets interesting
+        // if the user changes their timezone after a job is scheduled. But
+        // I think that could get a little weird, so I'm sticking with storing it.
+        TimeZone timezone;
+        if (StringUtils.isBlank(timezoneStr)) {
+            // To replicate the old behavior, we must 
+            // look up the timezone for the user.
+            timezone = yukonUserDao.getUserTimeZone(liteYukonUser);
+        } else {
+            timezone = TimeZone.getTimeZone(timezoneStr);
+        }
+        SimpleYukonUserContext userContext = new SimpleYukonUserContext(liteYukonUser, locale, timezone);
+        job.setUserContext(userContext);
         String sql =
             "select * from JobProperty " +
             "where jobId = ?";

@@ -28,8 +28,8 @@ import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Widget used to display basic device information
@@ -51,12 +51,12 @@ public class MoveInMoveOutController extends MultiActionController {
             HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("moveIn.jsp");
         Meter meter = getMeter(request);
-        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         Date currentDate = new Date();
         String currentDateFormatted = dateFormattingService.formatDate(currentDate,
                                                                        DateFormattingService.DateFormatEnum.DATE,
-                                                                       liteYukonUser);
+                                                                       userContext);
 
         // Adds the group to the mav object
         mav.addObject("meter", meter);
@@ -79,7 +79,7 @@ public class MoveInMoveOutController extends MultiActionController {
 
         // Getting all the needed form values
         Meter prevMeter = getMeter(request);
-        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         String deviceName = ServletRequestUtils.getStringParameter(request,
                                                                    "deviceName");
@@ -95,7 +95,7 @@ public class MoveInMoveOutController extends MultiActionController {
             try {
                 moveInDate = dateFormattingService.flexibleDateParser(moveInDateStr,
                                                                       DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                      liteYukonUser);
+                                                                      userContext);
             } catch (ParseException pe) {
                 moveInDate = null;
             }
@@ -103,7 +103,7 @@ public class MoveInMoveOutController extends MultiActionController {
 
         MoveInForm moveInForm = new MoveInForm();
         moveInForm.setEmailAddress(emailAddress);
-        moveInForm.setLiteYukonUser(liteYukonUser);
+        moveInForm.setUserContext(userContext);
         moveInForm.setMeterName(deviceName);
         moveInForm.setMeterNumber(meterNumber);
         moveInForm.setMoveInDate(moveInDate);
@@ -122,13 +122,13 @@ public class MoveInMoveOutController extends MultiActionController {
                               dateFormattingService.formatDate(moveInResult.getCurrentReading()
                                                                            .getPointDataTimeStamp(),
                                                                DateFormatEnum.BOTH,
-                                                               liteYukonUser));
+                                                               userContext));
             }
         } else {
             moveInResult = moveInMoveOutService.scheduleMoveIn(moveInForm);
             moveInResult.setMoveInDate(moveInDate);
         }
-        moveInMoveOutEmailService.createMoveInEmail(moveInResult, liteYukonUser);
+        moveInMoveOutEmailService.createMoveInEmail(moveInResult, userContext);
 
         mav.addObject("currentReading", moveInResult.getCurrentReading());
         mav.addObject("calculatedDifference",
@@ -138,7 +138,7 @@ public class MoveInMoveOutController extends MultiActionController {
         mav.addObject("beginDate",
                       dateFormattingService.formatDate(moveInForm.getMoveInDate(),
                                                        DateFormatEnum.DATE,
-                                                       liteYukonUser));
+                                                       userContext));
         mav.addObject("prevMeter", moveInResult.getPreviousMeter());
         mav.addObject("newMeter", moveInResult.getNewMeter());
         mav.addObject("errors", moveInResult.getErrors());
@@ -153,12 +153,12 @@ public class MoveInMoveOutController extends MultiActionController {
             HttpServletResponse response) throws Exception {
         ModelAndView mav = new ModelAndView("moveOut.jsp");
         Meter meter = getMeter(request);
-        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         Date currentDate = new Date();
         String currentDateFormatted = dateFormattingService.formatDate(currentDate,
                                                                        DateFormattingService.DateFormatEnum.DATE,
-                                                                       liteYukonUser);
+                                                                       userContext);
 
         // Adds the group to the mav object
         mav.addObject("meter", meter);
@@ -180,7 +180,7 @@ public class MoveInMoveOutController extends MultiActionController {
 
         // Getting all the needed form values
         Meter prevMeter = getMeter(request);
-        LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         String emailAddress = ServletRequestUtils.getStringParameter(request,
                                                                      "emailAddress");
@@ -192,7 +192,7 @@ public class MoveInMoveOutController extends MultiActionController {
             try {
                 moveOutDate = dateFormattingService.flexibleDateParser(moveOutDateStr,
                                                                        DateFormattingService.DateOnlyMode.END_OF_DAY,
-                                                                       liteYukonUser);
+                                                                       userContext);
             } catch (ParseException pe) {
                 moveOutDate = null;
             }
@@ -201,7 +201,7 @@ public class MoveInMoveOutController extends MultiActionController {
 
         MoveOutForm moveOutForm = new MoveOutForm();
         moveOutForm.setEmailAddress(emailAddress);
-        moveOutForm.setLiteYukonUser(liteYukonUser);
+        moveOutForm.setUserContext(userContext);
         moveOutForm.setMeter(prevMeter);
         moveOutForm.setMoveOutDate(moveOutDate);
 
@@ -229,12 +229,12 @@ public class MoveInMoveOutController extends MultiActionController {
                 mav.addObject("beginDate",
                               dateFormattingService.formatDate(calcReadingDate,
                                                                DateFormatEnum.DATE,
-                                                               liteYukonUser));
+                                                               userContext));
 
                 mav.addObject("endDate",
                               dateFormattingService.formatDate(currentReadingDate,
                                                                DateFormatEnum.BOTH,
-                                                               liteYukonUser));
+                                                               userContext));
 
             }
         } else {
@@ -243,10 +243,10 @@ public class MoveInMoveOutController extends MultiActionController {
             mav.addObject("endDate",
                           dateFormattingService.formatDate(new Date(moveOutDate.getTime() - 1),
                                                            DateFormatEnum.DATE,
-                                                           liteYukonUser));
+                                                           userContext));
         }
         moveInMoveOutEmailService.createMoveOutEmail(moveOutResult,
-                                                     liteYukonUser);
+                                                     userContext);
 
         mav.addObject("currentReading", moveOutResult.getCurrentReading());
         mav.addObject("calculatedUsage", moveOutResult.getCalculatedReading());

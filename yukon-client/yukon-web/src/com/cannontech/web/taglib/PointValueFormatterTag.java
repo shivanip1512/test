@@ -1,4 +1,4 @@
-package com.cannontech.web.util;
+package com.cannontech.web.taglib;
 
 import java.io.IOException;
 
@@ -10,7 +10,8 @@ import org.springframework.beans.factory.annotation.Configurable;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.web.taglib.YukonTagSupport;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 @Configurable("pointValueFormatterTagPrototype")
 public class PointValueFormatterTag extends YukonTagSupport {
@@ -20,7 +21,8 @@ public class PointValueFormatterTag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
-        String valueString = pointFormattingService.getValueString(value, format, getYukonUser());
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(getJspContext());
+        String valueString = pointFormattingService.getValueString(value, format, userContext);
         
         JspWriter out = getJspContext().getOut();
         out.print(valueString);

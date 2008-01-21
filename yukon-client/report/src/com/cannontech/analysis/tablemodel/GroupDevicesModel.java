@@ -12,7 +12,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.ModelRow> implements ReportModelMetaInfo {
     
@@ -65,7 +65,7 @@ public class GroupDevicesModel extends BareReportModelBase<GroupDevicesModel.Mod
     }
     
     @Override
-    public LinkedHashMap<String, String> getMetaInfo(LiteYukonUser user) {
+    public LinkedHashMap<String, String> getMetaInfo(YukonUserContext userContext) {
         
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
         

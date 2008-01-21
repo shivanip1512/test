@@ -17,10 +17,10 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import com.cannontech.common.bulk.importdata.dao.BulkImportDataDao;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 public class BulkImporterRefreshController implements Controller  {
     
@@ -41,7 +41,7 @@ public class BulkImporterRefreshController implements Controller  {
         
         // JSON obj, user
         JSONObject jsonUpdates = new JSONObject();
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // import times
         jsonUpdates.put("lastImportAttempt", bulkImportDataDao.getLastImportTime());
@@ -67,7 +67,7 @@ public class BulkImporterRefreshController implements Controller  {
                 Map<String, String> item = new HashMap<String, String>();
                 item.put("failName", failure.getName());
                 item.put("errorString", error);
-                item.put("failTime", dateFormattingService.formatDate(failure.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, user));
+                item.put("failTime", dateFormattingService.formatDate(failure.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, userContext));
                 failures.add(item);
             }
         }
@@ -86,7 +86,7 @@ public class BulkImporterRefreshController implements Controller  {
             item.put("routeName", failedComm.getRouteName());
             item.put("substationName", failedComm.getSubstationName());
             item.put("errorString", failedComm.getErrorMsg());
-            item.put("failTime", dateFormattingService.formatDate(failedComm.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, user));
+            item.put("failTime", dateFormattingService.formatDate(failedComm.getDateTime(), DateFormattingService.DateFormatEnum.BOTH, userContext));
             failedComms.add(item);
         }
         

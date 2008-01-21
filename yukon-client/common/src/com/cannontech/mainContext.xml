@@ -3,12 +3,15 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
-       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	
 	<tx:annotation-driven />
+    <context:annotation-config/>
     
     <!--  
        The following is the "main" datasource that should be used for new code
@@ -108,9 +111,41 @@
 
     <bean id="dateFormattingService"
         class="com.cannontech.core.service.impl.DateFormattingServiceImpl">
-        <property name="yukonUserDao">
-            <ref bean="yukonUserDao" />
-        </property>
     </bean>
+    
+    
+    
+    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+        <property name="basenames">
+            <list>
+               <value>classpath:com/cannontech/yukon/common/dateFormatting</value>
+               <value>classpath:com/cannontech/yukon/common/pointFormatting</value>
+               <value>classpath:com/cannontech/yukon/web/menuLabels</value>
+               <value>classpath:com/cannontech/yukon/web/standardLayout</value>
+            </list>
+        </property>
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="fallbackToSystemLocale" value="false"/>
+        <property name="useCodeAsDefaultMessage" value="true"/>
+        <property name="cacheSeconds" value="0"/>
+    </bean>
+    
+    <bean id="rootThemeSource" class="com.cannontech.common.i18n.DefaultThemeSource">
+        <property name="messageSource" ref="messageSource"/>
+    </bean>
+    
+    <bean id="mainThemeSource" class="com.cannontech.common.i18n.ReloadableResourceBundleThemeSource">
+        <property name="defaultEncoding" value="UTF-8"/>
+        <property name="fallbackToSystemLocale" value="false"/>
+        <property name="parentThemeSource" ref="rootThemeSource"/>
+        <property name="useCodeAsDefaultMessage" value="true"/>
+        <property name="cacheSeconds" value="0"/>
+    </bean>
+    
+    <bean id="yukonUserContextMessageSourceResolver" class="com.cannontech.i18n.YukonUserContextMessageSourceResolverImpl">
+        <property name="defaultThemeName" value="default"/>
+        <property name="themeSource" ref="mainThemeSource"/>
+    </bean>
+    
 
 </beans>

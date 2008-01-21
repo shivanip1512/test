@@ -19,8 +19,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 public class LogTailUpdaterController extends LogController {
 	
@@ -30,7 +30,7 @@ public class LogTailUpdaterController extends LogController {
 	protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
-        LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // get JSON data
         StringWriter jsonDataWriter = new StringWriter();
@@ -54,7 +54,7 @@ public class LogTailUpdaterController extends LogController {
             // Setting up the last modified variable for the JSON
         	long lastModL = logFile.lastModified();
             Date lastMod = new Date(lastModL);
-            String lastModStr = dateFormattingService.formatDate(lastMod, DateFormattingService.DateFormatEnum.BOTH, yukonUser);
+            String lastModStr = dateFormattingService.formatDate(lastMod, DateFormattingService.DateFormatEnum.BOTH, userContext);
             jsonUpdates.put("fileDateMod", lastModStr);
             
             // Setting up the file length variable for the JSON

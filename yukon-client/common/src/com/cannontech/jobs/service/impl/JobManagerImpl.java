@@ -26,7 +26,6 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.common.util.TimeSource;
 import com.cannontech.core.dao.YukonUserDao;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.dao.JobStatusDao;
 import com.cannontech.jobs.dao.ScheduledOneTimeJobDao;
 import com.cannontech.jobs.dao.ScheduledRepeatingJobDao;
@@ -40,6 +39,8 @@ import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.ScheduleException;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.user.SystemUserContext;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputUtil;
 
@@ -189,14 +190,13 @@ public class JobManagerImpl implements JobManager {
     }
     
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time) {
-        LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(-2);
-        scheduleJob(jobDefinition, task, time, liteYukonUser);
+        scheduleJob(jobDefinition, task, time, new SystemUserContext());
     }
 
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, LiteYukonUser runAs) {
+    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, Date time, YukonUserContext userContext) {
         log.info("scheduling onetime job: jobDefinitio=" + jobDefinition + ", task=" + task + ", time=" + time);
         ScheduledOneTimeJob oneTimeJob = new ScheduledOneTimeJob();
-        scheduleJobCommon(oneTimeJob, jobDefinition, task, runAs);
+        scheduleJobCommon(oneTimeJob, jobDefinition, task, userContext);
 
         oneTimeJob.setStartTime(time);
         scheduledOneTimeJobDao.save(oneTimeJob);
@@ -205,14 +205,13 @@ public class JobManagerImpl implements JobManager {
     }
 
     public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression) {
-        LiteYukonUser liteYukonUser = yukonUserDao.getLiteYukonUser(-2);
-        scheduleJob(jobDefinition, task, cronExpression, liteYukonUser);
+        scheduleJob(jobDefinition, task, cronExpression, new SystemUserContext());
     }
 
-    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, LiteYukonUser runAs) {
+    public void scheduleJob(YukonJobDefinition<?> jobDefinition, YukonTask task, String cronExpression, YukonUserContext userContext) {
         log.info("scheduling repeating job: jobDefinitio=" + jobDefinition + ", task=" + task + ", cronExpression=" + cronExpression);
         ScheduledRepeatingJob repeatingJob = new ScheduledRepeatingJob();
-        scheduleJobCommon(repeatingJob, jobDefinition, task, runAs);
+        scheduleJobCommon(repeatingJob, jobDefinition, task, userContext);
 
         repeatingJob.setCronString(cronExpression);
         scheduledRepeatingJobDao.save(repeatingJob);
@@ -220,13 +219,13 @@ public class JobManagerImpl implements JobManager {
         doScheduleScheduledJob(repeatingJob);
     }
 
-    private void scheduleJobCommon(YukonJob job, YukonJobDefinition<?> jobDefinition, YukonTask task, LiteYukonUser runAs) throws BeansException {
+    private void scheduleJobCommon(YukonJob job, YukonJobDefinition<?> jobDefinition, YukonTask task, YukonUserContext userContext) throws BeansException {
         InputRoot inputRoot = jobDefinition.getInputs();
 
         HashMap<String, String> properties = InputUtil.extractProperties(inputRoot, task);
         log.debug("extracted properties for " + jobDefinition + ": " + properties);
 
-        job.setRunAsUser(runAs);
+        job.setUserContext(userContext);
         job.setJobDefinition(jobDefinition);
         job.setBeanName(jobDefinition.getName());
         job.setJobProperties(properties);
@@ -334,7 +333,7 @@ public class JobManagerImpl implements JobManager {
         try {
             CronExpression cronExpression = new CronExpression(job.getCronString());
             // is this the right thing to do?
-            TimeZone userTimeZone = yukonUserDao.getUserTimeZone(job.getRunAsUser());
+            TimeZone userTimeZone = job.getUserContext().getTimeZone();
             cronExpression.setTimeZone(userTimeZone);
             Date nextValidTimeAfter = cronExpression.getNextValidTimeAfter(from);
             return nextValidTimeAfter;
@@ -352,7 +351,7 @@ public class JobManagerImpl implements JobManager {
                 status.setJobState(JobState.COMPLETED);
                 try {
                     YukonTask task = instantiateTask(status.getJob());
-                    task.setRunAsUser(status.getJob().getRunAsUser());
+                    task.setUserContext(status.getJob().getUserContext());
                     YukonTask existingTask = currentlyRunning.putIfAbsent(status.getJob(), task);
                     if (existingTask != null) {
                         // this should have been caught before the job was

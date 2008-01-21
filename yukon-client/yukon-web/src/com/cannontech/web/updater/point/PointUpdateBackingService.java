@@ -17,7 +17,7 @@ import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
 
 public class PointUpdateBackingService implements UpdateBackingService, PointDataListener {
@@ -30,7 +30,7 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
         Collections.synchronizedMap(new LinkedHashMap<Integer, DatedPointValue>(maxCacheSize, .75f, true));
     private Pattern idSplitter = Pattern.compile("^([^/]+)/(.+)$");
 
-    public String getLatestValue(String identifier, long afterDate, LiteYukonUser user) {
+    public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext) {
         Matcher m = idSplitter.matcher(identifier);
         if (m.matches() && m.groupCount() != 2) {
             throw new RuntimeException("identifier string isn't well formed: " + identifier);
@@ -44,9 +44,9 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
         String valueString;
         try {
             Format formatEnum = Format.valueOf(format);
-            valueString = pointFormattingService.getValueString(latestValue, formatEnum, user);
+            valueString = pointFormattingService.getValueString(latestValue, formatEnum, userContext);
         } catch (IllegalArgumentException e) {
-            valueString = pointFormattingService.getValueString(latestValue, format, user);
+            valueString = pointFormattingService.getValueString(latestValue, format, userContext);
         }
 
         return valueString;

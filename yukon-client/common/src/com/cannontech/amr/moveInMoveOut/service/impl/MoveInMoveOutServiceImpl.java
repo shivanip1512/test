@@ -67,7 +67,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
         CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveInResult.getPreviousMeter(),
                                                                                     moveInFormObj.getMoveInDate(),
-                                                                                    moveInFormObj.getLiteYukonUser());
+                                                                                    moveInFormObj.getUserContext());
 
         if (!resultHolder.getErrors().isEmpty()) {
             logger.info("Move in for " + moveInResult.getPreviousMeter()
@@ -86,7 +86,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                                        .getValue(),
                         moveInFormObj.getMoveInDate());
 
-        archiveDataMoveIn(moveInResult, moveInFormObj.getLiteYukonUser());
+        archiveDataMoveIn(moveInResult, moveInFormObj.getUserContext().getYukonUser());
         updateMeter(moveInFormObj.getPreviousMeter(),
                     moveInResult.getNewMeter());
         removeServiceDeviceGroups(moveInResult);
@@ -108,12 +108,11 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         moveInTask.setMeter(moveInFormObj.getPreviousMeter());
         moveInTask.setNewMeterName(moveInFormObj.getMeterName());
         moveInTask.setNewMeterNumber(moveInFormObj.getMeterNumber());
-        moveInTask.setRunAsUser(moveInFormObj.getLiteYukonUser());
 
         jobManager.scheduleJob(moveInDefinition,
                                moveInTask,
                                moveInFormObj.getMoveInDate(),
-                               moveInFormObj.getLiteYukonUser());
+                               moveInFormObj.getUserContext());
 
         logger.info("Move in for " + moveInResultObj.getPreviousMeter()
                                                     .toString() + " scheduled.");
@@ -131,7 +130,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
         CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveOutResultObj.getPreviousMeter(),
                                                                                     moveOutFormObj.getMoveOutDate(),
-                                                                                    moveOutFormObj.getLiteYukonUser());
+                                                                                    moveOutFormObj.getUserContext());
         if (!resultHolder.getErrors().isEmpty()) {
             logger.info("Move out for " + moveOutResultObj.getPreviousMeter()
                                                           .toString() + " failed. " + moveOutResultObj.getErrors());
@@ -149,7 +148,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
                         moveOutResultObj.getCalculatedReading().getValue(),
                         moveOutFormObj.getMoveOutDate());
 
-        archiveDataMoveOut(moveOutResultObj, moveOutFormObj.getLiteYukonUser());
+        archiveDataMoveOut(moveOutResultObj, moveOutFormObj.getUserContext().getYukonUser());
 
         addServiceDeviceGroups(moveOutResultObj);
         logger.info("Move out for " + moveOutResultObj.getPreviousMeter()
@@ -170,12 +169,11 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         moveOutTask.setEmailAddress(moveOutFormObj.getEmailAddress());
         moveOutTask.setMoveOutDate(moveOutFormObj.getMoveOutDate());
         moveOutTask.setMeter(moveOutFormObj.getMeter());
-        moveOutTask.setRunAsUser(moveOutFormObj.getLiteYukonUser());
 
         jobManager.scheduleJob(moveOutDefinition,
                                moveOutTask,
                                moveOutFormObj.getMoveOutDate(),
-                               moveOutFormObj.getLiteYukonUser());
+                               moveOutFormObj.getUserContext());
 
         logger.info("Move out for " + moveOutResultObj.getPreviousMeter()
                                                       .toString() + " scheduled.");
@@ -292,7 +290,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private void addArchiveEntryDatabase(Meter oldMeter, Date moveDate,
             DeviceEventEnum deviceEvent, LiteYukonUser liteYukonUser) {
 
-        boolean autoArchivingEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(liteYukonUser.getUserID(),
+        boolean autoArchivingEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(liteYukonUser,
                                                                                          MeteringRole.AUTO_ARCHIVING_ENABLED));
 
         if (autoArchivingEnabled) {

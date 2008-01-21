@@ -11,15 +11,13 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.jobs.support.YukonTaskBase;
 
-public class MoveOutTask implements YukonTask {
+public class MoveOutTask extends YukonTaskBase {
 
     private Logger logger = YukonLogManager.getLogger(MoveOutTask.class);
 
     // Injected variables
-    private LiteYukonUser liteYukonUser = null;
     private Meter meter = null;
     private String emailAddress = null;
     private Date moveOutDate = null;
@@ -36,18 +34,18 @@ public class MoveOutTask implements YukonTask {
         logger.info("Starting move out task.");
         MoveOutForm moveOutFormObj = new MoveOutForm();
         moveOutFormObj.setEmailAddress(emailAddress);
-        moveOutFormObj.setLiteYukonUser(liteYukonUser);
+        moveOutFormObj.setUserContext(getUserContext());
         moveOutFormObj.setMeter(meter);
         moveOutFormObj.setMoveOutDate(moveOutDate);
         
         MoveOutResult moveOutResult = null;
         
         moveOutResult = moveInMoveOutService.moveOut(moveOutFormObj);
-        moveInMoveOutEmailService.createMoveOutEmail(moveOutResult, liteYukonUser);
+        moveInMoveOutEmailService.createMoveOutEmail(moveOutResult, getUserContext());
     }
 
     public void stop() throws UnsupportedOperationException {
-        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     // Setters for injected parameters
@@ -73,10 +71,6 @@ public class MoveOutTask implements YukonTask {
 
     public void setMoveOutDate(Date moveOutDate) {
         this.moveOutDate = moveOutDate;
-    }
-
-    public void setRunAsUser(LiteYukonUser user) {
-        this.liteYukonUser = user;
     }
 
     // Setters for injected services and daos

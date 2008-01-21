@@ -30,6 +30,8 @@ import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ExpireLRUMap;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -133,11 +135,11 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         
         ModelAndView mav = getOutagesModelAndView(meter, allExistingAttributes);
 
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
-        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, user);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, userContext.getYukonUser());
         
         if( allExistingAttributes.contains(BuiltInAttribute.OUTAGE_LOG)) {
-            PerishableOutageData data = addOutageData(meter, result.getValues());
+            PerishableOutageData data = addOutageData(meter, result.getValues(), userContext);
             mav.addObject("data", data);
         }
 
@@ -147,7 +149,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         
         mav.addObject("result", result);
         
-        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, user);
+        boolean readable = meterReadService.isReadable(meter, allExistingAttributes, userContext.getYukonUser());
         mav.addObject("readable", readable);
         
         return mav;
@@ -187,7 +189,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         return meter;
     }
 
-    private PerishableOutageData addOutageData(Meter meter, List<PointValueHolder> values) {
+    private PerishableOutageData addOutageData(Meter meter, List<PointValueHolder> values, YukonUserContext userContext) {
 
         LitePoint litePoint = attributeService.getPointForAttribute(meter, BuiltInAttribute.OUTAGE_LOG);
         
@@ -196,7 +198,7 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         for (PointValueHolder holder : values) {
             if( holder.getId() == litePoint.getPointID()) {
                 String duration = TimeUtil.convertSecondsToTimeString(holder.getValue());
-                String timestamp = pointFormattingService.getValueString(holder, Format.DATE);
+                String timestamp = pointFormattingService.getValueString(holder, Format.DATE, userContext);
                 OutageData od = new OutageData(timestamp, duration);
                 outageData.add(od);
             }

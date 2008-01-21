@@ -1,4 +1,4 @@
-package com.cannontech.web.util;
+package com.cannontech.web.taglib;
 
 import java.io.IOException;
 
@@ -13,7 +13,6 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.web.taglib.YukonTagSupport;
 
 @Configurable("attributeResolverTagPrototype")
 public class AttributeResolverTag extends YukonTagSupport {

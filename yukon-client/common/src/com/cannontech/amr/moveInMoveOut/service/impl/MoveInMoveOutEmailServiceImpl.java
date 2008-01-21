@@ -23,14 +23,14 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.util.SimpleTemplateProcessor;
+import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailService;
+import com.cannontech.user.YukonUserContext;
 
 public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService {
 
@@ -54,38 +54,38 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     private final String scheduledMsgSub = "Scheduled meter reading for {prevMeterName}.";
 
     public void createMoveInEmail(MoveInResult moveInResult,
-            LiteYukonUser liteYukonUser) {
+                                  YukonUserContext userContext) {
         if (!StringUtils.isBlank(moveInResult.getEmailAddress())) {
             if (moveInResult.isScheduled()) {
-                createMoveInScheduleEmail(moveInResult, liteYukonUser);
+                createMoveInScheduleEmail(moveInResult, userContext);
             } else {
                 if (moveInResult.getErrors().isEmpty()) {
-                    createMoveInSuccessEmail(moveInResult, liteYukonUser);
+                    createMoveInSuccessEmail(moveInResult, userContext);
                 } else {
-                    createMoveInFailureEmail(moveInResult, liteYukonUser);
+                    createMoveInFailureEmail(moveInResult, userContext);
                 }
             }
         }
     }
 
     public void createMoveOutEmail(MoveOutResult moveOutResult,
-            LiteYukonUser liteYukonUser) {
+                                   YukonUserContext userContext) {
         if (!StringUtils.isBlank(moveOutResult.getEmailAddress())) {
             if (moveOutResult.isScheduled()) {
-                createMoveOutScheduleEmail(moveOutResult, liteYukonUser);
+                createMoveOutScheduleEmail(moveOutResult, userContext);
             } else {
                 if (moveOutResult.getErrors().isEmpty()) {
-                    createMoveOutSuccessEmail(moveOutResult, liteYukonUser);
+                    createMoveOutSuccessEmail(moveOutResult, userContext);
                 } else {
-                    createMoveOutFailureEmail(moveOutResult, liteYukonUser);
+                    createMoveOutFailureEmail(moveOutResult, userContext);
                 }
             }
         }
     }
 
     private void createMoveInSuccessEmail(MoveInResult moveInResult,
-            LiteYukonUser liteYukonUser) {
-        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
+                                          YukonUserContext userContext) {
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new HashMap<String, Object>();
         msgData.put("status", "completed");
         msgData.put("statusMsg",
@@ -120,12 +120,12 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         }
         msgData.put("deviceGroups", deviceGroupList);
         
-        setDatesMoveIn(moveInResult, msgData, liteYukonUser);
+        setDatesMoveIn(moveInResult, msgData, userContext);
 
         msgData.put("currentUsage",
                     pointFormattingService.getValueString(moveInResult.getCurrentReading(),
                                                           Format.FULL,
-                                                          liteYukonUser));
+                                                          userContext));
         msgData.put("calculatedUsage",
                     pointFormattingService.getValueString(moveInResult.getCalculatedDifference(),
                                                           Format.SHORT));
@@ -133,7 +133,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
                     pointFormattingService.getValueString(moveInResult.getCalculatedPreviousReading(),
                                                           Format.SHORTDATE));
 
-        msgData.put("user", liteYukonUser.getUsername());
+        msgData.put("user", userContext.getYukonUser().getUsername());
         msgData.put("processingDate", Calendar.getInstance()
                                               .getTime()
                                               .toString());
@@ -153,8 +153,8 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     }
 
     private void createMoveInScheduleEmail(MoveInResult moveInResult,
-            LiteYukonUser liteYukonUser) {
-        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
+                                           YukonUserContext userContext) {
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new TreeMap<String, Object>();
         msgData.put("status", "scheduled");
 
@@ -165,7 +165,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         Date moveInDate = moveInResult.getMoveInDate();
         String moveInDateStr = dateFormattingService.formatDate(moveInDate,
                                                                 DateFormatEnum.DATE,
-                                                                liteYukonUser);
+                                                                userContext);
 
         msgData.put("startDate", moveInDateStr);
 
@@ -184,8 +184,8 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     }
 
     private void createMoveInFailureEmail(MoveInResult moveInResult,
-            LiteYukonUser liteYukonUser) {
-        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
+                                          YukonUserContext userContext) {
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new TreeMap<String, Object>();
         msgData.put("status", "failed");
         msgData.put("statusMsg",
@@ -196,7 +196,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
                                                    .getMeterNumber());
         msgData.put("prevMeterName", moveInResult.getPreviousMeter().getName());
 
-        setDatesMoveIn(moveInResult, msgData, liteYukonUser);
+        setDatesMoveIn(moveInResult, msgData, userContext);
         buildErrorStr(moveInResult.getErrors(), msgData);
 
         String subject = tp.process(baseSubjectFormat, msgData);
@@ -214,8 +214,8 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     }
 
     private void createMoveOutSuccessEmail(MoveOutResult moveOutResult,
-            LiteYukonUser liteYukonUser) {
-        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
+                                           YukonUserContext userContext) {
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new HashMap<String, Object>();
         msgData.put("status", "completed");
         msgData.put("statusMsg",
@@ -223,7 +223,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
                                                            .getName() + " is complete.");
         msgData.put("prevMeterName", moveOutResult.getPreviousMeter().getName());
 
-        setDatesMoveOut(moveOutResult, msgData, liteYukonUser);
+        setDatesMoveOut(moveOutResult, msgData, userContext);
 
         Set<String> deviceGroupList = new TreeSet<String>();
         for(DeviceGroup deviceGroup : moveOutResult.getDeviceGroupsAdded()){
@@ -234,7 +234,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("currentUsage",
                     pointFormattingService.getValueString(moveOutResult.getCurrentReading(),
                                                           Format.FULL,
-                                                          liteYukonUser));
+                                                          userContext));
         msgData.put("calculatedUsage",
                     pointFormattingService.getValueString(moveOutResult.getCalculatedDifference(),
                                                           Format.SHORT));
@@ -242,7 +242,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
                     pointFormattingService.getValueString(moveOutResult.getCalculatedReading(),
                                                           Format.SHORTDATE));
 
-        msgData.put("user", liteYukonUser.getUsername());
+        msgData.put("user", userContext.getYukonUser().getUsername());
         msgData.put("processingDate", Calendar.getInstance()
                                               .getTime()
                                               .toString());
@@ -262,8 +262,8 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     }
 
     private void createMoveOutScheduleEmail(MoveOutResult moveOutResult,
-            LiteYukonUser liteYukonUser) {
-        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
+                                            YukonUserContext userContext) {
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new TreeMap<String, Object>();
         msgData.put("status", "scheduled");
 
@@ -273,7 +273,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         Date moveOutDate = new Date(moveOutResult.getMoveOutDate().getTime() - 1);
         String moveOutDateStr = dateFormattingService.formatDate(moveOutDate,
                                                                  DateFormatEnum.DATE,
-                                                                 liteYukonUser);
+                                                                 userContext);
 
         msgData.put("startDate", moveOutDateStr);
 
@@ -292,8 +292,8 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     }
 
     private void createMoveOutFailureEmail(MoveOutResult moveOutResult,
-            LiteYukonUser liteYukonUser) {
-        SimpleTemplateProcessor tp = new SimpleTemplateProcessor();
+                                           YukonUserContext userContext) {
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new TreeMap<String, Object>();
         msgData.put("status", "failed");
         msgData.put("statusMsg",
@@ -304,7 +304,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
                                                     .getMeterNumber());
         msgData.put("prevMeterName", moveOutResult.getPreviousMeter().getName());
 
-        setDatesMoveOut(moveOutResult, msgData, liteYukonUser);
+        setDatesMoveOut(moveOutResult, msgData, userContext);
         buildErrorStr(moveOutResult.getErrors(), msgData);
 
         String subject = tp.process(baseSubjectFormat, msgData);
@@ -333,32 +333,32 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     }
 
     private void setDatesMoveOut(MoveOutResult moveOutResult,
-            Map<String, Object> msgData, LiteYukonUser liteYukonUser) {
+            Map<String, Object> msgData, YukonUserContext userContext) {
         Date moveOutDate = new Date(moveOutResult.getMoveOutDate().getTime() - 1);
         String moveOutDateStr = dateFormattingService.formatDate(moveOutDate,
                                                                  DateFormatEnum.DATE,
-                                                                 liteYukonUser);
+                                                                 userContext);
 
         Date currentReadDate = new Date();
         String currentReadDateStr = dateFormattingService.formatDate(currentReadDate,
                                                                      DateFormatEnum.BOTH,
-                                                                     liteYukonUser);
+                                                                     userContext);
 
         msgData.put("startDate", moveOutDateStr);
         msgData.put("stopDate", currentReadDateStr);
     }
 
     private void setDatesMoveIn(MoveInResult moveInResult,
-            Map<String, Object> msgData, LiteYukonUser liteYukonUser) {
+            Map<String, Object> msgData, YukonUserContext userContext) {
         Date moveInDate = moveInResult.getMoveInDate();
         String moveInDateStr = dateFormattingService.formatDate(moveInDate,
                                                                 DateFormatEnum.DATE,
-                                                                liteYukonUser);
+                                                                userContext);
 
         Date currentDate = new Date();
         String currentDateStr = dateFormattingService.formatDate(currentDate,
                                                                  DateFormatEnum.BOTH,
-                                                                 liteYukonUser);
+                                                                 userContext);
 
         msgData.put("startDate", moveInDateStr);
         msgData.put("stopDate", currentDateStr);

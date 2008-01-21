@@ -23,8 +23,8 @@ import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.util.ServletUtil;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -46,7 +46,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         ModelAndView mav = new ModelAndView();
         
         // user
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // Add any previous results for the device into the mav
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request,
@@ -55,11 +55,11 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         Meter meter = meterDao.getForId(deviceId);
         
         // pre
-        PeakReportResult preResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.PRE, user);
+        PeakReportResult preResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.PRE, userContext.getYukonUser());
         mav.addObject("preResult", preResult);
         
         // post
-        PeakReportResult postResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.POST, user);
+        PeakReportResult postResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.POST, userContext.getYukonUser());
         mav.addObject("postResult", postResult);
 
         addHighlightedFields(request, mav);
@@ -72,7 +72,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         mav.addObject("stopDate", COMMAND_FORMAT.format(now));
         
         if(preResult != null) {
-            Map<String,String> preMap = getParsedPeakResultValuesMap(preResult, user, deviceId, 1);
+            Map<String,String> preMap = getParsedPeakResultValuesMap(preResult, userContext, deviceId, 1);
             mav.addObject("displayName", preMap.get("displayName"));
             mav.addObject("prePeriodStartDateDisplay",preMap.get("periodStartDateDisplay"));
             mav.addObject("prePeriodStopDateDisplay",preMap.get("periodStopDateDisplay"));
@@ -80,13 +80,13 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         }
         
         if(postResult != null) {
-            Map<String,String> postMap = getParsedPeakResultValuesMap(postResult, user, deviceId, 1);
+            Map<String,String> postMap = getParsedPeakResultValuesMap(postResult, userContext, deviceId, 1);
             mav.addObject("postPeriodStartDateDisplay",postMap.get("periodStartDateDisplay"));
             mav.addObject("postPeriodStopDateDisplay",postMap.get("periodStopDateDisplay"));
             mav.addObject("postPeakValue",postMap.get("peakValueStr"));
         }
         
-        boolean readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
+        boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
         mav.addObject("readable", readable);
 
         return mav;
@@ -110,9 +110,9 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         Meter meter = meterDao.getForId(deviceId);
         
         // Get the user's timezone
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
-        boolean readable = commandAuthorizationService.isAuthorized(user, "getvalue lp peak", meter);
+        boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
         mav.addObject("readable", readable);
 
         // Get the report type for the commands
@@ -131,7 +131,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         try {
             preCommandStartDate = dateFormattingService.flexibleDateParser(startDateStr,
                                                                            DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                           user);
+                                                                           userContext);
         } catch (ParseException e) {
             mav.addObject("errorMsg",
                           "Start date: " + startDateStr + " is not formatted correctly - example (mm/dd/yyyy).  Please try again.");
@@ -141,7 +141,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         try {
             preCommandStopDate = dateFormattingService.flexibleDateParser(stopDateStr,
                                                                           DateFormattingService.DateOnlyMode.START_OF_DAY,
-                                                                          user);
+                                                                          userContext);
         } catch (ParseException e) {
             mav.addObject("errorMsg",
                           "Stop date: " + stopDateStr + " is not formatted correctly - example (mm/dd/yyyy).  Please try again.");
@@ -167,13 +167,13 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         PeakReportPeakType peakType = PeakReportPeakType.valueOf(reportType.toUpperCase());
         preCommandDays = (getDaysBetween(preCommandStopDate, preCommandStartDate) + 1);
         
-        prePeakResult = peakReportService.requestPeakReport(deviceId, peakType, PeakReportRunType.PRE, 1, preCommandStartDate, preCommandStopDate, true, user);
+        prePeakResult = peakReportService.requestPeakReport(deviceId, peakType, PeakReportRunType.PRE, 1, preCommandStartDate, preCommandStopDate, true, userContext);
                    
         
         // Build post command only if days are 1 or more
         postCommandDays = getDaysBetween(postCommandStopDate, preCommandStopDate);
         if (postCommandDays > 0) {
-            postPeakResult = peakReportService.requestPeakReport(deviceId, peakType, PeakReportRunType.POST, 1, preCommandStopDate, postCommandStopDate, true, user);
+            postPeakResult = peakReportService.requestPeakReport(deviceId, peakType, PeakReportRunType.POST, 1, preCommandStopDate, postCommandStopDate, true, userContext);
         }
            
         mav.addObject("preCommandDays", preCommandDays);
@@ -183,7 +183,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         mav.addObject("postResult", postPeakResult);
         
         if(prePeakResult != null && !prePeakResult.isNoData()) {
-            Map<String,String> preMap = getParsedPeakResultValuesMap(prePeakResult, user, deviceId, 1);
+            Map<String,String> preMap = getParsedPeakResultValuesMap(prePeakResult, userContext, deviceId, 1);
             mav.addObject("displayName", preMap.get("displayName"));
             mav.addObject("prePeriodStartDateDisplay",preMap.get("periodStartDateDisplay"));
             mav.addObject("prePeriodStopDateDisplay",preMap.get("periodStopDateDisplay"));
@@ -191,7 +191,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         }
         
         if(postPeakResult != null && !postPeakResult.isNoData()) {
-            Map<String,String> postMap = getParsedPeakResultValuesMap(postPeakResult, user, deviceId, 1);
+            Map<String,String> postMap = getParsedPeakResultValuesMap(postPeakResult, userContext, deviceId, 1);
             mav.addObject("postPeriodStartDateDisplay",postMap.get("periodStartDateDisplay"));
             mav.addObject("postPeriodStopDateDisplay",postMap.get("periodStopDateDisplay"));
             mav.addObject("postPeakValue",postMap.get("peakValueStr"));
@@ -200,19 +200,19 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         return mav;
     }
     
-    private Map<String, String> getParsedPeakResultValuesMap(PeakReportResult peakResult, LiteYukonUser user, int deviceId, int channel) {
+    private Map<String, String> getParsedPeakResultValuesMap(PeakReportResult peakResult, YukonUserContext userContext, int deviceId, int channel) {
         
         // init hash
         Map<String, String> parsedVals = new HashMap<String, String>();
         
         // special formatting of peakResult dates for display purposes
-        String runDateDisplay = dateFormattingService.formatDate(peakResult.getRunDate(), DateFormattingService.DateFormatEnum.DATEHM, user);
+        String runDateDisplay = dateFormattingService.formatDate(peakResult.getRunDate(), DateFormattingService.DateFormatEnum.DATEHM, userContext);
         parsedVals.put("runDateDisplay", runDateDisplay);
         
-        String periodStartDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, user);
+        String periodStartDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
         parsedVals.put("periodStartDateDisplay", periodStartDateDisplay);
         
-        String periodStopDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, user);
+        String periodStopDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
         parsedVals.put("periodStopDateDisplay", periodStopDateDisplay);
         
         parsedVals.put("displayName", peakResult.getPeakType().getDisplayName());
@@ -220,7 +220,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         
         String peakValueStr = "";
         if(peakResult.getPeakType() == PeakReportPeakType.DAY) {
-            peakValueStr = dateFormattingService.formatDate(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, user);
+            peakValueStr = dateFormattingService.formatDate(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
         }
         else if(peakResult.getPeakType() == PeakReportPeakType.HOUR) {
             peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());

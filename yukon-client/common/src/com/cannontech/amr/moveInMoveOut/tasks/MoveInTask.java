@@ -11,15 +11,13 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.jobs.support.YukonTask;
+import com.cannontech.jobs.support.YukonTaskBase;
 
-public class MoveInTask implements YukonTask {
+public class MoveInTask extends YukonTaskBase {
 
     private Logger logger = YukonLogManager.getLogger(MoveInTask.class);
 
     // Injected variables
-    private LiteYukonUser liteYukonUser = null;
     private Meter meter = null;
     private String newMeterName = null;
     private String newMeterNumber = null;
@@ -38,7 +36,7 @@ public class MoveInTask implements YukonTask {
         logger.info("Starting move in task.");
         MoveInForm moveInFormObj = new MoveInForm();
         moveInFormObj.setEmailAddress(emailAddress);
-        moveInFormObj.setLiteYukonUser(liteYukonUser);
+        moveInFormObj.setUserContext(getUserContext());
         moveInFormObj.setMeterName(newMeterName);
         moveInFormObj.setMeterNumber(newMeterNumber);
         moveInFormObj.setMoveInDate(moveInDate);
@@ -47,11 +45,11 @@ public class MoveInTask implements YukonTask {
         MoveInResult moveInResult = null;
 
         moveInResult = moveInMoveOutService.moveIn(moveInFormObj);
-        moveInMoveOutEmailService.createMoveInEmail(moveInResult, liteYukonUser);
+        moveInMoveOutEmailService.createMoveInEmail(moveInResult, getUserContext());
     }
 
     public void stop() throws UnsupportedOperationException {
-        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException();
     }
 
     // Setters for injected parameters
@@ -93,10 +91,6 @@ public class MoveInTask implements YukonTask {
 
     public Meter getMeter() {
         return meter;
-    }
-
-    public void setRunAsUser(LiteYukonUser user) {
-        this.liteYukonUser = user;
     }
 
     // Setters for injected services and daos

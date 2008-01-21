@@ -15,7 +15,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryModel.ModelRow> implements ReportModelMetaInfo {
     
@@ -61,7 +61,7 @@ public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryMod
     }
     
     @Override
-    public LinkedHashMap<String, String> getMetaInfo(LiteYukonUser user) {
+    public LinkedHashMap<String, String> getMetaInfo(YukonUserContext userContext) {
         
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
 
@@ -71,8 +71,8 @@ public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryMod
         
         info.put("Device Name", device.getPaoName());
         info.put("Point Id", Integer.toString(getPointId()));
-        info.put("Start Date", dateFormattingService.formatDate(new Date(startDate), DateFormattingService.DateFormatEnum.BOTH, user));
-        info.put("Stop Date", dateFormattingService.formatDate(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, user));
+        info.put("Start Date", dateFormattingService.formatDate(new Date(startDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Stop Date", dateFormattingService.formatDate(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
         return info;
     }
 

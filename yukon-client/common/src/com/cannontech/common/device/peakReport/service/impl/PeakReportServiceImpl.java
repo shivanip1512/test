@@ -29,6 +29,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.db.device.DeviceLoadProfile;
+import com.cannontech.user.YukonUserContext;
 
 public class PeakReportServiceImpl implements PeakReportService {
 
@@ -40,7 +41,7 @@ public class PeakReportServiceImpl implements PeakReportService {
     private PeakReportDao peakReportDao = null;
     
     
-    public PeakReportResult requestPeakReport(int deviceId, PeakReportPeakType peakType, PeakReportRunType runType, int channel, Date startDate, Date stopDate, boolean persist, LiteYukonUser user) {
+    public PeakReportResult requestPeakReport(int deviceId, PeakReportPeakType peakType, PeakReportRunType runType, int channel, Date startDate, Date stopDate, boolean persist, YukonUserContext userContext) {
         
         // interval
         int interval = getChannelIntervalForDevice(deviceId, channel);
@@ -50,12 +51,13 @@ public class PeakReportServiceImpl implements PeakReportService {
         commandBuffer.append("getvalue lp peak");
         commandBuffer.append(" " + peakType.toString().toLowerCase());
         commandBuffer.append(" channel " + channel);
-        commandBuffer.append(" " + dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, user));
+        //i18n The following is wrong and needs to be changed per YUK-5203
+        commandBuffer.append(" " + dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext));
         
-        Calendar startDateCal = dateFormattingService.getCalendar(user);
+        Calendar startDateCal = dateFormattingService.getCalendar(userContext);
         startDateCal.setTime(startDate);
         
-        Calendar stopDateCal = dateFormattingService.getCalendar(user);
+        Calendar stopDateCal = dateFormattingService.getCalendar(userContext);
         stopDateCal.setTime(stopDate);
         
         int commandDays = TimeUtil.differenceInDays(startDateCal, stopDateCal) + 1;
@@ -76,7 +78,7 @@ public class PeakReportServiceImpl implements PeakReportService {
         // run command
         CommandResultHolder commandResultHolder;
         try{
-            commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), user);
+            commandResultHolder = commandRequestExecutor.execute(meter, commandBuffer.toString(), userContext.getYukonUser());
         }
         catch(Exception e){
             throw new PeakSummaryReportRequestException();

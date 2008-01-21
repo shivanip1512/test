@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.bulk.importdata.dao.BulkImportDataDao;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.importer.ImportDataBase;
+import com.cannontech.user.YukonUserContext;
 
 public class BulkImportResultsModel extends BareReportModelBase<BulkImportResultsModel.ModelRow> implements ReportModelMetaInfo {
     
@@ -72,12 +72,12 @@ public class BulkImportResultsModel extends BareReportModelBase<BulkImportResult
     }
     
     @Override
-    public LinkedHashMap<String, String> getMetaInfo(LiteYukonUser user) {
+    public LinkedHashMap<String, String> getMetaInfo(YukonUserContext userContext) {
         
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
 
         info.put("Report Type", BulkImportResultstReportType.valueOf(reportType).getReportDecription());
-        info.put("Generated", dateFormattingService.formatDate(new Date(), DateFormattingService.DateFormatEnum.BOTH, null));
+        info.put("Generated", dateFormattingService.formatDate(new Date(), DateFormattingService.DateFormatEnum.BOTH, userContext));
         return info;
     }
 

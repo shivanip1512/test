@@ -21,7 +21,7 @@ import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.database.data.lite.LitePoint;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * @author mkruse
@@ -42,7 +42,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 	 * @param device
 	 * @param beginDate
 	 */
-	public CalculatedPointResults calculatePoint(Meter meter, Date beginDate, LiteYukonUser liteYukonUser) {
+	public CalculatedPointResults calculatePoint(Meter meter, Date beginDate, YukonUserContext userContext) {
 
         CalculatedPointResults results = new CalculatedPointResults();
 
@@ -51,7 +51,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 		logger.info("Starting meter read for " + meter.toString());
 		CommandResultHolder meterReadResults = meterReadService.readMeter(
 				meter, Collections.singleton(BuiltInAttribute.ENERGY),
-				liteYukonUser);
+				userContext.getYukonUser());
 
         PointValueHolder currentPVH = null;
 		if (meterReadResults.isErrorsExist()) {
@@ -72,7 +72,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 		PeakReportResult peakReportResults = peakReportService
 				.requestPeakReport(meter.getDeviceId(), PeakReportPeakType.DAY,
 						PeakReportRunType.PRE, 1, beginDate, new Date(), false,
-						liteYukonUser);
+						userContext);
 
 		double calculatedDifferenceUsage = 0;
 		if (peakReportResults.getErrors().isEmpty()) {

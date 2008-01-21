@@ -3,7 +3,7 @@ package com.cannontech.amr.moveInMoveOut.service;
 
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface MoveInMoveOutEmailService{
 
@@ -17,7 +17,7 @@ public interface MoveInMoveOutEmailService{
      * @param liteYukonUser
      */
 
-    public void createMoveInEmail(MoveInResult moveInResult, LiteYukonUser liteYukonUser);
-    public void createMoveOutEmail(MoveOutResult moveOutResult, LiteYukonUser liteYukonUser);
+    public void createMoveInEmail(MoveInResult moveInResult, YukonUserContext userContext);
+    public void createMoveOutEmail(MoveOutResult moveOutResult, YukonUserContext userContext);
     
 }

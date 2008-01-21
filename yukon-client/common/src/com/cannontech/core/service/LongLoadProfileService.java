@@ -6,6 +6,7 @@ import java.util.Date;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
+import com.cannontech.user.YukonUserContext;
 
 public interface LongLoadProfileService {
     public void initiateLongLoadProfile(LiteYukonPAObject device, 
@@ -13,10 +14,10 @@ public interface LongLoadProfileService {
                                         Date start, 
                                         Date stop, 
                                         CompletionCallback runner,
-                                        LiteYukonUser user);
+                                        YukonUserContext userContext);
     public Collection<ProfileRequestInfo> getPendingLongLoadProfileRequests(LiteYukonPAObject device);
     
-    public boolean removePendingLongLoadProfileRequest(LiteYukonPAObject device, long requestId, LiteYukonUser user);
+    public boolean removePendingLongLoadProfileRequest(LiteYukonPAObject device, long requestId, YukonUserContext userContext);
     
     public void printSizeOfCollections(int deviceId);
     

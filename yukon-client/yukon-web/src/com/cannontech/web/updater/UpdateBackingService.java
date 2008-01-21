@@ -1,6 +1,6 @@
 package com.cannontech.web.updater;
 
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 
 public interface UpdateBackingService {
@@ -10,5 +10,5 @@ public interface UpdateBackingService {
      * @param afterDate the if-modified-since date, or null if the latest value is desired
      * @return null if unchanged
      */
-    public String getLatestValue(String identifier, long afterDate, LiteYukonUser user);
+    public String getLatestValue(String identifier, long afterDate, YukonUserContext userContext);
 }

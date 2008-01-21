@@ -24,14 +24,13 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.LoadableModel;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.PointFormattingService.Format;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.input.InputSource;
@@ -67,11 +66,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     }
     
     
-    
-    /* (non-Javadoc)
-     * @see com.cannontech.simplereport.SimpleReportService#formatData(java.lang.String, java.lang.Object, com.cannontech.database.data.lite.LiteYukonUser)
-     */
-    public String formatData(String format, Object data, LiteYukonUser user, PointFormattingService cachedPointFormatter) {
+    public String formatData(String format, Object data, YukonUserContext userContext, PointFormattingService cachedPointFormatter) {
         
         if(data == null) {
             return "";
@@ -89,10 +84,10 @@ public class SimpleReportServiceImpl implements SimpleReportService {
                 DateFormatEnum enumValue = DateFormattingService.DateFormatEnum.valueOf(format);
                 formattedData = dateFormattingService.formatDate((Date) data,
                                                                  enumValue,
-                                                                 user);
+                                                                 userContext);
             } else {
                 SimpleDateFormat formatter = new SimpleDateFormat(format);
-                formatter.setTimeZone(yukonUserDao.getUserTimeZone(user));
+                formatter.setTimeZone(userContext.getTimeZone());
                 formattedData = formatter.format(data);
             }
         }
@@ -112,9 +107,9 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         else if(data instanceof PointValueHolder) {
             try {
                 Format formatEnum = PointFormattingService.Format.valueOf(format);
-                formattedData = cachedPointFormatter.getValueString((PointValueHolder)data, formatEnum, user);
+                formattedData = cachedPointFormatter.getValueString((PointValueHolder)data, formatEnum, userContext);
             } catch (IllegalArgumentException e) {
-                formattedData = cachedPointFormatter.getValueString((PointValueHolder)data, format, user);
+                formattedData = cachedPointFormatter.getValueString((PointValueHolder)data, format, userContext);
             }
         }
 
@@ -166,7 +161,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     public BareReportModel getStringReportModel(final YukonReportDefinition<BareReportModel> reportDefinition,
             final BareReportModel reportModel,
             Map<String, String> parameterMap,
-            final LiteYukonUser user) throws Exception {
+            final YukonUserContext userContext) throws Exception {
         
         final PointFormattingService cachedInstance = pointFormattingService.getCachedInstance();
         
@@ -194,7 +189,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
             public Object getValueAt(int rowIndex, int columnIndex) {
                 Object objValue = reportModel.getValueAt(rowIndex, columnIndex);
                 ColumnLayoutData columnLayoutData = reportDefinition.getReportLayoutData().getBodyColumns()[columnIndex];
-                String formattedString = formatData(columnLayoutData.getFormat(), objValue, user, cachedInstance);
+                String formattedString = formatData(columnLayoutData.getFormat(), objValue, userContext, cachedInstance);
                 return formattedString;
             }
             
@@ -206,10 +201,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     
 
     
-    /* (non-Javadoc)
-     * @see com.cannontech.simplereport.SimpleReportService#getFormattedData(com.cannontech.analysis.tablemodel.BareReportModel, java.util.List, com.cannontech.database.data.lite.LiteYukonUser)
-     */
-    public List<List<String>> getFormattedData(BareReportModel reportModel, List<ColumnInfo> ColumnInfos, LiteYukonUser user) {
+    public List<List<String>> getFormattedData(BareReportModel reportModel, List<ColumnInfo> ColumnInfos, YukonUserContext userContext) {
         
         List<List<String>> data = new ArrayList<List<String>>();
         int columnCount = reportModel.getColumnCount();
@@ -225,7 +217,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
 
                 String format = ColumnInfos.get(colIdx).getColumnFormat();
                 Object dataItem = reportModel.getValueAt(rowIdx, colIdx);
-                String formattedData = formatData(format, dataItem, user, cachedInstance);
+                String formattedData = formatData(format, dataItem, userContext, cachedInstance);
                 colData.add(formattedData);
             }
             data.add(colData);
@@ -234,9 +226,6 @@ public class SimpleReportServiceImpl implements SimpleReportService {
     }
     
     
-    /* (non-Javadoc)
-     * @see com.cannontech.simplereport.SimpleReportService#buildColumnInfoListFromColumnLayoutData(com.cannontech.analysis.report.ColumnLayoutData[])
-     */
     public List<ColumnInfo> buildColumnInfoListFromColumnLayoutData(ColumnLayoutData[] bodyColumns) {
         
         int totalWidth = 0;

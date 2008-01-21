@@ -9,6 +9,21 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
     <tx:annotation-driven/>
+    
+    <bean id="themeResolver" class="com.cannontech.web.i18n.YukonGroupThemeResolver">
+        <property name="defaultThemeName" value="default"/>
+    </bean>
+    
+    <!-- This is required because WebApplicationContexts only look locally for a bean named "themeSource" -->
+    <bean id="themeSource" class="org.springframework.ui.context.support.DelegatingThemeSource">
+        <property name="parentThemeSource" ref="mainThemeSource"/>
+    </bean>
+    
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
+    
+    <bean id="userContextResolver" class="com.cannontech.web.util.YukonUserContextConstructor">
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+    </bean>
 
     <bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
           factory-method="getLocalConfiguration">
@@ -372,7 +387,7 @@
         <property name="registrationService" ref="dataUpdaterService"/>
     </bean>
 
-    <bean id="pointValueFormatterTagPrototype" class="com.cannontech.web.util.PointValueFormatterTag">
+    <bean id="pointValueFormatterTagPrototype" class="com.cannontech.web.taglib.PointValueFormatterTag">
         <property name="pointFormattingService" ref="pointFormattingServiceForRequest"/>
     </bean>
     
@@ -439,12 +454,12 @@
         </property>
     </bean>
 
-    <bean id="attributeResolverTagPrototype" class="com.cannontech.web.util.AttributeResolverTag">
+    <bean id="attributeResolverTagPrototype" class="com.cannontech.web.taglib.AttributeResolverTag">
         <property name="deviceDao" ref="deviceDao" />
         <property name="attributeService" ref="attributeService"/>
     </bean>
     
-    <bean id="formatDateTagPrototype" class="com.cannontech.web.util.FormatDateTag">
+    <bean id="formatDateTagPrototype" class="com.cannontech.web.taglib.FormatDateTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
     

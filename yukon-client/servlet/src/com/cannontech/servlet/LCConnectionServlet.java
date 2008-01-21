@@ -9,6 +9,7 @@ package com.cannontech.servlet;
  */
 import java.text.ParseException;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 
@@ -23,7 +24,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -35,6 +35,7 @@ import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.roles.loadcontrol.DirectLoadcontrolRole;
 import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.loadcontrol.ILCCmds;
@@ -407,8 +408,8 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	if( req.getParameter("gearnum") != null )
 		optionalProps.put( "gearnum", new Integer(req.getParameter("gearnum")) );
 
-    LiteYukonUser currentUser = (LiteYukonUser)req.getSession().getAttribute(ServletUtil.ATT_YUKON_USER);
-    Calendar gcStart = dateFormattingService.getCalendar(currentUser);
+    YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(req);
+    Calendar gcStart = dateFormattingService.getCalendar(userContext);
 
 	if( req.getParameter("startbutton") != null
 		 && req.getParameter("startbutton").equals("startat") )
@@ -417,7 +418,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 		int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") );
 		
 		try {
-		    gcStart.setTime( dateFormattingService.flexibleDateParser(req.getParameter("startdate"), currentUser) );
+		    gcStart.setTime( dateFormattingService.flexibleDateParser(req.getParameter("startdate"), userContext) );
         }
         catch (ParseException e) {
             gcStart.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("startdate")) );
@@ -439,7 +440,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 		optionalProps.put( "startdate", gcStart.getTime() );
 	}
 
-    Calendar gcStop = dateFormattingService.getCalendar(currentUser);
+    Calendar gcStop = dateFormattingService.getCalendar(userContext);
     
 	if( req.getParameter("stopbutton") != null
 		 && req.getParameter("stopbutton").equals("stopat") )
@@ -447,7 +448,8 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 		int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") );
 		
         try {
-            gcStop.setTime( dateFormattingService.flexibleDateParser(req.getParameter("stopdate"), currentUser) );
+            Date stopDate = dateFormattingService.flexibleDateParser(req.getParameter("stopdate"), userContext);
+            gcStop.setTime( stopDate );
         }
         catch (ParseException e) {
             gcStop.setTime( ServletUtil.parseDateStringLiberally(req.getParameter("stopdate")) );
@@ -472,7 +474,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	else
 	{
 		//set the stop time to 1 year from now if no stop selected
-		Calendar c = dateFormattingService.getCalendar(currentUser);
+		Calendar c = dateFormattingService.getCalendar(userContext);
 		c.add( c.YEAR, 1 );
 		optionalProps.put( "stopdate", c.getTime() );
 	}

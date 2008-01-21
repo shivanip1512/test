@@ -25,6 +25,8 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.macs.message.Schedule;
 import com.cannontech.roles.operator.SchedulerRole;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 public class MACSScheduleController extends MultiActionController {
@@ -154,17 +156,16 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     public ModelAndView controlView(HttpServletRequest request, HttpServletResponse reponse) throws Exception {
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         final ModelAndView mav = new ModelAndView();
         final String sortBy = ServletRequestUtils.getRequiredStringParameter(request, "sortBy");
         final Boolean descending = ServletRequestUtils.getRequiredBooleanParameter(request, "descending");
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        final TimeZone zone = userDao.getUserTimeZone(user);
 
-        if (!isEditable(user, SchedulerRole.ROLEID)) return view(request, reponse);
+        if (!isEditable(userContext.getYukonUser(), SchedulerRole.ROLEID)) return view(request, reponse);
         
         final Schedule schedule = service.getById(id);
-        final Calendar cal = Calendar.getInstance(zone);
+        final Calendar cal = dateFormattingService.getCalendar(userContext);
         final Calendar stopCal = (Calendar) cal.clone();
         stopCal.add(Calendar.HOUR_OF_DAY, 4);
         
@@ -173,7 +174,7 @@ public class MACSScheduleController extends MultiActionController {
         mav.addObject("schedule", schedule);
         mav.addObject("sortBy", sortBy);
         mav.addObject("descending", descending);
-        mav.addObject("zone", zone.getDisplayName(true, TimeZone.SHORT));
+        mav.addObject("zone", userContext.getTimeZone().getDisplayName(true, TimeZone.SHORT));
         
         if (state.equalsIgnoreCase("Running") || state.equalsIgnoreCase("Pending")) {
             mav.setViewName("stopView.jsp");
@@ -189,6 +190,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     public ModelAndView action(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         final ModelAndView mav = new ModelAndView();
         final String sortBy = ServletRequestUtils.getRequiredStringParameter(request, "sortBy");
         final Boolean descending = ServletRequestUtils.getRequiredBooleanParameter(request, "descending");
@@ -198,7 +200,8 @@ public class MACSScheduleController extends MultiActionController {
         final String stopDate = ServletRequestUtils.getRequiredStringParameter(request, "stopdate");
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
         final TimeZone zone = userDao.getUserTimeZone(user);
-        Date stop = dateFormattingService.flexibleDateParser(stopDate + " " + stopTime, user);
+        //i18n this isn't legit, the time and date must be parsed separately
+        Date stop = dateFormattingService.flexibleDateParser(stopDate + " " + stopTime, userContext);
         Date start = null;
         
         if (!isEditable(user, SchedulerRole.ROLEID)) return mav;
@@ -210,7 +213,8 @@ public class MACSScheduleController extends MultiActionController {
         if (time.equals("starttime")) {
             String startTime = ServletRequestUtils.getStringParameter(request, "starttime");
             String startDate = ServletRequestUtils.getStringParameter(request, "startdate");
-            start = dateFormattingService.flexibleDateParser(startDate + " " + startTime, user);
+            //i18n this isn't legit, the time and date must be parsed separately
+            start = dateFormattingService.flexibleDateParser(startDate + " " + startTime, userContext);
         }
         
         if (time.equals("stopnow")) stop = Calendar.getInstance(zone).getTime();

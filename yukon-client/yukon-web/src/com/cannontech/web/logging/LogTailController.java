@@ -14,8 +14,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FileUtil;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 
@@ -45,7 +46,7 @@ public class LogTailController extends LogController {
     */
     protected ModelAndView handleRequestInternal(HttpServletRequest request, HttpServletResponse response) throws Exception {
         authDao.verifyRole(ServletUtil.getYukonUser(request), AdministratorRole.ROLEID);
-        LiteYukonUser yukonUser = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         ModelAndView mav = new ModelAndView("logTail.jsp");
         
@@ -63,7 +64,7 @@ public class LogTailController extends LogController {
        
         // Checks to see if the logFile exists and has the ability to be read
         if((logFile != null) && (logFile.canRead())){
-            String lastMod = dateFormattingService.formatDate(new Date(lastModL), DateFormattingService.DateFormatEnum.BOTH, yukonUser);
+            String lastMod = dateFormattingService.formatDate(new Date(lastModL), DateFormattingService.DateFormatEnum.BOTH, userContext);
             String fileLength = String.valueOf(fileLengthL/1024);
         	List<String> logLines = FileUtil.readLines(logFile, numLines, offSet);
             

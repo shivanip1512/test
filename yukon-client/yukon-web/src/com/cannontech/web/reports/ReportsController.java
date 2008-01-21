@@ -23,12 +23,13 @@ import com.cannontech.analysis.ReportFuncs;
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.ReportModelMetaInfo;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.simplereport.SimpleReportService;
 import com.cannontech.simplereport.SimpleYukonReport;
 import com.cannontech.simplereport.YukonReportDefinition;
 import com.cannontech.tools.csv.CSVWriter;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.InputUtil;
 
@@ -50,7 +51,7 @@ public class ReportsController extends MultiActionController  {
         ModelAndView mav = new ModelAndView("simple/htmlView.jsp");
         String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
         
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // optional page module, showMenu, menuSelection values
         //-----------------------------------------------------------------------------------------
@@ -88,7 +89,7 @@ public class ReportsController extends MultiActionController  {
         //-----------------------------------------------------------------------------------------
         int columnCount = reportModel.getColumnCount();
         int rowCount = reportModel.getRowCount();
-        List<List<String>> data = simpleReportService.getFormattedData(reportModel, columnInfo, user);
+        List<List<String>> data = simpleReportService.getFormattedData(reportModel, columnInfo, userContext);
         
         mav.addObject("columnCount", columnCount);
         mav.addObject("rowCount", rowCount);
@@ -106,7 +107,7 @@ public class ReportsController extends MultiActionController  {
         
         if (reportModel instanceof ReportModelMetaInfo) {
             ReportModelMetaInfo metaInfo = (ReportModelMetaInfo) reportModel;
-            mav.addObject("metaInfo", metaInfo.getMetaInfo(user));
+            mav.addObject("metaInfo", metaInfo.getMetaInfo(userContext));
         }
         
         // include input values map
@@ -132,7 +133,7 @@ public class ReportsController extends MultiActionController  {
      */
     public ModelAndView csvView(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // get report definition, model
         //-----------------------------------------------------------------------------------------
@@ -158,7 +159,7 @@ public class ReportsController extends MultiActionController  {
         // data grid
         //-----------------------------------------------------------------------------------------
         List<ColumnInfo> columnInfo = simpleReportService.buildColumnInfoListFromColumnLayoutData(bodyColumns);
-        List<List<String>> data = simpleReportService.getFormattedData(reportModel, columnInfo, user);
+        List<List<String>> data = simpleReportService.getFormattedData(reportModel, columnInfo, userContext);
         
         // convert from List<List<String>> to List<String[]> that csvWriter likes to eat
         List<String[]> dataAsArray = new ArrayList<String[]>();
@@ -217,20 +218,20 @@ public class ReportsController extends MultiActionController  {
      * @throws Exception
      */
     public ModelAndView pdfView(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
                 
         // get report definition, model
         //-----------------------------------------------------------------------------------------
         Map<String, String> parameterMap = getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap);
-        BareReportModel stringReportModel = simpleReportService.getStringReportModel(reportDefinition, reportModel, parameterMap, user);
+        BareReportModel stringReportModel = simpleReportService.getStringReportModel(reportDefinition, reportModel, parameterMap, userContext);
                 
         SimpleYukonReport report = new SimpleYukonReport(reportDefinition, stringReportModel);
         
         if(reportModel instanceof ReportModelMetaInfo) {
             ReportModelMetaInfo metaInfoReport = (ReportModelMetaInfo) reportModel;
-            LinkedHashMap<String, String> metaInfo = metaInfoReport.getMetaInfo(user);
+            LinkedHashMap<String, String> metaInfo = metaInfoReport.getMetaInfo(userContext);
             report.setMetaInfo(metaInfo);
         }
         
