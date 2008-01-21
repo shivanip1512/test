@@ -13,10 +13,10 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  * with additional options to choose from.
  */
 public class TopLevelOption extends BaseMenuOption {
-    private List optionChildren = new ArrayList(4);
+    private List<SimpleMenuOption> optionChildren = new ArrayList<SimpleMenuOption>(4);
 
-    public TopLevelOption(String topOptionName) {
-        setLinkName(topOptionName);
+    public TopLevelOption(String linkKey) {
+        setLinkKey(linkKey);
     }
 
     public void addSubLevelOption(SimpleMenuOption subLevelOption) {
@@ -26,7 +26,7 @@ public class TopLevelOption extends BaseMenuOption {
     /**
      * @return List<SimpleMenuOption>
      */
-    public List getSubLevelOptions() {
+    public List<SimpleMenuOption> getSubLevelOptions() {
         return optionChildren;
     }
 
@@ -34,7 +34,8 @@ public class TopLevelOption extends BaseMenuOption {
      * @param user the current user logged in to the session
      * @return Iterator<SimpleMenuOption>
      */
-    public Iterator getValidSubLevelOptions(LiteYukonUser user) {
+    @SuppressWarnings("unchecked")
+    public Iterator<SimpleMenuOption> getValidSubLevelOptions(LiteYukonUser user) {
         return new FilterIterator(optionChildren.iterator(), new CheckUserPredicate(user));
     }
 

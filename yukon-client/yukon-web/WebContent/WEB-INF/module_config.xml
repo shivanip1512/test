@@ -23,19 +23,19 @@
      respectively.
 -->
   <quicklinks>
-    <option name="CapControl">
+    <option id="capcontrol">
       <link>/capcontrol/subareas.jsp</link>
       <requireProperty value="capcontrol.CBCSettingsRole.ACCESS"/>
     </option>
-    <option property="CICurtailmentRole.CURTAILMENT_LABEL">
+    <option id="commercialcurtailment">
       <link>/cc/programSelect.jsf</link>
       <requireRole value="CICurtailmentRole.ROLEID"/>
     </option>
-    <option name="Commander">
+    <option id="commander">
       <link>/apps/SelectDevice.jsp</link>
       <requireRole value="application.CommanderRole.ROLEID"/>
     </option>
-     <option name="Reporting">
+     <option id="reporting">
       <link>/analysis/Reports.jsp</link>
       <requireRole value="application.ReportingRole.ROLEID"/>
     </option>
@@ -44,32 +44,32 @@
   <module name="amr">
     <skin name="standard"/>
    	<toplinks>
-   		<option id="deviceselection" name="Device Selection">
+   		<option id="deviceselection">
    		   <link>/spring/csr/search</link>	
    		</option>
-   		<option id="billing" name="Billing">
+   		<option id="billing">
    		   <sublinks>
-	          <option id="generation" name="Billing Generation">
+	          <option id="generation">
 	            <requireRole value="BillingRole.ROLEID"/>
 	   		    <link>/operator/Metering/Billing.jsp</link>
 	          </option>
-	          <option id="setup" name="Billing Setup">
+	          <option id="setup">
 	          	<requireRole value="BillingRole.ROLEID"/>
 	            <link>/spring/dynamicBilling/overview</link>
 	          </option>
           </sublinks>	
    		</option>
-		<option id="scheduler" name="Scheduler">
+		<option id="scheduler">
 		   <requireRole value="SchedulerRole.ROLEID"/>
    		   <link>/spring/macsscheduler/schedules/view</link>	
    		</option>
-		<option id="devicegroups" name="Device Groups">
+		<option id="devicegroups">
           <requireRole value="CommanderRole.ROLEID"/> <!-- THIS ROLE will change when more group items are added -->
 		  <sublinks>
-		    <option id="home" name="Editor">
+		    <option id="home">
               <link>/spring/group/home</link>
             </option>
-		    <option id="commander" name="Commander">
+		    <option id="commander">
               <link>/spring/group/groupProcessing</link>
               <requireRole value="CommanderRole.ROLEID"/>
             </option>
@@ -80,111 +80,111 @@
   
   <module name="capcontrol">
     <toplinks>
-      <option id="create" name="Create">
+      <option id="create">
         <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
         <sublinks>
-          <option name="Area">
+          <option id="area">
             <link>/editor/cbcWizBase.jsf?type=4002</link>
           </option>
-          <option name="Special Area">
+          <option id="specialarea">
             <link>/editor/cbcWizBase.jsf?type=4003</link>
           </option>
-          <option name="Substation">
+          <option id="substation">
             <link>/editor/cbcWizBase.jsf?type=4004</link>
           </option>
-          <option name="Substation Bus">
+          <option id="substationbus">
             <link>/editor/cbcWizBase.jsf?type=4000</link>
           </option>
-          <option name="Feeder">
+          <option id="feeder">
             <link>/editor/cbcWizBase.jsf?type=4001</link>
           </option>
-          <option name="CapBank">
+          <option id="capbank">
             <link>/editor/cbcWizBase.jsf?type=1050</link>
           </option>
-          <option name="CBC">
+          <option id="cbc">
             <link>/editor/cbcWizBase.jsf?type=1051</link>
           </option>
-          <option name="Schedule">
+          <option id="schedule">
             <link>/editor/cbcWizBase.jsf?type=100000</link>
           </option>
-          <option name="Strategy">
+          <option id="strategy">
             <link>/editor/cbcWizBase.jsf?type=5</link>
           </option>
         </sublinks>
       </option>
-      <option id="modify" name="Modify">
+      <option id="modify">
         <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
         <sublinks>
-          <option name="Edit">
+          <option id="edit">
             <script>editorPost()</script>
           </option>
-          <option name="Delete">
+          <option id="delete">
             <script>deletePost()</script>
           </option>
-          <option name="Copy">
+          <option id="copy">
             <script>copyPost()</script>
           </option>
         </sublinks>
       </option>
-      <option id="analysis" name="Analysis">
+      <option id="analysis">
         <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
         <sublinks>
-          <option name="Today kVAR/Watt">
+          <option id="todaykvarperwatt">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('Today kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')</script>
           </option>
-          <option name="Today PF">
+          <option id="todaypf">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('Today PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=DAY')</script>
           </option>
-          <option name="30 Day kVAR/Watt">
+          <option id="30daykvarperwatt">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('30 Day kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=MONTH')</script>
           </option>
-          <option name="30 Day PF">
+          <option id="30daypf">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('30 Day PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')</script>
           </option>
         </sublinks>
       </option>
-      <option id="view" name="View">
+      <option id="view">
         <sublinks>
-          <option name="Schedules">
+          <option id="schedules">
             <script>post('/editor/paoSchedListBase.jsf')</script>
           </option>
-          <option name="Strategies">
+          <option id="strategies">
             <script>post('/editor/cbcStrategyList.jsf')</script>
           </option>
-          <option name="One-Line">
+          <option id="oneline">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_ONELINE"/>
             <script>showOneLine()</script>
           </option>
-          <option name="Recent Controls">
+          <option id="recentcontrols">
             <script>showRecentCmds('tabledata.jsp?type=RC')</script>
           </option>
-          <option name="Recent Cap Bank Moves">
+          <option id="recentcapbankmoves">
        		<link>movedCapBanks.jsp</link>  
        	  </option>
-       	  <option name="Special Areas">
+       	  <option id="specialareas">
        		<link>specialSubAreas.jsp</link>  
        	  </option>
         </sublinks>
       </option>
-      <option id="orphans" name="Orphans">
+      <option id="orphans">
         <sublinks>
-        <option name="Orphaned Substations">
+        <option id="orphanedsubstations">
             <script>resultsPost('cbc_lastSearch=__cti_oSubstations__')</script>
           </option>
-         <option name="Orphaned Substation Buses">
+         <option id="orphanedsubstationbuses">
             <script>resultsPost('cbc_lastSearch=__cti_oSubBuses__')</script>
           </option>
-          <option name="Orphaned Feeders">
+          <option id="orphanedfeeders">
             <script>resultsPost('cbc_lastSearch=__cti_oFeeders__')</script>
           </option>
-          <option name="Orphaned CapBanks">
+          <option id="orphanedcapbanks">
             <script>resultsPost('cbc_lastSearch=__cti_oBanks__')</script>
           </option>
-          <option name="Orphaned CBCs">
+          <option id="orphanedcbcs">
             <script>resultsPost('cbc_lastSearch=__cti_oCBCs__')</script>
           </option>
         </sublinks>
@@ -204,18 +204,18 @@
   
   <module name="commercialcurtailment">
     <toplinks>
-      <option id="ccurt_events" name="Events">
+      <option id="ccurt_events">
         <link>/cc/programSelect.jsf</link>
       </option>
-      <option id="ccurt_setup" name="Setup">
+      <option id="ccurt_setup">
         <sublinks>
-          <option id="ccurt_programs" name="Programs">
+          <option id="ccurt_programs">
             <link>/cc/programList.jsf</link>
           </option>
-          <option id="ccurt_groups" name="Groups">
+          <option id="ccurt_groups">
             <link>/cc/groupList.jsf</link>
           </option>
-          <option id="ccurt_customers" name="Customers">
+          <option id="ccurt_customers">
             <link>/cc/customerList.jsf</link>
           </option>
         </sublinks>
@@ -224,64 +224,62 @@
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
-    <requireRole value="TrendingRole.ROLEID"/>
   </module>
   
   <module name="commercialcurtailment_user">
     <toplinks>
-      <option name="Control">
+      <option id="control">
         <link>/cc/user/overview.jsf</link>
       </option>
-      <option name="Trending">
+      <option id="trending">
         <link>/user/CILC/user_trending_sp.jsp</link>
       </option>
-      <option name="Profile">
+      <option id="profile">
         <link>/user/CILC/customerProfile.jsf</link>
       </option>
     </toplinks>
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
-    <requireRole value="application.TrendingRole.ROLEID"/>
   </module>
   
   <module name="reporting">
    <toplinks>
-      <option id="reports" name="Reports">
+      <option id="reports">
         <sublinks>
-          <option id="administrator" property="ReportingRole.ADMIN_REPORTS_GROUP_LABEL">
+          <option id="administrator">
             <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE</link>
             <requireProperty value="ReportingRole.ADMIN_REPORTS_GROUP"/>
           </option>
-          <option id="metering" property="ReportingRole.AMR_REPORTS_GROUP_LABEL">
+          <option id="metering">
             <link>/analysis/Reports.jsp?groupType=METERING</link>
             <requireProperty value="ReportingRole.AMR_REPORTS_GROUP"/>
           </option>
-          <option id="capcontrol" property="ReportingRole.CAP_CONTROL_REPORTS_GROUP_LABEL">
+          <option id="capcontrol">
             <link>/analysis/Reports.jsp?groupType=CAP_CONTROL</link>
             <requireProperty value="ReportingRole.CAP_CONTROL_REPORTS_GROUP"/>
           </option>
-          <option id="statistical" property="ReportingRole.STATISTICAL_REPORTS_GROUP_LABEL">
+          <option id="statistical">
             <link>/analysis/Reports.jsp?groupType=STATISTICAL</link>
             <requireProperty value="ReportingRole.STATISTICAL_REPORTS_GROUP"/>
           </option>
-          <option id="database" property="ReportingRole.DATABASE_REPORTS_GROUP_LABEL">
+          <option id="database">
             <link>/analysis/Reports.jsp?groupType=DATABASE</link>
             <requireProperty value="ReportingRole.DATABASE_REPORTS_GROUP"/>
           </option>
-          <option id="management" property="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP_LABEL">
+          <option id="management">
             <link>/analysis/Reports.jsp?groupType=LOAD_MANAGEMENT</link>
             <requireProperty value="ReportingRole.LOAD_MANAGEMENT_REPORTS_GROUP"/>
           </option>
-          <option id="stars" property="ReportingRole.STARS_REPORTS_GROUP_LABEL">
+          <option id="stars">
             <link>/analysis/Reports.jsp?groupType=STARS</link>
             <requireProperty value="ReportingRole.STARS_REPORTS_GROUP"/>
           </option>
-          <option id="settlement" property="ReportingRole.SETTLEMENT_REPORTS_GROUP_LABEL">
+          <option id="settlement">
             <link>/analysis/Reports.jsp?groupType=SETTLEMENT</link>
             <requireProperty value="ReportingRole.SETTLEMENT_REPORTS_GROUP"/>
           </option>
-          <option id="cni" property="ReportingRole.CI_CURTAILMENT_REPORTS_GROUP_LABEL">
+          <option id="cni">
             <link>/analysis/Reports.jsp?groupType=CCURT</link>
             <requireProperty value="ReportingRole.CI_CURTAILMENT_REPORTS_GROUP"/>
           </option>
@@ -293,18 +291,6 @@
     <css file="/WebConfig/yukon/styles/reportinglogos.css"/>
     <script file="/JavaScript/change_monitor.js"/>
     <script file="/JavaScript/calendar.js"/>
-  </module>
-  
-  <module name="javawebstart">
-   <toplinks>
-      <option name="Launcher">
-        <link>/jws/</link>
-      </option>
-      <option name="Java">
-        <link>/jws/java</link>
-      </option>
-   </toplinks>
-  	<skin name="standard"/>
   </module>
   
   <module name="esub">
@@ -322,12 +308,12 @@
     
     
     <toplinks>
-    <option id="multispeak" name="MultiSpeak">
+    <option id="multispeak">
     	<sublinks>
-    	  <option id="interfaces" name="Interfaces">
+    	  <option id="interfaces">
     		<link>/msp_setup.jsp</link>
     	  </option>
-    	  <option id="mappings" name="Substation To Route Mappings">
+    	  <option id="mappings">
     		<link>/spring/multispeak/setup/routemapping/mappings</link>
     	  </option>
     	</sublinks>
@@ -339,15 +325,15 @@
     <skin name="standard"/>
     
     <toplinks>
-    <option id="scheduler" name="Scheduler">
+    <option id="scheduler">
     	<sublinks>
-    	  <option id="active" name="Active">
+    	  <option id="active" >
     		<link>/spring/debug/scheduler/active</link>
     	  </option>
-    	  <option id="status" name="Status">
+    	  <option id="status">
     		<link>/spring/debug/scheduler/status</link>
     	  </option>
-    	  <option id="jobs" name="Jobs">
+    	  <option id="jobs">
     		<link>/spring/debug/scheduler/jobs</link>
     	  </option>
     	</sublinks>
@@ -371,7 +357,7 @@
 
   <module name="commander">
     <toplinks>
-      <option name="Device Selection">
+      <option id="deviceselection">
         <link>/apps/SelectDevice.jsp</link>
       </option>
     </toplinks>
@@ -385,51 +371,51 @@
     <css file="/WebConfig/yukon/styles/commanderStyles.css"/>
     
     <toplinks>
-      <option id="devices" name="Devices">
+      <option id="devices">
         <sublinks>
-          <option id="mct" name="MCT">
+          <option id="mct">
             <link>SelectDevice.jsp?SortBy=1004</link>
           </option>
-          <option id="ied" name="IED">
+          <option id="ied">
             <link>SelectDevice.jsp?SortBy=1002</link>
           </option>
-          <option id="rtu" name="RTU">
+          <option id="rtu">
             <link>SelectDevice.jsp?SortBy=1001</link>
           </option>
-          <option id="transmitter" name="Transmitter">
+          <option id="transmitter">
             <link>SelectDevice.jsp?SortBy=1000</link>
           </option>
-          <option id="group" name="Group">
+          <option id="group">
             <link>/spring/group/groupProcessing</link>
           </option>
         </sublinks>
       </option>
-      <option id="lm" name="Load Management">
+      <option id="lm">
         <sublinks>
-          <option id="group" name="Group">
+          <option id="group">
             <link>SelectDevice.jsp?SortBy=1005</link>
           </option>
-          <option id="xcom" name="Expresscom">
+          <option id="xcom">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;xcom</link>
             <requireProperty value="CommanderRole.EXPRESSCOM_SERIAL_MODEL"/>
           </option>
-          <option id="vcom" name="Versacom">
+          <option id="vcom">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;vcom</link>
             <requireProperty value="CommanderRole.VERSACOM_SERIAL_MODEL"/>
           </option>
-          <option id="205serial" name="DCU-205 Serial">
+          <option id="205serial">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa205</link>
             <requireProperty value="CommanderRole.DCU_SA205_SERIAL_MODEL"/>
           </option>
-          <option id="305serial" name="DCU-305 Serial">
+          <option id="305serial">
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305</link>
             <requireProperty value="CommanderRole.DCU_SA305_SERIAL_MODEL"/>
           </option>
         </sublinks>
       </option>
-      <option id="capcontrol" name="Cap Control">
+      <option id="capcontrol">
         <sublinks>
-          <option id="capcontrolsub" name="Cap Control">
+          <option id="capcontrolsub">
             <link>SelectDevice.jsp?SortBy=4</link>
           </option>
         </sublinks>

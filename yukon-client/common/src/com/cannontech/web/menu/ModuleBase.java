@@ -1,7 +1,7 @@
 package com.cannontech.web.menu;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.commons.collections.iterators.FilterIterator;
@@ -21,9 +21,9 @@ public class ModuleBase {
     private String searchPath;
     private String searchFieldName;
     private String searchMethod;
-    private List quickLinks;
-    private List cssFiles = new LinkedList();
-    private List scriptFiles = new LinkedList();
+    private List<SimpleMenuOption> quickLinks;
+    private List<String> cssFiles = new ArrayList<String>(2);
+    private List<String> scriptFiles = new ArrayList<String>(2);
     private String skin;
     private MenuBase menuBase;
     private UserChecker authorizationChecker;
@@ -48,15 +48,15 @@ public class ModuleBase {
         this.searchPath = searchPath;
     }
     
-    public List getQuickLinks() {
+    public List<SimpleMenuOption> getQuickLinks() {
         return quickLinks;
     }
     
-    public void setQuickLinks(List quickLinks) {
+    public void setQuickLinks(List<SimpleMenuOption> quickLinks) {
         this.quickLinks = quickLinks;
     }
     
-    public Iterator getValidQuickLinks(LiteYukonUser user) {
+    public Iterator<SimpleMenuOption> getValidQuickLinks(LiteYukonUser user) {
         return new FilterIterator(quickLinks.iterator(), new CheckUserPredicate(user));
     }
     
@@ -96,7 +96,7 @@ public class ModuleBase {
         this.searchMethod = searchMethod;
     }
 
-    public List getCssFiles() {
+    public List<String> getCssFiles() {
         return cssFiles;
     }
 
@@ -104,7 +104,7 @@ public class ModuleBase {
         cssFiles.add(cssFile);
     }
     
-    public List getScriptFiles() {
+    public List<String> getScriptFiles() {
         return scriptFiles;
     }
     

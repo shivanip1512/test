@@ -8,14 +8,10 @@ package com.cannontech.web.menu;
 public class SimpleMenuOptionAction extends SimpleMenuOption {
     private String script = "";
 
-    public SimpleMenuOptionAction(String subOptionName) {
-        super(subOptionName);
+    public SimpleMenuOptionAction(String linkKey) {
+        super(linkKey);
     }
 
-    public SimpleMenuOptionAction(OptionNameFactory factory) {
-        super(factory);
-    }
-    
     public void setScript(String jsEventName) {
         this.script = jsEventName;
     }

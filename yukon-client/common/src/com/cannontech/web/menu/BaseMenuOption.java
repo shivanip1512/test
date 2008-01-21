@@ -6,14 +6,9 @@ import com.cannontech.user.checker.UserChecker;
 
 public abstract class BaseMenuOption {
     private UserChecker propertyChecker = new NullUserChecker();
-    private OptionNameFactory nameFactory = OptionNameFactory.createPlain("");
     private String id = null;
+    private String linkKey = null;
     
-    public BaseMenuOption(OptionNameFactory nameFactory) {
-        super();
-        this.nameFactory = nameFactory;
-    }
-
     public BaseMenuOption() {
         super();
     }
@@ -26,12 +21,12 @@ public abstract class BaseMenuOption {
         return propertyChecker.check(user);
     }
 
-    public String getLinkName(LiteYukonUser yukonUser) {
-        return nameFactory.getName(yukonUser);
+    public String getLinkKey() {
+        return this.linkKey;
     }
 
-    public void setLinkName(String linkName) {
-        nameFactory = OptionNameFactory.createPlain(linkName);
+    public void setLinkKey(String linkKey) {
+        this.linkKey = linkKey;
     }
 
     public String getId() {

@@ -6,11 +6,8 @@ package com.cannontech.web.menu;
  */
 public class SimpleMenuOptionLink extends SimpleMenuOption {
     private String linkUrl = "";
-    public SimpleMenuOptionLink(String subOptionName) {
-        super(subOptionName);
-    }
-    public SimpleMenuOptionLink(OptionNameFactory factory) {
-        super(factory);
+    public SimpleMenuOptionLink(String linkKey) {
+        super(linkKey);
     }
     public String getUrl() {
         return linkUrl;

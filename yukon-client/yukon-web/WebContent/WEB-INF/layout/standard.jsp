@@ -1,36 +1,47 @@
 <%@ page errorPage="/internalError.jsp" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
-<cti:outputDoctype htmlLevel="strict"/>
+<cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
     <head>
-        <title><c:out value="${ctiPageTitle}"/></title>           
+        <title><c:out value="${info.title}"/></title>           
 
-        <cti:outputHeadContent>
-          <cti:includeCss link="/WebConfig/yukon/CannonStyle.css"/>
-          <cti:includeCss link="/WebConfig/yukon/styles/StandardStyles.css"/>
-          <cti:includeCss link="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>
-          <cti:includeScript link="/JavaScript/prototype.js"/>
-          <cti:includeScript link="/JavaScript/yukonGeneral.js"/>
-          <cti:includeScript link="/JavaScript/CtiMenu.js"/>
-        </cti:outputHeadContent>
+        <!-- Layout CSS files -->
+        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/CannonStyle.css" >
+        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
+        <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
+        
+        <!-- Module CSS files from module_config.xml -->
+        <c:forEach items="${moduleConfigCss}" var="file"><link rel="stylesheet" type="text/css" href="<c:url value="${file}"/>" >
+        </c:forEach>
+        
+        <!-- Individual files from includeCss tag on the request page -->
+        <c:forEach items="${innerContentCss}" var="file"><link rel="stylesheet" type="text/css" href="<c:url value="${file}"/>" >
+        </c:forEach>
+        
+        <!-- Login Group specific style sheets (WebClientRole.STD_PAGE_STYLE_SHEET)-->
+        <c:forEach items="${loginGroupCss}" var="file"><link rel="stylesheet" type="text/css" href="<c:url value="${file}"/>" >
+        </c:forEach>
+        
+        <!-- Consolidated Script Files -->
+        <c:forEach items="${javaScriptFiles}" var="file"><script type="text/javascript" src="<c:url value="${file}"/>"></script>
+        </c:forEach>
     </head>
-<body class="<c:out value="${ctiModuleName}"/>_module">
+<body class="<c:out value="${module.moduleName}"/>_module">
 <div id="Header">
     <div class="stdhdr_left"><div id="TopLeftLogo"></div><div id="TopLeftLogo2"></div></div>
-    <div class="stdhdr_right"><div id="TopRightLogo"></div></div>
+    <div class="stdhdr_right"><img src="<cti:theme key="yukon.web.layout.standard.upperrightlogo" default="/WebConfig/yukon/YukonBW.gif" url="true"/>"></div>
     <div class="stdhdr_clear"></div>
 </div>
-<cti:outputMenu/>
+<cti:outputContent writable="${menuRenderer}"/>
 
 <div id="Content">
-<cti:outputContent/>
+<cti:outputContent writable="${bodyContent}"/>
 </div> <!-- Content -->
 
 <div id="CopyRight">
-Yukon Version ${ctiYukonVersion}. 
-Copyright &copy; 2002-2008, 
-  Cannon Technologies. All rights reserved.
+<cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>
+<cti:msg key="yukon.web.layout.standard.copyright"/>
 </div>
 
 </body>

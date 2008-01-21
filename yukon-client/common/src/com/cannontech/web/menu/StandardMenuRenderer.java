@@ -18,10 +18,10 @@ import org.apache.ecs.html.Script;
 import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
 
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
-import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -47,18 +47,21 @@ public class StandardMenuRenderer implements MenuRenderer {
     private LiteYukonUser yukonUser;
     private MenuFeatureSet features = new MenuFeatureSet();
     private String[] selections = new String[2];
+    private final MessageSourceAccessor messageSource;
     
     /**
      * Create a new menu renderer for a given ServletRequest and ModuleMenuBase.
-     * The ServletRequest is required so that absolulte URLs can be adjusted
+     * The ServletRequest is required so that absolute URLs can be adjusted`
      * for the context path.
      * @param request the current request object
      * @param moduleBase the menu base of the current module
+     * @param messageSource 
      */
-    public StandardMenuRenderer(HttpServletRequest request, ModuleBase moduleBase) {
+    public StandardMenuRenderer(HttpServletRequest request, ModuleBase moduleBase, MessageSourceAccessor messageSource) {
         httpServletRequest = request;
         this.moduleBase = moduleBase;
-        yukonUser = (LiteYukonUser) request.getSession().getAttribute("YUKON_USER");
+        this.messageSource = messageSource;
+        yukonUser = ServletUtil.getYukonUser(request);
     }
     
     public String renderMenu() {
@@ -117,8 +120,8 @@ public class StandardMenuRenderer implements MenuRenderer {
             }
             first = false;
             BaseMenuOption option = (BaseMenuOption) topLevelOptionIterator.next();
-            A link = new A();
-            link.addElement(e(option.getLinkName(yukonUser)));
+            A link = createLink(option, "yukon.web.menu.topMenuDefaultTitle");
+
             if (option instanceof SimpleMenuOption) {
                 SimpleMenuOption simpleOption = (SimpleMenuOption) option;
                 link.setHref(buildUrl(simpleOption.getUrl()));
@@ -127,13 +130,39 @@ public class StandardMenuRenderer implements MenuRenderer {
                 subMenuParents.add(optionParent);
                 // <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">
                 link.setHref("#");
-                link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getLinkName(yukonUser)) + "'); return false;"));
-                link.setTitle(e("Display Sub Menu for " + option.getLinkName(yukonUser)));
+                link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getLinkKey()) + "'); return false;"));
             }
             link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
             leftDiv.addElement(link);
         }
         return leftDiv;
+    }
+
+    private A createLink(BaseMenuOption option, String defaultKey) {
+        String linkKey = option.getLinkKey();
+        A link = new A();
+        String menuLabel = messageSource.getMessage(linkKey);
+        link.addElement(e(menuLabel));
+        
+        // get default title
+        String title = messageSource.getMessage(defaultKey, menuLabel);
+        // check for custom title
+        title = messageSource.getMessageWithDefault(linkKey + ".title", title);
+        
+        link.setTitle(e(title));
+        return link;
+    }
+
+    private A createLink(String linkKey, String defaultTitle) {
+        A link = new A();
+        String menuLabel = messageSource.getMessage(linkKey);
+        link.addElement(e(menuLabel));
+        
+        // check for custom title
+        String title = messageSource.getMessageWithDefault(linkKey + ".title", defaultTitle);
+        
+        link.setTitle(e(title));
+        return link;
     }
     
     private Div buildSubMenus() {
@@ -142,7 +171,7 @@ public class StandardMenuRenderer implements MenuRenderer {
         for (Iterator<TopLevelOption> iter = subMenuParents.iterator(); iter.hasNext();) {
             TopLevelOption optionParent = iter.next();
             Div thisMenu = new Div();
-            thisMenu.setID(generateIdForString(optionParent.getLinkName(yukonUser)));
+            thisMenu.setID(generateIdForString(optionParent.getLinkKey()));
             if(!isOptionSelected(optionParent, 0)){
                 thisMenu.setStyle("display: none;");
             }
@@ -154,11 +183,10 @@ public class StandardMenuRenderer implements MenuRenderer {
                 }
                 first = false;
                 SimpleMenuOption subOption = (SimpleMenuOption) subLevelOptionIterator.next();
-                A link = new A();
+                A link = createLink(subOption, "yukon.web.menu.subMenuDefaultTitle");
                 if(isOptionSelected(subOption, 1)){
                     link.setClass("selected");
                 }
-                link.addElement(e(subOption.getLinkName(yukonUser)));
                 link.setHref(buildUrl(subOption.getUrl()));
                 thisMenu.addElement(link);
             }
@@ -174,22 +202,34 @@ public class StandardMenuRenderer implements MenuRenderer {
         right.setPrettyPrint(true);
         right.setClass("stdhdr_rightSide");
         if (features.showModuleSelection) {
-            right.addElement(new Span("Module: ").setClass("stdhdr_menu"));
+            String moduleMsg = messageSource.getMessage("yukon.web.menu.module");
+            right.addElement(new Span(moduleMsg).setClass("stdhdr_menu"));
             Iterator quickLinkIterator = moduleBase.getValidQuickLinks(yukonUser);
             Select select = new Select();
             select.setOnChange(e("javascript:window.location=(this[this.selectedIndex].value);"));
-            select.addElement(new Option("").addElement(e("Select a location...")).setSelected(true));
+            String locationSelectMsg = messageSource.getMessage("yukon.web.menu.locationSelect");
+            select.addElement(new Option("").addElement(e(locationSelectMsg)).setSelected(true));
             while (quickLinkIterator.hasNext()) {
                 SimpleMenuOption element = (SimpleMenuOption) quickLinkIterator.next();
-                select.addElement(new Option(buildUrl(element.getUrl())).addElement(e(element.getLinkName(yukonUser))));
+                Option quickOption = new Option(buildUrl(element.getUrl()));
+                String menuName = messageSource.getMessage(element.getLinkKey());
+                quickOption.addElement(e(menuName));
+              
+                select.addElement(quickOption);
             }
             right.addElement(select);
         }
 
         right.addElement("&nbsp;&nbsp;");
-        right.addElement(new A(buildUrl(homeurl), "Home").setClass("stdhdr_menuLink"));
+        A homeLink = createLink("yukon.web.menu.home", "");
+        homeLink.setHref(homeurl);
+        homeLink.setClass("stdhdr_menuLink");
+        right.addElement(homeLink);
         right.addElement(" ");
-        right.addElement(new A(buildUrl("/servlet/LoginController?ACTION=LOGOUT"), "Log Out").setClass("stdhdr_menuLink"));
+        A logoutLink = createLink("yukon.web.menu.logout", "");
+        logoutLink.setHref(buildUrl("/servlet/LoginController?ACTION=LOGOUT"));
+        logoutLink.setClass("stdhdr_menuLink");
+        right.addElement(logoutLink);
         right.addElement(" ");
         return right;
     }

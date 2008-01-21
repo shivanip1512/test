@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -28,6 +29,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
     private List<SimpleMenuOption> quickLinkList = new ArrayList<SimpleMenuOption>(5);
     private final Resource moduleConfigFile;
+    private final String menuKeyPrefix = "yukon.web.menu.config.";
     
     public CommonModuleBuilder(Resource moduleConfigFile) throws CommonMenuException {
         this.moduleConfigFile = moduleConfigFile;
@@ -51,7 +53,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         List linkList = quickLinks.getChildren("option");
         for (Iterator iter = linkList.iterator(); iter.hasNext();) {
             Element optionElem = (Element) iter.next();
-            SimpleMenuOption menuOption = createSimpleMenuOption(optionElem);
+            SimpleMenuOption menuOption = createSimpleMenuOption(optionElem, menuKeyPrefix + "quicklinks");
             UserChecker checker = getCheckerForElement(optionElem);
             
             menuOption.setPropertyChecker(checker);
@@ -80,7 +82,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
             List topOptions = topLinks.getChildren("option");
             for (Iterator iterator = topOptions.iterator(); iterator.hasNext();) {
                 Element topOptionElement = (Element) iterator.next();
-                BaseMenuOption topLevelOption = processTopOption(topOptionElement);
+                BaseMenuOption topLevelOption = processTopOption(topOptionElement, menuKeyPrefix + moduleName);
                 UserChecker checker = getCheckerForElement(topOptionElement);
                 
                 topLevelOption.setPropertyChecker(checker);
@@ -113,29 +115,29 @@ public class CommonModuleBuilder implements ModuleBuilder {
         moduleMap.put(moduleBase.getModuleName(), moduleBase);
     }
 
-    private BaseMenuOption processTopOption(Element topOptionElement) throws CommonMenuException {
-        String topOptionName = topOptionElement.getAttributeValue("name");
+    private BaseMenuOption processTopOption(Element topOptionElement, String prefix) throws CommonMenuException {
         String topOptionId = topOptionElement.getAttributeValue("id");
+        String key = prefix + "." + topOptionId;
         BaseMenuOption topLevelOption = null;
         Element topAction = topOptionElement.getChild("script");
         Element topLink = topOptionElement.getChild("link");
         Element topSub = topOptionElement.getChild("sublinks");
         if (topAction != null) {
-            SimpleMenuOptionAction topLevelOptionTemp = new SimpleMenuOptionAction(topOptionName);
+            SimpleMenuOptionAction topLevelOptionTemp = new SimpleMenuOptionAction(key);
             topLevelOptionTemp.setScript(topAction.getTextTrim());
             topLevelOption = topLevelOptionTemp;
         } else if (topLink != null) {
-            SimpleMenuOptionLink topLevelOptionTemp = new SimpleMenuOptionLink(topOptionName);
+            SimpleMenuOptionLink topLevelOptionTemp = new SimpleMenuOptionLink(key);
             topLevelOptionTemp.setLinkUrl(topLink.getTextTrim());
             topLevelOption = topLevelOptionTemp;
         } else if (topSub != null) {
-            TopLevelOption topLevelOptionTemp = new TopLevelOption(topOptionName);
+            TopLevelOption topLevelOptionTemp = new TopLevelOption(key);
             List subOptionElements = topSub.getChildren("option");
             for (Iterator iter = subOptionElements.iterator(); iter.hasNext();) {
                 Element subElement = (Element) iter.next();
-                SimpleMenuOption subLevelOption = createSimpleMenuOption(subElement);
+                SimpleMenuOption subLevelOption = createSimpleMenuOption(subElement, topLevelOptionTemp);
                 if (subLevelOption == null) {
-                    throw new CommonMenuException("Illegal value found under: " + topOptionName);
+                    throw new CommonMenuException("Illegal value found under: " + key);
                 }
                 UserChecker checker = getCheckerForElement(subElement);
                 
@@ -146,8 +148,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
             
         }
         if (topLevelOption == null) {
-            throw new CommonMenuException("No script, link, or sublinks found under: "
-                                          + topOptionName);
+            throw new CommonMenuException("No script, link, or sublinks found under: " + key);
         }
         
         topLevelOption.setId(topOptionId);
@@ -155,30 +156,31 @@ public class CommonModuleBuilder implements ModuleBuilder {
         return topLevelOption;
     }
 
-    private SimpleMenuOption createSimpleMenuOption(Element subElement) {
+    private SimpleMenuOption createSimpleMenuOption(Element subElement, BaseMenuOption parent) {
+        return createSimpleMenuOption(subElement, parent.getLinkKey());
+    }
+    
+    private SimpleMenuOption createSimpleMenuOption(Element subElement, String prefix) {
         SimpleMenuOption subLevelOption = null;
-        String subOptionName = subElement.getAttributeValue("name");
-        OptionNameFactory factory;
-        if (subOptionName == null) {
-            // if the name is null, see if there's a property defined
-            String subOptionProperty = subElement.getAttributeValue("property");
-            factory = OptionNameFactory.createPropertyRetriever(subOptionProperty);
+        String subOptionId = subElement.getAttributeValue("id");
+        String key;
+        if (StringUtils.isBlank(prefix)) {
+            key = subOptionId;
         } else {
-            factory = OptionNameFactory.createPlain(subOptionName);
+            key = prefix + "." + subOptionId;
         }
         Element subAction = subElement.getChild("script");
         Element subLink = subElement.getChild("link");
         if (subAction != null) {
-            SimpleMenuOptionAction subLevelOptionTemp = new SimpleMenuOptionAction(factory);
+            SimpleMenuOptionAction subLevelOptionTemp = new SimpleMenuOptionAction(key);
             subLevelOptionTemp.setScript(subAction.getTextTrim());
             subLevelOption = subLevelOptionTemp;
         } else if (subLink != null) {
-            SimpleMenuOptionLink subLevelOptionTemp = new SimpleMenuOptionLink(factory);
+            SimpleMenuOptionLink subLevelOptionTemp = new SimpleMenuOptionLink(key);
             subLevelOptionTemp.setLinkUrl(subLink.getTextTrim());
             subLevelOption = subLevelOptionTemp;
         }
 
-        String subOptionId = subElement.getAttributeValue("id");
         subLevelOption.setId(subOptionId);
         
         return subLevelOption;
