@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/10/31 20:53:50 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/01/21 20:43:50 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,14 +69,14 @@ private:
 
 #pragma pack(pop)
 
-    enum IOStates
+    enum IOOperations
     {
-        IO_State_Output,      //  normal output
-        IO_State_Input,       //  input
-        IO_State_Complete,    //  transaction complete
-        IO_State_Failed,      //  transaction failed
-        IO_State_Invalid,     //  catch-all error condition for initialization errors
-    } _io_state;
+        IO_Operation_Output,      //  normal output
+        IO_Operation_Input,       //  input
+        IO_Operation_Complete,    //  transaction complete
+        IO_Operation_Failed,      //  transaction failed
+        IO_Operation_Invalid,     //  catch-all error condition for initialization errors
+    } _io_operation;
 
     enum ControlStates
     {
@@ -119,7 +119,12 @@ private:
 
     int _comm_errors;
     int _protocol_errors;
-    int _sanity_counter;
+    int _input_loops;
+
+    enum ControlResult
+    {
+        ControlResult_Retransmit
+    };
 
     bool process_inbound( CtiXfer &xfer, int status );  //  returns completeFrame & crcValid & direction
     int  process_control( frame in_frame );
@@ -127,7 +132,7 @@ private:
     int generate_control( CtiXfer &xfer );
     int decode_control  ( CtiXfer &xfer, int status );
 
-    bool control_pending( void ) const;
+    bool control_pending( void );
 
     void sendFrame     (CtiXfer &xfer);
     void sendRetransmit(CtiXfer &xfer);
@@ -146,7 +151,7 @@ private:
 
     enum IDLCFrameEnum
     {
-        Frame_MaximumDataLength      = 255,
+        Frame_MaximumDataLength         = 255,
         Frame_MinimumLength             =   5,
         Frame_ControlPacketLength       =   5,
         Frame_DataPacket_OverheadLength =   6,  //  header is 3, CRC is 2
@@ -154,9 +159,8 @@ private:
 
     enum MiscNumeric
     {
-        Insanity                 =  10,
-
-        MaximumCommErrors        =   3,
+        MaximumCommErrors        =   1,
+        MaximumInputLoops        =   3,
         MaximumProtocolErrors    =   3,
         MaximumFramingSeekLength = 260,
     };
@@ -177,8 +181,8 @@ public:
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
 
-    bool isTransactionComplete( void ) const;
-    bool errorCondition( void ) const;
+    virtual bool isTransactionComplete( void ) const;
+    virtual bool errorCondition( void ) const;
 
     bool send( const unsigned char *buf, unsigned len );
     bool recv( void );
