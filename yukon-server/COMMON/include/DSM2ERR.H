@@ -15,7 +15,7 @@ using std::string;
 
 typedef struct _ERRSTRUCT {
     INT  Error;
-    CHAR ErrorMessage[80];
+    CHAR ErrorMessage[160];
     INT  Type;
     CHAR TypeDescription[16];
 } ERRSTRUCT;
