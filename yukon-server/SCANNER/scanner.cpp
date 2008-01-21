@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.68 $
-* DATE         :  $Date: 2007/11/02 20:14:26 $
+* REVISION     :  $Revision: 1.69 $
+* DATE         :  $Date: 2008/01/21 19:52:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1251,14 +1251,16 @@ void LoadScannableDevices(void *ptr)
             {
                 if(pBase->isSingle())
                 {
-                    CtiDeviceSingle* DeviceRecord = (CtiDeviceSingle*)pBase.get();
-                    DeviceRecord->validateScanTimes(bforce);
+                    boost::static_pointer_cast<CtiDeviceSingle>(pBase)->validateScanTimes(bforce);
                 }
+
+                pBase->setPointManager(&ScannerPointManager);
             }
         }
         else
         {
             ScannerDeviceManager.apply(applyValidateScanTimes, (void*)bforce);
+            attachPointManagerToDevices(&ScannerDeviceManager, &ScannerPointManager);
         }
     }
 
