@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/01/14 19:29:59 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/01/21 20:53:22 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -15,12 +15,9 @@
 
 
 #include "dev_ccu721.h"
+#include "prot_emetcon.h"
 #include "porter.h"
-#include "pt_numeric.h"
-#include "pt_status.h"
 #include "numstr.h"
-#include "dllyukon.h"
-#include "cparms.h"
 
 
 using Cti::Protocol::Klondike;
@@ -249,6 +246,11 @@ void CCU721::DecodeDatabaseReader(RWDBReader &rdr)
 }
 
 
+LONG CCU721::getAddress() const
+{
+    return _address.getSlaveAddress();
+}
+
 bool CCU721::hasQueuedWork() const
 {
     return true; //_klondike.get
@@ -344,14 +346,16 @@ int CCU721::recvCommRequest(OUTMESS *OutMessage)
 {
     bool error = false;
 
-    if( OutMessage->EventCode & DTRAN )
+    _current_outmessage = *OutMessage;
+
+    if( _current_outmessage.EventCode & DTRAN &&
+        _current_outmessage.EventCode & BWORD )
     {
-        _klondike.setDirectTransmissionInfo(OutMessage->Buffer.BSt);
-        error = !_klondike.setCommand(Klondike::Command_DirectMessageRequest);
+        error = !_klondike.setCommandDirectTransmission(_current_outmessage.Buffer.BSt);
     }
     else
     {
-        error = !_klondike.setCommand(OutMessage->Sequence);
+        error = !_klondike.setCommand(_current_outmessage.Sequence);
     }
 
     return error;
@@ -372,6 +376,42 @@ int CCU721::sendCommRequest(OUTMESS *&OutMessage, list <OUTMESS *> &outList)
 
 int CCU721::sendCommResult(INMESS *InMessage)
 {
+    using Cti::Protocol::Emetcon;
+
+    if( _klondike.errorCondition() )
+    {
+        InMessage->EventCode = _klondike.errorCode();
+
+        InMessage->Buffer.DSt.Time     = InMessage->Time;
+        InMessage->Buffer.DSt.DSTFlag  = InMessage->MilliTime & DSTACTIVE;
+    }
+    else
+    {
+        unsigned char input[255], input_length;
+
+        _klondike.getResultDirectTransmission(input, 255,input_length );
+
+        //  if this was targeted at an MCT
+        if( _current_outmessage.TargetID != _current_outmessage.DeviceID && InMessage->DeviceID != 0 && InMessage->TargetID != 0 )
+        {
+            if( (_current_outmessage.EventCode & BWORD) &&
+                (_current_outmessage.Buffer.BSt.IO & Emetcon::IO_Read ) )
+            {
+                //  inbound command - decode the D words
+                InMessage->EventCode = Klondike::decodeDWords(input, input_length, _current_outmessage.Remote, &(InMessage->Buffer.DSt));
+                InMessage->Buffer.DSt.Time    = InMessage->Time;
+                InMessage->Buffer.DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
+                InMessage->Buffer.DSt.Length  = (input_length / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
+
+                InMessage->InLength = InMessage->Buffer.DSt.Length;
+            }
+            else
+            {
+                InMessage->InLength = 0;
+            }
+        }
+    }
+
     return 0;
 }
 
