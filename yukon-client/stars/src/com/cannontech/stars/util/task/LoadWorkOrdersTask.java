@@ -8,7 +8,6 @@ package com.cannontech.stars.util.task;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Date;
 
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -24,7 +23,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
-import com.cannontech.database.data.stars.event.EventWorkOrder;
 
 /**
  * @author yao
@@ -36,8 +34,6 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
     private static final JdbcTemplate jdbcTemplate;
     private static final PlatformTransactionManager transactionManager;
     private static final String selectSql;
-    private static final String selectEventWorkOrder;
-    private static final ParameterizedRowMapper<EventWorkOrder> eventWorkOrderRowMapper;
     private static final ParameterizedRowMapper<LiteWorkOrderBase> workOrderBaseRowMapper;
     
 	private final LiteStarsEnergyCompany energyCompany;
@@ -55,15 +51,6 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
                     "FROM WorkOrderBase wo, ECToWorkOrderMapping map " +
                     "WHERE map.EnergyCompanyID = ? " +
                     "AND map.WorkOrderID = wo.OrderID";
-        
-        selectEventWorkOrder = "SELECT EB.EVENTID,USERID,SYSTEMCATEGORYID,ACTIONID,EVENTTIMESTAMP,ORDERID " +
-                               "FROM EventBase EB,EventWorkOrder EWO,ECToWorkOrderMapping map " + 
-                               "WHERE EB.EVENTID = EWO.EVENTID " +
-                               "AND map.EnergyCompanyID = ? " +
-                               "AND MAP.WORKORDERID = EWO.ORDERID " +
-                               "ORDER BY EB.EVENTID, EVENTTIMESTAMP";
-        
-        eventWorkOrderRowMapper = createEventWorkOrderRowMapper();
         
         workOrderBaseRowMapper = createWorkOrderBaseRowMapper(); 
         
@@ -128,28 +115,6 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 	                               }
 	                           });
 
-	        jdbcTemplate.query(
-	                           selectEventWorkOrder,
-	                           new Object[]{energyCompany.getEnergyCompanyID()},
-	                           new RowCallbackHandler() {
-	                               public void processRow(ResultSet rs) throws SQLException {
-	                                   if (isCanceled) {
-	                                       status = STATUS_CANCELED;
-	                                       return;
-	                                   }
-
-	                                   final int orderId = rs.getInt("ORDERID");
-
-	                                   LiteWorkOrderBase liteWorkOrderBase = energyCompany.getWorkOrderBase(orderId, false);
-	                                   if (liteWorkOrderBase != null) {
-	                                       EventWorkOrder eventWorkOrder = eventWorkOrderRowMapper.mapRow(rs, rs.getRow());
-	                                       liteWorkOrderBase.getEventWorkOrders().add(0, eventWorkOrder);
-	                                   } else {
-	                                       CTILogger.error("WorkOrderID: " + orderId + " - Not loaded for EnergyCompanyID: " + energyCompany.getEnergyCompanyID());
-	                                   }
-	                               }
-	                           });
-
 	        energyCompany.setWorkOrdersLoaded( true );
 	        status = STATUS_FINISHED;
 	        CTILogger.info("All work orders loaded for energy company #" + energyCompany.getEnergyCompanyID());
@@ -193,19 +158,4 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
         return mapper;
     }
     
-	private static ParameterizedRowMapper<EventWorkOrder> createEventWorkOrderRowMapper() {
-	    final ParameterizedRowMapper<EventWorkOrder> mapper = new ParameterizedRowMapper<EventWorkOrder>() {
-	        public EventWorkOrder mapRow(ResultSet rs, int rowNum) throws SQLException {
-	            final EventWorkOrder eventWorkOrder = new EventWorkOrder();
-	            eventWorkOrder.setEventID(rs.getInt("EVENTID"));
-	            eventWorkOrder.getEventBase().setUserID(rs.getInt("USERID"));
-	            eventWorkOrder.getEventBase().setSystemCategoryID(rs.getInt("SYSTEMCATEGORYID"));
-	            eventWorkOrder.getEventBase().setActionID(rs.getInt("ACTIONID"));
-	            eventWorkOrder.getEventBase().setEventTimestamp( new Date(rs.getTimestamp("EVENTTIMESTAMP").getTime() ));                
-	            eventWorkOrder.getEventWorkOrder().setWorkOrderID(rs.getInt("ORDERID"));
-	            return eventWorkOrder;
-	        }
-	    };
-	    return mapper;
-	}     
 }

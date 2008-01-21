@@ -11,6 +11,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,23 +21,18 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.customer.CustomerTypes;
-import com.cannontech.database.data.lite.LiteAddress;
-import com.cannontech.database.data.lite.LiteCICustomer;
-import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
-import com.cannontech.database.data.stars.report.WorkOrderBase;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.event.dao.EventWorkOrderDao;
 import com.cannontech.stars.util.AbstractFilter;
 import com.cannontech.stars.util.FilterWrapper;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WorkOrderFilter;
-import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.util.ServletUtil;
 
@@ -47,7 +43,7 @@ import com.cannontech.util.ServletUtil;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class WorkOrderBean {
-	
+	private static final EventWorkOrderDao eventWorkOrderDao = YukonSpringHook.getBean("eventWorkOrderDao", EventWorkOrderDao.class);
 	private boolean manageMembers = false;
 	public static final int SORT_ORDER_ASCENDING = 0;
 	public static final int SORT_ORDER_DESCENDING = 1;
@@ -62,18 +58,8 @@ public class WorkOrderBean {
     
 	private static final String LINE_SEPARATOR = System.getProperty("line.separator");
 	
-	private static final Comparator ORDER_ID_CMPTOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
-			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
-			return so1.getOrderID() - so2.getOrderID();
-		}
-	};
-	
-	private static final Comparator ORDER_NO_CMPTOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
-			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
+	private static final Comparator<LiteWorkOrderBase> ORDER_NO_CMPTOR = new Comparator<LiteWorkOrderBase>() {
+		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
 			int result = 0;
 			
 			Long on1 = null;
@@ -104,13 +90,8 @@ public class WorkOrderBean {
 		}
 	};
 	
-	private static final Comparator SERVICE_COMPANY_CMPTOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-
-			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
-			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
-			if( so1 == null || so2 == null)
-				System.out.println("HERE");
+	private static final Comparator<LiteWorkOrderBase> SERVICE_COMPANY_CMPTOR = new Comparator<LiteWorkOrderBase>() {
+		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
 			int servCo1 = so1.getServiceCompanyID();
 		    int servCo2 = so2.getServiceCompanyID();
 		    
@@ -124,13 +105,8 @@ public class WorkOrderBean {
 		}
 	};	
 	
-	private static final Comparator SERVICE_STATUS_CMPTOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-
-			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
-			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
-			if( so1 == null || so2 == null)
-				System.out.println("HERE");			
+	private static final Comparator<LiteWorkOrderBase> SERVICE_STATUS_CMPTOR = new Comparator<LiteWorkOrderBase>() {
+		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
 			int servStat1 = so1.getCurrentStateID();
 		    int servStat2 = so2.getCurrentStateID();
 		    YukonListEntry yle1 = DaoFactory.getYukonListDao().getYukonListEntry(servStat1);
@@ -143,13 +119,8 @@ public class WorkOrderBean {
 		}
 	};	
 	
-	private static final Comparator SERVICE_TYPE_CMPTOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-
-			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
-			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
-			if( so1 == null || so2 == null)
-				System.out.println("HERE");
+	private static final Comparator<LiteWorkOrderBase> SERVICE_TYPE_CMPTOR = new Comparator<LiteWorkOrderBase>() {
+		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
 			int servType1 = so1.getWorkTypeID();
 		    int servType2 = so2.getWorkTypeID();
 		    YukonListEntry yle1 = DaoFactory.getYukonListDao().getYukonListEntry(servType1);
@@ -162,10 +133,8 @@ public class WorkOrderBean {
 		}
 	};
 	
-	private static final Comparator ORDER_DATE_CMPTOR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			LiteWorkOrderBase so1 = (LiteWorkOrderBase) o1;
-			LiteWorkOrderBase so2 = (LiteWorkOrderBase) o2;
+	private static final Comparator<LiteWorkOrderBase> ORDER_DATE_CMPTOR = new Comparator<LiteWorkOrderBase>() {
+		public int compare(LiteWorkOrderBase so1, LiteWorkOrderBase so2) {
 			int rslt = (new Date(so1.getDateReported()).compareTo(new Date(so2.getDateReported())));
 			if (rslt == 0)
 				rslt = so1.getOrderID() - so2.getOrderID();
@@ -403,21 +372,23 @@ public class WorkOrderBean {
 		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Current State</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='13%' >Ordered By</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("          <td  class='HeaderCell' width='20%' >Assigned</td>").append(LINE_SEPARATOR);
-//		htmlBuf.append("          <td  class='HeaderCell' width='34%' >Description</td>").append(LINE_SEPARATOR);
 		htmlBuf.append("        </tr>").append(LINE_SEPARATOR);
 		
+		Map<Integer,List<EventWorkOrder>> eventWorkOrderMap = eventWorkOrderDao.getByWorkOrders(soList);
 		for (int i = minOrderNo; i <= maxOrderNo; i++) {
         LiteStarsEnergyCompany liteStarsEC_Order = null;
-//		for (int i = 0; i < soList.size(); i++) {
-//			LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i);
-            LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) soList.get(i-1);
+            LiteWorkOrderBase liteOrder = soList.get(i-1);
+            
+            List<EventWorkOrder> workOrderList = eventWorkOrderMap.get(liteOrder.getLiteID());
+            if (workOrderList == null) workOrderList = new ArrayList<EventWorkOrder>();
+            
             if( liteStarsEC_Order == null || liteStarsEC_Order.getEnergyCompanyID().intValue() != liteOrder.getEnergyCompanyID())
                 liteStarsEC_Order = StarsDatabaseCache.getInstance().getEnergyCompany(liteOrder.getEnergyCompanyID());
             
 			StarsServiceRequest starsOrder = StarsLiteFactory.createStarsServiceRequest(liteOrder, liteStarsEC_Order);
 			Date date = null;
-			if( liteOrder.getEventWorkOrders().size() > 0)
-				date = StarsUtils.translateDate( liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp().getTime());
+			if (workOrderList.size() > 0)
+				date = StarsUtils.translateDate(workOrderList.get(0).getEventBase().getEventTimestamp().getTime());
 
 			String dateStr = (date != null)? StarsUtils.formatDate(date, liteStarsEC_Order.getDefaultTimeZone()) : "----";
 

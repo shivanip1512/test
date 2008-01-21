@@ -2,6 +2,9 @@
 <%@ page import="com.cannontech.database.data.lite.stars.LiteWorkOrderBase" %>
 <%@ include file="include/StarsHeader.jsp" %>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
+<%@page import="com.cannontech.database.data.stars.event.EventWorkOrder"%>
+<%@page import="com.cannontech.stars.dr.event.dao.EventWorkOrderDao"%>
+<%@page import="com.cannontech.spring.YukonSpringHook"%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -78,9 +81,11 @@ function checkOrderNo(form) {
                  <td width="28%" class="HeaderCell">Desription</td>
               </tr>
               <%
+    EventWorkOrderDao eventWorkOrderDao = YukonSpringHook.getBean("eventWorkOrderDao", EventWorkOrderDao.class);
 	for (int i = 0; i < serviceHist.getStarsServiceRequestCount(); i++) {
 		StarsServiceRequest order = serviceHist.getStarsServiceRequest(i);
 		LiteWorkOrderBase liteOrder = liteEC.getWorkOrderBase(order.getOrderID(), true);
+        List<EventWorkOrder> eventWorkOrderList = eventWorkOrderDao.getByWorkOrderId(liteOrder.getOrderID());
 		String companyName = "";
 		for (int j = 0; j < companies.getStarsServiceCompanyCount(); j++) {
 			if (companies.getStarsServiceCompany(j).getCompanyID() == liteOrder.getServiceCompanyID()) {
@@ -91,7 +96,7 @@ function checkOrderNo(form) {
 %>
               <tr valign="middle"> 
                 <td width="12%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= liteOrder.getOrderNumber() %></a></td>
-                <td width="12%" class="TableCell"><%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), dateTimeFormat) %></td>
+                <td width="12%" class="TableCell"><%= ServletUtils.formatDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp(), dateTimeFormat) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getWorkTypeID()).getEntryText()) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getCurrentStateID()).getEntryText()) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(liteOrder.getOrderedBy()) %></td>

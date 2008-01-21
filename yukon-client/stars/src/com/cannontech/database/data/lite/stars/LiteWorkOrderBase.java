@@ -1,13 +1,10 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.util.ArrayList;
-
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
-import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.db.company.EnergyCompany;
 
 /**
@@ -33,7 +30,6 @@ public class LiteWorkOrderBase extends LiteBase {
 	private String additionalOrderNumber = null;
 	private int accountID = com.cannontech.database.db.stars.customer.CustomerAccount.NONE_INT;
 	
-	private ArrayList<EventWorkOrder> eventWorkOrders = null;
 	private int energyCompanyID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	public LiteWorkOrderBase() {
@@ -268,8 +264,6 @@ public class LiteWorkOrderBase extends LiteBase {
             setAccountID(( (java.math.BigDecimal) results[10] ).intValue());
             setAdditionalOrderNumber( (String) results[11]);
             setEnergyCompanyID(( (java.math.BigDecimal) results[12]).intValue());
-            
-    		setEventWorkOrders(EventWorkOrder.retrieveEventWorkOrders(getOrderID()));
 		}
 		catch (Exception e)
 		{
@@ -285,13 +279,4 @@ public class LiteWorkOrderBase extends LiteBase {
 		this.additionalOrderNumber = additionalOrderNumber;
 	}
 
-	public ArrayList<EventWorkOrder> getEventWorkOrders() {
-		if( eventWorkOrders == null)
-			eventWorkOrders = new ArrayList<EventWorkOrder>();
-		return eventWorkOrders;
-	}
-
-	public void setEventWorkOrders(ArrayList<EventWorkOrder> eventWorkOrders) {
-		this.eventWorkOrders = eventWorkOrders;
-	}
 }

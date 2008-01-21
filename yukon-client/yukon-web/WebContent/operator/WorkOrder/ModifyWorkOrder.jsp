@@ -15,12 +15,18 @@
     else
         liteOrder = (LiteWorkOrderBase)workOrderSetList.get(0);
     
+    EventWorkOrderDao eventWorkOrderDao = YukonSpringHook.getBean("eventWorkOrderDao", EventWorkOrderDao.class);
+    List<EventWorkOrder> eventWorkOrderList = eventWorkOrderDao.getByWorkOrderId(liteOrder.getOrderID());
+    
 	int statusPending = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
 	int statusAssigned = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_ASSIGNED).getEntryID();
 	int statusScheduled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
 	int statusCompleted = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
 	int statusCancelled = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
 %>
+<%@page import="com.cannontech.stars.dr.event.dao.EventWorkOrderDao"%>
+<%@page import="com.cannontech.spring.YukonSpringHook"%>
+<%@page import="com.cannontech.database.data.stars.event.EventWorkOrder"%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -113,8 +119,8 @@ function closeOrder(form) {
 function changeStatus(form) {
 	if( form.CurrentState.value == "<%= liteOrder.getCurrentStateID()%>" )
 	{
-		form.elements["DateEventTimestamp"].value = "<%= (liteOrder.getEventWorkOrders().size() > 0 ? (ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), datePart)) : "") %>";
-		form.elements["TimeEventTimestamp"].value = "<%= (liteOrder.getEventWorkOrders().size() > 0 ? (ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), timeFormat)) : "") %>";
+		form.elements["DateEventTimestamp"].value = "<%= (eventWorkOrderList.size() > 0 ? (ServletUtils.formatDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp(), datePart)) : "") %>";
+		form.elements["TimeEventTimestamp"].value = "<%= (eventWorkOrderList.size() > 0 ? (ServletUtils.formatDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp(), timeFormat)) : "") %>";
 		document.getElementById("DivEventTimestamp").disabled = true;
 	}
 	else {
@@ -341,9 +347,9 @@ function sendWorkOrder() {
                           <tr> 
                             <td width="30%" align="right" class="TableCell">Event Date:</td>
                             <td width="70%"> 
-                              <input type="text" name="DateEventTimestamp" size="14" value="<%= (liteOrder.getEventWorkOrders().size() > 0 ? (ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), datePart)) : "") %>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="DateEventTimestamp" size="14" value="<%= (eventWorkOrderList.size() > 0 ? (ServletUtils.formatDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp(), datePart)) : "") %>" disabled onchange="setContentChanged(true)">
                               - 
-                              <input type="text" name="TimeEventTimestamp" size="8" value="<%= (liteOrder.getEventWorkOrders().size() > 0 ? (ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(0).getEventBase().getEventTimestamp(), timeFormat)) : "") %>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="TimeEventTimestamp" size="8" value="<%= (eventWorkOrderList.size() > 0 ? (ServletUtils.formatDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp(), timeFormat)) : "") %>" disabled onchange="setContentChanged(true)">
                             </td>
                           </tr>
                         </table>
@@ -354,10 +360,10 @@ function sendWorkOrder() {
 	                        <td width="30%" align="right" valign="top" class="TableCell">Event History:
 	                        <td width="70%">
 						      <table width="95%" border="1" cellspacing="0" cellpadding="1" align="left" valign="top">
-	                            <% for (int i = 0; i < liteOrder.getEventWorkOrders().size(); i++) { %>
+	                            <% for (int i = 0; i < eventWorkOrderList.size(); i++) { %>
 	                            <tr> 
-	                              <td width="40%" class="TableCell">&nbsp;<%=DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getEventWorkOrders().get(i).getEventBase().getActionID()).getEntryText()%>&nbsp;</td>
-	                              <td width="60%" class="TableCell">&nbsp;<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(i).getEventBase().getEventTimestamp(), datePart) %>&nbsp;-&nbsp;<%= ServletUtils.formatDate(liteOrder.getEventWorkOrders().get(i).getEventBase().getEventTimestamp(), timeFormat) %></td>
+	                              <td width="40%" class="TableCell">&nbsp;<%=DaoFactory.getYukonListDao().getYukonListEntry(eventWorkOrderList.get(i).getEventBase().getActionID()).getEntryText()%>&nbsp;</td>
+	                              <td width="60%" class="TableCell">&nbsp;<%= ServletUtils.formatDate(eventWorkOrderList.get(i).getEventBase().getEventTimestamp(), datePart) %>&nbsp;-&nbsp;<%= ServletUtils.formatDate(eventWorkOrderList.get(i).getEventBase().getEventTimestamp(), timeFormat) %></td>
 	                            </tr>
 	                            <%}%>
 	                          </table>                                

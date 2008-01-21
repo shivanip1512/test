@@ -77,6 +77,10 @@
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
     
+    <bean id="eventWorkOrderDao" class="com.cannontech.stars.dr.event.dao.impl.EventWorkOrderDaoImpl">
+        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+    </bean>
+    
     <bean id="starsCacheService" class="com.cannontech.stars.core.service.impl.StarsCacheServiceImpl"/>
     
 </beans>

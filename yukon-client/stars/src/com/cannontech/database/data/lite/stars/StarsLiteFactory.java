@@ -334,7 +334,6 @@ public class StarsLiteFactory {
 		liteOrder.setAccountID( order.getWorkOrderBase().getAccountID().intValue() );
 		liteOrder.setAdditionalOrderNumber(order.getWorkOrderBase().getAdditionalOrderNumber());
 		liteOrder.setEnergyCompanyID( order.getEnergyCompanyID().intValue());
-		liteOrder.setEventWorkOrders(order.getEventWorkOrders());
 	}
 	
 	public static void setLiteSiteInformation(LiteSiteInformation liteSiteInfo, com.cannontech.database.db.stars.customer.SiteInformation siteInfo) {
@@ -1149,7 +1148,6 @@ public class StarsLiteFactory {
 		order.getWorkOrderBase().setAccountID( new Integer(liteOrder.getAccountID()) );
 		order.getWorkOrderBase().setAdditionalOrderNumber( liteOrder.getAdditionalOrderNumber());
 		order.setEnergyCompanyID( new Integer(liteOrder.getEnergyCompanyID()) );
-		order.setEventWorkOrders(liteOrder.getEventWorkOrders());
 	}
 	
 	public static void setEnergyCompany(com.cannontech.database.db.company.EnergyCompany company, LiteStarsEnergyCompany liteCompany) {
