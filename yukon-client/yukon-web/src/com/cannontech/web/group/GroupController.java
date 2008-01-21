@@ -136,7 +136,7 @@ public class GroupController extends MultiActionController {
         mav.addObject("group", group);
 
         // Create a list of groups the current group could move to excluding the
-        // current group itself, any decendant groups of the current group and
+        // current group itself, any descendant groups of the current group and
         // any groups that are not modifiable
         List<DeviceGroup> groups = deviceGroupDao.getAllGroups();
         List<DeviceGroup> moveGroups = new ArrayList<DeviceGroup>();
