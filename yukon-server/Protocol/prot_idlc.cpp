@@ -8,13 +8,15 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/10/31 20:53:50 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/01/21 20:46:04 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #include "yukon.h"
 
+#include <limits>
+using namespace std;
 
 #include "logger.h"
 #include "utility.h"
@@ -27,8 +29,10 @@ namespace Cti       {
 namespace Protocol  {
 
 IDLC::IDLC() :
-    _io_state(IO_State_Invalid),
-    _control_state(Control_State_ResetSend)
+    _io_operation(IO_Operation_Invalid),
+    _control_state(Control_State_OK),
+    _slave_sequence (numeric_limits<unsigned char>::max()),  //  these are what trigger the IDLC reset
+    _master_sequence(numeric_limits<unsigned char>::max())
 {
 }
 
@@ -189,7 +193,7 @@ unsigned IDLC::calcFrameLength(const frame &f)
     }
     else
     {
-        retval = f.data[0];
+        retval = f.data[0] + Frame_DataPacket_OverheadLength;
     }
 
     return retval;
@@ -225,8 +229,8 @@ bool IDLC::isCRCValid(const frame &f)
     //  CRC doesn't include the framing byte or the two CRC bytes at the end
     crc = NCrcCalc_C(f.raw + 1, length - 3);
 
-    if( ((unsigned char *)&crc)[0] == f.raw[length - 2] &&
-        ((unsigned char *)&crc)[1] == f.raw[length - 1] )
+    if( ((crc >> 8) & 0xff) == f.raw[length - 2] &&  //  MSB
+        ( crc       & 0xff) == f.raw[length - 1] )   //  LSB
     {
         crc_valid = true;
     }
@@ -267,20 +271,20 @@ int IDLC::generate( CtiXfer &xfer )
     }
     else
     {
-        switch( _io_state )
+        switch( _io_operation )
         {
-            case IO_State_Output:       sendFrame(xfer);            break;
+            case IO_Operation_Output:   sendFrame(xfer);            break;
 
-            case IO_State_Input:        recvFrame(xfer, _in_recv);  break;
+            case IO_Operation_Input:    recvFrame(xfer, _in_recv);  break;
 
-            case IO_State_Complete:
-            case IO_State_Invalid:
-            case IO_State_Failed:
+            case IO_Operation_Complete:
+            case IO_Operation_Invalid:
+            case IO_Operation_Failed:
             default:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled state (" << _io_state << ") in  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - unhandled state (" << _io_operation << ") in  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 retval = BADRANGE;
@@ -325,9 +329,9 @@ int IDLC::decode( CtiXfer &xfer, int status )
     }
     else
     {
-        switch( _io_state )
+        switch( _io_operation )
         {
-            case IO_State_Input:
+            case IO_Operation_Input:
             {
                 if( process_inbound(xfer, status) )
                 {
@@ -338,7 +342,7 @@ int IDLC::decode( CtiXfer &xfer, int status )
                             _protocol_errors++;
                         }
                     }
-                    else if( _in_frame.header.control.response_sequence != _slave_sequence )
+                    else if( _in_frame.header.control.request_sequence != _slave_sequence )
                     {
                         //_io_state = IO_State_Retransmit;
                         _protocol_errors++;
@@ -346,8 +350,8 @@ int IDLC::decode( CtiXfer &xfer, int status )
                     else
                     {
                         //  successful response - increment our sequence numbers
-                        _master_sequence = (_master_sequence + 1) % 8;
-                        _slave_sequence  = (_slave_sequence  + 1) % 8;
+                        _master_sequence = _in_frame.header.control.response_sequence;
+                        _slave_sequence  = (_slave_sequence + 1) % 8;
 
                         //  and copy the data
                         _in_data_length = _in_frame.data[0];
@@ -355,46 +359,50 @@ int IDLC::decode( CtiXfer &xfer, int status )
                         memcpy(_in_data, _in_frame.data + 1, _in_data_length);
 
                         //  we're done
-                        _io_state = IO_State_Complete;
+                        _io_operation  = IO_Operation_Complete;
+                        _control_state = Control_State_OK;
                     }
                 }
 
                 break;
             }
 
-            case IO_State_Output:
+            case IO_Operation_Output:
             {
-                recv();
+                _io_operation  = IO_Operation_Complete;
+                _control_state = Control_State_OK;
 
                 break;
             }
 
-            case IO_State_Complete:
-            case IO_State_Failed:
-            case IO_State_Invalid:
+            case IO_Operation_Complete:
+            case IO_Operation_Failed:
+            case IO_Operation_Invalid:
             default:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled state (" << _io_state << ") in  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - unhandled operation (" << _io_operation << ") in  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _protocol_errors++;
-                _io_state = IO_State_Failed;
+                _io_operation  = IO_Operation_Failed;
+                _control_state = Control_State_OK;
 
                 break;
             }
         }
     }
 
-    if( _sanity_counter      > Insanity              ||
+    if( _input_loops         > MaximumInputLoops     ||
         _protocol_errors     > MaximumProtocolErrors ||
         _comm_errors         > MaximumCommErrors     ||
         _framing_seek_length > MaximumFramingSeekLength )
     {
         //  this should be a nicer error - this is very generic
         retval = !NORMAL;
-        _io_state = IO_State_Failed;
+        _io_operation  = IO_Operation_Failed;
+        _control_state = Control_State_OK;
     }
 
     return retval;
@@ -412,7 +420,6 @@ int IDLC::decode_control( CtiXfer &xfer, int status )
             _control_state = Control_State_ResetRecv;
             break;
         }
-
         case Control_State_ResetRecv:
         {
             if( process_inbound(xfer, status) )
@@ -458,8 +465,8 @@ int IDLC::process_control( frame in_frame )
 
     if( in_frame.header.control.code == ControlCode_ResetAcknowlegde )
     {
-        _master_sequence = 1;
-        _slave_sequence  = 1;
+        _master_sequence = 0;
+        _slave_sequence  = 0;
 
         _control_state = Control_State_OK;
     }
@@ -494,43 +501,60 @@ bool IDLC::process_inbound( CtiXfer &xfer, int status )
 {
     bool valid_frame = false;
 
-    if( !_in_recv )
+    if( status )
     {
-        //  if we haven't received anything yet, make sure that we align on a
-        //    framing byte first...
-        //  in the normal case, this should return 0, meaning that we're aligned
-        //    and that the whole _in_actual count is valid
-        _framing_seek_length += alignFrame(xfer, _in_frame, _in_actual);
-
-        _in_recv += _in_actual;
-    }
-    else if( !isCompleteFrame(_in_frame, _in_recv) )
-    {
-        //  we didn't get the whole thing yet - loop back through generate() so we can grab the remainder
-        ++_sanity_counter;
-    }
-    else if( !isCRCValid(_in_frame) )
-    {
-        //  bad CRC, re-request frame
-        //_io_state = IO_State_Retransmit;
-        _protocol_errors++;
-    }
-    else if( _in_frame.header.direction )
-    {
-        //  nothing coming from the slave should have the direction bit set
-        _protocol_errors++;
+        _comm_errors++;
     }
     else
     {
-        valid_frame = true;
+        if( !_in_recv )
+        {
+            //  if we haven't received anything yet, make sure that we align on a
+            //    framing byte first...
+            //  in the normal case, this should return 0, meaning that we're aligned
+            //    and that the whole _in_actual count is valid
+            _framing_seek_length += alignFrame(xfer, _in_frame, _in_actual);
+        }
+
+        _in_recv += _in_actual;
+
+        if( !isCompleteFrame(_in_frame, _in_recv) )
+        {
+            //  we didn't get the whole thing yet - loop back through generate() so we can grab the remainder
+            ++_input_loops;
+        }
+        else if( !isCRCValid(_in_frame) )
+        {
+            //  bad CRC, re-request frame
+            //_IO_Operation = IO_Operation_Retransmit;
+            _protocol_errors++;
+        }
+        else if( _in_frame.header.direction )
+        {
+            //  nothing coming from the slave should have the direction bit set
+            _protocol_errors++;
+        }
+        else
+        {
+            valid_frame = true;
+        }
     }
 
     return valid_frame;
 }
 
 
-bool IDLC::control_pending( void ) const
+bool IDLC::control_pending( void )
 {
+    if( _control_state == Control_State_OK )
+    {
+        //  uninitialized
+        if( _slave_sequence  > 7 || _master_sequence > 7 )
+        {
+            _control_state = Control_State_ResetSend;
+        }
+    }
+
     return _control_state != Control_State_OK;
 }
 
@@ -539,17 +563,17 @@ bool IDLC::isTransactionComplete( void ) const
 {
     bool retval = false;
 
-    switch( _io_state )
+    switch( _io_operation )
     {
-        case IO_State_Input:
-        case IO_State_Output:
-        //case IO_State_Retransmit:
+        case IO_Operation_Input:
+        case IO_Operation_Output:
+        //case IO_Operation_Retransmit:
             break;
 
         //  note the "default" case there - we exit instead of looping forever
-        case IO_State_Complete:
-        case IO_State_Failed:
-        case IO_State_Invalid:
+        case IO_Operation_Complete:
+        case IO_Operation_Failed:
+        case IO_Operation_Invalid:
         default:
             retval = true;
     }
@@ -560,7 +584,7 @@ bool IDLC::isTransactionComplete( void ) const
 
 bool IDLC::errorCondition( void ) const
 {
-    return _io_state == IO_State_Failed;
+    return _io_operation == IO_Operation_Failed;
 }
 
 
@@ -572,7 +596,8 @@ bool IDLC::send( const unsigned char *buf, unsigned len )
 
 bool IDLC::recv( void )
 {
-    _io_state = IO_State_Input;
+    _io_operation  = IO_Operation_Input;
+    _control_state = Control_State_OK;
     _in_recv  = 0;
     _framing_seek_length = 0;
 
@@ -590,14 +615,15 @@ bool IDLC::setOutData( const unsigned char *buf, unsigned len )
 {
     if( buf && len && len < Frame_MaximumDataLength )
     {
-        _io_state = IO_State_Output;
+        _io_operation  = IO_Operation_Output;
+        _control_state = Control_State_OK;
 
         memcpy(_out_data, buf, len);
 
         _out_data_length = len;
 
         //  this is the only place these are reset to 0
-        _sanity_counter  = 0;
+        _input_loops     = 0;
         _comm_errors     = 0;
         _protocol_errors = 0;
 
@@ -606,7 +632,8 @@ bool IDLC::setOutData( const unsigned char *buf, unsigned len )
     }
     else
     {
-        _io_state = IO_State_Invalid;
+        _io_operation    = IO_Operation_Invalid;
+        _control_state   = Control_State_OK;
         _out_data_length = 0;
     }
 
