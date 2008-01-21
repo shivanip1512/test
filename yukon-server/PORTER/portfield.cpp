@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.213 $
-* DATE         :  $Date: 2007/12/11 21:33:12 $
+* REVISION     :  $Revision: 1.214 $
+* DATE         :  $Date: 2008/01/21 20:47:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3015,6 +3015,38 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
 
         switch(Device->getType())
         {
+        case TYPE_CCU721:
+            {
+                if( (OutMessage->EventCode & BWORD) &&
+                    (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
+                {
+                    CtiDeviceSPtr tempDevice;
+                    if( !CommResult && !status && (tempDevice = DeviceManager.RemoteGetEqual(InMessage->TargetID)) )
+                    {
+                        if( InMessage->Buffer.DSt.Length && //  make sure it's not just an ACK
+                            tempDevice->getAddress() != CtiDeviceMCT::TestAddress1 &&  //  also, make sure we're not sending to an FCT-jumpered MCT,
+                            tempDevice->getAddress() != CtiDeviceMCT::TestAddress2 &&  //    since it'll return its native address and not the test address
+                            (tempDevice->getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
+                        {
+                            //  Seems this should percolate to the device level, although setting status here kills the decode
+
+                            //  Address did not match, so it's a comm error
+                            status = CommResult = WRONGADDRESS;
+                            InMessage->EventCode = WRONGADDRESS;
+
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << tempDevice->getName() << "\" ";
+                                dout << "(" << tempDevice->getAddress() << ") != (" << InMessage->Buffer.DSt.Address << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+                        }
+                    }
+                }
+
+                addCommResult(InMessage->TargetID, CommResult != NORMAL, OutMessage->Retry > 0);
+
+                break;
+            }
         case TYPE_CCU711:
             {
                 if( OutMessage->MessageFlags & MessageFlag_PortSharing )
@@ -3092,16 +3124,16 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                 {
                     if( !(status = NackTst(InMessage->Buffer.InMessage[0], &nack1, OutMessage->Remote)) &&
                         !(status = NackTst(InMessage->Buffer.InMessage[1], &nack2, OutMessage->Remote)) &&
-                        !nack1 && 
+                        !nack1 &&
                         !nack2 )
                     {
                         InMessage->InLength = OutMessage->InLength;
-    
+
                         if( (OutMessage->EventCode & BWORD) &&
                             (OutMessage->Buffer.BSt.IO & Cti::Protocol::Emetcon::IO_Read ) )
                         {
                             DSTRUCT        DSt;
-    
+
                             /* This is I so decode dword(s) for the result */
                             CommResult = InMessage->EventCode = status = D_Words (InMessage->Buffer.InMessage + 3, (USHORT)((InMessage->InLength - 3) / (DWORDLEN + 1)),  OutMessage->Remote, &DSt);
                             DSt.Time = InMessage->Time;
@@ -3109,23 +3141,23 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             InMessage->Buffer.DSt = DSt;
                         }
                     }
-					else if( !status && nack1 )
-					{
-						status = NOTNORMAL;
+                    else if( !status && nack1 )
+                    {
+                        status = NOTNORMAL;
 
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - NACK received in CCU header from device \"" << Device->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-					}
-					else if( !status && nack2 )
-					{
+                    }
+                    else if( !status && nack2 )
+                    {
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - repeaters expected but not heard **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
-					}
-    
+                    }
+
                     CtiDeviceSPtr tempDevice;
                     if( !CommResult && !status && (tempDevice = DeviceManager.RemoteGetEqual(InMessage->TargetID)) )
                     {
@@ -3137,11 +3169,11 @@ INT DoProcessInMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OUTM
                             (tempDevice->getAddress() & 0x1fff) != (InMessage->Buffer.DSt.Address & 0x1fff) )
                         {
                             //  Seems this should percolate to the device level, although setting status here kills the decode
-                            
+
                             //  Address did not match, so it's a comm error
                             status = CommResult = WRONGADDRESS;
                             InMessage->EventCode = WRONGADDRESS;
-    
+
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint - Wrong DLC Address: \"" << tempDevice->getName() << "\" ";
