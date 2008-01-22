@@ -1330,5 +1330,32 @@ public static Date roundToMinute(Date toRound) {
             response.addCookie(cookie);
         }
     }
+    /**
+     * Expose the model objects in the given map as request attributes.
+     * Names will be taken from the model Map.
+     * This method is suitable for all resources reachable by {@link javax.servlet.RequestDispatcher}.
+     * 
+     * Copied from org.springframework.web.servlet.view.AbstractView 
+     * @param model Map of model objects to expose
+     * @param request current request
+     */
+    public static <K,V> void exposeModelAsRequestAttributes(Map<K,V> model, ServletRequest request) {
+        Iterator<Map.Entry<K,V>> it = model.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<K,V> entry = it.next();
+            if (!(entry.getKey() instanceof String)) {
+                throw new IllegalArgumentException(
+                        "Invalid key [" + entry.getKey() + "] in model Map: only Strings allowed as model keys");
+            }
+            String modelName = (String) entry.getKey();
+            Object modelValue = entry.getValue();
+            if (modelValue != null) {
+                request.setAttribute(modelName, modelValue);
+            }
+            else {
+                request.removeAttribute(modelName);
+            }
+        }
+    }
 
 }
