@@ -48,10 +48,7 @@ public class DateFormattingServiceImpl implements DateFormattingService {
 
     public String formatDate(Date date, DateFormatEnum type, YukonUserContext userContext)
             throws IllegalArgumentException {
-        final TimeZone zone = userContext.getTimeZone();
-    
         DateFormat df = getDateFormatter(type, userContext);
-        df.setTimeZone(zone);
         if (date != null) {
             return df.format(date);
         } else {
@@ -64,6 +61,7 @@ public class DateFormattingServiceImpl implements DateFormattingService {
 
         String format = messageSourceResolver.getMessageSourceAccessor(userContext).getMessage(type.getFormatKey());
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(format, userContext.getLocale());
+        simpleDateFormat.setTimeZone(userContext.getTimeZone());
         
         return simpleDateFormat;
 
@@ -102,7 +100,7 @@ public class DateFormattingServiceImpl implements DateFormattingService {
     }
 
     public Calendar getCalendar(YukonUserContext userContext) {
-        return Calendar.getInstance(userContext.getTimeZone());
+        return Calendar.getInstance(userContext.getTimeZone(), userContext.getLocale());
     }
 
 }

@@ -7,6 +7,16 @@ import java.util.Date;
 
 import com.cannontech.user.YukonUserContext;
 
+/**
+ * This is the primary means within Yukon for formatting and parsing date
+ * for the user interface.
+ * 
+ * Please see the com/cannontech/yukon/common/dateFormatting.xml file
+ * for the actual format strings.
+ * 
+ * @author tmack
+ *
+ */
 public interface DateFormattingService {
 
     static public enum DateFormatEnum {
