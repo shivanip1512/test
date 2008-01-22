@@ -28,7 +28,7 @@
 </cti:breadCrumbs>
 
 <%
-String allowCtlVal = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.ALLOW_CONTROLS);
+String allowCtlVal = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SYSTEM_WIDE_CONTROLS);
 if (allowCtlVal!=null) {
 	boolean allowControl = Boolean.valueOf(allowCtlVal);
 	if (allowControl) {%>
