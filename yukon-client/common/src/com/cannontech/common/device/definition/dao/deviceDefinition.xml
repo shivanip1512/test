@@ -540,7 +540,7 @@
         		<cmd text="getconfig intervals"/>
         	</command>
             <command name="Read IED Blink Count">
-                <cmd text="getvalue ied powerfail"/>
+                <cmd text="getvalue ied outage"/>
                 <pointRef name="IED Blink Count"/>
             </command>
         </commands>
@@ -837,7 +837,7 @@
         		<cmd text="getconfig intervals"/>
         	</command>
             <command name="Read IED Blink Count">
-                <cmd text="getvalue ied powerfail"/>
+                <cmd text="getvalue ied outage"/>
                 <pointRef name="IED Blink Count"/>
             </command>
         </commands>
@@ -1152,7 +1152,7 @@
         		<cmd text="getconfig intervals"/>
         	</command>
             <command name="Read IED Blink Count">
-                <cmd text="getvalue ied powerfail"/>
+                <cmd text="getvalue ied outage"/>
                 <pointRef name="IED Blink Count"/>
             </command>
         </commands>
@@ -1467,7 +1467,7 @@
         		<cmd text="getconfig intervals"/>
         	</command>
             <command name="Read IED Blink Count">
-                <cmd text="getvalue ied powerfail"/>
+                <cmd text="getvalue ied outage"/>
                 <pointRef name="IED Blink Count"/>
             </command>
         </commands>
