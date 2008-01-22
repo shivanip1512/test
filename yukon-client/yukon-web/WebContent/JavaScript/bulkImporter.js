@@ -108,7 +108,7 @@ function setupRefreshStuff(url, refreshPeriod) {
         
         // rebuild failed comms table
         removeDataFromTable(failedComm_table);
-        addRowsToTable(failedComm_table, json.failedComms, ['failName','routeName','substationName','errorString','errorString']);
+        addRowsToTable(failedComm_table, json.failedComms, ['failName','routeName','substationName','errorString','failTime']);
         
         
         setTimeout(updateResults, refreshPeriod);
