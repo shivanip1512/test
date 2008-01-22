@@ -10,16 +10,15 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
+<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
+<%@ page import="com.cannontech.common.constants.LoginController" %>
 
 <jsp:directive.page import="com.cannontech.database.db.capcontrol.RecentControls"/>
 <cti:standardPage title="Results" module="capcontrol">
 <cti:standardMenu/>
 <%@include file="cbc_inc.jspf"%>
 
-<cti:breadCrumbs>
-    <cti:crumbLink url="subareas.jsp" title="Substation Areas" />
-    <cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
-</cti:breadCrumbs>
+
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
@@ -27,7 +26,9 @@
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
 <%
-    CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
+	FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 	
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
 	String returnURL = nav.getPreviousPage();
@@ -45,13 +46,13 @@
 		for( int i = 0; i < strPaoids.length; i++ )
 		{
 			int id = Integer.parseInt( strPaoids[i] );
-			StreamableCapObject cbcPAO = capControlCache.getCapControlPAO(new Integer(id));
+			StreamableCapObject cbcPAO = filterCapControlCache.getCapControlPAO(new Integer(id));
 
 			if( cbcPAO != null )
 			{
-				List<RecentControls> events= CBCWebUtils.getCCEventsForPAO(new Long (id), cbcPAO.getCcType(), capControlCache, dayCnt);
+				List<RecentControls> events= CBCWebUtils.getCCEventsForPAO(new Long (id), cbcPAO.getCcType(), filterCapControlCache, dayCnt);
 				logData.put(new Long(id), events);
-				titles[i] = capControlCache.getCapControlPAO(new Integer(id)) +
+				titles[i] = filterCapControlCache.getCapControlPAO(new Integer(id)) +
 						"  : Previous " + dayCnt + " days of controls (" + (logData.get(new Long(id))).size() + " events found)";
 
 				//temp hack for only showing 1 table for a SubBus or Feeder
@@ -76,6 +77,11 @@
 	}
 
 %>
+
+<cti:breadCrumbs>
+	<cti:crumbLink url="subareas.jsp" title="Home" />
+	<cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
+</cti:breadCrumbs>
 
 <div align="left"> 
 <table id="filterTable">
