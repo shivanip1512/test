@@ -18,6 +18,7 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.CommandDateFormatFactory;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -88,13 +89,15 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
         formatString.append(channel);
         formatString.append(" ");
         if (start != null) {
-            formatString.append(cmdDateFormatter.format(start));
+            SimpleDateFormat cmdFormatter = CommandDateFormatFactory.createLoadProfileCommandDateFormatter();
+            formatString.append(cmdFormatter.format(start));
             formatString.append(" ");
         }
         if (stop == null) {
             stop = new Date();
         }
-        formatString.append(cmdDateFormatter.format(stop));
+        SimpleDateFormat cmdFormatter = CommandDateFormatFactory.createLoadProfileCommandDateFormatter();
+        formatString.append(cmdFormatter.format(stop));
         if (runner == null) {
             formatString.append(" background");
         }

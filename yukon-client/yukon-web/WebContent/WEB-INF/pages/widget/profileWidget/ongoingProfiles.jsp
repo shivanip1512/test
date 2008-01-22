@@ -22,7 +22,7 @@
 	
 		<table class="compactResultsTable">
 		
-			<tr><th>Pending Requests:</th></tr>
+			<tr><th align="left">Pending Requests:</th></tr>
 			
 			<tr>
 				<td>

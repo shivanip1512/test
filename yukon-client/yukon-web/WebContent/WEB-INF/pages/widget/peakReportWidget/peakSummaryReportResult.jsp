@@ -20,8 +20,8 @@
 			<table class="compactResultsTable">
 				
 				<tr>
-					<th>Report: <div style="font-weight:normal;display:inline;">${reportTypeDisplayName}</div></th>
-					<th align="right" style="font-weight:normal;color:#666666;">${runDateDisplay}</th>
+					<th align="left">Report: <div style="font-weight:normal;display:inline;">${reportTypeDisplayName}</div></th>
+					<th align="left" style="font-weight:normal;color:#666666;">${runDateDisplay}</th>
 				</tr>
 		
 				<tr>

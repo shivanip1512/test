@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.commands.CommandDateFormatFactory;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.peakReport.dao.PeakReportDao;
@@ -51,8 +52,8 @@ public class PeakReportServiceImpl implements PeakReportService {
         commandBuffer.append("getvalue lp peak");
         commandBuffer.append(" " + peakType.toString().toLowerCase());
         commandBuffer.append(" channel " + channel);
-        //i18n The following is wrong and needs to be changed per YUK-5203
-        commandBuffer.append(" " + dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext));
+        SimpleDateFormat cmdFormatter = CommandDateFormatFactory.createPeakReportCommandDateFormatter();
+        commandBuffer.append(" " + cmdFormatter.format(stopDate));
         
         Calendar startDateCal = dateFormattingService.getCalendar(userContext);
         startDateCal.setTime(startDate);
