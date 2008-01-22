@@ -2,6 +2,7 @@ package com.cannontech.web.bulkimporter;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,8 +62,7 @@ public class BulkImporterUploadController extends MultiActionController  {
 
             if (dataFile == null || StringUtils.isBlank(dataFile.getOriginalFilename())) {
                 badMsgs.add("No file provided.");
-            }
-            else {
+            } else {
                 msgs = saveFileData(dataFile);
                 goodMsgs = msgs.get("good");
                 badMsgs = msgs.get("bad");
@@ -168,9 +168,18 @@ public class BulkImporterUploadController extends MultiActionController  {
         try {
             
             int lineNo = 0;
-            BufferedReader reader = new BufferedReader(new InputStreamReader(dataFile.getInputStream()));
+
+            InputStream is = dataFile.getInputStream();
+            InputStreamReader isr = new InputStreamReader(dataFile.getInputStream());
+            BufferedReader reader = new BufferedReader(isr);
             String line = null;
             
+			// Checks to see if the file contains any bits
+            if(is.available() <= 0){
+                badMsgs.add(dataFile.getOriginalFilename()+" does not exist.  No Meters Added.");
+                errorOccurred = true;
+            }
+
             while ((line = reader.readLine()) != null) {
                 
                 lineNo++;
