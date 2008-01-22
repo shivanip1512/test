@@ -27,11 +27,11 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         public String FeederName;
         public String BankName;
         public String CBCName;
-        public String Attempts;
-        public String Success;
-        public String Questionable;
-        public String Failure;
-        public String SuccessPcnt;
+        public Integer Attempts;
+        public Integer Success;
+        public Integer Questionable;
+        public Integer Failure;
+        public Double SuccessPcnt;
         public String Protocol;
     }
     
@@ -82,11 +82,13 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
                         row.FeederName = rs.getString("FeederName");
                         row.BankName = rs.getString("capBankName");
                         row.CBCName = rs.getString("CBCName");
-                        row.Attempts = rs.getString("Attempts");
-                        row.Success = rs.getString("Success");
-                        row.Questionable = rs.getString("Questionable");
-                        row.Failure = rs.getString("Failure");
-                        row.SuccessPcnt = rs.getString("SuccessPcnt");
+                        row.Attempts = rs.getInt("Attempts");
+                        row.Success = rs.getInt("Success");
+                        row.Questionable = rs.getInt("Questionable");
+                        row.Failure = rs.getInt("Failure");
+                        
+                        double successRate = (row.Success + row.Questionable) / row.Attempts;
+                        row.SuccessPcnt = successRate;
                         row.Protocol = rs.getString("Protocol");
                         data.add(row);
                     } catch (java.sql.SQLException e) {
@@ -105,8 +107,8 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select rs.Region, rs.OpCenter, rs.TA, rs.SubName, rs.FeederName, rs.capbankname, RS.CBCName,  s.Attempts, s. Success, s.Questionable, s.Failure, s.SuccessPcnt, rs.Protocol ");
-        sql.append("from (select T.CBCName, T.Attempts, isnull(F.Failure,0)Failure, isnull(q.Questionable,0)Questionable, isnull(SS.Success,0)Success, (T.Attempts - isnull(F.Failure,0)) * 100/ T.Attempts SuccessPcnt ");
+        StringBuffer sql = new StringBuffer ("select rs.Region, rs.OpCenter, rs.TA, rs.SubName, rs.FeederName, rs.capbankname, RS.CBCName,  s.Attempts, s. Success, s.Questionable, s.Failure, rs.Protocol ");
+        sql.append("from (select T.CBCName, T.Attempts, F.Failure, q.Questionable, SS.Success ");
         sql.append("from (select CBCName, count(*) Attempts from ccoperations_view where Optime  between ? and ? ");
         sql.append("group by CBCName ) T ");
         sql.append("left outer join (select CBCName, count(*) Failure from ccoperations_view where Optime  between ? and ? ");
