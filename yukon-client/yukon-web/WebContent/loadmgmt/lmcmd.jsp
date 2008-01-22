@@ -31,7 +31,10 @@ if( cmdMsg.getLMData() == null )
 }
 
 %>
-
+<%@page import="com.cannontech.user.YukonUserContext"%>
+<%@page import="com.cannontech.servlet.YukonUserContextUtils"%><%
+YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
+%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -771,7 +774,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
               </td>
               <td width="147">
                 <div class="TableCell">
-				<%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PROGRAM_NAME) %>
+				<%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PROGRAM_NAME, userContext) %>
 				</div>
               </td>
 <% if( ILCCmds.AREA_START_PROGS.equals(cmd) ) { %>
@@ -793,7 +796,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 <% } %>
               <td width="81">
                 <div class="TableCell" align="center"><font color="<%= LCUtils.getFgColor(prg) %>">
-				  <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_STATUS) %>
+				  <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_STATUS, userContext) %>
 				</font></div>
 			  </td>
             </tr>
@@ -861,7 +864,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
               </td>
               <td width="127">
                 <div class="TableCell">
-				<%= LCUtils.getProgramValueAt(prgBase, ProgramTableModel.PROGRAM_NAME) %>
+				<%= LCUtils.getProgramValueAt(prgBase, ProgramTableModel.PROGRAM_NAME, userContext) %>
 				</div>
               </td>
 <% if( ILCCmds.SC_START.equals(cmd) ) { %>
@@ -883,7 +886,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 <% } %>
               <td width="61">
                 <div class="TableCell" align="center"><font color="<%= LCUtils.getFgColor(prgBase) %>">
-				  <%= LCUtils.getProgramValueAt(prgBase, ProgramTableModel.CURRENT_STATUS) %>
+				  <%= LCUtils.getProgramValueAt(prgBase, ProgramTableModel.CURRENT_STATUS, userContext) %>
 				</font></div>
 			  </td>
 

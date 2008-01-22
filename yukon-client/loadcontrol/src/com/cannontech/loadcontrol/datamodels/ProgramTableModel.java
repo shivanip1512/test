@@ -12,6 +12,7 @@ import com.cannontech.loadcontrol.data.LMControlArea;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.loadcontrol.events.LCGenericTableModelEvent;
 import com.cannontech.roles.application.TDCRole;
+import com.cannontech.user.SystemUserContext;
 
 public class ProgramTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, IProgramTableModel
 {
@@ -295,7 +296,8 @@ public class ProgramTableModel extends javax.swing.table.AbstractTableModel impl
 		if( row <= getRowCount() && isProgramValid((LMProgramBase)getRowAt(row)) )
 		{
 			LMProgramBase prg = (LMProgramBase)getRowAt(row);
-			return LCUtils.getProgramValueAt( prg, col );
+			// the following line could be changed to be more careful about the formatting
+			return LCUtils.getProgramValueAt( prg, col, new SystemUserContext() );
 		}
 		else
 			return null;

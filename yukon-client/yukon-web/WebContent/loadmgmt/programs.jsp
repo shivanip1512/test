@@ -53,8 +53,12 @@ else
 	for( int i = 0; i < strProgIDs.length; i++ )
 	  intVect.add( Integer.parseInt( strProgIDs[i] ) );
 }
+
+
 %>
 
+<%@page import="com.cannontech.user.YukonUserContext"%>
+<%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -66,8 +70,9 @@ else
 
 <body class="Background" leftmargin="0" topmargin="0" onload="reload();" >
 
-<%pageContext.setAttribute("dashedLine", CtiUtilities.STRING_DASH_LINE);%>
-<%pageContext.setAttribute("noTimeWindow", CtiUtilities.STRING_DASH_LINE + " - " + CtiUtilities.STRING_DASH_LINE);%>
+<%
+YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
+%>
 
 <table width="760" border="0" cellspacing="0" cellpadding="0">
   <tr>
@@ -139,7 +144,7 @@ else
 	                  					 ? " selected" : "" );
 						  %>                      
                         <option value="programs.jsp?areaID=<%= tempArea.getYukonID() %>" <%= s %>>
-                        	<%= LCUtils.getControlAreaValueAt(tempArea, ControlAreaTableModel.AREA_NAME) %>
+                        	<%= LCUtils.getControlAreaValueAt(tempArea, ControlAreaTableModel.AREA_NAME, userContext) %>
                         </option>
 							<%
 							}
@@ -174,12 +179,12 @@ else
                     <tr valign="top">
                       <td width="111" class="TableCell">
                         <div name = "subPopup" align = "left" > 
-                          <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.AREA_NAME) %></div>
+                          <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.AREA_NAME, userContext) %></div>
                       </td>
                       <td width="47" class="TableCell">
                       <div name = "areastatus" class="lm_tip_cell" onMouseOver="itemid=<%= lmCntrArea.getYukonID() %>;menuAppear(event, 'areaMenu')" onMouseOut="menuDisappear(event, 'areaMenu')" >
                       	<font color="<%= LCUtils.getFgColor(lmCntrArea) %>"> 
-                        <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.CURRENT_STATE) %> 
+                        <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.CURRENT_STATE, userContext) %> 
                        </font></div></td>
 					  
                       <td width="67" class="TableCell" align="center">
@@ -193,11 +198,10 @@ else
 					  </td>					  
 
                       <td width="40" class="TableCell" align="center">
-							<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.PRIORITY) %>
+							<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.PRIORITY, userContext) %>
 					  </td>
-					  <%pageContext.setAttribute("controlAreaTimeWindow", LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.TIME_WINDOW));%>
                       <td width="75" class="TableCell" align="center"> 
-							${controlAreaTimeWindow}
+							<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.TIME_WINDOW, userContext) %>
 					  </td> 
 					  
 <!--					  
@@ -305,40 +309,24 @@ else
                 <td width="137" class="TableCell">
 				      <input type="checkbox" name="pid" value=<%= prg.getYukonID() %> onClick="this.form.submit()"
 					     <% if( intVect.contains(prg.getYukonID().intValue()) ) { out.print(" checked"); } %> >
-					  <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PROGRAM_NAME) %> 
+					  <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PROGRAM_NAME, userContext) %> 
 				</td>
                 
                 <td width="84" class="TableCell"><font color="<%= LCUtils.getFgColor(prg) %>">
                   <div name = "prgstatus" class="lm_tip_cell" onMouseOver="itemid=<%= prg.getYukonID() %>;menuAppear(event, 'progMenu')" onMouseOut="menuDisappear(event, 'progMenu')" >
-                  <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_STATUS) %>
+                  <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_STATUS, userContext) %>
 				  </div></font>
                 </td>
-                <%pageContext.setAttribute("programStartTime", LCUtils.getProgramValueAt(prg, ProgramTableModel.START_TIME));%>
+                <%pageContext.setAttribute("programStartTime", LCUtils.getProgramValueAt(prg, ProgramTableModel.START_TIME, userContext));%>
                 <td width="133" class="TableCell" align="center">
-           			<c:choose>
-			  			<c:when test="${programStartTime == dashedLine}">
-			  				${programStartTime}
-			  			</c:when>
-						<c:otherwise>	
-			  				<cti:formatDate value="${programStartTime}" type="BOTH" var="formattedProgramStartTime" />
-                    		${formattedProgramStartTime}	
-               			</c:otherwise>	
-               		</c:choose>
+                    <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.START_TIME, userContext) %>
                 </td>
-                <%pageContext.setAttribute("programStopTime", LCUtils.getProgramValueAt(prg, ProgramTableModel.STOP_TIME));%>
+                <%pageContext.setAttribute("programStopTime", LCUtils.getProgramValueAt(prg, ProgramTableModel.STOP_TIME, userContext));%>
                 <td width="129" class="TableCell" align="center">
-                	<c:choose>
-			  			<c:when test="${programStopTime == dashedLine}">
-			  				${programStopTime}
-			  			</c:when>
-						<c:otherwise>	
-			  				<cti:formatDate value="${programStopTime}" type="BOTH" var="formattedProgramStopTime" />
-                    		${formattedProgramStopTime}		
-               			</c:otherwise>	
-               		</c:choose>
+                    <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.STOP_TIME, userContext) %>
                 </td>
-                <td width="103" class="TableCell" align="center"><%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_GEAR) %></td>
-                <td width="52" class="TableCell" align="center"><%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PRIORITY) %></td>
+                <td width="103" class="TableCell" align="center"><%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_GEAR, userContext) %></td>
+                <td width="52" class="TableCell" align="center"><%= LCUtils.getProgramValueAt(prg, ProgramTableModel.PRIORITY, userContext) %></td>
               </tr>
 <% } %>
 </form>
@@ -381,27 +369,19 @@ else
               <tr valign="top"> 
                 <td width="151" class="TableCell"> 
                   <div name = "sub" align = "left">
-				  		<%= LCUtils.getGroupValueAt(grp, GroupTableModel.GROUP_NAME) %></div>
+				  		<%= LCUtils.getGroupValueAt(grp, GroupTableModel.GROUP_NAME, userContext) %></div>
                 </td>
                                 
                 <td width="94" class="TableCell">
                 <font color="<%= LCUtils.getFgColor(grp) %>">
                 <div name = "grpstatus" class="lm_tip_cell" onMouseOver="itemid=<%= grp.getYukonID() %>;menuAppear(event, 'groupMenu')" onMouseOut="menuDisappear(event, 'groupMenu')" >
-                	<%= LCUtils.getGroupValueAt(grp, GroupTableModel.GROUP_STATE) %>
+                	<%= LCUtils.getGroupValueAt(grp, GroupTableModel.GROUP_STATE, userContext) %>
                 </div></font></td>
-				<%pageContext.setAttribute("groupStartTime", LCUtils.getGroupValueAt(grp, GroupTableModel.TIME));%>
+				<%pageContext.setAttribute("groupStartTime", LCUtils.getGroupValueAt(grp, GroupTableModel.TIME, userContext));%>
                 <td width="134" class="TableCell" align="center">
-                	<c:choose>
-			  			<c:when test="${groupStartTime == dashedLine}">
-			  				${groupStartTime}
-			  			</c:when>
-						<c:otherwise>	
-			  				<cti:formatDate value="${groupStartTime}" type="BOTH" var="formattedGroupStartTime" />
-                    		${formattedGroupStartTime}		
-               			</c:otherwise>	
-               		</c:choose>
+                    <%= LCUtils.getGroupValueAt(grp, GroupTableModel.TIME, userContext) %>
                 </td>
-                <td width="159" class="TableCell"><%= LCUtils.getGroupValueAt(grp, GroupTableModel.STATS) %></td>
+                <td width="159" class="TableCell"><%= LCUtils.getGroupValueAt(grp, GroupTableModel.STATS, userContext) %></td>
               </tr>
 <% } /* for j */ %>
 <% } /* if contains */ %>

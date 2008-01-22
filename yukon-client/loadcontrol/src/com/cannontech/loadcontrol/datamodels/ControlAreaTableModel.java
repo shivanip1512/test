@@ -7,6 +7,7 @@ import java.awt.Color;
 
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.data.LMControlArea;
+import com.cannontech.user.SystemUserContext;
 
 public class ControlAreaTableModel extends com.cannontech.tdc.observe.ObservableRowTableModel implements IControlAreaTableModel
 {
@@ -266,7 +267,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 		if( row < getRowCount() && row >= 0 )
 		{
 			LMControlArea lmCntrArea = getRowAt(row);
-			return LCUtils.getControlAreaValueAt( lmCntrArea, col);					
+			// the following line could be changed to be more careful about the formatting
+			return LCUtils.getControlAreaValueAt( lmCntrArea, col, new SystemUserContext());					
 		}
 		else
 			return null;

@@ -12,6 +12,8 @@
 		return;
 	}
 %>
+<%@page import="com.cannontech.user.YukonUserContext"%>
+<%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -21,6 +23,9 @@
 <link rel="stylesheet" href="css/lm.css" type="text/css">
 </head>
 
+<%
+YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
+%>
 
 <body class="Background" leftmargin="0" topmargin="0" onload="reload();">
 <table width="760" border="0" cellspacing="0" cellpadding="0">
@@ -163,12 +168,12 @@ if( DaoFactory.getAuthDao().hasPAOAccess((LiteYukonUser) session.getAttribute(Se
                     <tr valign="top">
                       <td width="111" class="TableCell"><a href="programs.jsp?areaID=<%= lmCntrArea.getYukonID() %>" class="Link1"> 
                         <div name = "subPopup" align = "left" cursor:default;" > 
-                          <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.AREA_NAME) %></div></a>
+                          <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.AREA_NAME, userContext) %></div></a>
                       </td>
                       <td width="47" class="TableCell">
                       	<div name = "areastatus" class="lm_tip_cell" onMouseOver="itemid=<%= lmCntrArea.getYukonID() %>;menuAppear(event, 'areaMenu')" onMouseOut="menuDisappear(event, 'areaMenu')">
                       	<font color="<%= LCUtils.getFgColor(lmCntrArea) %>"> 
-                        <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.CURRENT_STATE) %> 
+                        <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.CURRENT_STATE, userContext) %> 
                         </font></div>
                       </td>
 					  
@@ -183,11 +188,11 @@ if( DaoFactory.getAuthDao().hasPAOAccess((LiteYukonUser) session.getAttribute(Se
 							  </td>					  
 		
 		                      <td width="40" class="TableCell" align="center">
-								<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.PRIORITY) %>
+								<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.PRIORITY, userContext) %>
 							  </td>
 							  
 		                      <td width="75" class="TableCell">
-								<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.TIME_WINDOW) %>
+								<%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.TIME_WINDOW, userContext) %>
 							  </td>
 					  
 					  

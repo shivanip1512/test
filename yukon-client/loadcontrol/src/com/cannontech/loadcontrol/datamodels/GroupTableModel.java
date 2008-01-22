@@ -14,6 +14,7 @@ import com.cannontech.loadcontrol.data.LMCurtailCustomer;
 import com.cannontech.loadcontrol.data.LMGroupBase;
 import com.cannontech.loadcontrol.data.LMProgramBase;
 import com.cannontech.roles.application.TDCRole;
+import com.cannontech.user.SystemUserContext;
 
 public class GroupTableModel extends javax.swing.table.AbstractTableModel implements javax.swing.event.TableModelListener, ISelectableLMTableModel
 {
@@ -275,7 +276,8 @@ public Object getValueAt(int row, int col)
 	{
 		ILMGroup rowValue = (ILMGroup)getRowAt(row);
 		
-		return LCUtils.getGroupValueAt( rowValue, col );
+        // the following line could be changed to be more careful about the formatting
+		return LCUtils.getGroupValueAt( rowValue, col, new SystemUserContext() );
 	}
 	else
 		return null;

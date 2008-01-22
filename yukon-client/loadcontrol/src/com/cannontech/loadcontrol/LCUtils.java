@@ -1,5 +1,7 @@
 package com.cannontech.loadcontrol;
 
+import static com.cannontech.common.util.CtiUtilities.*;
+
 import java.awt.Color;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -9,8 +11,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.ILMGroup;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -30,6 +33,8 @@ import com.cannontech.loadcontrol.messages.LMManualControlResponse;
 import com.cannontech.message.server.ServerResponseMsg;
 import com.cannontech.message.util.ServerRequest;
 import com.cannontech.message.util.ServerRequestImpl;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 
@@ -255,8 +260,10 @@ public class LCUtils
 		return topStrBuf.toString() + "<BR>" + botStrBuf.toString();
 	}
 	
-	public static synchronized Object getProgramValueAt(LMProgramBase prg, int col) 
+	public static synchronized Object getProgramValueAt(LMProgramBase prg, int col, YukonUserContext userContext) 
 	{
+        DateFormattingService dateFormattingService =
+            (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
         switch( col )
 		{
 			case ProgramTableModel.PROGRAM_NAME:
@@ -271,15 +278,16 @@ public class LCUtils
 					return LMProgramBase.getProgramStatusString( prg.getProgramStatus().intValue() );
 	
 			case ProgramTableModel.START_TIME:
-				if( prg.getDisableFlag().booleanValue() )
-					return CtiUtilities.STRING_DASH_LINE;
-				else
-				{
+				if( prg.getDisableFlag().booleanValue() ) {
+                    return CtiUtilities.STRING_DASH_LINE;
+                } else {
 					if( prg.getStartTime() == null
-						 || prg.getStartTime().before(com.cannontech.common.util.CtiUtilities.get1990GregCalendar()) )
-						return CtiUtilities.STRING_DASH_LINE;
-					else
-						return new ModifiedDate( prg.getStartTime().getTime().getTime(), ModifiedDate.FRMT_NOSECS );
+						 || prg.getStartTime().before(get1990GregCalendar()) ) {
+                        return CtiUtilities.STRING_DASH_LINE;
+                    } else {
+                        String result = dateFormattingService.formatDate(prg.getStartTime().getTime(), DateFormatEnum.DATEHM, userContext);
+                        return result;
+                    }
 				}
 
 			case ProgramTableModel.CURRENT_GEAR:
@@ -293,15 +301,15 @@ public class LCUtils
 			}
 			
 			case ProgramTableModel.STOP_TIME:
-				if( prg.getDisableFlag().booleanValue() )
-					return CtiUtilities.STRING_DASH_LINE;
-				else
-				{
-					if( prg.getStopTime() == null
-						|| prg.getStopTime().before(com.cannontech.common.util.CtiUtilities.get1990GregCalendar()) )
-						return CtiUtilities.STRING_DASH_LINE;
-					else
-						return new ModifiedDate( prg.getStopTime().getTime().getTime(), ModifiedDate.FRMT_NOSECS );
+				if( prg.getDisableFlag().booleanValue() ) {
+                    return CtiUtilities.STRING_DASH_LINE;
+                } else {
+					if( prg.getStopTime() == null || prg.getStopTime().before(get1990GregCalendar()) ) {
+                        return CtiUtilities.STRING_DASH_LINE;
+                    } else {
+                        String result = dateFormattingService.formatDate(prg.getStopTime().getTime(), DateFormatEnum.DATEHM, userContext);
+                        return result;
+                    }
 				}
 			
 			case ProgramTableModel.PRIORITY:
@@ -328,7 +336,7 @@ public class LCUtils
 	/**
 	 * getValueAt method comment.
 	 */
-	public static synchronized Object getGroupValueAt( ILMGroup grpVal, int col) 
+	public static synchronized Object getGroupValueAt( ILMGroup grpVal, int col, YukonUserContext userContext) 
 	{
 		switch( col )
 		{
@@ -345,10 +353,15 @@ public class LCUtils
 
 			case GroupTableModel.TIME:
 			{
-				if( grpVal.getGroupTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() )
-					return new ModifiedDate( grpVal.getGroupTime().getTime(), ModifiedDate.FRMT_NOSECS );
-				else
-					return CtiUtilities.STRING_DASH_LINE;
+				if( grpVal.getGroupTime().getTime() > com.cannontech.common.util.CtiUtilities.get1990GregCalendar().getTime().getTime() ) {
+			        DateFormattingService dateFormattingService =
+			            (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
+			        
+			        String result = dateFormattingService.formatDate(grpVal.getGroupTime(), DateFormatEnum.DATEHM, userContext);
+                    return result;
+                } else {
+                    return CtiUtilities.STRING_DASH_LINE;
+                }
 			}
 		
 			case GroupTableModel.STATS:
@@ -391,9 +404,10 @@ public class LCUtils
 
 	/**
 	 * getValueAt method comment.
+	 * @param userContext 
 	 * @param currentUser TODO
 	 */
-	public static synchronized Object getControlAreaValueAt(LMControlArea lmCntrArea, int col) 
+	public static synchronized Object getControlAreaValueAt(LMControlArea lmCntrArea, int col, YukonUserContext userContext) 
 	{
 	
 		switch( col )
@@ -416,26 +430,21 @@ public class LCUtils
 			}
 					
 			case ControlAreaTableModel.TIME_WINDOW:
-			{
-				return
-					getTimeString(
-							lmCntrArea,
-							(lmCntrArea.getDefDailyStartTime() == null 
-								? LMControlArea.INVALID_INT
-								: lmCntrArea.getDefDailyStartTime().intValue()),
-							(lmCntrArea.getCurrentDailyStartTime() == null
-								? LMControlArea.INVALID_INT
-								: lmCntrArea.getCurrentDailyStartTime().intValue())) +
-					" - " +
-					getTimeString(
-							lmCntrArea,
-							(lmCntrArea.getDefDailyStopTime() == null 
-								? LMControlArea.INVALID_INT
-								: lmCntrArea.getDefDailyStopTime().intValue()),
-							(lmCntrArea.getCurrentDailyStopTime() == null
-								? LMControlArea.INVALID_INT
-								: lmCntrArea.getCurrentDailyStopTime().intValue())); 
-					 
+            {
+			    String startString =
+			        getTimeString(lmCntrArea, 
+			                      lmCntrArea.getDefDailyStartTime(), 
+			                      lmCntrArea.getCurrentDailyStartTime(), 
+			                      userContext);
+
+			    String stopString =
+			        getTimeString(lmCntrArea, 
+			                      lmCntrArea.getDefDailyStopTime(), 
+			                      lmCntrArea.getCurrentDailyStopTime(), 
+			                      userContext);
+                
+                String result = startString + " - " + stopString;
+                return result; 
 			}
 			
 			case ControlAreaTableModel.PEAK_PROJECTION:
@@ -466,52 +475,40 @@ public class LCUtils
 	}
 
 
-	private static synchronized String getTimeString( LMControlArea row, int defSecs, int currSecs)
-	{
+	private static synchronized String getTimeString(LMControlArea row,
+                                                     Integer defSecs,
+                                                     Integer currSecs,
+                                                     YukonUserContext userContext) {
+        DateFormattingService dateFormattingService =
+            (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
+
         String retStr = null;
-		GregorianCalendar currTime = null;
-        GregorianCalendar tempTime = null;
+        
+        if (row == null || row.getDisableFlag().booleanValue()) {
+            retStr = CtiUtilities.STRING_DASH_LINE;
+        } else {
+            if (defSecs == null && currSecs == null) {
+                retStr = CtiUtilities.STRING_DASH_LINE;
+            } else {
+                int secondsAfterMidnight;
 
-		
-		if( row == null || row.getDisableFlag().booleanValue() )
-			retStr = CtiUtilities.STRING_DASH_LINE;
-		else
-		{					
-			if( defSecs <= LMControlArea.INVALID_INT && currSecs <= LMControlArea.INVALID_INT )
-			{
-				retStr = CtiUtilities.STRING_DASH_LINE;
-			}
-			else
-			{
-			    //i18n This isn't correct, the old implementation did pass in the user, but it was 
-			    // always null so I just removed it wouldn't appear to be correct.
-				//set our time to todays date
-                currTime = new GregorianCalendar();
-                tempTime = new GregorianCalendar();
-                
-                currTime.setTime( new java.util.Date() );
-										
-				if( defSecs == currSecs || currSecs <= LMControlArea.INVALID_INT )
-				{
-					currTime.set( GregorianCalendar.HOUR_OF_DAY, 0 ); 
-					currTime.set( GregorianCalendar.MINUTE, 0 );
-					currTime.set( GregorianCalendar.SECOND, defSecs );
+                if (defSecs == currSecs || currSecs == null) {
+                    secondsAfterMidnight = defSecs;
+                } else {
+                    secondsAfterMidnight = currSecs;
+                }
+                Calendar systemCalendar = Calendar.getInstance();
+                systemCalendar.set(Calendar.HOUR_OF_DAY, 0);
+                systemCalendar.set(Calendar.MINUTE, 0);
+                systemCalendar.set(Calendar.SECOND, secondsAfterMidnight);
+                retStr =
+                    dateFormattingService.formatDate(systemCalendar.getTime(),
+                                                     DateFormattingService.DateFormatEnum.TIME,
+                                                     userContext);
+            }
+        }
 
-					retStr = TIME_FORMATTER.format( currTime.getTime() );
-				}
-				else
-				{
-					tempTime.setTime( currTime.getTime() );
-					tempTime.set( GregorianCalendar.HOUR_OF_DAY, 0 ); 
-					tempTime.set( GregorianCalendar.MINUTE, 0 );
-					tempTime.set( GregorianCalendar.SECOND, currSecs );
-	
-					retStr = TIME_FORMATTER.format( tempTime.getTime() );
-				}
-			}
-		}
-	
-		return retStr;
+        return retStr;
 	}
 	
 	public static synchronized String getProgAvailChgStr( LMProgramBase prog )
