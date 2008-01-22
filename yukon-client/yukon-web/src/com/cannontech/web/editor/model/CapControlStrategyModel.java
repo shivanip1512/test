@@ -73,12 +73,12 @@ public class CapControlStrategyModel implements EditorDataModel{
     private void resetValueTable() {
         valueTable.put(CapControlModelUtil.PEAK_LOWER, new Double(0.0));
         valueTable.put(CapControlModelUtil.PEAK_UPPER, new Double(0.0));
-        valueTable.put(CapControlModelUtil.PEAK_LAG, new Double(0.0));
-        valueTable.put(CapControlModelUtil.PEAK_LEAD, new Double(0.0));
+        valueTable.put(CapControlModelUtil.PEAK_LAG, new Double(80.0));
+        valueTable.put(CapControlModelUtil.PEAK_LEAD, new Double(80.0));
         valueTable.put(CapControlModelUtil.OFFP_LOWER, new Double(0.0));
         valueTable.put(CapControlModelUtil.OFFP_UPPER, new Double(0.0));
-        valueTable.put(CapControlModelUtil.OFFP_LAG, new Double(0.0));
-        valueTable.put(CapControlModelUtil.OFFP_LEAD, new Double(0.0));
+        valueTable.put(CapControlModelUtil.OFFP_LAG, new Double(80.0));
+        valueTable.put(CapControlModelUtil.OFFP_LEAD, new Double(80.0));
         valueTable.put(CapControlModelUtil.PEAK_PF_POINT, new Double (0.0));
         valueTable.put(CapControlModelUtil.OFFP_PF_POINT, new Double (0.0));
     }

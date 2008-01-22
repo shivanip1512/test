@@ -489,7 +489,7 @@
                              required="true"
                                 value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.PEAK_LEAD]}" 
                                 valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
-                                <f:validateLongRange minimum="0" maximum="100" />
+                                <f:validateLongRange minimum="51" maximum="100" />
                 </x:inputText>
 
                 <x:outputText value="%" styleClass="padlabel"
@@ -517,7 +517,7 @@
                              required="true"
                              value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.OFFP_LEAD]}" 
                              valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
-                        <f:validateLongRange minimum="0" maximum="100" />
+                        <f:validateLongRange minimum="51" maximum="100" />
                 </x:inputText>
                 <x:outputText value="%" styleClass="padlabel"
                                  rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}"/>
@@ -560,7 +560,7 @@
                              required="true"
                              value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.PEAK_LAG]}" 
                              valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
-                        <f:validateLongRange minimum="0" maximum="100" />
+                        <f:validateLongRange minimum="51" maximum="100" />
                 </x:inputText>
 
                 <x:outputText value="%" styleClass="padlabel"
@@ -587,7 +587,7 @@
                              required="true"
                              value="#{capControlForm.currentStratModel.valueTable[capControlForm.currentStratModel.OFFP_LAG]}" 
                              valueChangeListener="#{capControlForm.currentStratModel.dataChanged}">
-                <f:validateLongRange minimum="0" maximum="100" />
+                <f:validateLongRange minimum="51" maximum="100" />
                 </x:inputText>
                 <x:outputText value="%" styleClass="padlabel"
                                  rendered="#{capControlForm.currentStratModel.enableTable[capControlForm.currentStratModel.PEAK_PF_POINT]}"/>
