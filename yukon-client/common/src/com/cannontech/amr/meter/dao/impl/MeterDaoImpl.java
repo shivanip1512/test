@@ -17,10 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.SimpleTemplateProcessor;
-import com.cannontech.common.util.TemplateProcessor;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
@@ -88,6 +88,14 @@ public class MeterDaoImpl implements MeterDao {
             throw new NotFoundException("Unknown meter id " + id);
         }
     }
+    
+    public Meter getForYukonDevice(YukonDevice yukonDevice) {
+        if (yukonDevice instanceof Meter) {
+            return (Meter) yukonDevice;
+        } else {
+            return getForId(yukonDevice.getDeviceId());
+        }
+    }
 
     public Meter getForMeterNumber(String meterNumber) {
         try {
@@ -152,7 +160,7 @@ public class MeterDaoImpl implements MeterDao {
     }
 
     private String computeDeviceName(Meter device) {
-        TemplateProcessor templateProcessor = new SimpleTemplateProcessor();
+        SimpleTemplateProcessor templateProcessor = new SimpleTemplateProcessor();
         String formattingStr = roleDao.getGlobalPropertyValue(ConfigurationRole.DEVICE_DISPLAY_TEMPLATE);
         Validate.notNull(formattingStr,
                          "Device display template role property does not exist.");
