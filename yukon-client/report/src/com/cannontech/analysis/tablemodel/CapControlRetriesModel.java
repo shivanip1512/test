@@ -87,8 +87,8 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp.paoname as region, yp1.paoname as subbus, yp2.paoname as feeder, yp3.paoname as capbank, yp4.paoname as cbc, el.ct as numRetries ");
-        sql.append("from (select pointid, count(*) as ct from cceventlog where text like '%resending%' ");
+        StringBuffer sql = new StringBuffer ("select yp.paoname region, yp1.paoname subbus, yp2.paoname feeder, yp3.paoname capbank, yp4.paoname cbc, el.ct numRetries ");
+        sql.append("from (select pointid, count(*) ct from cceventlog where text like '%resending%' ");
         sql.append("and datetime > ? ");
         sql.append("and datetime <= ? ");
         sql.append("group by pointid) el ");
@@ -102,7 +102,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("join yukonpaobject yp1 on yp1.paobjectid = fs.substationbusid ");
         sql.append("join ccsubstationsubbuslist ss on ss.substationbusid = fs.substationbusid ");
         sql.append("join yukonpaobject yp5 on yp5.paobjectid = ss.substationid ");
-        sql.append("join ccsubstationsubbus ssb on ssb.substationbusid = fs.substationbusid ");
+        sql.append("join ccsubstationsubbuslist ssb on ssb.substationbusid = fs.substationbusid ");
         sql.append("join ccsubareaassignment sa on sa.substationbusid = ssb.substationid ");
         sql.append("join  yukonpaobject yp on yp.paobjectid = sa.areaid ");
         sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = sa.areaid ");

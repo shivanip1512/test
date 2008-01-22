@@ -105,13 +105,13 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp3.paoName as cbcName, yp.paoName as bankName, el.datetime as opTime, el.text as operation, ");
-        sql.append("el2.datetime as confTime, el2.text as confStatus, el2.capbankstateInfo as bankStatusQuality, yp1.paoName as feederName, yp1.paobjectId as feederId,  yp2.paoName as subName, ");
-        sql.append("yp2.paobjectid as subBusId, ca.paoname as region, cb.bankSize as bankSize, cb.controllertype as protocol, p.value as ipAddress, ");
-        sql.append("cbc.serialnumber as serialNum, da.slaveAddress as slaveAddress "); 
-        sql.append("from ( select op.logid as oid,  min(aaa.confid) as cid  from (select logid, pointid from cceventlog where datetime > ? and datetime < ? and (text like '%Close sent,%' or text like '%Open sent,%' )) op ");
-        sql.append("left join (select el.logid as opid, min(el2.logid) as confid from cceventlog el ");
-        sql.append("join cceventlog el2 on el2.pointid = el.pointid left outer join  (select a.logid as aid, min(b.logid) as next_aid "); 
+        StringBuffer sql = new StringBuffer ("select yp3.paoName cbcName, yp.paoName bankName, el.datetime opTime, el.text operation, ");
+        sql.append("el2.datetime confTime, el2.text confStatus, el2.capbankstateInfo bankStatusQuality, yp1.paoName feederName, yp1.paobjectId feederId,  yp2.paoName subName, ");
+        sql.append("yp2.paobjectid subBusId, ca.paoname region, cb.bankSize bankSize, cb.controllertype protocol, p.value ipAddress, ");
+        sql.append("cbc.serialnumber serialNum, da.slaveAddress slaveAddress "); 
+        sql.append("from ( select op.logid oid,  min(aaa.confid) cid  from (select logid, pointid from cceventlog where datetime > ? and datetime < ? and (text like '%Close sent,%' or text like '%Open sent,%' )) op ");
+        sql.append("left join (select el.logid opid, min(el2.logid) confid from cceventlog el ");
+        sql.append("join cceventlog el2 on el2.pointid = el.pointid left outer join  (select a.logid aid, min(b.logid) next_aid "); 
         sql.append("from cceventlog a, cceventlog b where a.pointid = b.pointid ");
         sql.append("and (a.text like '%Close sent,%' or a.text like '%Open sent,%') and (b.text like '%Close sent,%' or b.text like '%Open sent,%')  ");
         sql.append("and b.logid > a.logid group by a.logid) el3 on el3.aid = el.logid ");

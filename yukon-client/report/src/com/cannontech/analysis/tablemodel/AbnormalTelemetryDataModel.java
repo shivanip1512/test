@@ -132,20 +132,20 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
     }
     
     public StringBuffer buildSQLStatement() {
-        StringBuffer sql = new StringBuffer ("select yp.paoname as substationbus, ");
-        sql.append("sp.Pointname as SubVarPoint, ");
-        sql.append("ds.currentvarpointquality as sVarQuality, ");
-        sql.append("spv.Pointname as SubVoltPoint, ");
-        sql.append("ds.currentvoltpointquality as sVoltQuality, ");
-        sql.append("spw.Pointname as SubWattPoint, ");
-        sql.append("ds.currentwattpointquality as sWattQuality, ");
-        sql.append("yp1.paoname as feederName, ");
-        sql.append("p.Pointname as VarPoint, ");
-        sql.append("df.currentvarpointquality as fVarQuality, ");
-        sql.append("pv.Pointname as VoltPoint, ");
-        sql.append("df.currentvoltpointquality as fVoltQuality, ");
-        sql.append("pw.Pointname as WattPoint, ");
-        sql.append("df.currentwattpointquality as fWattQuality ");
+        StringBuffer sql = new StringBuffer ("select yp.paoname substationbus, ");
+        sql.append("sp.Pointname SubVarPoint, ");
+        sql.append("ds.currentvarpointquality sVarQuality, ");
+        sql.append("spv.Pointname SubVoltPoint, ");
+        sql.append("ds.currentvoltpointquality sVoltQuality, ");
+        sql.append("spw.Pointname SubWattPoint, ");
+        sql.append("ds.currentwattpointquality sWattQuality, ");
+        sql.append("yp1.paoname feederName, ");
+        sql.append("p.Pointname VarPoint, ");
+        sql.append("df.currentvarpointquality fVarQuality, ");
+        sql.append("pv.Pointname VoltPoint, ");
+        sql.append("df.currentvoltpointquality fVoltQuality, ");
+        sql.append("pw.Pointname WattPoint, ");
+        sql.append("df.currentwattpointquality fWattQuality ");
         sql.append("from yukonpaobject yp, yukonpaobject yp1, capcontrolfeeder f, capcontrolsubstationbus s, ");
         sql.append("ccsubstationsubbuslist sbl, ccsubareaassignment sa, ");
         sql.append("ccfeedersubassignment fs, point p, point pv, point pw, point sp, point spv, point spw, ");

@@ -109,9 +109,9 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp.paoname as cbcName, p.value as ipAddress, da.slaveaddress as slaveAddress, cb.controllertype as protocol, ");
-        sql.append("ca.paoname as region, yp3.paoName as subName, yp2.paoName as feederName, yp1.paoName as capbankName, cb.bankSize as bankSize, ");
-        sql.append("cb.operationalstate as controlType,  yp1.description as driveDirections ");
+        StringBuffer sql = new StringBuffer ("select yp.paoname cbcName, p.value ipAddress, da.slaveaddress slaveAddress, cb.controllertype protocol, ");
+        sql.append("ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capbankName, cb.bankSize bankSize, ");
+        sql.append("cb.operationalstate controlType,  yp1.description driveDirections ");
         sql.append("from (select paobjectid, paoname from yukonpaobject where type like '%CBC%') yp ");
         sql.append("left outer join capbank cb on cb.controldeviceid = yp.paobjectid ");
         sql.append("left outer join yukonpaobject yp1 on cb.deviceid = yp1.paobjectid ");

@@ -69,36 +69,36 @@ public class MaxDailyOpsModel extends ReportModelBase {
      */
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select ca.paoname as Region, ");
-        sql.append( "yp3.paoname as SubName, yp2.paoname as FeederName, yp.paoname as cbcName, yp1.paoname as capName, ");
+        StringBuffer sql = new StringBuffer ("select ca.paoname Region, ");
+        sql.append( "yp3.paoname SubName, yp2.paoname FeederName, yp.paoname cbcName, yp1.paoname capName, ");
         sql.append( "slTemp.currentWeekCount, slTemp1.prevWeek1Count, slTemp2.prevWeek2Count, slTemp3.prevWeek3Count, slTemp4.prevWeek4Count, ");
         sql.append( "slTemp5.prevWeek5Count, slTemp6.prevWeek6Count ");
         sql.append( "from capbank cb ");
         sql.append( "join point p on p.paobjectid = cb.deviceid and p.pointname = 'operation' " );
-        sql.append( "left outer join (select pointid, count(*) as currentWeekCount " );
+        sql.append( "left outer join (select pointid, count(*) currentWeekCount " );
         sql.append( "from systemlog where description like '%CapBank Exceeded Max%' " );
         sql.append( "and (datetime <= ? and datetime > ?) group by pointid) slTemp on slTemp.pointid = p.pointid ");
-        sql.append( "left outer join (select pointid, count(*) as prevWeek1Count ");
+        sql.append( "left outer join (select pointid, count(*) prevWeek1Count ");
         sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
         sql.append( "and (datetime <= ? and ");
         sql.append( "datetime > ?) group by pointid) slTemp1 on slTemp1.pointid = p.pointid ");
-        sql.append( "left outer join (select pointid, count(*) as prevWeek2Count ");
+        sql.append( "left outer join (select pointid, count(*) prevWeek2Count ");
         sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
         sql.append( "and (datetime <= ? and ");
         sql.append( "datetime > ?) group by pointid) slTemp2 on slTemp2.pointid = p.pointid ");
-        sql.append( "left outer join (select pointid, count(*) as prevWeek3Count ");
+        sql.append( "left outer join (select pointid, count(*) prevWeek3Count ");
         sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
         sql.append( "and (datetime <= ? and ");
         sql.append( "datetime > ?) group by pointid) slTemp3 on slTemp3.pointid = p.pointid ");
-        sql.append( "left outer join (select pointid, count(*) as prevWeek4Count ");
+        sql.append( "left outer join (select pointid, count(*) prevWeek4Count ");
         sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
         sql.append( "and (datetime <= ? and ");
         sql.append( "datetime > ?) group by pointid) slTemp4 on slTemp4.pointid = p.pointid ");
-        sql.append( "left outer join (select pointid, count(*) as prevWeek5Count ");
+        sql.append( "left outer join (select pointid, count(*) prevWeek5Count ");
         sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
         sql.append( "and (datetime <= ? and ");
         sql.append( "datetime > ?) group by pointid) slTemp5 on slTemp5.pointid = p.pointid ");
-        sql.append( "left outer join (select pointid, count(*) as prevWeek6Count ");
+        sql.append( "left outer join (select pointid, count(*) prevWeek6Count ");
         sql.append( "from systemlog where description like '%CapBank Exceeded Max%' ");
         sql.append( "and (datetime <= ? and ");
         sql.append( "datetime > ?) group by pointid) slTemp6 on slTemp6.pointid = p.pointid ");

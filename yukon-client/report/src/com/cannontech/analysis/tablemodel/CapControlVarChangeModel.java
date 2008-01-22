@@ -90,16 +90,16 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp.paoname as capbankname, ");
-        sql.append("yp1.paoname as cbcName, ");
+        StringBuffer sql = new StringBuffer ("select yp.paoname capbankname, ");
+        sql.append("yp1.paoname cbcName, ");
         sql.append("c.banksize, ");
         sql.append("el.kvarChange, ");
-        sql.append("((el.kvarChange / c.banksize) * 100) as percentChange, ");
+        sql.append("((el.kvarChange / c.banksize) * 100) percentChange, ");
         sql.append("el.datetime, ");
-        sql.append("yp2.paoname as Area, ");
-        sql.append("yp3.paoname as Substation, ");
-        sql.append("yp4.paoname as SubBus, ");
-        sql.append("yp5.paoname as Feeder ");
+        sql.append("yp2.paoname Area, ");
+        sql.append("yp3.paoname Substation, ");
+        sql.append("yp4.paoname SubBus, ");
+        sql.append("yp5.paoname Feeder ");
         sql.append("from (select * from cceventlog where datetime >= ? and datetime < ? ) el, ");
         sql.append("capbank c, yukonpaobject yp, yukonpaobject yp1, ");
         sql.append("yukonpaobject yp2, yukonpaobject yp3, ");

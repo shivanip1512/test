@@ -88,7 +88,7 @@ public class CapControlMaintenancePendingModel extends BareReportModelBase<CapCo
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp.paoname as cbcname, yp1.paoname as capbankname, yp1.description as address, "); 
+        StringBuffer sql = new StringBuffer ("select yp.paoname cbcname, yp1.paoname capbankname, yp1.description address, "); 
         sql.append("cba.drivedirections, cba.maintenanceareaid, cba.polenumber, cba.latitude, cba.longitude, "); 
         sql.append("cba.othercomments, cba.opteamcomments from ccfeederbanklist fb, ccfeedersubassignment fs, "); 
         sql.append("ccsubstationsubbuslist ss, ccsubareaassignment sa, yukonpaobject yp, yukonpaobject yp1, capbankadditional cba, capbank cb "); 

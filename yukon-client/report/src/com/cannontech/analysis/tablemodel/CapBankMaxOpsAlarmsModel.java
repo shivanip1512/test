@@ -78,9 +78,9 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     }
     
     public StringBuffer buildSQLStatement() {
-        StringBuffer sql = new StringBuffer ("select yp4.paoname as Area,  yp3.paoname as Substation, yp2.paoname as subBus, ");
-        sql.append("yp1.paoname as feederName, yp.paoname as capBankName, c.maxdailyops, c.maxopDisable, ");
-        sql.append("substring(dcb.additionalflags, 7, 1) as maxOpHitFlag ");
+        StringBuffer sql = new StringBuffer ("select yp4.paoname Area,  yp3.paoname Substation, yp2.paoname subBus, ");
+        sql.append("yp1.paoname feederName, yp.paoname capBankName, c.maxdailyops, c.maxopDisable, ");
+        sql.append("substring(dcb.additionalflags, 7, 1) maxOpHitFlag ");
         sql.append("from yukonpaobject yp, ");
         sql.append("yukonpaobject yp1, ");
         sql.append("yukonpaobject yp2, ");

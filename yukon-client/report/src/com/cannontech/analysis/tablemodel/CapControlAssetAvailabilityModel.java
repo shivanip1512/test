@@ -80,25 +80,25 @@ public class CapControlAssetAvailabilityModel extends BareDatedReportModelBase<C
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp.paoname as area, ");
-        sql.append("yp1.paoname as substation, ");
-        sql.append("yp2.paoname as subbus, ");
-        sql.append("yp3.paoname as feeder, ");
+        StringBuffer sql = new StringBuffer ("select yp.paoname area, ");
+        sql.append("yp1.paoname substation, ");
+        sql.append("yp2.paoname subbus, ");
+        sql.append("yp3.paoname feeder, ");
         sql.append("case when els.feederid = 0 ");
         sql.append("then els.subcount ");
         sql.append("else ");
         sql.append("els.subcount ");
-        sql.append("end as subcount, ");
+        sql.append("end subcount, ");
         sql.append("case when elf.feederid = 0 ");
         sql.append("then 0 ");
         sql.append("else ");
         sql.append("elf.feedcount ");
-        sql.append("end as feedcount ");
+        sql.append("end feedcount ");
         sql.append("from yukonpaobject yp,yukonpaobject yp1,yukonpaobject yp2,yukonpaobject yp3, ");
         sql.append("ccsubareaassignment sa, ccsubstationsubbuslist ss, ccfeedersubassignment fs, ");
-        sql.append("(select count(*) as subcount, subid, feederid from cceventlog ");
+        sql.append("(select count(*) subcount, subid, feederid from cceventlog ");
         sql.append("where (text like '%Cannot Decrease Var%' or text like '%Cannot Increase Volt%') and datetime > ? and datetime < ? group by subid, feederid) els, ");
-        sql.append("(select count(*) as feedcount, feederid from cceventlog ");
+        sql.append("(select count(*) feedcount, feederid from cceventlog ");
         sql.append("where (text like '%Cannot Decrease Var%' or text like '%Cannot Increase Volt%') and datetime > ? and datetime < ? group by feederid) elf ");
         sql.append("where ");
         sql.append("yp.paobjectid = sa.areaid ");

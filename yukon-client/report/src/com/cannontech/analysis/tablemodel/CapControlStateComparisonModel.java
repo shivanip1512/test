@@ -84,9 +84,9 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     public StringBuffer buildSQLStatement() {
         StringBuffer sql = new StringBuffer ("");
         if(!useMisMatch) {
-            sql.append("select ca.paoname as region, yp3.paoName as subName, yp2.paoName as feederName, yp1.paoName as capBankName, ");
-            sql.append("yp.paoName as cbcName, s.text as capBankStatus, s1.text as cbcStatus,  ");
-            sql.append("dcb.laststatuschangetime as capBankChangeTime, dcb.twowaycbcstatetime as cbcChangeTime ");
+            sql.append("select ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capBankName, ");
+            sql.append("yp.paoName cbcName, s.text capBankStatus, s1.text cbcStatus,  ");
+            sql.append("dcb.laststatuschangetime capBankChangeTime, dcb.twowaycbcstatetime cbcChangeTime ");
             sql.append("from  (select * from yukonpaobject where type like 'CBC 702%') yp ");
             sql.append("left join capbank cb on cb.controldeviceid = yp.paobjectid and cb.controldeviceid > 0 ");
             sql.append("join (select * from yukonpaobject where type like 'CAP BANK') yp1 on yp1.paobjectid = cb.deviceid ");
@@ -103,9 +103,9 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
             sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
      	 	sql.append("left outer join (select paobjectid, paoname from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
         } else {
-            sql.append("select ca.paoname as region, yp3.paoName as subName, yp2.paoName as feederName, yp1.paoName as capBankName, ");
-            sql.append("yp.paoName as cbcName, s.text as capBankStatus, s1.text as cbcStatus, ");
-            sql.append("dcb.laststatuschangetime as capBankChangeTime, dcb.twowaycbcstatetime as cbcChangeTime ");
+            sql.append("select ca.paoname region, yp3.paoName subName, yp2.paoName feederName, yp1.paoName capBankName, ");
+            sql.append("yp.paoName cbcName, s.text capBankStatus, s1.text cbcStatus, ");
+            sql.append("dcb.laststatuschangetime capBankChangeTime, dcb.twowaycbcstatetime cbcChangeTime ");
             sql.append("from (select * from yukonpaobject where type like 'CBC 702%') yp ");
             sql.append("left join capbank cb on cb.controldeviceid = yp.paobjectid and cb.controldeviceid > 0 ");
             sql.append("join (select * from yukonpaobject where type like 'CAP BANK') yp1 on yp1.paobjectid = cb.deviceid ");
