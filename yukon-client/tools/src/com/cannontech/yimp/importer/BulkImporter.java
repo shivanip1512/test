@@ -25,6 +25,7 @@ import org.apache.log4j.Logger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -230,12 +231,11 @@ public void runImport(List<ImportData> imps) {
     MCT400SeriesBase template400SeriesBase = null;
 	List<ImportFail> failures = new ArrayList<ImportFail>();
 	List<ImportData> successVector = new ArrayList<ImportData>();
-//	boolean badEntry = false;
+
 	Integer updateDeviceID = null;
 	int successCounter = 0;
 	Connection conn = null;
     boolean notUpdate = true;
-    boolean usingSub = false;
 
     DeviceGroupService deviceGroupService = (DeviceGroupService) YukonSpringHook.getBean("deviceGroupService");
     DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = (DeviceGroupMemberEditorDao) YukonSpringHook.getBean("deviceGroupMemberEditorDao");
@@ -275,10 +275,6 @@ public void runImport(List<ImportData> imps) {
 		//validation
         String errorMsgBase = "Import entry with name "+name+" ";
         List<String> errorMsg = new ArrayList<String>();
-//        String errorMsg = "";
-        
-//		StringBuffer errorMsg = new StringBuffer("Import entry with name ");
-//		badEntry = false;
 		
 		if (StringUtils.isBlank(address)) {
             String error = errorMsgBase+"has a a blank address.  ";
@@ -311,25 +307,31 @@ public void runImport(List<ImportData> imps) {
             }
         }
         
-		if(StringUtils.isBlank(name) || name.length() > 60) {
-			String error = errorMsgBase+"has a name with an improper length.  ";
+        if(StringUtils.isBlank(name)){
+            String error = "Import entry doesn't have a name.  ";
             log.error(error);
             errorMsg.add(error);
-		} else {
-            if(name.indexOf(',') != -1) {
-                String error = errorMsgBase+"has a name that uses invalid characters.  ";
+        } else {
+            if(name.length() > 60) {
+                String error = errorMsgBase+"has a name with an improper length.  ";
                 log.error(error);
                 errorMsg.add(error);
             } else {
-                if( updateDeviceID != null) {
-                    notUpdate = false;
-                    log.info("Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.");
-                }
-                
-                if (DBFuncs.IsDuplicateName(name) && notUpdate) {
-                    String error = errorMsgBase+"is already used by a 400 series MCT in the Yukon database.  ";
+                if(name.indexOf(',') != -1) {
+                    String error = errorMsgBase+"has a name that uses invalid characters.  ";
                     log.error(error);
                     errorMsg.add(error);
+                } else {
+                    if( updateDeviceID != null) {
+                        notUpdate = false;
+                        log.info("Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.");
+                    }
+                
+                    if (DBFuncs.IsDuplicateName(name) && notUpdate) {
+                        String error = errorMsgBase+"is already used by a 400 series MCT in the Yukon database.  ";
+                        log.error(error);
+                        errorMsg.add(error);
+                    }
                 }
             }
         }
@@ -387,28 +389,30 @@ public void runImport(List<ImportData> imps) {
             }
             if(StringUtils.isBlank(collectionGrp)) {
                 String error = errorMsgBase+"has no collection group.  ";
-                log.error(error);
+                log.warn(error);
                 errorMsg.add(error);
             } else {
                 try {
                     collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp());
                 } catch (NotFoundException nfe) {
-                    String error = errorMsgBase+"has a collection group that does not exist.  ";
-                    log.error(error);
-                    errorMsg.add(error);
+                    String error = errorMsgBase+"has a collection group that does not exist.  Creating device group.  ";
+                    log.warn(error);
+                    deviceGroupEditorDao.addGroup(collectionGroupBase, DeviceGroupType.STATIC, currentEntry.getCollectionGrp());
+                    collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp());
                 }
             }
             if(StringUtils.isBlank(altGrp)) {
                 String error = errorMsgBase+"has no alternate group.  ";
-                log.error(error);
+                log.warn(error);
                 errorMsg.add(error);
             } else {
                 try {
                     alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp());
                 } catch (NotFoundException nfe) {
-                    String error = errorMsgBase+"has an alternate group that does not exist.  ";
-                    log.error(error);
-                    errorMsg.add(error);
+                    String error = errorMsgBase+"has an alternate group that does not exist.  Creating device group.  ";
+                    log.warn(error);
+                    deviceGroupEditorDao.addGroup(alternateGroupBase, DeviceGroupType.STATIC, currentEntry.getAltGrp());
+                    alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp());
                 }
                 
             }
@@ -420,9 +424,10 @@ public void runImport(List<ImportData> imps) {
                 try {
                     billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup());
                 } catch (NotFoundException nfe) {
-                    String error = errorMsgBase+"has a billing group that does not exist.  ";
-                    log.error(error);
-                    errorMsg.add(error);
+                    String error = errorMsgBase+"has a billing group that does not exist.  Creating device group.  ";
+                    log.warn(error);
+                    deviceGroupEditorDao.addGroup(billingGroupBase, DeviceGroupType.STATIC, currentEntry.getBillingGroup());
+                    billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup());
                 }
             }
         }
@@ -565,7 +570,6 @@ public void runImport(List<ImportData> imps) {
             if(routeID.intValue() == -12) {
                 if (routeIDsFromSub.size() > 0) {
                     current400Series.getDeviceRoutes().setRouteID((Integer)routeIDsFromSub.get(0));
-                    usingSub  = true;
                 }
             }
             else
