@@ -15,7 +15,7 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public class KVarWattRPHModel extends BareReportModelBase<KVarWattRPHModel.ModelRow> implements ReportModelMetaInfo {
     
@@ -132,14 +132,14 @@ public class KVarWattRPHModel extends BareReportModelBase<KVarWattRPHModel.Model
     }
     
     @Override
-    public LinkedHashMap<String, String> getMetaInfo(LiteYukonUser user) {
+    public LinkedHashMap<String, String> getMetaInfo(YukonUserContext userContext) {
         
         LinkedHashMap<String, String> info = new LinkedHashMap<String, String>();
 
         
         info.put("Name", paoDao.getYukonPAOName(getTargetId()));
-        info.put("Start Date", dateFormattingService.formatDate(new Date(startDate), DateFormattingService.DateFormatEnum.BOTH, user));
-        info.put("Stop Date", dateFormattingService.formatDate(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, user));
+        info.put("Start Date", dateFormattingService.formatDate(new Date(startDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Stop Date", dateFormattingService.formatDate(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
         return info;
     }
 
