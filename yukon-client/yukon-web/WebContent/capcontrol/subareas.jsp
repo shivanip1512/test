@@ -35,6 +35,17 @@ if (allowCtlVal!=null) {
 			<div id="systemCommandLink" align="right" > </div>
 <%} 
 }%>    
+
+<script type="text/javascript">
+
+    // handles analysis links (which are not functional for a substation area - show error alert)
+    function loadPointChartGreyBox(title, url) {
+        alert(title + ' is not available for a Substation Area.\n\nChoose specific Substation Bus or Feeder within a Substation');
+        return void(0);
+    }
+    
+</script>
+
 <cti:titledContainer title="Substation Areas" id="last_titled_container">
 	<form id="areaForm" action="substations.jsp" method="post">
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />

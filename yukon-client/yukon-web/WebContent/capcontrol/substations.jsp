@@ -64,6 +64,13 @@ if(special){
    		var html = new String($F('cmd_substation_'+id));
    		overlib(html, FULLHTML, STICKY);
    	}
+    
+    // handles analysis links (which are not functional for a substation - show error alert)
+	function loadPointChartGreyBox(title, url) {
+		alert(title + ' is not available for a Substation.\n\nChoose specific Substation Bus or Feeder within a Substation');
+		return void(0);
+	}
+    
 </script>
 
 <cti:titledContainer title="<%="Substation In Area:  " + ccSession.getLastArea()%>" id="last_titled_container">
