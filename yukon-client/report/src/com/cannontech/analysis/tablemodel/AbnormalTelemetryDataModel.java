@@ -12,6 +12,8 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.data.point.CTIPointQuailtyException;
+import com.cannontech.database.data.point.PointQualities;
 
 
 public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTelemetryDataModel.ModelRow> implements CapControlFilterable {
@@ -23,11 +25,22 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
     private Set<Integer> subbusIds;
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
+    public final static String SUB_NAME_STRING = "Substation Bus";
+    public final static String FEEDER_NAME_STRING = "Feeder";
+    public final static int SUB_NAME_COLUMN = 0;
+    public final static int FEEDER_NAME_COLUMN = 7;
+    public final static int SUB_VAR_COLUMN = 1;
     
     public AbnormalTelemetryDataModel() {
     }
     
     static public class ModelRow {
+        public String subVarQuality = "";
+        public String subVoltQuality = "";
+        public String subWattQuality = "";
+        public String fdrVarQuality = "";
+        public String fdrVoltQuality = "";
+        public String fdrWattQuality = "";
         public String substationBus;
         public String subVarPoint;
         public String subVoltPoint;
@@ -65,7 +78,43 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
             public void processRow(ResultSet rs) throws SQLException {
                 
                 AbnormalTelemetryDataModel.ModelRow row = new AbnormalTelemetryDataModel.ModelRow();
-
+                Integer sVarQuality = rs.getInt("sVarQuality");
+                Integer sVoltQuality = rs.getInt("sVoltQuality");
+                Integer sWattQuality = rs.getInt("sWattQuality");
+                Integer fVarQuality = rs.getInt("fVarQuality");
+                Integer fVoltQuality = rs.getInt("fVoltQuality");
+                Integer fWattQuality = rs.getInt("fWattQuality");
+                try {
+                    row.subVarQuality = PointQualities.getQuality(sVarQuality);
+                } catch (CTIPointQuailtyException e) {
+                    CTILogger.error("Invalid Point Quality",e);
+                }
+                try {
+                    row.subVoltQuality = PointQualities.getQuality(sVoltQuality);
+                } catch (CTIPointQuailtyException e) {
+                    CTILogger.error("Invalid Point Quality",e);
+                }
+                try {
+                    row.subWattQuality = PointQualities.getQuality(sWattQuality);
+                } catch (CTIPointQuailtyException e) {
+                    CTILogger.error("Invalid Point Quality",e);
+                }
+                try {
+                    row.fdrVarQuality = PointQualities.getQuality(fVarQuality);
+                } catch (CTIPointQuailtyException e) {
+                    CTILogger.error("Invalid Point Quality",e);
+                }
+                try {
+                    row.fdrVoltQuality = PointQualities.getQuality(fVoltQuality);
+                } catch (CTIPointQuailtyException e) {
+                    CTILogger.error("Invalid Point Quality",e);
+                }
+                try {
+                    row.fdrWattQuality = PointQualities.getQuality(fWattQuality);
+                } catch (CTIPointQuailtyException e) {
+                    CTILogger.error("Invalid Point Quality",e);
+                }
+                
                 row.substationBus = rs.getString("substationBus");
                 row.subVarPoint = rs.getString("subVarPoint");
                 row.subVoltPoint = rs.getString("subVoltPoint");
@@ -85,12 +134,18 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
     public StringBuffer buildSQLStatement() {
         StringBuffer sql = new StringBuffer ("select yp.paoname as substationbus, ");
         sql.append("sp.Pointname as SubVarPoint, ");
+        sql.append("ds.currentvarpointquality as sVarQuality, ");
         sql.append("spv.Pointname as SubVoltPoint, ");
+        sql.append("ds.currentvoltpointquality as sVoltQuality, ");
         sql.append("spw.Pointname as SubWattPoint, ");
+        sql.append("ds.currentwattpointquality as sWattQuality, ");
         sql.append("yp1.paoname as feederName, ");
         sql.append("p.Pointname as VarPoint, ");
+        sql.append("df.currentvarpointquality as fVarQuality, ");
         sql.append("pv.Pointname as VoltPoint, ");
-        sql.append("pw.Pointname as WattPoint ");
+        sql.append("df.currentvoltpointquality as fVoltQuality, ");
+        sql.append("pw.Pointname as WattPoint, ");
+        sql.append("df.currentwattpointquality as fWattQuality ");
         sql.append("from yukonpaobject yp, yukonpaobject yp1, capcontrolfeeder f, capcontrolsubstationbus s, ");
         sql.append("ccsubstationsubbuslist sbl, ccsubareaassignment sa, ");
         sql.append("ccfeedersubassignment fs, point p, point pv, point pw, point sp, point spv, point spw, ");

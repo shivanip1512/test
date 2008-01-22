@@ -128,7 +128,7 @@ public class CapControlNewActivityReport extends YukonReportBase
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 		
 		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), CapControlNewActivityModel.SUB_NAME_COLUMN);
-		factory.setText("Substation Name: ");
+		factory.setText("Substation: ");
 		header.addElement(factory.createElement());
 		
 		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), CapControlNewActivityModel.SUB_NAME_COLUMN);
@@ -137,7 +137,7 @@ public class CapControlNewActivityReport extends YukonReportBase
 		header.addElement(tfactory.createElement());
 		
 		factory = ReportFactory.createGroupLabelElementDefault(getModel(), CapControlNewActivityModel.FEEDER_NAME_COLUMN);
-		factory.setText("Feeder Name: ");
+		factory.setText("Feeder: ");
 		factory.setAbsolutePosition(new Point2D.Float(0, 18) );	//override location, need to be lower than macroroute text		
 		header.addElement(factory.createElement());
 		

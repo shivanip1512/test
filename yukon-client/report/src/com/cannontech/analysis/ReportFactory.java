@@ -26,6 +26,7 @@ import org.jfree.report.style.ElementStyleSheet;
 import org.jfree.report.style.FontDefinition;
 import org.jfree.ui.FloatDimension;
 
+import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 
 /**
@@ -133,8 +134,7 @@ public class ReportFactory
 		return factory;
 	}
 	
-	public static TextFieldElementFactory createGroupTextFieldElementDefault(ReportModelBase model, int index)
-	{
+	public static TextFieldElementFactory createGroupTextFieldElementDefault(ReportModelBase model, int index) {
 		TextFieldElementFactory factory = new TextFieldElementFactory();
 		
 		if( model.getColumnClass(index).equals(Integer.class) || model.getColumnClass(index).equals(Double.class))
@@ -149,7 +149,14 @@ public class ReportFactory
 		factory = setGroupTextFieldElementDefaults(factory, model.getColumnName(index), model.getColumnProperties(index));
 		return factory;
 	}
-
+	
+	public static TextFieldElementFactory createGroupTextFieldElementDefault( Point2D pt2D, ColumnLayoutData cld) {
+        TextFieldElementFactory factory = new TextFieldElementFactory();
+        factory = createTextFieldElementDefault(pt2D, cld);
+        
+        factory = setGroupTextFieldElementDefaults(factory, pt2D, cld);
+        return factory;
+    }
 
 	/**
 	 * 
@@ -192,6 +199,13 @@ public class ReportFactory
 		factory = setTextFieldElementDefaults(factory, model.getColumnName(index), model.getColumnProperties(index));
 		return factory;
 	}
+	
+	public static TextFieldElementFactory createTextFieldElementDefault( Point2D pt2D, ColumnLayoutData cld ) {
+        
+        TextFieldElementFactory factory = new TextFieldElementFactory();
+        factory = setTextFieldElementDefaults(factory, pt2D, cld);
+        return factory;
+    }
 
 	private static TextFieldElementFactory createTextFieldElementDefault(String name, ColumnProperties props)
 	{
@@ -232,6 +246,19 @@ public class ReportFactory
 		return factory;
 	}
 	
+	private static TextFieldElementFactory setTextFieldElementDefaults(TextFieldElementFactory factory, Point2D pt2D, ColumnLayoutData cld){
+        factory.setAbsolutePosition(pt2D);
+        factory.setMinimumSize(new FloatDimension(cld.getWidth(), 12));
+        factory.setDynamicHeight(Boolean.TRUE);
+        factory.setHorizontalAlignment(ElementAlignment.LEFT);
+        factory.setVerticalAlignment(ElementAlignment.MIDDLE);
+        factory.setNullString("  ---  ");
+        factory.setName(cld.getColumnName() + NAME_ELEMENT);
+        factory.setFieldname(cld.getFieldName());
+
+        return factory;
+    }
+	
 	private static TextFieldElementFactory setGroupTextFieldElementDefaults(TextFieldElementFactory factory, String name, ColumnProperties props)
 	{
 		factory.setAbsolutePosition(new java.awt.geom.Point2D.Float(props.getPositionX(), props.getPositionY()));
@@ -246,5 +273,20 @@ public class ReportFactory
 
 		return factory;
 	}
+	
+	private static TextFieldElementFactory setGroupTextFieldElementDefaults(TextFieldElementFactory factory, Point2D pt2D, ColumnLayoutData cld)
+    {
+        factory.setAbsolutePosition(pt2D);
+        factory.setMinimumSize(new FloatDimension(cld.getWidth(), 18));
+        factory.setDynamicHeight(Boolean.TRUE);
+        factory.setHorizontalAlignment(ElementAlignment.LEFT);
+        factory.setVerticalAlignment(ElementAlignment.BOTTOM);
+        factory.setNullString("  ---  ");
+        factory.setBold(new Boolean(true));
+        factory.setName(cld.getColumnName() + NAME_GROUP_ELEMENT);
+        factory.setFieldname(cld.getFieldName());
+
+        return factory;
+    }
 }
 
