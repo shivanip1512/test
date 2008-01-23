@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_tap.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2007/07/03 15:44:45 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2008/01/23 17:30:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1122,6 +1122,11 @@ INT CtiDeviceTapPagingTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnVal
                         if(xfer.doTrace(commReturnValue))
                         {
                             traceIn((char*)xfer.getInBuffer(), xfer.getInCountActual(), traceList, TRUE);
+                        }
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(slog);
+                            slog << CtiTime() << " " <<  getName() << ": " << _outMessage->Request.CommandStr << endl;
                         }
 
                         //Message sent and accepted. Add to verification list!
