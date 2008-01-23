@@ -527,6 +527,15 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     /**
+     * Removes this subbus from all the structures in cache. 
+     * @param msg
+     */
+    private void handleDeletedSubstation( int itemID ) {   
+        Integer id = new Integer(itemID);
+        subStationMap.remove( id );
+    }
+    
+    /**
      * Process multiple SubBuses
      * @param busesMsg
      */
@@ -556,7 +565,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
         else if( stationsMsg.isUpdateSubStations()){
         	//If this is an update to an existing sub.
-            handleDeletedSubStation(stationsMsg);
+            handleDeletedSubStations(stationsMsg);
         }
         //add the each subbus to the cache
         handleAllSubStation(stationsMsg);
@@ -570,12 +579,13 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
-    private void handleDeletedSubStation(CBCSubStations stationsMsg) {
+    private void handleDeletedSubStations(CBCSubStations stationsMsg) {
         for( int i = 0; i < stationsMsg.getNumberOfStations(); i++ ){
         	//remove old
-        	handleDeletedSub( stationsMsg.getSubAt(i).getCcId() );
+        	handleDeletedSubstation( stationsMsg.getSubAt(i).getCcId() );
         }
     }
+    
     @SuppressWarnings("deprecation")
     private void logAllSubs(CBCSubstationBuses busesMsg) {
         for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- ){

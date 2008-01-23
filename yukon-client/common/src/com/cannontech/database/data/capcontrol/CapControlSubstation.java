@@ -38,6 +38,8 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
     public void delete() throws SQLException {
         // remove all the associations of Subs to this Area
         com.cannontech.database.db.capcontrol.CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getSubstationID(), null, getDbConnection());
+        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
+        ssDao.deleteStrategyAssigment(getSubstationID());
         // Delete from all dynamic objects
         delete("DynamicCCSubstation", "substationID", getSubstationID());
         

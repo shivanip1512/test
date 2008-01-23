@@ -41,7 +41,7 @@ public class DefineCollectableCBCSubStations extends DefineCollectableCBCMessage
 		super.restoreGuts( obj, vstr, polystr );
 
 		CBCSubStations cbcSub = (CBCSubStations) obj;
-		//cbcSub.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
+		cbcSub.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
 	    Vector stations = VectorExtract.extractVector(vstr,polystr);
 
 		cbcSub.setSubStations( stations );

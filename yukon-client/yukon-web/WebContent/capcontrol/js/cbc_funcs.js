@@ -461,7 +461,7 @@ function getUrlType( selElems, type ) {
 function editorPost()
 {
     var elemAreas = document.getElementsByName('cti_chkbxAreas');	
-    var elemSubStation = document.getElementsByName('cti_chkbxSubStation');
+    var elemSubStations = document.getElementsByName('cti_chkbxSubStation');
     var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
@@ -469,7 +469,7 @@ function editorPost()
 
     var validElems = new Array();
     getValidChecks( elemAreas, validElems );
-    getValidChecks( elemSubStation, validElems );
+    getValidChecks( elemSubStations, validElems );
     getValidChecks( elemSubs, validElems );
     getValidChecks( elemFdrs, validElems );
     getValidChecks( elemBanks, validElems );
@@ -493,7 +493,7 @@ function editorPost()
 function copyPost()
 {
 	var elemAreas = document.getElementsByName('cti_chkbxAreas');
-    var elemSubs = document.getElementsByName('cti_chkbxSubStation');
+    var elemSubstations = document.getElementsByName('cti_chkbxSubStation');
     var elemSubs = document.getElementsByName('cti_chkbxSubbuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
@@ -508,6 +508,7 @@ function copyPost()
     var isPoint = 0;
     var isCap = 0;
     getValidChecks( elemSubs, validElems );
+    getValidChecks( elemSubstations, validElems );
     getValidChecks( elemFdrs, validElems );
     isCap   += getValidChecks( elemBanks, validElems );
 	isPoint += getValidChecks( elemPoints, validElems );
@@ -530,7 +531,7 @@ function copyPost()
 function deletePost()
 {
     var elemAreas = document.getElementsByName('cti_chkbxAreas');
-    var elemSubs = document.getElementsByName('cti_chkbxSubStation');
+    var elemSubstations = document.getElementsByName('cti_chkbxSubStation');
     var elemSubs = document.getElementsByName('cti_chkbxSubbuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
@@ -538,6 +539,7 @@ function deletePost()
 
     var validElems = new Array();
     getValidChecks( elemAreas, validElems );
+    getValidChecks( elemSubstations, validElems );
     getValidChecks( elemSubs, validElems );
     getValidChecks( elemFdrs, validElems );
     getValidChecks( elemBanks, validElems );
