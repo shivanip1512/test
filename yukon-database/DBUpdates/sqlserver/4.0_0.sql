@@ -1377,6 +1377,10 @@ alter table POINT
    add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET);
 /* End YUK-5113 */
 
+/* Start YUK-5213 */
+insert into yukonroleproperty values(-70019,-700, 'System Wide Controls', 'false', 'Allow system wide controls');
+/* End YUK-5213 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
