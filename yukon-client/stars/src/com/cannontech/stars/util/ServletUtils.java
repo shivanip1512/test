@@ -283,13 +283,10 @@ public class ServletUtils {
 				if (ctrlHist.getControlSummary() != null) {
 					lmCtrlHist.getControlSummary().setDailyTime(
 							lmCtrlHist.getControlSummary().getDailyTime() + ctrlHist.getControlSummary().getDailyTime() );
-					//TODO: calculate with opt out hours and enrollment periods?
                     lmCtrlHist.getControlSummary().setMonthlyTime(
 							lmCtrlHist.getControlSummary().getMonthlyTime() + ctrlHist.getControlSummary().getMonthlyTime() );
-//                  TODO: calculate with opt out hours and enrollment periods?
 					lmCtrlHist.getControlSummary().setSeasonalTime(
 							lmCtrlHist.getControlSummary().getSeasonalTime() + ctrlHist.getControlSummary().getSeasonalTime() );
-//                  TODO: calculate with opt out hours and enrollment periods?
 					lmCtrlHist.getControlSummary().setAnnualTime(
 							lmCtrlHist.getControlSummary().getAnnualTime() + ctrlHist.getControlSummary().getAnnualTime() );
 				}
