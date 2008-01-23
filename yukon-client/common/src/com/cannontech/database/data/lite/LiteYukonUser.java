@@ -127,42 +127,5 @@ public class LiteYukonUser extends LiteBase {
     public void setAuthType(AuthType authType) {
         this.authType = authType;
     }
-    
-    @Override
-    public int hashCode() {
-        final int prime = 31;
-        int result = super.hashCode();
-        result = prime * result + ((authType == null) ? 0 : authType.hashCode());
-        result = prime * result + ((status == null) ? 0 : status.hashCode());
-        result = prime * result + ((username == null) ? 0 : username.hashCode());
-        return result;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
-            return true;
-        if (!super.equals(obj))
-            return false;
-        if (getClass() != obj.getClass())
-            return false;
-        final LiteYukonUser other = (LiteYukonUser) obj;
-        if (authType == null) {
-            if (other.authType != null)
-                return false;
-        } else if (!authType.equals(other.authType))
-            return false;
-        if (status == null) {
-            if (other.status != null)
-                return false;
-        } else if (!status.equals(other.status))
-            return false;
-        if (username == null) {
-            if (other.username != null)
-                return false;
-        } else if (!username.equals(other.username))
-            return false;
-        return true;
-    }
 
 }
