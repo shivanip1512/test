@@ -25,6 +25,17 @@ ALTER TABLE DEVICEROUTES
 /* Start YUK-5119 */
 insert into YukonRoleProperty values(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
 /* End YUK-5119 */
+
+/* Start YUK-5204 */
+alter table Job add Locale varchar2(10);
+update Job set Locale = 'en_US';
+alter table Job modify Locale varchar2(10) not null;
+
+alter table Job add TimeZone varchar2(40);
+update Job set TimeZone = ' ';
+alter table Job modify TimeZone varchar2(40) not null;
+/* End YUK-5204 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

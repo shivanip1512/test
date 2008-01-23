@@ -36,6 +36,22 @@ GO
 insert into YukonRoleProperty values(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
 /* End YUK-5119 */
 
+/* Start YUK-5204 */
+alter table Job add Locale varchar(10);
+go
+update Job set Locale = 'en_US';
+go
+alter table Job alter column Locale varchar(10) not null;
+go
+
+alter table Job add TimeZone varchar(40);
+go
+update Job set TimeZone = ' ';
+go
+alter table Job alter column TimeZone varchar(40) not null;
+go
+/* End YUK-5204 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

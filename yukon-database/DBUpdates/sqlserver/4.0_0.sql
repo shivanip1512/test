@@ -1383,22 +1383,6 @@ alter table POINT
 insert into yukonroleproperty values(-70019,-700, 'System Wide Controls', 'false', 'Allow system wide controls');
 /* End YUK-5213 */
 
-/* Start YUK-5204 */
-alter table Job add Locale varchar(10);
-go
-update Job set Locale = 'en_US';
-go
-alter table Job alter column Locale varchar(10) not null;
-go
-
-alter table Job add TimeZone varchar(40);
-go
-update Job set TimeZone = ' ';
-go
-alter table Job alter column TimeZone varchar(40) not null;
-go
-/* End YUK-5204 */
-
 /* Start YUK-5195 */
 update yukonroleproperty SET defaultvalue = 'false' WHERE rolepropertyid = -100102;
 update yukonroleproperty SET defaultvalue = 'false' WHERE rolepropertyid = -100104; 
