@@ -36,10 +36,10 @@
   <tag>
   	<name>crumbLink</name>
   	<tag-class>com.cannontech.web.taglib.nav.CrumbLinkTag</tag-class>
-    <body-content>empty</body-content>
+    <body-content>scriptless</body-content>
   	<attribute>
   		<name>url</name>
-  		<required>true</required>
+  		<required>false</required>
   		<rtexprvalue>true</rtexprvalue>
   	</attribute>	
   	<attribute>

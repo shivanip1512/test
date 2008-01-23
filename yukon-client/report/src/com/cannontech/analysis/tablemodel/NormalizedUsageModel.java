@@ -8,16 +8,20 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.chart.model.ChartValue;
+import com.cannontech.common.chart.service.impl.ChartNormalizedDeltaConverter;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.impl.SimplePointValue;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.user.YukonUserContext;
 
-public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryModel.ModelRow> implements ReportModelMetaInfo {
+public class NormalizedUsageModel extends BareReportModelBase<NormalizedUsageModel.ModelRow> implements ReportModelMetaInfo {
     
     // dependencies
     private RawPointHistoryDao rphDao;
@@ -31,7 +35,7 @@ public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryMod
     Long stopDate;
 
     // member variables
-    private static String title = "Archived Data";
+    private static String title = "Normalized Usage Data";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     
     
@@ -48,11 +52,37 @@ public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryMod
         Date stopDateDate = new Date();
         stopDateDate.setTime(stopDate);
         
+        // get raw data
         List<PointValueHolder> pvhList = rphDao.getPointData(pointId, startDateDate, stopDateDate);
         
+        // convert raw PointValueHolder list into raw ChartValue list
+        List<ChartValue<Double>> chartValueList = new ArrayList<ChartValue<Double>>();
+        
         for(PointValueHolder pvh : pvhList) {
-            RawPointHistoryModel.ModelRow row = new RawPointHistoryModel.ModelRow();
-            row.pointDataTimeStamp = pvh.getPointDataTimeStamp();
+        	
+        	ChartValue<Double> chartValue = new ChartValue<Double>();
+        	chartValue.setId(pvh.getId());
+        	chartValue.setTime(pvh.getPointDataTimeStamp().getTime());
+        	chartValue.setValue(pvh.getValue());
+        	
+        	chartValueList.add(chartValue);
+        }
+        
+        // normalize ChartValue list
+        ChartNormalizedDeltaConverter normalizer = new ChartNormalizedDeltaConverter();
+        List<ChartValue<Double>> normalizedCharValueList = normalizer.convertValues(chartValueList, null);
+        
+        // convert normalized ChartValue back to POintValueHolder, add data to report rows
+        for(ChartValue<Double> cv : normalizedCharValueList) {
+        	
+            int cvId = ((Long)cv.getId()).intValue();
+            Date cvDate = new Date(cv.getTime());
+            double cvValue = cv.getValue();
+            
+            PointValueHolder pvh = new SimplePointValue(cvId, cvDate, PointTypes.PULSE_ACCUMULATOR_POINT, cvValue);
+            
+            NormalizedUsageModel.ModelRow row = new NormalizedUsageModel.ModelRow();
+            row.pointDataTimeStamp = cvDate;
             row.valueHolder = pvh;
             data.add(row);
         }

@@ -55,6 +55,8 @@ public class SimpleReportLinkFromModelTag extends YukonTagSupport implements Dyn
         optionalAttributeDefaults.put("showMenu", "false");
         optionalAttributeDefaults.put("menuSelection", "");
         
+        // other optional attributes (required by alternate html views)
+        optionalAttributeDefaults.put("deviceId", "");
         CtiUtilities.overrideValuesOfDefaultsMap(optionalAttributeDefaults, identifierAttributes);
         
         propertiesMap.putAll(optionalAttributeDefaults);

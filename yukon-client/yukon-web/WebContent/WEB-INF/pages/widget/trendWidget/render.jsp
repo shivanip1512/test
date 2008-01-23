@@ -17,9 +17,8 @@
 
 <c:choose>
 	<c:when test="${selectedAttributeGraph != null}">
-
 		<c:if test="${selectedAttributeGraph.description != null}">
-			<div style="font-size: 10px; text-align: right; position: relative"  onmouseover="javascript:toggleWhatsThis()" onmouseout="javascript:toggleWhatsThis()">
+			<div style="font-size: 10px; text-align: right; position: relative"  onmouseover="toggleWhatsThis()" onmouseout="toggleWhatsThis()">
 				What's this?
 			<div id="whatsThisText" class="widgetPopup" style="display:none;text-align: left">${selectedAttributeGraph.description}</div>
 			</div>
@@ -102,6 +101,9 @@
 		
 		
 		<%-- Charting Style (line/bar) --%>
+		
+        
+        
 		<tr>
 			<td class="label">Chart Style:</td>
 		
@@ -113,17 +115,40 @@
 		</tr>
         
         <%-- export to report --%>
+        <c:choose>
+        	<c:when test="${selectedAttributeGraph.attribute == 'ENERGY'}">
+        		<c:set var="rawTabularDataLabel" value="Archived Usage Data" />
+        	</c:when>
+        	<c:otherwise>
+        		<c:set var="rawTabularDataLabel" value="Tabular Data" />
+        	</c:otherwise>
+        </c:choose>
+        
 		<tr>
-            <td class="label"><b>Tabular Data:</b></td>
+            <td class="label"><b>${rawTabularDataLabel}:</b></td>
             
             <td>
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">HTML</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="trendDataHtmlView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">HTML</cti:simpleReportLinkFromNameTag>
                 |
                 <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
                 |
                 <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
             </td>
         </tr>
+        
+        <c:if test="${selectedAttributeGraph.attribute == 'ENERGY'}">
+	        <tr>
+	            <td class="label"><b>Normalized Usage Data:</b></td>
+	            
+	            <td>
+	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="trendDataHtmlView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">HTML</cti:simpleReportLinkFromNameTag>
+	                |
+	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
+	                |
+	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+	            </td>
+	        </tr>
+	    </c:if>
         
 		</table>
 		

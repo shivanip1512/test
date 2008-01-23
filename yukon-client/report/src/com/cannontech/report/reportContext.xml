@@ -476,5 +476,50 @@
         </property>
     </bean>
     
+    <!-- Normalized Usage history -->
+   <bean id="normalizedUsageModel" class="com.cannontech.analysis.tablemodel.NormalizedUsageModel"
+         scope="prototype">
+        <property name="rphDao" ref="rphDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="pointDao" ref="pointDao"/>
+        <property name="dateFormattingService" ref="dateFormattingService"/>
+    </bean>
+    
+    <bean id="normalizedUsageDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="normalizedUsageModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="pointId"/>
+                    <property name="displayName" value="Point ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="startDate"/>
+                    <property name="displayName" value="Start Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateMillisType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="stopDate"/>
+                    <property name="displayName" value="Stop Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateMillisType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.NormalizedUsageReportLayoutData"/>
+        </property>
+    </bean>
+    
 </beans>
 
