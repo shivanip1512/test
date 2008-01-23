@@ -1291,6 +1291,16 @@ alter table POINT
 insert into yukonroleproperty values(-70019,-700, 'System Wide Controls', 'false', 'Allow system wide controls');
 /* End YUK-5213 */
 
+/* Start YUK-5204 */
+alter table Job add Locale varchar2(10);
+update Job set Locale = 'en_US';
+alter table Job modify Locale varchar2(10) not null;
+
+alter table Job add TimeZone varchar2(40);
+update Job set TimeZone = ' ';
+alter table Job modify TimeZone varchar2(40) not null;
+ /* End YUK-5204 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
