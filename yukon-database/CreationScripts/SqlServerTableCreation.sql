@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/16/2008 10:11:54 AM                        */
+/* Created on:     1/22/2008 11:29:33 PM                        */
 /*==============================================================*/
 
 
@@ -4901,7 +4901,7 @@ go
 /*==============================================================*/
 create table DEVICECONFIGURATION (
    DeviceConfigurationID numeric              not null,
-   Name                 varchar(30)          not null,
+   Name                 varchar(60)          not null,
    Type                 varchar(30)          not null,
    constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
 )
@@ -9189,7 +9189,7 @@ create table RAWPOINTHISTORY (
    QUALITY              numeric              not null,
    VALUE                float                not null,
    millis               smallint             not null,
-   constraint SYS_C0013322 primary key (CHANGEID)
+   constraint SYS_C0013322 primary key nonclustered (CHANGEID)
 )
 go
 
@@ -10041,10 +10041,10 @@ insert into YukonGroupRole values(-235,-1,-6,-1505,'(none)');
 insert into YukonGroupRole values(-236,-1,-6,-1506,'(none)');
 insert into YukonGroupRole values(-237,-1,-6,-1507,'(none)');
 
-/*Multispeak*/
+/* Multispeak */
 insert into YukonGroupRole values(-270,-1,-7,-1600,'0');
 
-/*Configuration (Device)*/
+/* Configuration (Device) */
 insert into YukonGroupRole values(-280,-1,-8,-1700,'{name}');
 
 /* Esubstation Editor */
@@ -10298,7 +10298,7 @@ insert into yukongrouprole values ( -988, -302, -306, -30603, 'true');
 
 
 /* START the System Administrator role Group */
-/*Database Editor*/
+/* Database Editor */
 insert into YukonGroupRole values(-1000,-2,-100,-10000,'(none)');
 insert into YukonGroupRole values(-1001,-2,-100,-10001,'(none)');
 insert into YukonGroupRole values(-1002,-2,-100,-10002,'(none)');
@@ -10311,7 +10311,7 @@ insert into YukonGroupRole values(-1009,-2,-100,-10009,'(none)');
 insert into YukonGroupRole values(-1010,-2,-100,-10010,'00000000');
 insert into YukonGroupRole values(-1011,-2,-100,-10011,'(none)');
 
-/*TDC*/
+/* TDC */
 insert into YukonGroupRole values(-1020,-2,-101,-10100,'(none)');
 insert into YukonGroupRole values(-1021,-2,-101,-10101,'(none)');
 insert into YukonGroupRole values(-1022,-2,-101,-10102,'(none)');
@@ -10321,7 +10321,7 @@ insert into YukonGroupRole values(-1027,-2,-101,-10107,'(none)');
 insert into YukonGroupRole values(-1028,-2,-101,-10108,'(none)');
 insert into YukonGroupRole values(-1031,-2,-101,-10111,'(none)');
 
-/*Trending*/
+/* Trending */
 insert into YukonGroupRole values(-1048,-2,-102,-10221,'(none)');
 insert into YukonGroupRole values(-1049,-2,-102,-10220,'(none)');
 insert into YukonGroupRole values(-1050,-2,-102,-10200,'(none)');
@@ -10344,7 +10344,7 @@ insert into YukonGroupRole values(-1067,-2,-102,-10217,'(none)');
 insert into YukonGroupRole values(-1068,-2,-102,-10218,'(none)');
 insert into YukonGroupRole values(-1069,-2,-102,-10219,'(none)');
 
-/*Commander*/
+/* Commander */
 insert into YukonGroupRole values(-1070,-2,-103,-10300,'(none)');
 insert into YukonGroupRole values(-1071,-2,-103,-10301,'true');
 insert into YukonGroupRole values(-1072,-2,-103,-10302,'true');
@@ -10352,10 +10352,10 @@ insert into YukonGroupRole values(-1073,-2,-103,-10303,'false');
 insert into YukonGroupRole values(-1074,-2,-103,-10304,'false');
 insert into YukonGroupRole values(-1075,-2,-103,-10305,'(none)');
 
-/*Billing*/
+/* Billing */
 insert into YukonGroupRole values(-1390,-2,-106,-10600,'(none)');
 
-/*Esubstation Editor*/
+/* Esubstation Editor */
 insert into YukonGroupRole values(-1080,-2,-107,-10700,'(none)');
 insert into YukonGroupRole values(-1081,-2,-206,-20600,'(none)');
 insert into YukonGroupRole values(-1082,-2,-206,-20601,'(none)');
@@ -11163,7 +11163,7 @@ insert into YukonRole values (-209,'Inventory','Operator','Operator Access to ha
 /* operator work order management role */
 insert into YukonRole values (-210,'Work Order','Operator','Operator Access to work order management');
 
-/*ISOC*/
+/* ISOC */
 insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access to C&I Curtailment'); 
 
 /* Scheduler Role */
@@ -11299,11 +11299,11 @@ insert into YukonRoleProperty values(-10009,-100,'allow_user_roles','false','All
 insert into YukonRoleProperty values(-10010,-100,'z_optional_product_dev','00000000','This feature is for development purposes only');
 insert into YukonRoleProperty values(-10011,-100,'allow_member_programs','false','Allows member management of LM Direct Programs through the DBEditor');
 
-/*MultiSpeak*/
+/* MultiSpeak */
 insert into YukonRoleProperty values(-1600,-7,'PAOName Alias','0','Defines a Yukon Pao (Device) Name field alias. Valid values(0-4): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer]');
 insert into YukonRoleProperty values(-1601,-7,'Primary CIS Vendor','0','Defines the primary CIS vendor for CB interfaces.');
 
-/*Configuration*/
+/* Configuration */
 insert into YukonRoleProperty values(-1700,-8,'Device Display Template','{name}','Defines the format for displaying devices. Available placeholders: {name},{description},{meterNumber},{id},{address}');
 
 /* TDC Role */
@@ -11670,7 +11670,7 @@ insert into YukonRoleProperty values(-70012,-700,'Show Cap Bank Add Info','false
 insert into YukonRoleProperty values(-70013,-700,'Definition Available','Switched:Open,Switched:OpenQuestionable,Switched:OpenPending,Standalone:Open,Standalone:OpenQuestionable,Standalone:OpenPending','Capbank sized in these states will be added to the available sum.');
 insert into YukonRoleProperty values(-70014,-700,'Definition Unavailable','Switched:Close,Switched:CloseQuestionable,Switched:CloseFail,Switched:ClosePending,Switched:OpenFail,Standalone:Close,Standalone:CloseQuestionable,Standalone:CloseFail,Standalone:ClosePending,Standalone:OpenFail,Fixed-Open,Disabled-Open','Capbank sized in these states will be added to the unavailable sum.');
 insert into YukonRoleProperty values(-70015,-700,'Definition Tripped','Switched:Open,Switched:OpenFail,Switched:OpenPending,Switched:OpenQuestionable,Standalone:Open,Standalone:OpenFail,Standalone:OpenPending,Standalone:OpenQuestionable','Capbank sized in these states will be added to the tripped sum.');
-insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Switched:Close,Switched:CloseFail,Switched:CloseQuestionable,Switched:ClosePending,Standalone:Close,Standalone:CloseFail,Standalone:CloseQuestionable,Standalone:ClosePending,Fixed:Close,Fixed:CloseFail,Fixed:CloseQuestionable,Fixed:ClosePending,Disabled:Close,Disabled:CloseFail,Disabled:CloseQuestionable,Disabled:ClosePending','Capbank sized in these states will be added to the closed sum.'); /* Start YUK-5086 */
+insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Switched:Close,Switched:CloseFail,Switched:CloseQuestionable,Switched:ClosePending,Standalone:Close,Standalone:CloseFail,Standalone:CloseQuestionable,Standalone:ClosePending,Fixed:Close,Fixed:CloseFail,Fixed:CloseQuestionable,Fixed:ClosePending,Disabled:Close,Disabled:CloseFail,Disabled:CloseQuestionable,Disabled:ClosePending','Capbank sized in these states will be added to the closed sum.');
 insert into yukonroleproperty values(-70017,-700, 'Add Comments', 'false', 'Allows the user to Add comments to Cap Bank objects.');
 insert into yukonroleproperty values(-70018,-700, 'Modify Comments', 'false', 'Allows the user to Modify comments on Cap Bank objects.');
 
@@ -13161,6 +13161,7 @@ go
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationId)
       references DEVICECONFIGURATION (DeviceConfigurationID)
+         on delete cascade
 go
 
 alter table DEVICECONFIGURATIONDEVICEMAP

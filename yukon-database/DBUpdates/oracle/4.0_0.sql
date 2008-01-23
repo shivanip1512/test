@@ -283,7 +283,7 @@ update cceventlog set actionId = -1;
 alter table cceventlog modify actionId number not null;
 
 
-/* Begin YUK-4785 */
+/* Begin YUK-4785, YUK-5216 */
 create table DEVICECONFIGURATIONDEVICEMAP  (
    DeviceID             NUMBER                          not null,
    DeviceConfigurationId NUMBER                          not null,
@@ -294,7 +294,7 @@ create table DEVICECONFIGURATIONDEVICEMAP  (
 
 create table DEVICECONFIGURATION  (
    DeviceConfigurationID NUMBER                          not null,
-   Name                 VARCHAR2(30)                    not null,
+   Name                 VARCHAR2(60)                    not null,
    Type                 VARCHAR2(30)                    not null,
    constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
 )
@@ -312,6 +312,7 @@ create table DEVICECONFIGURATIONITEM  (
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationId)
       references DEVICECONFIGURATION (DeviceConfigurationID)
+	      on delete cascade
 ;
 
 alter table DEVICECONFIGURATIONDEVICEMAP
@@ -327,7 +328,7 @@ alter table DEVICECONFIGURATIONITEM
 ;
 
       
-/* End YUK-4785 */
+/* End YUK-4785, YUK-5216 */
 insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','Controls the ability to edit and create device configurations');
 insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');

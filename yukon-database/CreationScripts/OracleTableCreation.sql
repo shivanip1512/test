@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/17/2008 10:54:28 AM                        */
+/* Created on:     1/22/2008 11:27:47 PM                        */
 /*==============================================================*/
 
 
@@ -2561,7 +2561,7 @@ create table DEVICECARRIERSETTINGS  (
 /*==============================================================*/
 create table DEVICECONFIGURATION  (
    DeviceConfigurationID NUMBER                          not null,
-   Name                 VARCHAR2(30)                    not null,
+   Name                 VARCHAR2(60)                    not null,
    Type                 VARCHAR2(30)                    not null,
    constraint PK_DEVICECONFIGURATION primary key (DeviceConfigurationID)
 );
@@ -10328,7 +10328,8 @@ alter table DEVICECARRIERSETTINGS
 
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_DEVICECO foreign key (DeviceConfigurationId)
-      references DEVICECONFIGURATION (DeviceConfigurationID);
+      references DEVICECONFIGURATION (DeviceConfigurationID)
+      on delete cascade;
 
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
