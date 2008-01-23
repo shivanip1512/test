@@ -32,6 +32,10 @@ ADD CONSTRAINT [PK_DEVICEROUTES] PRIMARY KEY CLUSTERED ([DEVICEID]);
 GO
 /* End YUK-5123 */
 
+/* Start YUK-5119 */
+insert into YukonRoleProperty values(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
+/* End YUK-5119 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

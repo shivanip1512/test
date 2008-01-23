@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/23/2008 10:00:18 AM                        */
+/* Created on:     1/23/2008 10:18:16 AM                        */
 /*==============================================================*/
 
 
@@ -8776,6 +8776,7 @@ insert into YukonRoleProperty values(-10812, -108,'Java Web Start Launcher Enabl
 insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details', 'false', 'Disable stack traces for this user.');
 insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
 insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
+insert into YukonRoleProperty values(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
 
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');

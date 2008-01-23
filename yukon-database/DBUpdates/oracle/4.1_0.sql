@@ -21,6 +21,10 @@ ALTER TABLE DEVICEROUTES
  PRIMARY KEY
  (DEVICEID);
 /* End YUK-5123 */
+
+/* Start YUK-5119 */
+insert into YukonRoleProperty values(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
+/* End YUK-5119 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
