@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2008/01/21 21:01:49 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2008/01/23 21:53:19 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1734,6 +1734,14 @@ int CtiDeviceMCT4xx::executePutConfigMultiple(ConfigPartsList       &partsList,
             {
                 string tempString = "putconfig install ";
                 tempString += *tempItr;
+                if( parse.isKeyValid("force") )
+                {
+                    tempString += " force";
+                }
+                else if( parse.isKeyValid("verify") )
+                {
+                    tempString += " verify";
+                }
                 tempReq->setCommandString(tempString);
                 tempReq->setConnectionHandle(pReq->getConnectionHandle());
 
