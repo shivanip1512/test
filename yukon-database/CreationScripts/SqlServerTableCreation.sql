@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/23/2008 8:49:33 AM                         */
+/* Created on:     1/23/2008 9:53:51 AM                         */
 /*==============================================================*/
 
 
@@ -11709,10 +11709,13 @@ insert into YukonRoleProperty values(-100008, -1000, 'Max Op Count', 'false', 'd
 
 insert into YukonRoleProperty values(-100100, -1001, 'kVAR', 'true', 'display kVAR');
 insert into YukonRoleProperty values(-100101, -1001, 'Power Factor', 'true', 'display Power Factor');
-insert into YukonRoleProperty values(-100102, -1001, 'Watts', 'true', 'display Watts');
+insert into YukonRoleProperty values(-100102, -1001, 'Watts', 'false', 'display Watts');
 insert into YukonRoleProperty values(-100103, -1001, 'Daily Op Count', 'true', 'display Daily Operation Count');
-insert into YukonRoleProperty values(-100104, -1001, 'Volts', 'true', 'display Volts');
+insert into YukonRoleProperty values(-100104, -1001, 'Volts', 'false', 'display Volts');
 insert into YukonRoleProperty values(-100105, -1001, 'Target', 'true', 'is target stat displayed');
+
+insert into yukonroleproperty values(-100107, -1001, 'Watt/Volt', 'true', 'display Watts/Volts');
+insert into yukonroleproperty values(-100108, -1001, 'Three Phase', 'false', 'display 3-phase data for feeder'); 
 
 insert into YukonRoleProperty values(-100200, -1002, 'Total Op Count', 'true', 'display Total Operation Count');
 insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');

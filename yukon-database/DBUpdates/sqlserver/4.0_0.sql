@@ -1399,6 +1399,12 @@ alter table Job alter column TimeZone varchar(40) not null;
 go
 /* End YUK-5204 */
 
+/* Start YUK-5195 */
+update yukonroleproperty SET defaultvalue = 'false' WHERE rolepropertyid = -100102;
+update yukonroleproperty SET defaultvalue = 'false' WHERE rolepropertyid = -100104; 
+insert into yukonroleproperty values ( -100107, -1001, 'Watt/Volt', 'true', 'display Watts/Volts');
+insert into yukonroleproperty values ( -100108, -1001, 'Three Phase', 'false', 'display 3-phase data for feeder'); 
+/* End YUK-5195 */
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
