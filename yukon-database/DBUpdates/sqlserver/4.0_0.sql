@@ -1153,7 +1153,9 @@ insert into devicetypecommand values(-704, -139, 'MCT-410GL', 32, 'N', -1);
 insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1); 
 /* End YUK-4860 */
 
-/* Start YUK-4859 */
+/* Start YUK-4859, YUK-5197 */
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCCAP_INVENTORY_VIEW]'))
+DROP VIEW [CCCAP_INVENTORY_VIEW]
 go
 create view CCCAP_INVENTORY_VIEW as
 SELECT
@@ -1192,7 +1194,7 @@ FROM
 					  WHERE (InfoKey LIKE '%udp ip%')) p ON p.PAObjectID = yp.PAObjectID
 	left outer join capbankadditional capa on capa.deviceid = cb.deviceid; 
 go
-/* End YUK-4859 */
+/* End YUK-4859, YUK-5197 */
 
 /* Start YUK-4862 */
 insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');
