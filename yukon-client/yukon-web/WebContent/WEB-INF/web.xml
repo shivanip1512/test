@@ -433,6 +433,14 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>layout</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>3</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<description>
 			Returns an xml config file for log4j logging
 		</description>
@@ -1042,6 +1050,11 @@
 	<servlet-mapping>
 		<servlet-name>SOAPMonitorService</servlet-name>
 		<url-pattern>/servlet/SOAPMonitorService</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>layout</servlet-name>
+		<url-pattern>/spring/layout/*</url-pattern>
 	</servlet-mapping>
 
 
