@@ -7126,54 +7126,54 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
 {
     CtiCCSubstationPtr substationToDelete = findSubstationByPAObjectID(substationId);
 
+    if (substationToDelete == NULL)
+        return;
     try
     {
-        if (substationToDelete != NULL)
+        //Using the list because deleteSubbus(int) removes the subbus from the map, invalidating our counter for the loop.
+        //Quick fix, a more elegant solution should be found.
+        std::list<int> deleteList;
+        for(LONG h=0;h<_ccSubstationBuses->size();h++)
         {
-            if( _ccSubstations->size() > 0 )
+            CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(h);
+            if (currentCCSubstationBus->getParentId() == substationId) 
             {
-                for(LONG h=0;h<_ccSubstationBuses->size();h++)
-                {
-                    CtiCCSubstationBus* currentCCSubstationBus = (CtiCCSubstationBus*)(*_ccSubstationBuses).at(h);
+                 deleteList.push_back(currentCCSubstationBus->getPAOId());
+            }
+        }
+        for( std::list<int>::iterator itr = deleteList.begin(); itr != deleteList.end(); itr++)
+        {
+            deleteSubBus(*itr);
+        }
 
-                    if (currentCCSubstationBus->getParentId() == substationId) 
-                    {
-                         deleteSubBus(currentCCSubstationBus->getPAOId());
-                    }
+        try
+        {
+            string substationName = substationToDelete->getPAOName();
+            _paobject_substation_map.erase(substationToDelete->getPAOId());
+            _substation_area_map.erase(substationToDelete->getPAOId());
+            _substation_specialarea_map.erase(substationToDelete->getPAOId());
+            CtiCCSubstation_vec::iterator itr = _ccSubstations->begin();
+            for( ;itr != _ccSubstations->end(); itr++ )
+            {
+                CtiCCSubstation *substation = *itr;
+                if (substation->getPAOId() == substationId)
+                {
+                    _ccSubstations->erase(itr);
+                    break;
                 }
             }
-            
-            try
-            {
-                string substationName = substationToDelete->getPAOName();
-                _paobject_substation_map.erase(substationToDelete->getPAOId());
-                _substation_area_map.erase(substationToDelete->getPAOId());
-                _substation_specialarea_map.erase(substationToDelete->getPAOId());
-                CtiCCSubstation_vec::iterator itr = _ccSubstations->begin();
-                while ( itr != _ccSubstations->end() )
-                {
-                    CtiCCSubstation *substation = *itr;
-                    if (substation->getPAOId() == substationId)
-                    {
-                        itr = _ccSubstations->erase(itr);
-                        break;
-                    }else
-                        ++itr;
-
-                }
-                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << "SUBSTATION: " << substationName <<" has been deleted." << endl;
-                }
-            }
-            catch(...)
+            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << "SUBSTATION: " << substationName <<" has been deleted." << endl;
             }
-
         }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+
     }
     catch(...)
     {
@@ -7217,8 +7217,6 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
                 deleteSubstation(stationId);
                 iter++;
             }                
-           
-           
 
             try
             {
@@ -7326,130 +7324,131 @@ void CtiCCSubstationBusStore::deleteSubBus(long subBusId)
 {
     CtiCCSubstationBusPtr subToDelete = findSubBusByPAObjectID(subBusId);
 
+    if( subToDelete == NULL )
+        return;
+
     try
-    {
-        if (subToDelete != NULL)
+    {            
+        CtiFeeder_vec& ccFeeders = subToDelete->getCCFeeders();
+        std::list<int> deleteFeederList;
+        long feedCount = ccFeeders.size();
+        for(LONG i=0;i<feedCount;i++)
         {
-            //subToDelete->dumpDynamicData();
+            CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.front();
+            deleteFeederList.push_back(feederToDelete->getPAOId());
+        }
+        for( std::list<int>::iterator itr = deleteFeederList.begin(); itr != deleteFeederList.end(); itr++ )
+        {
+            deleteFeeder(*itr);
+        }
 
-            CtiFeeder_vec& ccFeeders = subToDelete->getCCFeeders();
-            long feedCount = ccFeeders.size();
-            for(LONG i=0;i<feedCount;i++)
+        try
+        {
+            //Delete pointids on this sub
+            list <LONG> *pointIds  = subToDelete->getPointIds();
+            while (!pointIds->empty())
             {
-                CtiCCFeederPtr feederToDelete = (CtiCCFeeder*)ccFeeders.front();
-                deleteFeeder(feederToDelete->getPAOId());
-            }
-
-           try
-           {
-
-               //Delete pointids on this sub
-               list <LONG> *pointIds  = subToDelete->getPointIds();
-               while (!pointIds->empty())
-               {
-                   LONG pointid = pointIds->front();
-                   pointIds->pop_front();
-                   int ptCount = getNbrOfSubBusesWithPointID(pointid);
-                   if (ptCount > 1)
-                   {
-                       multimap< long, CtiCCSubstationBusPtr >::iterator iter1 = _pointid_subbus_map.lower_bound(pointid);
-                       while (iter1 != _pointid_subbus_map.end() || iter1 != _pointid_subbus_map.upper_bound(pointid))
+                LONG pointid = pointIds->front();
+                pointIds->pop_front();
+                int ptCount = getNbrOfSubBusesWithPointID(pointid);
+                if (ptCount > 1)
+                {
+                    multimap< long, CtiCCSubstationBusPtr >::iterator iter1 = _pointid_subbus_map.lower_bound(pointid);
+                    while (iter1 != _pointid_subbus_map.end() || iter1 != _pointid_subbus_map.upper_bound(pointid))
+                    {
+                       if (((CtiCCSubstationBusPtr)iter1->second)->getPAOId() == subToDelete->getPAOId())
                        {
-                           if (((CtiCCSubstationBusPtr)iter1->second)->getPAOId() == subToDelete->getPAOId())
-                           {
-                               _pointid_subbus_map.erase(iter1);
-                               break;
-                           }
-                           iter1++;
-                       }   
-                   } 
-                   else
-                       _pointid_subbus_map.erase(pointid);
-               }
-               subToDelete->getPointIds()->clear();
-            }
-            catch(...)
+                           _pointid_subbus_map.erase(iter1);
+                           break;
+                       }
+                       iter1++;
+                    }   
+                } 
+                else
+                    _pointid_subbus_map.erase(pointid);
+           }
+           subToDelete->getPointIds()->clear();
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+        //DUAL BUS Alt Sub deletion...
+        try
+        {
+            //Deleting subs that have this sub as altSub
+            while (_altsub_sub_idmap.find(subBusId) != _altsub_sub_idmap.end())
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-            //DUAL BUS Alt Sub deletion...
-            try
-            {
-                //Deleting subs that have this sub as altSub
-                while (_altsub_sub_idmap.find(subBusId) != _altsub_sub_idmap.end())
+                long tempSubId = _altsub_sub_idmap.find(subBusId)->second;
+                CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(tempSubId);
+                if (tempSub != NULL)
                 {
-                    long tempSubId = _altsub_sub_idmap.find(subBusId)->second;
-                    CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(tempSubId);
-                    if (tempSub != NULL)
+                    if (!stringCompareIgnoreCase(tempSub->getControlUnits(), CtiCCSubstationBus::KVARControlUnits))
                     {
-                        if (!stringCompareIgnoreCase(tempSub->getControlUnits(), CtiCCSubstationBus::KVARControlUnits))
-                        {
-                            LONG pointid = subToDelete->getCurrentVarLoadPointId();
-                            _pointid_subbus_map.erase(pointid);
-                            tempSub->getPointIds()->remove(pointid);
-                        }
-                        else if (!!stringCompareIgnoreCase(tempSub->getControlUnits(), CtiCCSubstationBus::VoltControlUnits))
-                        {
-                            LONG pointid = subToDelete->getCurrentVoltLoadPointId();
-                            _pointid_subbus_map.erase(pointid);
-                            tempSub->getPointIds()->remove(pointid);
-                        }
+                        LONG pointid = subToDelete->getCurrentVarLoadPointId();
+                        _pointid_subbus_map.erase(pointid);
+                        tempSub->getPointIds()->remove(pointid);
                     }
-                    _altsub_sub_idmap.erase(subBusId);
-                }
-                //Deleting this sub from altSubMap
-                if (subToDelete->getAltDualSubId() != subToDelete->getPAOId())
-                {
-                    multimap <long, long>::iterator iter = _altsub_sub_idmap.begin();
-                    while (iter != _altsub_sub_idmap.end())
+                    else if (!!stringCompareIgnoreCase(tempSub->getControlUnits(), CtiCCSubstationBus::VoltControlUnits))
                     {
-                        if (iter->second == subToDelete->getPAOId())
-                        {
-                            _altsub_sub_idmap.erase(iter);
-                            iter = _altsub_sub_idmap.end();
-                        }
-                        else
-                            iter++;
+                        LONG pointid = subToDelete->getCurrentVoltLoadPointId();
+                        _pointid_subbus_map.erase(pointid);
+                        tempSub->getPointIds()->remove(pointid);
                     }
-               
                 }
+                _altsub_sub_idmap.erase(subBusId);
             }
-            catch(...)
+            //Deleting this sub from altSubMap
+            if (subToDelete->getAltDualSubId() != subToDelete->getPAOId())
             {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
-
-            try
-            {
-                string subBusName = subToDelete->getPAOName();
-                _paobject_subbus_map.erase(subToDelete->getPAOId());
-                _subbus_substation_map.erase(subToDelete->getPAOId());
-                CtiCCSubstationBus_vec::iterator itr = _ccSubstationBuses->begin();
-                while ( itr != _ccSubstationBuses->end() )
+                multimap <long, long>::iterator iter = _altsub_sub_idmap.begin();
+                while (iter != _altsub_sub_idmap.end())
                 {
-                    CtiCCSubstationBus *subBus = *itr;
-                    if (subBus->getPAOId() == subBusId)
+                    if (iter->second == subToDelete->getPAOId())
                     {
-                        itr = _ccSubstationBuses->erase(itr);
-                        break;
-                    }else
-                        ++itr;
-
+                        _altsub_sub_idmap.erase(iter);
+                        iter = _altsub_sub_idmap.end();
+                    }
+                    else
+                        iter++;
                 }
-                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << "SUBBUS: " << subBusName <<" has been deleted." << endl;
-                }
+           
             }
-            catch(...)
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+        
+        try
+        {
+            string subBusName = subToDelete->getPAOName();
+            _paobject_subbus_map.erase(subToDelete->getPAOId());
+            _subbus_substation_map.erase(subToDelete->getPAOId());
+            CtiCCSubstationBus_vec::iterator itr = _ccSubstationBuses->begin();
+            while ( itr != _ccSubstationBuses->end() )
+            {
+                CtiCCSubstationBus *subBus = *itr;
+                if (subBus->getPAOId() == subBusId)
+                {
+                    itr = _ccSubstationBuses->erase(itr);
+                    break;
+                }else
+                    ++itr;
+        
+            }
+            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << "SUBBUS: " << subBusName <<" has been deleted." << endl;
             }
-
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
     catch(...)
@@ -7464,76 +7463,75 @@ void CtiCCSubstationBusStore::deleteFeeder(long feederId)
 {
     CtiCCFeederPtr feederToDelete = findFeederByPAObjectID(feederId);
 
+    if (feederToDelete == NULL)
+        return;
     try
     {
-        if (feederToDelete != NULL)
+        CtiCCCapBank_SVector &ccCapBanks = feederToDelete->getCCCapBanks();
+        std::list<int> capbankDeleteList;
+        long capCount = ccCapBanks.size();
+        for (LONG j = 0; j < capCount; j++)
         {
-            //feederToDelete->dumpDynamicData();
+            CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
+            capbankDeleteList.push_back(capBankToDelete->getPAOId());
+        }
+        for( std::list<int>::iterator itr = capbankDeleteList.begin(); itr != capbankDeleteList.end(); itr++ )
+        {
+            deleteCapBank(*itr);
+        }
 
-            CtiCCCapBank_SVector &ccCapBanks = feederToDelete->getCCCapBanks();
-            long capCount = ccCapBanks.size();
-            for (LONG j = 0; j < capCount; j++)
+        list <LONG> *pointIds  = feederToDelete->getPointIds();
+        //Delete pointids on this feeder
+        while (!pointIds->empty())
+        {
+            LONG pointid = pointIds->front();
+            pointIds->pop_front();
+            int ptCount = getNbrOfFeedersWithPointID(pointid);
+            if (ptCount > 1)
             {
-                CtiCCCapBankPtr capBankToDelete = (CtiCCCapBank*)ccCapBanks.front();
-
-                deleteCapBank(capBankToDelete->getPAOId());
-            }
-
-
-            list <LONG> *pointIds  = feederToDelete->getPointIds();
-            //Delete pointids on this feeder
-            while (!pointIds->empty())
-            {
-                LONG pointid = pointIds->front();
-                pointIds->pop_front();
-                int ptCount = getNbrOfFeedersWithPointID(pointid);
-                if (ptCount > 1)
+                multimap< long, CtiCCFeederPtr >::iterator iter1 = _pointid_feeder_map.lower_bound(pointid);
+                while (iter1 != _pointid_feeder_map.end() || iter1 != _pointid_feeder_map.upper_bound(pointid))
                 {
-                    multimap< long, CtiCCFeederPtr >::iterator iter1 = _pointid_feeder_map.lower_bound(pointid);
-                    while (iter1 != _pointid_feeder_map.end() || iter1 != _pointid_feeder_map.upper_bound(pointid))
+                    if (((CtiCCFeederPtr)iter1->second)->getPAOId() == feederToDelete->getPAOId())
                     {
-                        if (((CtiCCFeederPtr)iter1->second)->getPAOId() == feederToDelete->getPAOId())
-                        {
-                            _pointid_feeder_map.erase(iter1);
-                            break;
-                        }
-                        iter1++;
-                    }   
-                } 
-                else
-                    _pointid_feeder_map.erase(pointid);
-            }
-            feederToDelete->getPointIds()->clear();
-            try
-            {
-
-                LONG subBusId = findSubBusIDbyFeederID(feederId);
-                if (subBusId != NULL)
-                {                   
-                    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subBusId);
-                    if (subBus != NULL)
-                    {
-                        subBus->deleteCCFeeder(feederId);
+                        _pointid_feeder_map.erase(iter1);
+                        break;
                     }
+                    iter1++;
                 }
-
-                string feederName = feederToDelete->getPAOName();
-                _paobject_feeder_map.erase(feederToDelete->getPAOId());
-                _feeder_subbus_map.erase(feederToDelete->getPAOId());
-
-                if( _CC_DEBUG & CC_DEBUG_EXTENDED )
-                {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << "FEEDER: " << feederName <<" has been deleted." << endl;
-                }
-
             }
-            catch(...)
+            else
+                _pointid_feeder_map.erase(pointid);
+        }
+        feederToDelete->getPointIds()->clear();
+        try
+        {
+
+            LONG subBusId = findSubBusIDbyFeederID(feederId);
+            if (subBusId != NULL)
+            {                   
+                CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(subBusId);
+                if (subBus != NULL)
+                {
+                    subBus->deleteCCFeeder(feederId);
+                }
+            }
+
+            string feederName = feederToDelete->getPAOName();
+            _paobject_feeder_map.erase(feederToDelete->getPAOId());
+            _feeder_subbus_map.erase(feederToDelete->getPAOId());
+
+            if( _CC_DEBUG & CC_DEBUG_EXTENDED )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+                dout << CtiTime() << "FEEDER: " << feederName <<" has been deleted." << endl;
             }
 
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
     }
     catch(...)
@@ -8438,7 +8436,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 delete executor;
                 executor = f.createExecutor(new CtiCCGeoAreasMsg(*_ccGeoAreas));
                 executor->Execute();
-                delete executor; 
+                delete executor;
                 executor = f.createExecutor(new CtiCCSpecialAreasMsg(*_ccSpecialAreas));
                 executor->Execute();
                 delete executor; 
