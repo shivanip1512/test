@@ -1310,14 +1310,16 @@ alter table CCSUBSPECIALAREAASSIGNMENT
 go
 /* End YUK-4746 */
 
-/* Start YUK-5020 */
+/* Start YUK-5020, YUK-5217 */
+/* @error ignore-begin */
 alter table DeviceTypeCommand
 drop constraint "FK_DevCmd_Grp ";
 
 alter table DeviceTypeCommand
    add constraint FK_DevCmd_Grp foreign key (CommandGroupID)
       references CommandGroup (CommandGroupID);
-/* End YUK-5020 */
+/* @error ignore-end */
+/* End YUK-5020, YUK-5217 */
 
 /* Start YUK-5022 */
 alter table DYNAMICBILLINGFIELD

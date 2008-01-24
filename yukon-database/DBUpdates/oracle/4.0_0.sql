@@ -518,7 +518,7 @@ disableflag, paostatistics)
 	end loop;
 close substation_curs;
 end;
-/
+
 
 Create global temporary table mySubstation2
 (
@@ -623,7 +623,7 @@ set
 		mySubstation3
 	where 
 		a.substationbusid = mySubstation3.subbusid);
-/
+
 declare 
 	v_ccsubbusid		mysubstation2.subbusid%TYPE;
 	v_lastsubstationid 	mysubstation2.substationid%TYPE;
@@ -653,8 +653,6 @@ while (substation_curs2%found)
 	end loop;
 close substation_curs2;
 end;
-
-/
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
@@ -1151,14 +1149,16 @@ where
 update capbank set operationalstate = 'StandAlone' where lower(operationalstate) = 'stand alone'; 
 /* End YUK-4997 */
 
-/* Start YUK-5020 */
+/* Start YUK-5020, YUK-5217 */
+/* @error ignore-begin */
 alter table DeviceTypeCommand
 drop constraint "FK_DevCmd_Grp ";
 
 alter table DeviceTypeCommand
    add constraint FK_DevCmd_Grp foreign key (CommandGroupID)
       references CommandGroup (CommandGroupID);
-/* End YUK-5020 */
+/* @error ignore-end */
+/* End YUK-5020, YUK-5217 */
 
 /* Start YUK-5022 */
 alter table DYNAMICBILLINGFIELD
