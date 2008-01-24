@@ -9,7 +9,10 @@ if exists (select 1
             and   type = 'U')
    drop table MeterReadLog;
 go
+
+delete from SequenceNumber where SequenceName = 'MeterReadLog';
 /* End YUK-5107 */
+
 
 /* Start YUK-5103 */
 /* @error ignore-begin */
