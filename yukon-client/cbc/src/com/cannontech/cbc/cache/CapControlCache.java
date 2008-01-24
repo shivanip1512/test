@@ -16,11 +16,11 @@ import com.cannontech.yukon.cbc.SubStation;
 
 public interface CapControlCache {
 
-    public List<CapBankDevice> getCapBanksBySpecialArea(Integer areaID);
+    public List<CapBankDevice> getCapBanksBySpecialArea(int areaID);
     
-    public List<SubStation> getSubstationsBySpecialArea(Integer areaId);
+    public List<SubStation> getSubstationsBySpecialArea(int areaId);
     
-    public int getParentAreaID( int childID );
+    public int getParentAreaID(int childID);
     
     public CBCArea getCBCArea(int id);
     
@@ -32,7 +32,7 @@ public interface CapControlCache {
     
     public List<SubBus> getSubBusesBySubStation(SubStation sub);
     
-    public SubStation getSubstation( Integer subId);
+    public SubStation getSubstation( int subId);
     
     public CBCClientConnection getConnection();
     
@@ -44,29 +44,29 @@ public interface CapControlCache {
 	 * 
 	 * @return SubBus
 	 */
-	public SubBus getSubBus(Integer subID);
+	public SubBus getSubBus(int subID);
 
 	/**
 	 * Returns the base object type for a SubBus, Feeder or CapBankDevice
 	 * 
 	 */
-	public StreamableCapObject getCapControlPAO(Integer paoID);
+	public StreamableCapObject getCapControlPAO(int paoID);
 
 	/**
 	 * 
 	 * @return Feeder
 	 */
-	public Feeder getFeeder(Integer feederID);
+	public Feeder getFeeder(int feederID);
 
 	/**
 	 * @return CapBankDevice
 	 */
-	public CapBankDevice getCapBankDevice(Integer capBankDeviceID);
+	public CapBankDevice getCapBankDevice(int capBankDeviceID);
 
 	/**
 	 * @return List<Feeder>
 	 */
-	public List<Feeder> getFeedersBySubBus(Integer subBusID);
+	public List<Feeder> getFeedersBySubBus(int subBusID);
     
     /**
      * @return List<Feeder>
@@ -77,7 +77,7 @@ public interface CapControlCache {
 	/**
 	 * @return CapBankDevice[]
 	 */
-	public CapBankDevice[] getCapBanksByFeeder(Integer feederID);
+	public CapBankDevice[] getCapBanksByFeeder(int feederID);
 
 	/**
 	 * Instant lookup to check if this paoID is used by a SubBus
@@ -113,7 +113,7 @@ public interface CapControlCache {
 	 * @return CapBankDevice[]
 	 * @param subBusID long
 	 */
-	public abstract List<CapBankDevice> getCapBanksBySubBus(Integer subBusID);
+	public abstract List<CapBankDevice> getCapBanksBySubBus(int subBusID);
     
     /**
      * @return List<CapBankDevice>
@@ -125,25 +125,25 @@ public interface CapControlCache {
 	 * Returns all Substations for a given Area
 	 * 
 	 */
-	public abstract List<SubStation> getSubstationsByArea(Integer areaID);
+	public abstract List<SubStation> getSubstationsByArea(int areaID);
     
     /**
      * Returns all SubBuses for a given Area
      * 
      */
-    public abstract List<SubBus> getSubBusesByArea(Integer areaID);
+    public abstract List<SubBus> getSubBusesByArea(int areaID);
 
 	/**
 	 * Returns all CapBanks for a given Area
 	 * 
 	 */
-	public abstract List<CapBankDevice> getCapBanksByArea(Integer areaID);
+	public abstract List<CapBankDevice> getCapBanksByArea(int areaID);
 
 	/**
 	 * Returns all Feeders for a given Area
 	 * 
 	 */
-	public abstract List<Feeder> getFeedersByArea(Integer areaID);
+	public abstract List<Feeder> getFeedersByArea(int areaID);
 
 	/**
 	 * Find all the orphaned CBC's in the system. This requires a database hit since

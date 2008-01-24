@@ -27,26 +27,23 @@ public class FeederUpdatableStats extends LxAbstractView implements
     public static final String LBL_TIMESTAMP = "Updated: ";
     public static final String LBL_KVAR_LOAD = "kVAR: ";
     public static final String LBL_PFACTOR = "PF: ";
-    public static final String LBL_WATT_VOLT = "kW/Volt";
     public static final String LBL_DAILYOPS = "Daily / Max Ops: ";
     private static final String LBL_WATT = "kW";
     private static final String LBL_VOLT = "Volt";
     private static final String LBL_TARGET = "Target: ";
+    private static final String LBL_WATT_VOLT = "Watt/Volt: ";
+    private static final String LBL_THREE_PHASE = "Phase A/B/C: ";
     
-    public UpdatableTextList timestamp = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TIMESTAMP, this);
-    
+    private UpdatableTextList 			timestamp = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TIMESTAMP, this);
     private PointQualCheckUpdatTextList varLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_KVAR,this);
-    
-    private UpdatableTextList pFactor = new UpdatableTextList(CBCOnelineSettingsRole.FDR_PF,this);
-    
+    private UpdatableTextList 			pFactor = new UpdatableTextList(CBCOnelineSettingsRole.FDR_PF,this);
     private PointQualCheckUpdatTextList wattLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_WATT,this);
-    
-    private UpdatableTextList dailyOps = new UpdatableTextList(CBCOnelineSettingsRole.FDR_OP_CNT,this);
-    
+    private UpdatableTextList 			dailyOps = new UpdatableTextList(CBCOnelineSettingsRole.FDR_OP_CNT,this);
     private PointQualCheckUpdatTextList voltLoad = new PointQualCheckUpdatTextList(CBCOnelineSettingsRole.FDR_VOLT,this);
-
-    private UpdatableTextList target = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TARGET,this);
-
+    private UpdatableTextList 			target = new UpdatableTextList(CBCOnelineSettingsRole.FDR_TARGET,this);
+    private UpdatableTextList			wattVolt = new UpdatableTextList(CBCOnelineSettingsRole.FDR_WATT_VOLT,this);
+    private UpdatableTextList			threePhase = new UpdatableTextList(CBCOnelineSettingsRole.FDR_THREE_PHASE,this);
+    
     private LxGraph graph;
     private OnelineFeeder parent;
     private LiteYukonUser user;
@@ -80,6 +77,8 @@ public class FeederUpdatableStats extends LxAbstractView implements
         propLabelMap.put(CBCOnelineSettingsRole.FDR_OP_CNT, LBL_DAILYOPS);
         propLabelMap.put(CBCOnelineSettingsRole.FDR_VOLT, LBL_VOLT);
         propLabelMap.put(CBCOnelineSettingsRole.FDR_TARGET, LBL_TARGET);
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_WATT_VOLT,LBL_WATT_VOLT);
+        propLabelMap.put(CBCOnelineSettingsRole.FDR_THREE_PHASE, LBL_THREE_PHASE);
 
     }
 
@@ -98,6 +97,8 @@ public class FeederUpdatableStats extends LxAbstractView implements
                           CBCDisplay.FDR_ONELINE_VOLTS_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.FDR_TARGET,
                           CBCDisplay.FDR_TARGET_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_WATT_VOLT, CBCDisplay.FDR_ONELINE_WATTS_VOLTS_COLUMN);
+        propColumnMap.put(CBCOnelineSettingsRole.FDR_THREE_PHASE, CBCDisplay.FDR_ONELINE_THREE_PHASE_COLUMN);
     }
 
     private Feeder getStreamable() {
@@ -207,10 +208,11 @@ public class FeederUpdatableStats extends LxAbstractView implements
             voltLoad.setType(PointUnits.UOMID_KVOLTS);
 
         }
-        allStats.add(varLoad);
+        allStats.add(varLoad); 
+        allStats.add(threePhase);
         allStats.add(wattLoad);
         allStats.add(voltLoad);
-
+        allStats.add(wattVolt);
     }
 
     public void addExtraElements(LxGraph graph, UpdatableTextList list) {

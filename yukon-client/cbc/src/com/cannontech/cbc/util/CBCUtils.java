@@ -296,19 +296,23 @@ public final class CBCUtils {
 
     }
 
-    public static String getAreaNameFromSubStationId(int subID) {	
+    public static String getAreaNameForSubStationIdFromCache(int subID) {	
     	String ret = "(none)";
     	SubStation station  = ccCache.getSubstation(subID);
-    	if( station != null ) {
-    		int areaId = station.getParentID();
-    		CBCArea area = ccCache.getCBCArea(areaId);
-    		if( area != null ) {
-    			ret = area.getCcName();
-    		}
-    	}
+		int areaId = station.getParentID();
+		CBCArea area = ccCache.getCBCArea(areaId);
+		if( area != null ) {
+			ret = area.getPaoName();
+		}
         return ret;
     }
+    
+    public static String getAreaNameForSubStationBusIdFromCache(int subID) {	
+    	SubBus bus  = ccCache.getSubBus(subID);
 
+		int stationId = bus.getParentID();
+		return getAreaNameForSubStationIdFromCache(stationId);
+    }
     public static Integer getStateGroupIDByGroupName(String groupName) {
         LiteStateGroup[] allStateGroups = DaoFactory.getStateDao()
                                                     .getAllStateGroups();

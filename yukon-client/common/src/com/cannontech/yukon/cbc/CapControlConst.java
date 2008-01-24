@@ -59,4 +59,9 @@ public interface CapControlConst
        STRING_BANK_TIME_OF_DAY
    };
    
+   public static final String CMD_TYPE_SUB = "SUB_TYPE";
+   public static final String CMD_TYPE_SUBSTATION = "SUBSTATION_TYPE";
+   public static final String CMD_TYPE_FEEDER = "FEEDER_TYPE";
+   public static final String CMD_TYPE_CAPBANK = "CAPBANK_TYPE";
+   public static final String CMD_TYPE_AREA = "AREA_TYPE";
 }

@@ -1,5 +1,7 @@
 package com.cannontech.cbc.web;
 
+import org.apache.commons.lang.Validate;
+
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.core.dao.DaoFactory;
@@ -31,15 +33,8 @@ public class ParentStringPrinter {
     }
 
     private StreamableCapObject getStreamable(Integer id) {
-        if (cbcCache.getCapBankDevice(id) != null)
-            return cbcCache.getCapBankDevice(id);
-        else if (cbcCache.getFeeder(id) != null)
-            return cbcCache.getFeeder(id);
-        else if (cbcCache.getSubBus(id) != null)
-            return cbcCache.getSubBus(id);
-        else if (cbcCache.getCBCArea(id) != null)
-            return cbcCache.getCBCArea(id);
-        return null;
+    	Validate.notNull(id,"id cannot be null");
+    	return cbcCache.getCapControlPAO(id);
     }
 
     private String printHierarchy(int id) {

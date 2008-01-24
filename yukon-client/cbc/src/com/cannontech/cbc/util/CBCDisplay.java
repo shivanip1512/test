@@ -71,7 +71,9 @@ public class CBCDisplay {
     public static final int FDR_VAR_LOAD_POPUP = 13;
     public static final int FDR_WARNING_IMAGE = 14;
     public static final int FDR_WARNING_POPUP = 15;
-
+    public static final int FDR_ONELINE_WATTS_VOLTS_COLUMN = 16;
+    public static final int FDR_ONELINE_THREE_PHASE_COLUMN = 17;
+    
     // Column numbers for the SubBus display
     public static final int SUB_AREA_NAME_COLUMN = 0;
     public static final int SUB_NAME_COLUMN = 1;
@@ -742,14 +744,6 @@ public class CBCDisplay {
                                                          .doubleValue(),
                                                          decPlaces);
 
-            retVal += " / ";
-            if (feeder.getCurrentVarLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM)
-                retVal += DASH_LINE;
-            else
-                retVal += CommonUtils.formatDecimalPlaces(feeder.getEstimatedVarLoadPointValue()
-                                                          .doubleValue(),
-                                                          decPlaces);
-
             return retVal;
         }
 
@@ -764,9 +758,34 @@ public class CBCDisplay {
                 return "false";
             }
         }
+        case FDR_ONELINE_THREE_PHASE_COLUMN: {
+        	StringBuilder str = new StringBuilder();
+        	
+        	str.append(CommonUtils.formatDecimalPlaces(feeder.getPhaseA(),decPlaces) + "/");
+        	str.append(CommonUtils.formatDecimalPlaces(feeder.getPhaseB(),decPlaces) + "/");
+        	str.append(CommonUtils.formatDecimalPlaces(feeder.getPhaseC(),decPlaces));
+        	
+        	return str.toString();
+        }
+        case FDR_ONELINE_WATTS_VOLTS_COLUMN: {
+           StringBuilder retVal = new StringBuilder();
+           
+        	if (feeder.getCurrentWattLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM) {
+                retVal.append("---");
+        	} else {
+                retVal.append(CommonUtils.formatDecimalPlaces(feeder.getCurrentWattLoadPointValue().doubleValue(), decPlaces));
+            }
+        	
+        	if (feeder.getCurrentVoltLoadPointID().intValue() <= PointTypes.SYS_PID_SYSTEM) {
+        		retVal.append("/---");
+            } else {
+        		retVal.append("/" + CommonUtils.formatDecimalPlaces(feeder.getCurrentVoltLoadPointValue().doubleValue(), decPlaces));
+        	}
+        	return retVal.toString();
+        }
 
         default:
-            return null;
+            return "---";
         }
     }
 

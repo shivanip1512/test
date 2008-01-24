@@ -29,6 +29,7 @@ import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.yukon.cbc.CapControlConst;
 import com.cannontech.yukon.cbc.SubBus;
 
 @SuppressWarnings("serial")
@@ -91,6 +92,7 @@ public class OnelineCBCServlet extends HttpServlet {
             } catch (RuntimeException e) {
                 if (count < MAX_RETRY) {
                     CTILogger.warn("Failure generating OneLine drawing: " + e.getClass());
+                    CTILogger.debug(e.getStackTrace());
                     continue; 
                 }
                 throw e;
@@ -184,7 +186,7 @@ public class OnelineCBCServlet extends HttpServlet {
 
         CBCCommandExec cbcExecutor = new CBCCommandExec( cache, userName );
 
-        if( controlType.equals(CBCServlet.TYPE_CAPBANK) )
+        if( controlType.equals(CapControlConst.CMD_TYPE_CAPBANK) )
             cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams );
 
     }

@@ -37,6 +37,7 @@ import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.util.StringUtils;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
@@ -62,11 +63,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
     public static final String CBC_ONE_LINE = "oneLineSubs";
     public static final String REF_SECONDS_DEF = "60";
     public static final String REF_SECONDS_PEND = "5";
-    public static final String TYPE_SUB = "SUB_TYPE";
-    public static final String TYPE_SUBSTATION = "SUBSTATION_TYPE";
-    public static final String TYPE_FEEDER = "FEEDER_TYPE";
-    public static final String TYPE_CAPBANK = "CAPBANK_TYPE";
-    public static final String TYPE_AREA = "AREA_TYPE";
+
     private String ovuvEnabled = "false";
     private CapControlCache cbcCache;
 
@@ -310,13 +307,13 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                 if(handleSubstationGET(updatedId, xmlMsgs, i, cbcDisplay)){
                     continue;
                 }
-                if(handleSubGET(updatedId, xmlMsgs, i, cbcDisplay)) {
+                else if(handleSubGET(updatedId, xmlMsgs, i, cbcDisplay)) {
                     continue;
                 }
-                if (handleFeederGET(updatedId, xmlMsgs, i, cbcDisplay)) {
+                else if(handleFeederGET(updatedId, xmlMsgs, i, cbcDisplay)) {
                     continue;
                 }
-                if (handleCapBankGET(updatedId, xmlMsgs, i, cbcDisplay)) {
+                else if(handleCapBankGET(updatedId, xmlMsgs, i, cbcDisplay)) {
                     continue;
                 }
             }
@@ -339,8 +336,10 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      *  
      */
     private boolean handleSubstationGET( String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
-        SubStation sub = cbcCache.getSubstation( new Integer(ids) );
-        if( sub == null ) {
+    	SubStation sub;
+    	try {
+        	sub = cbcCache.getSubstation( new Integer(ids) );
+        } catch(NotFoundException e) {
             return false;
         }
 
@@ -366,8 +365,10 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      *  
      */
     private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
-        SubBus sub = cbcCache.getSubBus( new Integer(ids) );
-        if( sub == null ) {
+    	SubBus sub;
+    	try{ 
+    		sub = cbcCache.getSubBus( new Integer(ids) );
+    	} catch(NotFoundException e) {
             return false;
         }
 
@@ -400,10 +401,13 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      *  
      */
     private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
-        Feeder fdr = cbcCache.getFeeder( new Integer(ids) );
-        if( fdr == null ) {
+    	Feeder fdr;
+    	try {
+    		fdr = cbcCache.getFeeder( new Integer(ids) );
+    	} catch( NotFoundException e) {
             return false;
         }
+    	
         String[] optParams = {
             /*param0*/cbcDisplay.getHTMLFgColor(fdr),
             /*param1*/cbcDisplay.getFeederValueAt(fdr, CBCDisplay.FDR_TARGET_COLUMN).toString(),
@@ -435,11 +439,14 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      *  
      */
     private boolean handleCapBankGET(String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
-        CapBankDevice capBank = cbcCache.getCapBankDevice( new Integer(ids) );
-        String liteStates = init_All_Manual_Cap_States();
-        if( capBank == null ) {
+    	CapBankDevice capBank;
+    	try {
+    		capBank = cbcCache.getCapBankDevice( new Integer(ids) );
+    	} catch( NotFoundException e) {
             return false;
-        }
+    	}
+        
+        String liteStates = init_All_Manual_Cap_States();
         //get all the system states and concat them into a string
         String[] optParams = {
             /*param0*/cbcDisplay.getHTMLFgColor(capBank),
@@ -535,33 +542,11 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                         ", paoID = " + paoID +
                         ", opt = " + optParams +
                         ", operationalState = " + operationalState);
+        
         final CBCCommandExec cbcExecutor = new CBCCommandExec(cbcCache, userName );
-        //send the command with the id, type, paoid
-        if( CBCServlet.TYPE_SUBSTATION.equals(controlType) ) {
-            cbcExecutor.execute_SubstationCmd( cmdID, paoID );
-        }
-        if( CBCServlet.TYPE_SUB.equals(controlType) ) {
-            cbcExecutor.execute_SubCmd( cmdID, paoID );
-        }
-        if( CBCServlet.TYPE_FEEDER.equals(controlType) ) {
-            cbcExecutor.execute_FeederCmd( cmdID, paoID );
-        }
-        if( CBCServlet.TYPE_CAPBANK.equals(controlType) ) {
-            int operationalStateValue = getOperationalState(operationalState);
-            cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams, operationalStateValue);
-        }
-        if ( CBCServlet.TYPE_AREA.equals (controlType) ) { 
-            cbcExecutor.execute_SubAreaCmd(cmdID, paoID);
-        }
-    }
-
-    private int getOperationalState(String value) {
-        if (value == null) return CBCCommandExec.defaultOperationalState;
-        try {
-            int operationalState = CapBankOperationalState.valueOf(value).ordinal();
-            return operationalState;
-        } catch (IllegalArgumentException e) {
-            return CBCCommandExec.defaultOperationalState;
-        }
+        
+        //send the command
+        cbcExecutor.commandExecuteMethod(controlType, cmdID, paoID, optParams, operationalState);
+        
     }
 }

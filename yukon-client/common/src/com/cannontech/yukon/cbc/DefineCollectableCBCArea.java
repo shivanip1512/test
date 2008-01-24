@@ -61,18 +61,31 @@ public class DefineCollectableCBCArea extends
             com.roguewave.vsj.CollectableStreamer polystr)
             throws java.io.IOException {
         
-        //super.restoreGuts(obj, vstr, polystr);
-
         CBCArea area = (CBCArea) obj;
 
         int paoId = (int) vstr.extractUnsignedInt();
         area.setPaoID(paoId);
         area.setCcId(paoId);
-        area.setPaoCategory((String) vstr.restoreObject(SimpleMappings.CString));
-        area.setPaoClass((String) vstr.restoreObject(SimpleMappings.CString));
-        area.setPaoName((String) vstr.restoreObject(SimpleMappings.CString));
-        area.setPaoType((String) vstr.restoreObject(SimpleMappings.CString));
-        area.setPaoDescription((String) vstr.restoreObject(SimpleMappings.CString));
+        
+        String newCcCategory = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoCategory(newCcCategory);
+        area.setCcCategory(newCcCategory);
+        
+        String newClass = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoClass(newClass);
+        area.setCcClass(newClass);
+        
+        String name = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoName(name);
+        area.setCcName(name);
+        
+        String paoType = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoType(paoType);
+        area.setCcType(paoType);
+        
+        String paoDescription = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoDescription(paoDescription);
+        
         area.setDisableFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
         area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
         area.setStations( VectorExtract.extractIntArray(vstr, polystr));

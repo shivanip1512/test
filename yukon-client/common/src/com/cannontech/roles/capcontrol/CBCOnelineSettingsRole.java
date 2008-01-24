@@ -31,7 +31,8 @@ public interface CBCOnelineSettingsRole {
     public static final int FDR_VOLT = FDR_ONELINE_PROPID_BASE - 4;
     public static final int FDR_TARGET = FDR_ONELINE_PROPID_BASE - 5;
     public static final int FDR_TIMESTAMP = FDR_ONELINE_PROPID_BASE - 6;
-    
+    public static final int FDR_WATT_VOLT = FDR_ONELINE_PROPID_BASE - 7;
+    public static final int FDR_THREE_PHASE = FDR_ONELINE_PROPID_BASE - 8;
     
     
     //CAP BANK

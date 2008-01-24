@@ -17,7 +17,7 @@
 <!-- Form for submitting CapBank commands -->
 <form id="frmCapBankCmd" action="/servlet/CBCServlet" method="post">
 <input type="hidden" name="redirectURL" value="/capcontrol/feeders.jsp">
-<input type="hidden" name="controlType" value="<%=CBCServlet.TYPE_CAPBANK%>">
+<input type="hidden" name="controlType" value="<%=CapControlConst.CMD_TYPE_CAPBANK%>">
 <input type="hidden" name="paoID">
 <input type="hidden" name="cmdID">
 <input type="hidden" name="opt">
@@ -35,7 +35,7 @@
 				onclick= "new Ajax.Request('/servlet/CBCServlet', 
 				{
 				method:'post', 
-				parameters:'paoID=<%=capBankId%>&cmdID=<%=CBCCommand.RETURN_BANK_TO_FEEDER%>&controlType=<%=CBCServlet.TYPE_CAPBANK%>&redirectURL=/capcontrol/feeders.jsp',
+				parameters:'paoID=<%=capBankId%>&cmdID=<%=CBCCommand.RETURN_BANK_TO_FEEDER%>&controlType=<%=CapControlConst.CMD_TYPE_CAPBANK%>&redirectURL=/capcontrol/feeders.jsp',
 				onSuccess: function () {
 					top.document.getElementById('tempIFrame').style.display='none';
 					window.parent.location.replace ('feeders.jsp');

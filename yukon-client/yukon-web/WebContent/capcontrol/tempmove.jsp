@@ -91,7 +91,7 @@ Event.observe(window, 'load', updateFeederBankInfo );
  <!--sort of a hack on REDIRECTURL input for now, but I can not figure out how to get around the use of the proxy in XmlHTTP calls-->
  <form id="frmCapBankMove" action="/servlet/CBCServlet" method="post" >
 	<input type="hidden" name="redirectURL" value="/capcontrol/moved.jsp" id="redirectURL" >
-	<input type="hidden" name="controlType" value="<%=CBCServlet.TYPE_CAPBANK%>">
+	<input type="hidden" name="controlType" value="<%=CapControlConst.CMD_TYPE_CAPBANK%>">
 	<input type="hidden" name="paoID" value="<%=bankid%>">
 	<input type="hidden" name="cmdID" value="<%=CBCCommand.CMD_BANK_TEMP_MOVE%>">
 	<input type="hidden" name="opt" value="<%=oldfdrid%>">  <!--Old Feeder ID-->

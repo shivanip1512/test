@@ -1,7 +1,6 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
-<%@ page import="com.cannontech.roles.capcontrol.CBCOnelineSettingsRole"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <cti:standardPage title="Feeders" module="capcontrol">
@@ -332,13 +331,13 @@ for( SubBus subBus: subBuses ) {
 				<td colspan="11">
 				<table id="subSnapShot<%=subBus.getCcId()%>">
 				
-				<%
-											if (subBus != null) {
-											String areaName = CBCUtils.getAreaNameFromSubStationId(subBus.getCcId().intValue());	
-											int varPoint = subBus.getCurrentVarLoadPointID().intValue();
-											int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
-											int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
-								%>
+					<%
+					if (subBus != null) {
+					String areaName = CBCUtils.getAreaNameForSubStationBusIdFromCache(subBus.getCcId().intValue());	
+					int varPoint = subBus.getCurrentVarLoadPointID().intValue();
+					int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
+					int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
+					%>
 			        <tr class="tableCellSnapShot" style="display: none;">
 			        <td>
 			        <b><u>Substation Info</u></b>

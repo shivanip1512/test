@@ -46,6 +46,7 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
     public static final int SEND_ALL_CLOSE = 30;
     public static final int SEND_ALL_ENABLE_OVUV = 31;
     public static final int SEND_ALL_DISABLE_OVUV = 32;
+    public static final int SEND_TIMESYNC = 34;
     public static final int OPERATIONAL_STATECHANGE = 35;
     
 	//server does not use these commands
