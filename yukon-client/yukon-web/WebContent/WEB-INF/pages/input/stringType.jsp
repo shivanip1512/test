@@ -4,5 +4,5 @@
 
 <spring:bind path="${input.field}">
 	<ct:inputName input="${input}" error="${status.error}" />
-	<input type="text" id="${status.expression}" name="${status.expression}" value="${status.value}" />
+	<input type="text" maxlength="60" size="30" id="${status.expression}" name="${status.expression}" value="${status.value}" />
 </spring:bind>

@@ -332,6 +332,25 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         xmlReader.parse(new InputSource(is));
         is.close();
     }
+    
+    public PointTemplate getPointTemplateByTypeAndOffset(YukonDevice device,
+            Integer offset, Integer pointType) {
+
+
+        Set<PointTemplate> allPointTemplates = this.getAllPointTemplates(device.getType());
+
+        for (PointTemplate template : allPointTemplates) {
+
+            if (template.getType() == pointType && template.getOffset() == offset) {
+                return template;
+            }
+        }
+
+        String deviceType = paoGroupsWrapper.getPAOTypeString(device.getType());
+        String pointTypeString = PointTypes.getType(pointType);
+
+        throw new NotFoundException("Point template not found for device type: " + deviceType + ", point type: " + pointTypeString + ", offset: " + offset);
+    }
 
     private PointTemplate getPointTemplate(Integer deviceType, String pointName) {
     	if (this.deviceAllPointTemplateMap.containsKey(deviceType)) {
@@ -634,4 +653,5 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
     public Resource getCurrentDefinitionResource() {
         return currentDefinitionResource;
     }
+
 }

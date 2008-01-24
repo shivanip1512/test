@@ -14,7 +14,7 @@
 	<script type="text/javascript">
 	
 		function deleteConfig(){
-			var confirmDelete = confirm("Are you sure you want to permanently delete this configuration?  This configuration cannot be recovered after it is removed.");
+			var confirmDelete = confirm("Are you sure you want to delete this configuration?  You will not be able to recover this configuration after it is deleted.  All devices with this configuration will be changed to have no configuration assigned to them.  However, any configuration settings that have been downloaded to the meter will remain until a new configuration is assigned and downloaded.");
 			return confirmDelete;
 		}
 	

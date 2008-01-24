@@ -41,7 +41,7 @@
 			<list>
 				<ref bean="dst430_470Category"/>
 				<ref bean="demandLP430_470Category"/>
-				<ref bean="lpChannelsCategory"/>
+				<ref bean="mct470lpChannelsCategory"/>
 				<ref bean="mct470CofigurationByte"/>
 				
 				<!-- 
@@ -212,8 +212,8 @@
 			<list>
 				<ref bean="dst430_470Category"/>
 				<ref bean="demandLP430_470Category"/>
-				<ref bean="lpChannelsCategory"/>
-				<ref bean="mct470CofigurationByte"/>
+				<ref bean="mct430lpChannelsCategory"/>
+				<ref bean="mct430CofigurationByte"/>
 				
 				<!-- 
 				<ref bean="addressingCategory"/>
@@ -1031,6 +1031,45 @@
 		</property>
 	</bean>
 					
+	<bean id="mct430CofigurationByte" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Configuration" />
+		<property name="inputList">
+			<list>
+				<!-- Configuration Byte 0x03 
+					From MCT-470 SSPEC 4.4:
+					The Configuration register defines some of the MCT behaviors. This byte is meant 
+					to be set by the user from the Master Station or with the FTU. The table below 
+					gives details of each bit. The default config value (written for reset ram 
+					function) is 0x00.
+				-->
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Enable DST" />
+					<property name="field" value="enableDst" />
+					<property name="description">
+						<value>
+							If this is set, the device will action any DST changes.  Clearing this will force the DST Active flag to zero.
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Role Enabled" />
+					<property name="field" value="roleEnabled" />
+					<property name="description">
+						<value>
+							Enable Role code 
+						</value>
+					</property>
+					<property name="type" ref="inputBooleanType" />
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				
+				<!-- END Configuration Byte 0x03 -->
+			</list>
+		</property>
+	</bean>
+					
 	<bean id="mct470CofigurationByte" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT Configuration" />
 		<property name="inputList">
@@ -1058,7 +1097,7 @@
 					<property name="field" value="multipleElectronicMeters" />
 					<property name="description">
 						<value>
-							When this is set, the disconnect does not require a button to be pressed to reconnect the meter.  The normal mode of operation is with this cleared and the button must be pressed for a reconnect.
+							Indicates whether multiple electronic meters are attached.
 						</value>
 					</property>
 					<property name="type">
@@ -1545,7 +1584,645 @@
 		</property>
 	</bean>
 	
-	<bean id="lpChannelsCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+	<bean id="mct430lpChannelsCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
+		<property name="name" value="MCT Load Profile Channels" />
+		<property name="inputList">
+			<list>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #1 Meter Type" />
+					<property name="field" value="channel1Type" />
+					<property name="description">
+						<value>
+							Used to determine which type of meter will populate load profile channel 1
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Channel Not Used" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Electronic Meter" />
+										<property name="value" value="1" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #1 Physical Channel" />
+					<property name="field" value="channel1PhysicalChannel" />
+					<property name="description">
+						<value>
+							The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470â€™s daughter board the pulse meter is attached to.  In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.  
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="1" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="2" />
+										<property name="value" value="1" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="3" />
+										<property name="value" value="2" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="4" />
+										<property name="value" value="3" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="5" />
+										<property name="value" value="4" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="6" />
+										<property name="value" value="5" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="7" />
+										<property name="value" value="6" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="8" />
+										<property name="value" value="7" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="9" />
+										<property name="value" value="8" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="10" />
+										<property name="value" value="9" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="11" />
+										<property name="value" value="10" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="12" />
+										<property name="value" value="11" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="13" />
+										<property name="value" value="12" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="14" />
+										<property name="value" value="13" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="15" />
+										<property name="value" value="14" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="16" />
+										<property name="value" value="15" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #1 Load Profile Interval" />
+					<property name="field" value="channel1LPInterval" />
+					<property name="description">
+						<value>
+							Used to determine whether to use load profile interval 0 or 1 and is only relevant for pulse meters
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="#0" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="#1" />
+										<property name="value" value="1" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #1 Multiplier" />
+					<property name="field" value="channel1Multiplier" />
+					<property name="description">
+						<value>
+							Metering Ratio and K-Value
+						</value>
+					</property>
+					<property name="type" ref="inputFloatType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.FloatRangeValidator">
+								<property name="minValue" value=".0001" />
+								<property name="maxValue" value="50000" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+
+
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #2 Meter Type" />
+					<property name="field" value="channel2Type" />
+					<property name="description">
+						<value>
+							Used to determine which type of meter will populate load profile channel 2
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Channel Not Used" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Electronic Meter" />
+										<property name="value" value="1" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #2 Physical Channel" />
+					<property name="field" value="channel2PhysicalChannel" />
+					<property name="description">
+						<value>
+							The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470â€™s daughter board the pulse meter is attached to.  In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.  
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="1" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="2" />
+										<property name="value" value="1" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="3" />
+										<property name="value" value="2" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="4" />
+										<property name="value" value="3" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="5" />
+										<property name="value" value="4" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="6" />
+										<property name="value" value="5" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="7" />
+										<property name="value" value="6" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="8" />
+										<property name="value" value="7" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="9" />
+										<property name="value" value="8" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="10" />
+										<property name="value" value="9" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="11" />
+										<property name="value" value="10" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="12" />
+										<property name="value" value="11" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="13" />
+										<property name="value" value="12" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="14" />
+										<property name="value" value="13" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="15" />
+										<property name="value" value="14" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="16" />
+										<property name="value" value="15" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #2 Load Profile Interval" />
+					<property name="field" value="channel2LPInterval" />
+					<property name="description">
+						<value>
+							Used to determine whether to use load profile interval 0 or 1 and is only relevant for pulse meters
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="#0" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="#1" />
+										<property name="value" value="1" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #2 Multiplier" />
+					<property name="field" value="channel2Multiplier" />
+					<property name="description">
+						<value>
+							Metering Ratio and K-Value
+						</value>
+					</property>
+					<property name="type" ref="inputFloatType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.FloatRangeValidator">
+								<property name="minValue" value=".0001" />
+								<property name="maxValue" value="50000" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+
+
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #3 Meter Type" />
+					<property name="field" value="channel3Type" />
+					<property name="description">
+						<value>
+							Used to determine which type of meter will populate load profile channel 3
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Channel Not Used" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Electronic Meter" />
+										<property name="value" value="1" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #3 Physical Channel" />
+					<property name="field" value="channel3PhysicalChannel" />
+					<property name="description">
+						<value>
+							The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470â€™s daughter board the pulse meter is attached to.  In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.  
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="1" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="2" />
+										<property name="value" value="1" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="3" />
+										<property name="value" value="2" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="4" />
+										<property name="value" value="3" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="5" />
+										<property name="value" value="4" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="6" />
+										<property name="value" value="5" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="7" />
+										<property name="value" value="6" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="8" />
+										<property name="value" value="7" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="9" />
+										<property name="value" value="8" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="10" />
+										<property name="value" value="9" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="11" />
+										<property name="value" value="10" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="12" />
+										<property name="value" value="11" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="13" />
+										<property name="value" value="12" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="14" />
+										<property name="value" value="13" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="15" />
+										<property name="value" value="14" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="16" />
+										<property name="value" value="15" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #3 Load Profile Interval" />
+					<property name="field" value="channel3LPInterval" />
+					<property name="description">
+						<value>
+							Used to determine whether to use load profile interval 0 or 1 and is only relevant for pulse meters
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="#0" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="#1" />
+										<property name="value" value="1" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #3 Multiplier" />
+					<property name="field" value="channel3Multiplier" />
+					<property name="description">
+						<value>
+							Metering Ratio and K-Value
+						</value>
+					</property>
+					<property name="type" ref="inputFloatType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.FloatRangeValidator">
+								<property name="minValue" value=".0001" />
+								<property name="maxValue" value="50000" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #4 Meter Type" />
+					<property name="field" value="channel4Type" />
+					<property name="description">
+						<value>
+							Used to determine which type of meter will populate load profile channel 4
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Channel Not Used" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="Electronic Meter" />
+										<property name="value" value="1" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #4 Physical Channel" />
+					<property name="field" value="channel4PhysicalChannel" />
+					<property name="description">
+						<value>
+							The channel of the attached meter.  In the case of a pulse meter, this indicates which physical KYZ channel of the MCT-470â€™s daughter board the pulse meter is attached to.  In the case of an electronic meter, this indicates which load profile channel of that electronic meter to retrieve.  
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="1" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="2" />
+										<property name="value" value="1" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="3" />
+										<property name="value" value="2" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="4" />
+										<property name="value" value="3" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="5" />
+										<property name="value" value="4" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="6" />
+										<property name="value" value="5" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="7" />
+										<property name="value" value="6" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="8" />
+										<property name="value" value="7" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="9" />
+										<property name="value" value="8" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="10" />
+										<property name="value" value="9" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="11" />
+										<property name="value" value="10" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="12" />
+										<property name="value" value="11" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="13" />
+										<property name="value" value="12" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="14" />
+										<property name="value" value="13" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="15" />
+										<property name="value" value="14" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="16" />
+										<property name="value" value="15" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #4 Load Profile Interval" />
+					<property name="field" value="channel4LPInterval" />
+					<property name="description">
+						<value>
+							Used to determine whether to use load profile interval 0 or 1 and is only relevant for pulse meters
+						</value>
+					</property>
+					<property name="type">
+						<bean class="com.cannontech.web.input.type.DelegatingEnumeratedType">
+							<property name="enumeratedType" ref="inputIntegerType" />
+							<property name="optionList">
+								<list>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="#0" />
+										<property name="value" value="0" />
+									</bean>
+									<bean class="com.cannontech.web.input.type.InputOption">
+										<property name="text" value="#1" />
+										<property name="value" value="1" />
+									</bean>
+								</list>
+							</property>
+						</bean>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+				<bean class="com.cannontech.web.input.InputBase">
+					<property name="displayName" value="Channel #4 Multiplier" />
+					<property name="field" value="channel4Multiplier" />
+					<property name="description">
+						<value>
+							Metering Ratio and K-Value
+						</value>
+					</property>
+					<property name="type" ref="inputFloatType" />
+					<property name="validatorList">
+						<list>
+							<bean class="com.cannontech.web.input.validate.FloatRangeValidator">
+								<property name="minValue" value=".0001" />
+								<property name="maxValue" value="50000" />
+							</bean>
+						</list>
+					</property>
+					<property name="security" ref="configEditSecurity" />
+				</bean>
+								
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="mct470lpChannelsCategory" class="com.cannontech.common.device.config.model.CategoryTemplate">
 		<property name="name" value="MCT Load Profile Channels" />
 		<property name="inputList">
 			<list>

@@ -1,10 +1,6 @@
 package com.cannontech.common.device.config.model;
 
-// import java.util.Date;
-
 import com.cannontech.common.device.config.dao.ConfigurationType;
-
-// import com.cannontech.common.device.config.model.tou.Tou;
 
 /**
  * Backing bean for mct 430 device configurations
@@ -48,9 +44,7 @@ public class MCT430Configuration extends ConfigurationBase {
 
     private Boolean enableDst = null;
     private Boolean txTestMessage = false;
-    private int multipleElectronicMeters = 0;
     private Boolean roleEnabled = null;
-    private int electronicMeter = 0;
 
     // private int channel3MeterConfig = 0;
     // private int channel2MeterConfig = 0;
@@ -807,19 +801,17 @@ public class MCT430Configuration extends ConfigurationBase {
         txTestMessage = 0x02 & (txTestMessage << 1);
 
         // bit 2
-        int multipleElectronicMeters = getMultipleElectronicMeters();
-        multipleElectronicMeters = 0x04 & (multipleElectronicMeters << 2);
+        // not used
 
         // bit 3
         int roleEnabled = (getRoleEnabled()) ? 1 : 0;
         roleEnabled = 0x08 & (roleEnabled << 3);
 
         // bits 4-7
-        int electronicMeter = getElectronicMeter();
-        electronicMeter = 0xF0 & (electronicMeter << 4);
+        // not used
 
         // Combine the bits to make the full value
-        int configurationValue = enableDst | txTestMessage | multipleElectronicMeters | roleEnabled | electronicMeter;
+        int configurationValue = enableDst | txTestMessage | roleEnabled;
 
         return configurationValue;
 
@@ -838,16 +830,14 @@ public class MCT430Configuration extends ConfigurationBase {
         // this.setTxTestMessage(txTestMessage == 1);
 
         // bit 2
-        int multipleElectronicMeters = (0x04 & configuration) >> 2;
-        this.setMultipleElectronicMeters(multipleElectronicMeters);
+        // not used
 
         // bit 3
         int roleEnabled = (0x08 & configuration) >> 3;
         this.setRoleEnabled(roleEnabled == 1);
 
         // bit 4-7
-        int electronicMeter = (0xF0 & configuration) >> 4;
-        this.setElectronicMeter(electronicMeter);
+        // not used
 
     }
 
@@ -857,22 +847,6 @@ public class MCT430Configuration extends ConfigurationBase {
 
     public void setEnableDst(Boolean enableDst) {
         this.enableDst = enableDst;
-    }
-
-    public int getElectronicMeter() {
-        return electronicMeter;
-    }
-
-    public void setElectronicMeter(int electronicMeter) {
-        this.electronicMeter = electronicMeter;
-    }
-
-    public int getMultipleElectronicMeters() {
-        return multipleElectronicMeters;
-    }
-
-    public void setMultipleElectronicMeters(int multipleElectronicMeters) {
-        this.multipleElectronicMeters = multipleElectronicMeters;
     }
 
     public Boolean getRoleEnabled() {

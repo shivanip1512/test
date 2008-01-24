@@ -10355,5 +10355,933 @@
         <type value="1077" javaConstant="CBC_EXPRESSCOM" changeGroup="lm"/>
         <displayName value="CBC Expresscom"/>
     </device>
+
+    <device>
+        <type value="1083" javaConstant="CBC_7020" changeGroup="lm"/>
+        <displayName value="CBC 7020"/>
+        <points>
+        	<point init="true" type="PulseAccumulator">
+                <name>Total op count</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        	<point init="true" type="PulseAccumulator">
+                <name>UV op count</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        	<point init="true" type="PulseAccumulator">
+                <name>OV op count</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        
+            <point init="true" type="Analog">
+                <name>Voltage</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>High Voltage</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Low Voltage</name>
+                <offset value="7"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Delta Voltage</name>
+                <offset value="8"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Analog Input 1</name>
+                <offset value="9"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Temperature</name>
+                <offset value="10"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>RSSI</name>
+                <offset value="13"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control Ignored Reason</name>
+                <offset value="14"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control UV Set Point</name>
+                <offset value="10002"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control OV Set Point</name>
+                <offset value="10003"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control OVUV Track Time</name>
+                <offset value="10004"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Neutral Current Sensor</name>
+                <offset value="10010"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Neutral Current Alarm Set Point</name>
+                <offset value="10011"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>IP Address</name>
+                <offset value="20001"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>UDP Port</name>
+                <offset value="20002"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            
+            <point type="Status">
+                <name>Capacitor bank state</name>
+                <offset value="1"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Re-close Blocked</name>
+                <offset value="2"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Control Mode</name>
+                <offset value="3"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Auto Volt Control</name>
+                <offset value="4"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Local</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Remote</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - OVUV</name>
+                <offset value="7"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Neutral Fault</name>
+                <offset value="8"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Scheduled</name>
+                <offset value="9"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Digital</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Analog</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Temperature</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>OV Condition</name>
+                <offset value="13"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>UV Condition</name>
+                <offset value="14"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Op Failed - Neutral Current</name>
+                <offset value="15"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Neutral Current Fault</name>
+                <offset value="16"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Bad Relay</name>
+                <offset value="24"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Daily Max Ops</name>
+                <offset value="25"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Voltage Delta Abnormal</name>
+                <offset value="26"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Temp Alarm</name>
+                <offset value="27"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>DST Active</name>
+                <offset value="28"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Neutral Lockout</name>
+                <offset value="29"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Control Ignored Indicator</name>
+                <offset value="34"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+    </device>
+
+    <device>
+        <type value="1088" javaConstant="CBC_7022" changeGroup="lm"/>
+        <displayName value="CBC 7022"/>
+        <points>
+        	<point init="true" type="PulseAccumulator">
+                <name>Total op count</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        	<point init="true" type="PulseAccumulator">
+                <name>UV op count</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        	<point init="true" type="PulseAccumulator">
+                <name>OV op count</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        
+            <point init="true" type="Analog">
+                <name>Voltage</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>High Voltage</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Low Voltage</name>
+                <offset value="7"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Delta Voltage</name>
+                <offset value="8"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Analog Input 1</name>
+                <offset value="9"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Temperature</name>
+                <offset value="10"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>RSSI</name>
+                <offset value="13"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control Ignored Reason</name>
+                <offset value="14"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control UV Set Point</name>
+                <offset value="10002"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control OV Set Point</name>
+                <offset value="10003"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control OVUV Track Time</name>
+                <offset value="10004"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Neutral Current Sensor</name>
+                <offset value="10010"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Neutral Current Alarm Set Point</name>
+                <offset value="10011"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>IP Address</name>
+                <offset value="20001"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>UDP Port</name>
+                <offset value="20002"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            
+            <point type="Status">
+                <name>Capacitor bank state</name>
+                <offset value="1"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Re-close Blocked</name>
+                <offset value="2"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Control Mode</name>
+                <offset value="3"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Auto Volt Control</name>
+                <offset value="4"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Local</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Remote</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - OVUV</name>
+                <offset value="7"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Neutral Fault</name>
+                <offset value="8"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Scheduled</name>
+                <offset value="9"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Digital</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Analog</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Temperature</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>OV Condition</name>
+                <offset value="13"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>UV Condition</name>
+                <offset value="14"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Op Failed - Neutral Current</name>
+                <offset value="15"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Neutral Current Fault</name>
+                <offset value="16"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Bad Relay</name>
+                <offset value="24"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Daily Max Ops</name>
+                <offset value="25"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Voltage Delta Abnormal</name>
+                <offset value="26"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Temp Alarm</name>
+                <offset value="27"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>DST Active</name>
+                <offset value="28"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Neutral Lockout</name>
+                <offset value="29"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Control Ignored Indicator</name>
+                <offset value="34"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+    </device>
+
+    <device>
+        <type value="1089" javaConstant="CBC_7023" changeGroup="lm"/>
+        <displayName value="CBC 7023"/>
+        <points>
+        	<point init="true" type="PulseAccumulator">
+                <name>Total op count</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        	<point init="true" type="PulseAccumulator">
+                <name>UV op count</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        	<point init="true" type="PulseAccumulator">
+                <name>OV op count</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        
+            <point init="true" type="Analog">
+                <name>Voltage</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>High Voltage</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Low Voltage</name>
+                <offset value="7"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Delta Voltage</name>
+                <offset value="8"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Analog Input 1</name>
+                <offset value="9"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Temperature</name>
+                <offset value="10"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>RSSI</name>
+                <offset value="13"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control Ignored Reason</name>
+                <offset value="14"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control UV Set Point</name>
+                <offset value="10002"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control OV Set Point</name>
+                <offset value="10003"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control OVUV Track Time</name>
+                <offset value="10004"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Neutral Current Sensor</name>
+                <offset value="10010"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Neutral Current Alarm Set Point</name>
+                <offset value="10011"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>IP Address</name>
+                <offset value="20001"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>UDP Port</name>
+                <offset value="20002"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            
+            <point type="Status">
+                <name>Capacitor bank state</name>
+                <offset value="1"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Re-close Blocked</name>
+                <offset value="2"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Control Mode</name>
+                <offset value="3"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Auto Volt Control</name>
+                <offset value="4"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Local</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Remote</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - OVUV</name>
+                <offset value="7"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Neutral Fault</name>
+                <offset value="8"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Scheduled</name>
+                <offset value="9"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Digital</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Analog</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Temperature</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>OV Condition</name>
+                <offset value="13"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>UV Condition</name>
+                <offset value="14"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Op Failed - Neutral Current</name>
+                <offset value="15"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Neutral Current Fault</name>
+                <offset value="16"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Bad Relay</name>
+                <offset value="24"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Daily Max Ops</name>
+                <offset value="25"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Voltage Delta Abnormal</name>
+                <offset value="26"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Temp Alarm</name>
+                <offset value="27"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>DST Active</name>
+                <offset value="28"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Neutral Lockout</name>
+                <offset value="29"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Control Ignored Indicator</name>
+                <offset value="34"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+    </device>
+
+    <device>
+        <type value="1090" javaConstant="CBC_7024" changeGroup="lm"/>
+        <displayName value="CBC 7024"/>
+        <points>
+        	<point init="true" type="PulseAccumulator">
+                <name>Total op count</name>
+                <offset value="1"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        	<point init="true" type="PulseAccumulator">
+                <name>UV op count</name>
+                <offset value="2"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        	<point init="true" type="PulseAccumulator">
+                <name>OV op count</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+        
+            <point init="true" type="Analog">
+                <name>Voltage</name>
+                <offset value="5"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>High Voltage</name>
+                <offset value="6"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Low Voltage</name>
+                <offset value="7"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Delta Voltage</name>
+                <offset value="8"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Analog Input 1</name>
+                <offset value="9"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Temperature</name>
+                <offset value="10"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Temp-F"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>RSSI</name>
+                <offset value="13"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control Ignored Reason</name>
+                <offset value="14"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control UV Set Point</name>
+                <offset value="10002"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control OV Set Point</name>
+                <offset value="10003"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Control OVUV Track Time</name>
+                <offset value="10004"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Neutral Current Sensor</name>
+                <offset value="10010"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Neutral Current Alarm Set Point</name>
+                <offset value="10011"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>IP Address</name>
+                <offset value="20001"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>UDP Port</name>
+                <offset value="20002"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            
+            <point type="Status">
+                <name>Capacitor bank state</name>
+                <offset value="1"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Re-close Blocked</name>
+                <offset value="2"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Control Mode</name>
+                <offset value="3"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Auto Volt Control</name>
+                <offset value="4"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Local</name>
+                <offset value="5"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Remote</name>
+                <offset value="6"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - OVUV</name>
+                <offset value="7"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Neutral Fault</name>
+                <offset value="8"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Scheduled</name>
+                <offset value="9"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Digital</name>
+                <offset value="10"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Analog</name>
+                <offset value="11"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Last Control - Temperature</name>
+                <offset value="12"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>OV Condition</name>
+                <offset value="13"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>UV Condition</name>
+                <offset value="14"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Op Failed - Neutral Current</name>
+                <offset value="15"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Neutral Current Fault</name>
+                <offset value="16"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Bad Relay</name>
+                <offset value="24"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Daily Max Ops</name>
+                <offset value="25"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Voltage Delta Abnormal</name>
+                <offset value="26"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Temp Alarm</name>
+                <offset value="27"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>DST Active</name>
+                <offset value="28"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Neutral Lockout</name>
+                <offset value="29"/>
+                <stategroup value="SystemState"/>
+            </point>
+            <point type="Status">
+                <name>Control Ignored Indicator</name>
+                <offset value="34"/>
+                <stategroup value="SystemState"/>
+            </point>
+        </points>
+    </device>
     
 </deviceDefinitions>

@@ -129,6 +129,9 @@
 					<property name="validatorList">
 						<list>
 							<ref bean="requiredInputValidator"/>
+							<bean class="com.cannontech.web.input.validate.LengthValidator">
+								<property name="maxLength" value="60" />
+							</bean>
 						</list>
 					</property>
 					<property name="security" ref="configEditSecurity" />

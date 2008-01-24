@@ -118,4 +118,13 @@ public interface DeviceDefinitionDao {
      */
     public Resource getCurrentDefinitionResource();
 
+    /**
+     * Method to get a point template for a device based on point type and offset
+     * @param device - Device to get point template for
+     * @param offset - Offset of point template
+     * @param pointType - Type of point template
+     * @return Point template for device
+     */
+    public PointTemplate getPointTemplateByTypeAndOffset(YukonDevice device, Integer offset, Integer pointType);
+
 }

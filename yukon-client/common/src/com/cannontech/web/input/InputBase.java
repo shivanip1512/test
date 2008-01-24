@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cannontech.web.input.type.InputType;
+import com.cannontech.web.input.validate.DefaultValidator;
 import com.cannontech.web.input.validate.InputValidator;
 
 /**
@@ -68,7 +69,10 @@ public class InputBase implements InputSource {
 
         List<InputValidator> fullValidatorList = new ArrayList<InputValidator>();
         fullValidatorList.addAll(validatorList);
-        fullValidatorList.add(type.getValidator());
+        
+        if(type.getValidator() != DefaultValidator.getInstance()) {
+            fullValidatorList.add(type.getValidator());
+        }
 
         return fullValidatorList;
     }

@@ -21,8 +21,7 @@
 		});
 		
 		function saveConfig(){
-	
-			var confirmSave = confirm("Are you sure you want to change this configuration?  This change will affect *ALL* devices that have been assigned this configuration.");
+			var confirmSave = confirm("Are you sure you want to change this configuration?  This change will affect *ALL* devices that have been assigned this configuration once the configuration is downloaded to the devices again.");
 			return confirmSave;
 		}
 	
