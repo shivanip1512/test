@@ -1485,6 +1485,7 @@ void CtiLMDynamicGroupDataMsg::dump() const
 
 void CtiLMDynamicProgramDataMsg::dump() const
 {
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
     dout << " ------- Message -------       LM Dynamic Program Data" << endl;
     dout << "PAObject ID                    " << _paoid << endl;
     dout << "Disable Flag                   " << _disableflag << endl;
@@ -1501,6 +1502,7 @@ void CtiLMDynamicProgramDataMsg::dump() const
 
 void CtiLMDynamicControlAreaDataMsg::dump() const
 {
+    CtiLockGuard<CtiLogger> doubt_guard(dout);
     dout << " ------- Message -------       LM Dynamic Control Area Data" << endl;
     dout << "PAObject ID                    " << _paoid << endl;
     dout << "Disable Flag                   " << _disableflag << endl;
@@ -1509,8 +1511,18 @@ void CtiLMDynamicControlAreaDataMsg::dump() const
     dout << "Current Priority               " << _currentpriority << endl;
     dout << "Current Start Time             " << _currentdailystarttime << endl;
     dout << "Current Stop Time              " << _currentdailystoptime << endl;
+    if( _triggers.size() > 0 )
+    {
+        for( int i = 0; i < _triggers.size(); i++ )
+        {
+            dout << "Trigger:" << endl;
+            _triggers[i].dump();
+        }
+    }
 }
 
+//This cannot be called by itself, it is not protected by a mutex.
+//This is only called by control area msg dump.
 void CtiLMDynamicTriggerDataMsg::dump() const
 {
     dout << " ------- Message -------       LM Dynamic Trigger Data" << endl;
@@ -1575,6 +1587,14 @@ CtiMessage* CtiLMDynamicControlAreaDataMsg::replicateMessage() const
     msg->_currentpriority = _currentpriority;
     msg->_currentdailystarttime = _currentdailystarttime;
     msg->_currentdailystoptime = _currentdailystoptime;
+
+    if( _triggers.size() > 0 )
+    {
+        for( int i = 0; i < _triggers.size(); i++ )
+        {
+            msg->_triggers.push_back(_triggers[i]); //This is a copy.
+        }
+    }
     return msg;
 }
 
