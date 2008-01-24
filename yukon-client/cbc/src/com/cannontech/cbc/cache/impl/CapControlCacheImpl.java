@@ -593,7 +593,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     	logAllSubStations(stationsMsg);
         //If this is a full reload of all subs.
     	if (stationsMsg.isAllSubStations()) {
-    	    clearAllMaps();
+    	    subStationMap.clear();
         }
         else if( stationsMsg.isUpdateSubStations()){
         	//If this is an update to an existing sub.
