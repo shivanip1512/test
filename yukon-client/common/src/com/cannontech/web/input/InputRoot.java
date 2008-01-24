@@ -8,20 +8,20 @@ import java.util.Map;
  * Class which contains a list of inputs
  */
 public class InputRoot {
-    private List<Input> inputList;
+    private List<Input<?>> inputList;
 
-    public List<Input> getInputList() {
+    public List<Input<?>> getInputList() {
         return inputList;
     }
 
-    public void setInputList(List<Input> inputList) {
+    public void setInputList(List<Input<?>> inputList) {
         this.inputList = inputList;
     }
 
-    public Map<String, ? extends InputSource> getInputMap() {
-        Map<String, InputSource> result = new HashMap<String, InputSource>();
-        for (Input input : inputList) {
-            Map<String, ? extends InputSource> temp = input.getInputMap(input.getField());
+    public Map<String, InputSource<?>> getInputMap() {
+        Map<String, InputSource<?>> result = new HashMap<String, InputSource<?>>();
+        for (Input<?> input : inputList) {
+            Map<String, ? extends InputSource<?>> temp = input.getInputMap(input.getField());
             result.putAll(temp);
         }
 

@@ -9,13 +9,11 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
-import com.cannontech.web.input.validate.DefaultValidator;
-import com.cannontech.web.input.validate.InputValidator;
-
 /**
  * Implementation of input type which represents an integer input type
  */
-public class IntegerSetType implements InputType<Set> {
+@SuppressWarnings("unchecked")
+public class IntegerSetType extends DefaultValidatedType<Set> {
 
     private String renderer = null;
 
@@ -31,12 +29,9 @@ public class IntegerSetType implements InputType<Set> {
         this.renderer = renderer;
     }
 
+    @SuppressWarnings("unchecked")
     public Class<Set> getTypeClass() {
         return Set.class;
-    }
-
-    public InputValidator getValidator() {
-        return DefaultValidator.getInstance();
     }
 
     public PropertyEditor getPropertyEditor() {

@@ -4,13 +4,10 @@ import java.beans.PropertyEditor;
 
 import org.springframework.beans.propertyeditors.CustomNumberEditor;
 
-import com.cannontech.web.input.validate.DefaultValidator;
-import com.cannontech.web.input.validate.InputValidator;
-
 /**
  * Implementation of input type which represents a float input type
  */
-public class FloatType implements InputType<Float> {
+public class FloatType extends DefaultValidatedType<Float> {
 
     private float minValue = 0;
     private float maxValue = 0;
@@ -47,10 +44,6 @@ public class FloatType implements InputType<Float> {
 
     public Class<Float> getTypeClass() {
         return Float.class;
-    }
-
-    public InputValidator getValidator() {
-        return DefaultValidator.getInstance();
     }
 
     public PropertyEditor getPropertyEditor() {

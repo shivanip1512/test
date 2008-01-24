@@ -8,7 +8,7 @@ import com.cannontech.web.input.validate.InputValidator;
 /**
  * Interface which represents an input to be used to populate a field
  */
-public interface Input {
+public interface Input<T> {
 
     /**
      * Method to get the name of the field this input will populate
@@ -33,7 +33,7 @@ public interface Input {
      * input groups - which are inputs themselves)
      * @return - List of inputs contained in this input
      */
-    public List<InputSource> getInputList();
+    public List<InputSource<T>> getInputList();
 
     /**
      * Method to get a map of <prefix + input-field-path, inputSource> for this
@@ -41,7 +41,7 @@ public interface Input {
      * @param prefix - Prefix to append to the field path map key
      * @return This input's input map
      */
-    public Map<String, ? extends InputSource> getInputMap(String prefix);
+    public Map<String, InputSource<T>> getInputMap(String prefix);
 
     /**
      * Method to get the security class for this input
@@ -53,6 +53,6 @@ public interface Input {
      * Method to get a list of validators for this input
      * @return - A list of validators
      */
-    public List<InputValidator> getValidatorList();
+    public List<InputValidator<T>> getValidatorList();
 
 }

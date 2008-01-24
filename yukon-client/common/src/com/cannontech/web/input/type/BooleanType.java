@@ -4,13 +4,10 @@ import java.beans.PropertyEditor;
 
 import org.springframework.beans.propertyeditors.CustomBooleanEditor;
 
-import com.cannontech.web.input.validate.DefaultValidator;
-import com.cannontech.web.input.validate.InputValidator;
-
 /**
  * Implementation of input type which represents a boolean input type.
  */
-public class BooleanType implements InputType<Boolean> {
+public class BooleanType extends DefaultValidatedType<Boolean> {
 
     private String renderer = "booleanType.jsp";
 
@@ -24,10 +21,6 @@ public class BooleanType implements InputType<Boolean> {
 
     public Class<Boolean> getTypeClass() {
         return Boolean.class;
-    }
-
-    public InputValidator getValidator() {
-        return DefaultValidator.getInstance();
     }
 
     public PropertyEditor getPropertyEditor() {

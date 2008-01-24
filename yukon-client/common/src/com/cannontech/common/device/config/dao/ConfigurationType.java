@@ -7,6 +7,7 @@ import com.cannontech.common.device.config.model.MCT470Configuration;
 import com.cannontech.common.search.criteria.MCT410Criteria;
 import com.cannontech.common.search.criteria.MCT430Criteria;
 import com.cannontech.common.search.criteria.MCT470Criteria;
+import com.cannontech.common.search.criteria.YukonObjectCriteriaHelper;
 
 /**
  * Enum for all the types of configurations
@@ -22,7 +23,7 @@ public enum ConfigurationType {
             return "MCT 470 Configuration";
         }
 
-        public Class getCriteria() {
+        public Class<? extends YukonObjectCriteriaHelper> getCriteria() {
             return MCT470Criteria.class;
         }
 
@@ -39,7 +40,7 @@ public enum ConfigurationType {
             return "MCT 430 Configuration";
         }
 
-        public Class getCriteria() {
+        public Class<? extends YukonObjectCriteriaHelper> getCriteria() {
             return MCT430Criteria.class;
         }
 
@@ -56,7 +57,7 @@ public enum ConfigurationType {
             return "MCT 410 Configuration";
         }
 
-        public Class getCriteria() {
+        public Class<? extends YukonObjectCriteriaHelper> getCriteria() {
             return MCT410Criteria.class;
         }
 
@@ -83,7 +84,7 @@ public enum ConfigurationType {
      * Method to get the search criteria associated with this configuration type
      * @return Search criteria
      */
-    public abstract Class getCriteria();
+    public abstract Class<? extends YukonObjectCriteriaHelper> getCriteria();
 
     /**
      * Method to get an array of the device types this configuration type

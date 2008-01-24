@@ -21,7 +21,7 @@ public interface InputType<T> {
      * Method used to get the validator that will do type-specific validation
      * @return - Validator
      */
-    public InputValidator getValidator();
+    public InputValidator<T> getValidator();
 
     /**
      * Method used to get the property editor that will be used to change a

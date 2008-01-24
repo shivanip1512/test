@@ -5,13 +5,11 @@ import java.beans.PropertyEditorSupport;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.web.input.validate.DefaultValidator;
-import com.cannontech.web.input.validate.InputValidator;
 
 /**
  * Implementation of input type which represents a date input type.
  */
-public class DeviceGroupType implements InputType<DeviceGroup> {
+public class DeviceGroupType extends DefaultValidatedType<DeviceGroup> {
     private DeviceGroupService deviceGroupService;
 
     private String renderer = "stringType.jsp";
@@ -32,10 +30,6 @@ public class DeviceGroupType implements InputType<DeviceGroup> {
         return DeviceGroup.class;
     }
 
-    public InputValidator getValidator() {
-        return DefaultValidator.getInstance();
-    }
-
     public PropertyEditor getPropertyEditor() {
         PropertyEditor editor = new PropertyEditorSupport() {
             @Override
@@ -43,7 +37,7 @@ public class DeviceGroupType implements InputType<DeviceGroup> {
                 DeviceGroup group = deviceGroupService.resolveGroupName(text);
                 setValue(group);
             }
-            
+
             @Override
             public String getAsText() {
                 DeviceGroup group = (DeviceGroup) getValue();

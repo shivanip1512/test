@@ -41,7 +41,7 @@ public class DeviceConfigurationFormController extends InputFormController {
 
     public void init() {
 
-        List<Input> inputList = inputRoot.getInputList();
+        List<Input<?>> inputList = inputRoot.getInputList();
 
         for (CategoryTemplate catTemplate : configurationTemplate.getCategoryList()) {
             inputList.addAll(catTemplate.getInputList());
@@ -55,13 +55,13 @@ public class DeviceConfigurationFormController extends InputFormController {
     }
 
     @Override
-    protected Map referenceData(HttpServletRequest request) throws Exception {
+    protected Map<String, Object> referenceData(HttpServletRequest request) throws Exception {
 
         Map<String, Object> dataMap = new HashMap<String, Object>();
 
         dataMap.put("configurationTemplate", configurationTemplate);
 
-        InputSource nameInput = inputRoot.getInputMap().get("name");
+        InputSource<?> nameInput = inputRoot.getInputMap().get("name");
         dataMap.put("name", nameInput);
 
         return dataMap;

@@ -7,30 +7,30 @@ import java.util.Map;
 
 import com.cannontech.web.input.validate.InputValidator;
 
-public class InputGroup implements Input {
+public class InputGroup<T> implements Input<T> {
 
     private String field = null;
     private String displayName = null;
     private String renderer = null;
-    private Map<String, Input> inputMap = new HashMap<String, Input>();
+    private Map<String, Input<T>> inputMap = new HashMap<String, Input<T>>();
     private InputSecurity security = new SimpleInputSecurity();
-    private List<InputValidator> validatorList = new ArrayList<InputValidator>();
+    private List<InputValidator<T>> validatorList = new ArrayList<InputValidator<T>>();
 
-    public List<InputSource> getInputList() {
+    public List<InputSource<T>> getInputList() {
 
-        List<InputSource> inputList = new ArrayList<InputSource>();
-        for (Input input : inputMap.values()) {
+        List<InputSource<T>> inputList = new ArrayList<InputSource<T>>();
+        for (Input<T> input : inputMap.values()) {
             inputList.addAll(input.getInputList());
         }
 
         return inputList;
     }
 
-    public Map<String, Input> getInputMap() {
+    public Map<String, Input<T>> getInputMap() {
         return this.inputMap;
     }
 
-    public void setInputMap(Map<String, Input> inputMap) {
+    public void setInputMap(Map<String, Input<T>> inputMap) {
         this.inputMap = inputMap;
     }
 
@@ -66,20 +66,20 @@ public class InputGroup implements Input {
         this.displayName = displayName;
     }
 
-    public List<InputValidator> getValidatorList() {
+    public List<InputValidator<T>> getValidatorList() {
         return validatorList;
     }
 
-    public void setValidatorList(List<InputValidator> validatorList) {
+    public void setValidatorList(List<InputValidator<T>> validatorList) {
         this.validatorList = validatorList;
     }
 
-    public Map<String, ? extends InputSource> getInputMap(String prefix) {
+    public Map<String, InputSource<T>> getInputMap(String prefix) {
         prefix += ".";
 
-        Map<String, InputSource> result = new HashMap<String, InputSource>();
-        for (Map.Entry<String, Input> entry : inputMap.entrySet()) {
-            Map<String, ? extends InputSource> temp = entry.getValue()
+        Map<String, InputSource<T>> result = new HashMap<String, InputSource<T>>();
+        for (Map.Entry<String, Input<T>> entry : inputMap.entrySet()) {
+            Map<String, InputSource<T>> temp = entry.getValue()
                                                            .getInputMap(prefix + entry.getKey());
             result.putAll(temp);
         }

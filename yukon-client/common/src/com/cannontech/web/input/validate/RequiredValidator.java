@@ -7,7 +7,7 @@ import org.springframework.validation.Errors;
  * Implementation of InputValidator that validates that a value exists for the
  * input
  */
-public final class RequiredValidator implements InputValidator {
+public final class RequiredValidator implements InputValidator<Object> {
 
     public void validate(String path, String displayName, Object value, Errors errors) {
 

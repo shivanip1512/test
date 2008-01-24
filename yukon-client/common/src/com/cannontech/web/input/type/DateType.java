@@ -6,13 +6,10 @@ import java.util.Date;
 
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 
-import com.cannontech.web.input.validate.DefaultValidator;
-import com.cannontech.web.input.validate.InputValidator;
-
 /**
  * Implementation of input type which represents a date input type.
  */
-public class DateType implements InputType<Date> {
+public class DateType extends DefaultValidatedType<Date> {
 
     private String renderer = "dateType.jsp";
     private String format = "MM/dd/yyyy";
@@ -35,10 +32,6 @@ public class DateType implements InputType<Date> {
 
     public Class<Date> getTypeClass() {
         return Date.class;
-    }
-
-    public InputValidator getValidator() {
-        return DefaultValidator.getInstance();
     }
 
     public PropertyEditor getPropertyEditor() {

@@ -9,13 +9,13 @@ public class CategoryTemplate {
 
     private String name = null;
     private String description = null;
-    private List<Input> inputList = new ArrayList<Input>();
+    private List<Input<?>> inputList = new ArrayList<Input<?>>();
 
-    public List<Input> getInputList() {
+    public List<Input<?>> getInputList() {
         return inputList;
     }
 
-    public void setInputList(List<Input> inputList) {
+    public void setInputList(List<Input<?>> inputList) {
         this.inputList = inputList;
     }
 

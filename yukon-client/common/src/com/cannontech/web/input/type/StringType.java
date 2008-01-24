@@ -4,13 +4,10 @@ import java.beans.PropertyEditor;
 
 import sun.beans.editors.StringEditor;
 
-import com.cannontech.web.input.validate.DefaultValidator;
-import com.cannontech.web.input.validate.InputValidator;
-
 /**
  * Implementation of input type which represents a string input type
  */
-public class StringType implements InputType<String> {
+public class StringType extends DefaultValidatedType<String> {
 
     private String renderer = "stringType.jsp";
 
@@ -24,10 +21,6 @@ public class StringType implements InputType<String> {
 
     public Class<String> getTypeClass() {
         return String.class;
-    }
-
-    public InputValidator getValidator() {
-        return DefaultValidator.getInstance();
     }
 
     public PropertyEditor getPropertyEditor() {

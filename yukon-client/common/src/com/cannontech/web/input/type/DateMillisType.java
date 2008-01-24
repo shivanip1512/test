@@ -4,13 +4,10 @@ import java.beans.PropertyEditor;
 import java.beans.PropertyEditorSupport;
 import java.util.Date;
 
-import com.cannontech.web.input.validate.DefaultValidator;
-import com.cannontech.web.input.validate.InputValidator;
-
 /**
  * Implementation of input type which represents a date input type.
  */
-public class DateMillisType implements InputType<Long> {
+public class DateMillisType extends DefaultValidatedType<Long> {
 
     private String renderer = "dateType.jsp";
     private String format = "MM/dd/yyyy";
@@ -33,10 +30,6 @@ public class DateMillisType implements InputType<Long> {
 
     public Class<Long> getTypeClass() {
         return Long.class;
-    }
-
-    public InputValidator getValidator() {
-        return DefaultValidator.getInstance();
     }
 
     public PropertyEditor getPropertyEditor() {

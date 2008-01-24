@@ -66,9 +66,9 @@ public class ConfigurationTemplate {
         this.dbNameMapping = dbNameMapping;
     }
 
-    public List<Input> getInputList() {
+    public List<Input<?>> getInputList() {
 
-        List<Input> inputList = new ArrayList<Input>();
+        List<Input<?>> inputList = new ArrayList<Input<?>>();
 
         for (CategoryTemplate category : categoryList) {
             inputList.addAll(category.getInputList());

@@ -12,9 +12,9 @@ import com.cannontech.web.input.InputSource;
  */
 public class InputBindingErrorProcessor extends DefaultBindingErrorProcessor {
 
-    private Map<String, ? extends InputSource> inputMap = null;
+    private Map<String, ? extends InputSource<?>> inputMap = null;
 
-    public InputBindingErrorProcessor(Map<String, ? extends InputSource> inputMap) {
+    public InputBindingErrorProcessor(Map<String, ? extends InputSource<?>> inputMap) {
         this.inputMap = inputMap;
     }
 
@@ -22,7 +22,7 @@ public class InputBindingErrorProcessor extends DefaultBindingErrorProcessor {
     protected Object[] getArgumentsForBindError(String objectName, String field) {
 
         if (inputMap.containsKey(field)) {
-            InputSource input = inputMap.get(field);
+            InputSource<?> input = inputMap.get(field);
 
             return new Object[] { input.getDisplayName() };
         }

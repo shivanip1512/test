@@ -5,7 +5,7 @@ import com.cannontech.web.input.type.InputType;
 /**
  * Interface which extends input and represents a single input
  */
-public interface InputSource extends Input {
+public interface InputSource<T> extends Input<T> {
 
     /**
      * Method to get the description of the field for this input
@@ -17,6 +17,6 @@ public interface InputSource extends Input {
      * Method to get the input type for this input
      * @return - Input type
      */
-    public InputType getType();
+    public InputType<T> getType();
 
 }

@@ -336,10 +336,10 @@ public class DeviceConfigurationDaoImpl implements DeviceConfigurationDao {
      */
     private void registerEditors(PropertyEditorRegistry registry, InputRoot inputRoot) {
 
-        Map<String, ? extends InputSource> inputMap = inputRoot.getInputMap();
+        Map<String, ? extends InputSource<?>> inputMap = inputRoot.getInputMap();
 
-        InputSource input = null;
-        InputType inputType = null;
+        InputSource<?> input = null;
+        InputType<?> inputType = null;
         for (String fieldPath : inputMap.keySet()) {
 
             input = inputMap.get(fieldPath);

@@ -27,10 +27,10 @@ public abstract class BaseEnumeratedType<T> implements InputType<T> {
         this.renderer = renderer;
     }
 
-    public InputValidator getValidator() {
-        return new InputValidator() {
+    public InputValidator<T> getValidator() {
+        return new InputValidator<T>() {
 
-            public void validate(String path, String displayName, Object value, Errors errors) {
+            public void validate(String path, String displayName, T value, Errors errors) {
 
                 String valueString = value.toString();
 

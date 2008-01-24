@@ -35,15 +35,15 @@ public abstract class InputFormController extends SimpleFormController {
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
             throws Exception {
 
-        Map<String, ? extends InputSource> inputMap = getInputRoot().getInputMap();
+        Map<String, ? extends InputSource<?>> inputMap = getInputRoot().getInputMap();
 
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         List<String> notEditableFields = new ArrayList<String>();
 
         // Initialize the binder for each input
 
-        InputSource input = null;
-        InputType inputType = null;
+        InputSource<?> input = null;
+        InputType<?> inputType = null;
         for (String fieldPath : inputMap.keySet()) {
 
             input = inputMap.get(fieldPath);
@@ -73,8 +73,8 @@ public abstract class InputFormController extends SimpleFormController {
     protected void onBindAndValidate(HttpServletRequest request, Object command,
             BindException errors) throws Exception {
 
-        Map<String, ? extends InputSource> inputMap = getInputRoot().getInputMap();
-        List<Input> inputList = getInputRoot().getInputList();
+        Map<String, InputSource<?>> inputMap = getInputRoot().getInputMap();
+        List<Input<?>> inputList = getInputRoot().getInputList();
 
         BeanWrapper beanWrapper = new BeanWrapperImpl(command);
         Object value = null;
@@ -83,12 +83,14 @@ public abstract class InputFormController extends SimpleFormController {
         // Validate each of the input values individually
         for (String fieldPath : inputMap.keySet()) {
 
-            Input input = inputMap.get(fieldPath);
+            Input<?> input = inputMap.get(fieldPath);
 
             // Get the submitted value
             value = beanWrapper.getPropertyValue(fieldPath);
-
-            for (InputValidator validator : input.getValidatorList()) {
+            
+            List<? extends InputValidator<?>> validatorList = input.getValidatorList();
+            
+            for (InputValidator validator : validatorList) {
                 // Validate the value
                 validator.validate(fieldPath, input.getDisplayName(), value, errors);
             }
@@ -99,7 +101,8 @@ public abstract class InputFormController extends SimpleFormController {
 
             if (input instanceof InputGroup) {
 
-                for (InputValidator validator : input.getValidatorList()) {
+                List<? extends InputValidator<?>> validatorList = input.getValidatorList();
+                for (InputValidator validator : validatorList) {
                     
                     if(input.getField() != null){
                         value = beanWrapper.getPropertyValue(input.getField());

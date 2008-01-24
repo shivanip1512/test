@@ -5,14 +5,12 @@ import java.beans.PropertyEditorSupport;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.web.input.validate.DefaultValidator;
-import com.cannontech.web.input.validate.InputValidator;
 
 /**
  * Implementation of input type which represents a date input type.
  */
 
-public class MeterType implements InputType<Meter> {
+public class MeterType extends DefaultValidatedType<Meter> {
 
     private MeterDao meterDao = null;
     private String renderer = null;
@@ -37,10 +35,6 @@ public class MeterType implements InputType<Meter> {
         return Meter.class;
     }
 
-    public InputValidator getValidator() {
-        return DefaultValidator.getInstance();
-    }
-    
     public PropertyEditor getPropertyEditor() {
         PropertyEditor editor = new PropertyEditorSupport() {
             @Override
