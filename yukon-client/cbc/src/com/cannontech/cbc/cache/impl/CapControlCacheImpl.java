@@ -575,7 +575,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         logAllSubs(busesMsg);
         //If this is a full reload of all subs.
     	if (busesMsg.isAllSubs()) {
-    	    clearAllMaps();
+    	    subBusMap.clear();
         }
         else if( busesMsg.isUpdateSub()){
         	//If this is an update to an existing sub.
@@ -759,7 +759,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     private synchronized void handleSubStation( SubStation sub ) {   
         
-        Validate.notNull(sub, "sub can't be null");
+        Validate.notNull(sub, "substation can't be null");
         //remove the old sub from the area hashmap just in case the area changed
         subStationMap.remove(sub.getCcId());
         subStationMap.put( sub.getCcId(), sub );
@@ -767,13 +767,6 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         //not linking to sub busses, feeders, and capbanks.
         
         getUpdatedObjMap().handleCBCChangeEvent(sub, new Date());
-    }
-    
-    private synchronized void clearAllMaps() {
-        subBusMap.clear();
-        feederMap.clear();
-        capBankMap.clear();
-        subToBankMap.clear();
     }
     
     /**
