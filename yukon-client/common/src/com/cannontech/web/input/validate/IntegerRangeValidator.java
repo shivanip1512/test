@@ -39,13 +39,13 @@ public class IntegerRangeValidator implements InputValidator<Integer> {
 
         if (value < minValue) {
             errors.rejectValue(path,
-                               "error.belowMin",
+                               "yukon.web.input.error.belowMin",
                                new Object[] { displayName, minValue },
                                "The input value must be greater than or equal to " + minValue);
         }
         if (value > maxValue) {
             errors.rejectValue(path,
-                               "error.aboveMax",
+                               "yukon.web.input.error.aboveMax",
                                new Object[] { displayName, maxValue },
                                "The input value must be less than or equal to " + maxValue);
         }

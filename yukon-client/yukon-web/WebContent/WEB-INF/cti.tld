@@ -699,14 +699,8 @@
             (i.e. by HtmlEscapeTag or a "defaultHtmlEscape" context-param in web.xml).
         </description>
         <attribute>
-            <name>message</name>
+            <name>key</name> <!-- renamed to works as 'message' or 'code' -->
             <required>false</required>
-            <rtexprvalue>true</rtexprvalue>
-            <description>A MessageSourceResolvable argument (direct or through JSP EL).</description>
-        </attribute>
-        <attribute>
-            <name>key</name> <!-- renamed to 'key' -->
-            <required>true</required>
             <rtexprvalue>true</rtexprvalue>
             <description>The key (code) to use when looking up the message.
             If key is not provided, the text attribute will be used.</description>

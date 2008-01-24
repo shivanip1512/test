@@ -43,13 +43,13 @@ public class FloatRangeValidator implements InputValidator<Float> {
 
         if (value < minValue) {
             errors.rejectValue(path,
-                               "error.belowFloatMin",
+                               "yukon.web.input.error.belowFloatMin",
                                new Object[] { displayName, minValue },
                                "The input value must be greater than or equal to " + minValue);
         }
         if (value > maxValue) {
             errors.rejectValue(path,
-                               "error.aboveFloatMax",
+                               "yukon.web.input.error.aboveFloatMax",
                                new Object[] { displayName, maxValue },
                                "The input value must be less than or equal to " + maxValue);
         }

@@ -45,7 +45,7 @@
 		   <ul>
 		      <c:forEach var="errorMsg" items="${errors.allErrors}">
 		         <li>
-		            <spring:message message="${errorMsg}"/>
+		            <cti:msg key="${errorMsg}"/>
 		         </li>
 		      </c:forEach>
 		   </ul>

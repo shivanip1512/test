@@ -32,7 +32,7 @@ public final class LengthValidator implements InputValidator<Object> {
 
         if (valueString.length() < minLength) {
             errors.rejectValue(path,
-                               "error.minLength",
+                               "yukon.web.input.error.minLength",
                                new Object[] { displayName, minLength },
                                "The value must be at least " + minLength + " characters long.");
 
@@ -40,7 +40,7 @@ public final class LengthValidator implements InputValidator<Object> {
 
         if (valueString.length() > maxLength) {
             errors.rejectValue(path,
-                               "error.maxLength",
+                               "yukon.web.input.error.maxLength",
                                new Object[] { displayName, maxLength },
                                "The value must not be longer than " + maxLength + " characters.");
 

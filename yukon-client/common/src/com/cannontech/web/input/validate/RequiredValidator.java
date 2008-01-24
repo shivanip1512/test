@@ -13,7 +13,7 @@ public final class RequiredValidator implements InputValidator<Object> {
 
         if (value == null || StringUtils.isBlank(value.toString())) {
             errors.rejectValue(path,
-                               "error.requiredField",
+                               "yukon.web.input.error.requiredField",
                                new Object[] { displayName },
                                "The input must have a value");
         }
