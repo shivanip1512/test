@@ -1587,15 +1587,7 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
 	}
 	else if( database == DBChangeMsg.CHANGE_CONFIG_DB )
 	{
-        if(DBChangeMsg.CAT_DEVICE_CONFIG.equals(dbCategory)){
-            if(DeviceConfiguration.DB_CHANGE_OBJECT_TYPE.equals(objectType)){
-                retLBase = handleDeviceConfigChange(dbType, id);
-            } else if(Category.DB_CHANGE_OBJECT_TYPE.equals(objectType)){
-                retLBase = handleDeviceConfigCategoryChange(dbType, id);
-            }
-        } else{
-            retLBase = handleConfigChange( dbType, id );
-        }
+	    // Do nothing - no cache for device configs
 	}
 	else if( database == DBChangeMsg.CHANGE_TAG_DB )
 	{
