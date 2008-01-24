@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/23/2008 10:19:37 AM                        */
+/* Created on:     1/24/2008 10:16:10 AM                        */
 /*==============================================================*/
 
 
@@ -3642,9 +3642,9 @@ go
 create table CCFeederBankList (
    FeederID             numeric              not null,
    DeviceID             numeric              not null,
-   ControlOrder         float                not null,
-   CloseOrder           float                not null,
-   TripOrder            float                not null,
+   ControlOrder         numeric(18,5)        not null,
+   CloseOrder           numeric(18,5)        not null,
+   TripOrder            numeric(18,5)        not null,
    constraint PK_CCFEEDERBANKLIST primary key (FeederID, DeviceID)
 )
 go

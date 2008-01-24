@@ -257,9 +257,45 @@ INSERT INTO State VALUES(-1, 9, 'High Limit 1', 9, 6 , 0);
 INSERT INTO State VALUES(-1, 10, 'High Limit 2', 10, 6 , 0);
 /* @error ignore-end */
 
-alter table ccfeederbanklist alter column controlorder float;
-alter table ccfeederbanklist alter column closeorder float;
-alter table ccfeederbanklist alter column triporder float;
+/* Start YUK-5209 */
+ALTER TABLE CCFEEDERBANKLIST
+ ADD ControlOrderTemp  NUMERIC(18,5);
+go
+ALTER TABLE CCFEEDERBANKLIST
+ ADD CloseOrderTemp  NUMERIC(18,5);
+go
+ALTER TABLE CCFEEDERBANKLIST
+ ADD TripOrderTemp  NUMERIC(18,5);
+go
+
+UPDATE CCFeederBankList
+   SET ControlOrderTemp = ControlOrder
+      ,CloseOrderTemp = CloseOrder
+      ,TripOrderTemp = TripOrder;
+go 
+ALTER TABLE CCFEEDERBANKLIST DROP COLUMN CONTROLORDER;
+go
+ALTER TABLE CCFEEDERBANKLIST DROP COLUMN CLOSEORDER;
+go
+ALTER TABLE CCFEEDERBANKLIST DROP COLUMN TRIPORDER;
+go
+sp_rename 'ccfeederbanklist.ControlOrderTemp', 'ControlOrder', 'COLUMN';
+go
+sp_rename 'ccfeederbanklist.CLOSEORDERTEMP', 'CloseOrder', 'COLUMN';
+go
+sp_rename 'ccfeederbanklist.TripOrderTemp', 'TripOrder', 'COLUMN';
+go
+
+ALTER TABLE CCFEEDERBANKLIST
+alter column ControlOrder NUMERIC(18,5) NOT NULL;
+go
+ALTER TABLE CCFEEDERBANKLIST
+alter column CloseOrder NUMERIC(18,5) NOT NULL;
+go
+ALTER TABLE CCFEEDERBANKLIST
+alter column TripOrder NUMERIC(18,5) NOT NULL;
+go
+/* End YUK-5209 */
 
 update command set label = 'Turn Off Test Light' where commandid = -65;
 update command set label = 'Clear Comm Loss Counter' where commandid = -67;

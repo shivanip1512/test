@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/23/2008 10:18:16 AM                        */
+/* Created on:     1/24/2008 10:17:53 AM                        */
 /*==============================================================*/
 
 
@@ -1391,9 +1391,9 @@ create table CCEventLog  (
 create table CCFeederBankList  (
    FeederID             NUMBER                          not null,
    DeviceID             NUMBER                          not null,
-   ControlOrder         FLOAT                           not null,
-   CloseOrder           FLOAT                           not null,
-   TripOrder            FLOAT                           not null,
+   ControlOrder         NUMBER(18,5)                    not null,
+   CloseOrder           NUMBER(18,5)                    not null,
+   TripOrder            NUMBER(18,5)                    not null,
    constraint PK_CCFEEDERBANKLIST primary key (FeederID, DeviceID)
 );
 
