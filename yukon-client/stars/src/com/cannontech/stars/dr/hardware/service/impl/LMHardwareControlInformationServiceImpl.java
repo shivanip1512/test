@@ -144,6 +144,10 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
                     inventoryIds.add(controlInformation.getInventoryId());
                 }
             }
+            //inventory id coming in must not have been opted out at all, even in the past.
+            else
+                inventoryIds.add(inventoryId);
+            
         } catch (Exception e) {
             logger.error("Unable to retrieve non-opted-out inventory for InventoryId: " + inventoryId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId, e );
         }
