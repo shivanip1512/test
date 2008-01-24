@@ -338,7 +338,7 @@ function confirmCancel() {
 <% if (inWizard) { %>
                     <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
                       <tr> 
-                      	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                  	<cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
 	                        <td width="40%" align="right"> 
 	<% if (needMoreInfo) { %>
 	                          <input type="submit" name="Next" value="Next">
@@ -358,12 +358,14 @@ function confirmCancel() {
 <% } else { %>
                     <table width="400" border="0" cellspacing="0" cellpadding="5" align="center">
                       <tr> 
-                        <td width="40%" align="right"> 
-                          <input type="submit" name="Submit" value="Submit">
-                        </td>
-                        <td width="40%" align="left"> 
-                          <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
-                        </td>
+                        <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+	                        <td width="40%" align="right"> 
+	                          <input type="submit" name="Submit" value="Submit">
+	                        </td>
+	                        <td width="40%" align="left"> 
+	                          <input type="reset" name="Reset" value="Reset" onclick="setContentChanged(false)">
+	                        </td>
+	                 	</cti:checkProperty>
                       </tr>
                     </table>
 <% } %>
