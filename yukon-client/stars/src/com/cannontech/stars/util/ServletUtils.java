@@ -237,7 +237,6 @@ public class ServletUtils {
 	public static StarsLMControlHistory getControlHistory(StarsLMProgram program, StarsAppliances appliances,
 		StarsCtrlHistPeriod period, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser, int accountId)
 	{
-        Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, energyCompany.getDefaultTimeZone() );
 		String trackHwAddr = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING );
 		/*
          * GRE and similar systems
@@ -269,7 +268,7 @@ public class ServletUtils {
             
 			for (int i = 0; i < groupIDs.size(); i++) {
 				StarsLMControlHistory ctrlHist = LMControlHistoryUtil.getStarsLMControlHistory(
-						((Integer)groupIDs.get(i)).intValue(), accountId, startDate, energyCompany.getDefaultTimeZone(), currentUser );
+						((Integer)groupIDs.get(i)).intValue(), accountId, period, energyCompany.getDefaultTimeZone(), currentUser );
 				
 				for (int j = 0, k = 0; j < ctrlHist.getControlHistoryCount(); j++) {
 					while (k < lmCtrlHist.getControlHistoryCount()
@@ -295,7 +294,7 @@ public class ServletUtils {
 			return lmCtrlHist;
 		}
 		else {
-			return LMControlHistoryUtil.getStarsLMControlHistory( program.getGroupID(), accountId, startDate, energyCompany.getDefaultTimeZone(), currentUser );
+			return LMControlHistoryUtil.getStarsLMControlHistory( program.getGroupID(), accountId, period, energyCompany.getDefaultTimeZone(), currentUser );
 		}
 	}
 	

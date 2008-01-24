@@ -7,7 +7,7 @@
 	if (progNoStr != null) progNo = Integer.parseInt( progNoStr );
 	
 	StarsLMProgram program = programs.getStarsLMProgram( progNo );
-	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( program, appliances, StarsCtrlHistPeriod.NONE, liteEC, lYukonUser, account.getAccountID() );
+	StarsLMControlHistory ctrlHist = ServletUtils.getControlHistory( program, appliances, StarsCtrlHistPeriod.PASTDAY, liteEC, lYukonUser, account.getAccountID() );
 	ControlSummary summary = ctrlHist.getControlSummary();
 	
 	StarsApplianceCategory category = null;
@@ -83,10 +83,6 @@
                       <tr> 
                         <td height="23" class="TableCell" width="117">Past Month</td>
                         <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationFromSeconds(summary.getMonthlyTime()) %></td>
-                      </tr>
-                      <tr> 
-                        <td height="23" class="TableCell" width="117">Seasonal</td>
-                        <td height="23" class="TableCell" width="95"><%= ServletUtils.getDurationFromSeconds(summary.getSeasonalTime()) %></td>
                       </tr>
                       <tr> 
                         <td height="23" class="TableCell" width="117">Annual</td>
