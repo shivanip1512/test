@@ -7,11 +7,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2007/03/28 21:18:42 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/01/25 22:29:23 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.22  2008/01/25 22:29:23  jotteson
+* YUK-5184 Verification Reports not working for sa 205
+* Changed CtiString to allow padding up to a given size.
+* Changed RTM to pad properly, not use the pointer address.
+*
 * Revision 1.21  2007/03/28 21:18:42  jotteson
 * Memory leak's fixed.
 *
@@ -93,6 +98,7 @@
 #include "protocol_sa.h"
 #include "prot_sa3rdparty.h"
 #include "numstr.h"
+#include "ctistring.h"
 
 
 CtiDeviceRTM::CtiDeviceRTM() :
@@ -590,7 +596,7 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                     {
                         if( !bad_code )
                         {
-                            string codestr("-");
+                            CtiString codestr("-");
                             string cmdStr = CtiProtocolSA3rdParty::asString(sacode);
                             CtiVerificationBase::Protocol prot_type;
                             switch(sacode.type)
@@ -605,7 +611,8 @@ int CtiDeviceRTM::decode(CtiXfer &xfer,  int status)
                                 break;
                             case SA205:
                                 prot_type = CtiVerificationBase::Protocol_SA205;
-                                codestr = CtiNumStr(sacode.code).zpad(6);
+                                codestr = sacode.code;
+                                codestr.padFront(6, "0");
                                 break;
                             case SA305:
                                 prot_type = CtiVerificationBase::Protocol_SA305;
