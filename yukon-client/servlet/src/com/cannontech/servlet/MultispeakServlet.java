@@ -5,7 +5,6 @@ package com.cannontech.servlet;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,6 +12,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+import javax.xml.rpc.ServiceException;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
@@ -28,22 +30,21 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
 import com.cannontech.multispeak.db.MultispeakInterface;
-import com.cannontech.multispeak.service.ArrayOfErrorObject;
-import com.cannontech.multispeak.service.ArrayOfString;
-import com.cannontech.multispeak.service.CB_CDSoap_BindingStub;
-import com.cannontech.multispeak.service.CB_MRSoap_BindingStub;
-import com.cannontech.multispeak.service.CD_CBSoap_BindingStub;
-import com.cannontech.multispeak.service.Customer;
-import com.cannontech.multispeak.service.EA_MRSoap_BindingStub;
-import com.cannontech.multispeak.service.MR_CBSoap_BindingStub;
-import com.cannontech.multispeak.service.MR_EASoap_BindingStub;
-import com.cannontech.multispeak.service.MR_OASoap_BindingStub;
-import com.cannontech.multispeak.service.MspObject;
-import com.cannontech.multispeak.service.OA_MRSoap_BindingStub;
-import com.cannontech.multispeak.service.OA_ODSoap_BindingStub;
-import com.cannontech.multispeak.service.OD_OASoap_BindingStub;
-import com.cannontech.multispeak.service.ServiceLocation;
-import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
+import com.cannontech.multispeak.deploy.service.CB_CDSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.CB_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.CD_CBSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.EA_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.MR_CBSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.MR_EASoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.MR_OASoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.MspObject;
+import com.cannontech.multispeak.deploy.service.OA_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OA_ODSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OD_OASoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.spring.YukonSpringHook;
@@ -80,9 +81,6 @@ public class MultispeakServlet extends HttpServlet
         if (redirect == null)
             redirect = req.getContextPath() + req.getRequestURL();
 
-        MultispeakFuncs multispeakFuncs = (MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs");
-        MultispeakDaoImpl multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
-                
         MultispeakBean mspBean = (MultispeakBean)session.getAttribute("multispeakBean");
         if( mspBean == null) {
             session.setAttribute("multispeakBean", new MultispeakBean());
@@ -90,6 +88,9 @@ public class MultispeakServlet extends HttpServlet
         }
         
         if( action.equalsIgnoreCase("CB_MR")) {
+            MultispeakDaoImpl multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
+            MultispeakFuncs multispeakFuncs = (MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs");
+            
             String command = req.getParameter("command");
             MultispeakVendor mspVendor;
             mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
@@ -109,52 +110,44 @@ public class MultispeakServlet extends HttpServlet
             return redirect;
         }
         
+        //Validate the request parameters before continuing on.
+        String errorMessage = isValidMspRequest(req);
+        if (errorMessage != null) {
+            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, errorMessage);
+            return redirect;
+        }
+        
 //		load all parameters from req
-        String vendorIDStr = req.getParameter("vendorID");
-        Integer vendorID = null;
-        if( vendorIDStr != null && vendorIDStr.length() > 0)
-            vendorID = Integer.valueOf(vendorIDStr);
+        Integer vendorID = Integer.valueOf(req.getParameter("vendorID"));
 		String companyName = req.getParameter("mspCompanyName");
         String appName = req.getParameter("mspAppName");
 		String uniqueKey = req.getParameter("mspUniqueKey");
 		String password = req.getParameter("mspPassword");
 		String username = req.getParameter("mspUserName");
-        int maxReturnRecords = 10000;
-        long requestMessageTimeout = 120000;
-        long maxInitiateRequestObjects = 15;
-        try{
-            maxReturnRecords = Integer.parseInt(req.getParameter("mspMaxReturnRecords"));
-            requestMessageTimeout = Long.parseLong(req.getParameter("mspRequestMessageTimeout"));
-            maxInitiateRequestObjects = Long.parseLong(req.getParameter("mspMaxInitiateRequestObjects"));
-        } catch (NumberFormatException nfe) {
-            CTILogger.error("Error found while trying to parse multispeak form",nfe);
-        }
+        
+        //These items are validated (numeric) in isValidMspRequest(req).
+        int maxReturnRecords = Integer.parseInt(req.getParameter("mspMaxReturnRecords"));
+        long requestMessageTimeout = Long.parseLong(req.getParameter("mspRequestMessageTimeout"));
+        long maxInitiateRequestObjects = Long.parseLong(req.getParameter("mspMaxInitiateRequestObjects"));
         String templateNameDefault = req.getParameter("mspTemplateNameDefault");
+
         String outPassword = req.getParameter("outPassword");
         String outUsername = req.getParameter("outUserName");
 		String mspURL = req.getParameter("mspURL");
 		String[] mspInterfaces = req.getParameterValues("mspInterface");
 		String[] mspEndpoints = req.getParameterValues("mspEndpoint");
-		// load action parameters from req
-        String mspService = req.getParameter("actionService");
-        String mspEndpoint = req.getParameter("actionEndpoint");
-        int mspPrimaryCIS = multispeakFuncs.getPrimaryCIS();
-        if (req.getParameter("mspPrimaryCIS") != null)
-        	mspPrimaryCIS = Integer.valueOf(req.getParameter("mspPrimaryCIS")).intValue();
-        int mspPaoNameAlias = multispeakFuncs.getPaoNameAlias();
-        if (req.getParameter("mspPaoNameAlias") != null)
-        	mspPaoNameAlias = Integer.valueOf(req.getParameter("mspPaoNameAlias")).intValue();
         
         if( !mspURL.endsWith("/"))
             mspURL += "/";
         
         if( vendorID != null)
             mspBean.setSelectedVendorID(vendorID.intValue());
+        
         MultispeakVendor mspVendor = new MultispeakVendor(vendorID,companyName, appName, 
                                                           username, password, outUsername, outPassword, 
                                                           uniqueKey, maxReturnRecords, requestMessageTimeout,
                                                           maxInitiateRequestObjects, templateNameDefault, 
-                                                          0, mspURL);
+                                                          mspURL);
 
         List<MultispeakInterface> mspInterfaceList = new ArrayList<MultispeakInterface>();
         if( mspInterfaces != null) {
@@ -167,47 +160,8 @@ public class MultispeakServlet extends HttpServlet
         mspVendor.setMspInterfaces(mspInterfaceList);
         mspBean.setSelectedMspVendor(mspVendor);
 
-        if( companyName.length() <= 0){
-            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* Invalid company name length, at least one character required.");
-            return redirect;
-        }
-        
         if( action.equalsIgnoreCase("Save")) {
-            multispeakDao.updateMultispeakVendor(mspVendor);
-            if ( mspPrimaryCIS != multispeakFuncs.getPrimaryCIS() || 
-                 mspPaoNameAlias != multispeakFuncs.getPaoNameAlias()){
-    			try
-    			{
-    				boolean breakTime = false;
-    				LiteYukonGroup yukGrp = DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
-    				YukonGroup yukGrpPersist = (YukonGroup)LiteFactory.createDBPersistent( yukGrp );
-    				//fill out the DB Persistent with data
-    				yukGrpPersist = (YukonGroup)Transaction.createTransaction( Transaction.RETRIEVE, yukGrpPersist ).execute();
-
-    				for( int j = 0; j < yukGrpPersist.getYukonGroupRoles().size(); j++ ){
-    					YukonGroupRole grpRole = (YukonGroupRole)yukGrpPersist.getYukonGroupRoles().get(j);
-    					if( MultispeakRole.MSP_PRIMARY_CB_VENDORID == grpRole.getRolePropertyID().intValue() ) {
-							grpRole.setValue(String.valueOf(mspPrimaryCIS));
-							if( !breakTime )
-								breakTime = true;
-							else
-								break;							
-    					} else if( MultispeakRole.MSP_PAONAME_ALIAS == grpRole.getRolePropertyID().intValue() ) {
-							grpRole.setValue(String.valueOf(mspPaoNameAlias));
-							if( !breakTime )
-								breakTime = true;
-							else
-								break;
-    					}
-    				}
-					//update any changed values in the DB
-					DaoFactory.getDbPersistentDao().performDBChange(yukGrpPersist, Transaction.UPDATE);
-    			}
-    			catch (Exception e)
-    			{
-    				CTILogger.error( "Unable to connect to DISPATCH.  MSPPrimaryCIS role not saved", e );					
-    			}
-            }
+            saveMspVendor(req, mspVendor);
 		}
         else if( action.equalsIgnoreCase("Create")) {
             redirect = req.getContextPath() + "/msp_setup.jsp?vendor="+ createMultispeakInterface(session, mspVendor);
@@ -217,13 +171,104 @@ public class MultispeakServlet extends HttpServlet
             mspBean.setSelectedVendorID(1);   //set to default
         }        
         else if( action.equalsIgnoreCase("pingURL")) {
+            String mspService = req.getParameter("actionService");
             pingURL(session, mspVendor, mspService);
         }        
 		else if( action.equalsIgnoreCase("getMethods")) {
+            String mspService = req.getParameter("actionService");
             getMethods(session, mspVendor, mspService);
 		}
 		return redirect;
 	}
+
+    private void saveMspVendor(HttpServletRequest req, MultispeakVendor mspVendor) {
+        MultispeakDaoImpl multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
+        MultispeakFuncs multispeakFuncs = (MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs");
+        
+        multispeakDao.updateMultispeakVendor(mspVendor);
+        
+        int oldMspPrimaryCIS = multispeakFuncs.getPrimaryCIS();
+        int mspPrimaryCIS = oldMspPrimaryCIS;
+        if (req.getParameter("mspPrimaryCIS") != null)
+            mspPrimaryCIS = Integer.valueOf(req.getParameter("mspPrimaryCIS")).intValue();
+        
+        int oldMspPaoNameAlias = multispeakFuncs.getPaoNameAlias();
+        int mspPaoNameAlias = oldMspPaoNameAlias;
+        if (req.getParameter("mspPaoNameAlias") != null)
+            mspPaoNameAlias = Integer.valueOf(req.getParameter("mspPaoNameAlias")).intValue();
+        
+        //Update the role property values if they have changed.
+        if ( mspPrimaryCIS != oldMspPrimaryCIS || 
+             mspPaoNameAlias != oldMspPaoNameAlias ){
+            try
+            {
+                boolean breakTime = false;
+                LiteYukonGroup yukGrp = DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
+                YukonGroup yukGrpPersist = (YukonGroup)LiteFactory.createDBPersistent( yukGrp );
+                //fill out the DB Persistent with data
+                yukGrpPersist = (YukonGroup)Transaction.createTransaction( Transaction.RETRIEVE, yukGrpPersist ).execute();
+
+                for( int j = 0; j < yukGrpPersist.getYukonGroupRoles().size(); j++ ){
+                    YukonGroupRole grpRole = (YukonGroupRole)yukGrpPersist.getYukonGroupRoles().get(j);
+                    if( MultispeakRole.MSP_PRIMARY_CB_VENDORID == grpRole.getRolePropertyID().intValue() ) {
+                        grpRole.setValue(String.valueOf(mspPrimaryCIS));
+                        if( !breakTime )
+                            breakTime = true;
+                        else
+                            break;                          
+                    } else if( MultispeakRole.MSP_PAONAME_ALIAS == grpRole.getRolePropertyID().intValue() ) {
+                        grpRole.setValue(String.valueOf(mspPaoNameAlias));
+                        if( !breakTime )
+                            breakTime = true;
+                        else
+                            break;
+                    }
+                }
+                //update any changed values in the DB
+                DaoFactory.getDbPersistentDao().performDBChange(yukGrpPersist, Transaction.UPDATE);
+            }
+            catch (Exception e)
+            {
+                CTILogger.error( "Unable to connect to DISPATCH.  MSPPrimaryCIS role not saved", e );                   
+            }
+        }
+    }
+
+    /**
+     * Validates that the request object has data in required fields.
+     * Returns a String error message if the request is not valid.
+     * Returns null if the request is a valid object (has data in all necessary fields).
+     * @param mspVendor
+     * @return
+     */
+    private String isValidMspRequest(HttpServletRequest req) {
+        
+        String param = req.getParameter("mspCompanyName");
+        if( StringUtils.isBlank(req.getParameter("mspCompanyName")) )
+            return "* Invalid Company Name.  Must have length greater than zero.";
+        
+        param = req.getParameter("mspMaxInitiateRequestObjects");
+        if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param))
+            return "* Invalid MaxInitiateRequestObjects.  Must be a numeric value.";
+        
+        param = req.getParameter("mspRequestMessageTimeout");
+        if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param))
+            return "* Invalid RequestMessageTimeout.  Must be a numeric value.";
+        
+        param = req.getParameter("mspMaxReturnRecords");
+        if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param))
+            return "* Invalid MaxReturnRecords.  Must be a numeric value.";
+        
+        param = req.getParameter("mspTemplateNameDefault");
+        if( StringUtils.isBlank(param))
+            return "* Invalid TemplateNameDefault.  Must have length greater than zero.";
+        
+        param = req.getParameter("vendorID");
+        if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param))
+            return "* VendorID is invalid.  Must be a numerica value.";
+        
+        return null;
+    }
     
     /**
      * Inserts the mspVendor into the database.
@@ -299,11 +344,11 @@ public class MultispeakServlet extends HttpServlet
      */
     private void pingURL(HttpSession session, MultispeakVendor mspVendor, String mspService){
         try {
-            ArrayOfErrorObject objects = pingURL(mspVendor, mspService);
-            if( objects != null && objects.getErrorObject() != null  && objects.getErrorObject().length > 0){
+            ErrorObject[] objects = pingURL(mspVendor, mspService);
+            if( objects != null && objects != null  && objects.length > 0){
                 String result = "";
-                for (int i = 0; i < objects.getErrorObject().length; i++) {
-                    result += objects.getErrorObject(i).getObjectID() + " - " + objects.getErrorObject(i).getErrorString();
+                for (int i = 0; i < objects.length; i++) {
+                    result += objects[i].getObjectID() + " - " + objects[i].getErrorString();
                 }
                 session.setAttribute( MultispeakDefines.MSP_RESULT_MSG, result);
                 session.setAttribute("resultColor", "red");
@@ -326,15 +371,15 @@ public class MultispeakServlet extends HttpServlet
      */
     private void getMethods(HttpSession session, MultispeakVendor mspVendor, String mspService){
         try {
-            ArrayOfString objects = getMethods(mspVendor, mspService);
-            if( objects != null && objects.getString() != null)
+            String[] objects = getMethods(mspVendor, mspService);
+            if( objects != null && objects != null)
             {
                 String resultStr = mspService + " available methods:\n";
-                if( objects.getString().length > 0)
+                if( objects.length > 0)
                 {
-                    resultStr += " * " + objects.getString(0) + "\n";
-                    for (int i = 1; i < objects.getString().length; i++)
-                        resultStr += " * " + objects.getString(i) + "\n";
+                    resultStr += " * " + objects[0] + "\n";
+                    for (int i = 1; i < objects.length; i++)
+                        resultStr += " * " + objects[i] + "\n";
                 }
                 session.setAttribute( MultispeakDefines.MSP_RESULT_MSG, resultStr);
                 session.setAttribute("resultColor", "blue");
@@ -360,9 +405,9 @@ public class MultispeakServlet extends HttpServlet
      * @throws RemoteException 
      * @throws ServiceException 
      */
-    public static ArrayOfErrorObject pingURL(MultispeakVendor mspVendor, String service) throws RemoteException
+    public static ErrorObject[] pingURL(MultispeakVendor mspVendor, String service) throws RemoteException
     {
-        ArrayOfErrorObject objects = new ArrayOfErrorObject();
+        ErrorObject[] objects = new ErrorObject[]{};
         if( service.equalsIgnoreCase(MultispeakDefines.OD_OA_STR)) {
             OD_OASoap_BindingStub port = MultispeakPortFactory.getOD_OAPort(mspVendor);
             objects = port.pingURL();
@@ -413,9 +458,9 @@ public class MultispeakServlet extends HttpServlet
      * @return Returns an ArrayOfErrorObjects
      * @throws RemoteException
      */
-    public static ArrayOfString getMethods(MultispeakVendor mspVendor, String service) throws RemoteException
+    public static String[] getMethods(MultispeakVendor mspVendor, String service) throws RemoteException
     {
-        ArrayOfString objects = new ArrayOfString();
+        String[] objects = new String[]{};
         if( service.equalsIgnoreCase(MultispeakDefines.OD_OA_STR)) {
             OD_OASoap_BindingStub port = MultispeakPortFactory.getOD_OAPort(mspVendor);
             objects = port.getMethods();
