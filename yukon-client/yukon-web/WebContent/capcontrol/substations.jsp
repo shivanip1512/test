@@ -27,7 +27,7 @@
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
 	Integer areaId = ccSession.getLastAreaId();
-	String area = paoDao.getYukonPAOName(areaId);)
+	String area = paoDao.getYukonPAOName(areaId);
 	List<SubStation> areaSubs;
 	boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
 	if(special){
