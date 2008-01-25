@@ -27,7 +27,7 @@
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
 	Integer areaId = ccSession.getLastAreaId();
-	String area = ccSession.getLastArea();
+	String area = paoDao.getYukonPAOName(areaId);)
 	List<SubStation> areaSubs;
 	boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
 	if(special){
@@ -73,7 +73,7 @@ if(special){
     
 </script>
 
-<cti:titledContainer title="<%="Substation In Area:  " + ccSession.getLastArea()%>" id="last_titled_container">
+<cti:titledContainer title="<%="Substation In Area:  " + area%>" id="last_titled_container">
           
 		<%
           		if (areaSubs.size() == 0) {
