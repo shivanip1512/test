@@ -310,6 +310,8 @@ public class SimpleReportServiceImpl implements SimpleReportService {
      */
     public Map<String, String> extractPropertiesFromAttributesMap(InputRoot inputRoot, Map<String, Object> attributes){
         
+    	// look at the attributes the report input root want, and find them in the dynamic attributes
+    	// if found, use inputs' prop editor to convert to text and add to the return map
         HashMap<String,String> propertiesMap = new HashMap<String,String>();
         Map<String, ? extends InputSource> inputs = inputRoot.getInputMap();
         for (Entry<String, ? extends InputSource> entry : inputs.entrySet()) {
@@ -327,6 +329,14 @@ public class SimpleReportServiceImpl implements SimpleReportService {
                 propertiesMap.put(field, reportProperty);
             }
         }
+        
+        // any other dynamic attributes that were not required by the report definition's input root, add to return map
+        for (String attrKey : attributes.keySet()) {
+        	if (!propertiesMap.containsKey(attrKey)) {
+        		propertiesMap.put(attrKey, attributes.get(attrKey).toString());
+        	}
+        }
+        
         return propertiesMap;
     }
     

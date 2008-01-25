@@ -56,14 +56,12 @@ public class SimpleReportLinkFromNameTag extends YukonTagSupport implements Dyna
             propertiesMap = simpleReportService.extractPropertiesFromAttributesMap(inputRoot, identifierAttributes);
         }
         
-        
         // other optional attributes
         Map<String, String> optionalAttributeDefaults = new HashMap<String, String>();
         optionalAttributeDefaults.put("module", "blank");
         optionalAttributeDefaults.put("showMenu", "false");
         optionalAttributeDefaults.put("menuSelection", "");
-        // other optional attributes (required by alternate html views)
-        optionalAttributeDefaults.put("deviceId", "");
+        
         CtiUtilities.overrideValuesOfDefaultsMap(optionalAttributeDefaults, identifierAttributes);
         
         propertiesMap.putAll(optionalAttributeDefaults);
