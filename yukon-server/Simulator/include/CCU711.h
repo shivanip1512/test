@@ -160,7 +160,7 @@ public:
     //  Create a response to a message that has been received and store it in the array of a queue message struct
     void CreateQueuedResponse(int DBValue);
     //  Decode the information contained in an incoming message
-    void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress,int & bytesToReturn, int offset);
+    void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress,int & bytesToReturn, int offset, int counter);
     //  Returns number of data bytes to be sent to poerter at an index and fills the data array
     void getData(long int mctAddress, int function, int ioType, int bytesToReturn);
     //  Allows serverNexus to set the current strategy

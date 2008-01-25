@@ -733,7 +733,7 @@ void CCU711::CreateQueuedMsg(mctStruct structArray[])
         unsigned char address;
         long int mctaddress;
         int bytesToReturn = 0;
-        decodeForQueueMessage(type, iotype, function, address, mctaddress, bytesToReturn, Offset);
+        decodeForQueueMessage(type, iotype, function, address, mctaddress, bytesToReturn, Offset, i);
         newMessage.setWord(type);
         newMessage.setiotype(iotype);
         newMessage.setFunction(function);
@@ -1076,7 +1076,7 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress, int  & bytesToReturn, int offset)
+void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress, int  & bytesToReturn, int offset, int counter)
 {
     switch(_messageData[19] & 0xc0)
     {
@@ -1114,12 +1114,10 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     bytesToReturn = _messageData[offset+5];
 
     address = _messageData[1];
-    mctaddress = _messageData[12] << 16 |
-                 _messageData[13] <<  8 |
-                 _messageData[14];
-////
-////  THIS IS ONLY THE FIRST MCT ADDRESS,  THAT IS WHY MULTIPLE MCTS ARE CREATING PROBLEMS
-////
+    mctaddress = _messageData[12+(counter*offset)] << 16 |
+                 _messageData[13+(counter*offset)] <<  8 |
+                 _messageData[14+(counter*offset)];
+
 }
 
 
