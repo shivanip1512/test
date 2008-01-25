@@ -12,6 +12,8 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
+import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 
 public class CapControlSubstation extends CapControlYukonPAOBase implements EditorPanel {
@@ -36,8 +38,9 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
     }
 
     public void delete() throws SQLException {
-        // remove all the associations of Subs to this Area
-        com.cannontech.database.db.capcontrol.CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getSubstationID(), null, getDbConnection());
+        CCSubAreaAssignment.deleteSubstation(getSubstationID());
+        CCSubSpecialAreaAssignment.deleteSubstation(getSubstationID());
+        CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getSubstationID(), null, getDbConnection());
         SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
         ssDao.deleteStrategyAssigment(getSubstationID());
         // Delete from all dynamic objects

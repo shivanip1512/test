@@ -157,4 +157,13 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         yukonTemplate.update(deleteStmt.toString(), new Integer[] {areaID});
     }
+    
+    public static void deleteSubstation(Integer substationId) {
+        SqlStatementBuilder deleteStmt = new SqlStatementBuilder();
+        deleteStmt.append("DELETE FROM ");
+        deleteStmt.append(TABLE_NAME);
+        deleteStmt.append(" WHERE SubstationBusID = ? ");
+        yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+        yukonTemplate.update(deleteStmt.toString(), new Integer[] {substationId});
+    }
 }
