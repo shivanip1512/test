@@ -138,6 +138,24 @@ size_t CtiString::index(const char* e, size_t* ext, size_t i) {
 
 }
 
+//This is only intended to accept 1 character.
+//The code is defensive against multiple but not perfect.
+void CtiString::padFront(size_t minLength, const char *character) {
+    for( int i = size(); size() < minLength; i++ )
+    {
+        insert(0, character);
+    }
+}
+
+//This is only intended to accept 1 character.
+//The code is defensive against multiple but not perfect.
+void CtiString::padEnd(size_t minLength, const char *character) {
+    for( int i = size(); size() < minLength; i++ )
+    {
+        insert(size(), character);
+    }
+}
+
 
 CtiString operator+(const CtiString &rs1, const CtiString &rs){
     CtiString t = rs1;

@@ -60,6 +60,8 @@ public:
     string strip(stripType scope=CtiString::both, char c = ' ');
     void toLower();
     void toUpper();
+    void padFront(size_t minLength, const char *character);
+    void padEnd(size_t minLength, const char *character);
 
     CtiString& operator= ( const CtiString& rs);
     CtiString& operator= ( const string& s);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/10/30 13:33:03 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/01/25 22:29:23 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,7 +83,7 @@ public:
     explicit CtiNumStr( unsigned long  ulVal );
     explicit CtiNumStr(          long   lVal );
 
-    CtiNumStr( void *vpVal );
+    //CtiNumStr( void *vpVal );
 
     ~CtiNumStr( );
 

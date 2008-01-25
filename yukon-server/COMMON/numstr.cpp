@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/10/30 13:33:02 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/01/25 22:29:23 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,7 +36,8 @@ CtiNumStr::CtiNumStr( unsigned short us ) : _dataType(DataType_Unsigned)  {  ini
 CtiNumStr::CtiNumStr( unsigned int   ui ) : _dataType(DataType_Unsigned)  {  init(32);  _unsigned = ui;  }
 CtiNumStr::CtiNumStr( unsigned long  ul ) : _dataType(DataType_Unsigned)  {  init(32);  _unsigned = ul;  }
 
-CtiNumStr::CtiNumStr( void *vp ) : _dataType(DataType_Pointer)  {  init(32);  _pointer = vp;  }  //  32-bit pointers
+//If you are looking for this feature, see CtiString::zeroPad and CtiString::spacePad
+//CtiNumStr::CtiNumStr( void *vp ) : _dataType(DataType_Pointer)  {  init(32);  _pointer = vp;  }  //  32-bit pointers
 
 CtiNumStr::~CtiNumStr( )
 {
