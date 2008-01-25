@@ -128,12 +128,17 @@ int main(int argc, char *argv[])
         strategy = atoi(argv[3]);
     }
     boost::thread *thr1;
+
+    int portCount = 0;
+
     while( portNum != (portMax+1) )
     {
         thr1 = new boost::thread(Adapter<CCUThreadFunPtr, int, int>(CCUThread, portNum, strategy));
         threadVector.push_back(thr1);
-        CTISleep(750);
+        //Wait longer to spawn each subsequent thread so that the DB doesn't get overloaded
+        CTISleep(750*portCount);
         portNum++;
+        portCount++;
     }
 
 
@@ -279,9 +284,26 @@ void updateKWH(std::map <int, mctStruct> & mctAddressMap, std::list <int> & need
     }
 }
 
-//  This function returns the first mct kwhvalue found in the DB or a random value
-double getfirstDBValue(RWDBDatabase db, RWDBTable table, RWDBConnection conn)
+int getFirstAddresses(long int firstAddresses[], unsigned char ReadBuffer[])
 {
+    int Offset = ReadBuffer[6];
+    int Length = ReadBuffer[3];
+    int counter = Length / Offset;
+
+    for(int i = 0; i<(counter); i++)
+    {
+        long int mctaddress = ReadBuffer[12+(i*Offset)] << 16 |
+                              ReadBuffer[13+(i*Offset)] <<  8 |
+                              ReadBuffer[14+(i*Offset)];
+        firstAddresses[i]=mctaddress;
+    }
+    return 0;
+}
+
+//  This function returns the first mct kwhvalue found in the DB or a random value
+double getDBValue(std::map <int, mctStruct> & mctAddressMap, RWDBDatabase db, RWDBTable table, RWDBConnection conn, long int mctAddress)
+{
+
     //select from db
     RWDBSelector selector  = db.selector();
 
@@ -289,7 +311,7 @@ double getfirstDBValue(RWDBDatabase db, RWDBTable table, RWDBConnection conn)
 
     selector.from( table );
 
-    selector.where( selector["MCTADDRESS"] != -1);
+    selector.where( selector["MCTADDRESS"] == mctAddress);
 
     //reader valid copy to map
 
@@ -309,6 +331,16 @@ double getfirstDBValue(RWDBDatabase db, RWDBTable table, RWDBConnection conn)
     }
     else
         readKWHvalue = 7;  //  There's nothing in the DB yet so just return a small value
+
+    mctStruct temp;
+
+    temp.setmctAddress(readMCTaddress);
+    temp.setKwhValue(readKWHvalue);
+    temp.setTime(readTimestamp);
+
+    mctAddressMap[readMCTaddress]=temp;
+
+    //cout<<"\n\nValue "<<readKWHvalue<<endl;
 
     return readKWHvalue;
 }
@@ -387,7 +419,7 @@ void CCUThread(const int& s, const int& strtgy)
 
         if( dbDll != "none" && dbName != "none" && dbUser != "none" && dbPassword != "none" )
         {
-            cout << CtiTime() << " - Obtaining connection to the database..." << endl;
+            //cout << CtiTime() << " - Obtaining connection to the database..." << endl;
             setDatabaseParams(0,dbDll,dbName,dbUser,dbPassword);
         }
 
@@ -594,7 +626,7 @@ void CCUThread(const int& s, const int& strtgy)
                     //Print the needed addresses from the list
                     for (std::list <int> ::iterator ci = neededAddresses.begin(); ci != neededAddresses.end(); ++ci)
                     {
-                            //cout<<"\nMct in list: "<<*ci<<endl;
+                            cout<<"\nMct in list: "<<*ci<<endl;
                     }
 
                     //If the mct is not in the map (and therefore is in the list), check to see if it's in the db, if not, add it to the db
@@ -624,9 +656,22 @@ void CCUThread(const int& s, const int& strtgy)
                     //  If there's nothing in the map, but a kwh value is still needed
                     if(mctAddressMap.begin()==mctAddressMap.end())
                     {
-                        mctStruct temp;
-                        temp.setKwhValue(getfirstDBValue(db, table, conn));
-                        structArray[0]=temp;
+                        long int mctAddress;
+
+                        int type, iotype, function, bytesToReturn, offset, counter;
+                        long int firstAddresses[50];
+
+                        //memset(firstAddresses, 0, 50);
+
+                        getFirstAddresses(firstAddresses, ReadBuffer);
+                        int j = 0;
+                        while(j<1)
+                        {
+                            mctStruct temp;
+                            temp.setKwhValue(getDBValue(mctAddressMap, db, table, conn, firstAddresses[j]));
+                            structArray[j]=temp;
+                            j++;
+                        }
                     }
 
                     aCCU711->ReceiveMore(ReadBuffer, counter, structArray);
