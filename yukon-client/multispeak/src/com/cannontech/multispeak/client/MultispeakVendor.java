@@ -42,8 +42,6 @@ public class MultispeakVendor
     private long maxInitiateRequestObjects = 15;
     private String templateNameDefault = "*Default Template";
     
-	public int DEFAULT_TIMEOUT = 60000;	//TODO Added this to the MultispeakRole
-
 	public static final int DEFAULT_PAONAME = 0;
     public static final int ACCOUNT_NUMBER_PAONAME = 1;
     public static final int SERVICE_LOCATION_PAONAME = 2;
@@ -63,7 +61,6 @@ public class MultispeakVendor
            CUSTOMER_PAONAME_STRING,
            EA_LOCATION_PAONAME_STRING
        };
-    private int timeout = 0;
     private String url = "http://127.0.0.1:8080/soap/";    //some default url string for formatting example
     
 	private List<MultispeakInterface> mspInterfaces = null;
@@ -77,7 +74,7 @@ public class MultispeakVendor
     public MultispeakVendor(Integer vendorID, String companyName, String appName, String userName, 
             String password, String outUserName, String outPassword, String uniqueKey,  
             int maxReturnRecords, long requestMessageTimeout, long maxInitiateRequestObjects, 
-            String templateNameDefault, int timeout, String url) {
+            String templateNameDefault, String url) {
         super();
         // TODO Auto-generated constructor stub
         this.vendorID = vendorID;
@@ -92,13 +89,12 @@ public class MultispeakVendor
         this.requestMessageTimeout = requestMessageTimeout;
         this.maxInitiateRequestObjects = maxInitiateRequestObjects;
         this.templateNameDefault = templateNameDefault;
-        setTimeout(timeout);
         this.url = url;
     }
 
 
     public MultispeakVendor(Integer vendorID, String companyName, String userName, String password, 
-            String uniqueKey, int timeout, String url)
+            String uniqueKey, String url)
     {
         super();
         this.vendorID = vendorID;
@@ -106,7 +102,6 @@ public class MultispeakVendor
         this.userName = userName;
         this.password = password;
         this.uniqueKey = uniqueKey;
-        setTimeout(timeout);
         this.url = url;
     }
 
@@ -238,26 +233,6 @@ public class MultispeakVendor
     public void setVendorID(Integer i)
     {
         vendorID = i;
-    }
-
-    /**
-     * @return Returns the timeout.
-     */
-    public int getTimeout()
-    {
-        return timeout;
-    }
-
-    /**
-     * If the timeout is less than 1, DEFAULT_TIMEOUT will be set instead 
-     * @param timeout The timeout to set.
-     */
-    public void setTimeout(int timeout)
-    {
-    	if (timeout < 1)
-    		this.timeout = DEFAULT_TIMEOUT;
-    	else
-    		this.timeout = timeout;
     }
 
     public String getAppName() {
