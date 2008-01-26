@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.client.Multispeak;
@@ -28,6 +29,7 @@ import com.cannontech.multispeak.deploy.service.MR_EASoap_PortType;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.PhaseCd;
+import com.cannontech.multispeak.service.MspValidationService;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class MR_EAImpl implements MR_EASoap_PortType
@@ -39,43 +41,41 @@ public class MR_EAImpl implements MR_EASoap_PortType
     private BasicServerConnection porterConnection;
     public Multispeak multispeak;
     public MspRawPointHistoryDao mspRawPointHistoryDao;
+    public MspValidationService mspValidationService;
     
+    @Required
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
         this.multispeakFuncs = multispeakFuncs;
     }
-
+    @Required
     public void setMspMeterReadDao(MspMeterReadDao mspMeterReadDao) {
         this.mspMeterReadDao = mspMeterReadDao;
     }
-    
+    @Required
     public void setMr_cb(MR_CBSoap_PortType mr_cb) {
         this.mr_cb = mr_cb;
     }
-    
+    @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
     }
-    
+    @Required
     public void setMultispeak(Multispeak multispeak) {
         this.multispeak = multispeak;
     }
-    
+    @Required
     public void setMspRawPointHistoryDao(
             MspRawPointHistoryDao mspRawPointHistoryDao) {
         this.mspRawPointHistoryDao = mspRawPointHistoryDao;
     }
+    @Required
+    public void setMspValidationService(
+            MspValidationService mspValidationService) {
+        this.mspValidationService = mspValidationService;
+    }
     
     private void init() {
         multispeakFuncs.init();
-    }
-
-    private void isValidBlockReadingType(String readingType,
-            FormattedBlockService<Block> formattedBlock) throws RemoteException {
-        if( formattedBlock == null) {
-            String message = readingType + " is NOT a supported ReadingType.";
-            CTILogger.error(message);
-            throw new RemoteException(message);
-        }
     }
 
     public void setReadingTypesMap(
@@ -209,16 +209,7 @@ public class MR_EAImpl implements MR_EASoap_PortType
     @Override
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo, String readingType) throws RemoteException {
         init();
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        com.cannontech.amr.meter.model.Meter meter;
-        try {
-            meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
-        } catch (NotFoundException e) {
-            String message = "Meter Number (" + meterNo + "): NOT Found.";
-            CTILogger.error(message);
-            throw new RemoteException(message);
-        }
-
+        com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
         return readingTypesMap.get(readingType).getFormattedBlock(meter);
     }
     
@@ -238,8 +229,8 @@ public class MR_EAImpl implements MR_EASoap_PortType
     @Override
     public FormattedBlock[] getReadingsByDateAndType(Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
         init();
-        FormattedBlockService<Block> formattedBlock = readingTypesMap.get(readingType);
-        isValidBlockReadingType(readingType, formattedBlock);
+        FormattedBlockService<Block> formattedBlock = 
+            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
         FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlock, startDate.getTime(), endDate.getTime(), lastReceived);
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{mspBlock};
@@ -249,15 +240,12 @@ public class MR_EAImpl implements MR_EASoap_PortType
 
     @Override
     public FormattedBlock[] getReadingsByMeterNoAndType(String meterNo, Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
-//        init();   //already handled in isAMRMeter
-        if( ! mr_cb.isAMRMeter(meterNo)) {
-            String message = "Meter Number (" + meterNo + "): NOT Found.";
-            CTILogger.error(message);
-            throw new RemoteException(message);
-        }
-        
-        FormattedBlockService<Block> formattedBlock = readingTypesMap.get(readingType);
-        isValidBlockReadingType(readingType, formattedBlock);
+        init();
+        //Validate the meterNo is in Yukon
+        mspValidationService.isYukonMeterNumber(meterNo); 
+
+        FormattedBlockService<Block> formattedBlock = 
+            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlock, 
@@ -294,8 +282,8 @@ public class MR_EAImpl implements MR_EASoap_PortType
             throw new RemoteException(message);
         }
         
-        FormattedBlockService<Block> formattedBlock = readingTypesMap.get(readingType);
-        isValidBlockReadingType(readingType, formattedBlock);
+        FormattedBlockService<Block> formattedBlock = 
+            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         errorObjects = multispeak.BlockMeterReadEvent(vendor, meterNo, 
                                                       formattedBlock, transactionID);
 

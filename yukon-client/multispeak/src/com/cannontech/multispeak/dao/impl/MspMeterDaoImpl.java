@@ -19,9 +19,9 @@ import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.dao.MspMeterDao;
-import com.cannontech.multispeak.service.Meter;
-import com.cannontech.multispeak.service.Nameplate;
-import com.cannontech.multispeak.service.UtilityInfo;
+import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.deploy.service.Nameplate;
+import com.cannontech.multispeak.deploy.service.UtilityInfo;
 
 public final class MspMeterDaoImpl implements MspMeterDao
 {

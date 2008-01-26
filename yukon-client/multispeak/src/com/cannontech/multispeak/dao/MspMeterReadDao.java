@@ -3,7 +3,7 @@ package com.cannontech.multispeak.dao;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.multispeak.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.MeterRead;
 
 public interface MspMeterReadDao {
 

@@ -6,13 +6,11 @@ import java.util.List;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.database.data.device.KV;
-import com.cannontech.multispeak.block.data.FormattedBlockBase;
 import com.cannontech.multispeak.block.data.load.LoadBlock;
-import com.cannontech.multispeak.block.data.load.LoadFormattedBlock;
-import com.cannontech.multispeak.service.FormattedBlock;
+import com.cannontech.multispeak.block.data.load.LoadValList;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
 
-public class LoadFormattedBlockImpl extends YukonFormattedBlockImpl <LoadBlock> {
+public class LoadFormattedBlockImpl extends FormattedBlockServiceImpl <LoadBlock> {
 
     public FormattedBlock getFormattedBlock( Meter meter) {
         
@@ -22,8 +20,8 @@ public class LoadFormattedBlockImpl extends YukonFormattedBlockImpl <LoadBlock> 
             loadBlock = getBlock(meter);
         } catch (IllegalArgumentException e) {}
 
-        FormattedBlockBase blockBase = new LoadFormattedBlock(loadBlock);
-        return createMspFormattedBlock(blockBase);
+        LoadValList loadValList = new LoadValList(loadBlock);
+        return createMspFormattedBlock(loadValList);
     }
     
     public FormattedBlock getFormattedBlock(List<Meter> meters) {
@@ -36,8 +34,8 @@ public class LoadFormattedBlockImpl extends YukonFormattedBlockImpl <LoadBlock> 
             } catch (IllegalArgumentException e) {}
         }
         
-        FormattedBlockBase blockBase = new LoadFormattedBlock(loadBlockList);
-        return createMspFormattedBlock(blockBase);
+        LoadValList loadValList = new LoadValList(loadBlockList);
+        return createMspFormattedBlock(loadValList);
     }
     
     public FormattedBlock createFormattedBlock( LoadBlock loadBlock) {
@@ -47,8 +45,8 @@ public class LoadFormattedBlockImpl extends YukonFormattedBlockImpl <LoadBlock> 
     }
     
     public FormattedBlock createFormattedBlock(List<LoadBlock> block) {
-        FormattedBlockBase blockBase = new LoadFormattedBlock(block);
-        return createMspFormattedBlock(blockBase);
+        LoadValList loadValList = new LoadValList(block);
+        return createMspFormattedBlock(loadValList);
     }
 
     public LoadBlock getNewBlock() {

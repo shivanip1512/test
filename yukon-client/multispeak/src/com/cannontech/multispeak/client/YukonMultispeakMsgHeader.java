@@ -9,8 +9,8 @@ package com.cannontech.multispeak.client;
 import java.math.BigInteger;
 
 import com.cannontech.common.version.VersionTools;
-import com.cannontech.multispeak.service.MessageHeaderCSUnits;
-import com.cannontech.multispeak.service.MultiSpeakMsgHeader;
+import com.cannontech.multispeak.deploy.service.MessageHeaderCSUnits;
+import com.cannontech.multispeak.deploy.service.MultiSpeakMsgHeader;
 
 /**
  * @author stacey

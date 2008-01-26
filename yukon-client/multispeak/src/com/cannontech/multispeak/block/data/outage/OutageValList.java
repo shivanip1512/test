@@ -1,23 +1,30 @@
 package com.cannontech.multispeak.block.data.outage;
 
+import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.multispeak.block.data.FormattedBlockValueListBase;
+import com.cannontech.multispeak.block.data.FormattedBlockBase;
+import com.cannontech.multispeak.block.data.load.LoadBlock;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 
-public class OutageValList extends FormattedBlockValueListBase{
+public class OutageValList extends FormattedBlockBase{
 
-    public static SyntaxItem[] syntaxItem = new SyntaxItem[]{
+    public static SyntaxItem[] syntaxItems = new SyntaxItem[]{
             SyntaxItem.METER_NUMBER,
             SyntaxItem.BLINK_COUNT,
             SyntaxItem.BLINK_COUNT_DATETIME
     };
 
     public OutageValList(List<OutageBlock> block) {
-        super(block, syntaxItem);
+        super(block);
     }
     
-    public SyntaxItem[] getSyntaxItem() {
-        return syntaxItem;
+    public OutageValList(OutageBlock outageBlock) {
+        this(Collections.singletonList(outageBlock));
+    }
+    
+    @Override
+    public SyntaxItem[] getSyntaxItems() {
+        return syntaxItems;
     }
 }

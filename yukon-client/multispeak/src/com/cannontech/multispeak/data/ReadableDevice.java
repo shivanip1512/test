@@ -2,7 +2,7 @@ package com.cannontech.multispeak.data;
 
 import java.util.Date;
 
-import com.cannontech.multispeak.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.MeterRead;
 
 /**
  * Interface to be implemented for each type of billable device

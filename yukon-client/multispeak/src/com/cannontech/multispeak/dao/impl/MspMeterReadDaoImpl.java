@@ -9,7 +9,7 @@ import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.dao.MspMeterReadDao;
-import com.cannontech.multispeak.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.MeterRead;
 
 public class MspMeterReadDaoImpl implements MspMeterReadDao {
 

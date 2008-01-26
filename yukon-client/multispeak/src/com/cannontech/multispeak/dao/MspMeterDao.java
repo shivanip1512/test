@@ -2,7 +2,7 @@ package com.cannontech.multispeak.dao;
 
 import java.util.List;
 
-import com.cannontech.multispeak.service.Meter;
+import com.cannontech.multispeak.deploy.service.Meter;
 
 public interface MspMeterDao
 {

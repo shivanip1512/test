@@ -14,14 +14,14 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.block.YukonFormattedBlock;
+import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.service.ArrayOfErrorObject;
-import com.cannontech.multispeak.service.EA_MRSoap_BindingStub;
-import com.cannontech.multispeak.service.FormattedBlock;
-import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
+import com.cannontech.multispeak.deploy.service.EA_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
+import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.spring.YukonSpringHook;
 
 
@@ -36,7 +36,7 @@ public class BlockMeterReadEvent extends MultispeakEvent {
     private Meter meter;
     private Block block;
     boolean populated = false;
-    private YukonFormattedBlock<Block> formattedBlock;
+    private FormattedBlockService<Block> formattedBlock;
     
     /**
      * @param mspVendor_
@@ -44,8 +44,9 @@ public class BlockMeterReadEvent extends MultispeakEvent {
      * @param returnMessages_
      */
     public BlockMeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter, 
-            YukonFormattedBlock<Block> formattedBlock, int returnMessages_) {
-        super(mspVendor_, pilMessageID_, returnMessages_);
+            FormattedBlockService<Block> formattedBlock, int returnMessages_,
+            String transactionID_) {
+        super(mspVendor_, pilMessageID_, returnMessages_, transactionID_);
         this.meter = meter;
         this.formattedBlock = formattedBlock;
         this.block = formattedBlock.getNewBlock();
@@ -56,8 +57,8 @@ public class BlockMeterReadEvent extends MultispeakEvent {
      * @param pilMessageID_
      */
     public BlockMeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter, 
-            YukonFormattedBlock<Block> formattedBlock) {
-        this(mspVendor_, pilMessageID_, meter, formattedBlock, 1);
+            FormattedBlockService<Block> formattedBlock, String transactionID_) {
+        this(mspVendor_, pilMessageID_, meter, formattedBlock, 1, transactionID_);
     }
   
     public Meter getMeter() {
@@ -79,9 +80,9 @@ public class BlockMeterReadEvent extends MultispeakEvent {
         
         try {            
             EA_MRSoap_BindingStub port = MultispeakPortFactory.getEA_MRPort(getMspVendor());            
-            ArrayOfErrorObject errObjects = port.formattedBlockNotification( getMspFormattedBlock());
+            ErrorObject[] errObjects = port.formattedBlockNotification( getMspFormattedBlock(), getTransactionID());
             if( errObjects != null)
-                ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logArrayOfErrorObjects(endpointURL, "ReadingChangedNotification", errObjects.getErrorObject());
+                ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ReadingChangedNotification", errObjects);
             
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - ReadingChangedNotification (" + getMspVendor().getCompanyName() + ")");

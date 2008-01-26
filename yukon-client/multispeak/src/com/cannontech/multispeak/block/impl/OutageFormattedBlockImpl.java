@@ -6,12 +6,11 @@ import java.util.List;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.multispeak.block.data.FormattedBlockBase;
 import com.cannontech.multispeak.block.data.outage.OutageBlock;
-import com.cannontech.multispeak.block.data.outage.OutageFormattedBlock;
-import com.cannontech.multispeak.service.FormattedBlock;
+import com.cannontech.multispeak.block.data.outage.OutageValList;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
 
-public class OutageFormattedBlockImpl extends YukonFormattedBlockImpl <OutageBlock>{
+public class OutageFormattedBlockImpl extends FormattedBlockServiceImpl <OutageBlock>{
 
     public FormattedBlock getFormattedBlock( Meter meter) {
         OutageBlock outageBlock = getNewBlock();
@@ -20,8 +19,8 @@ public class OutageFormattedBlockImpl extends YukonFormattedBlockImpl <OutageBlo
             outageBlock = getBlock(meter);
         } catch (IllegalArgumentException e){}
         
-        FormattedBlockBase blockBase = new OutageFormattedBlock(outageBlock);
-        return createMspFormattedBlock(blockBase);
+        OutageValList outageValList = new OutageValList(outageBlock);
+        return createMspFormattedBlock(outageValList);
     }
     
     public FormattedBlock getFormattedBlock(List<Meter> meters) {
@@ -34,8 +33,8 @@ public class OutageFormattedBlockImpl extends YukonFormattedBlockImpl <OutageBlo
             } catch (IllegalArgumentException e) {}
         }
         
-        FormattedBlockBase blockBase = new OutageFormattedBlock(outageBlockList);
-        return createMspFormattedBlock(blockBase);
+        OutageValList outageValList = new OutageValList(outageBlockList);
+        return createMspFormattedBlock(outageValList);
     }
 
     public FormattedBlock createFormattedBlock( OutageBlock outageBlock) {
@@ -45,8 +44,8 @@ public class OutageFormattedBlockImpl extends YukonFormattedBlockImpl <OutageBlo
     }
     
     public FormattedBlock createFormattedBlock(List<OutageBlock> block) {
-        FormattedBlockBase blockBase = new OutageFormattedBlock(block);
-        return createMspFormattedBlock(blockBase);
+        OutageValList outageValList = new OutageValList(block);
+        return createMspFormattedBlock(outageValList);
     }
     
     public OutageBlock getNewBlock() {

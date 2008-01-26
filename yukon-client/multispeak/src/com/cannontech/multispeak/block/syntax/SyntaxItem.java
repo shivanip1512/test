@@ -1,7 +1,7 @@
 package com.cannontech.multispeak.block.syntax;
 
 import com.cannontech.multispeak.data.MspUom;
-import com.cannontech.multispeak.service.Uom;
+import com.cannontech.multispeak.deploy.service.Uom;
 
 public enum SyntaxItem {
         METER_NUMBER("meterNo", null),

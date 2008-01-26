@@ -3,9 +3,9 @@ package com.cannontech.multispeak.block;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.multispeak.service.FormattedBlock;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
 
-public interface YukonFormattedBlock <T extends Block> {
+public interface FormattedBlockService <T extends Block> {
 
     public FormattedBlock getFormattedBlock(Meter meter);
     

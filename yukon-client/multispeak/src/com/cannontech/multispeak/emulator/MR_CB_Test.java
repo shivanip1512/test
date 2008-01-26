@@ -17,13 +17,10 @@ import org.apache.axis.message.SOAPHeaderElement;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
 import com.cannontech.multispeak.dao.impl.MspMeterDaoImpl;
-import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
-import com.cannontech.multispeak.service.ArrayOfErrorObject;
-import com.cannontech.multispeak.service.ArrayOfMeterRead;
-import com.cannontech.multispeak.service.ErrorObject;
-import com.cannontech.multispeak.service.MR_CBSoap_BindingStub;
-import com.cannontech.multispeak.service.Meter;
-import com.cannontech.multispeak.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.MR_CBSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -38,6 +35,7 @@ public class MR_CB_Test {
 	{
 		try {
 			String endpointURL = "http://localhost:8080/soap/MR_CBSoap";
+			endpointURL = "http://demo.cannontech.com/soap/MR_CBSoap";
 //			endpointURL = "http://10.100.10.25:80/soap/MR_CBSoap";
 		  	MR_CBSoap_BindingStub instance = new MR_CBSoap_BindingStub(new URL(endpointURL), new Service());
 			
@@ -47,7 +45,7 @@ public class MR_CB_Test {
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
-			int todo = 0;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo
+			int todo = 2;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo
 			
 			if (todo==0)
 			{
@@ -82,12 +80,12 @@ public class MR_CB_Test {
 			}
 			else if (todo == 2)
 			{
-			    ArrayOfErrorObject objects = instance.pingURL();
-				if (objects != null && objects.getErrorObject() != null)
+			    ErrorObject[] objects = instance.pingURL();
+				if (objects != null && objects != null)
 				{
-					for (int i = 0; i < objects.getErrorObject().length; i++)
+					for (int i = 0; i < objects.length; i++)
 					{
-						ErrorObject obj = objects.getErrorObject(i);
+						ErrorObject obj = objects[i];
 						System.out.println("Ping" + i + ": " + obj.getErrorString());
 					}
 				}
@@ -105,10 +103,10 @@ public class MR_CB_Test {
 
 				GregorianCalendar endCal = (GregorianCalendar)cal.clone();
 				endCal.add(Calendar.MONTH, 2);
-				ArrayOfMeterRead amr = instance.getReadingsByMeterNo("01071861", cal, endCal);	//1068048 whe, 1010156108 sn_head/amr_demo
+				MeterRead[] amr = instance.getReadingsByMeterNo("01071861", cal, endCal);	//1068048 whe, 1010156108 sn_head/amr_demo
 				if( amr != null)
 				{
-					CTILogger.info("MeterRead received: " + amr.getMeterRead().length + " : " );
+					CTILogger.info("MeterRead received: " + amr.length + " : " );
 //									CTILogger.info("MeterRead Error String: " + mr.getErrorString());
 				}
 			}

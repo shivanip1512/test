@@ -15,9 +15,9 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.service.CB_CDSoap_BindingStub;
-import com.cannontech.multispeak.service.LoadActionCode;
-import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
+import com.cannontech.multispeak.deploy.service.CB_CDSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.LoadActionCode;
+import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -37,16 +37,17 @@ public class CDEvent extends MultispeakEvent{
      * @param pilMessageID_
      * @param returnMessages_
      */
-    public CDEvent(MultispeakVendor mspVendor_, long pilMessageID_, int returnMessages_) {
-        super(mspVendor_, pilMessageID_, returnMessages_);
+    public CDEvent(MultispeakVendor mspVendor_, long pilMessageID_, int returnMessages_, 
+            String transactionID_) {
+        super(mspVendor_, pilMessageID_, returnMessages_, transactionID_ );
     }
     
 	/**
 	 * @param mspVendor_
 	 * @param pilMessageID_
 	 */
-	public CDEvent(MultispeakVendor mspVendor_, long pilMessageID_) {
-		this(mspVendor_, pilMessageID_, 1);
+	public CDEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_) {
+		this(mspVendor_, pilMessageID_, 1, transactionID_);
 	}
 
     public LoadActionCode getLoadActionCode() {
@@ -150,7 +151,7 @@ public class CDEvent extends MultispeakEvent{
         try
         {
             CB_CDSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(getMspVendor());
-            port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode());
+            port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode(), getTransactionID());
             
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - initiateConnectDisconnect (" + getMspVendor().getCompanyName() + ")");

@@ -5,6 +5,8 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.multispeak.client.Multispeak;
@@ -19,25 +21,32 @@ import com.cannontech.multispeak.deploy.service.DomainMember;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
 import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.service.MspValidationService;
 
 public class CD_CBImpl implements CD_CBSoap_PortType
 {
     public Multispeak multispeak;
     public MultispeakFuncs multispeakFuncs;
     public MspMeterDao mspMeterDao;
-    
+    public MspValidationService mspValidationService;
+
+    @Required
     public void setMultispeak(Multispeak multispeak) {
         this.multispeak = multispeak;
     }
-
+    @Required
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
         this.multispeakFuncs = multispeakFuncs;
     }
-
+    @Required
     public void setMspMeterDao(MspMeterDao mspMeterDao) {
         this.mspMeterDao = mspMeterDao;
     }
-    
+    @Required
+    public void setMspValidationService(
+            MspValidationService mspValidationService) {
+        this.mspValidationService = mspValidationService;
+    }
     private void init(){
         multispeakFuncs.init();
     }
@@ -104,17 +113,10 @@ public class CD_CBImpl implements CD_CBSoap_PortType
     public LoadActionCode getCDMeterState(java.lang.String meterNo) throws java.rmi.RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        com.cannontech.amr.meter.model.Meter meter;
-        
-        try {
-            meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
-        }catch (NotFoundException e) {
-            String message = "Meter Number (" + meterNo + "): NOT Found.";
-            CTILogger.error(message);
-            throw new RemoteException(message);
-        }
 
+        com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
         LoadActionCode loadActionCode = multispeak.CDMeterState(vendor, meter, null);
+        
         return loadActionCode;
     }
 

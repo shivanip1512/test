@@ -2,8 +2,8 @@ package com.cannontech.multispeak.dao;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.service.Customer;
-import com.cannontech.multispeak.service.ServiceLocation;
+import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.ServiceLocation;
 
 public interface MspObjectDao {
 

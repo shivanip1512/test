@@ -8,7 +8,7 @@ import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.impl.DynamicDataSourceImpl;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.multispeak.client.MultispeakDefines;
-import com.cannontech.multispeak.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.spring.YukonSpringHook;
 
 /**

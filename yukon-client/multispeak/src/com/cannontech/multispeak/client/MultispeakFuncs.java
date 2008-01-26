@@ -31,10 +31,9 @@ import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.service.ArrayOfString;
-import com.cannontech.multispeak.service.Customer;
-import com.cannontech.multispeak.service.ErrorObject;
-import com.cannontech.multispeak.service.ServiceLocation;
+import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.roles.yukon.MultispeakRole;
 
 /**
@@ -74,7 +73,7 @@ public class MultispeakFuncs
         this.meterDao = meterDao;
     }
     
-    public void logArrayOfString(String intfaceName, String methodName, String[] strings)
+    public void logStrings(String intfaceName, String methodName, String[] strings)
 	{
 		if (strings != null)
 		{
@@ -85,7 +84,7 @@ public class MultispeakFuncs
 		}
 	}
 	
-	public void logArrayOfErrorObjects(String intfaceName, String methodName, ErrorObject[] objects )
+	public void logErrorObjects(String intfaceName, String methodName, ErrorObject[] objects )
 	{
 		if (objects != null)
 		{
@@ -181,9 +180,9 @@ public class MultispeakFuncs
 	 * @return
 	 * @throws java.rmi.RemoteException
 	 */
-	public ArrayOfString getMethods(String interfaceName, String[] methods){
-		logArrayOfString(interfaceName, "getMethods", methods);
-		return new ArrayOfString(methods);
+	public String[] getMethods(String interfaceName, String[] methods){
+		logStrings(interfaceName, "getMethods", methods);
+		return methods;
 	}
 	
 	private String getAtributeFromSOAPHeader(String attributeName) throws java.rmi.RemoteException
@@ -299,7 +298,7 @@ public class MultispeakFuncs
         String returnStr = "";
         
         /* NISC fields availalbe toDate 20070101
-        private com.cannontech.multispeak.service.Network network;
+        private com.cannontech.multispeak.deploy.service.Network network;
         network.getBoardDist();
         network.getDistrict();
         network.getEaLoc().getName();

@@ -7,6 +7,7 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.multispeak.block.Block;
@@ -79,7 +80,9 @@ public class OutageBlock implements Block{
                 blinkCountDateTime = pointValue.getPointDataTimeStamp();
                 hasData = true;
             }
-        } catch (IllegalArgumentException e) {}
+        } catch (NotFoundException e) {
+            CTILogger.warn("Point not found for Meter Number " + meter.getMeterNumber() + " for attribute " + BuiltInAttribute.BLINK_COUNT.name());
+        }
     }
     
     public boolean hasData() {

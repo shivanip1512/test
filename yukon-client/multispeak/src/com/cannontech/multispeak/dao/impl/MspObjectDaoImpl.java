@@ -7,10 +7,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
-import com.cannontech.multispeak.service.CB_MRSoap_BindingStub;
-import com.cannontech.multispeak.service.Customer;
-import com.cannontech.multispeak.service.ServiceLocation;
-import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
+import com.cannontech.multispeak.deploy.service.CB_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 
 public class MspObjectDaoImpl implements MspObjectDao {
 

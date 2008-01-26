@@ -13,6 +13,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
@@ -37,36 +39,44 @@ import com.cannontech.multispeak.deploy.service.MeterExchange;
 import com.cannontech.multispeak.deploy.service.MeterGroup;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
+import com.cannontech.multispeak.service.MspValidationService;
 import com.cannontech.yukon.BasicServerConnection;
 
 public class MR_CBImpl implements MR_CBSoap_PortType{
 
-    public Multispeak multispeak;
-    public MspMeterDao mspMeterDao;
-    public MultispeakFuncs multispeakFuncs;
-    public MspRawPointHistoryDao mspRawPointHistoryDao;
+    private Multispeak multispeak;
+    private MspMeterDao mspMeterDao;
+    private MultispeakFuncs multispeakFuncs;
+    private MspRawPointHistoryDao mspRawPointHistoryDao;
     private BasicServerConnection porterConnection;
+    private MspValidationService mspValidationService;
     
+    @Required
     public void setMspMeterDao(MspMeterDao mspMeterDao) {
         this.mspMeterDao = mspMeterDao;
     }
-    
+    @Required
     public void setMultispeak(Multispeak multispeak) {
         this.multispeak = multispeak;
     }
-
+    @Required
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
         this.multispeakFuncs = multispeakFuncs;
     }
-
+    @Required
     public void setMspRawPointHistoryDao(MspRawPointHistoryDao mspRawPointHistoryDao) {
         this.mspRawPointHistoryDao = mspRawPointHistoryDao;
     }
-
+    @Required
     public void setPorterConnection(BasicServerConnection porterConnection) {
         this.porterConnection = porterConnection;
     }
-
+    @Required
+    public void setMspValidationService(
+            MspValidationService mspValidationService) {
+        this.mspValidationService = mspValidationService;
+    }
+    
     private void init() {
         multispeakFuncs.init();
     }
@@ -146,18 +156,10 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
     public boolean isAMRMeter(java.lang.String meterNo) throws java.rmi.RemoteException {
         init();
 
-        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        if( meterNo != null && meterNo.length() > 0) {
-            try {
-                com.cannontech.amr.meter.model.Meter meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
-                if( meter != null) {
-                    CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter(), returning true." );
-                    return true;
-                }
-            }catch (NotFoundException e){
-                CTILogger.info("MSP: MeterNumber: " + meterNo + " isAMRMeter() NOT found, returning false." );
-                return false;
-            }
+        try {
+            mspValidationService.isYukonMeterNumber(meterNo);
+        }catch (NotFoundException e){
+            return false;
         }
         return false;
     }
@@ -170,12 +172,10 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
     
     @Override
     public MeterRead[] getReadingsByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException {
-    //      init(); //init is already performed on the call to isAMRMeter()
-        if( ! isAMRMeter(meterNo)) {
-            String message = "Meter Number (" + meterNo + "): NOT Found.";
-            CTILogger.error(message);
-            throw new RemoteException(message);
-        }
+        init(); //init is already performed on the call to isAMRMeter()
+        
+        //Validate the meterNo is a Yukon meterNumber
+        mspValidationService.isYukonMeterNumber(meterNo);
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
         MeterRead[] meterReads = mspRawPointHistoryDao.retrieveMeterReads(ReadBy.METER_NUMBER, 
@@ -190,23 +190,12 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
 
     @Override
     public MeterRead getLatestReadingByMeterNo(java.lang.String meterNo) throws java.rmi.RemoteException {
-//      init(); //init is already performed on the call to isAMRMeter()
-        if( ! isAMRMeter(meterNo)) {
-            String message = "Meter Number (" + meterNo + "): NOT Found.";
-            CTILogger.error(message);            
-            throw new RemoteException(message);
-        }
+        init(); //init is already performed on the call to isAMRMeter()
+
+        //Validate the meterNo is a Yukon meterNumber
+        com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        com.cannontech.amr.meter.model.Meter meter;
-        
-        try {
-            meter = multispeakFuncs.getMeter(vendor.getUniqueKey(), meterNo);
-        }catch (NotFoundException e) {
-            String message = "Meter Number (" + meterNo + "): NOT Found.";
-            CTILogger.error(message);
-            throw new RemoteException(message);
-        }
         
         //Custom hack put in only for SEDC.  Performs an actual meter read instead of simply replying from the database.
         if ( vendor.getCompanyName().equalsIgnoreCase("SEDC") ) {

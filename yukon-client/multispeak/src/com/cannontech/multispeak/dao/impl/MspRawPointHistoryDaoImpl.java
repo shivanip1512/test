@@ -25,12 +25,12 @@ import com.cannontech.database.db.point.PointUnit;
 import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.UnitMeasure;
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.block.YukonFormattedBlock;
+import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.dao.MspRawPointHistoryDao;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
-import com.cannontech.multispeak.service.FormattedBlock;
-import com.cannontech.multispeak.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
+import com.cannontech.multispeak.deploy.service.MeterRead;
 
 public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
 {
@@ -149,7 +149,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         return meterReadArray;
     }
     
-    public FormattedBlock retrieveBlock(YukonFormattedBlock<Block> block, Date startDate, Date endDate, String lastReceived) {
+    public FormattedBlock retrieveBlock(FormattedBlockService<Block> block, Date startDate, Date endDate, String lastReceived) {
         Date timerStart = new Date();
         
         List<Block> blockList = new ArrayList<Block>();
@@ -257,7 +257,7 @@ public class MspRawPointHistoryDaoImpl implements MspRawPointHistoryDao
         return block.createFormattedBlock(blockList);
     }
     
-    public FormattedBlock retrieveBlockByMeterNo(YukonFormattedBlock<Block> block, Date startDate, 
+    public FormattedBlock retrieveBlockByMeterNo(FormattedBlockService<Block> block, Date startDate, 
                                                 Date endDate, String meterNumber, int maxRecords) {
         Date timerStart = new Date();
         

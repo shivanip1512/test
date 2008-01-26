@@ -2,11 +2,11 @@ package com.cannontech.multispeak.block.impl;
 
 import com.cannontech.common.device.attribute.service.AttributeDynamicDataSource;
 import com.cannontech.multispeak.block.Block;
-import com.cannontech.multispeak.block.YukonFormattedBlock;
+import com.cannontech.multispeak.block.FormattedBlockService;
 import com.cannontech.multispeak.block.data.FormattedBlockBase;
-import com.cannontech.multispeak.service.FormattedBlock;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
 
-public abstract class YukonFormattedBlockImpl <T extends Block> implements YukonFormattedBlock <T>{
+public abstract class FormattedBlockServiceImpl <T extends Block> implements FormattedBlockService <T>{
 
     public AttributeDynamicDataSource attrDynamicDataSource;
     
@@ -17,9 +17,9 @@ public abstract class YukonFormattedBlockImpl <T extends Block> implements Yukon
     
     public FormattedBlock createMspFormattedBlock(FormattedBlockBase blockBase) {
         FormattedBlock mspFormattedBlock = new FormattedBlock();
-        mspFormattedBlock.setValueList(blockBase.getValList());
-        mspFormattedBlock.setSeparator(blockBase.getValList().getSeparator());
-        mspFormattedBlock.setValSyntax(blockBase.getValList().getValSyntax());
+        mspFormattedBlock.setValueList(blockBase.getValueList());
+        mspFormattedBlock.setSeparator(blockBase.getSeparator());
+        mspFormattedBlock.setValSyntax(blockBase.getValSyntax());
         return mspFormattedBlock;
     }
 }

@@ -14,14 +14,13 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.multispeak.service.ArrayOfErrorObject;
-import com.cannontech.multispeak.service.ArrayOfOutageDetectionEvent;
-import com.cannontech.multispeak.service.OA_ODSoap_BindingStub;
-import com.cannontech.multispeak.service.OutageDetectDeviceType;
-import com.cannontech.multispeak.service.OutageDetectionEvent;
-import com.cannontech.multispeak.service.OutageEventType;
-import com.cannontech.multispeak.service.OutageLocation;
-import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.OA_ODSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OutageDetectDeviceType;
+import com.cannontech.multispeak.deploy.service.OutageDetectionEvent;
+import com.cannontech.multispeak.deploy.service.OutageEventType;
+import com.cannontech.multispeak.deploy.service.OutageLocation;
+import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.spring.YukonSpringHook;
 
 /**
@@ -38,9 +37,9 @@ public class ODEvent extends MultispeakEvent{
 	 * @param vendorName_
 	 * @param pilMessageID_
 	 */
-	public ODEvent(MultispeakVendor mspVendor_, long pilMessageID_)//, int meterCount_)
+	public ODEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_)
 	{
-		super(mspVendor_, pilMessageID_);
+		super(mspVendor_, pilMessageID_, transactionID_);
 	}
 
     /**
@@ -136,14 +135,13 @@ public class ODEvent extends MultispeakEvent{
         CTILogger.info("Sending ODEventNotification ("+ endpointURL+ "): Meter Number " + getOutageDetectionEvent().getObjectID());
         
         try {
-            OutageDetectionEvent[] odEventArray = new OutageDetectionEvent[1];
-            odEventArray[0] = getOutageDetectionEvent();
-            ArrayOfOutageDetectionEvent arrayODEvents = new ArrayOfOutageDetectionEvent(odEventArray);
+            OutageDetectionEvent[] odEvents = new OutageDetectionEvent[1];
+            odEvents [0] = getOutageDetectionEvent();
             
             OA_ODSoap_BindingStub port = MultispeakPortFactory.getOA_ODPort(getMspVendor());
-            ArrayOfErrorObject errObjects = port.ODEventNotification(arrayODEvents);
+            ErrorObject[] errObjects = port.ODEventNotification(odEvents, getTransactionID());
             if( errObjects != null)
-                ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logArrayOfErrorObjects(endpointURL, "ODEventNotification", errObjects.getErrorObject());
+                ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ODEventNotification", errObjects);
             
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - initiateOutageDetection (" + getMspVendor().getCompanyName() + ")");

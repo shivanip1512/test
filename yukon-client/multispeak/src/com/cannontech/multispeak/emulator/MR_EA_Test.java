@@ -8,27 +8,20 @@
 package com.cannontech.multispeak.emulator;
 
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.GregorianCalendar;
 
 import org.apache.axis.client.Service;
 import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.multispeak.service.ArrayOfErrorObject;
-import com.cannontech.multispeak.service.ArrayOfMeter;
-import com.cannontech.multispeak.service.ArrayOfMeterRead;
-import com.cannontech.multispeak.service.ArrayOfString;
-import com.cannontech.multispeak.service.ErrorObject;
-import com.cannontech.multispeak.service.FormattedBlock;
-import com.cannontech.multispeak.service.FormattedBlockValSyntax;
-import com.cannontech.multispeak.service.MR_EASoap_BindingStub;
-import com.cannontech.multispeak.service.Meter;
-import com.cannontech.multispeak.service.MeterRead;
-import com.cannontech.multispeak.service.SyntaxItem;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.FormattedBlock;
+import com.cannontech.multispeak.deploy.service.MR_EASoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.Meter;
+import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.SyntaxItem;
 
 /**
  * @author stacey
@@ -67,14 +60,14 @@ public class MR_EA_Test {
 			}
 			else if( todo == 1)
 			{
-				ArrayOfMeter meters = new ArrayOfMeter();
+				Meter[] meters = new Meter[]{};
 				meters = instance.getAMRSupportedMeters(meterNumber);//"10224712");//new String ("MCT - Annandale Broadcast"));
-				if (meters != null && meters.getMeter().length > 0)
+				if (meters != null && meters.length > 0)
 				{
-					CTILogger.info("METERS RETURNED: " + meters.getMeter().length);
-					for (int i = 0; i < meters.getMeter().length; i++)
+					CTILogger.info("METERS RETURNED: " + meters.length);
+					for (int i = 0; i < meters.length; i++)
 					{
-						Meter m = meters.getMeter(i);
+						Meter m = meters[i];
 						CTILogger.info(m.getMeterNo());
 	//					String obj = strings.getString(i);
 	//					System.out.println("Method" + i + ": " + obj);
@@ -83,12 +76,12 @@ public class MR_EA_Test {
 			}
 			else if (todo == 2)
 			{
-			    ArrayOfErrorObject objects = instance.pingURL();
-				if (objects != null && objects.getErrorObject() != null)
+			 ErrorObject[] objects = instance.pingURL();
+				if (objects != null && objects != null)
 				{
-					for (int i = 0; i < objects.getErrorObject().length; i++)
+					for (int i = 0; i < objects.length; i++)
 					{
-						ErrorObject obj = objects.getErrorObject(i);
+						ErrorObject obj = objects[i];
 						System.out.println("Ping" + i + ": " + obj.getErrorString());
 					}
 				}
@@ -106,45 +99,44 @@ public class MR_EA_Test {
 
 				GregorianCalendar endCal = (GregorianCalendar)cal.clone();
 				endCal.add(Calendar.MONTH, 1);
-				ArrayOfMeterRead amr = instance.getReadingsByMeterNo(meterNumber, cal, endCal);	//1068048 whe, 1010156108 sn_head/amr_demo
+				MeterRead[] amr = instance.getReadingsByMeterNo(meterNumber, cal, endCal);	//1068048 whe, 1010156108 sn_head/amr_demo
 				if( amr != null)
 				{
-					CTILogger.info("MeterRead received: " + amr.getMeterRead().length + " : " );
+					CTILogger.info("MeterRead received: " + amr.length + " : " );
 //									CTILogger.info("MeterRead Error String: " + mr.getErrorString());
 				}
 			}
 			else if( todo == 4)
 			{
-				ArrayOfMeterRead amr = instance.getLatestReadings(null);	//1068048 whe, 1010156108 sn_head/amr_demo
+				MeterRead[] amr = instance.getLatestReadings(null);	//1068048 whe, 1010156108 sn_head/amr_demo
 				if( amr != null)
 				{
-					CTILogger.info("MeterRead received: " + amr.getMeterRead().length + " : " );
+					CTILogger.info("MeterRead received: " + amr.length + " : " );
 //												CTILogger.info("MeterRead Error String: " + mr.getErrorString());
 				}
 			}			
             else if( todo == 5){
                 FormattedBlock fb = instance.getLatestReadingByMeterNoAndType(meterNumber, "Load");
                 System.out.println(fb.getSeparator());
-                    for (SyntaxItem item : fb.getValSyntax().getSyntaxItem()) {
+                    for (SyntaxItem item : fb.getValSyntax()) {
                         System.out.println(item.getFieldName());
                         System.out.println(item.getPosition());
                         if (item.getUom()!=null)
                             System.out.println(item.getUom().getValue());
                     }
-                    for (String item : fb.getValueList().getVal()) {
+                    for (String item : fb.getValueList()) {
                         System.out.println(item);
                     }
             }
             
             else if( todo == 6){
-                ArrayOfString aos = new ArrayOfString(new String[]{meterNumber});
-                ArrayOfErrorObject objects = instance.initiateMeterReadByMeterNoAndType(aos, null, "Load");
+                ErrorObject[] objects = instance.initiateMeterReadByMeterNoAndType(meterNumber, null, "Load", "1");
                 
-                if (objects != null && objects.getErrorObject() != null)
+                if (objects != null && objects != null)
                 {
-                    for (int i = 0; i < objects.getErrorObject().length; i++)
+                    for (int i = 0; i < objects.length; i++)
                     {
-                        ErrorObject obj = objects.getErrorObject(i);
+                        ErrorObject obj = objects[i];
                         System.out.println("Ping" + i + ": " + obj.getErrorString());
                     }
                 }

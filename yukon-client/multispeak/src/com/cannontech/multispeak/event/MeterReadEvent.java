@@ -20,11 +20,10 @@ import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.data.MeterReadFactory;
 import com.cannontech.multispeak.data.ReadableDevice;
-import com.cannontech.multispeak.service.ArrayOfErrorObject;
-import com.cannontech.multispeak.service.ArrayOfMeterRead;
-import com.cannontech.multispeak.service.CB_MRSoap_BindingStub;
-import com.cannontech.multispeak.service.MeterRead;
-import com.cannontech.multispeak.service.impl.MultispeakPortFactory;
+import com.cannontech.multispeak.deploy.service.CB_MRSoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.MeterRead;
+import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 import com.cannontech.spring.YukonSpringHook;
 
 
@@ -43,8 +42,9 @@ public class MeterReadEvent extends MultispeakEvent{
      * @param pilMessageID_
      * @param returnMessages_
      */
-    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter, int returnMessages_) {
-        super(mspVendor_, pilMessageID_, returnMessages_);
+    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter, 
+            int returnMessages_, String transactionID_) {
+        super(mspVendor_, pilMessageID_, returnMessages_, transactionID_);
         setDevice(MeterReadFactory.createMeterReadObject(meter));
     }
     
@@ -52,8 +52,9 @@ public class MeterReadEvent extends MultispeakEvent{
      * @param mspVendor_
      * @param pilMessageID_
      */
-    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter) {
-        this(mspVendor_, pilMessageID_, meter, 1);
+    public MeterReadEvent(MultispeakVendor mspVendor_, long pilMessageID_, Meter meter,
+            String transactionID_) {
+        this(mspVendor_, pilMessageID_, meter, 1, transactionID_);
     }
     
     /**
@@ -81,14 +82,13 @@ public class MeterReadEvent extends MultispeakEvent{
         CTILogger.info("Sending ReadingChangedNotification ("+ endpointURL+ "): Meter Number " + getDevice().getMeterRead().getObjectID());
         
         try {            
-            MeterRead [] meterReadArray = new MeterRead[1];
-            meterReadArray[0] = getDevice().getMeterRead();
-            ArrayOfMeterRead arrayMeterRead = new ArrayOfMeterRead(meterReadArray);
+            MeterRead [] meterReads = new MeterRead[1];
+            meterReads[0] = getDevice().getMeterRead();
 
             CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(getMspVendor());            
-            ArrayOfErrorObject errObjects = port.readingChangedNotification(arrayMeterRead);
+            ErrorObject[] errObjects = port.readingChangedNotification(meterReads, getTransactionID());
             if( errObjects != null)
-                ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logArrayOfErrorObjects(endpointURL, "ReadingChangedNotification", errObjects.getErrorObject());
+                ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ReadingChangedNotification", errObjects);
             
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - ReadingChangedNotification (" + getMspVendor().getCompanyName() + ")");

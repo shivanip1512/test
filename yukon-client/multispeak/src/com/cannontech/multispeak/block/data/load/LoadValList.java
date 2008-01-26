@@ -1,13 +1,15 @@
 package com.cannontech.multispeak.block.data.load;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import com.cannontech.multispeak.block.data.FormattedBlockValueListBase;
+import com.cannontech.multispeak.block.data.FormattedBlockBase;
 import com.cannontech.multispeak.block.syntax.SyntaxItem;
 
-public class LoadValList extends FormattedBlockValueListBase{
+public class LoadValList extends FormattedBlockBase{
 
-    public static SyntaxItem[] syntaxItem = new SyntaxItem[]{
+    public static SyntaxItem[] syntaxItems = new SyntaxItem[]{
             SyntaxItem.METER_NUMBER,
             SyntaxItem.LOAD_PROFILE_DEMAND,
             SyntaxItem.LOAD_PROFILE_DEMAND_DATETIME,
@@ -18,10 +20,15 @@ public class LoadValList extends FormattedBlockValueListBase{
     };
 
     public LoadValList(List<LoadBlock> block) {
-        super(block, syntaxItem);
+        super(block);
+    }
+
+    public LoadValList(LoadBlock loadBlock) {
+        this(Collections.singletonList(loadBlock));
     }
     
-    public SyntaxItem[] getSyntaxItem() {
-        return syntaxItem;
+    @Override
+    public SyntaxItem[] getSyntaxItems() {
+        return syntaxItems;
     }
 }

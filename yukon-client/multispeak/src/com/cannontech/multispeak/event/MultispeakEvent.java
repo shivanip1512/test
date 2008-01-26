@@ -24,22 +24,25 @@ public abstract class MultispeakEvent implements MspEvent{
 	private long pilMessageID = -1;
     /** The number of commander messages this event is waiting for **/
     private int returnMessages = 0;
-
+    /** The transactionID provided from the calling web service request. */
+    private String transactionID = null;
 	/**
 	 * 
 	 */
-	public MultispeakEvent(MultispeakVendor mspVendor_, long pilMessageID_) {
-		this(mspVendor_, pilMessageID_, 1);
+	public MultispeakEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_) {
+		this(mspVendor_, pilMessageID_, 1, transactionID_);
 	}
 
     /**
      * 
      */
-    public MultispeakEvent(MultispeakVendor mspVendor_, long pilMessageID_, int returnMessages_) {
+    public MultispeakEvent(MultispeakVendor mspVendor_, long pilMessageID_, 
+            int returnMessages_, String transactionID_) {
         super();
         mspVendor = mspVendor_;
         pilMessageID = pilMessageID_;
-        returnMessages = returnMessages_; 
+        returnMessages = returnMessages_;
+        transactionID = transactionID_;
     }
 	/**
 	 * @return
@@ -58,33 +61,45 @@ public abstract class MultispeakEvent implements MspEvent{
     /**
      * @return Returns the mspVendor.
      */
-    public MultispeakVendor getMspVendor()
-    {
+    public MultispeakVendor getMspVendor() {
         return mspVendor;
     }
 
     /**
      * @param mspVendor The mspVendor to set.
      */
-    public void setMspVendor(MultispeakVendor mspVendor)
-    {
+    public void setMspVendor(MultispeakVendor mspVendor) {
         this.mspVendor = mspVendor;
     }
+    
     /**
      * @return Returns the returnMessages.
      */
-    public int getReturnMessages()
-    {
+    public int getReturnMessages() {
         return returnMessages;
     }
+    
     /**
      * @param returnMessages The returnMessages to set.
      */
-    public void setReturnMessages(int returnMessages)
-    {
+    public void setReturnMessages(int returnMessages) {
         this.returnMessages = returnMessages;
     }
     
+    /**
+     * @return Returns the transactionID of the calling web service.
+     */
+    public String getTransactionID() {
+        return transactionID;
+    }
+
+    /**
+     * @param transactionID The transactionID to set.
+     */
+    public void setTransactionID(String transactionID) {
+        this.transactionID = transactionID;
+    }
+
     public void updateReturnMessageCount() {
         if( getReturnMessages() > 0)
             returnMessages--;

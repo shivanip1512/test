@@ -22,16 +22,17 @@ public class CDStatusEvent extends CDEvent{
      * @param pilMessageID_
      * @param returnMessages_
      */
-    public CDStatusEvent(MultispeakVendor mspVendor_, long pilMessageID_, int returnMessages_) {
-        super(mspVendor_, pilMessageID_, returnMessages_);
+    public CDStatusEvent(MultispeakVendor mspVendor_, long pilMessageID_, int returnMessages_,
+            String transactionID_) {
+        super(mspVendor_, pilMessageID_, returnMessages_, transactionID_);
     }
     
 	/**
 	 * @param mspVendor_
 	 * @param pilMessageID_
 	 */
-	public CDStatusEvent(MultispeakVendor mspVendor_, long pilMessageID_) {
-		this(mspVendor_, pilMessageID_, 1);
+	public CDStatusEvent(MultispeakVendor mspVendor_, long pilMessageID_, String transactionID_) {
+		this(mspVendor_, pilMessageID_, 1, transactionID_);
 	}
 
     public void eventNotification() {

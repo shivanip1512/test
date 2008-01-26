@@ -39,18 +39,18 @@ public class MspAccountInfoDaoImpl implements AccountInfoDao {
     public AccountInfo getAccount(int deviceId) throws RemoteException { 
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
         Meter meter = meterDao.getForId(deviceId);
-        com.cannontech.multispeak.service.Customer mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
+        com.cannontech.multispeak.deploy.service.Customer mspCustomer = mspObjectDao.getMspCustomer(meter, mspVendor);
         return mapToAccountInfo(mspCustomer);
     }
     
     public ServiceLocation getServiceLocation(int deviceId) throws RemoteException {
         MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
         Meter meter = meterDao.getForId(deviceId);
-        com.cannontech.multispeak.service.ServiceLocation mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
+        com.cannontech.multispeak.deploy.service.ServiceLocation mspServLoc = mspObjectDao.getMspServiceLocation(meter, mspVendor);
         return mapToServicLocation(mspServLoc);
     }
     
-    public AccountInfo mapToAccountInfo(com.cannontech.multispeak.service.Customer mspCustomer) {
+    public AccountInfo mapToAccountInfo(com.cannontech.multispeak.deploy.service.Customer mspCustomer) {
         final AccountInfo accountInfo = new AccountInfo();
         accountInfo.setFirstName(mspCustomer.getFirstName());
         accountInfo.setLastName(mspCustomer.getLastName());
@@ -66,7 +66,7 @@ public class MspAccountInfoDaoImpl implements AccountInfoDao {
         return accountInfo;
     }
     
-    public ServiceLocation mapToServicLocation(com.cannontech.multispeak.service.ServiceLocation mspServLoc) {
+    public ServiceLocation mapToServicLocation(com.cannontech.multispeak.deploy.service.ServiceLocation mspServLoc) {
         final ServiceLocation servLoc = new ServiceLocation();
         servLoc.setAccountNumber(mspServLoc.getAccountNumber());
         servLoc.setCustomerNumber(mspServLoc.getCustID());

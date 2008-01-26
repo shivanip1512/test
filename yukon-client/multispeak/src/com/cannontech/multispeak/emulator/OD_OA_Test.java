@@ -11,14 +11,12 @@ import java.util.GregorianCalendar;
 
 import org.apache.axis.message.SOAPHeaderElement;
 
-import com.cannontech.multispeak.service.ArrayOfErrorObject;
-import com.cannontech.multispeak.service.ArrayOfString;
-import com.cannontech.multispeak.service.ErrorObject;
-import com.cannontech.multispeak.service.OD_OA;
-import com.cannontech.multispeak.service.OD_OALocator;
-import com.cannontech.multispeak.service.OD_OASoap_BindingStub;
-import com.cannontech.multispeak.service.OD_OASoap_PortType;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
+import com.cannontech.multispeak.deploy.service.OD_OA;
+import com.cannontech.multispeak.deploy.service.OD_OALocator;
+import com.cannontech.multispeak.deploy.service.OD_OASoap_BindingStub;
+import com.cannontech.multispeak.deploy.service.OD_OASoap_PortType;
 
 
 /**
@@ -80,45 +78,44 @@ public class OD_OA_Test {
 	}
 	public void getMethodsTest() throws RemoteException
 	{
-		ArrayOfString strings = port.getMethods();
-		print_ArrayOfString(strings);
+		String[] strings = port.getMethods();
+		print_String(strings);
 	}
 	
 	public void pingURLTest() throws RemoteException
 	{
-		ArrayOfErrorObject objects = port.pingURL();
-		print_ArrayOfErrorObjects(objects);
+		ErrorObject[] objects = port.pingURL();
+		print_ErrorObjects(objects);
 	}
 	
 	public void initiateOutageDetectionTest(String [] meters) throws RemoteException
 	{
-		ArrayOfString meterNums = new ArrayOfString();
-		meterNums.setString(meters);
-		
-		ArrayOfErrorObject objects = port.initiateOutageDetectionEventRequest(meterNums, new GregorianCalendar(), null);
-		print_ArrayOfErrorObjects(objects);
+		ErrorObject[] objects = port.initiateOutageDetectionEventRequest(meters, 
+		                                                                 new GregorianCalendar(), 
+		                                                                 null, "1");
+		print_ErrorObjects(objects);
 
 	}
 	
-	public void print_ArrayOfString(ArrayOfString strings)
+	public void print_String(String[] strings)
 	{
-		if (strings != null && strings.getString() != null)
+		if (strings != null && strings != null)
 		{
-			for (int i = 0; i < strings.getString().length; i++)
+			for (int i = 0; i < strings.length; i++)
 			{
-				String obj = strings.getString(i);
+				String obj = strings[i];
 				System.out.println("Method" + i + ": " + obj);
 			}
 		}
 	}
 	
-	public void print_ArrayOfErrorObjects( ArrayOfErrorObject objects )
+	public void print_ErrorObjects( ErrorObject[] objects )
 	{
-		if (objects != null && objects.getErrorObject() != null)
+		if (objects != null && objects != null)
 		{
-			for (int i = 0; i < objects.getErrorObject().length; i++)
+			for (int i = 0; i < objects.length; i++)
 			{
-				ErrorObject obj = objects.getErrorObject(i);
+				ErrorObject obj = objects[i];
 				System.out.println(i + ": " + obj == null? "Null" : obj.getErrorString());
 			}
 		}
