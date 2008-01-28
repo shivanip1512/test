@@ -171,6 +171,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
             String groupName) throws NotFoundException{
+        return getGroupByName(parent, groupName, false);
+    }
+    
+    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, 
+            String groupName, boolean addGroup) throws NotFoundException{
         String rawName = SqlUtils.convertStringToDbValue(groupName);
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -182,7 +187,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         try{
             group = jdbcTemplate.queryForObject(sql.toString(), mapper, parent.getId(), rawName);
         } catch (EmptyResultDataAccessException erdae) {
-            throw new NotFoundException(parent.getFullName()+"/"+groupName);
+            if (addGroup) {
+                StoredDeviceGroup addedGroup = addGroup(parent, DeviceGroupType.STATIC, groupName);
+                return addedGroup;
+            }
+            else
+                throw new NotFoundException(parent.getFullName()+"/"+groupName);
         }
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(parent);

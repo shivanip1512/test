@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.core.dao.NotFoundException;
 
 public interface DeviceGroupEditorDao {
     public StoredDeviceGroup getRootGroup();
@@ -12,6 +13,15 @@ public interface DeviceGroupEditorDao {
     
     public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName);
     
+    /**
+     * This method will return a Group by Name.  If the Group is not found for this parent and addGroup is true, 
+     *  then a new Static group will be added to parent.  If addGroup is false, then throws NotFoundException.
+     * @param parent
+     * @param groupName
+     * @param addGroup
+     * @return
+     */
+    public StoredDeviceGroup getGroupByName(StoredDeviceGroup parent, String groupName, boolean addGroup);
     /**
      * This find all STATIC groups that are descendants of group.
      * @param group
