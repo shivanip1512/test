@@ -62,11 +62,13 @@ public class CBCDaoImpl  implements CBCDao{
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "Analog Input 1");
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "RSSI");
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "Control Ignored Reason");
-    	pointGroupConfig.add(CBCPointGroup.ANALOG, "Total op count");
-    	pointGroupConfig.add(CBCPointGroup.ANALOG, "UV op count");
-    	pointGroupConfig.add(CBCPointGroup.ANALOG, "OV op count");
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "IP Address");
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "UDP Port");
+
+    	// Accumulator Group
+    	pointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "Total op count");
+    	pointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "UV op count");
+    	pointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "OV op count");
     	
     	// Status Group
     	pointGroupConfig.add(CBCPointGroup.STATUS, "Capacitor bank state");
@@ -148,6 +150,15 @@ public class CBCDaoImpl  implements CBCDao{
             analogList.add(pointTimestampParams);
         }
         returnMap.put(CBCPointGroup.ANALOG.toString(), analogList);
+        
+        // Add Accumulator group point timestamp params
+        List<CBCPointTimestampParams> accumulatorList = new ArrayList<CBCPointTimestampParams>();
+        for (String pointName : pointGroupConfig.get(CBCPointGroup.ACCUMULATOR)) {
+            CBCPointTimestampParams pointTimestampParams = nameToParamsMap.get(pointName);
+            nameToParamsMap.remove(pointName);
+            accumulatorList.add(pointTimestampParams);
+        }
+        returnMap.put(CBCPointGroup.ACCUMULATOR.toString(), accumulatorList);
 
         // Add Status group point timestamp params
         List<CBCPointTimestampParams> statusList = new ArrayList<CBCPointTimestampParams>();

@@ -49,6 +49,25 @@
 					</td>
 				</tr>
 			</c:forEach>
+			
+			<tr>
+				<td style="font-weight: bold;">
+					<br>Accumulator
+				</td>
+			</tr>
+			<c:forEach var="point" items="${pointMap.ACCUMULATOR}">
+				<tr class="<tags:alternateRow odd="" even="altRow"/>" style="font-size: 10px">
+					<td>
+						${point.pointName}
+					</td>
+					<td>
+						${point.value}
+					</td>
+					<td>
+						${point.timestamp}
+					</td>
+				</tr>
+			</c:forEach>
 
 			<tr>
 				<td style="font-weight: bold;">
