@@ -3,18 +3,15 @@ package com.cannontech.stars.dr.event.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
@@ -80,13 +77,8 @@ public class EventWorkOrderDaoImpl implements EventWorkOrderDao {
     
     @Override
     public List<EventWorkOrder> getByWorkOrderId(final int workOrderId) {
-        try {
-            List<EventWorkOrder> list = simpleJdbcTemplate.query(selecltByWorkOrderIdSql, rowMapper, workOrderId);
-            return list;
-        } catch (DataRetrievalFailureException e) {
-            CTILogger.warn(e);
-            return Collections.emptyList();
-        }
+        List<EventWorkOrder> list = simpleJdbcTemplate.query(selecltByWorkOrderIdSql, rowMapper, workOrderId);
+        return list;
     }
     
     private String builderSqlForWorkOrderId(List<Integer> workOrderIdList) {
