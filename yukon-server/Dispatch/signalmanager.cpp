@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/01/14 17:23:09 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/01/28 16:44:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -669,6 +669,21 @@ size_t CtiSignalManager::entries() const
     return _map.size();
 }
 
+size_t CtiSignalManager::pointMapEntries() const
+{
+    CtiLockGuard< CtiMutex > tlg(_mux, 5000);
+    while(!tlg.isAcquired())
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+        tlg.tryAcquire(5000);
+    }
+
+    return _pointMap.size();
+}
+
 bool CtiSignalManager::empty() const
 {
     CtiLockGuard< CtiMutex > tlg(_mux, 5000);
@@ -859,9 +874,9 @@ CtiMultiMsg* CtiSignalManager::getCategorySignals(unsigned category) const
     return pMulti;
 }
 
-void CtiSignalManager::removeFromMaps(long pointID, int categoryID)
+void CtiSignalManager::removeFromMaps(long pointID, int condition)
 {
-    SigMgrMap_t::iterator itr = _map.find(make_pair(pointID, categoryID));
+    SigMgrMap_t::iterator itr = _map.find(make_pair(pointID, condition));
     if( itr != _map.end() )
     {
         _map.erase( itr );
@@ -873,7 +888,7 @@ void CtiSignalManager::removeFromMaps(long pointID, int categoryID)
         do
         {
             CtiSignalMsg* pSignal = pointIter->second;
-            if( pSignal && pSignal->getSignalCategory() == categoryID )
+            if( pSignal && pSignal->getCondition() == condition )
             {
                 pointIter = _pointMap.erase(pointIter);
             }

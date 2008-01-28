@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/01/14 17:23:09 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/01/28 16:44:47 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ protected:
     mutable CtiMutex _mux;
 
 private:
-    void removeFromMaps(long pointID, int categoryID);
+    void removeFromMaps(long pointID, int condition);
 public:
 
     CtiSignalManager();
@@ -77,6 +77,7 @@ public:
     CtiMultiMsg* getCategorySignals(unsigned category) const;
 
     size_t entries() const;
+    size_t pointMapEntries() const;
     bool empty() const;
 
     UINT writeDynamicSignalsToDB();

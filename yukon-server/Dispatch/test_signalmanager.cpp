@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2008/01/14 17:23:09 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2008/01/28 16:44:47 $
 *
 * Copyright (c) 2008 Cannon Technologies All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -50,14 +50,20 @@ BOOST_AUTO_UNIT_TEST(test_signalmanager_signal_add)
     BOOST_CHECK(!manager.empty());
     BOOST_CHECK(!manager.dirty());
     BOOST_CHECK_EQUAL(manager.entries(), 1);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 1);
     manager.addSignal(testMessage2);
     BOOST_CHECK(!manager.empty());
     BOOST_CHECK(manager.dirty());
     BOOST_CHECK_EQUAL(manager.entries(), 2);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 2);
     manager.addSignal(testMessage2); // re-add an existing signal, should not add another.
     BOOST_CHECK_EQUAL(manager.entries(), 2);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 2);
 }
 
+// Please note this alarm also tests a bug with the two maps that are now in the signal manager.
+// If you change it be sure to leave in the double checks for entries and pointMapEntries
+// Or even better dont change it and create a new test.
 BOOST_AUTO_UNIT_TEST(test_signalmanager_alarming)
 {
     CtiSignalManager manager;
@@ -75,6 +81,7 @@ BOOST_AUTO_UNIT_TEST(test_signalmanager_alarming)
     manager.addSignal(testMessage1);
     manager.addSignal(testMessage2);
     BOOST_CHECK_EQUAL(manager.entries(), 2);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 2);
     //basic setup complete.
     manager.setAlarmActive(1, CtiTablePointAlarming::commandFailure);
     BOOST_CHECK(manager.isAlarmed(1, CtiTablePointAlarming::commandFailure));
@@ -104,36 +111,48 @@ BOOST_AUTO_UNIT_TEST(test_signalmanager_alarming)
     BOOST_CHECK(!manager.isAlarmActive(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK(!manager.isAlarmUnacknowledged(1, CtiTablePointAlarming::commandFailure));
     BOOST_CHECK_EQUAL(manager.entries(), 1);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 1);
 
     manager.addSignal(testMessage1);
     testMessage1.setCondition(CtiTablePointAlarming::uncommandedStateChange);
     manager.addSignal(testMessage1);
     BOOST_CHECK_EQUAL(manager.entries(), 3);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 3);
     manager.setAlarmActive(1, CtiTablePointAlarming::commandFailure, false);
     BOOST_CHECK_EQUAL(manager.entries(), 3);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 3);
     manager.setAlarmAcknowledged(1, CtiTablePointAlarming::commandFailure);
     BOOST_CHECK_EQUAL(manager.entries(), 2);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 2);
     manager.setAlarmAcknowledged(1, CtiTablePointAlarming::uncommandedStateChange);
     BOOST_CHECK_EQUAL(manager.entries(), 2);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 2);
     manager.setAlarmActive(1, CtiTablePointAlarming::uncommandedStateChange, false);
     BOOST_CHECK_EQUAL(manager.entries(), 1);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 1);
 }
 
 BOOST_AUTO_UNIT_TEST(test_signalmanager_getters)
 {
     CtiSignalManager manager;
-    CtiSignalMsg testMessage1, testMessage2;
-    testMessage1.setId(1);
-    testMessage2.setId(1);
-    testMessage1.setCondition(CtiTablePointAlarming::commandFailure);
-    testMessage2.setCondition(CtiTablePointAlarming::uncommandedStateChange);
-    testMessage1.setSignalCategory(SignalEvent);
-    testMessage2.setSignalCategory(SignalAlarm0);
-    testMessage1.setTags(TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM);
-    testMessage2.setTags(TAG_ACTIVE_CONDITION | TAG_UNACKNOWLEDGED_ALARM);
-    manager.addSignal(testMessage1);
-    manager.addSignal(testMessage2);
+    CtiSignalMsg *testMessage1, *testMessage2;
+    testMessage1 = CTIDBG_new CtiSignalMsg(1);
+    testMessage2 = CTIDBG_new CtiSignalMsg(1);
+    testMessage1->setCondition(CtiTablePointAlarming::commandFailure);
+    testMessage2->setCondition(CtiTablePointAlarming::uncommandedStateChange);
+    testMessage1->setSignalCategory(SignalEvent);
+    testMessage2->setSignalCategory(SignalAlarm0);
+    testMessage1->setTags(TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM);
+    testMessage2->setTags(TAG_ACTIVE_CONDITION | TAG_UNACKNOWLEDGED_ALARM);
+    manager.addSignal(*testMessage1);
+    manager.addSignal(*testMessage1);
+    manager.addSignal(*testMessage2);
     BOOST_CHECK_EQUAL(manager.entries(), 2);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 2);
+    delete testMessage1;
+    testMessage1 = 0;
+    delete testMessage2;
+    testMessage2 = 0;
 
     BOOST_CHECK_EQUAL(manager.getConditionTags(1, CtiTablePointAlarming::commandFailure), TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM);
     BOOST_CHECK_EQUAL(manager.getConditionTags(1, CtiTablePointAlarming::uncommandedStateChange), TAG_ACTIVE_CONDITION | TAG_UNACKNOWLEDGED_ALARM);
@@ -149,9 +168,9 @@ BOOST_AUTO_UNIT_TEST(test_signalmanager_getters)
     BOOST_CHECK(messagePtr != NULL);
     if( messagePtr != NULL )
     {
-        BOOST_CHECK(messagePtr->getCondition() == testMessage1.getCondition());
-        BOOST_CHECK(messagePtr->getSignalCategory() == testMessage1.getSignalCategory());
-        BOOST_CHECK(messagePtr->getTags() == testMessage1.getTags());
+        BOOST_CHECK(messagePtr->getCondition() == CtiTablePointAlarming::commandFailure);
+        BOOST_CHECK(messagePtr->getSignalCategory() == SignalEvent);
+        BOOST_CHECK(messagePtr->getTags() == (TAG_ACTIVE_CONDITION | TAG_ACTIVE_ALARM));
         delete messagePtr;
         messagePtr = NULL;
     }
@@ -188,6 +207,25 @@ BOOST_AUTO_UNIT_TEST(test_signalmanager_getters)
         BOOST_CHECK_EQUAL(tempMulti->getCount(), 1);
         delete tempMulti;
         tempMulti = NULL;
+    }
+
+    manager.setAlarmActive(1, CtiTablePointAlarming::uncommandedStateChange, false);
+    BOOST_CHECK_EQUAL(manager.entries(), 1);
+    BOOST_CHECK_EQUAL(manager.pointMapEntries(), 1);
+
+    tempMulti = manager.getPointSignals(1);
+    BOOST_CHECK(tempMulti != NULL);
+    if( tempMulti != NULL )
+    {
+        BOOST_CHECK_EQUAL(tempMulti->getCount(), 1);
+        delete tempMulti;
+        tempMulti = NULL;
+    }
+
+    tempMulti = manager.getPointSignals(3);
+    if( tempMulti != NULL )
+    {
+        BOOST_CHECK_EQUAL(tempMulti->getCount(), 0);
     }
 
 }
