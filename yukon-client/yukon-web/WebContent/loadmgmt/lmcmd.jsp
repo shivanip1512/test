@@ -58,6 +58,30 @@ function validateInput()
 		alert('The Start date/time must be before the Stop date/time');
 		return false;
 	}
+	
+		//Check for a colon so as to prevent accidental control starts or incorrect control times
+	if( document.cmdForm.startTime1 != null && !document.cmdForm.startTime1.disabled && document.cmdForm.startTime1.value.indexOf(":") < 0) {
+		alert('Unable to determine a valid start time.  Start time should be in the form HH:mm.');
+		return false;
+	}
+	
+	//Check for a colon so as to prevent accidental control stops or incorrect control times
+	if( document.cmdForm.stopTime1 != null && !document.cmdForm.stopTime1.disabled && document.cmdForm.stopTime1.value.indexOf(":") < 0) {
+		alert('Unable to determine a valid stop time.  Stop time should be in the form HH:mm.');
+		return false;
+	}
+	
+	//Check length so as to prevent accidental control starts or incorrect control times
+	if( document.cmdForm.startTime1 != null && !document.cmdForm.startTime1.disabled && document.cmdForm.startTime1.value.length != 5) {
+		alert('Unable to determine a valid start time.  Start time should be in the form HH:mm.');
+		return false;
+	}
+	
+	//Check length so as to prevent accidental control stops or incorrect control times
+	if( document.cmdForm.stopTime1 != null && !document.cmdForm.stopTime1.disabled && document.cmdForm.stopTime1.value.length != 5) {
+		alert('Unable to determine a valid stop time.  Stop time should be in the form HH:mm.');
+		return false;
+	}
 
 	opener.setTimeout("window.location.reload(true)", 2000);
 	self.close();
@@ -117,7 +141,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 <body leftmargin="0" topmargin="0" bgcolor="#FFFFFF">
 	<div align="center">
 
-	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" onsubmit="isCancel();validateInput();">
+	<form name="cmdForm" method="post" action="<%=request.getContextPath()%>/servlet/LCConnectionServlet" onsubmit="return validateInput()">
 		<input type="hidden" name="cmd" value="<%= cmd %>" >
 		<input type="hidden" name="itemid" value="<%= itemid %>" >
         <input type="hidden" name="adjustments" id="h_adjustments" value=""/>                       
@@ -140,7 +164,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 
      <input type="hidden" name="h_starttime" id="h_starttime" value=""/>                       
      <input type="hidden" name="h_stoptime" id="h_stoptime" value=""/>                       
-    <cti:formatDate value="${nowDate}" type="BOTH" var="startAtThisMoment" />
+    <cti:formatDate value="${nowDate}" type="DATE" var="startAtThisMoment" />
     <cti:formatDate value="${nowDate}" type="TIME" var="startAtThisMomentHHMM" />
     
     <table width="350" border="1" cellspacing="0" cellpadding="6" align="center" valign="top" bgcolor="#FFFFFF">
@@ -410,7 +434,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
  stpDate.setTime( nowStartOrStop.getTime() + 14400000 );
  pageContext.setAttribute("stopNowDate", stpDate);
 %>
-<cti:formatDate value="${stopNowDate}" type="BOTH" var="stopAtThisMoment" />
+<cti:formatDate value="${stopNowDate}" type="DATE" var="stopAtThisMoment" />
 <cti:formatDate value="${stopNowDate}" type="TIME" var="stopAtThisMomentHHMM" />
  
                 <input type="text" name="stopdate" value="${stopAtThisMoment}" size="8"

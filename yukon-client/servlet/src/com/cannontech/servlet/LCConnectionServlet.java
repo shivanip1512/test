@@ -432,11 +432,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	else
 	{
 		//assume they want to start now
-        gcStart.set( Calendar.YEAR, 1990 );
-        gcStart.set( Calendar.DAY_OF_YEAR, 1 );
-        gcStart.set( Calendar.HOUR, 0 );
-        gcStart.set( Calendar.MINUTE, 0 );
-        gcStart.set( Calendar.SECOND, 0 );
+        gcStart = CtiUtilities.get1990GregCalendar();
 		optionalProps.put( "startdate", gcStart.getTime() );
 	}
 
@@ -464,11 +460,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 				 && req.getParameter("stopbutton").equals("stopnow") )
 	{
 		//assume they want to stop now
-        gcStart.set( Calendar.YEAR, 1990 );
-        gcStart.set( Calendar.DAY_OF_YEAR, 1 );
-        gcStop.set( GregorianCalendar.HOUR, 0 );
-        gcStop.set( GregorianCalendar.MINUTE, 0 );
-        gcStop.set( GregorianCalendar.SECOND, 0 );
+        gcStop = CtiUtilities.get1990GregCalendar();
 		optionalProps.put( "stopdate", gcStop.getTime() );
 	}
 	else
