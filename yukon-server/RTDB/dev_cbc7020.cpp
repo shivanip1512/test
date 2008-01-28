@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/12/03 22:19:41 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/01/28 22:34:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,6 +93,38 @@ INT CBC7020::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
     return nRet;
 }
 
+
+//  This overrides the processPoints function in dev_dnp, but calls it afterward to do the real processing
+void CBC7020::processPoints( Cti::Protocol::Interface::pointlist_t &points )
+{
+    Cti::Protocol::Interface::pointlist_t::iterator pt_itr, last_pos;
+
+    last_pos    = points.end();
+
+    //  we need to find any status values for offsets 1 and 2
+    for( pt_itr = points.begin(); pt_itr != last_pos; pt_itr++ )
+    {
+        CtiPointDataMsg *pt_msg = *pt_itr;
+
+        if( pt_msg &&
+            pt_msg->getType() == AnalogPointType &&
+            pt_msg->getId()   == PointOffset_FirmwareRevision )
+        {
+            unsigned int value = pt_msg->getValue();
+
+            //  convert 0x[hibyte][lobyte] into lobyte.hibyte
+            //  i.e. 0x0208 = 8.02
+            double firmware = static_cast<double>(value & 0xff) +
+                              static_cast<double>((value >> 8) & 0xff) / 100;
+
+            pt_msg->setValue(firmware);
+        }
+    }
+
+    //  do the final processing
+    Inherited::processPoints(points);
+}
+
 /*INT CBC7020::executePutConfig(CtiRequestMsg                  *pReq,
                                    CtiCommandParser               &parse,
                                    OUTMESS                        *&OutMessage,
@@ -164,7 +196,7 @@ INT CBC7020::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
         if( outList.size() )
         {
             CtiString resultString;
-    
+
             resultString = CtiNumStr(outList.size()) + " configuration messages being sent ";
             retList.push_back( CTIDBG_new CtiReturnMsg(getID( ),
                                                     string(pReq->CommandString()),
@@ -292,7 +324,7 @@ int CBC7020::executePutConfigSingle(CtiRequestMsg         *pReq,
 /*int CBC7020::executePutConfigVoltage(CtiRequestMsg *pReq,CtiCommandParser &parse,OUTMESS *&OutMessage,list< CtiMessage* >&vgList,list< CtiMessage* >&retList,list< OUTMESS* >   &outList)
 {
     OUTMESS *tempOutMess;
-    
+
     int nRet = NORMAL;
     long value;
     CtiConfigDeviceSPtr deviceConfig = getDeviceConfig();
@@ -700,8 +732,8 @@ int CBC7020::executePutConfigTimeAndTemp1(CtiRequestMsg *pReq,CtiCommandParser &
 
             if( season1Start    == numeric_limits<long>::min()
              || weekdayTimedControlClose1 == numeric_limits<long>::min()
-             || weekendTimedControlClose1 == numeric_limits<long>::min() 
-             || weekendTimedControlTrip1  == numeric_limits<long>::min() 
+             || weekendTimedControlClose1 == numeric_limits<long>::min()
+             || weekendTimedControlTrip1  == numeric_limits<long>::min()
              || weekdayTimedControlTrip1  == numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -782,7 +814,7 @@ int CBC7020::executePutConfigTimeAndTemp2(CtiRequestMsg *pReq,CtiCommandParser &
             tempMinHysterisis2, tempMinThresholdTrigTime2, tempMaxThreshold2, tempMaxThresholdAction2, tempMaxHysterisis2;
 
             CBCSeason2TimeAndTempSPtr config = boost::static_pointer_cast< ConfigurationPart<CBCSeason2TimeAndTemp> >(tempBasePtr);
-            
+
             season2Start              = config->getLongValueFromKey(Season2Start);
             weekdayTimedControlClose2 = config->getLongValueFromKey(WeekdayTimedControlClose2);
             weekendTimedControlClose2 = config->getLongValueFromKey(WeekendTimedControlClose2);
@@ -800,8 +832,8 @@ int CBC7020::executePutConfigTimeAndTemp2(CtiRequestMsg *pReq,CtiCommandParser &
 
             if( season2Start    == numeric_limits<long>::min()
              || weekdayTimedControlClose2 == numeric_limits<long>::min()
-             || weekendTimedControlClose2 == numeric_limits<long>::min() 
-             || weekendTimedControlTrip2  == numeric_limits<long>::min() 
+             || weekendTimedControlClose2 == numeric_limits<long>::min()
+             || weekendTimedControlTrip2  == numeric_limits<long>::min()
              || weekdayTimedControlTrip2  == numeric_limits<long>::min() )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);

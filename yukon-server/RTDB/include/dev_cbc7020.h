@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_cbc.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/12/03 22:19:41 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/01/28 22:34:20 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -37,6 +37,15 @@ public:
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
 
     //virtual INT executePutConfig(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* >&vgList, list< CtiMessage* >&retList, list< OUTMESS* >&outList);
+
+protected:
+
+    enum
+    {
+        PointOffset_FirmwareRevision = 3,
+    };
+
+    virtual void processPoints( Cti::Protocol::Interface::pointlist_t &points );
 
 private:
 
