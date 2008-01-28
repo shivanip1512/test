@@ -17,8 +17,122 @@ var ALL_POPUP_TYPES = {
     legend: "legend"
 };
 
-var clkCountQueue = $H();
+function resetCapOpCount(element, cmdId) {
+    if (!element.checked) return;
+    
+    var newOpcntVal = prompt("What is the new value for Op Count?", "0");
+    if (newOpcntVal == null) {
+        element.checked = false;
+        return;
+    }
+        
+    var params = {};
+    params['optParams'] = newOpcntVal;
+    submitOnelineCommand(cmdId, params);
+    return;
+}
 
+function submitToCapControlCommandController(url, params) {
+    new Ajax.Request(url, {
+        method: 'POST',
+        onSuccess: function(transport) {
+            display_status("Command sent successfully", "green");    
+        },
+        onFailure: function(transport) {
+            display_status("Command submission failed", "red");
+        },
+        onException: function(transport) {
+            display_status("Command submission failed", "red");
+        },
+        parameters:params
+    });
+}
+	
+function submitOnelineManualCommand(rawStateId) {
+    var params = {};
+    params['paoId'] = $('paoId').value;
+    params['controlType'] = $('controlType').value;
+    params['rawStateId'] = rawStateId;
+    
+    var url = $('manualUrl').value;
+    submitToCapControlCommandController(url, params);
+    closePopupWindow();        
+}
+
+function submitOnelineCommand(cmdId, params) {
+    if (params == null) params = {};
+    params['paoId'] = $('paoId').value;
+    params['controlType'] = $('controlType').value;
+    params['cmdId'] = cmdId;
+    
+    var url = $('url').value;
+    submitToCapControlCommandController(url, params);
+    closePopupWindow();        
+}
+
+function submitTagMenu(isCapBank) {
+
+    var disableChange = $("disableCheckBox").checked != eval($("disableCheckBox_orig").value);
+    var disableOVUVChange = $("disableOVUVCheckBox").checked != eval($("disableOVUVCheckBox_orig").value);
+    var operationalStateChange = false;
+
+    if (isCapBank) {
+        var index = $("operationalStateValue").selectedIndex;
+        var state = $("operationalStateValue").options[index].value;
+        var origState = $('operationalStateValue_orig').value;
+        operationalStateChange = state != origState;
+    }
+    
+	if (!(disableChange || disableOVUVChange || operationalStateChange)) {
+	    alert("No Change Was Made.");
+        return false;	
+    }    
+        
+    params = {};
+	params['paoId'] = $('paoId').value;
+	params['controlType'] = $('controlType').value;
+		
+	params['disableValue'] = $('disableCheckBox').checked;
+	params['disableOVUVValue'] = $('disableOVUVCheckBox').checked;
+    if (isCapBank) params['operationalStateValue'] = $('operationalStateValue').options[$('operationalStateValue').selectedIndex].value;
+        
+	params['disableChange'] = disableChange;
+	params['disableOVUVChange'] = disableOVUVChange;
+	params['operationalStateChange'] = operationalStateChange;
+		
+    params['disableReason'] = $('disableReason').value;
+    params['disableOVUVReason'] = $('disableOVUVReason').value;
+    if (isCapBank) params['operationalStateReason'] = $('operationalStateReason').value;
+        
+    var confirmMessage = '';
+    if (disableChange) confirmMessage += 'Enable/Disable State Change\n';
+    if (disableOVUVChange) confirmMessage += 'Enable/Disable OV/UV Change\n';
+    if (isCapBank && operationalStateChange) confirmMessage += 'Operational State Change';
+        
+    if (!confirm(confirmMessage)) return false;
+        
+    var url = $('url').value;
+    submitToCapControlCommandController(url, params);
+    closePopupWindow();  
+}
+
+function toggleReason(element, reasonElementId) {
+	if (element.tagName == 'INPUT') {
+		if(element.checked) {
+            $(reasonElementId).show();
+			var textareaArray = $(reasonElementId).getElementsBySelector('TEXTAREA');
+            textareaArray.invoke('enable');
+	    } else {
+            $(reasonElementId).hide();
+        }
+	}
+	
+    if(element.tagName == 'SELECT') {
+        var textareaArray = $(reasonElementId).getElementsBySelector('TEXTAREA');
+        textareaArray.invoke('enable');
+	}
+}
+	
 function openPopupWin(elem, compositeIdType) {
 	currentPopup = new PopupWindow("controlrequest");
 	currentPopup.offsetX = x;
@@ -28,43 +142,39 @@ function openPopupWin(elem, compositeIdType) {
 	
 	type = compositeIdType.split("_")[0];
 	id = compositeIdType.split("_")[1];
-	//will only be present with cap banks
-	disScan = compositeIdType.split("_")[2];
 	
-	var url;
-	if (type == ALL_POPUP_TYPES.subCommand) {
-		url = createSubMenu();
+    var menuName;
+    
+    if (type == ALL_POPUP_TYPES.subCommand) {
+		menuName = 'subMenu';
 	}
 	else if (type == ALL_POPUP_TYPES.feederCommand) {
-			url = createFeederMenu(id);
-
+		menuName = 'feederMenu';
 	}
 	else if (type == ALL_POPUP_TYPES.capCommand) {
-				url = createCapBankMenu(id);
+        menuName = 'capBankMenu';
 	}
 	else if (type == ALL_POPUP_TYPES.subTag) {
-						url = createSubTagMenu();
+        menuName = 'subTagMenu';
 	}
 	else if (type == ALL_POPUP_TYPES.feederTag) {
-						url = createFeederTagMenu(id);
+        menuName = 'feederTagMenu';
 	}
 	else if (type == ALL_POPUP_TYPES.capTag) {
-						url = createCapTagMenu(id);
+        menuName = 'capTagMenu';
 	}
-	
 	else if (type == ALL_POPUP_TYPES.capInfo) {
-						url = createCapInfoMenu(id);
+        menuName = 'capInfoMenu';
 	}
-	
 	else if (type == ALL_POPUP_TYPES.childCapMaint) {
-					url = createCapbankMaint(id, disScan);
+        menuName = 'capBankMaint';
 	}
 	else if (type == ALL_POPUP_TYPES.childCapDBChange) {
-						url = createCapbankDBChange(id);
+        menuName = 'capBankDBChange';
 	}
 	else if (type == ALL_POPUP_TYPES.cbcPointTimestamp) {
-						showPointTimestamps(id);
-						return;
+        showPointTimestamps(id);
+		return;
 	}
     else if (type == ALL_POPUP_TYPES.legend) {
         var legendUrl = '/spring/capcontrol/oneline/legend';
@@ -81,8 +191,18 @@ function openPopupWin(elem, compositeIdType) {
         return;
     }
 
-	showPopup(url);
+    var url = '/spring/capcontrol/oneline/popupmenu?menu=' + menuName + '&id=' + id + '&returnUrl=' + window.location;
+    getFromURL(url);
+}
 
+function getFromURL(url) {
+    new Ajax.Request(url, {
+        method: 'POST',
+        onSuccess: function(transport) {
+            var html = transport.responseText;
+            showPopup(html);
+        }
+    });    
 }
 
 function showPopup(html) {
@@ -100,715 +220,19 @@ function showPopup(html) {
 	window.parent.document.getElementById("controlrequest").style.backgroundColor = "black";
 }
 
-function createCapInfoTable (paoName, testData) {
-
-var allRows = "";
-var str = '';
-str+='				<table >';
-str+='						<tr style="color:#9FBBAC; font-weight: bold; font-size: 18;" >';
-str+='							<td align="center" colspan="3" > <u>';
-str+= paoName;
-str+= '<\/u> <\/td>';
-str+='							<td align="right" valign="top" id = "popupplaceholder">';
-str+='								<a   href="javascript:void(0)" style="color=white" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
-str+='							<\/td>';
-str+='						<\/tr>';
-for (var key in REF_LABELS)
-{
-	label = REF_LABELS[key];
-	data  = testData[key];
-	str+='<tr >';
-	str+='			<td align="left" style="color:white">';
-	str+='				' + label;
-	str+='			<\/td>';
-	str+='			<td align="right" style="color:white"> ' + data +' <\/td>';
-	str+='		<\/tr>';
-
-}
-str+='<\/table>';
-return str;
-
-}
-
-function createCapInfoMenu (capID) {	
-	var testData = new Object();
-	var paoName = getState("CapState_" + capID, "paoName");
-	allAttribs = getHiddenAttributes("CapHiddenInfo_" + capID);
-	for(var i=0; i<allAttribs.length; i++){
-		element = allAttribs.item(i);
-		name = element.getName();
-		val = element.getValue();
-		if (findValueByKey(name, REF_LABELS)){
-			testData[name] = val;
-		}
-	}
-	return createCapInfoTable (paoName, testData);
-}
-
-function createFeederTagMenu(feederID) {
-
- 	var comments = getState("FeederState_" + feederID, "capControlComments");
-    
-    //Disable
-    var allFdrCmds;
-    var feederState;
-	var isDis = getState("FeederState_" + feederID, "isDisable");
-    
-    if (isDis == "true") {
-        allFdrCmds = ALL_FDR_CMDS.enable_fdr;
-        feederState = "feederEnabled";
-	} else {
-        allFdrCmds = ALL_FDR_CMDS.disable_fdr;
-        feederState = "feederDisabled";
-	}
-    
-    var disableFeeder = new Command (feederID, allFdrCmds, ALL_CMD_TYPES.feeder);
-    var disFeederTag = new Command (feederID, feederState, ALL_CMD_TYPES.tag);
-    var disableReason = escape(getState("FeederState_" + feederID, "disableFdrReason"));
-    
-    //Disable OVUV
-    var allFdrCmdsOVUV;
-    var feederStateOVUV;
-	var isOVUVDis = getState("FeederState_" + feederID, "isOVUVDis");
-    
-	if (isOVUVDis == "true") {
-        allFdrCmdsOVUV = ALL_FDR_CMDS.send_all_enable_ovuv;
-        feederStateOVUV = ALL_TAG_CMDS.feederOVUVEnabled;
-	} else {
-        allFdrCmdsOVUV = ALL_FDR_CMDS.send_all_disable_ovuv;
-        feederStateOVUV = ALL_TAG_CMDS.feederOVUVDisabled;
-	}
-    
-	var disFeederOVUV = new Command (feederID, allFdrCmdsOVUV, ALL_CMD_TYPES.feeder);
-	var disFeederOVUVTag = new Command (feederID, feederStateOVUV, ALL_CMD_TYPES.tag);
-    var disableOVUVReason = escape(getState("FeederState_" + feederID, "disableOVUVFdrReason"));
-    
-    //PopupWindow
-	var str = '';
-	str += '<html>\n';
-	str += '<body style="background-color:black">\n';
-	str += '<table >\n';
-    str += '    <tr>\n'
-    str += '        <td><div style="float: right;"><a href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();"> x <\/a></div></td>\n';
-    str += '    </tr>\n';
-	str += '    <tr>\n';
-	str += '	    <td>';
-	str += '		    <span id="fdrTagSpan_' + feederID + '">';
-	str += '				<input type="hidden" id="executeQueue_' + feederID + '" val=""/>';
-	str += '				<input type="checkbox" name="' + disableFeeder.createName() + '" onclick="addCommand(this); addCommand(\'' + disFeederTag.createName() +'\'); setReason(\'' + disFeederTag.createName() + '\', \'' + disableReason + '\', this);"';
-	if (isDis == "true")
-			str+= ' checked ';
-	str += '>\n';
-    str += '                <font color="white">Disable<\/font><\/><\/br>';
-	str += generateReasonSpan ((isDis == "true"), disFeederTag.createName() + 'ReasonSpan', disableReason);
-	str += '				<input type="checkbox"  name = "' + disFeederOVUV.createName() + '" onclick="addCommand(this); addCommand(\'' + disFeederOVUVTag.createName() +'\'); setReason(\'' + disFeederOVUVTag.createName() + '\', \'' + disableOVUVReason + '\', this);"';
-	if (isOVUVDis == "true")
-		str+= ' checked ';
-	str+='>'; 	
-	str+='				    <font color="white">Disable OVUV<\/font><\/><\/br>';
-	str += generateReasonSpan ((isOVUVDis == "true"), disFeederOVUVTag.createName() + 'ReasonSpan', disableOVUVReason);
-    
-  	//***********COMMENTS****************//
-	str+='<a href="/capcontrol/capcontrolcomments.jsp?paoID=' + feederID + '&returnURL=' + window.location +'"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
-	str+='<font color="white">';
-	str+= generateCommentField("commentField_" + feederID, comments );
-	str+='</font>';
-	str += '<br>';
-	//************************	
-    
-    str += '            </span>\n';
-	str+='			</td>';
-	str+='		</tr>';	
-	str+='		<tr>';
-	str+='			<td>';
-	str+='				<input  type="submit" name="execute" value="Execute" onclick="disableAll(); executeMultipleCommands(\'fdrTagSpan_\','+feederID+'); reset(this); disableAllCheckedReasons(\'fdrTagSpan_\','+feederID+')"\/>';
-	str+='			</td>';
-	str+='		</tr>';
-	str+='	</table>';
-	str+='	</body>';
-	str += '</html>';
-    return str;
-
-}
-
-function createSubTagMenu() {
-	var paoId = getSubId();
-
-	var comments = getState("SubState_" + paoId, "capControlComments");
-
-	//Disable
-	var allSubCmds;
-    var subState;
-	var isDis = getState("SubState_" + paoId, "isDisable");
-	
-    if (isDis == "true") {
-        allSubCmds = ALL_SUB_CMDS.enable_sub;
-        subState = "subEnabled";
-	} else {
-        allSubCmds = ALL_SUB_CMDS.disable_sub;
-        subState = "subDisabled";
-	}
-    
-    var disableSub = new Command (paoId, allSubCmds, ALL_CMD_TYPES.sub);
-    var disSubTag = new Command (paoId, subState, ALL_CMD_TYPES.tag);
-    var disableReason = escape(getState("SubState_" + paoId, "subDisableReason"));
-    
-	//Disable OVUV
-    var allSubCmdsOVUV;
-    var subStateOVUV;
-	var isOVUVDis = getState("SubState_" + paoId, "isOVUVDis");
-	
-    if (isOVUVDis == "true") {
-        allSubCmdsOVUV = ALL_SUB_CMDS.send_all_enable_ovuv;
-        subStateOVUV = ALL_TAG_CMDS.subOVUVEnabled;
-	} else {
-        allSubCmdsOVUV = ALL_SUB_CMDS.send_all_disable_ovuv;
-        subStateOVUV = ALL_TAG_CMDS.subOVUVDisabled;
-	}
-    
-    var disSubOVUV = new Command (paoId, allSubCmdsOVUV, ALL_CMD_TYPES.sub);
-    var disSubOVUVTag = new Command (paoId, subStateOVUV, ALL_CMD_TYPES.tag);
-    var disableOVUVReason = escape(getState("SubState_" + paoId, "subDisableOVUVReason"));
-    
-    //PopupWindow
-	var str='';
-	str += '<html>\n';
-	str += '<body style="background-color:black">\n';
-	str += '<table>\n';
-    str += '   <tr>\n';
-    str += '   <td><div style="float: right;"><a href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();">  x <\/a></div></td>\n';
-    str += '   </tr>\n';
-	str += '   <tr>\n';
-	str += '       <td>\n';
-	str += '           <span id="subTagSpan_' + paoId + '">\n';
-	str += '               <input type="hidden" id="executeQueue_' + paoId + '" val=""/>\n';
-	str += '               <input type="checkbox"  name = "' + disableSub.createName() + '" onclick="addCommand(this); addCommand(\'' + disSubTag.createName() +'\'); setReason(\'' + disSubTag.createName() + '\', \'' + disableReason + '\', this);"';
-	if (isDis == "true") {
-	   str += ' checked ';
-    }    
-	str += '>\n';
-	str += '               <font color="white">Disable<\/font>\n'
-    str += '               <\/br>\n';
-	str += generateReasonSpan ((isDis == "true"), disSubTag.createName() + 'ReasonSpan', disableReason);
-	str += '               <input type="checkbox"  name = "' + disSubOVUV.createName() + '" onclick="addCommand(this); addCommand(\'' + disSubOVUVTag.createName() +'\'); setReason(\'' + disSubOVUVTag.createName() + '\', \'' + disableOVUVReason + '\', this);"';
-	if (isOVUVDis == "true") {
-		str += ' checked ';
-    }    
-	str += '>'; 	
-	str += '               <font color="white">Disable OVUV<\/font><\/br>';
-	str += generateReasonSpan ((isOVUVDis == "true"), disSubOVUVTag.createName() + 'ReasonSpan', disableOVUVReason);
-    
-    //***********COMMENTS****************//
-	str+='<a href="/capcontrol/capcontrolcomments.jsp?paoID=' + paoId + '&returnURL=' + window.location +'"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
-	str+='<font color="white">';
-	str+= generateCommentField("commentField_" + paoId, comments );
-	str+='</font>';
-	str += '<br>';
-	//************************	
-    
-    str += '           <\/span>\n';
-	str += '       <\/td>\n';
-	str += '   <\/tr>\n';
-	str += '   <tr>\n';
-	str += '       <td>\n';
-	str += '           <input  type="submit" name="execute" value="Execute" onclick="disableAll(); executeMultipleCommands(\'subTagSpan_\','+paoId+'); reset(this); disableAllCheckedReasons(\'subTagSpan_\','+paoId+')"\/>\n';
-	str += '	   <\/td>\n';
-	str += '   <\/tr>\n';
-	str += '<\/table>';
-	str += '<\/body>';
-	str += '</html>';
-	return str;
-}
-
-function createCapTagMenu (paoID) {
-	//state var	
-	var comments = getState("CapState_" + paoID, "capControlComments");
-	
-    //variables pushed from the server
-	var paoName = getState("CapState_" + paoID, "paoName"); //name of the capbank
-	
-    //capbank states
-	var isDis = getState("CapState_" + paoID, "isDisable");
-	var isOVUVDis = getState("CapState_" + paoID, "isOVUVDis");
-	var isStandalone = getState("CapState_" + paoID, "isStandalone");
-    var isFixed = getState("CapState_" + paoID, "isFixed");
-    var isSwitched = getState("CapState_" + paoID, "isSwitched");
-    
-    //reasons
-	var disableCapReason = escape(getState("CapState_" + paoID, "disableCapReason"));
-	var disableCapOVUVReason = escape(getState("CapState_" + paoID, "disableCapOVUVReason"));
-	var aloneReason = escape(getState("CapState_" + paoID, "standAloneReason"));
-    
-    var allCapCmds;
-    var allCapCmdsOVUV;
-    var allTagCmds;
-    var allTagCmdsOVUV;
-    var allTagCmdsStandAlone;
-    
-	if (isDis == "true") {
-        allCapCmds = ALL_CAP_CMDS.enable_capbank;
-        allTagCmds = ALL_TAG_CMDS.capEnabled;
-	} else {
-        allCapCmds = ALL_CAP_CMDS.disable_capbank;
-        allTagCmds = ALL_TAG_CMDS.capDisabled;
-	}
-    
-	if (isOVUVDis == "true") {
-        allCapCmdsOVUV = ALL_CAP_CMDS.bank_enable_ovuv;
-        allTagCmdsOVUV = ALL_TAG_CMDS.capOVUVEnabled;
-	} else {
-        allCapCmdsOVUV = ALL_CAP_CMDS.bank_disable_ovuv;
-        allTagCmdsOVUV = ALL_TAG_CMDS.capOVUVDisabled;
-	}
-    
-    var disableCap = new Command (paoID, allCapCmds, ALL_CMD_TYPES.cap);
-    var disCapTag = new Command (paoID, allTagCmds, ALL_CMD_TYPES.tag);   
-    var disCapOVUV = new Command (paoID, allCapCmdsOVUV, ALL_CMD_TYPES.cap);
-    var disCapOVUVTag = new Command (paoID, allTagCmdsOVUV, ALL_CMD_TYPES.tag);
-    var aloneCap = new Command (paoID, ALL_CAP_CMDS.operational_state, ALL_CMD_TYPES.cap);
-    var aloneCapTag = new Command (paoID, ALL_CAP_CMDS.operational_state, ALL_CMD_TYPES.tag);
-    	
-	var str='';
-	str += '<html>';
-	str+='<body style="background-color:black">';
-	var str='';
-	str+='	<table>';
-	str += '<table border=2 style="border-color: black black white black; width=236">'
-	str+='			<tr style="color:#9FBBAC; font-weight: bold; font-size: 16; border-color: black black white black;" >';
-	str+='				<td style="border-color: black black black black;" align="center" colspan="2" > ' + paoName + ' <\/td>';
-	str+='				<td style="border-color: black black black black;" align="right" valign="top" id = "popupplaceholder">';
-	str+='					<a   href="javascript:void(0)" style="color=#9FBBAC" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
-	str+='				<\/td>';
-	str+='			<\/tr>';
-	str += '<\/table>'
-	str+='		<tr>';
-	str+='			<td>';
-	str+='				<span id="capTagSpan_';
-	str+= 				paoID;
-	str+='">';
-	str+='				<input type="hidden" id="executeQueue_' + paoID + '" val=""/>';
-	//***********DIS/EN CAP***********//
-	str+='					<input name="';
-	str+=					disableCap.createName();
-	str+='" type="checkbox" onclick=" '; 
-	str+=' addCommand (this); addCommand(\'' + disCapTag.createName() +'\'); setReason(\'' + disCapTag.createName() + '\', \'' + disableCapReason + '\', this)"';
-	if (isDis == "true")
-	str+=					' checked ';
-	str+='> <font color="white">Disable<\/font><\/br>';
-	str += generateReasonSpan((isDis == "true"),  disCapTag.createName() + 'ReasonSpan' , disableCapReason);
-	//***********OV/UV***********//
-	str+='					<input name="';
-	str+=					disCapOVUV.createName();
-	str+='" type="checkbox" onclick=" ';
-	str+=' addCommand(this); addCommand(\'' + disCapOVUVTag.createName() +'\'); setReason(\'' + disCapOVUVTag.createName() + '\', \'' + disableCapOVUVReason + '\', this)"';
-	if (isOVUVDis == "true")
-	str+=					' checked ';
-	str+='> <font color="white">Disable OVUV<\/font></br>';
-	str += generateReasonSpan((isOVUVDis == "true"),  disCapOVUVTag.createName() + 'ReasonSpan' , disableCapOVUVReason);
-	
-	//***********STANDALONE****************//
-    str += '<font color="white">Operational State</font>\n';
-    str += '                <select name="' + aloneCap.createName() + '" size="1" onchange="addCommand(this); setReason(\'' + aloneCapTag.createName() + '\', \'' + aloneReason + '\', this)">\n';
-    str += '                    <option value="Fixed"';
-    if (isFixed == 'true') str += ' selected';
-    str += '>Fixed</option>';
-    str += '                    <option value="StandAlone"';
-    if (isStandalone == 'true') str += 'selected';
-    str += '>StandAlone</option>';
-    str += '                    <option value="Switched"';
-    if (isSwitched == 'true') str += ' selected';
-    str += '>Switched</option>';
-    str += '                </select>';
-    str += '                <br>';
-    str += '                <br>';
-    str += generateReasonSpan (true, aloneCapTag.createName() + 'ReasonSpan', aloneReason);
-
-	//***********COMMENTS****************//
-	str+='<a href="/capcontrol/capcontrolcomments.jsp?paoID=' + paoID + '&returnURL=' + window.location +'"  ><font color="white"><B>Comments</B><\/font></a><\/><\/br>';
-	str+='<font color="white">';
-	str+= generateCommentField("commentField_" + paoID, comments );
-	str+='</font>';
-	str += '<br>';
-	//************************
-	str+='				</span>';
-	str+='			</td>';
-	str+='		</tr>';
-	str+='		<tr>';
-	str+='			<td>';
-	str+='				<input  type="submit" name="execute" value="Execute" onclick="disableAll(); executeMultipleCommands(\'capTagSpan_\','+paoID+'); reset(this); disableAllCheckedReasons(\'capTagSpan_\','+paoID+')"\/>';
-	str+='			</td>';
-	str+='		</tr>';
-	str+='	</table>';
-	str+='	</body>';
-	str += '</html>';
-    return str;
-}
-
-function createCapBankMenu(paoID) {
-	var open = new Command (paoID, ALL_CAP_CMDS.open_capbank, ALL_CMD_TYPES.cap);
-	var close = new Command (paoID, ALL_CAP_CMDS.close_capbank, ALL_CMD_TYPES.cap);
-	var confirm = new Command (paoID, ALL_CAP_CMDS.confirm_open, ALL_CMD_TYPES.cap);
-	var paoName = getState("CapState_" + paoID, "paoName");
-	var disScan = getState("CapState_" + paoID, "scanOptionDis");
-	var str = "";
-	str += "<html>";
-	str += "<body>";
-	str += "<table border=2 style=\"border-color: black black white black; width=200\">";
-	str+="			<tr style=\"color:#9FBBAC; font-weight: bold; font-size: 16; border-color: black black white black;\" >";
-	str+="				<td style=\"border-color: black black black black;\" align=\"center\" rowspan=\"2\" colspan=\"2\" > " + paoName + " <\/td>";
-	str+="				<td style=\"border-color: black black black black;\" align=\"right\" valign=\"top\" id = \"popupplaceholder\">";
-	str+="					<a   href=\"javascript:void(0)\" style=\"color=#9FBBAC\" title=\"Click To Close\" onclick=\"closePopupWindow();\"> x <\/a>";
-	str+="				<\/td>";
-	str+="			<\/tr>";
-	str += "<\/table>"	
-	str += "<table style=\"background-color:black\" name=\"commandTable\">";
-	str += "			<tr >";
-	str += "				<td align=\"center\" colspan=\"2\">";
-	str += "				<input type=\"submit\" name=\"";
-	str +=					open.createName();
-	str +="\" value=\"open\" onclick = \"disableAll(); submit(this); reset(this)\";/>";
-	str += "				<input type=\"submit\" name=\"";
-	str +=					close.createName();
-	str +="\" value=\"close\" onclick = \"disableAll(); submit(this); reset(this)\"/>";
-	str += "				<input type=\"submit\" name=\"";
-	str +=					confirm.createName();
-	str +="\" value=\"confirm \" onclick = \"disableAll(); submit(this); reset(this)\"/>";
-	str += "				</td>";
-
-	str += "			</tr>";
-	str += "			<tr>";
-	str += "				<td  style=\"color=gray\">";
-	str += "				<a href=\"javascript:void(0)\" onclick=\"disableAll();openPopupWin(this, '"; 
-	str += 					ALL_POPUP_TYPES.childCapMaint + "_" + paoID + "_" + disScan;
-	str += "')\" style=\"color:white\">Maintenance </a>";
-	str += "				</td>";
-	str += "				<td >";
-	str += "				<a href=\"javascript:void(0)\" onclick=\"disableAll();openPopupWin(this, '";
-	str += 					ALL_POPUP_TYPES.childCapDBChange + "_" + paoID;
-	str += "')\" style=\"color:white\">DB Change </a>";
-	str += "				</td>";
-	str += "			</tr>";
-	str += "		</table>";
-	str += "		<DIV ID=\"controlrequest\" STYLE=\"position:absolute;visibility:hidden;background-color:#000000;\"></DIV>";
-	str += "		<A NAME=\"popupanchor\" ID=\"popupanchor\" > </A>";
-	str += "	</body>";
-	str += "</html>";
-	return str;
-}
-function createFeederMenu(paoID) {
-	var resetOpcount = new Command (paoID, ALL_FDR_CMDS.reset_op_cnt, ALL_CMD_TYPES.feeder);
-	var openAllFdr = new Command (paoID, ALL_FDR_CMDS.send_all_open, ALL_CMD_TYPES.feeder);
-	var closeAllFdr = new Command (paoID, ALL_FDR_CMDS.send_all_close, ALL_CMD_TYPES.feeder);
-	var enableOvUvFdr = new Command (paoID, ALL_FDR_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.feeder);
-	var disableOvUvFdr = new Command (paoID, ALL_FDR_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.feeder);
-	var sendAll2WayFdr = new Command (paoID, ALL_FDR_CMDS.send_all_2way_scan, ALL_CMD_TYPES.feeder);
-	var sendTimeSyncFdr = new Command (paoID, ALL_FDR_CMDS.send_timesync, ALL_CMD_TYPES.feeder);
-	
-	
-	var str='';
-	str+='<html>';
-	str+='	<body>';
-	str+='	<table style="background-color:black" name="commandTable">';
-	str+='			<tr align="left" valign="top">';
-	str+='				<td>';
-	str+='				<input type="submit" name="';
-	str+= 				resetOpcount.createName();
-	str+='" value="Reset Opcount " onclick = "disableAll(); submitWithConfirm(this); reset(this)"\/><br\/>';
-	str+='              </td>';
-	str+='				<td align="right" valign="top">';
-	str+='				<a href="javascript:void(0)" style="color=gray" title="Click To Close" onclick="closePopupWindow();"> x <\/a>';
-	str+='				<\/td>';
-	str+='			<tr align="left">';
-	str+='				<td>';
-	str+='<font color="gray">Fdr-Level CBC Commands: </font>'
-	str+='						<select id="subSelect" style="background-color=gray; margin: 2px 2px 2px 2px" >';
-	
-	str+='							<option  value="" style="color: white"> <\/option>';
-	str+='							<option  value="';
-	str+=							openAllFdr.createName();
-	str+='" style="color: white"> Open All CapBanks<\/option>';
-	str+='							<option  value="';
-	str+=							closeAllFdr.createName();
-	str+='" style="color: white"> Close All CapBanks<\/option>';
-	str+='							<option  value="';
-	str+=							enableOvUvFdr.createName();
-	str+='" style="color: white"> Enable OvUv<\/option>';
-	str+='							<option  value="';
-	str+=							disableOvUvFdr.createName();
-	str+='" style="color: white"> Disable OvUv<\/option>';
-	str+='							<option  value="';
-	str+=							sendAll2WayFdr.createName();
-	str+='" style="color: white"> Scan All 2way CBCs<\/option>';
-	str+='							<option  value="';
-	str+=							sendTimeSyncFdr.createName();
-	str+='" style="color: white"> Send All TimeSync<\/option>';
-	
-	str+='						<\/select>';
-	str+='				<\/td>';
-	str+='			<\/tr>';
-	str+='			<tr>';
-	str+='				<td>';
-	str+='				<input type="submit"  name="execute" value = "Execute" onclick="disableAll(); submitWithConfirm(subSelect); reset(subSelect);"\/>';
-	str+='				<input type="submit" name="cancel" value = "Cancel" onclick="disableAll(); reset(subSelect);"\/><\/br>';
-	str+='				<\/td>';
-	str+='			<\/tr>';
-
-	str+='		<\/table>';
-	str+='	<\/body>';
-	str+='<\/html>';
-	return str;
-}
-function createSubMenu() {
-	//state var
-	paoId = getSubId();
-	var resetOpcount = new Command (paoId, ALL_SUB_CMDS.reset_op_cnt, ALL_CMD_TYPES.sub);
-	var confirmSub = new Command (paoId, ALL_SUB_CMDS.confirm_close, ALL_CMD_TYPES.sub);
-	var openAllSub = new Command (paoId, ALL_SUB_CMDS.send_all_open, ALL_CMD_TYPES.sub);
-	var closeAllSub = new Command (paoId, ALL_SUB_CMDS.send_all_close, ALL_CMD_TYPES.sub);
-	var enableOvUvSub = new Command (paoId, ALL_SUB_CMDS.send_all_enable_ovuv, ALL_CMD_TYPES.sub);
-	var disableOvUvSub = new Command (paoId, ALL_SUB_CMDS.send_all_disable_ovuv, ALL_CMD_TYPES.sub);
-	var sendAll2WaySub = new Command (paoId, ALL_SUB_CMDS.send_all_2way_scan, ALL_CMD_TYPES.sub);
-	var sendTimeSyncSub = new Command (paoId, ALL_SUB_CMDS.send_timesync, ALL_CMD_TYPES.sub);
-
-	var verifyAll = new Command (paoId, ALL_SUB_CMDS.v_all_banks, ALL_CMD_TYPES.sub);
-	var verifyFQ = new Command (paoId, ALL_SUB_CMDS.v_fq_banks, ALL_CMD_TYPES.sub);
-	var verifyFailed = new Command (paoId, ALL_SUB_CMDS.v_failed_banks, ALL_CMD_TYPES.sub);
-	var verifyQuestion = new Command (paoId, ALL_SUB_CMDS.v_question_banks, ALL_CMD_TYPES.sub);
-	var verifyStandalone = new Command (paoId, ALL_SUB_CMDS.v_standalone_banks, ALL_CMD_TYPES.sub);
-	var verifyStop = new Command (paoId, ALL_SUB_CMDS.v_disable_verify, ALL_CMD_TYPES.sub);
-	
-	var isV = getState("SubState_" + paoId, "isVerify");
-	var str = "";
-	str += "<html>";
-	str+='	<body style="background-color:black">';
-	str+='			<table >';
-	str+='				<tr>';
-	str+='					<td>';
-	str+='						<input type ="submit"   style="margin: 2px 2px 2px 2px" name="';
-	str+=						resetOpcount.createName();
-	str+='" value = "Reset Opcount" onclick="disableAll(); submitWithConfirm(this); reset(this);"\/>';
-	str+='						<input type ="submit"    style="margin: 2px 2px 2px 2px" name="';
-	str+= 						confirmSub.createName();
-	str+='" value = "Confirm All" onclick="disableAll(); submitWithConfirm(this); reset(this.name);"\/><br\/>';
-	str+='					<\/td>';
-	str+='					<td align ="right" valign="top">';
-	str+='						<a  href="#" onclick="closePopupWindow()" style="color:gray" title="Click here to close"> x <\/a><br\/>';
-	str+='					<\/td>';
-	str+='				<\/tr>';    
-    str+='				<tr>';
-	str+='					<td>';
-	str+='<font color="gray">Sub-Level CBC Commands: </font>'
-	str+='						<select id="subSelect" style="background-color=gray; margin: 2px 2px 2px 2px" >';
-	
-	str+='							<option  value="" style="color: white"> <\/option>';
-	str+='							<option  value="';
-	str+=							openAllSub.createName();
-	str+='" style="color: white"> Open All CapBanks<\/option>';
-	str+='							<option  value="';
-	str+=							closeAllSub.createName();
-	str+='" style="color: white"> Close All CapBanks<\/option>';
-	str+='							<option  value="';
-	str+=							enableOvUvSub.createName();
-	str+='" style="color: white"> Enable OvUv<\/option>';
-	str+='							<option  value="';
-	str+=							disableOvUvSub.createName();
-	str+='" style="color: white"> Disable OvUv<\/option>';
-	str+='							<option  value="';
-	str+=							sendAll2WaySub.createName();
-	str+='" style="color: white"> Scan All 2way CBCs<\/option>';
-	str+='							<option  value="';
-	str+=							sendTimeSyncSub.createName();
-	str+='" style="color: white"> Send All TimeSync<\/option>';
-
-	if (isV != "true") {
-		str+='							<option  value="';
-		str+=							verifyAll.createName();
-		str+='" style="color: white"> Verify All<\/option>';
-		str+='							<option  value="';
-		str+=							verifyFQ.createName();
-		str+='" style="color: white"> Verify Failed and Questionable<\/option>';
-		str+='							<option  value="';
-		str+=							verifyFailed.createName();
-		str+='" style="color: white"> Verify Failed<\/option>';
-		str+='							<option  value="';
-		str+=							verifyQuestion.createName();
-		str+='" style="color: white"> Verify Questionable<\/option>';
-		str+='							<option  value="';
-		str+=							verifyStandalone.createName();
-		str+='" style="color: white"> Verify Standalone<\/option>';
-
-	}
-	else {
-		str+='							<option  value="';
-		str+=							verifyStop.createName();
-		str+='" style="color: white"> Stop Verify <\/option>';
-	}
-	str+='						<\/select>';
-	str+='					<\/td>';
-	str+='				<\/tr>';
-	str+='				<tr>';
-	str+='					<td>';
-	str+='					<input type="submit"  name="execute" value = "Execute" onclick="disableAll(); submitWithConfirm(subSelect); reset(subSelect);"\/>';
-	str+='					<input type="submit" name="cancel" value = "Cancel" onclick="disableAll(); reset(subSelect);"\/><\/br>';
-	str+='					<\/td>';
-	str+='				<\/tr>';
-	str+='			<\/table>';
-	str+='	<\/body>';
-	str += "</html>";
-	return str;
-}
-function toggleState(els, state) {
-	for (i = 0; i < els.length; i++) {
-		els[i].disabled = state;
-	}
-}
-function disableAll() {
-	buttons = document.getElementsByTagName("input");
-	options = document.getElementsByTagName("select");
-	toggleState(buttons, true);
-	toggleState(options, true);
-}
-function submit(obj) {
-	if (obj.tagName == "SELECT") {
-		option = obj.options[obj.selectedIndex];
-		executeCommand(option.value);
-	}
-	else {
-		executeCommand(obj.name);
-	}
-
-}
-
-
-function reset(select, dontCloseCurrentPopup) {
-	buttons = document.getElementsByTagName("input");
-	options = document.getElementsByTagName("select");
-	toggleState(buttons, false);
-	toggleState(options, false);
-	if (select.tagName == "SELECT") {
-		select.options[0].selected = true;
-	} else {
-		if ((select.id == "resetOpcount") && (select.tagName == "INPUT")) {
-			select.checked = false;
-		}
-	}
-	closeCurrentPopup = !dontCloseCurrentPopup;
-	if (closeCurrentPopup) {
-		closeCurrentPopupWindow();
-	}
-	clkCountQueue = $H();
-}
-function submitWithConfirm(obj) {
-	var cmdStr; 
-	var name;
-	if (obj.tagName == "SELECT"){
-		cmdStr = getCommandVerbal(obj.options[obj.selectedIndex].value);
-		name = obj.options[obj.selectedIndex].value;
-	}
-	else{
-		cmdStr = getCommandVerbal (obj.name);
-		name = obj.name;
-	}
-	if (confirm("Are you sure you want to execute " + cmdStr + "?"))
-	{
-		var paoID = name.split("_")[1];
-		var tagDesc = name.split("_")[0];
-		submit(obj);
-	}
-}
-
 function closePopupWindow() {
-	closeCurrentPopupWindow();
-}
-//debug
-function say(word) {
-	if (word != null) {
-		alert(word);
-	} else {
-		alert("hello!");
-	}
-}
-function createCapbankMaint(paoID, disScan) {
-var scan = new Command (paoID, ALL_CAP_CMDS.scan_2way_dev, ALL_CMD_TYPES.cap);
-var ovUVEn = new Command (paoID, ALL_CAP_CMDS.bank_enable_ovuv, ALL_CMD_TYPES.cap);
-var sendTimeSync = new Command (paoID, ALL_CAP_CMDS.send_timesync, ALL_CMD_TYPES.cap);
-var str='';
-str+='<html>';
-str+='	<body style="background-color: black">';
-str+='	<table>';
-str+='		<tr>';
-str+='			<td>';
-str+='				<input type="submit"  name="';
-str+=				scan.createName();
-str+='" value="Scan" '
-if (disScan == "true")
-str+=				' disabled = "true" ' ;
-str+='onclick="disableAll(); submit(this); reset(this)"\/>';
-str+='			<\/td>';
-str+='			<td align="right" valign="top">';
-str+='				<a  href="javascript:void(0)" style="color=white;" onclick="closeCurrentPopupWindow()"title="Click To Close" > x <\/a>';
-str+='			<\/td>';
-str+='		<\/tr>';
-str+='		<tr>';
-str+='			<td>';
-str+='				<input type="submit"  name="';
-str+=			ovUVEn.createName();		
-str+='" value="Enable OV\/UV" onclick="disableAll(); submit(this); reset(this)"\/>';
-str+='			<\/td>';
-str+='		<\/tr>';
-str+='		<tr>';
-str+='			<td>';
-str+='				<input type="submit"  name="';
-str+=			sendTimeSync.createName();		
-str+='" value="Send TimeSync" onclick="disableAll(); submit(this); reset(this)"\/>';
-str+='			<\/td>';
-str+='		<\/tr>';
-str+='	<\/table>';
-str+='	<\/body>';
-str+='<\/html>';	
-
-return str;
-}
-function closeCurrentPopupWindow() {
 	if (window.parent.currentPopup) {
-		window.parent.currentPopup.hidePopup();
-	}
-}
-function createCapbankDBChange(paoID) {
-	var resetOpcount = new Command (paoID, ALL_CAP_CMDS.reset_op_cnt, ALL_CMD_TYPES.cap);
-	var commands = getAllManualStatesForCap(paoID);
-	var str = "";
-	str += "	<input id=\"resetOpcount\" name=\"";
-	str += 		resetOpcount.createName();
-	str +="\"  type=\"checkbox\" onclick=\"disableAll(); submit(this);";
-	str += "	reset(this, true)\"> <font color=\"white\">Reset Opcount</font></input>";
-	str += "	<a  href=\"javascript:void(0)\" style=\"color=white;\" onclick=\"closeCurrentPopupWindow(); reset(this)\"title=\"Click To Close\" > x </a><br/>";
-	str += "	<select name=\"manCommSelect\" style=\"background-color=gray\" onchange=\"disableAll(); submit(this); reset(this);\">';";
-	str += "<option value=\"\" style=\"\color: white\" > </option>;";
-	for (var i = 0; i < commands.length; i++)
-	{
-		str += "		<option value=\"";
-		str += commands[i].createName();
-		str += "\" style=\"color: white\">";
-		str += commands[i].name;
-		str +="  </option>;";
-	}
-	str += "	</select>';";
-	return str;
-}
-
-
-function bind (str)
-{
-	var html = str;
-	return html;
+        window.parent.currentPopup.hidePopup();
+    }
 }
 
 function showPointTimestamps (cbcID) {
-	var pointDataUrl = '/spring/capcontrol/pointdata';
+	
+	var pointDataUrl = '/spring/capcontrol/oneline/popupmenu';
+	var params = { 'menu' : 'pointTimestamp', 'cbcID': cbcID, 'oneline' : 'true' };
 	new Ajax.Request (pointDataUrl, {
         method: 'POST', 
-        parameters: 'cbcID=' + cbcID, 
+        parameters: params, 
 	    onSuccess: function (transport) {
             var html = transport.responseText;  
 		    showPopup(html);
@@ -816,35 +240,6 @@ function showPointTimestamps (cbcID) {
 	});
 }
 
-//function borrowed from cbc_funcs.js to align oneline popup
-function alignHeaders(mainTable, headerTable) {
-mytable = window.parent.document.getElementById(mainTable);
-hdrTable =  window.parent.document.getElementById(headerTable);
-	if (hdrTable)
-	{
-	hdrRow=hdrTable.getElementsByTagName('tr').item(0);
-	
-		for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
-		    var myrow = mytable.getElementsByTagName('tr').item(j);  
-		     if ((myrow != null) && myrow.style.display != 'none' && hdrRow.style.display != 'none') {
-		        var colNum = myrow.cells.length;
-		        
-		        for(i=0;i < colNum - 1; i++) {
-		            var hdrCell = hdrRow.getElementsByTagName('td').item(i);
-		            var myrowCell = myrow.cells[i];
-		            if ((hdrCell.style.display != 'none') && (myrowCell.style.display != 'none')) {
-		                maxWidth = Math.max(hdrCell.offsetWidth, myrowCell.offsetWidth);
-		                hdrCell.width = maxWidth;
-		                myrowCell.width = maxWidth;
-		                break;
-		                }
-		                                                                       
-		            }
-		    
-		        }
-		    }
-	}
-}
 //over-ridden function from PopupWindow.js
 function PopupWindow_showPopup (anchorname) {
 	this.anchorname = anchorname;
@@ -896,8 +291,5 @@ function PopupWindow_showPopup (anchorname) {
 			}
 		this.refresh();
 		}
-		alignHeaders("dataTable", "headerTable");
-		
-	
 }
 

@@ -8,7 +8,7 @@ import com.loox.jloox.LxLine;
 public abstract class OnelineObject {
     protected LiteYukonUser user;
     protected Integer paoId;
-    protected SubBus subBusMsg;
+    protected SubBus subBus;
     protected OneLineDrawing drawing;
     
     public abstract LxLine getRefLnBelow();
@@ -23,8 +23,8 @@ public abstract class OnelineObject {
         return drawing;
     }
     
-    public final SubBus getSubBusMsg() {
-        return subBusMsg;
+    public final SubBus getSubBus() {
+        return subBus;
     }
     
     public final Integer getPaoId() {

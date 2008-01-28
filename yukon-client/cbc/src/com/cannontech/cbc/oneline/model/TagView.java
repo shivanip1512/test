@@ -8,11 +8,7 @@ public interface TagView {
 
     public LxGraph getGraph();
 
-    public void setGraph(LxGraph graph);
-
     public OnelineObject getParentOnelineObject();
-
-    public void setParentOnelineObject(OnelineObject parent);
 
     public void addTagInfo();
 

@@ -76,18 +76,18 @@ public class SubUpdatableStats extends LxAbstractView implements
 
     private OnelineSub parent;
     private LxGraph graph;
-    private SubBus subBusMsg;
+    private SubBus subBus;
     private LiteYukonUser user;
     public static Hashtable<Integer, Integer> propColumnMap = new Hashtable<Integer, Integer>();
     public static Hashtable<Integer, String> propLabelMap = new Hashtable<Integer, String>();;
     public List<UpdatableTextList> allStats = new ArrayList<UpdatableTextList>();
 
-    public SubUpdatableStats(LxGraph graph, OnelineSub parent) {
+    public SubUpdatableStats(LxGraph graph, OnelineSub parent, SubBus subBus) {
         super();
         this.parent = parent;
         this.graph = graph;
         this.user = parent.getUser();
-        subBusMsg = parent.getSubBusMsg();
+        this.subBus = subBus;
         initPropColumnMap();
         initPropLabelMap();
         initAllStats();
@@ -171,7 +171,7 @@ public class SubUpdatableStats extends LxAbstractView implements
             UpdatableTextList pair = manager.adjustPosition(allStats,
                                                             prevComp,
                                                             0,
-                                                            subBusMsg,
+                                                            subBus,
                                                             user);
             copy.add(pair);
 
@@ -182,7 +182,7 @@ public class SubUpdatableStats extends LxAbstractView implements
                 UpdatableTextList pair = manager.adjustPosition(allStats,
                                                                 prevEl.getFirstElement(),
                                                                 i,
-                                                                subBusMsg,
+                                                                subBus,
                                                                 user);
                 copy.add(pair);
             }
@@ -214,15 +214,15 @@ public class SubUpdatableStats extends LxAbstractView implements
     
     //TODO make this a part of interface
     private void initPointQualCheckable() {
-        if (subBusMsg != null)
+        if (subBus != null)
         {
-            varLoad.setPointCheckable(subBusMsg);
+            varLoad.setPointCheckable(subBus);
             varLoad.setType(PointUnits.UOMID_KVAR);
 
-            wattLoad.setPointCheckable(subBusMsg);
+            wattLoad.setPointCheckable(subBus);
             wattLoad.setType(PointUnits.UOMID_KW);
 
-            voltLoad.setPointCheckable(subBusMsg);
+            voltLoad.setPointCheckable(subBus);
             voltLoad.setType(PointUnits.UOMID_KVOLTS);
 
         }

@@ -46,7 +46,7 @@ public class CBCAjaxMultiActionController extends MultiActionController {
     }
 
     private StringBuffer generateHtmlLink(CapControlCache cbcCache) {
-        StringBuffer buf = new StringBuffer("<a   href='#' onclick='handleSystemCommand()' ");
+        StringBuffer buf = new StringBuffer("<a   href='javascript:void(0);' onclick='handleSystemCommand()' ");
         buf.append((cbcCache.getSystemStatusOn()) ? "id='systemOn'>"
                 : "id='systemOff'>");
         buf.append((cbcCache.getSystemStatusOn()) ? "Disable System </a>"
@@ -62,8 +62,7 @@ public class CBCAjaxMultiActionController extends MultiActionController {
 
         LiteYukonUser user = (LiteYukonUser) req.getSession(false)
                                                 .getAttribute(LoginController.YUKON_USER);
-        CBCCommandExec executor = new CBCCommandExec(cbcCache,
-                                                     user.getUsername());
+        CBCCommandExec executor = new CBCCommandExec(cbcCache, user);
         boolean turnSystemOff = ParamUtil.getBoolean(req, "turnSystemOff");
         int commandID = (turnSystemOff) ? CBCCommand.DISABLE_SYSTEM
                 : CBCCommand.ENABLE_SYSTEM;

@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-
-<beans>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+       
 	<bean
 		class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="urlMap">
 			<map>
-				<entry key="/pointdata">
-					<ref bean="ccPointTimestampController" />
-				</entry>
 				<entry key="/capAddInfo*">
 					<ref bean="capBankAdditionalController" />
 				</entry>
@@ -21,8 +24,15 @@
 				<entry key="/checkCapPoint">
 					<ref bean="checkCapPoint" />
 				</entry>
-                <entry key="/oneline/legend"><ref bean="onelineLegendController"/></entry>
-                <entry key="/capcontrol/oneline/CBCReasonUpdaterServlet"><ref bean="onelineCommentController"/></entry>
+                <entry key="/oneline/legend">
+                    <ref bean="onelineLegendController"/>
+                </entry>
+                <entry key="/oneline/popupmenu">
+                    <ref bean="popupmenuControl"/>
+                </entry>
+                <entry key="commandexecutor">
+                    <ref bean="capControlCommandController"/>
+                </entry>
 			</map>
 		</property>
 	</bean>
@@ -61,13 +71,6 @@
 
 	<!-- Controllers -->
 
-	<bean id="ccPointTimestampController"
-		class="com.cannontech.web.editor.CCPointTimestampServlet">
-		<property name="cbcDao" ref="cbcDao" />
-        <property name="capControlCache" ref="capControlCache"/>
-        <property name="capbankDao" ref="capbankDao"/>
-		<property name="requireSession" value="true"/> 
-	</bean>
 	<bean id="capBankAdditionalController"
 		class="com.cannontech.web.editor.CapBankAdditionalServlet" />
 
@@ -102,6 +105,28 @@
     <bean id="onelineCommentController" class="com.cannontech.web.cbc.OnelineCommentController">
         <property name="commentDao" ref="capCommentDao"/>
     </bean>
+
+    <bean id="capControlCommandController"
+        class="com.cannontech.web.cbc.CapControlCommandController">
+        <property name="methodNameResolver">
+            <ref bean="methodNameResolver" />
+        </property>
+        <property name="commentDao" ref="capCommentDao" />
+        <property name="capControlCache" ref="capControlCache" />
+    </bean>
+
+    <bean id="popupmenuControl" class="com.cannontech.web.cbc.OnelinePopupMenuController">
+        <property name="methodNameResolver">
+            <bean class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+                <property name="paramName" value="menu"/>
+            </bean>
+        </property>
+        <property name="capControlCache" ref="capControlCache"/>
+        <property name="capControlCommentService" ref="capControlCommentService"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="cbcDao" ref="cbcDao" />
+        <property name="dataSource" ref="yukonDataSource"/>
+    </bean>
     
 	<!-- Method name resolvers -->
 	<bean id="methodNameResolver"
@@ -110,4 +135,5 @@
 			<value>action</value>
 		</property>
 	</bean>
+    
 </beans>

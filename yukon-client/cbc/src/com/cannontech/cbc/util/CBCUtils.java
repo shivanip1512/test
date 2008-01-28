@@ -326,20 +326,6 @@ public final class CBCUtils {
 
     }
 
-    public static String getAllManualCapStates() {
-        String liteStates = "";
-        LiteState[] cbcStates = CBCUtils.getCBCStateNames();
-        // create a comma separated string of all states
-        // "Any:-1,Open:0,Close:1"
-        for (int i = 0; i < cbcStates.length; i++) {
-            LiteState state = cbcStates[i];
-            liteStates += state.toString() + ":" + state.getStateRawState();
-            if (i < (cbcStates.length - 1))
-                liteStates += ",";
-        }
-        return liteStates;
-    }
-
     public static boolean isCBAdditionalInfoAllowed(LiteYukonUser user) {
         boolean showCapBankAddInfo = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.SHOW_CB_ADDINFO)).booleanValue();
         return showCapBankAddInfo;

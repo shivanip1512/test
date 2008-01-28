@@ -618,32 +618,33 @@ function toggleImg( imgID ) {
 
 
 function alignHeaders(mainTable, headerTable) {
-mytable = document.getElementById(mainTable);
-
-hdrTable =  document.getElementById(headerTable);
-	if (hdrTable)
-	{
-	hdrRow=hdrTable.getElementsByTagName('tr').item(0);
+    mytable = document.getElementById(mainTable);
+    hdrTable =  document.getElementById(headerTable);
 	
-		for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
-		    var myrow = mytable.getElementsByTagName('tr').item(j);  
-		     if ((myrow != null) && myrow.style.display != 'none' && hdrRow.style.display != 'none') {
-		        var colNum = myrow.cells.length;
+    if (mytable == null || hdrTable == null) return;
+    
+    $(mainTable).hide();
+    
+	hdrRow = hdrTable.getElementsByTagName('tr').item(0);
+	
+    for (j=0; j < mytable.getElementsByTagName('tr').length; j ++ ) {
+        var myrow = mytable.getElementsByTagName('tr').item(j);  
+		if ((myrow != null) && myrow.style.display != 'none' && hdrRow.style.display != 'none') {
+		  var colNum = myrow.cells.length;
 		        
-		        for(i=0;i < colNum - 1; i++) {
-		            var hdrCell = hdrRow.getElementsByTagName('td').item(i);
-		            var myrowCell = myrow.cells[i];
-		            if ((hdrCell.style.display != 'none') && (myrowCell.style.display != 'none')) {
-		                maxWidth = Math.max(hdrCell.offsetWidth, myrowCell.offsetWidth);
-		                hdrCell.width = maxWidth;
-		                myrowCell.width = maxWidth;
-		                }
-		                                                                       
-		            }
-		    
-		        }
-		    }
-	}
+		  for (i=0; i < colNum - 1; i++) {
+		      var hdrCell = hdrRow.getElementsByTagName('td').item(i);
+		      var myrowCell = myrow.cells[i];
+		      if ((hdrCell.style.display != 'none') && (myrowCell.style.display != 'none')) {
+		          maxWidth = Math.max(hdrCell.offsetWidth, myrowCell.offsetWidth);
+		          hdrCell.width = maxWidth;
+		          myrowCell.width = maxWidth;
+		      }                                                                     
+		  }	    
+	   }
+    }
+    
+    $(mainTable).show();
 }
 
 var CtiNonScrollTable = Class.create();

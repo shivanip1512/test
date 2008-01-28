@@ -32,7 +32,7 @@ public class DynamicLineElement extends LineElement implements OnelineLxElement 
     public StreamableCapObject getStreamable(String compName) {
         if (parentObject instanceof OnelineSub) {
            OnelineSub sub = (OnelineSub) parentObject;
-            return sub.getSubBusMsg();
+            return sub.getSubBus();
         }
         if (parentObject instanceof OnelineFeeder) {
             OnelineFeeder feeder = (OnelineFeeder)parentObject;

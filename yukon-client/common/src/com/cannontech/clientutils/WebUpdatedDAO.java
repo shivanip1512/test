@@ -10,11 +10,16 @@ package com.cannontech.clientutils;
  * strategy for dealing with this situation.
  * see @WebUpdatedPAObjectMap class for the implementation
  */
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 public interface WebUpdatedDAO<E> {
 
+    public void removeId(E e);
+    
+    public void removeIds(Collection<E> ids);
+    
     public List<E> getUpdatedIdsSince(Date timeStamp, E... ids);
     
     public void manualUpdate(Date timeStamp, E... ids);

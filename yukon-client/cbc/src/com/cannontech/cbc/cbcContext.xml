@@ -35,6 +35,12 @@
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
+  <alias alias="capControlCommentDao" name="capCommentDao"/>
+  
+  <bean id="capControlCommentService" class="com.cannontech.cbc.service.impl.CapControlCommentServiceImpl">
+    <property name="capControlCommentDao" ref="capControlCommentDao"/>
+  </bean>
+  
   <bean id="cbcCache" class="com.cannontech.cbc.cache.impl.CapControlCacheImpl" init-method="initialize" >
   	  <property name="defCapControlConn" ref="cbcConnection"/>
   	  <property name="refreshTimer" ref="globalScheduledExecutor"/>

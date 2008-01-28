@@ -2,13 +2,14 @@ package com.cannontech.cbc.oneline.model.cap;
 
 import java.awt.geom.Point2D;
 
+import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.oneline.CommandPopups;
-import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.TagView;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.yukon.cbc.CapBankDevice;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
@@ -16,22 +17,14 @@ import com.loox.jloox.LxGraph;
 @SuppressWarnings("serial")
 public class CapBankTagView extends LxAbstractView implements TagView {
 
-    public OnelineCap parent;
-    public LxGraph graph;
-    public CapBankHiddenStates states;
+    public final OnelineCap parent;
+    public final LxGraph graph;
+    public final CapBankDevice capBank;
 
-    public CapBankTagView(LxGraph g, OnelineObject p, HiddenStates s) {
-        graph = g;
-        parent = (OnelineCap) p;
-        states = (CapBankHiddenStates) s;
-    }
-
-    public HiddenStates getStates() {
-        return states;
-    }
-
-    public void setStates(HiddenStates states) {
-        this.states = (CapBankHiddenStates) states;
+    public CapBankTagView(LxGraph g, OnelineObject p, CapBankDevice capBank) {
+        this.graph = g;
+        this.parent = (OnelineCap) p;
+        this.capBank = capBank;
     }
 
     public void draw() {
@@ -44,16 +37,8 @@ public class CapBankTagView extends LxAbstractView implements TagView {
         return graph;
     }
 
-    public void setGraph(LxGraph graph) {
-        this.graph = graph;
-    }
-
     public OnelineObject getParentOnelineObject() {
         return parent;
-    }
-
-    public void setParentOnelineObject(OnelineObject parent) {
-        this.parent = (OnelineCap) parent;
     }
 
     public void addTagInfo() {
@@ -95,20 +80,31 @@ public class CapBankTagView extends LxAbstractView implements TagView {
 
     public String getTagString() {
         String tagString = "T:";
-        if (states.isDisabled().booleanValue())
+        if (capBank.getCcDisableFlag()) {
             tagString += "D:";
-        else
+        } else {
             tagString += ":";
-        if (states.isOVUVDisabled())
+        }
+        
+        if (capBank.getOvUVDisabled()) {
             tagString += "V:";
-        else
+        } else {
             tagString += ":";
-        if (states.isStandalone())
-            tagString += "S";
-        else if (states.isFixed())
-            tagString += "F";
-        else
-            tagString += "";
+        }
+        
+        CapBankOperationalState state = CapBankOperationalState.valueOf(capBank.getOperationalState());
+        switch (state) {
+            case Fixed : {
+                tagString += "F";
+                break;
+            }
+            case StandAlone : {
+                tagString += "S";
+                break;
+            }
+            default : tagString += "";
+        }
+            
         return tagString;
     }
 

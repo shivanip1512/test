@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
-import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.TagView;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
@@ -42,11 +41,20 @@ public class OnelineFeeder extends OnelineObject {
     private StaticImage editorImage;
     private StaticImage infoImage;
 
+    
+    public OnelineFeeder(SubBus subBus) {
+        this.subBus = subBus;
+
+    }
+    
     @Override
     public void draw() {
         // add the feeder distribution line
-        int numOfFdr = subBusMsg.getCcFeeders().size();
+        int numOfFdr = subBus.getCcFeeders().size();
         currFdrIdx = drawing.getFeeders().size();
+        
+        Feeder feeder = subBus.getCcFeeders().get(currFdrIdx);
+        
         double refYBelow = getRefLnBelow().getPoint1().getY();
         double refYAbove = getRefLnAbove().getPoint1().getY();
         double fdrOffset = (refYBelow - refYAbove) / numOfFdr;
@@ -65,14 +73,12 @@ public class OnelineFeeder extends OnelineObject {
         LxGraph graph = drawing.getDrawing().getLxGraph();
         graph.add(feederLn);
         graph.add(editorImage);
-        //graph.add(infoImage);
+        
         UpdatableStats stats = new FeederUpdatableStats(graph, this);
-        stats.draw();
-        HiddenStates feederStates = new FeederHiddenStates(graph, this);
-        TagView tagView = new FeederTagView(graph, this, feederStates);
-        tagView.draw();
+        TagView tagView = new FeederTagView(graph, this, feeder);
 
-        feederStates.draw();
+        stats.draw();
+        tagView.draw();
     }
 
     private void initInformationImage() {
@@ -111,7 +117,7 @@ public class OnelineFeeder extends OnelineObject {
             feederName.setPaint(Color.PINK);
             feederName.setX(currFdrX + 5);
             feederName.setY(fdrYCoord + 5);
-            Feeder feeder = subBusMsg.getCcFeeders().get(currFdrIdx);
+            Feeder feeder = subBus.getCcFeeders().get(currFdrIdx);
             feederName.setText(feeder.getCcName());
             drawing.getDrawing().getLxGraph().add(feederName);
             feederName.setName(getName());
@@ -119,11 +125,6 @@ public class OnelineFeeder extends OnelineObject {
 
         }
         return feederLn;
-    }
-
-    public OnelineFeeder(SubBus subBusMessage) {
-        subBusMsg = subBusMessage;
-
     }
 
     @Override
@@ -135,7 +136,7 @@ public class OnelineFeeder extends OnelineObject {
     }
 
     private Integer getCurrentFeederIdFromMessage() {
-        Feeder feeder = subBusMsg.getCcFeeders()
+        Feeder feeder = subBus.getCcFeeders()
                                           .get(drawing.getFeeders().size());
         Integer ccId = feeder.getCcId();
         return ccId;
@@ -178,7 +179,7 @@ public class OnelineFeeder extends OnelineObject {
     }
 
     public Feeder getStreamable() {
-        return subBusMsg.getCcFeeders().get(currFdrIdx);
+        return subBus.getCcFeeders().get(currFdrIdx);
     }
 
     public UpdatableTextList getTag() {

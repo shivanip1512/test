@@ -4,7 +4,6 @@ import java.awt.geom.Point2D;
 
 import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.elements.SubDynamicImage;
-import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.TagView;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
@@ -17,17 +16,15 @@ import com.loox.jloox.LxGraph;
 @SuppressWarnings("serial")
 public class SubTagView extends LxAbstractView implements TagView {
 
-    private SubBus subBusMsg;
-    private LxGraph graph;
-    private OnelineSub parent;
-    private SubHiddenStates states;
+    private final LxGraph graph;
+    private final OnelineSub parent;
+    private final SubBus subBus;
 
-    public SubTagView(LxGraph graph, OnelineObject parent, HiddenStates states) {
+    public SubTagView(LxGraph graph, OnelineObject parent, SubBus subBus) {
         super();
         this.graph = graph;
         this.parent = (OnelineSub) parent;
-        this.states = (SubHiddenStates) states;
-        subBusMsg = parent.getSubBusMsg();
+        this.subBus = subBus;
     }
 
     public void addTagInfo() {
@@ -50,7 +47,7 @@ public class SubTagView extends LxAbstractView implements TagView {
                                                          new Integer((int) label.getWidth() + 10),
                                                          null);
 
-        label.setName(CommandPopups.SUB_TAG + "_" + subBusMsg.getCcId());
+        label.setName(CommandPopups.SUB_TAG + "_" + subBus.getCcId());
         graph.add(label);
         UpdatableTextList tag = new UpdatableTextList();
         //        graph.add(value);
@@ -73,21 +70,13 @@ public class SubTagView extends LxAbstractView implements TagView {
 
     public String getTagString() {
         String tagString = "T:";
-        if (states.isDisabled().booleanValue())
+        if (subBus.getCcDisableFlag())
             tagString += "D:";
         else
             tagString += ":";
-        if (states.isOVUVDisabled())
+        if (subBus.getOvUvDisabledFlag())
             tagString += "V";
         return tagString;
-    }
-
-    public void setGraph(LxGraph g) {
-        graph = g;
-    }
-
-    public void setParentOnelineObject(OnelineObject p) {
-        parent = (OnelineSub) p;
     }
 
     @Override

@@ -3,28 +3,26 @@ package com.cannontech.cbc.oneline.model.feeder;
 import java.awt.geom.Point2D;
 
 import com.cannontech.cbc.oneline.CommandPopups;
-import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.TagView;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.yukon.cbc.Feeder;
 import com.loox.jloox.LxAbstractView;
 import com.loox.jloox.LxGraph;
 
 @SuppressWarnings("serial")
 public class FeederTagView extends LxAbstractView implements TagView {
 
-    private LxGraph graph;
-    private OnelineFeeder parent;
-    private FeederHiddenStates states;
+    private final LxGraph graph;
+    private final OnelineFeeder parent;
+    private final Feeder feeder;
 
-    public FeederTagView(LxGraph graph, OnelineObject parent,
-            HiddenStates states) {
-        super();
+    public FeederTagView(LxGraph graph, OnelineObject parent, Feeder feeder) {
         this.graph = graph;
         this.parent = (OnelineFeeder) parent;
-        this.states = (FeederHiddenStates) states;
+        this.feeder = feeder;
     }
 
     public void addTagInfo() {
@@ -75,30 +73,20 @@ public class FeederTagView extends LxAbstractView implements TagView {
 
     public String getTagString() {
         String tagString = "T:";
-        if (states.isDisabled().booleanValue())
+        if (feeder.getCcDisableFlag())
             tagString += "D:";
         else
             tagString += ":";
-        if (states.isOVUVDisabled())
+        if (feeder.getOvUvDisabledFlag())
             tagString += "V";
             
         return tagString;
 
     }
 
-    public void setGraph(LxGraph g) {
-        graph = g;
-
-    }
-
-    public void setParentOnelineObject(OnelineObject p) {
-        parent = (OnelineFeeder) p;
-    }
-
     @Override
     public LxGraph getGraph() {
         return graph;
-
     }
 
 }

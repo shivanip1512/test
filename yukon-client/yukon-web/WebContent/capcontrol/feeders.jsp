@@ -30,7 +30,10 @@
 	
     boolean showFlip = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
     if (popupEvent == null) popupEvent = "onmouseover";
-	SubStation substation = filterCapControlCache.getSubstation( new Integer(subid) );
+    SubStation substation = null;
+    if (subid > 0) {
+        substation = filterCapControlCache.getSubstation( new Integer(subid) );
+    }
 	List<SubBus> subBuses = filterCapControlCache.getSubBusesBySubStation(substation);
     Collections.sort(subBuses, CBCUtils.SUB_DISPLAY_COMPARATOR);
 	List<Feeder> feeders = filterCapControlCache.getFeedersBySubStation(substation);
@@ -587,7 +590,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					<%
 					if (CBCUtils.isTwoWay(obj)) {
 					%>					
-					<a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', 'cbcPointTimestamps.jsp?cbcID=<%=obj.getLiteID()%>', 500, 600)" >
+					<a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>', 500, 600)" >
 						<img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestamp information.<br>for the cap bank controller device');" />
 					</a>
 					<%

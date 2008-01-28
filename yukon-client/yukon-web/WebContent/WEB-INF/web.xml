@@ -998,12 +998,6 @@
 		<url-pattern>/capcontrol/oneline/OnelineCBCServlet</url-pattern>
 	</servlet-mapping>
 	<servlet-mapping>
-		<servlet-name>capcontrol</servlet-name>
-		<url-pattern>
-			/capcontrol/oneline/CBCReasonUpdaterServlet
-		</url-pattern>
-	</servlet-mapping>
-	<servlet-mapping>
 		<servlet-name>DynamicTextServlet</servlet-name>
 		<url-pattern>/servlet/DynamicTextServlet</url-pattern>
 	</servlet-mapping>

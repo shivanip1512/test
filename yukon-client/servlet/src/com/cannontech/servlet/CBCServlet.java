@@ -23,7 +23,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CapControlCommentDao;
 import com.cannontech.cbc.dao.CommentAction;
@@ -64,7 +63,6 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
     public static final String REF_SECONDS_DEF = "60";
     public static final String REF_SECONDS_PEND = "5";
 
-    private String ovuvEnabled = "false";
     private CapControlCache cbcCache;
 
     /**
@@ -118,16 +116,15 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
             //be sure we have a valid user and that user has the rights to control
             if( user != null && CBCWebUtils.hasControlRights(session) ) {
                 try {
-                    Writer writer = resp.getWriter();
                     if (areaId != -1){
-                        updateSubAreaMenu(areaId, writer, user);
+                        updateSubAreaMenu(areaId, resp, user);
                     }else if(specialAreaId != -1){
-                        updateSubSpecialAreaMenu(specialAreaId, writer, user);
+                        updateSubSpecialAreaMenu(specialAreaId, resp, user);
                     }else if( commentID != 0){
                         processComment(commentID,req,user);
                     } else {
                         //send the command with the id, type, paoid
-                        executeCommand( req, user.getUsername() );
+                        executeCommand( req, user);
                     }
                 } catch( Exception e ) {
                     CTILogger.warn( "Servlet request was attempted but failed for the following reason:", e );
@@ -185,30 +182,42 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         }
     }
 
-    private void updateSubAreaMenu(Integer areaId, Writer writer, LiteYukonUser user) throws IOException {
-        String ovuvEnabled = getOvUvEnabled(user);
-        CBCArea area = cbcCache.getCBCArea(areaId);
-        String msg = area.getPaoName() + ":" + areaId + ":";
-        msg += (area.getDisableFlag()) ? "DISABLED" : "ENABLED";
-        if (area.getOvUvDisabledFlag()) {
-            msg += "-V";
+    private void updateSubAreaMenu(Integer areaId, HttpServletResponse response,
+            LiteYukonUser user) throws IOException {
+        try {
+            Writer writer = response.getWriter();
+            String ovuvEnabled = getOvUvEnabled(user);
+            CBCArea area = cbcCache.getCBCArea(areaId);
+            String msg = area.getPaoName() + ":" + areaId + ":";
+            msg += (area.getDisableFlag()) ? "DISABLED" : "ENABLED";
+            if (area.getOvUvDisabledFlag()) {
+                msg += "-V";
+            }
+            msg+= ":" + ovuvEnabled;
+            writer.write (msg);
+            writer.flush();
+        } catch (NotFoundException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
-        msg+= ":" + ovuvEnabled;
-        writer.write (msg);
-        writer.flush();
     }
 
-    private void updateSubSpecialAreaMenu(Integer areaId, Writer writer, LiteYukonUser user) throws IOException {
-        String ovuvEnabled = getOvUvEnabled(user);
-        CBCSpecialArea area = cbcCache.getCBCSpecialArea(areaId);
-        String msg = area.getPaoName() + ":" + areaId + ":";
-        msg += (area.getDisableFlag())? "DISABLED" : "ENABLED";
-        if (area.getOvUvDisabledFlag()) { 
-            msg += "-V";
+    private void updateSubSpecialAreaMenu(Integer areaId, HttpServletResponse response,
+            LiteYukonUser user) throws IOException {
+        try {
+            Writer writer = response.getWriter();
+            String ovuvEnabled = getOvUvEnabled(user);
+            CBCSpecialArea area = cbcCache.getCBCSpecialArea(areaId);
+            String msg = area.getPaoName() + ":" + areaId + ":";
+            msg += (area.getDisableFlag())? "DISABLED" : "ENABLED";
+            if (area.getOvUvDisabledFlag()) { 
+                msg += "-V";
+            }
+            msg+= ":" + ovuvEnabled;
+            writer.write (msg);
+            writer.flush();
+        } catch (NotFoundException e) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
         }
-        msg+= ":" + ovuvEnabled;
-        writer.write (msg);
-        writer.flush();
     }
 
     /**
@@ -288,7 +297,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         String[] allIds = ParamUtil.getStrings( req, "id" );
         Date timeFrame = new Date(ParamUtil.getLong(req, "lastUpdate"));
         
-        ovuvEnabled = getOvUvEnabled(user);
+        String ovuvEnabled = getOvUvEnabled(user);
         
         final CBCDisplay cbcDisplay = new CBCDisplay(user);
 
@@ -304,16 +313,16 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                 
                 final String updatedId = updatedIds.get(i).toString();
                 //go get the XML data for the specific type of element
-                if(handleSubstationGET(updatedId, xmlMsgs, i, cbcDisplay)){
+                if(handleSubstationGET(updatedId, xmlMsgs, i, cbcDisplay, ovuvEnabled)){
                     continue;
                 }
-                else if(handleSubGET(updatedId, xmlMsgs, i, cbcDisplay)) {
+                else if(handleSubGET(updatedId, xmlMsgs, i, cbcDisplay, ovuvEnabled)) {
                     continue;
                 }
-                else if(handleFeederGET(updatedId, xmlMsgs, i, cbcDisplay)) {
+                else if(handleFeederGET(updatedId, xmlMsgs, i, cbcDisplay, ovuvEnabled)) {
                     continue;
                 }
-                else if(handleCapBankGET(updatedId, xmlMsgs, i, cbcDisplay)) {
+                else if(handleCapBankGET(updatedId, xmlMsgs, i, cbcDisplay, ovuvEnabled)) {
                     continue;
                 }
             }
@@ -335,7 +344,8 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * id is a SubBus id, else returns false.
      *  
      */
-    private boolean handleSubstationGET( String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
+    private boolean handleSubstationGET( String ids, ResultXML[] xmlMsgs, int indx, 
+            CBCDisplay cbcDisplay, String ovuvEnabled) {
     	SubStation sub;
     	try {
         	sub = cbcCache.getSubstation( new Integer(ids) );
@@ -364,7 +374,8 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * id is a SubBus id, else returns false.
      *  
      */
-    private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
+    private boolean handleSubGET( String ids, ResultXML[] xmlMsgs, int indx, 
+            CBCDisplay cbcDisplay, String ovuvEnabled) {
     	SubBus sub;
     	try{ 
     		sub = cbcCache.getSubBus( new Integer(ids) );
@@ -400,7 +411,8 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * id is a Feeder id, else returns false.
      *  
      */
-    private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
+    private boolean handleFeederGET( String ids, ResultXML[] xmlMsgs, int indx, 
+            CBCDisplay cbcDisplay, String ovuvEnabled) {
     	Feeder fdr;
     	try {
     		fdr = cbcCache.getFeeder( new Integer(ids) );
@@ -438,7 +450,8 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * @param req 
      *  
      */
-    private boolean handleCapBankGET(String ids, ResultXML[] xmlMsgs, int indx, CBCDisplay cbcDisplay) {
+    private boolean handleCapBankGET(String ids, ResultXML[] xmlMsgs, int indx, 
+            CBCDisplay cbcDisplay, String ovuvEnabled) {
     	CapBankDevice capBank;
     	try {
     		capBank = cbcCache.getCapBankDevice( new Integer(ids) );
@@ -530,7 +543,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * CBC object types.
      * @throws ServletRequestBindingException 
      */
-    private synchronized void executeCommand( HttpServletRequest req, String userName ) throws ServletRequestBindingException {
+    private synchronized void executeCommand( HttpServletRequest req, LiteYukonUser user) throws ServletRequestBindingException {
         int cmdID = ServletRequestUtils.getIntParameter(req, "cmdID", 0);
         int paoID = ServletRequestUtils.getIntParameter(req, "paoID", 0);
         String controlType = ServletRequestUtils.getStringParameter(req, "controlType", "");
@@ -543,7 +556,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                         ", opt = " + optParams +
                         ", operationalState = " + operationalState);
         
-        final CBCCommandExec cbcExecutor = new CBCCommandExec(cbcCache, userName );
+        final CBCCommandExec cbcExecutor = new CBCCommandExec(cbcCache, user);
         
         //send the command
         cbcExecutor.commandExecuteMethod(controlType, cmdID, paoID, optParams, operationalState);

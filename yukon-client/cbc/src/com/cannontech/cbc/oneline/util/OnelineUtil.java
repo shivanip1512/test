@@ -102,9 +102,9 @@ public class OnelineUtil {
         return null;
     }
 
-    public static List stringToList(String s) {
+    public static List<String> stringToList(String s) {
         String[] temp = StringUtils.split(s, ':');
-        List<String> l = new ArrayList(0);
+        List<String> l = new ArrayList<String>();
         for (int i = 0; i < temp.length; i++) {
             String string = temp[i];
             if (string.equalsIgnoreCase("null")) {
@@ -146,11 +146,11 @@ public class OnelineUtil {
     public static Dimension getDrawingDimension(SubBus subBusMsg) {
 
         // size determining stuff
-        Vector ccFeeders = subBusMsg.getCcFeeders();
+        Vector<Feeder> ccFeeders = subBusMsg.getCcFeeders();
         int maxCapNum = 0;
         String maxCapFeederName = "";
-        for (Iterator iter = ccFeeders.iterator(); iter.hasNext();) {
-            Feeder f = (Feeder) iter.next();
+        for (Iterator<Feeder> iter = ccFeeders.iterator(); iter.hasNext();) {
+            Feeder f = iter.next();
             if (f.getCcCapBanks().size() > maxCapNum) {
                 maxCapNum = f.getCcCapBanks().size();
                 maxCapFeederName = f.getCcName();
@@ -252,6 +252,7 @@ public class OnelineUtil {
         return link;
     }
     
+    @SuppressWarnings("static-access")
     public static int getYukonType (StreamableCapObject obj) {
         if (obj instanceof SubBus)
         {
@@ -322,7 +323,7 @@ public class OnelineUtil {
 
             OneLineDrawing onelineDrawing = canvas.getDrawing();
             Drawing drawing = onelineDrawing.getDrawing();
-            SubBus subBusMsg = onelineDrawing.getSub().getSubBusMsg();
+            SubBus subBusMsg = onelineDrawing.getSub().getSubBus();
 
             CapControlSVGGenerator gen = new CapControlSVGGenerator(svgOptions,
                                                                     drawing);

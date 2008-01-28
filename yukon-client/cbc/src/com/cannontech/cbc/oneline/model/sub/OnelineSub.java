@@ -7,7 +7,6 @@ import java.awt.geom.Point2D;
 import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
 import com.cannontech.cbc.oneline.elements.SubDynamicImage;
-import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.TagView;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
@@ -24,17 +23,16 @@ import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 
 public class OnelineSub extends OnelineObject {
-    public static final String SUB_TAG = "SubTag_";
-    public static final String SUB_TRANSFORMER_IMG = "sub_TransformerImg";
+    public static String NAME_PREFIX = "OnelineSub_";
     private StaticText name = null;
     private SubDynamicImage transformerImg = null;
     private DynamicLineElement injectionLine;
     private DynamicLineElement distributionLn;
     private StaticImage editorImage;
 
-    public OnelineSub(SubBus subBusMessage) {
-        subBusMsg = subBusMessage;
-        paoId = subBusMsg.getCcId();
+    public OnelineSub(SubBus subBus) {
+        this.subBus = subBus;
+        paoId = subBus.getCcId();
     }
 
     @Override
@@ -58,18 +56,16 @@ public class OnelineSub extends OnelineObject {
         initEditorImage();
         graph.add(editorImage);
 
-        UpdatableStats stats = new SubUpdatableStats(graph, this);
+        UpdatableStats stats = new SubUpdatableStats(graph, this, getSubBus());
+        TagView tagView = new SubTagView(graph, this, getSubBus());
+
         stats.draw();
-        //tag info
-        HiddenStates states = new SubHiddenStates(graph, this);
-        TagView tagView = new SubTagView(graph, this, states);
         tagView.draw();
-        states.draw();
     }
 
     private void initEditorImage() {
         editorImage = new StaticImage();
-        String link = OnelineUtil.createBookmarkLink(subBusMsg.getCcId().intValue());
+        String link = OnelineUtil.createBookmarkLink(subBus.getCcId().intValue());
         editorImage.setLinkTo(link);
         editorImage.setYukonImage(OnelineUtil.IMG_EDITOR);
         editorImage.setX(getInjectionLine().getPoint1().getX() + 5);
@@ -97,10 +93,10 @@ public class OnelineSub extends OnelineObject {
 
     public SubDynamicImage getTransformerImg() {
         if (transformerImg == null) {
-            transformerImg = new SubDynamicImage(subBusMsg, new SubImgState());
+            transformerImg = new SubDynamicImage(subBus, new SubImgState());
             OneLineParams layoutParams = drawing.getLayoutParams();
             transformerImg.setCenter(20, layoutParams.getHeight() / 3 + 50);
-            transformerImg.setName(SUB_TRANSFORMER_IMG);
+            transformerImg.setName(createSubName());
             transformerImg.setLinkTo("javascript:void(0)");
 
         }
@@ -112,7 +108,7 @@ public class OnelineSub extends OnelineObject {
             name = new StaticText();
             name.setFont(new java.awt.Font("arial", Font.BOLD, 16));
             name.setPaint(Color.WHITE);
-            name.setText(subBusMsg.getCcName());
+            name.setText(subBus.getCcName());
             StaticImage ccLogo = drawing.getLogos().getCcLogo();
             double ccLogoX = ccLogo.getX();
             name.setX(ccLogoX);
@@ -143,7 +139,7 @@ public class OnelineSub extends OnelineObject {
 
     public DynamicLineElement getDistributionLn() {
         if (distributionLn == null) {
-            int numOfFdr = subBusMsg.getCcFeeders().size();
+            int numOfFdr = subBus.getCcFeeders().size();
             double refYBelow = getRefLnBelow().getPoint1().getY();
             double refYAbove = getRefLnAbove().getPoint1().getY();
             double fdrOffset = (refYBelow - refYAbove) / numOfFdr;
@@ -164,6 +160,10 @@ public class OnelineSub extends OnelineObject {
             distributionLn.setName("Sub_Distribution_" + getPaoId());
         }
         return distributionLn;
+    }
+    
+    private String createSubName() {
+        return OnelineSub.NAME_PREFIX + getPaoId();
     }
 
 }

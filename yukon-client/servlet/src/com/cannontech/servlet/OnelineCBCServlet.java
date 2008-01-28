@@ -50,7 +50,7 @@ public class OnelineCBCServlet extends HttpServlet {
         {
             //This will be coming from a move back request in oneline.
             int paoID = ParamUtil.getInteger( req, "paoID" );
-            executeCommand( req, user.getUsername() );
+            executeCommand( req, user);
             redirectURL= "/capcontrol/feeders.jsp";
             currentSubId = cache.getParentSubBusID(paoID);
         }else
@@ -171,7 +171,7 @@ public class OnelineCBCServlet extends HttpServlet {
      * Allows the execution of commands to the cbc server for all
      * CBC object types.
      */
-    private void executeCommand( HttpServletRequest req, String userName ) {
+    private void executeCommand( HttpServletRequest req, LiteYukonUser user) {
 
         int cmdID = ParamUtil.getInteger( req, "cmdID" );
         int paoID = ParamUtil.getInteger( req, "paoID" );
@@ -184,7 +184,7 @@ public class OnelineCBCServlet extends HttpServlet {
                         ", paoID = " + paoID +
                         ", opt = " + optParams  );
 
-        CBCCommandExec cbcExecutor = new CBCCommandExec( cache, userName );
+        CBCCommandExec cbcExecutor = new CBCCommandExec(cache, user);
 
         if( controlType.equals(CapControlConst.CMD_TYPE_CAPBANK) )
             cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams );

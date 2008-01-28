@@ -2,7 +2,6 @@ package com.cannontech.cbc.oneline.model.cap;
 
 import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
-import com.cannontech.cbc.oneline.model.HiddenStates;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
@@ -38,6 +37,10 @@ public class OnelineCap extends OnelineObject {
     private StaticText capBankName;
     private StaticImage tmStmpImage;
 
+    public OnelineCap(SubBus subBus) {
+        this.subBus = subBus;
+    }
+    
     @Override
     public void draw() {
         currFdrIndex = drawing.getFeeders().size() - 1;
@@ -72,13 +75,12 @@ public class OnelineCap extends OnelineObject {
         if (tmStmpImage != null)
             graph.add(tmStmpImage);
             
+        CapBankDevice capBank = getCurrentCapFromMessage();
+        
         UpdatableStats capStats = new CapBankUpdatableStats(graph, this);
+        CapBankTagView tagView = new CapBankTagView(graph, this, capBank);
+
         capStats.draw();
-        HiddenStates hiddenStates = new CapBankHiddenStates(graph, this);
-        CapBankTagView tagView = new CapBankTagView(graph, this, hiddenStates);
-        HiddenStates capBankInfo = new CapBankAdditionalInfo (graph, this);
-        hiddenStates.draw();
-        capBankInfo.draw();
         tagView.draw();
     }
 
@@ -127,7 +129,7 @@ public class OnelineCap extends OnelineObject {
 
     private void initStateImage(double xImgYPos, double imgXPos) {
         stateImage = new StateImage();
-        Feeder feeder = subBusMsg.getCcFeeders().get(currFdrIndex);
+        Feeder feeder = subBus.getCcFeeders().get(currFdrIndex);
         CapBankDevice cap = feeder.getCcCapBanks().get(currentCapIdx);
         stateImage.setPointID(cap.getStatusPointID().intValue());
         stateImage.setX(imgXPos);
@@ -148,7 +150,7 @@ public class OnelineCap extends OnelineObject {
 
     private void initEditorImage() {
         editorImage = new StaticImage();
-        String link = OnelineUtil.createBookmarkLink(getCurrentCapIdFromMessage().intValue());
+        String link = OnelineUtil.createBookmarkLink(getCurrentCapIdFromMessage());
         editorImage.setLinkTo(link);
         editorImage.setYukonImage(OnelineUtil.IMG_EDITOR);
         editorImage.setX(stateImage.getX() - 20);
@@ -197,10 +199,6 @@ public class OnelineCap extends OnelineObject {
 
     }
 
-    public OnelineCap(SubBus subBusMessage) {
-        subBusMsg = subBusMessage;
-    }
-
     @Override
     public void addDrawing(OneLineDrawing d) {
         drawing = d;
@@ -218,12 +216,18 @@ public class OnelineCap extends OnelineObject {
     public String createCapName() {
         return NAME_PREFIX + getPaoId();
     }
+    
+    public int getCurrentCapIdFromMessage() {
+        CapBankDevice capBank = getCurrentCapFromMessage();
+        int paoId = capBank.getCcId();
+        return paoId;
+    }
 
-    public Integer getCurrentCapIdFromMessage() {
+    private CapBankDevice getCurrentCapFromMessage() {
         int currFdrIndex = drawing.getFeeders().size() - 1;
-        Feeder f = subBusMsg.getCcFeeders().get(currFdrIndex);
+        Feeder f = subBus.getCcFeeders().get(currFdrIndex);
         CapBankDevice c = f.getCcCapBanks().get(currentCapIdx);
-        return c.getCcId();
+        return c;
     }
 
     public int getCurrentCapIdx() {
@@ -251,7 +255,7 @@ public class OnelineCap extends OnelineObject {
     }
 
     public CapBankDevice getStreamable() {
-        Feeder feeder = subBusMsg.getCcFeeders().get(currFdrIndex);
+        Feeder feeder = subBus.getCcFeeders().get(currFdrIndex);
         CapBankDevice cap = feeder.getCcCapBanks().get(currentCapIdx);
         return cap;
     }

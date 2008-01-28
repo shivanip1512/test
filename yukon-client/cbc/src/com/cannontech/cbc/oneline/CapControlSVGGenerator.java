@@ -1,15 +1,10 @@
 package com.cannontech.cbc.oneline;
 
-import java.util.Map;
-import java.util.Set;
-
-import org.apache.batik.dom.svg.SVGDOMImplementation;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
 import org.w3c.dom.svg.SVGDocument;
 
-import com.cannontech.cbc.oneline.elements.HiddenTextElement;
 import com.cannontech.cbc.oneline.model.cap.OnelineCap;
 import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
@@ -26,33 +21,6 @@ import com.loox.jloox.LxAbstractText;
 import com.loox.jloox.LxComponent;
 
 public class CapControlSVGGenerator extends BaseSVGGenerator {
-    private static final String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
-
-    @Override
-    public Element createElement(SVGDocument doc, LxComponent comp) {
-        if (comp instanceof HiddenTextElement) {
-
-            HiddenTextElement text = (HiddenTextElement) comp;
-            Element textElem = doc.createElementNS(svgNS, "text");
-
-            Map<String,String> properties = text.getProperties();
-            Set<String> keys = properties.keySet();
-            for (final String key : keys) {
-                String value = properties.get(key);
-                textElem.setAttributeNS(null, key, value);
-            }
-
-            String id = text.getName();
-            textElem.setAttributeNS(null, "id", id);
-
-            String elementId = text.getElementID();
-            textElem.setAttributeNS(null, "elementID", elementId);
-            textElem.setAttributeNS(null, "style", "display: none");
-
-            return textElem;
-        }     
-        return super.createElement(doc, comp);
-    }
 
     @Override
     public CDATASection createCDATASection(SVGDocument doc) {

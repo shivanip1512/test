@@ -9,21 +9,33 @@ package com.cannontech.clientutils;
  * to  store the ids into the map
  */
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang.Validate;
-
 public abstract class WebUpdatedPAObjectMap<E> implements WebUpdatedDAO<E> {
-	private Map<E,Date> timestampMap = new HashMap<E,Date>();
+	private Map<E,Date> timestampMap = Collections.synchronizedMap(new HashMap<E,Date>());
 
 	public WebUpdatedPAObjectMap() {
 	}
+
+    @Override
+    public synchronized void removeId(E e) {
+        timestampMap.remove(e);
+    }
+	
+	@Override
+	public synchronized void removeIds(Collection<E> ids) {
+	    for (final E e : ids) {
+	        removeId(e);
+	    }
+	}
 	
     @Override
-    public List<E> getUpdatedIdsSince(Date timeStamp, E... keyList) {
+    public synchronized List<E> getUpdatedIdsSince(Date timeStamp, E... keyList) {
         final List<E> updatedIds = new ArrayList<E>();
         for (final E key : keyList) {
             if (hasObjectBeenUpdatedSince(key, timeStamp)) updatedIds.add(key);
@@ -32,13 +44,13 @@ public abstract class WebUpdatedPAObjectMap<E> implements WebUpdatedDAO<E> {
     }
 
     @Override
-    public void manualUpdate(Date timeStamp, E... ids) {
+    public synchronized void manualUpdate(Date timeStamp, E... ids) {
         for (final E e : ids) {
             updateMap(e, timeStamp);
         }    
     }
 
-	private boolean hasObjectBeenUpdatedSince(E e, Date timeStamp) {
+	private synchronized boolean hasObjectBeenUpdatedSince(E e, Date timeStamp) {
 	    if (e == null) return false;
 	    
 	    Date date = timestampMap.get(e);
@@ -50,12 +62,8 @@ public abstract class WebUpdatedPAObjectMap<E> implements WebUpdatedDAO<E> {
 		return false;
 	}
 
-    protected void updateMap(E e, Date date) {
-        getTimestampMap().put(e, date);                                     
+    protected synchronized void updateMap(E e, Date date) {
+        timestampMap.put(e, date);                                     
     }
-
-	private Map<E,Date> getTimestampMap() {
-		return timestampMap;
-	}
 
 }

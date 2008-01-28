@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.Writer;
 
 import com.cannontech.cbc.oneline.util.OnelineUtil;
-import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.util.HTMLGenerator;
@@ -22,7 +21,11 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
     private String[] files = {
             "AnchorPosition.js",
             "PopupWindow.js", 
-            "prototype150.js",  "scriptaculous/scriptaculous.js", "cc.js", "cccommands.js", "cconelinepopup.js"  };
+            "prototype150.js",
+            "scriptaculous/scriptaculous.js",
+            "cc.js",
+            "cconelinepopup.js"
+    };
 
     public OnelineHTMLGenerator() {
         super();
@@ -55,21 +58,14 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
         sb.append("</script>" + NEW_LINE);
         return sb.toString();
     }
-
+    
     @Override
     public void writeAdditionalFields(Writer w) {
         try {
-            //manual cap states
-            //encoded as a comma separated, colon dilimited
-            //"Any:-1,Open:0,Close:1"
-            String manualCapStates = CBCUtils.getAllManualCapStates();
-            w.write("<INPUT TYPE=\"hidden\" ID=\"capmanualstates\" value=\"" + manualCapStates + "\"></INPUT>");
             w.write("<DIV ID=\"cmdMessageDiv\" STYLE=\"position:absolute;visibility:hidden;background-color:#000000;\"></DIV>");
-
         } catch (IOException e) {
             CTILogger.error(e);
         }
-
-    }
-
+    }    
+        
 }
