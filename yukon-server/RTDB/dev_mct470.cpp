@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.111 $
-* DATE         :  $Date: 2007/12/17 17:11:07 $
+* REVISION     :  $Revision: 1.112 $
+* DATE         :  $Date: 2008/01/28 19:01:59 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -516,16 +516,18 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
 {
     bool valid = true;
 
-    OutMessage->DeviceID  = getID();
-    OutMessage->TargetID  = getID();
-    OutMessage->Port      = getPortID();
-    OutMessage->Remote    = getAddress();
-    OutMessage->Priority  = ScanPriority_LoadProfile;
-    OutMessage->TimeOut   = 2;
-    OutMessage->Retry     = 2;
+    OUTMESS *newOutMessage = CTIDBG_new OUTMESS(*OutMessage);
+
+    newOutMessage->DeviceID  = getID();
+    newOutMessage->TargetID  = getID();
+    newOutMessage->Port      = getPortID();
+    newOutMessage->Remote    = getAddress();
+    newOutMessage->Priority  = ScanPriority_LoadProfile;
+    newOutMessage->TimeOut   = 2;
+    newOutMessage->Retry     = 2;
 
     // Tell the porter side to complete the assembly of the message.
-    OutMessage->Request.BuildIt = TRUE;
+    newOutMessage->Request.BuildIt = TRUE;
 
     if( getMCTDebugLevel(DebugLevel_DynamicInfo) )
     {
@@ -535,8 +537,8 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
 
     if( key == Keys::Key_MCT_SSpec || key == Keys::Key_MCT_Configuration )
     {
-        strncpy(OutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
-        OutMessage->Sequence  = Emetcon::GetConfig_Model;     // Helps us figure it out later!
+        strncpy(newOutMessage->Request.CommandStr, "getconfig model", COMMAND_STR_SIZE );
+        newOutMessage->Sequence  = Emetcon::GetConfig_Model;     // Helps us figure it out later!
     }
     else
     {
@@ -554,8 +556,8 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
                 case Keys::Key_MCT_LoadProfileInterval:
                 case Keys::Key_MCT_LoadProfileConfig:
                 {
-                    strncpy(OutMessage->Request.CommandStr, "getconfig channels", COMMAND_STR_SIZE );
-                    OutMessage->Sequence = Emetcon::GetConfig_ChannelSetup;     // Helps us figure it out later!
+                    strncpy(newOutMessage->Request.CommandStr, "getconfig channels", COMMAND_STR_SIZE );
+                    newOutMessage->Sequence = Emetcon::GetConfig_ChannelSetup;     // Helps us figure it out later!
 
                     break;
                 }
@@ -566,8 +568,8 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
                         dout << CtiTime() << " **** Checkpoint - unhandled key (" << key << ") in CtiDeviceMCT470::requestDynamicInfo **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
 
-                    delete OutMessage;
-                    OutMessage = 0;
+                    delete newOutMessage;
+                    newOutMessage = 0;
                 }
             }
         }
@@ -577,8 +579,8 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
             {
                 case Keys::Key_MCT_LoadProfileInterval:
                 {
-                    strncpy(OutMessage->Request.CommandStr, "getconfig intervals", COMMAND_STR_SIZE );
-                    OutMessage->Sequence = Emetcon::GetConfig_Intervals;     // Helps us figure it out later!
+                    strncpy(newOutMessage->Request.CommandStr, "getconfig intervals", COMMAND_STR_SIZE );
+                    newOutMessage->Sequence = Emetcon::GetConfig_Intervals;     // Helps us figure it out later!
 
                     break;
                 }
@@ -592,17 +594,17 @@ void CtiDeviceMCT470::requestDynamicInfo(CtiTableDynamicPaoInfo::Keys key, OUTME
                 case Keys::Key_MCT_LoadProfileConfig:
                 case Keys::Key_MCT_IEDLoadProfileInterval:
                 {
-                    delete OutMessage;
-                    OutMessage = 0;
+                    delete newOutMessage;
+                    newOutMessage = 0;
                 }
             }
         }
     }
 
-    if( OutMessage )
+    if( newOutMessage )
     {
-        outList.push_back(OutMessage);
-        OutMessage = NULL;
+        outList.push_back(newOutMessage);
+        newOutMessage = NULL;
     }
 }
 
@@ -1053,60 +1055,69 @@ INT CtiDeviceMCT470::calcAndInsertLPRequests(OUTMESS *&OutMessage, list< OUTMESS
         }
         else
         {
+            _lastConfigRequest = Now.seconds();
+
             if( !hasDynamicInfo(Keys::Key_MCT_SSpec) )
             {
                 requestDynamicInfo(Keys::Key_MCT_SSpec, OutMessage, outList);
             }
+            else if( !hasDynamicInfo(Keys::Key_MCT_Configuration) )
+            {
+                requestDynamicInfo(Keys::Key_MCT_Configuration, OutMessage, outList);
+            }
+            //  check if we're the IED sspec
+            else if( (getDynamicInfo(Keys::Key_MCT_SSpec)   == Sspec
+                        && getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Min
+                        && getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRev_Max)
+                     || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430A_Sspec
+                     || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430S_Sspec )
+            {
+                if( getDynamicInfo(Keys::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
+                {
+                    OUTMESS *om = CTIDBG_new OUTMESS(*OutMessage);
+
+                    //  send the intervals....
+                    sendIntervals(om, outList);
+                    //  then verify them - the ordering here does matter
+                    requestDynamicInfo(Keys::Key_MCT_LoadProfileInterval, OutMessage, outList);
+                }
+
+                if( !hasDynamicInfo(Keys::Key_MCT_IEDLoadProfileInterval) )
+                {
+                    //  as i understand it, we can only read this, not write it, so we'll never do a write-then-read confirmation
+                    requestDynamicInfo(Keys::Key_MCT_IEDLoadProfileInterval, OutMessage, outList);
+                }
+
+                if( !hasDynamicInfo(Keys::Key_MCT_LoadProfileConfig) )
+                {
+                    //  this will need to be changed to check for a match like LoadProfileInterval above -
+                    //    if it doesn't match, then re-send and re-read
+                    //    (which will happen when the 470 config is added)
+                    requestDynamicInfo(Keys::Key_MCT_LoadProfileConfig, OutMessage, outList);
+                }
+            }
             else
             {
-                //  check if we're the IED sspec
-                if( (getDynamicInfo(Keys::Key_MCT_SSpec)         == Sspec       &&
-                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_Min &&
-                     getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRev_Max)
-                    || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430A_Sspec
-                    || getDynamicInfo(Keys::Key_MCT_SSpec) == MCT430S_Sspec )
+                if( getDynamicInfo(Keys::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
                 {
-                    if( getDynamicInfo(Keys::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
+                    if( hasDynamicInfo(Keys::Key_MCT_LoadProfileInterval) )
                     {
-                        OUTMESS *om = CTIDBG_new OUTMESS(*OutMessage);
+                        OUTMESS *om = CTIDBG_new CtiOutMessage(*OutMessage);
 
-                        //  send the intervals....
                         sendIntervals(om, outList);
-                        //  then verify them - the ordering here does matter
-                        requestDynamicInfo(Keys::Key_MCT_LoadProfileInterval, OutMessage, outList);
                     }
 
-                    if( !hasDynamicInfo(Keys::Key_MCT_IEDLoadProfileInterval) )
-                    {
-                        //  as i understand it, we can only read this, not write it, so we'll never do a write-then-read confirmation
-                        requestDynamicInfo(Keys::Key_MCT_IEDLoadProfileInterval, OutMessage, outList);
-                    }
-
-                    if( !hasDynamicInfo(Keys::Key_MCT_LoadProfileConfig) )
-                    {
-                        //  this will need to be changed to check for a match like LoadProfileInterval above -
-                        //    if it doesn't match, then re-send and re-read
-                        //    (which will happen when the 470 config is added)
-                        requestDynamicInfo(Keys::Key_MCT_LoadProfileConfig, OutMessage, outList);
-                    }
-                }
-                else
-                {
-                    if( getDynamicInfo(Keys::Key_MCT_LoadProfileInterval) != getLoadProfile().getLoadProfileDemandRate() )
-                    {
-                        if( hasDynamicInfo(Keys::Key_MCT_LoadProfileInterval) )
-                        {
-                            OUTMESS *om = new CtiOutMessage(*OutMessage);
-
-                            sendIntervals(om, outList);
-                        }
-
-                        requestDynamicInfo(Keys::Key_MCT_LoadProfileInterval, OutMessage, outList);
-                    }
+                    requestDynamicInfo(Keys::Key_MCT_LoadProfileInterval, OutMessage, outList);
                 }
             }
 
-            _lastConfigRequest = Now.seconds();
+            if( outList.empty() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - !isLPDynamicInfoCurrent(), but no dynamic info requested **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
         }
     }
     else if( useScanFlags() )
