@@ -279,6 +279,59 @@
         </s:complexContent>
       </s:complexType>
       <s:complexType name="AbstractGeometryType" abstract="true" />
+      <s:complexType name="BoxType">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractGeometryType">
+            <s:sequence>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="coordinates" type="tns:CoordinatesType" />
+                <s:element minOccurs="0" maxOccurs="1" name="coord" type="tns:CoordType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="CoordinatesType">
+        <s:simpleContent>
+          <s:extension base="s:string">
+            <s:attribute default="." name="decimal" type="s:string" />
+            <s:attribute default="," name="cs" type="s:string" />
+            <s:attribute default=" " name="ts" type="s:string" />
+          </s:extension>
+        </s:simpleContent>
+      </s:complexType>
+      <s:complexType name="CoordType">
+        <s:sequence>
+          <s:element minOccurs="1" maxOccurs="1" name="X" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="Y" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="Z" type="s:decimal" />
+          <s:element minOccurs="0" maxOccurs="1" name="Bulge" type="s:float" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="LineStringType">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractGeometryType">
+            <s:sequence>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="coordinates" type="tns:CoordinatesType" />
+                <s:element minOccurs="0" maxOccurs="1" name="coord" type="tns:CoordType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="LinearRingType">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:AbstractGeometryType">
+            <s:sequence>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="coord" type="tns:CoordType" />
+                <s:element minOccurs="0" maxOccurs="1" name="coordinates" type="tns:CoordinatesType" />
+              </s:choice>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="PolygonType">
         <s:complexContent mixed="false">
           <s:extension base="tns:AbstractGeometryType">
@@ -294,145 +347,10 @@
           <s:element minOccurs="0" maxOccurs="1" name="LinearRing" type="tns:LinearRingType" />
         </s:sequence>
       </s:complexType>
-      <s:complexType name="LinearRingType">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:AbstractGeometryType">
-            <s:sequence>
-              <s:choice minOccurs="0" maxOccurs="unbounded">
-                <s:element minOccurs="0" maxOccurs="1" name="coord" type="tns:CoordType" />
-                <s:element minOccurs="0" maxOccurs="1" name="coordinates" type="tns:CoordinatesType" />
-              </s:choice>
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="CoordType">
-        <s:sequence>
-          <s:element minOccurs="1" maxOccurs="1" name="X" type="s:decimal" />
-          <s:element minOccurs="0" maxOccurs="1" name="Y" type="s:decimal" />
-          <s:element minOccurs="0" maxOccurs="1" name="Z" type="s:decimal" />
-          <s:element minOccurs="0" maxOccurs="1" name="Bulge" type="s:float" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="CoordinatesType">
-        <s:simpleContent>
-          <s:extension base="s:string">
-            <s:attribute default="." name="decimal" type="s:string" />
-            <s:attribute default="," name="cs" type="s:string" />
-            <s:attribute default=" " name="ts" type="s:string" />
-          </s:extension>
-        </s:simpleContent>
-      </s:complexType>
       <s:complexType name="innerBoundaryIs">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="1" name="LinearRing" type="tns:LinearRingType" />
         </s:sequence>
-      </s:complexType>
-      <s:complexType name="BoxType">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:AbstractGeometryType">
-            <s:sequence>
-              <s:choice minOccurs="0" maxOccurs="unbounded">
-                <s:element minOccurs="0" maxOccurs="1" name="coordinates" type="tns:CoordinatesType" />
-                <s:element minOccurs="0" maxOccurs="1" name="coord" type="tns:CoordType" />
-              </s:choice>
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="LineStringType">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:AbstractGeometryType">
-            <s:sequence>
-              <s:choice minOccurs="0" maxOccurs="unbounded">
-                <s:element minOccurs="0" maxOccurs="1" name="coordinates" type="tns:CoordinatesType" />
-                <s:element minOccurs="0" maxOccurs="1" name="coord" type="tns:CoordType" />
-              </s:choice>
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="callBackList">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="outageEventID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="outageStatus" type="tns:outageStatus" />
-              <s:element minOccurs="0" maxOccurs="1" name="outageDescription" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="outageCustomerList" type="tns:ArrayOfOutageCustomer" />
-              <s:element minOccurs="0" maxOccurs="1" name="message" type="tns:message" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:simpleType name="outageStatus">
-        <s:restriction base="s:string">
-          <s:enumeration value="Assumed" />
-          <s:enumeration value="Confirmed" />
-          <s:enumeration value="Restored" />
-          <s:enumeration value="Unknown" />
-          <s:enumeration value="Scheduled" />
-          <s:enumeration value="StillOut" />
-          <s:enumeration value="NonPay" />
-        </s:restriction>
-      </s:simpleType>
-      <s:complexType name="ArrayOfOutageCustomer">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="outageCustomer" type="tns:outageCustomer" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="outageCustomer">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="custID" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="callBackAC" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="callBackPhone" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="timeToCall">
-            <s:complexType>
-              <s:sequence>
-                <s:element minOccurs="0" maxOccurs="1" name="startTime" type="s:dateTime" />
-                <s:element minOccurs="0" maxOccurs="1" name="endTime" type="s:dateTime" />
-              </s:sequence>
-            </s:complexType>
-          </s:element>
-          <s:element minOccurs="0" maxOccurs="1" name="callBackFlag" type="s:boolean" />
-          <s:element minOccurs="0" maxOccurs="1" name="callBackContactFirstName" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="callBackContactLastName" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="callBackContactMName" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="callBackStatus" type="tns:callBackStatus" />
-          <s:element minOccurs="0" maxOccurs="1" name="callBackCompletedTime" type="s:dateTime" />
-          <s:element minOccurs="0" maxOccurs="1" name="callBackType" type="tns:callBackType" />
-          <s:element minOccurs="0" maxOccurs="1" name="callRecordID" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="outageEventID" type="s:string" />
-        </s:sequence>
-      </s:complexType>
-      <s:simpleType name="callBackStatus">
-        <s:restriction base="s:string">
-          <s:enumeration value="On" />
-          <s:enumeration value="Off" />
-          <s:enumeration value="StillOff" />
-          <s:enumeration value="Undialable" />
-          <s:enumeration value="MaxDial" />
-          <s:enumeration value="NoResponse" />
-        </s:restriction>
-      </s:simpleType>
-      <s:simpleType name="callBackType">
-        <s:restriction base="s:string">
-          <s:enumeration value="IVR" />
-          <s:enumeration value="Manual" />
-        </s:restriction>
-      </s:simpleType>
-      <s:complexType name="message">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="recordID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="eventTime" type="s:dateTime" />
-              <s:element minOccurs="0" maxOccurs="1" name="wavPointer" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="listenedOn" type="s:dateTime" />
-              <s:element minOccurs="0" maxOccurs="1" name="listenedBy" type="s:string" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
       </s:complexType>
       <s:complexType name="connectDisconnectEvent">
         <s:complexContent mixed="false">
@@ -448,6 +366,7 @@
               <s:element minOccurs="0" maxOccurs="1" name="powerLimitationUnits" type="tns:powerLimitationUnits" />
               <s:element minOccurs="0" maxOccurs="1" name="reasonCode" type="tns:reasonCode" />
               <s:element minOccurs="0" maxOccurs="1" name="amountDue" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="meterNo" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -514,6 +433,7 @@
               <s:element minOccurs="0" maxOccurs="1" name="truckList" type="tns:ArrayOfTruck" />
               <s:element minOccurs="0" maxOccurs="1" name="employeeList" type="tns:ArrayOfEmployee" />
               <s:element minOccurs="0" maxOccurs="1" name="equipmentList" type="tns:ArrayOfEquipment" />
+              <s:element minOccurs="0" maxOccurs="1" name="IsActive" type="s:boolean" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -578,11 +498,20 @@
       </s:complexType>
       <s:complexType name="truck">
         <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
+          <s:extension base="tns:vehicle">
             <s:sequence>
               <s:element minOccurs="0" maxOccurs="1" name="truckType" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="contactInfo" type="tns:contactInfo" />
               <s:element minOccurs="0" maxOccurs="1" name="isCompanyOwned" type="s:boolean" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="vehicle">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="name" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -692,6 +621,19 @@
           <s:element minOccurs="0" maxOccurs="unbounded" name="message" type="tns:message" />
         </s:sequence>
       </s:complexType>
+      <s:complexType name="message">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="recordID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="eventTime" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="wavPointer" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="listenedOn" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="listenedBy" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:simpleType name="resolvedLevel">
         <s:restriction base="s:string">
           <s:enumeration value="Meter" />
@@ -759,6 +701,9 @@
                 <s:element minOccurs="1" maxOccurs="1" name="dutyCycle" type="s:long" />
                 <s:element minOccurs="1" maxOccurs="1" name="controlLoad" type="s:float" />
               </s:choice>
+              <s:element minOccurs="0" maxOccurs="1" name="pointID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="target" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="uom" type="tns:uom" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -769,174 +714,6 @@
           <s:enumeration value="Restore" />
         </s:restriction>
       </s:simpleType>
-      <s:complexType name="materialItem">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="stockNumber" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="stockDescr" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="item" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="avgCost" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="newCost" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="laborFactor" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="materialType" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="materialUnits" type="tns:materialUnits" />
-              <s:element minOccurs="0" maxOccurs="1" name="warehouseLocationList" type="tns:ArrayOfWarehouseLocation" />
-              <s:element minOccurs="0" maxOccurs="1" name="effectiveDate" type="s:dateTime" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:simpleType name="materialUnits">
-        <s:restriction base="s:string">
-          <s:enumeration value="Feet" />
-          <s:enumeration value="Meters" />
-          <s:enumeration value="Inches" />
-          <s:enumeration value="Pounds" />
-          <s:enumeration value="Kilograms" />
-          <s:enumeration value="Miles" />
-          <s:enumeration value="ThousandFeet" />
-          <s:enumeration value="Pair" />
-          <s:enumeration value="Each" />
-          <s:enumeration value="Hour" />
-          <s:enumeration value="Other" />
-          <s:enumeration value="Unknown" />
-          <s:enumeration value="DoNotChange" />
-        </s:restriction>
-      </s:simpleType>
-      <s:complexType name="ArrayOfWarehouseLocation">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="warehouseLocation" type="tns:warehouseLocation" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="warehouseLocation">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="warehouseID" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="aisle" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="bin" type="s:string" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="materialManagementAssembly">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="unitCode" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="unDescr" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="unMatCost" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="unType" type="tns:unType" />
-              <s:element minOccurs="0" maxOccurs="1" name="CPRList" type="tns:ArrayOfCPR" />
-              <s:element minOccurs="0" maxOccurs="1" name="materialComponentList" type="tns:ArrayOfMaterialComponent" />
-              <s:element minOccurs="0" maxOccurs="1" name="laborComponentList" type="tns:ArrayOfLaborComponent" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:simpleType name="unType">
-        <s:restriction base="s:string">
-          <s:enumeration value="Anc" />
-          <s:enumeration value="Cnd" />
-          <s:enumeration value="Guy" />
-          <s:enumeration value="OhA" />
-          <s:enumeration value="OhP" />
-          <s:enumeration value="OhS" />
-          <s:enumeration value="OhT" />
-          <s:enumeration value="OH" />
-          <s:enumeration value="Pol" />
-          <s:enumeration value="Sub" />
-          <s:enumeration value="UgA" />
-          <s:enumeration value="UgP" />
-          <s:enumeration value="UgS" />
-          <s:enumeration value="UgT" />
-          <s:enumeration value="UG" />
-          <s:enumeration value="Other" />
-        </s:restriction>
-      </s:simpleType>
-      <s:complexType name="ArrayOfCPR">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="CPR" type="tns:CPR" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="CPR">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="extensions" type="tns:extensions" />
-          <s:element minOccurs="0" maxOccurs="1" name="extensionsList" type="tns:extensionsList" />
-          <s:element minOccurs="0" maxOccurs="1" name="acctCode" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="quantity" type="s:float" />
-          <s:element minOccurs="0" maxOccurs="1" name="unitAction" type="tns:unitActn" />
-        </s:sequence>
-      </s:complexType>
-      <s:simpleType name="unitActn">
-        <s:restriction base="s:string">
-          <s:enumeration value="C" />
-          <s:enumeration value="R" />
-          <s:enumeration value="E" />
-        </s:restriction>
-      </s:simpleType>
-      <s:complexType name="ArrayOfMaterialComponent">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="materialComponent" type="tns:materialComponent" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="materialComponent">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="extensions" type="tns:extensions" />
-          <s:element minOccurs="0" maxOccurs="1" name="extensionsList" type="tns:extensionsList" />
-          <s:element minOccurs="0" maxOccurs="1" name="stockNumber" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="itemCount" type="s:float" />
-          <s:element minOccurs="0" maxOccurs="1" name="poleVar" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="wireVar" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="neutVar" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="miscVar" type="s:string" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="ArrayOfLaborComponent">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="laborComponent" type="tns:laborComponent" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="laborComponent">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="extensions" type="tns:extensions" />
-          <s:element minOccurs="0" maxOccurs="1" name="extensionsList" type="tns:extensionsList" />
-          <s:element minOccurs="0" maxOccurs="1" name="laborCategoryID" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="constMH" type="s:float" />
-          <s:element minOccurs="0" maxOccurs="1" name="retireMH" type="s:float" />
-          <s:element minOccurs="0" maxOccurs="1" name="salvageMH" type="s:float" />
-          <s:element minOccurs="0" maxOccurs="1" name="hotConstMH" type="s:float" />
-          <s:element minOccurs="0" maxOccurs="1" name="hotRetireMH" type="s:float" />
-          <s:element minOccurs="0" maxOccurs="1" name="hotSalvageMH" type="s:float" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="measurement">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="measurementDeviceID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="measurementTypeList" type="tns:ArrayOfMeasurementType" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="ArrayOfMeasurementType">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="measurementType" type="tns:measurementType" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="measurementType">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="dateTime" type="s:dateTime" />
-          <s:element minOccurs="0" maxOccurs="1" name="value" type="s:float" />
-          <s:element minOccurs="0" maxOccurs="1" name="uom" type="tns:uom" />
-          <s:element minOccurs="0" maxOccurs="1" name="quality" type="tns:qualityDescription" />
-          <s:element minOccurs="0" maxOccurs="1" name="timeSpan" type="tns:timeSpan" />
-          <s:element minOccurs="0" maxOccurs="1" name="stopTime" type="s:dateTime" />
-          <s:element minOccurs="0" maxOccurs="1" name="durationDescription" type="tns:durationDescription" />
-          <s:element minOccurs="0" maxOccurs="1" name="unitPrefix" type="tns:unitPrefix" />
-          <s:element minOccurs="0" maxOccurs="1" name="quadrant" type="tns:accountability" />
-          <s:element minOccurs="0" maxOccurs="1" name="phase" type="tns:phaseCd" />
-          <s:element minOccurs="0" maxOccurs="1" name="harmonic" type="s:long" />
-        </s:sequence>
-      </s:complexType>
       <s:simpleType name="uom">
         <s:restriction base="s:string">
           <s:enumeration value="Wh" />
@@ -1118,6 +895,175 @@
           <s:enumeration value="micro m" />
         </s:restriction>
       </s:simpleType>
+      <s:complexType name="materialItem">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="stockNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="stockDescr" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="item" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="avgCost" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="newCost" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="laborFactor" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="materialType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="materialUnits" type="tns:materialUnits" />
+              <s:element minOccurs="0" maxOccurs="1" name="warehouseLocationList" type="tns:ArrayOfWarehouseLocation" />
+              <s:element minOccurs="0" maxOccurs="1" name="effectiveDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="materialClass" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="materialUnits">
+        <s:restriction base="s:string">
+          <s:enumeration value="Feet" />
+          <s:enumeration value="Meters" />
+          <s:enumeration value="Inches" />
+          <s:enumeration value="Pounds" />
+          <s:enumeration value="Kilograms" />
+          <s:enumeration value="Miles" />
+          <s:enumeration value="ThousandFeet" />
+          <s:enumeration value="Pair" />
+          <s:enumeration value="Each" />
+          <s:enumeration value="Hour" />
+          <s:enumeration value="Other" />
+          <s:enumeration value="Unknown" />
+          <s:enumeration value="DoNotChange" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfWarehouseLocation">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="warehouseLocation" type="tns:warehouseLocation" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="warehouseLocation">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="warehouseID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="aisle" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="bin" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="materialManagementAssembly">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="unitCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="unDescr" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="unMatCost" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="unType" type="tns:unType" />
+              <s:element minOccurs="0" maxOccurs="1" name="CPRList" type="tns:ArrayOfCPR" />
+              <s:element minOccurs="0" maxOccurs="1" name="materialComponentList" type="tns:ArrayOfMaterialComponent" />
+              <s:element minOccurs="0" maxOccurs="1" name="laborComponentList" type="tns:ArrayOfLaborComponent" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="unType">
+        <s:restriction base="s:string">
+          <s:enumeration value="Anc" />
+          <s:enumeration value="Cnd" />
+          <s:enumeration value="Guy" />
+          <s:enumeration value="OhA" />
+          <s:enumeration value="OhP" />
+          <s:enumeration value="OhS" />
+          <s:enumeration value="OhT" />
+          <s:enumeration value="OH" />
+          <s:enumeration value="Pol" />
+          <s:enumeration value="Sub" />
+          <s:enumeration value="UgA" />
+          <s:enumeration value="UgP" />
+          <s:enumeration value="UgS" />
+          <s:enumeration value="UgT" />
+          <s:enumeration value="UG" />
+          <s:enumeration value="Other" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfCPR">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="CPR" type="tns:CPR" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="CPR">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="extensions" type="tns:extensions" />
+          <s:element minOccurs="0" maxOccurs="1" name="extensionsList" type="tns:extensionsList" />
+          <s:element minOccurs="0" maxOccurs="1" name="acctCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="quantity" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="unitAction" type="tns:unitActn" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="unitActn">
+        <s:restriction base="s:string">
+          <s:enumeration value="C" />
+          <s:enumeration value="R" />
+          <s:enumeration value="E" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="ArrayOfMaterialComponent">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="materialComponent" type="tns:materialComponent" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="materialComponent">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="extensions" type="tns:extensions" />
+          <s:element minOccurs="0" maxOccurs="1" name="extensionsList" type="tns:extensionsList" />
+          <s:element minOccurs="0" maxOccurs="1" name="stockNumber" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="itemCount" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="poleVar" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="wireVar" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="neutVar" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="miscVar" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="ArrayOfLaborComponent">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="laborComponent" type="tns:laborComponent" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="laborComponent">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="extensions" type="tns:extensions" />
+          <s:element minOccurs="0" maxOccurs="1" name="extensionsList" type="tns:extensionsList" />
+          <s:element minOccurs="0" maxOccurs="1" name="laborCategoryID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="constMH" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="retireMH" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="salvageMH" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="hotConstMH" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="hotRetireMH" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="hotSalvageMH" type="s:float" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="measurement">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="measurementDeviceID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="measurementTypeList" type="tns:ArrayOfMeasurementType" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfMeasurementType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="measurementType" type="tns:measurementType" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="measurementType">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="dateTime" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="value" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="uom" type="tns:uom" />
+          <s:element minOccurs="0" maxOccurs="1" name="quality" type="tns:qualityDescription" />
+          <s:element minOccurs="0" maxOccurs="1" name="timeSpan" type="tns:timeSpan" />
+          <s:element minOccurs="0" maxOccurs="1" name="stopTime" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="durationDescription" type="tns:durationDescription" />
+          <s:element minOccurs="0" maxOccurs="1" name="unitPrefix" type="tns:unitPrefix" />
+          <s:element minOccurs="0" maxOccurs="1" name="quadrant" type="tns:accountability" />
+          <s:element minOccurs="0" maxOccurs="1" name="phase" type="tns:phaseCd" />
+          <s:element minOccurs="0" maxOccurs="1" name="harmonic" type="s:long" />
+        </s:sequence>
+      </s:complexType>
       <s:simpleType name="qualityDescription">
         <s:restriction base="s:string">
           <s:enumeration value="Measured" />
@@ -1377,6 +1323,46 @@
           <s:enumeration value="Other" />
         </s:restriction>
       </s:simpleType>
+      <s:complexType name="outageCustomer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="custID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="callBackAC" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="callBackPhone" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="timeToCall">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="0" maxOccurs="1" name="startTime" type="s:dateTime" />
+                <s:element minOccurs="0" maxOccurs="1" name="endTime" type="s:dateTime" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="callBackFlag" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="callBackContactFirstName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="callBackContactLastName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="callBackContactMName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="callBackStatus" type="tns:callBackStatus" />
+          <s:element minOccurs="0" maxOccurs="1" name="callBackCompletedTime" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="callBackType" type="tns:callBackType" />
+          <s:element minOccurs="0" maxOccurs="1" name="callRecordID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="outageEventID" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:simpleType name="callBackStatus">
+        <s:restriction base="s:string">
+          <s:enumeration value="On" />
+          <s:enumeration value="Off" />
+          <s:enumeration value="StillOff" />
+          <s:enumeration value="Undialable" />
+          <s:enumeration value="MaxDial" />
+          <s:enumeration value="NoResponse" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="callBackType">
+        <s:restriction base="s:string">
+          <s:enumeration value="IVR" />
+          <s:enumeration value="Manual" />
+        </s:restriction>
+      </s:simpleType>
       <s:complexType name="outageEvent">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -1406,6 +1392,17 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:simpleType name="outageStatus">
+        <s:restriction base="s:string">
+          <s:enumeration value="Assumed" />
+          <s:enumeration value="Confirmed" />
+          <s:enumeration value="Restored" />
+          <s:enumeration value="Unknown" />
+          <s:enumeration value="Scheduled" />
+          <s:enumeration value="StillOut" />
+          <s:enumeration value="NonPay" />
+        </s:restriction>
+      </s:simpleType>
       <s:complexType name="ArrayOfString2">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="crewID" type="s:string" />
@@ -1417,120 +1414,6 @@
             <s:sequence>
               <s:element minOccurs="0" maxOccurs="1" name="switchID" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="controlEventType" type="tns:controlEventType" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="mspResultsBase" abstract="true">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="resultsType" type="tns:resultsType" />
-              <s:element minOccurs="0" maxOccurs="1" name="source" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="feeder" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="eaLoc" type="tns:eaLoc" />
-              <s:element minOccurs="0" maxOccurs="1" name="parentID" type="tns:objectRef" />
-              <s:element minOccurs="0" maxOccurs="1" name="phaseCode" type="tns:phaseCd" />
-              <s:element minOccurs="0" maxOccurs="1" name="loadCon" type="tns:ldCon" />
-              <s:element minOccurs="0" maxOccurs="1" name="equipRef" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="milesFromSrc" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="sectionLength" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="baseKvA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="baseKvB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="baseKvC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="baseKvBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="basePower" type="s:float" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:simpleType name="resultsType">
-        <s:restriction base="s:string">
-          <s:enumeration value="loadFlow" />
-          <s:enumeration value="shortCircuit" />
-          <s:enumeration value="Other" />
-        </s:restriction>
-      </s:simpleType>
-      <s:simpleType name="ldCon">
-        <s:restriction base="s:string">
-          <s:enumeration value="W" />
-          <s:enumeration value="D" />
-        </s:restriction>
-      </s:simpleType>
-      <s:complexType name="shortCircuitAnalysisResult">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspResultsBase">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="faultZ" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="minLg" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="maxLg" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="maxLl" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="maxLlg" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="maxLllg" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="posSeqR" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="posSeqX" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="negSeqR" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="negSeqX" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="zeroSeqR" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="zeroSeqX" type="s:float" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="loadFlowResult">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspResultsBase">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="priKvA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="priKvB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="priKvC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="priKvBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="sectionDropA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="sectionDropB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="sectionDropC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="sectionDropBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="cumulativeDropA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="cumulativeDropB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="cumulativeDropC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="cumulativeDropBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruCurrentA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruCurrentB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruCurrentC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruCurrentBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="pctCapA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="pctCapB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="pctCapC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="pctCapBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruKwA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruKwB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruKwC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruKwBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruKvarA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruKvarB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruKvarC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="thruKvarBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="pctPfA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="pctPfB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="pctPfC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="pctPfBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="pctLoss" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="sectKwA" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="sectKwB" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="sectKwC" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="sectKwBal" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="secKvarA" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="secKvarB" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="secKvarC" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="secKvarBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="consOnA" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="consOnB" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="consOnC" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="consOnBal" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="consThruA" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="consThruB" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="consThruC" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="consThruBal" type="s:long" />
-              <s:element minOccurs="0" maxOccurs="1" name="baseKvCalc" type="s:float" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -1606,10 +1489,10 @@
               <s:element minOccurs="0" maxOccurs="unbounded" name="graphicSymbol" type="tns:graphicSymbol" />
               <s:element minOccurs="0" maxOccurs="unbounded" name="annotationList" type="tns:genericAnnotationFeature" />
               <s:choice minOccurs="0" maxOccurs="unbounded">
-                <s:element minOccurs="0" maxOccurs="1" name="parentSectionID" type="tns:objectRef" />
                 <s:element minOccurs="0" maxOccurs="1" name="fromNodeID" type="tns:nodeIdentifier" />
-                <s:element minOccurs="0" maxOccurs="1" name="sectionID" type="s:string" />
+                <s:element minOccurs="0" maxOccurs="1" name="parentSectionID" type="tns:objectRef" />
                 <s:element minOccurs="0" maxOccurs="1" name="toNodeID" type="tns:nodeIdentifier" />
+                <s:element minOccurs="0" maxOccurs="1" name="sectionID" type="s:string" />
               </s:choice>
             </s:sequence>
           </s:extension>
@@ -1694,6 +1577,93 @@
           <s:element minOccurs="0" maxOccurs="1" name="noOfCustomers" type="s:float" />
         </s:sequence>
       </s:complexType>
+      <s:complexType name="serviceLocation">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspElectricPoint">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="custID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="facilityName" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="siteID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servAddr1" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servAddr2" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servCity" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servState" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servZip" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="revenueClass" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servStatus" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageStatus" type="tns:powerStatus" />
+              <s:element minOccurs="0" maxOccurs="1" name="billingCycle" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="route" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="specialNeeds" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="loadMgmt" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="budgBill" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecvBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecvCur" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecv30" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecv60" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecv90" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="paymentDueDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="lastPaymentDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="lastPaymentAmount" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="billDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="shutOffDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="connection" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="connectDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="disconnectDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="network" type="tns:network" />
+              <s:element minOccurs="0" maxOccurs="1" name="SIC" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="isCogenerationSite" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="woNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="soNumber" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="powerStatus">
+        <s:restriction base="s:string">
+          <s:enumeration value="PowerOn" />
+          <s:enumeration value="PowerOff" />
+          <s:enumeration value="StatusUnknown" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="network">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="boardDist" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="taxDist" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="franchiseDist" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="schoolDist" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="district" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="county" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="cityCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="substationCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="feeder" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="phaseCd" type="tns:phaseCd" />
+          <s:element minOccurs="0" maxOccurs="1" name="eaLoc" type="tns:eaLoc" />
+          <s:element minOccurs="0" maxOccurs="1" name="poleNo" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="section" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="township" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="range" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="subdivision" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="block" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="lot" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="linkedTransformer" type="tns:linkedTransformer" />
+          <s:element minOccurs="0" maxOccurs="1" name="linemanServiceArea" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="linkedTransformer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="bankID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="unitList">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="0" maxOccurs="unbounded" name="unitID" type="s:string" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+        </s:sequence>
+      </s:complexType>
       <s:complexType name="fakeNodeSection">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspElectricPoint">
@@ -1739,6 +1709,12 @@
         <s:attribute name="r" type="s:float" />
         <s:attribute name="x" type="s:float" />
       </s:complexType>
+      <s:simpleType name="ldCon">
+        <s:restriction base="s:string">
+          <s:enumeration value="W" />
+          <s:enumeration value="D" />
+        </s:restriction>
+      </s:simpleType>
       <s:complexType name="motor">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspMotorGenerator">
@@ -1885,6 +1861,122 @@
           <s:enumeration value="Unknown" />
         </s:restriction>
       </s:simpleType>
+      <s:complexType name="mspSwitchingBank" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspBankObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="isGanged" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="partner" type="tns:objectRef" />
+              <s:element minOccurs="0" maxOccurs="1" name="ldPoint" type="s:long" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="overcurrentDeviceBank">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspSwitchingBank">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="mspOverCurrentDeviceList" type="tns:mspOverCurrentDeviceList" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="mspOverCurrentDeviceList">
+        <s:sequence>
+          <s:choice minOccurs="0" maxOccurs="unbounded">
+            <s:element minOccurs="0" maxOccurs="1" name="fuse" type="tns:fuse" />
+            <s:element minOccurs="0" maxOccurs="1" name="mspOverCurrentDevice" type="tns:mspOverCurrentDevice" />
+            <s:element minOccurs="0" maxOccurs="1" name="sectionalizer" type="tns:sectionalizer" />
+            <s:element minOccurs="0" maxOccurs="1" name="recloser" type="tns:recloser" />
+            <s:element minOccurs="0" maxOccurs="1" name="breaker" type="tns:breaker" />
+          </s:choice>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="fuse">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspOverCurrentDevice">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="linkRtg" type="s:float" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="mspOverCurrentDevice" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspSwitchingDevice">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="bypassExists" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="lastService" type="s:dateTime" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="mspSwitchingDevice">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="eaEquipment" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="facilityID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="phase" type="tns:phaseCd" />
+              <s:element minOccurs="0" maxOccurs="1" name="position" type="tns:position" />
+              <s:element minOccurs="0" maxOccurs="1" name="ratedVolt" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="maxContAmp" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="mounting" type="tns:mounting" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="position">
+        <s:restriction base="s:string">
+          <s:enumeration value="NO" />
+          <s:enumeration value="NC" />
+          <s:enumeration value="Unknown" />
+        </s:restriction>
+      </s:simpleType>
+      <s:simpleType name="mounting">
+        <s:restriction base="s:string">
+          <s:enumeration value="Bus-mounted" />
+          <s:enumeration value="Pole-mounted" />
+          <s:enumeration value="Pad-mounted" />
+          <s:enumeration value="Vault-mounted" />
+          <s:enumeration value="Other" />
+        </s:restriction>
+      </s:simpleType>
+      <s:complexType name="sectionalizer">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspOverCurrentDevice" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="recloser">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspOverCurrentDevice" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="breaker">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspOverCurrentDevice" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="switchDeviceBank">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspSwitchingBank">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="mspSwitchDeviceList" type="tns:mspSwitchDeviceList" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="mspSwitchDeviceList">
+        <s:sequence>
+          <s:choice minOccurs="0" maxOccurs="unbounded">
+            <s:element minOccurs="0" maxOccurs="1" name="switch" type="tns:mspSwitchingDevice" />
+            <s:element minOccurs="0" maxOccurs="1" name="mspSwitchingDevice" type="tns:mspSwitchingDevice" />
+            <s:element minOccurs="0" maxOccurs="1" name="mspOverCurrentDevice" type="tns:mspOverCurrentDevice" />
+          </s:choice>
+        </s:sequence>
+      </s:complexType>
       <s:complexType name="regulatorBank">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspBankObject">
@@ -1958,15 +2050,6 @@
           <s:enumeration value="D-Y open" />
         </s:restriction>
       </s:simpleType>
-      <s:simpleType name="mounting">
-        <s:restriction base="s:string">
-          <s:enumeration value="Bus-mounted" />
-          <s:enumeration value="Pole-mounted" />
-          <s:enumeration value="Pad-mounted" />
-          <s:enumeration value="Vault-mounted" />
-          <s:enumeration value="Other" />
-        </s:restriction>
-      </s:simpleType>
       <s:simpleType name="config">
         <s:restriction base="s:string">
           <s:enumeration value="AB" />
@@ -2018,200 +2101,6 @@
           <s:element minOccurs="0" maxOccurs="1" name="pcbClass" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="sampleNumber" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="comment" type="s:string" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="mspSwitchingBank" abstract="true">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspBankObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="isGanged" type="s:boolean" />
-              <s:element minOccurs="0" maxOccurs="1" name="partner" type="tns:objectRef" />
-              <s:element minOccurs="0" maxOccurs="1" name="ldPoint" type="s:long" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="overcurrentDeviceBank">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspSwitchingBank">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="mspOverCurrentDeviceList" type="tns:mspOverCurrentDeviceList" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="mspOverCurrentDeviceList">
-        <s:sequence>
-          <s:choice minOccurs="0" maxOccurs="unbounded">
-            <s:element minOccurs="0" maxOccurs="1" name="recloser" type="tns:recloser" />
-            <s:element minOccurs="0" maxOccurs="1" name="fuse" type="tns:fuse" />
-            <s:element minOccurs="0" maxOccurs="1" name="breaker" type="tns:breaker" />
-            <s:element minOccurs="0" maxOccurs="1" name="sectionalizer" type="tns:sectionalizer" />
-            <s:element minOccurs="0" maxOccurs="1" name="mspOverCurrentDevice" type="tns:mspOverCurrentDevice" />
-          </s:choice>
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="recloser">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspOverCurrentDevice" />
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="mspOverCurrentDevice" abstract="true">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspSwitchingDevice">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="bypassExists" type="s:boolean" />
-              <s:element minOccurs="0" maxOccurs="1" name="lastService" type="s:dateTime" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="mspSwitchingDevice">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="eaEquipment" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="facilityID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="phase" type="tns:phaseCd" />
-              <s:element minOccurs="0" maxOccurs="1" name="position" type="tns:position" />
-              <s:element minOccurs="0" maxOccurs="1" name="ratedVolt" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="maxContAmp" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="mounting" type="tns:mounting" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:simpleType name="position">
-        <s:restriction base="s:string">
-          <s:enumeration value="NO" />
-          <s:enumeration value="NC" />
-          <s:enumeration value="Unknown" />
-        </s:restriction>
-      </s:simpleType>
-      <s:complexType name="sectionalizer">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspOverCurrentDevice" />
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="breaker">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspOverCurrentDevice" />
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="fuse">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspOverCurrentDevice">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="linkRtg" type="s:float" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="switchDeviceBank">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspSwitchingBank">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="mspSwitchDeviceList" type="tns:mspSwitchDeviceList" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="mspSwitchDeviceList">
-        <s:sequence>
-          <s:choice minOccurs="0" maxOccurs="unbounded">
-            <s:element minOccurs="0" maxOccurs="1" name="switch" type="tns:mspSwitchingDevice" />
-            <s:element minOccurs="0" maxOccurs="1" name="mspSwitchingDevice" type="tns:mspSwitchingDevice" />
-            <s:element minOccurs="0" maxOccurs="1" name="mspOverCurrentDevice" type="tns:mspOverCurrentDevice" />
-          </s:choice>
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="serviceLocation">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspElectricPoint">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="custID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="facilityName" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="siteID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="servAddr1" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="servAddr2" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="servCity" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="servState" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="servZip" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="servType" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="revenueClass" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="servStatus" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="outageStatus" type="tns:powerStatus" />
-              <s:element minOccurs="0" maxOccurs="1" name="billingCycle" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="route" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="specialNeeds" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="loadMgmt" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="budgBill" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="acRecvBal" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="acRecvCur" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="acRecv30" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="acRecv60" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="acRecv90" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="paymentDueDate" type="s:dateTime" />
-              <s:element minOccurs="0" maxOccurs="1" name="lastPaymentDate" type="s:dateTime" />
-              <s:element minOccurs="0" maxOccurs="1" name="lastPaymentAmount" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="billDate" type="s:dateTime" />
-              <s:element minOccurs="0" maxOccurs="1" name="shutOffDate" type="s:dateTime" />
-              <s:element minOccurs="0" maxOccurs="1" name="connection" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="connectDate" type="s:dateTime" />
-              <s:element minOccurs="0" maxOccurs="1" name="disconnectDate" type="s:dateTime" />
-              <s:element minOccurs="0" maxOccurs="1" name="network" type="tns:network" />
-              <s:element minOccurs="0" maxOccurs="1" name="SIC" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="isCogenerationSite" type="s:boolean" />
-              <s:element minOccurs="0" maxOccurs="1" name="woNumber" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="soNumber" type="s:string" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:simpleType name="powerStatus">
-        <s:restriction base="s:string">
-          <s:enumeration value="PowerOn" />
-          <s:enumeration value="PowerOff" />
-          <s:enumeration value="StatusUnknown" />
-        </s:restriction>
-      </s:simpleType>
-      <s:complexType name="network">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="boardDist" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="taxDist" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="franchiseDist" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="schoolDist" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="district" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="county" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="cityCode" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="substationCode" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="feeder" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="phaseCd" type="tns:phaseCd" />
-          <s:element minOccurs="0" maxOccurs="1" name="eaLoc" type="tns:eaLoc" />
-          <s:element minOccurs="0" maxOccurs="1" name="poleNo" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="section" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="township" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="range" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="subdivision" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="block" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="lot" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="linkedTransformer" type="tns:linkedTransformer" />
-          <s:element minOccurs="0" maxOccurs="1" name="linemanServiceArea" type="s:string" />
-        </s:sequence>
-      </s:complexType>
-      <s:complexType name="linkedTransformer">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="bankID" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="unitList">
-            <s:complexType>
-              <s:sequence>
-                <s:element minOccurs="0" maxOccurs="unbounded" name="unitID" type="s:string" />
-              </s:sequence>
-            </s:complexType>
-          </s:element>
         </s:sequence>
       </s:complexType>
       <s:complexType name="station">
@@ -2501,6 +2390,44 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="loadDisconnectDevice">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspDevice">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="ratedVoltage" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="ratedCurrent" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="moduleList" type="tns:moduleList" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="moduleList">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="module" type="tns:module" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="module">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspDevice">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="description" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="moduleType" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="loadControlDevice">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspDevice">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="ratedVoltage" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="ratedCurrent" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="numberOfRelays" type="s:integer" />
+              <s:element minOccurs="0" maxOccurs="1" name="moduleList" type="tns:moduleList" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="ArrayOfString1">
         <s:sequence>
           <s:element minOccurs="0" maxOccurs="unbounded" name="sealNumber" type="s:string" />
@@ -2525,7 +2452,6 @@
           <s:element minOccurs="0" maxOccurs="1" name="form" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="multiplier" type="s:long" />
           <s:element minOccurs="0" maxOccurs="1" name="demandMult" type="s:float" />
-          <s:element minOccurs="0" maxOccurs="1" name="transformerRatio" type="tns:transformerRatio" />
           <s:element minOccurs="0" maxOccurs="1" name="transponderID" type="s:string" />
         </s:sequence>
       </s:complexType>
@@ -2609,6 +2535,7 @@
           <s:element minOccurs="0" maxOccurs="1" name="eaLoc" type="tns:eaLoc" />
           <s:element minOccurs="0" maxOccurs="1" name="transformerBankID" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="meterBaseID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="mapLocation" type="tns:PointType" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="outageDetectionDevice">
@@ -2767,10 +2694,10 @@
               <s:element minOccurs="0" maxOccurs="1" name="gridLocation" type="s:string" />
               <s:element minOccurs="0" maxOccurs="unbounded" name="annotationList" type="tns:genericAnnotationFeature" />
               <s:choice minOccurs="0" maxOccurs="unbounded">
-                <s:element minOccurs="0" maxOccurs="1" name="parentSectionID" type="tns:objectRef" />
                 <s:element minOccurs="0" maxOccurs="1" name="fromNodeID" type="tns:nodeIdentifier" />
-                <s:element minOccurs="0" maxOccurs="1" name="sectionID" type="s:string" />
                 <s:element minOccurs="0" maxOccurs="1" name="toNodeID" type="tns:nodeIdentifier" />
+                <s:element minOccurs="0" maxOccurs="1" name="parentSectionID" type="tns:objectRef" />
+                <s:element minOccurs="0" maxOccurs="1" name="sectionID" type="s:string" />
               </s:choice>
             </s:sequence>
           </s:extension>
@@ -2814,19 +2741,6 @@
           <s:element minOccurs="0" maxOccurs="1" name="conductorType" type="s:string" />
           <s:element minOccurs="0" maxOccurs="1" name="phase" type="tns:mspPhase" />
         </s:sequence>
-      </s:complexType>
-      <s:complexType name="ugPrimaryLine">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspElectricLine">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
-              <s:element minOccurs="0" maxOccurs="1" name="isInConduit" type="s:boolean" />
-              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="condPerPhase" type="s:nonNegativeInteger" />
-              <s:element minOccurs="0" maxOccurs="1" name="lengthSrc" type="s:string" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
       </s:complexType>
       <s:complexType name="ohSecondaryLine">
         <s:complexContent mixed="false">
@@ -2873,6 +2787,19 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="ugPrimaryLine">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspElectricLine">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="operVolt" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="isInConduit" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="condPerPhase" type="s:nonNegativeInteger" />
+              <s:element minOccurs="0" maxOccurs="1" name="lengthSrc" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="secondaryJunctionBox">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspPointObject">
@@ -2897,6 +2824,30 @@
           <s:element minOccurs="0" maxOccurs="1" name="quantity" type="s:float" />
           <s:element minOccurs="0" maxOccurs="1" name="unitAction" type="tns:unitActn" />
         </s:sequence>
+      </s:complexType>
+      <s:complexType name="multiUtilitylocation">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspPointObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="accounts">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="account">
+                      <s:complexType>
+                        <s:sequence>
+                          <s:element minOccurs="0" maxOccurs="1" name="ServiceType" type="s:string" />
+                          <s:element minOccurs="0" maxOccurs="1" name="serviceLocationID" type="s:string" />
+                          <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+                          <s:element minOccurs="0" maxOccurs="1" name="customerID" type="s:string" />
+                        </s:sequence>
+                      </s:complexType>
+                    </s:element>
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
       </s:complexType>
       <s:complexType name="genericPointFeature">
         <s:complexContent mixed="false">
@@ -2987,13 +2938,29 @@
               <s:element minOccurs="0" maxOccurs="1" name="serviceLocationList" type="tns:serviceLocationList" />
               <s:element minOccurs="0" maxOccurs="1" name="owner" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="parcelID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="multiUtilityLocation">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="mutliUtilityLocationItem">
+                      <s:complexType>
+                        <s:sequence>
+                          <s:element minOccurs="0" maxOccurs="1" name="serviceType" />
+                          <s:element minOccurs="0" maxOccurs="1" name="serviceID" />
+                          <s:element minOccurs="0" maxOccurs="1" name="accountNumber" />
+                          <s:element minOccurs="0" maxOccurs="1" name="customerID" />
+                        </s:sequence>
+                      </s:complexType>
+                    </s:element>
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
             </s:sequence>
           </s:extension>
         </s:complexContent>
       </s:complexType>
       <s:complexType name="serviceLocationList">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="servLov" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="unbounded" name="servLoc" type="s:string" />
         </s:sequence>
       </s:complexType>
       <s:complexType name="guy">
@@ -3060,12 +3027,153 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="mspServiceLocation" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspPointObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="unbounded" name="graphicSymbol" type="tns:graphicSymbol" />
+              <s:element minOccurs="0" maxOccurs="unbounded" name="annotationList" type="tns:genericAnnotationFeature" />
+              <s:element minOccurs="0" maxOccurs="1" name="custID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="facilityName" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="siteID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="serviceAddress" type="tns:address" />
+              <s:element minOccurs="0" maxOccurs="1" name="revenueClass" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servStatus" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="billingCycle" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="route" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="budgBill" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecvBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecvCur" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecv30" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecv60" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="acRecv90" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="paymentDueDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="lastPaymentDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="lastPaymentAmount" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="billDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="shutOffDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="connectDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="disconnectDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="network" type="tns:mspNetwork" />
+              <s:element minOccurs="0" maxOccurs="1" name="SIC" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="woNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="soNumber" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="address">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="address1" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="address2" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="city" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="state" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="postalCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="country" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="mspNetwork" abstract="true">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="boardDist" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="taxDist" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="franchiseDist" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="schoolDist" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="district" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="county" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="cityCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="city" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="state" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="postalCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="country" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="section" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="township" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="range" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="subdivision" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="block" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="lot" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="waterServiceLocation">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspServiceLocation" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="electricServiceLocation">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspServiceLocation">
+            <s:sequence>
+              <s:choice minOccurs="0" maxOccurs="unbounded">
+                <s:element minOccurs="0" maxOccurs="1" name="parentSectionID" type="tns:objectRef" />
+                <s:element minOccurs="0" maxOccurs="1" name="toNodeID" type="tns:nodeIdentifier" />
+                <s:element minOccurs="0" maxOccurs="1" name="sectionID" type="s:string" />
+                <s:element minOccurs="0" maxOccurs="1" name="fromNodeID" type="tns:nodeIdentifier" />
+              </s:choice>
+              <s:element minOccurs="0" maxOccurs="1" name="outageStatus" type="tns:powerStatus" />
+              <s:element minOccurs="0" maxOccurs="1" name="specialNeeds" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="loadMgmt" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="isCogenerationSite" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="phaseCode" type="tns:phaseCd" />
+              <s:element minOccurs="0" maxOccurs="1" name="load" type="tns:mspLoadGroup" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="gasServiceLocation">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspServiceLocation" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="propaneServiceLocation">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspServiceLocation" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="meterBase">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspPointObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="meterID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servLoc" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="premiseID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="form" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="class" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="baseType" type="tns:baseType" />
+              <s:element minOccurs="0" maxOccurs="1" name="instrumentTransformers" type="tns:instrumentTransformers" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="instrumentTransformers">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="ct" type="s:double" />
+          <s:element minOccurs="0" maxOccurs="1" name="pt" type="s:double" />
+        </s:sequence>
+      </s:complexType>
       <s:simpleType name="scadaPointType">
         <s:restriction base="s:string">
           <s:enumeration value="status" />
           <s:enumeration value="analog" />
         </s:restriction>
       </s:simpleType>
+      <s:complexType name="outageDurationEvent">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="outageEventID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageDescription" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="meterNo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="servLoc" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="accountNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="timeOfInterruption" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="timeRestored" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="interruptionDuration" type="s:integer" />
+              <s:element minOccurs="0" maxOccurs="1" name="customerResponsible" type="s:boolean" />
+              <s:element minOccurs="0" maxOccurs="1" name="durationDisplay" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
       <s:complexType name="scadaStatus">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -3338,6 +3446,82 @@
           </s:extension>
         </s:complexContent>
       </s:complexType>
+      <s:complexType name="historyLog">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="meterID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="eventList" type="tns:ArrayOfEvent" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfEvent">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="event" type="tns:event" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="event">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="dateTime" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="eventCode" type="tns:eventCode" />
+          <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="argument" type="s:string" />
+        </s:sequence>
+        <s:attribute name="sequenceNumber" type="s:unsignedInt" />
+      </s:complexType>
+      <s:simpleType name="eventCode">
+        <s:restriction base="s:string">
+          <s:enumeration value="Primary power down" />
+          <s:enumeration value="Primary power up" />
+          <s:enumeration value="Time changed, old time" />
+          <s:enumeration value="Time changed, new time" />
+          <s:enumeration value="Time changed, old time as argument" />
+          <s:enumeration value="Time changed, new time as argument" />
+          <s:enumeration value="Meter accessed for read" />
+          <s:enumeration value="Meter accessed for write" />
+          <s:enumeration value="Procedure invoked" />
+          <s:enumeration value="Written to" />
+          <s:enumeration value="Programmed" />
+          <s:enumeration value="Communication terminated normally" />
+          <s:enumeration value="Communication terminated abnormally" />
+          <s:enumeration value="List cleared" />
+          <s:enumeration value="Last read entry updated" />
+          <s:enumeration value="History Log cleared" />
+          <s:enumeration value="History Log last read entry updated" />
+          <s:enumeration value="Event Log cleared" />
+          <s:enumeration value="Event Log last read entry updated" />
+          <s:enumeration value="Demand reset occurred" />
+          <s:enumeration value="Self read occurred" />
+          <s:enumeration value="Season change" />
+          <s:enumeration value="Rate change" />
+          <s:enumeration value="Special Schedule activation" />
+          <s:enumeration value="Tier changed" />
+          <s:enumeration value="Pending data stucture activation" />
+          <s:enumeration value="Pending data stucture clear" />
+          <s:enumeration value="Metering mode started" />
+          <s:enumeration value="Metering mode stopped" />
+          <s:enumeration value="Test mode started" />
+          <s:enumeration value="Test mode stopped" />
+          <s:enumeration value="Meter shop mode started" />
+          <s:enumeration value="Meter shop mode stopped" />
+          <s:enumeration value="Meter reprogrammed" />
+          <s:enumeration value="Configuration error detected" />
+          <s:enumeration value="Self check error detected" />
+          <s:enumeration value="RAM failure detected" />
+          <s:enumeration value="ROM failure detected" />
+          <s:enumeration value="Nonvolatile memory failure detected" />
+          <s:enumeration value="Clock error detected" />
+          <s:enumeration value="Measurement error detected" />
+          <s:enumeration value="Low battery detected" />
+          <s:enumeration value="Low loss potential detected" />
+          <s:enumeration value="Demand overload detected" />
+          <s:enumeration value="Tamper attempt detected" />
+          <s:enumeration value="Reverse flow detected" />
+          <s:enumeration value="Momentary interruption" />
+          <s:enumeration value="Sustained outage" />
+        </s:restriction>
+      </s:simpleType>
       <s:complexType name="profileObject">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -3392,18 +3576,18 @@
       <s:complexType name="status">
         <s:sequence>
           <s:choice minOccurs="0" maxOccurs="unbounded">
+            <s:element minOccurs="1" maxOccurs="1" name="testData" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="configChanged" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="invalid" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="longInterval" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="clockForward" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="manuallyModified" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="configChanged" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="longInterval" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="testData" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="DSTinEffect" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="clockBackward" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="invalid" type="s:boolean" />
-            <s:element minOccurs="1" maxOccurs="1" name="manuallyEntered" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="overflow" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="partialInterval" type="s:boolean" />
             <s:element minOccurs="1" maxOccurs="1" name="recorderStopped" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="manuallyEntered" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="DSTinEffect" type="s:boolean" />
+            <s:element minOccurs="1" maxOccurs="1" name="clockBackward" type="s:boolean" />
           </s:choice>
         </s:sequence>
         <s:attribute name="intervalIndex" type="s:unsignedInt" use="required" />
@@ -3487,6 +3671,10 @@
               <s:element minOccurs="0" maxOccurs="1" name="newSubstation" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="newFeeder" type="s:string" />
               <s:element minOccurs="0" maxOccurs="1" name="newPhase" type="tns:phaseCd" />
+              <s:element minOccurs="0" maxOccurs="1" name="oldSubstationCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="oldFeederNo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="newSubstationCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="newFeederNo" type="s:string" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -3614,8 +3802,11 @@
               <s:element minOccurs="0" maxOccurs="1" name="lastMeterRead" type="s:integer" />
               <s:element minOccurs="0" maxOccurs="1" name="lastReadingDate" type="s:dateTime" />
               <s:element minOccurs="0" maxOccurs="1" name="depositAmount" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="depositPaid" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="depositInterest" type="s:float" />
               <s:element minOccurs="0" maxOccurs="1" name="connectDate" type="s:dateTime" />
               <s:element minOccurs="0" maxOccurs="1" name="billingCycle" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="meterSetDate" type="s:dateTime" />
             </s:sequence>
           </s:extension>
         </s:complexContent>
@@ -3768,27 +3959,6 @@
           <s:element minOccurs="0" maxOccurs="1" name="adjustmentItemID" type="s:string" />
         </s:sequence>
       </s:complexType>
-      <s:complexType name="meterBase">
-        <s:complexContent mixed="false">
-          <s:extension base="tns:mspObject">
-            <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="meterID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="servLoc" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="premiseID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="form" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="class" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="baseType" type="tns:baseType" />
-              <s:element minOccurs="0" maxOccurs="1" name="instrumentTransformers" type="tns:instrumentTransformers" />
-            </s:sequence>
-          </s:extension>
-        </s:complexContent>
-      </s:complexType>
-      <s:complexType name="instrumentTransformers">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="ct" type="s:double" />
-          <s:element minOccurs="0" maxOccurs="1" name="pt" type="s:double" />
-        </s:sequence>
-      </s:complexType>
       <s:complexType name="ppmMeterExchange">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
@@ -3937,82 +4107,686 @@
           <s:element minOccurs="0" maxOccurs="1" name="presentReadingDate" type="s:dateTime" />
         </s:sequence>
       </s:complexType>
-      <s:complexType name="historyLog">
+      <s:complexType name="meters">
         <s:complexContent mixed="false">
           <s:extension base="tns:mspObject">
             <s:sequence>
-              <s:element minOccurs="0" maxOccurs="1" name="meterID" type="s:string" />
-              <s:element minOccurs="0" maxOccurs="1" name="eventList" type="tns:ArrayOfEvent" />
+              <s:element minOccurs="0" maxOccurs="1" name="electricMeters">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="electricMeter" type="tns:electricMeter" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="waterMeters">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="waterMeter" type="tns:waterMeter" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="gasMeters">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="gasMeter" type="tns:gasMeter" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="propaneMeters">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="propaneMeter" type="tns:propaneMeter" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
             </s:sequence>
           </s:extension>
         </s:complexContent>
       </s:complexType>
-      <s:complexType name="ArrayOfEvent">
+      <s:complexType name="electricMeter">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspMeter">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="electricNameplate" type="tns:electricNameplate" />
+              <s:element minOccurs="0" maxOccurs="1" name="utilityInfo" type="tns:utilityInfo" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="mspMeter" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="meterNo" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="serialNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="meterType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="AMRDeviceType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="AMRVendor" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="transponderID" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="receivedElectricMeter">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspMeter">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="electricNameplate" type="tns:electricNameplate" />
+              <s:element minOccurs="0" maxOccurs="1" name="metrologyFirmwareVersion" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="metrologyFirmwareRevision" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="transponderFirmwareVersion" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="catalogNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="moduleList" type="tns:moduleList" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="electricNameplate">
         <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="event" type="tns:event" />
+          <s:element minOccurs="0" maxOccurs="1" name="kh" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="kr" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="frequency" type="tns:frequency" />
+          <s:element minOccurs="0" maxOccurs="1" name="numberOfElements" type="tns:numberOfElement" />
+          <s:element minOccurs="0" maxOccurs="1" name="baseType" type="tns:baseType" />
+          <s:element minOccurs="0" maxOccurs="1" name="accuracyClass" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="elementsVoltage" type="tns:elementsVoltage" />
+          <s:element minOccurs="0" maxOccurs="1" name="supplyVoltage" type="tns:supplyVoltage" />
+          <s:element minOccurs="0" maxOccurs="1" name="maxAmperage" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="testAmperage" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="regRatio" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="phases" type="s:long" />
+          <s:element minOccurs="0" maxOccurs="1" name="wires" type="s:long" />
+          <s:element minOccurs="0" maxOccurs="1" name="dials" type="s:long" />
+          <s:element minOccurs="0" maxOccurs="1" name="form" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="multiplier" type="s:long" />
+          <s:element minOccurs="0" maxOccurs="1" name="demandMult" type="s:float" />
         </s:sequence>
       </s:complexType>
-      <s:complexType name="event">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="1" name="dateTime" type="s:dateTime" />
-          <s:element minOccurs="0" maxOccurs="1" name="eventCode" type="tns:eventCode" />
-          <s:element minOccurs="0" maxOccurs="1" name="userID" type="s:string" />
-          <s:element minOccurs="0" maxOccurs="1" name="argument" type="s:string" />
-        </s:sequence>
-        <s:attribute name="sequenceNumber" type="s:unsignedInt" />
+      <s:complexType name="testedElectricMeter">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:receivedElectricMeter">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="meterTestList" type="tns:meterTestList" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
       </s:complexType>
-      <s:simpleType name="eventCode">
+      <s:complexType name="meterTestList">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="meterTest" type="tns:meterTest" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="meterTest">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="testDate" type="s:dateTime" />
+          <s:element minOccurs="0" maxOccurs="1" name="asFound" type="tns:asFound" />
+          <s:element minOccurs="0" maxOccurs="1" name="asLeft" type="tns:asLeft" />
+          <s:element minOccurs="0" maxOccurs="1" name="reason" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="testersInitials" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="testCompany" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="comments" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="revolutions" type="s:float" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="asFound">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="kWhReading" type="s:integer" />
+          <s:element minOccurs="0" maxOccurs="1" name="kWReading" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="kVArReading" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="powerFactorReading" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="resultHigh" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="resultLow" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="resultLL" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="kWResult" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="kVArResult" type="s:float" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="asLeft">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="kWhReading" type="s:integer" />
+          <s:element minOccurs="0" maxOccurs="1" name="kWReading" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="kVArReading" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="powerFactorReading" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="resultHigh" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="resultLow" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="resultLL" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="kWResult" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="kVArResult" type="s:float" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="propaneMeter">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspMeter">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="propaneNameplate" type="tns:propaneNameplate" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="propaneNameplate">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:gasNameplate" />
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="gasNameplate">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="mechanicalForm">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="2" />
+                <s:enumeration value="3" />
+                <s:enumeration value="4" />
+                <s:enumeration value="5" />
+                <s:enumeration value="" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="measurementSystem">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="gasPressure">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="0" maxOccurs="1" name="maxPressure" type="s:float" />
+                <s:element minOccurs="0" maxOccurs="1" name="maxPressureUOM" type="tns:uom" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="gasFlow">
+            <s:complexType>
+              <s:sequence>
+                <s:element minOccurs="0" maxOccurs="1" name="maxFlowRate" />
+                <s:element minOccurs="0" maxOccurs="1" name="maxFlowRateUOM" type="tns:uom" />
+              </s:sequence>
+            </s:complexType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="gearDriveSize">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="2" />
+                <s:enumeration value="3" />
+                <s:enumeration value="4" />
+                <s:enumeration value="5" />
+                <s:enumeration value="6" />
+                <s:enumeration value="7" />
+                <s:enumeration value="" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="internalPipeDiameter">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="2" />
+                <s:enumeration value="3" />
+                <s:enumeration value="4" />
+                <s:enumeration value="5" />
+                <s:enumeration value="6" />
+                <s:enumeration value="7" />
+                <s:enumeration value="8" />
+                <s:enumeration value="9" />
+                <s:enumeration value="10" />
+                <s:enumeration value="11" />
+                <s:enumeration value="12" />
+                <s:enumeration value="13" />
+                <s:enumeration value="14" />
+                <s:enumeration value="15" />
+                <s:enumeration value="16" />
+                <s:enumeration value="17" />
+                <s:enumeration value="18" />
+                <s:enumeration value="19" />
+                <s:enumeration value="20" />
+                <s:enumeration value="21" />
+                <s:enumeration value="22" />
+                <s:enumeration value="23" />
+                <s:enumeration value="" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="temperatureCompensationType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="2" />
+                <s:enumeration value="" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="pressureCompensationType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="2" />
+                <s:enumeration value="" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="gasMeter">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspMeter">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="gasnameplate" type="tns:gasNameplate" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="waterMeter">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspMeter">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="waterNameplate" type="tns:waterNameplate" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="waterNameplate">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="installType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="2" />
+                <s:enumeration value="3" />
+                <s:enumeration value="" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="fluidType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="2" />
+                <s:enumeration value="3" />
+                <s:enumeration value="4" />
+                <s:enumeration value="5" />
+                <s:enumeration value="6" />
+                <s:enumeration value="" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="driveType">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="2" />
+                <s:enumeration value="3" />
+                <s:enumeration value="4" />
+                <s:enumeration value="5" />
+                <s:enumeration value="6" />
+                <s:enumeration value="7" />
+                <s:enumeration value="8" />
+                <s:enumeration value="9" />
+                <s:enumeration value="10" />
+                <s:enumeration value="11" />
+                <s:enumeration value="12" />
+                <s:enumeration value="13" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+          <s:element minOccurs="0" maxOccurs="1" name="pipeSize">
+            <s:simpleType>
+              <s:restriction base="s:string">
+                <s:enumeration value="0" />
+                <s:enumeration value="1" />
+                <s:enumeration value="2" />
+                <s:enumeration value="3" />
+                <s:enumeration value="4" />
+                <s:enumeration value="5" />
+                <s:enumeration value="6" />
+                <s:enumeration value="7" />
+                <s:enumeration value="8" />
+                <s:enumeration value="9" />
+                <s:enumeration value="10" />
+                <s:enumeration value="11" />
+                <s:enumeration value="12" />
+                <s:enumeration value="13" />
+                <s:enumeration value="14" />
+                <s:enumeration value="15" />
+                <s:enumeration value="16" />
+                <s:enumeration value="17" />
+                <s:enumeration value="18" />
+                <s:enumeration value="19" />
+                <s:enumeration value="20" />
+                <s:enumeration value="21" />
+                <s:enumeration value="22" />
+                <s:enumeration value="23" />
+                <s:enumeration value="24" />
+                <s:enumeration value="25" />
+                <s:enumeration value="" />
+              </s:restriction>
+            </s:simpleType>
+          </s:element>
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="endDeviceShipment">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="utility" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="manufacturer" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="poReferenceNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="shippingTicketNumber" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="recipient" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="shippedToAddress" type="tns:address" />
+              <s:element minOccurs="0" maxOccurs="1" name="shippedDate" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="transponderIDRange">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="start" />
+                    <s:element minOccurs="0" maxOccurs="1" name="end" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="receivedMeters">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="receivedElectricMeter" type="tns:receivedElectricMeter" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="receivedModules">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="module" type="tns:module" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="receivedLoadControlDevices">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="loadControlDevice" type="tns:loadControlDevice" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="receivedLoadDisconnectDevices">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="loadDisconnectDevice" type="tns:loadDisconnectDevice" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="serviceLocations">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="electricServiceLocations">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="electricServiceLocation" type="tns:electricServiceLocation" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="waterServiceLocations">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="waterServiceLocation" type="tns:waterServiceLocation" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="gasServiceLocations">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="gasServiceLocation" type="tns:gasServiceLocation" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+              <s:element minOccurs="0" maxOccurs="1" name="propaneServiceLocations">
+                <s:complexType>
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="unbounded" name="propaneServiceLocation" type="tns:propaneServiceLocation" />
+                  </s:sequence>
+                </s:complexType>
+              </s:element>
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="AVLEvent">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="GMTTime" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="eventType" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="GPS" type="tns:GPS" />
+              <s:element minOccurs="0" maxOccurs="1" name="AVLAddress" type="tns:AVLAddress" />
+              <s:element minOccurs="0" maxOccurs="1" name="telemetry" type="tns:telemetry" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="GPS">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="GPSValidity" type="s:boolean" />
+          <s:element minOccurs="0" maxOccurs="1" name="latitude" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="longitude" type="s:float" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="AVLAddress">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="street" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="crossStreet" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="city" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="state" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="postalCode" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="country" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="POIName" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="POIType" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="telemetry">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="1" name="speed" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="heading" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="cardinalHeading" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="odometer" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="maxVehSpeedLastReading" type="s:float" />
+          <s:element minOccurs="0" maxOccurs="1" name="maxEngineSpeedLastReading" type="s:positiveInteger" />
+          <s:element minOccurs="0" maxOccurs="1" name="engineRunningState" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="gearShiftPosition" type="s:string" />
+          <s:element minOccurs="0" maxOccurs="1" name="VTCUEvent" type="s:string" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="loggedOutageDetectionEvent">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="outageDetectionRecordID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="eventTime" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageDetectDeviceID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageDetectDeviceType" type="tns:outageDetectDeviceType" />
+              <s:element minOccurs="0" maxOccurs="1" name="problemCode" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageEventType" type="tns:outageEventType" />
+              <s:element minOccurs="0" maxOccurs="1" name="takenBy" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="callType" type="tns:callType" />
+              <s:element minOccurs="0" maxOccurs="1" name="description" type="s:string" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="outageDetectionLog">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="phaseCd" type="tns:phaseCd" />
+              <s:element minOccurs="0" maxOccurs="1" name="loggedODEventList" type="tns:loggedODEventList" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageLocation" type="tns:outageLocation" />
+              <s:element minOccurs="0" maxOccurs="1" name="messageList" type="tns:messageList" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageCustomer" type="tns:outageCustomer" />
+              <s:element minOccurs="0" maxOccurs="1" name="priority" type="tns:priorityType" />
+              <s:element minOccurs="0" maxOccurs="1" name="resolvedLevel" type="tns:resolvedLevel" />
+              <s:element minOccurs="0" maxOccurs="1" name="timeTroubleBegan" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="timeOfInitialEvent" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="timeOfLastEvent" type="s:dateTime" />
+              <s:element minOccurs="0" maxOccurs="1" name="eventsLogged" type="s:long" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="loggedODEventList">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="loggedOutageDetectionEvent" type="tns:loggedOutageDetectionEvent" />
+        </s:sequence>
+      </s:complexType>
+      <s:complexType name="mspResultsBase" abstract="true">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="resultsType" type="tns:resultsType" />
+              <s:element minOccurs="0" maxOccurs="1" name="source" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="feeder" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="eaLoc" type="tns:eaLoc" />
+              <s:element minOccurs="0" maxOccurs="1" name="parentID" type="tns:objectRef" />
+              <s:element minOccurs="0" maxOccurs="1" name="phaseCode" type="tns:phaseCd" />
+              <s:element minOccurs="0" maxOccurs="1" name="loadCon" type="tns:ldCon" />
+              <s:element minOccurs="0" maxOccurs="1" name="equipRef" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="milesFromSrc" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="sectionLength" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="baseKvA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="baseKvB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="baseKvC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="baseKvBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="basePower" type="s:float" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:simpleType name="resultsType">
         <s:restriction base="s:string">
-          <s:enumeration value="Primary power down" />
-          <s:enumeration value="Primary power up" />
-          <s:enumeration value="Time changed, old time" />
-          <s:enumeration value="Time changed, new time" />
-          <s:enumeration value="Time changed, old time as argument" />
-          <s:enumeration value="Time changed, new time as argument" />
-          <s:enumeration value="Meter accessed for read" />
-          <s:enumeration value="Meter accessed for write" />
-          <s:enumeration value="Procedure invoked" />
-          <s:enumeration value="Written to" />
-          <s:enumeration value="Programmed" />
-          <s:enumeration value="Communication terminated normally" />
-          <s:enumeration value="Communication terminated abnormally" />
-          <s:enumeration value="List cleared" />
-          <s:enumeration value="Last read entry updated" />
-          <s:enumeration value="History Log cleared" />
-          <s:enumeration value="History Log last read entry updated" />
-          <s:enumeration value="Event Log cleared" />
-          <s:enumeration value="Event Log last read entry updated" />
-          <s:enumeration value="Demand reset occurred" />
-          <s:enumeration value="Self read occurred" />
-          <s:enumeration value="Season change" />
-          <s:enumeration value="Rate change" />
-          <s:enumeration value="Special Schedule activation" />
-          <s:enumeration value="Tier changed" />
-          <s:enumeration value="Pending data stucture activation" />
-          <s:enumeration value="Pending data stucture clear" />
-          <s:enumeration value="Metering mode started" />
-          <s:enumeration value="Metering mode stopped" />
-          <s:enumeration value="Test mode started" />
-          <s:enumeration value="Test mode stopped" />
-          <s:enumeration value="Meter shop mode started" />
-          <s:enumeration value="Meter shop mode stopped" />
-          <s:enumeration value="Meter reprogrammed" />
-          <s:enumeration value="Configuration error detected" />
-          <s:enumeration value="Self check error detected" />
-          <s:enumeration value="RAM failure detected" />
-          <s:enumeration value="ROM failure detected" />
-          <s:enumeration value="Nonvolatile memory failure detected" />
-          <s:enumeration value="Clock error detected" />
-          <s:enumeration value="Measurement error detected" />
-          <s:enumeration value="Low battery detected" />
-          <s:enumeration value="Low loss potential detected" />
-          <s:enumeration value="Demand overload detected" />
-          <s:enumeration value="Tamper attempt detected" />
-          <s:enumeration value="Reverse flow detected" />
-          <s:enumeration value="Momentary interruption" />
-          <s:enumeration value="Sustained outage" />
+          <s:enumeration value="loadFlow" />
+          <s:enumeration value="shortCircuit" />
+          <s:enumeration value="Other" />
         </s:restriction>
       </s:simpleType>
+      <s:complexType name="shortCircuitAnalysisResult">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspResultsBase">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="faultZ" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="minLg" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="maxLg" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="maxLl" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="maxLlg" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="maxLllg" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="posSeqR" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="posSeqX" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="negSeqR" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="negSeqX" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="zeroSeqR" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="zeroSeqX" type="s:float" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="loadFlowResult">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspResultsBase">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="priKvA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="priKvB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="priKvC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="priKvBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="sectionDropA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="sectionDropB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="sectionDropC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="sectionDropBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="cumulativeDropA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="cumulativeDropB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="cumulativeDropC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="cumulativeDropBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruCurrentA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruCurrentB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruCurrentC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruCurrentBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="pctCapA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="pctCapB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="pctCapC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="pctCapBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruKwA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruKwB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruKwC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruKwBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruKvarA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruKvarB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruKvarC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="thruKvarBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="pctPfA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="pctPfB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="pctPfC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="pctPfBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="pctLoss" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="sectKwA" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="sectKwB" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="sectKwC" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="sectKwBal" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="secKvarA" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="secKvarB" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="secKvarC" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="secKvarBal" type="s:float" />
+              <s:element minOccurs="0" maxOccurs="1" name="consOnA" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="consOnB" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="consOnC" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="consOnBal" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="consThruA" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="consThruB" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="consThruC" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="consThruBal" type="s:long" />
+              <s:element minOccurs="0" maxOccurs="1" name="baseKvCalc" type="s:float" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="callBackList">
+        <s:complexContent mixed="false">
+          <s:extension base="tns:mspObject">
+            <s:sequence>
+              <s:element minOccurs="0" maxOccurs="1" name="outageEventID" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageStatus" type="tns:outageStatus" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageDescription" type="s:string" />
+              <s:element minOccurs="0" maxOccurs="1" name="outageCustomerList" type="tns:ArrayOfOutageCustomerListOutageCustomer" />
+              <s:element minOccurs="0" maxOccurs="1" name="message" type="tns:message" />
+            </s:sequence>
+          </s:extension>
+        </s:complexContent>
+      </s:complexType>
+      <s:complexType name="ArrayOfOutageCustomerListOutageCustomer">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="outageCustomer">
+            <s:complexType>
+              <s:complexContent mixed="false">
+                <s:extension base="tns:outageCustomer">
+                  <s:sequence>
+                    <s:element minOccurs="0" maxOccurs="1" name="servLoc" type="s:string" />
+                    <s:element minOccurs="0" maxOccurs="1" name="meterNo" type="s:string" />
+                  </s:sequence>
+                </s:extension>
+              </s:complexContent>
+            </s:complexType>
+          </s:element>
+        </s:sequence>
+      </s:complexType>
       <s:element name="GetActiveOutages">
         <s:complexType />
       </s:element>
@@ -4041,6 +4815,7 @@
         <s:complexType>
           <s:sequence>
             <s:element minOccurs="0" maxOccurs="1" name="ODEvents" type="tns:ArrayOfOutageDetectionEvent" />
+            <s:element minOccurs="0" maxOccurs="1" name="transactionID" type="s:string" />
           </s:sequence>
         </s:complexType>
       </s:element>
@@ -4093,6 +4868,11 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:complexType name="ArrayOfCircuitElement">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="circuitElement" nillable="true" type="tns:circuitElement" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="GetDownlineCircuitElementsResponse">
         <s:complexType>
           <s:sequence>
@@ -4100,11 +4880,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:complexType name="ArrayOfCircuitElement">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="circuitElement" nillable="true" type="tns:circuitElement" />
-        </s:sequence>
-      </s:complexType>
       <s:element name="GetUplineCircuitElements">
         <s:complexType>
           <s:sequence>
@@ -4183,6 +4958,11 @@
           </s:sequence>
         </s:complexType>
       </s:element>
+      <s:complexType name="ArrayOfMeterConnectivity">
+        <s:sequence>
+          <s:element minOccurs="0" maxOccurs="unbounded" name="meterConnectivity" nillable="true" type="tns:meterConnectivity" />
+        </s:sequence>
+      </s:complexType>
       <s:element name="GetDownlineMeterConnectivityResponse">
         <s:complexType>
           <s:sequence>
@@ -4190,11 +4970,6 @@
           </s:sequence>
         </s:complexType>
       </s:element>
-      <s:complexType name="ArrayOfMeterConnectivity">
-        <s:sequence>
-          <s:element minOccurs="0" maxOccurs="unbounded" name="meterConnectivity" nillable="true" type="tns:meterConnectivity" />
-        </s:sequence>
-      </s:complexType>
       <s:element name="GetUplineMeterConnectivity">
         <s:complexType>
           <s:sequence>
@@ -4433,7 +5208,7 @@
       <wsdl:output message="tns:GetOutageEventStatusByOutageLocationSoapOut" />
     </wsdl:operation>
     <wsdl:operation name="ODEventNotification">
-      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">OD Notifies OA of a change in OutageDetectionEvents by sending an array of changed OutageDetectionEvent objects.  OA returns information about failed transactions using an array of errorObjects.(Recommended)</wsdl:documentation>
+      <wsdl:documentation xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/">OD Notifies OA of a change in OutageDetectionEvents by sending an array of changed OutageDetectionEvent objects.  OA returns information about failed transactions using an array of errorObjects.The transactionID parameter is supplied to link the returned ODEventNotification with a potential InitiateODEventRequest.(Recommended)</wsdl:documentation>
       <wsdl:input message="tns:ODEventNotificationSoapIn" />
       <wsdl:output message="tns:ODEventNotificationSoapOut" />
     </wsdl:operation>
@@ -4919,10 +5694,10 @@
   </wsdl:binding>
   <wsdl:service name="OA_OD">
     <wsdl:port name="OA_ODSoap" binding="tns:OA_ODSoap">
-      <soap:address location="http://www.multispeak.org/interface/30n/5_OA_OD.asmx" />
+      <soap:address location="http://www.multispeak.org/interface/30p/5_OA_OD.asmx" />
     </wsdl:port>
     <wsdl:port name="OA_ODSoap12" binding="tns:OA_ODSoap12">
-      <soap12:address location="http://www.multispeak.org/interface/30n/5_OA_OD.asmx" />
+      <soap12:address location="http://www.multispeak.org/interface/30p/5_OA_OD.asmx" />
     </wsdl:port>
   </wsdl:service>
 </wsdl:definitions>
