@@ -369,7 +369,7 @@ function statusMsg(elem, msgStr) {
 function showDynamicPopup(elem) {
 	var spans = elem.getElementsByTagName('span');
 	var msg = spans[0].innerHTML;
-    overlib( msg, WIDTH, 160, CSSCLASS, TEXTFONTCLASS, 'flyover' );
+    overlib( msg, WIDTH, 200, CSSCLASS, TEXTFONTCLASS, 'flyover' );
 }
 
 // -------------------------------------------

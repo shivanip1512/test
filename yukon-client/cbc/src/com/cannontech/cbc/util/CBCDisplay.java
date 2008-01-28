@@ -255,7 +255,9 @@ public class CBCDisplay {
             String before = capBank.getBeforeVars();
             String after = capBank.getAfterVars();
             String change = capBank.getPercentChange();
-            return new String(" Before: "+before+ " <br/> After: " + after + " <br/> % Change: "+ change);
+            String msg = new String(" <b>kVAR PhaseA PhaseB PhaseC Total</b><br/><hr></br>");
+            msg += new String(" Before: " + before + " <br/> After: " + after + " <br/> % Change: " + change);
+            return msg;
         }
 
         default: return null;
