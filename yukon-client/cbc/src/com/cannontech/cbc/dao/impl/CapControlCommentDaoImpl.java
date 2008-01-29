@@ -37,15 +37,15 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
     private NextValueHelper nextValueHelper;
     
     static {
-            insertSql = "INSERT INTO CapControlComment (commentid,paoid,userid,commentTime,Action,comment,altered) VALUES (?,?,?,?,?,?,?)";
+            insertSql = "INSERT INTO CapControlComment (commentid,paoid,userid,commentTime,Action,capComment,altered) VALUES (?,?,?,?,?,?,?)";
             
             removeSql = "DELETE FROM CapControlComment WHERE commentid = ?";
             
             updateSql = "UPDATE CapControlComment SET paoid = ?," + 
-            "userid = ?,commentTime = ?, Action = ?, comment = ?, " + 
+            "userid = ?,commentTime = ?, Action = ?, capComment = ?, " + 
             "altered = ? WHERE commentid = ?";
             
-            selectAllSql = "SELECT commentid,paoid,userid,Action,commentTime,comment,altered " +
+            selectAllSql = "SELECT commentid,paoid,userid,Action,commentTime,capComment,altered " +
             		        "FROM CapControlComment";
             
             selectByIdSql = selectAllSql + " WHERE commentid = ?";
@@ -214,7 +214,7 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
                 comment.setUserId(rs.getInt("UserId"));
                 comment.setAction(rs.getString("Action"));
                 comment.setTime(rs.getTimestamp("commentTime"));
-                comment.setComment(rs.getString("comment"));
+                comment.setComment(rs.getString("capComment"));
                 String str = rs.getString("Altered");
                 if (str != null) {
                     char c = str.charAt(0);
