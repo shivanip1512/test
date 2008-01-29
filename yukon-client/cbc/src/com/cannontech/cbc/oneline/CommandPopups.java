@@ -19,6 +19,6 @@ public class CommandPopups {
     public static final String  CAP_TAG = "CapTag";
     public static final String CAP_INFO = "CapInfo";
     public static final String CAP_TMSTMP =  "CapPtTmstmp";
-
+    public static final String VAR_CHANGE_POPUP = "varChangePopup";
 
 }

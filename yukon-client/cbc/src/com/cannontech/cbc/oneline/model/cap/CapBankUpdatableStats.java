@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.OnelineDisplayManager;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.UpdatableStats;
@@ -138,11 +139,12 @@ public class CapBankUpdatableStats extends LxAbstractView implements
         if (allStats.size() > 1) {
             for (int i = 1; i < allStats.size(); i++) {
                 UpdatableTextList prevEl = copy.get(i - 1);
+                String componentName = ( prevEl == totalMaxDailyOpCount) ? CommandPopups.VAR_CHANGE_POPUP : null;
                 UpdatableTextList pair = manager.adjustPosition(allStats,
                                                                 prevEl.getFirstElement(),
                                                                 i,
                                                                 getStreamable(),
-                                                                user);
+                                                                user, componentName);
                 copy.add(pair);
             }
         }

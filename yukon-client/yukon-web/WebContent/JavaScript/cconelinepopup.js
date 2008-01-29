@@ -13,7 +13,7 @@ var ALL_POPUP_TYPES = {
 	childCapMaint: "CapBankMaint",
 	childCapDBChange:"CapDBChange",
 	cbcPointTimestamp: "CapPtTmstmp",
-    
+    varChangePopup: "varChangePopup",
     legend: "legend"
 };
 
@@ -176,6 +176,9 @@ function openPopupWin(elem, compositeIdType) {
         showPointTimestamps(id);
 		return;
 	}
+	else if (type == ALL_POPUP_TYPES.varChangePopup) {
+        menuName ='varChangePopup';
+    }
     else if (type == ALL_POPUP_TYPES.legend) {
         var legendUrl = '/spring/capcontrol/oneline/legend';
         new Ajax.Request(legendUrl, {
