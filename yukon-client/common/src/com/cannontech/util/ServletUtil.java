@@ -1148,7 +1148,7 @@ public static Date roundToMinute(Date toRound) {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public static String buildSafeQueryStringFromMap(Map<String,String> propertiesMap) throws UnsupportedEncodingException {
+    public static String buildSafeQueryStringFromMap(Map<String,String> propertiesMap, Boolean htmlOutput) throws UnsupportedEncodingException {
         final String urlEncoding = "UTF-8"; 
         List<String> parameterPairs = new ArrayList<String>(propertiesMap.size()); 
         for (String parameter : propertiesMap.keySet()) {
@@ -1156,7 +1156,7 @@ public static Date roundToMinute(Date toRound) {
             parameterPairs.add(thisPair);
         }
 
-        String queryString = StringUtils.join(parameterPairs, "&");
+        String queryString = StringUtils.join(parameterPairs, htmlOutput ? "&" : "&amp;");
 
         return queryString;
     }

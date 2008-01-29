@@ -374,11 +374,11 @@ public class ProfileWidget extends WidgetControllerBase {
                 optionalAttributeDefaults.put("module", "amr");
                 optionalAttributeDefaults.put("showMenu", "true");
                 optionalAttributeDefaults.put("menuSelection", "deviceselection");
-                optionalAttributeDefaults.put("deviceId", ((Integer)deviceId).toString());
+                optionalAttributeDefaults.put("viewJsp", "MENU");
                 
-                String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "htmlView");
-                String reportCsvUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "csvView");
-                String reportPdfUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "pdfView");
+                String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "htmlView", true);
+                String reportCsvUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "csvView", true);
+                String reportPdfUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "pdfView", true);
                 msgData.put("reportHtmlUrl", reportHtmlUrl);
                 msgData.put("reportCsvUrl", reportCsvUrl);
                 msgData.put("reportPdfUrl", reportPdfUrl);

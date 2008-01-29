@@ -26,6 +26,7 @@ import com.cannontech.analysis.tablemodel.ReportModelMetaInfo;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.simplereport.ColumnInfo;
 import com.cannontech.simplereport.SimpleReportService;
+import com.cannontech.simplereport.SimpleReportViewJsp;
 import com.cannontech.simplereport.SimpleYukonReport;
 import com.cannontech.simplereport.YukonReportDefinition;
 import com.cannontech.tools.csv.CSVWriter;
@@ -48,16 +49,19 @@ public class ReportsController extends MultiActionController  {
     public ModelAndView htmlView(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
-        ModelAndView mav = new ModelAndView("simple/htmlView.jsp");
+        String viewJsp = ServletRequestUtils.getRequiredStringParameter(request, "viewJsp");
+        String jspPath = SimpleReportViewJsp.valueOf(viewJsp).getJspPath();
+        ModelAndView mav = new ModelAndView(jspPath);
+        
         String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
         
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
         
         // optional page module, showMenu, menuSelection values
         //-----------------------------------------------------------------------------------------
-        String module = ServletRequestUtils.getRequiredStringParameter(request, "module");
-        Boolean showMenu = ServletRequestUtils.getRequiredBooleanParameter(request, "showMenu");
-        String menuSelection = ServletRequestUtils.getRequiredStringParameter(request, "menuSelection");
+        String module = ServletRequestUtils.getStringParameter(request, "module", "blank");
+        Boolean showMenu = ServletRequestUtils.getBooleanParameter(request, "showMenu", false);
+        String menuSelection = ServletRequestUtils.getStringParameter(request, "menuSelection", "");
         
         mav.addObject("module", module);
         mav.addObject("showMenu", showMenu);
@@ -66,7 +70,6 @@ public class ReportsController extends MultiActionController  {
         
         // get report definition, model
         //-----------------------------------------------------------------------------------------
-        // Map<String, String> parameterMap = request.getParameterMap();
         Map<String, String> parameterMap = getParameterMap(request);
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = simpleReportService.getReportModel(reportDefinition, parameterMap);

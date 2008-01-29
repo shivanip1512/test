@@ -11,6 +11,7 @@
                 <prop key="/profile/*">ProfileController</prop>
                 <prop key="/voltageAndTou/*">VoltageAndTouController</prop>
                 <prop key="/manualCommand/*">ManualCommandController</prop>
+                <prop key="/reports/*">AMRReportsController</prop>
             </props>
         </property>
     </bean>
@@ -98,4 +99,9 @@
 		<property name="commandDao" ref="commandDao" />
     </bean>
         
+    <bean id="AMRReportsController" class="com.cannontech.web.amr.reports.AMRReportsController">
+        <property name="pointDao" ref="pointDao"/>
+        <property name="simpleReportService" ref="simpleReportService"/>
+    </bean>
+    
 </beans>

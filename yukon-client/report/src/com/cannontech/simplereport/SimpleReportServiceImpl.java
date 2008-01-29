@@ -24,7 +24,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 import com.cannontech.analysis.report.ColumnLayoutData;
 import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.LoadableModel;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
@@ -41,7 +40,6 @@ public class SimpleReportServiceImpl implements SimpleReportService {
 //implements BeanFactoryAware
     
     private DateFormattingService dateFormattingService = null;
-    private YukonUserDao yukonUserDao = null;
     private PointFormattingService pointFormattingService = null;
     // BEAN AWARE
     //private BeanFactory beanFactory; // OR...
@@ -262,7 +260,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         return columnInfo;
     }
     
-    public String getReportUrl(HttpServletRequest httpRequest, String definitionName, Map<String, Object> inputValues, Map<String, String> optionalAttributeDefaults, String viewType) throws Exception{
+    public String getReportUrl(HttpServletRequest httpRequest, String definitionName, Map<String, Object> inputValues, Map<String, String> optionalAttributeDefaults, String viewType, Boolean htmlOutput) throws Exception{
         
         YukonReportDefinition<BareReportModel> reportDefinition = reportDefinitionFactory.getReportDefinition(definitionName);
         InputRoot inputRoot = reportDefinition.getInputs();
@@ -272,9 +270,10 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         
         // other optional attributes
         propertiesMap.putAll(optionalAttributeDefaults);
+        propertiesMap.put("def", definitionName);
         
         // build safe URL query string
-        String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap);
+        String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, htmlOutput);
         
         // complete URL
         URL urlObj = new URL(httpRequest.getRequestURL().toString());
@@ -287,7 +286,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         if(port > 0) {
             url += ":" + port;
         }
-        url += "/spring/reports/simple/" + viewType + "?def=" + definitionName + "&" + queryString;
+        url += "/spring/reports/simple/" + viewType + "?" + queryString;
 
         url = ServletUtil.createSafeUrl(httpRequest, url);
         url = StringEscapeUtils.escapeHtml(url);
@@ -330,13 +329,6 @@ public class SimpleReportServiceImpl implements SimpleReportService {
             }
         }
         
-        // any other dynamic attributes that were not required by the report definition's input root, add to return map
-        for (String attrKey : attributes.keySet()) {
-        	if (!propertiesMap.containsKey(attrKey)) {
-        		propertiesMap.put(attrKey, attributes.get(attrKey).toString());
-        	}
-        }
-        
         return propertiesMap;
     }
     
@@ -349,11 +341,6 @@ public class SimpleReportServiceImpl implements SimpleReportService {
         this.dateFormattingService = dateFormattingService;
     }
 
-    @Required
-    public void setYukonUserDao(YukonUserDao yukonUserDao) {
-        this.yukonUserDao = yukonUserDao;
-    }
-    
     @Required
     public void setReportDefinitionFactory(
             YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory) {

@@ -61,18 +61,19 @@ public class SimpleReportLinkFromNameTag extends YukonTagSupport implements Dyna
         optionalAttributeDefaults.put("module", "blank");
         optionalAttributeDefaults.put("showMenu", "false");
         optionalAttributeDefaults.put("menuSelection", "");
+        optionalAttributeDefaults.put("viewJsp", "MENU");
         
         CtiUtilities.overrideValuesOfDefaultsMap(optionalAttributeDefaults, identifierAttributes);
         
         propertiesMap.putAll(optionalAttributeDefaults);
+        propertiesMap.put("def", definitionName);
         
         // build safe URL query string
-        String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap);
+        String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, true);
         
         // complete URL
-        String url = "/spring/reports/simple/" + viewType + "?def=" + definitionName + "&" + queryString;
+        String url = "/spring/reports/simple/" + viewType + "?" + queryString;
         url = ServletUtil.createSafeUrl(httpRequest, url);
-        url = StringEscapeUtils.escapeHtml(url);
         
         // construct final <a> tag
         out.print("<a href=\"" + url + "\">");
@@ -81,11 +82,6 @@ public class SimpleReportLinkFromNameTag extends YukonTagSupport implements Dyna
         
     }
     
-    
-    
-    public void setDefinitionName(String definitionName) {
-        this.definitionName = definitionName;
-    }
     
     @Required
     public void setReportDefinitionFactory(
@@ -98,6 +94,10 @@ public class SimpleReportLinkFromNameTag extends YukonTagSupport implements Dyna
         this.simpleReportService = simpleReportService;
     }  
     
+    public void setDefinitionName(String definitionName) {
+        this.definitionName = definitionName;
+    }
+    
     public void setViewType(String viewer) {
         this.viewType = viewer;
     }
@@ -106,6 +106,4 @@ public class SimpleReportLinkFromNameTag extends YukonTagSupport implements Dyna
         identifierAttributes.put(localName, value);
     }
 
-
-      
 }

@@ -128,11 +128,11 @@
             <td class="label"><b>${rawTabularDataLabel}:</b></td>
             
             <td>
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="trendDataHtmlView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">HTML</cti:simpleReportLinkFromNameTag>
+                <a href="<c:url value="/spring/amr/reports/archivedDataReport?def=rawPointHistoryDefinition&pointId=${pointIds}&startDate=${startDateMillis}&stopDate=${endDateMillis}" />">HTML</a>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${endDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
                 |
-                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+                <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${endDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
             </td>
         </tr>
         
@@ -141,11 +141,11 @@
 	            <td class="label"><b>Normalized Usage Data:</b></td>
 	            
 	            <td>
-	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="trendDataHtmlView" module="amr" showMenu="true" menuSelection="deviceselection" deviceId="${deviceId}" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">HTML</cti:simpleReportLinkFromNameTag>
+	                <a href="<c:url value="/spring/amr/reports/archivedDataReport?def=normalizedUsageDefinition&pointId=${pointIds}&startDate=${startDateMillis}&stopDate=${endDateMillis}" />">HTML</a>
 	                |
-	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
+	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="csvView" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${endDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
 	                |
-	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${stopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+	                <cti:simpleReportLinkFromNameTag definitionName="normalizedUsageDefinition" viewType="pdfView" pointId="${pointIds}" startDate="${startDateMillis}" stopDate="${endDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
 	            </td>
 	        </tr>
 	    </c:if>

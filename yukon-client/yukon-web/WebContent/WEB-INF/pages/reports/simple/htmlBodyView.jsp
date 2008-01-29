@@ -3,17 +3,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%-- MODULE, MENU --%>
-<cti:standardPage title="${reportTitle}" module="${module}">
-<c:if test="${showMenu}">
-    <cti:standardMenu menuSelection="${menuSelection}" />
-</c:if>
-
-
 <%-- TITLE --%>
 <div class="simpleReportHeader">${reportTitle}</div>
-
-${xurl}
 
 <%-- INPUTS --%>
 <c:if test="${not empty metaInfo}">
@@ -59,8 +50,3 @@ ${xurl}
     </c:forEach>
 
 </table>
-
-
-
-
-</cti:standardPage>

@@ -68,5 +68,6 @@ public interface SimpleReportService {
                                         String definitionName,
                                         Map<String, Object> inputValues,
                                         Map<String, String> optionalAttributeDefaults,
-                                        String viewType) throws Exception;
+                                        String viewType,
+                                        Boolean htmlOutput) throws Exception;
 }
