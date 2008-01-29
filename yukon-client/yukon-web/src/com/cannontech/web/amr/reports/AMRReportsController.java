@@ -84,6 +84,34 @@ public class AMRReportsController extends MultiActionController  {
         
         return mav;
     }
+    
+    /**
+     * For viewing group Devices report with crumbs for group home and selected group
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    public ModelAndView groupDevicesReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        // mav
+        String jspPath = SimpleReportViewJsp.GROUP_DEVICES.getJspPath();
+        ModelAndView mav = new ModelAndView(jspPath);
+        
+        // model stuff
+        String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
+        String groupName = ServletRequestUtils.getRequiredStringParameter(request, "groupName");
+        
+        mav.addObject("definitionName", definitionName);
+        mav.addObject("groupName", groupName);
+        
+        // report title
+        YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
+        BareReportModel reportModel = reportDefinition.createBean();
+        mav.addObject("reportTitle", reportModel.getTitle());
+        
+        return mav;
+    }
 
     @Required
     public void setPointDao(PointDao pointDao) {

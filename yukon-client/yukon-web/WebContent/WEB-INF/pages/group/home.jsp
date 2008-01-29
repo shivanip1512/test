@@ -255,7 +255,7 @@
                     <h4>Generate Report</h4>
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
-                            <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="devicegroups|home" groupName="${group.fullName}">HTML</cti:simpleReportLinkFromNameTag>
+                            <a href="/spring/amr/reports/groupDevicesReport?def=groupDevicesDefinition&groupName=${fn:escapeXml(group.fullName)}">HTML</a>
                             |
                             <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="csvView" groupName="${group.fullName}">CSV</cti:simpleReportLinkFromNameTag>
                             |
