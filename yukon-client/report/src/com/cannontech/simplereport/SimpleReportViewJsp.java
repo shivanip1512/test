@@ -5,7 +5,8 @@ public enum SimpleReportViewJsp {
     BODY("simple/htmlBodyView.jsp"),
     MENU("simple/htmlMenuView.jsp"),
     ARCHIVED_DATA_REPORT("reports/htmlArchivedDataReportView.jsp"),
-    BULK_IMPORT_RESULTS("reports/htmlBulkImportResultsView.jsp");
+    BULK_IMPORT_RESULTS("reports/htmlBulkImportResultsView.jsp"),
+    GROUP_DEVICES("reports/htmlGroupDevicesReportView.jsp");
     
     
     private String jspPath;
