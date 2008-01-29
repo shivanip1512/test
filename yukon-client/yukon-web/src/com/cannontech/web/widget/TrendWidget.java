@@ -25,6 +25,7 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.widget.support.CachingWidgetParameterHelper;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
 
@@ -67,6 +68,8 @@ public class TrendWidget extends WidgetControllerBase {
             HttpServletResponse response) throws Exception {
 
         ModelAndView mav = new ModelAndView();
+        
+        CachingWidgetParameterHelper cachingWidgetParameterHelper = new CachingWidgetParameterHelper(request, "trendWidget");
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
@@ -75,8 +78,8 @@ public class TrendWidget extends WidgetControllerBase {
         YukonDevice device = deviceDao.getYukonDevice(deviceId);
 
         // Get the selected attribute graph
-        String selectedAttributeLabel = WidgetParameterHelper.getStringParameter(request,
-                                                                                 "selectedAttributeLabel");
+        String selectedAttributeLabel = cachingWidgetParameterHelper.getStringParameter("selectedAttributeLabel", null, deviceId);
+        
         AttributeGraphType selectedAttributeGraph = supportedAttributeGraphMap.get(selectedAttributeLabel);
 
         // Get the set of attributes that the trend supports and that exist for
@@ -108,10 +111,10 @@ public class TrendWidget extends WidgetControllerBase {
             startDateCal.setTime(startDate);
 
             // graph type (line/column)
-            String graphTypeString = WidgetParameterHelper.getStringParameter(request,
-                                                                              "graphType",
-                                                                              selectedAttributeGraph.getGraphType()
-                                                                                                    .toString());
+            String defaultGraphType = selectedAttributeGraph.getGraphType().toString();
+            String graphTypeString = cachingWidgetParameterHelper.getStringParameter("graphType", defaultGraphType, deviceId);
+
+
 
             GraphType graphType = null;
             if (graphTypeString.equals("LINE")) {
@@ -121,11 +124,13 @@ public class TrendWidget extends WidgetControllerBase {
             }
 
             // period
-            String periodString = WidgetParameterHelper.getStringParameter(request,
-                                                                           "period",
-                                                                           "YEAR");
+            String periodString = cachingWidgetParameterHelper.getStringParameter("period", "YEAR", deviceId);
+            
+            
             ChartPeriod period = ChartPeriod.valueOf(periodString);
 
+            
+            
             // default end date (today)
             Calendar endDateCal = dateFormattingService.getCalendar(userContext);
             Date endDate = new Date();
@@ -155,12 +160,8 @@ public class TrendWidget extends WidgetControllerBase {
             // if no period, re adjust
             if (periodString.equals("NOPERIOD")) {
 
-                String startDateParam = WidgetParameterHelper.getStringParameter(request,
-                                                                                 "startDateParam",
-                                                                                 "");
-                String endDateParam = WidgetParameterHelper.getStringParameter(request,
-                                                                               "endDateParam",
-                                                                               "");
+                String startDateParam = cachingWidgetParameterHelper.getStringParameter("startDateParam", "", deviceId);
+                String endDateParam = cachingWidgetParameterHelper.getStringParameter("endDateParam", "", deviceId);
 
                 if (!startDateParam.equals("")) {
 
