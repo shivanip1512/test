@@ -404,6 +404,23 @@ public class OnelinePopupMenuController extends MultiActionController {
         return mav;
     }
     
+    public ModelAndView varChangePopup(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final ModelAndView mav = new ModelAndView();
+        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        final String returnUrl = ServletRequestUtils.getRequiredStringParameter(request, "returnUrl"); 
+        final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
+        
+        mav.addObject("paoId", id);
+        mav.addObject("returnUrl", returnUrl);
+        Map<String,Object> varChangeMap = new HashMap<String,Object>();
+        varChangeMap.put("Before:", capBank.getBeforeVars());
+        varChangeMap.put("After:", capBank.getAfterVars());
+        varChangeMap.put("% Change:", capBank.getPercentChange());
+        mav.addObject("varChangeMap", varChangeMap);
+        mav.setViewName("oneline/popupmenu/varChangePopup");
+        return mav;
+    }
+    
     public void setCapControlCache(CapControlCache capControlCache) {
         this.capControlCache = capControlCache;
     }
