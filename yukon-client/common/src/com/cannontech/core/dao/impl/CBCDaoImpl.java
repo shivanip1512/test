@@ -64,6 +64,7 @@ public class CBCDaoImpl  implements CBCDao{
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "Control Ignored Reason");
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "IP Address");
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "UDP Port");
+    	pointGroupConfig.add(CBCPointGroup.ANALOG, "Firmware Version");
 
     	// Accumulator Group
     	pointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "Total op count");

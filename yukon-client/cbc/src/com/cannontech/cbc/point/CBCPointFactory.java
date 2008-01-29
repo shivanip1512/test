@@ -72,6 +72,7 @@ public class CBCPointFactory {
             new StatusPointParams(34, "Control Ignored Indicator"),
 
             // analog
+            new AnalogPointParams(1.0, 3, "Firmware Version", PointUnits.UOMID_UNDEF),
             new AnalogPointParams(0.1, 5, "Voltage", PointUnits.UOMID_VOLTS),
             new AnalogPointParams(0.1,
                                   6,

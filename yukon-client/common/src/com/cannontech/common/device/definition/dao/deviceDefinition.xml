@@ -10380,6 +10380,12 @@
             </point>
         
             <point init="true" type="Analog">
+                <name>Firmware Version</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
                 <name>Voltage</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
@@ -10611,6 +10617,12 @@
                 <unitofmeasure value="Counts"/>
             </point>
         
+            <point init="true" type="Analog">
+                <name>Firmware Version</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
             <point init="true" type="Analog">
                 <name>Voltage</name>
                 <offset value="5"/>
@@ -10844,6 +10856,12 @@
             </point>
         
             <point init="true" type="Analog">
+                <name>Firmware Version</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
+            <point init="true" type="Analog">
                 <name>Voltage</name>
                 <offset value="5"/>
                 <multiplier value="1.0"/>
@@ -11075,6 +11093,12 @@
                 <unitofmeasure value="Counts"/>
             </point>
         
+            <point init="true" type="Analog">
+                <name>Firmware Version</name>
+                <offset value="3"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Undefined"/>
+            </point>
             <point init="true" type="Analog">
                 <name>Voltage</name>
                 <offset value="5"/>
