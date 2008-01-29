@@ -34,9 +34,7 @@
 		    <fileset dir="src">
 		    	<exclude name="**/*.java"/>
 			</fileset>
-		    <fileset dir="i18n/en_us">
-		    	<exclude name="**"/>
-			</fileset>
+		    <fileset dir="i18n/en_us"/>
        	</jar>
 
    </target>
