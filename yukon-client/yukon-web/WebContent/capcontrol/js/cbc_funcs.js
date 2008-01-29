@@ -494,13 +494,14 @@ function copyPost()
 {
 	var elemAreas = document.getElementsByName('cti_chkbxAreas');
     var elemSubstations = document.getElementsByName('cti_chkbxSubStation');
-    var elemSubs = document.getElementsByName('cti_chkbxSubbuses');
+    var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
     var elemPoints = document.getElementsByName('cti_chkbxPoints');
 
     if ( elemAreas.length > 0 ){
-    	alert('Area\'s cannot be copied, please use the creation tool.');
+		//Cannot Copy area's forwarding to the creation wizard.
+    	window.location = '/editor/cbcWizBase.jsf?type=4002';
     	return;
     }
     
@@ -513,11 +514,12 @@ function copyPost()
     isCap   += getValidChecks( elemBanks, validElems );
 	isPoint += getValidChecks( elemPoints, validElems );
     //only allow the editing of the zeroth element for now
-    if ( validElems.length <= 0 )
+
+    if ( validElems.length <= 0 ) {
         alert('You must check the item you want to edit first');
-    else {      
-        if (validElems.length > 1)
-            alert ("You can only copy 1 item at a time"); 
+    } else if (validElems.length > 1) {
+        alert ("You can only copy 1 item at a time");
+    } else {
         var type = 0;   
         if (isPoint)  type = 2;
         if(isCap)    type =1;
@@ -532,7 +534,7 @@ function deletePost()
 {
     var elemAreas = document.getElementsByName('cti_chkbxAreas');
     var elemSubstations = document.getElementsByName('cti_chkbxSubStation');
-    var elemSubs = document.getElementsByName('cti_chkbxSubbuses');
+    var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
     var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
     var elemBanks = document.getElementsByName('cti_chkbxBanks');
     var elemPoints = document.getElementsByName('cti_chkbxPoints');
