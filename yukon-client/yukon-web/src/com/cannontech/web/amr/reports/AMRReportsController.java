@@ -21,8 +21,7 @@ public class AMRReportsController extends MultiActionController  {
     private SimpleReportService simpleReportService;
     
     /**
-     * htmlView - export report data as an HTML table
-     * 
+     * For viewing the Archived Data report with crumbs to device detail page
      * @param request
      * @param response
      * @return
@@ -45,6 +44,7 @@ public class AMRReportsController extends MultiActionController  {
         mav.addObject("startDate", startDate);
         mav.addObject("stopDate", stopDate);
         
+        // report title
         YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
         BareReportModel reportModel = reportDefinition.createBean();
         mav.addObject("reportTitle", reportModel.getTitle());
@@ -53,6 +53,34 @@ public class AMRReportsController extends MultiActionController  {
         LitePoint point = pointDao.getLitePoint(pointId);
         Integer deviceId = point.getPaobjectID();
         mav.addObject("deviceId", deviceId);
+        
+        return mav;
+    }
+    
+    /**
+     * For view Bulk Import Results report with crumbs to bulk importer page
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    public ModelAndView bulkImportResultsReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        // mav
+        String jspPath = SimpleReportViewJsp.BULK_IMPORT_RESULTS.getJspPath();
+        ModelAndView mav = new ModelAndView(jspPath);
+        
+        // model stuff
+        String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
+        String reportType = ServletRequestUtils.getRequiredStringParameter(request, "reportType");
+        
+        mav.addObject("definitionName", definitionName);
+        mav.addObject("reportType", reportType);
+        
+        // report title
+        YukonReportDefinition<BareReportModel> reportDefinition = simpleReportService.getReportDefinition(request);
+        BareReportModel reportModel = reportDefinition.createBean();
+        mav.addObject("reportTitle", reportModel.getTitle());
         
         return mav;
     }
