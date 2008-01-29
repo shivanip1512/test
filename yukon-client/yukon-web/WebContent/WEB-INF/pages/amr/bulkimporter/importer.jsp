@@ -123,21 +123,21 @@
             
             <tags:nameValue name="Tabular Data">
                 <div id="failed_reports">
-                        <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" reportType="FAILURES">HTML</cti:simpleReportLinkFromNameTag>
+                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILURES" />">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="FAILURES">CSV</cti:simpleReportLinkFromNameTag>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="pdfView" reportType="FAILURES">PDF</cti:simpleReportLinkFromNameTag>
                     </div>
                     <div id="pendingComm_reports" style="display:none;">
-                        <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" reportType="PENDING_COMMS">HTML</cti:simpleReportLinkFromNameTag>
+                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=PENDING_COMMS" />">">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="PENDING_COMMS">CSV</cti:simpleReportLinkFromNameTag>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="pdfView" reportType="PENDING_COMMS">PDF</cti:simpleReportLinkFromNameTag>
                     </div>
                     <div id="failedComm_reports" style="display:none;">
-                        <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" reportType="FAILED_COMMS">HTML</cti:simpleReportLinkFromNameTag>
+                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILED_COMMS" />">">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="FAILED_COMMS">CSV</cti:simpleReportLinkFromNameTag>
                         |
