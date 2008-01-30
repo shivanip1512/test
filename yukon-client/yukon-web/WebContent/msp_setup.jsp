@@ -5,6 +5,11 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <jsp:useBean id="multispeakBean" class="com.cannontech.multispeak.client.MultispeakBean" scope="session"/>
+<c:if test="${param.init != null}">
+	<c:set target="${multispeakBean}" property="selectedMspVendor" value="${null}"/>
+	<c:set var="MSP_RESULT_MSG" value="" scope="session" />
+	<c:set var="ERROR_MESSAGE" value="" scope="session" />
+</c:if>
 
 <cti:standardPage title="MultiSpeak Interfaces" module="multispeak">
 	<cti:breadCrumbs>
@@ -14,15 +19,6 @@
 	</cti:breadCrumbs>
 	<cti:standardMenu menuSelection="multispeak|interfaces"/>
 
-
-	<c:if test="${param.vendor != null}">
-		<c:set target="${multispeakBean}" property="selectedVendorID"><c:out value="${param.vendor}" default="1"/></c:set>
-	</c:if>
-	<c:if test="${param.init != null}">
-		<c:set var="MSP_RESULT_MSG" value="" scope="session" />
-		<c:set var="ERROR_MESSAGE" value="" scope="session" />
-	</c:if>
-	
 	<c:url var="setupUrl" value="/msp_setup.jsp">
 	    <c:param name="init" value="" />
 	</c:url>
@@ -64,7 +60,8 @@
 		
 		function vendorChanged(vendor)
 		{
-		    javascript:window.location='${setupUrl}&vendor=' + vendor;
+			document.form1.ACTION.value='ChangeVendor';
+			document.form1.submit();
 		}
 	</script>
     
@@ -81,7 +78,6 @@
 				<input type="hidden" name="actionEndpoint">
 				<input type="hidden" name="actionService">
 				<input type="hidden" name="REDIRECT" value='<c:out value="${pageContext.request.requestURI}"/>' >
-				<input type="hidden" name="vendorID" value='<c:out value="${multispeakBean.selectedMspVendor.vendorID}"/>'>
 				<input type="hidden" name="mspCompanyName" value='<c:out value="${multispeakBean.selectedMspVendor.companyName}"/>'>
 				
 				<tags:nameValueContainer style="width: 400px;float: left;">
@@ -89,7 +85,7 @@
 					<tags:nameValue name="Company Name">
 				      <select title="Select vendor" name="mspVendor" onChange="vendorChanged(this[this.selectedIndex].value);">
 					      <c:forEach var="mspVendorEntry" items="${multispeakBean.mspVendorList}">
-					        <option <c:if test="${mspVendorEntry.vendorID == multispeakBean.selectedVendorID}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <c:out value="${mspVendorEntry.companyName}"/> </option>
+					        <option <c:if test="${mspVendorEntry.vendorID == multispeakBean.selectedMspVendor.vendorID}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <c:out value="${mspVendorEntry.companyName}"/> </option>
 					      </c:forEach>
 				      </select>
 					</tags:nameValue>
@@ -103,24 +99,17 @@
 				      <input title="Enter the Password" type="text" name="mspPassword" value='<c:out value="${multispeakBean.selectedMspVendor.password}"/>'>
 					</tags:nameValue>
 					<tags:nameValue name="MSP Max Return Records">
-				      <input title="Enter the Max Return Records" type="text" name="mspMaxReturnRecords" value='<c:out value="${multispeakBean.selectedMspVendor.maxReturnRecords}"/>'>
+				      <input title="Enter the Max Return Records" type="text" name="mspMaxReturnRecords" value='<c:out value="${multispeakBean.selectedMspVendor.maxReturnRecords}"/>'> *
 					</tags:nameValue>
 					<tags:nameValue name="MSP Request Message Timeout">
-				      <input title="Enter the Request Message Timeout" type="text" name="mspRequestMessageTimeout" value='<c:out value="${multispeakBean.selectedMspVendor.requestMessageTimeout}"/>'>
+				      <input title="Enter the Request Message Timeout" type="text" name="mspRequestMessageTimeout" value='<c:out value="${multispeakBean.selectedMspVendor.requestMessageTimeout}"/>'> *
 					</tags:nameValue>
 					<tags:nameValue name="MSP Max Initiate Request Objects">
-				      <input title="Enter the Max Initiate Request Objects" type="text" name="mspMaxInitiateRequestObjects" value='<c:out value="${multispeakBean.selectedMspVendor.maxInitiateRequestObjects}"/>'>
+				      <input title="Enter the Max Initiate Request Objects" type="text" name="mspMaxInitiateRequestObjects" value='<c:out value="${multispeakBean.selectedMspVendor.maxInitiateRequestObjects}"/>'> *
 					</tags:nameValue>
 					<tags:nameValue name="MSP Template Name Default">
-				      <input title="Enter the Template Name Default" type="text" name="mspTemplateNameDefault" value='<c:out value="${multispeakBean.selectedMspVendor.templateNameDefault}"/>'>
+				      <input title="Enter the Template Name Default" type="text" name="mspTemplateNameDefault" value='<c:out value="${multispeakBean.selectedMspVendor.templateNameDefault}"/>'> *
 					</tags:nameValue>
-					<tags:nameValue name="MSP Unique Key">
-				      <select title="Enter the unique key" name="mspUniqueKey">
-				        <option value="meterNumber" <c:if test="${multispeakBean.selectedMspVendor.uniqueKey == 'meterNumber'}">selected</c:if>>meterNumber</option>
-				        <option value="deviceName" <c:if test="${multispeakBean.selectedMspVendor.uniqueKey == 'deviceName'}">selected</c:if>>deviceName</option>
-				      </SELECT>                     
-					</tags:nameValue>
-				
 				</tags:nameValueContainer>
 				
 				<br><br><br>
@@ -133,7 +122,7 @@
 					<tags:nameValue name="Password">
 				      <input title="Enter the Password for Outgoing Yukon messages" type="text" name="outPassword" value='<c:out value="${multispeakBean.selectedMspVendor.outPassword}"/>'>
 					</tags:nameValue>
-					<c:if test="${param.vendor == null or param.vendor == 1}">
+					<c:if test='${multispeakBean.selectedMspVendor.companyName == "Cannon"}'>
 						<tags:nameValue name="Primary CIS">
 					    	<select title="Select the Primary CIS vendor" name="mspPrimaryCIS">
 					        	<option selected value='0'>(none)</option>
@@ -153,6 +142,7 @@
 				</tags:nameValueContainer>
 				
 				<br style="clear:both">
+				<div class="smallText">* required</div>
 				
 				<table class="keyValueTable" style="margin-top: 2em;">
 				  <tr valign="bottom">

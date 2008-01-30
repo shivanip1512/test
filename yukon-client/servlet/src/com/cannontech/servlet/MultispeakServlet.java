@@ -4,6 +4,8 @@
 package com.cannontech.servlet;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
@@ -15,9 +17,11 @@ import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.lang.StringUtils;
+import org.jfree.report.util.StringUtil;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteFactory;
@@ -92,8 +96,7 @@ public class MultispeakServlet extends HttpServlet
             MultispeakFuncs multispeakFuncs = (MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs");
             
             String command = req.getParameter("command");
-            MultispeakVendor mspVendor;
-            mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());
 
             String deviceIDStr = req.getParameter("deviceID");
             Integer deviceID = null; 
@@ -110,25 +113,40 @@ public class MultispeakServlet extends HttpServlet
             return redirect;
         }
         
-        //Validate the request parameters before continuing on.
-        String errorMessage = isValidMspRequest(req);
-        if (errorMessage != null) {
-            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, errorMessage);
+//		load all parameters from req
+        String vendorIdStr = req.getParameter("mspVendor");
+        Integer vendorId = null;
+        if( StringUtils.isNotBlank(vendorIdStr) && StringUtils.isNumeric(vendorIdStr)) {
+            vendorId = Integer.valueOf(vendorIdStr);
+        }
+
+        if( action.equalsIgnoreCase("ChangeVendor")) {
+            MultispeakDaoImpl multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
+            MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
+            mspBean.setSelectedMspVendor(mspVendor);
             return redirect;
         }
         
-//		load all parameters from req
-        Integer vendorID = Integer.valueOf(req.getParameter("vendorID"));
-		String companyName = req.getParameter("mspCompanyName");
+        String companyName = req.getParameter("mspCompanyName");
         String appName = req.getParameter("mspAppName");
-		String uniqueKey = req.getParameter("mspUniqueKey");
 		String password = req.getParameter("mspPassword");
 		String username = req.getParameter("mspUserName");
         
-        //These items are validated (numeric) in isValidMspRequest(req).
-        int maxReturnRecords = Integer.parseInt(req.getParameter("mspMaxReturnRecords"));
-        long requestMessageTimeout = Long.parseLong(req.getParameter("mspRequestMessageTimeout"));
-        long maxInitiateRequestObjects = Long.parseLong(req.getParameter("mspMaxInitiateRequestObjects"));
+        String maxReturnRecordsStr = req.getParameter("mspMaxReturnRecords");
+        int maxReturnRecords = 10000;
+        if( StringUtils.isNotBlank(maxReturnRecordsStr) && StringUtils.isNumeric(maxReturnRecordsStr))
+            maxReturnRecords = Integer.parseInt(maxReturnRecordsStr);
+        
+        String requestMessageTimeoutStr = req.getParameter("mspRequestMessageTimeout");
+        long requestMessageTimeout = 120000;
+        if( StringUtils.isNotBlank(requestMessageTimeoutStr) && StringUtils.isNumeric(requestMessageTimeoutStr))
+            requestMessageTimeout = Long.parseLong(requestMessageTimeoutStr);
+
+        String maxInitiateRequestObjectsStr = req.getParameter("mspMaxInitiateRequestObjects");
+        long maxInitiateRequestObjects = 15;
+        if( StringUtils.isNotBlank(maxInitiateRequestObjectsStr) && StringUtils.isNumeric(maxInitiateRequestObjectsStr))
+            maxInitiateRequestObjects = Long.parseLong(maxInitiateRequestObjectsStr);
+
         String templateNameDefault = req.getParameter("mspTemplateNameDefault");
 
         String outPassword = req.getParameter("outPassword");
@@ -140,12 +158,9 @@ public class MultispeakServlet extends HttpServlet
         if( !mspURL.endsWith("/"))
             mspURL += "/";
         
-        if( vendorID != null)
-            mspBean.setSelectedVendorID(vendorID.intValue());
-        
-        MultispeakVendor mspVendor = new MultispeakVendor(vendorID,companyName, appName, 
+        MultispeakVendor mspVendor = new MultispeakVendor(vendorId,companyName, appName, 
                                                           username, password, outUsername, outPassword, 
-                                                          uniqueKey, maxReturnRecords, requestMessageTimeout,
+                                                          maxReturnRecords, requestMessageTimeout,
                                                           maxInitiateRequestObjects, templateNameDefault, 
                                                           mspURL);
 
@@ -153,26 +168,38 @@ public class MultispeakServlet extends HttpServlet
         if( mspInterfaces != null) {
             for (int i = 0; i < mspInterfaces.length; i++ )
             {
-                MultispeakInterface mspInterface = new MultispeakInterface(vendorID, mspInterfaces[i], mspEndpoints[i]);
+                MultispeakInterface mspInterface = new MultispeakInterface(vendorId, mspInterfaces[i], mspEndpoints[i]);
                 mspInterfaceList.add(mspInterface);
             }
         }
         mspVendor.setMspInterfaces(mspInterfaceList);
         mspBean.setSelectedMspVendor(mspVendor);
 
+        //Validate the request parameters before continuing on.
+        String errorMessage = isValidMspRequest(req);
+        if (errorMessage != null) {
+            session.setAttribute( MultispeakDefines.MSP_RESULT_MSG, "");
+            session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, errorMessage);
+            return redirect;
+        }
+
         if( action.equalsIgnoreCase("Save")) {
             saveMspVendor(req, mspVendor);
 		}
         else if( action.equalsIgnoreCase("Create")) {
-            redirect = req.getContextPath() + "/msp_setup.jsp?vendor="+ createMultispeakInterface(session, mspVendor);
+            try {
+                redirect = req.getContextPath() + "/msp_setup.jsp?vendor="+ createMultispeakInterface(session, mspVendor);
+            } catch( DuplicateException e) {
+                session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* " + e.getMessage());
+            }
         }
         else if( action.equalsIgnoreCase("Delete")) {
             deleteMultispeakInterface(session, mspVendor);
-            mspBean.setSelectedVendorID(1);   //set to default
-        }        
+            mspBean.setSelectedMspVendor(null); //clear out, a default one will load when needed
+        }
         else if( action.equalsIgnoreCase("pingURL")) {
             String mspService = req.getParameter("actionService");
-            pingURL(session, mspVendor, mspService);
+                pingURL(session, mspVendor, mspService);
         }        
 		else if( action.equalsIgnoreCase("getMethods")) {
             String mspService = req.getParameter("actionService");
@@ -263,10 +290,12 @@ public class MultispeakServlet extends HttpServlet
         if( StringUtils.isBlank(param))
             return "* Invalid TemplateNameDefault.  Must have length greater than zero.";
         
-        param = req.getParameter("vendorID");
-        if( StringUtils.isBlank(param) || !StringUtils.isNumeric(param))
-            return "* VendorID is invalid.  Must be a numerica value.";
-        
+        param = req.getParameter("mspURL");
+        try {
+            URL url = new URL(param);
+        } catch (MalformedURLException e) {
+            return "* Invalid URL format.  (Ex. http://127.0.0.1:8080/)";
+        }
         return null;
     }
     
@@ -275,17 +304,9 @@ public class MultispeakServlet extends HttpServlet
      * @param session The request session.
      * @param mspVendor The multispeakVendor to create.
      */
-    private int createMultispeakInterface(HttpSession session, MultispeakVendor mspVendor) {
-        /*try{
-            if( MultispeakFuncs.getMultispeakDao().getMultispeakVendor(mspVendor.getCompanyName())!= null){
-                session.setAttribute(ServletUtil.ATT_ERROR_MESSAGE, "* A vendor with the name '" + mspVendor.getCompanyName() + "' and app name '" + mspVendor.getAppName() + "' already exists.  Please enter a different company name.");
-                return "/msp_setup_new.jsp";
-            }
-        }catch(NotFoundException nfe) {*/
+    private int createMultispeakInterface(HttpSession session, MultispeakVendor mspVendor) throws DuplicateException {
         ((MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao")).addMultispeakVendor(mspVendor);
             return mspVendor.getVendorID().intValue();
-        /*}
-        return "/msp_setup.jsp";*/
     }
     
     /**
