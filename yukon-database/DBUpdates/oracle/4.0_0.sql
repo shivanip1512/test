@@ -1292,6 +1292,24 @@ alter table LMHardwareBase
 /* @error ignore-end */
 /* End YUK-5025 */
 
+/* Start YUK-5248 */
+update
+    YukonPAObject
+set 
+    PAOName = substr(PAOName,0,length(PAOName)-4)
+where
+    PAObjectID in (
+    select
+        PAObjectID
+    from
+        YukonPAObject
+    where
+        PAOName like '%REM'
+        and DisableFlag = 'Y'
+    );
+commit;
+/* End YUK-5248 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
