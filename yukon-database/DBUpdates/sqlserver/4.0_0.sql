@@ -1088,7 +1088,7 @@ go
 create table DEVICEEVENT (
    DeviceID             numeric              not null,
    TimeStamp            datetime             not null,
-   Comment              varchar(50)          not null,
+   DeviceEventComment              varchar(50)          not null,
    constraint PK_DEVICEEVENT primary key (DeviceID)
 );
 go

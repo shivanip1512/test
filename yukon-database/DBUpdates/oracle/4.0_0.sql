@@ -906,7 +906,7 @@ insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true',
 create table DEVICEEVENT  (
    DeviceID             NUMBER                          not null,
    TimeStamp            DATE                            not null,
-   "Comment"            VARCHAR2(50)                    not null,
+   DeviceEventComment            VARCHAR2(50)                    not null,
    constraint PK_DEVICEEVENT primary key (DeviceID)
 );
 /* End YUK-4810 */
