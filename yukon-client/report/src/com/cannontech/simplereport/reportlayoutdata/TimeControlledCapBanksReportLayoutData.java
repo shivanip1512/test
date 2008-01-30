@@ -9,13 +9,13 @@ public class TimeControlledCapBanksReportLayoutData implements ReportLayoutData{
     public TimeControlledCapBanksReportLayoutData() {
         
         this.bodyColumns = new ColumnLayoutData[] {
-            new ColumnLayoutData("Area", "area", 80),
-            new ColumnLayoutData("Substation", "substation", 80),
-            new ColumnLayoutData("Substation Bus", "substationbus", 80),
-            new ColumnLayoutData("Feeder", "feeder", 80),
-            new ColumnLayoutData("CapBank", "capbank", 80),
-            new ColumnLayoutData("Time of Close", "timeOfClose", 80),
-            new ColumnLayoutData("Time of Open", "timeOfOpen", 80)
+            new ColumnLayoutData("Area", "area", 100),
+            new ColumnLayoutData("Substation", "substation", 100),
+            new ColumnLayoutData("Substation Bus", "substationbus", 100),
+            new ColumnLayoutData("Strategy", "strategyName", 100),
+            new ColumnLayoutData("Control Method", "controlMethod", 100),
+            new ColumnLayoutData("Start Time", "startTimeSeconds", 100),
+            new ColumnLayoutData("Percent of Banks to Close", "percentOfBanksToClose", 130)
         };
         
     }

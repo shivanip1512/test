@@ -1,8 +1,10 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.util.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 
@@ -12,6 +14,8 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.spring.YukonSpringHook;
 
 
 public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControlledCapBanksModel.ModelRow> implements CapControlFilterable {
@@ -36,10 +40,10 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         public String area;
         public String substation;
         public String substationbus;
-        public String feeder;
-        public String capbank;
-        public String timeOfClose;
-        public String timeOfOpen;
+        public String strategyName;
+        public String controlMethod;
+        public String startTimeSeconds;
+        public Integer percentOfBanksToClose;
     }
     
     @Override
@@ -53,7 +57,7 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
     }
     
     public String getTitle() {
-        return "Time Controlled CapBanks Report";
+        return "Time Controlled Cap Banks Report";
     }
 
     public int getRowCount() {
@@ -67,18 +71,41 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
         
         jdbcOps.query(sql.toString(), new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
+                int startMonth = rs.getInt("seasonStartMonth");
+                int startDay = rs.getInt("seasonStartDay");
+                int endMonth = rs.getInt("seasonEndMonth");
+                int endDay = rs.getInt("seasonEndDay");
+                // using static method because we want server time
+                Calendar cal = Calendar.getInstance();
+                int day = cal.get(Calendar.DAY_OF_MONTH) +1;
+                int month = cal.get(Calendar.MONTH) + 1;
+                MonthDay today = new MonthDay(month, day);
+                MonthDay start = new MonthDay(startMonth, startDay);
+                MonthDay end = new MonthDay(endMonth, endDay);
                 
-                TimeControlledCapBanksModel.ModelRow row = new TimeControlledCapBanksModel.ModelRow();
+                // as written, assumes start and end are EXCLUSIVE -- that's probably not correct
+                if (today.compareTo(start) > 0 && today.compareTo(end) < 0) {
+                    TimeControlledCapBanksModel.ModelRow row = new TimeControlledCapBanksModel.ModelRow();
+                    row.area = rs.getString("area");
+                    row.substation = rs.getString("substation");
+                    row.substationbus = rs.getString("substationbus");
+                    row.strategyName = rs.getString("strategyname");
+                    row.controlMethod = rs.getString("controlmethod");
+                    long secondsSinceMidnight = rs.getLong("starttimeseconds");
+                    // do what julie does
+                    long minutes = secondsSinceMidnight / 60;
+                    long hours = minutes / 60;
+                    minutes = minutes % 60;
+                    String minuteString = Long.toString(minutes);
+                    if(minuteString.length() < 2) {
+                        minuteString = "0"+minuteString;
+                    }
 
-                row.area = rs.getString("area");
-                row.substation = rs.getString("substation");
-                row.substationbus = rs.getString("substationbus");
-                row.feeder = rs.getString("feeder");
-                row.capbank = rs.getString("capbank");
-                row.timeOfClose= rs.getString("timeofclose");
-                row.timeOfOpen = rs.getString("timeofopen");
-                
-                data.add(row);
+                    row.startTimeSeconds = hours + ":" + minuteString;
+                    row.percentOfBanksToClose = rs.getInt("percentOfBanksToClose");
+
+                    data.add(row);
+                }
             }
         });
         
@@ -87,21 +114,43 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select blah from blah where blah");
+        StringBuffer sql = new StringBuffer ("select ");
+        sql.append("ypa.paoname as area ");
+        sql.append(", yps.paoname as substation ");
+        sql.append(", yp.paoname as substationbus ");
+        sql.append(", strat.strategyname ");
+        sql.append(", strat.controlmethod ");
+        sql.append(", tod.starttimeseconds ");
+        sql.append(", tod.percentClose as PercentOfBanksToClose ");
+        sql.append(", dos.seasonname ");
+        sql.append(", dos.seasonstartmonth ");
+        sql.append(", dos.seasonstartday ");
+        sql.append(", dos.seasonendmonth ");
+        sql.append(", dos.seasonendday ");
+        sql.append("from capcontrolstrategy strat ");
+        sql.append(", ccseasonstrategyassignment strata ");
+        sql.append(", dateofseason dos ");
+        sql.append(", ccstrategytimeofday tod ");
+        sql.append(", yukonpaobject ypa ");
+        sql.append(", yukonpaobject yps ");
+        sql.append(", yukonpaobject yp ");
+        sql.append(", ccsubstationsubbuslist ss ");
+        sql.append(", ccsubareaassignment sa ");
+        sql.append("where strat.controlmethod = 'TimeOfDay' ");
+        sql.append("and strat.strategyid = strata.strategyid ");
+        sql.append("and dos.seasonscheduleid = strata.seasonscheduleid ");
+        sql.append("and dos.seasonname = strata.seasonname ");
+        sql.append("and tod.strategyid = strat.strategyid ");
+        sql.append("and tod.percentClose > 0 ");
+        sql.append("and yp.paobjectid = strata.paobjectid ");
+        sql.append("and yp.paobjectid = ss.substationbusid ");
+        sql.append("and yps.paobjectid = ss.substationid ");
+        sql.append("and sa.substationbusid = ss.substationid ");
+        sql.append("and ypa.paobjectid = sa.areaid ");
         
         String result = null;
         
-        if(capBankIds != null && !capBankIds.isEmpty()) {
-            result = "yp.paobjectid in ( ";
-            String wheres = SqlStatementBuilder.convertToSqlLikeList(capBankIds);
-            result += wheres;
-            result += " ) ";
-        }else if(feederIds != null && !feederIds.isEmpty()) {
-            result = "yp.paobjectid in ( ";
-            String wheres = SqlStatementBuilder.convertToSqlLikeList(feederIds);
-            result += wheres;
-            result += " ) ";
-        }else if(subbusIds != null && !subbusIds.isEmpty()) {
+        if(subbusIds != null && !subbusIds.isEmpty()) {
             result = "yp.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
             result += wheres;
@@ -150,6 +199,33 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
     @Required
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
+    }
+    
+    private class MonthDay implements Comparable<MonthDay> {
+        private final int month;
+        private final int day;
+
+        public MonthDay(int month, int day) {
+            this.month = month;
+            this.day = day;
+        }
+        
+        @Override
+        public int compareTo(MonthDay o) {
+            if (this.month == o.month) {
+                if (this.day == o.day) {
+                    return 0;
+                } else if (this.day < o.day) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            } else if (this.month < o.month) {
+                return -1;
+            } else {
+                return 1;
+            }
+        }
     }
     
 }
