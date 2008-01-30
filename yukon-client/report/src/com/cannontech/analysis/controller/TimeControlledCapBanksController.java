@@ -12,8 +12,6 @@ public class TimeControlledCapBanksController extends CapControlReportController
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.CAPCONTROLSUBSTATION,
             ReportFilter.CAPCONTROLSUBBUS,
-            ReportFilter.CAPBANK,
-            ReportFilter.CAPCONTROLFEEDER,
             ReportFilter.AREA};
     
     public TimeControlledCapBanksController() {
