@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
@@ -11,6 +12,7 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -56,11 +58,13 @@ public final class MultispeakDaoImpl implements MultispeakDao
      * If no match on vendorName is found, an IncorrectResultSizeDataAccessException is thrown
      * If multiple matches on the vendorName, the appName is used to find a better match.
      * When no match on the appname, the (random) first found MultispeakVendor object is returned.
+     * Throws NotFoundException if vendorName (and/or appName) are not found.
      */
-    public MultispeakVendor getMultispeakVendor(String vendorName, String appName) {
+    public MultispeakVendor getMultispeakVendor(String vendorName, String appName) 
+        throws NotFoundException {
 
         String upperVendorName = vendorName.toUpperCase();
-        String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, UNIQUEKEY, URL, " +
+        String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, URL, " +
                     " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT, " +
                     " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT " +
                      " FROM " + MSPVENDOR_TABLENAME + 
@@ -72,7 +76,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
                                            mspVendorRowMapper);
         
         if( mspInterfaces == null || mspInterfaces.isEmpty()) {
-            throw new IncorrectResultSizeDataAccessException(1, 0);
+            throw new NotFoundException("Company and/or Appname are not defined.");
             
         } else if( mspInterfaces.size() > 1) {  //match on app name if possible
             //Find a matching AppName
@@ -92,7 +96,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
      */
     public MultispeakVendor getMultispeakVendor(int vendorID) {
         try {
-                        String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, UNIQUEKEY, URL, " +
+                        String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, URL, " +
                                      " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT," +
                                      " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT " +
                                      " FROM " + MSPVENDOR_TABLENAME +
@@ -125,7 +129,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
     public List<MultispeakVendor> getMultispeakVendors()
     {
         try {
-            String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, UNIQUEKEY, URL, " +
+            String sql = "SELECT VENDORID, COMPANYNAME, USERNAME, PASSWORD, URL, " +
                          " APPNAME, OUTUSERNAME, OUTPASSWORD, MAXRETURNRECORDS, REQUESTMESSAGETIMEOUT," +
                          " MAXINITIATEREQUESTOBJECTS, TEMPLATENAMEDEFAULT " +
                          " FROM " + MSPVENDOR_TABLENAME;
@@ -178,7 +182,6 @@ public final class MultispeakDaoImpl implements MultispeakDao
                                  " COMPANYNAME = ?, " +
                                  " USERNAME = ?, " +
                                  " PASSWORD = ?, " +
-                                 " UNIQUEKEY = ?, " +
                                  " URL = ?, " +
                                  " APPNAME = ?, " +
                                  " OUTUSERNAME = ?, " +
@@ -194,7 +197,6 @@ public final class MultispeakDaoImpl implements MultispeakDao
                         mspVendor.getCompanyName(), 
                         mspVendor.getUserName(),
                         mspVendor.getPassword(),
-                        mspVendor.getUniqueKey(),
                         mspVendor.getUrl(),
                         mspVendor.getAppName(),
                         mspVendor.getOutUserName(),
@@ -225,15 +227,15 @@ public final class MultispeakDaoImpl implements MultispeakDao
                 try {
                     mspVendor.setVendorID(getNextVendorId());
                     String sql = "INSERT INTO " + MSPVENDOR_TABLENAME + 
-                                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                                 " (VendorID, CompanyName, UserName, Password, URL, AppName, OutUserName, OutPassword, " +
+                                 " MaxReturnRecords, RequestMessageTimeout, MaxInitiateRequestObjects, TemplateNameDefault) " + 
+                                 " VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
                     
                     Object [] args = new Object[] {
                         mspVendor.getVendorID(),
                         mspVendor.getCompanyName(), 
                         SqlUtils.convertStringToDbValue(mspVendor.getUserName()),
                         SqlUtils.convertStringToDbValue(mspVendor.getPassword()),
-                        mspVendor.getUniqueKey(),
-                        0,  //This value is deprecated and replaced with RequestMessageTimeout
                         mspVendor.getUrl(),
                         mspVendor.getAppName(),
                         SqlUtils.convertStringToDbValue(mspVendor.getOutUserName()),
@@ -247,7 +249,10 @@ public final class MultispeakDaoImpl implements MultispeakDao
                     
                 } catch (IncorrectResultSizeDataAccessException e) {
                     throw new NotFoundException("Multispeak Vendor not inserted for Company Name "+ mspVendor.getCompanyName() +".");
-                }                
+                } catch (DataIntegrityViolationException e) {
+                    throw new DuplicateException("Cannot create Multispeak Vendor Integration with the same CompanyName/AppName combination as an existing Vendor.", e);
+                }
+
                 for (int i = 0; i < mspVendor.getMspInterfaces().size(); i++){
                     MultispeakInterface mspInterface = mspVendor.getMspInterfaces().get(i);
                     mspInterface.setVendorID(mspVendor.getVendorID());
@@ -284,19 +289,18 @@ public final class MultispeakDaoImpl implements MultispeakDao
         String companyName = rset.getString(2).trim();
         String userName = rset.getString(3).trim();
         String password = rset.getString(4).trim();
-        String uniqueKey = rset.getString(5).trim();
-        String url = rset.getString(6).trim();
-        String appName = rset.getString(7).trim();
-        String outUserName = rset.getString(8).trim();
-        String outPassword = rset.getString(9).trim();
-        int maxReturnRecords = rset.getInt(10);
-        long requestMessageTimeout = rset.getLong(11);
-        long maxInitiateRequestObjects = rset.getLong(12);
-        String templateNameDefault = rset.getString(13).trim();
+        String url = rset.getString(5).trim();
+        String appName = rset.getString(6).trim();
+        String outUserName = rset.getString(7).trim();
+        String outPassword = rset.getString(8).trim();
+        int maxReturnRecords = rset.getInt(9);
+        long requestMessageTimeout = rset.getLong(10);
+        long maxInitiateRequestObjects = rset.getLong(11);
+        String templateNameDefault = rset.getString(12).trim();
         
         MultispeakVendor mspVendor = new MultispeakVendor(vendorID, companyName, appName, 
                                                           userName, password, outUserName, outPassword,
-                                                          uniqueKey, maxReturnRecords, requestMessageTimeout,
+                                                          maxReturnRecords, requestMessageTimeout,
                                                           maxInitiateRequestObjects, templateNameDefault, 
                                                           url);
         return mspVendor;
