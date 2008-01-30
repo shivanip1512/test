@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/30/2008 11:47:41 AM                        */
+/* Created on:     1/30/2008 2:46:03 PM                         */
 /*==============================================================*/
 
 
@@ -135,6 +135,8 @@ drop index Indx_LMCrtPrgActStTime;
 drop index CstLdIn_LMHrdCfg_FK;
 
 drop index LmHrd_LmHrdCfg_FK;
+
+drop index INDEX_1;
 
 drop index Indx_NOTIFGRPNme;
 
@@ -6177,8 +6179,6 @@ create table MSPVendor  (
    CompanyName          VARCHAR2(64)                    not null,
    UserName             VARCHAR2(64)                    not null,
    Password             VARCHAR2(64)                    not null,
-   UniqueKey            VARCHAR2(32)                    not null,
-   Timeout              NUMBER                          not null,
    URL                  VARCHAR2(120)                   not null,
    AppName              VARCHAR2(64)                    not null,
    OutUserName          VARCHAR2(64)                    not null,
@@ -6191,6 +6191,14 @@ create table MSPVendor  (
 );
 
 insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap/', 'Yukon', '(none)', '(none)',10000,120000,15,'*Default Template');
+
+/*==============================================================*/
+/* Index: INDEX_1                                               */
+/*==============================================================*/
+create unique index INDEX_1 on MSPVendor (
+   CompanyName ASC,
+   AppName ASC
+);
 
 /*==============================================================*/
 /* Table: MeterHardwareBase                                     */

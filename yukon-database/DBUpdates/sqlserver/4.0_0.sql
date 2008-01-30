@@ -1415,6 +1415,16 @@ where
 	);
 /* End YUK-5248 */
 
+/* Start YUK-5250 */
+ALTER TABLE MSPVENDOR DROP COLUMN UNIQUEKEY;
+ALTER TABLE MSPVENDOR DROP COLUMN TIMEOUT;
+
+create unique index INDEX_1 on MSPVendor (
+CompanyName ASC,
+AppName ASC
+);
+/* End YUK-5250 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

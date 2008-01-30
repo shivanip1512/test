@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/30/2008 11:46:09 AM                        */
+/* Created on:     1/30/2008 2:44:05 PM                         */
 /*==============================================================*/
 
 
@@ -545,6 +545,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index LMHardwareConfiguration.LmHrd_LmHrdCfg_FK
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('MSPVendor')
+            and   name  = 'INDEX_1'
+            and   indid > 0
+            and   indid < 255)
+   drop index MSPVendor.INDEX_1
 go
 
 if exists (select 1
@@ -8704,8 +8713,6 @@ create table MSPVendor (
    CompanyName          varchar(64)          not null,
    UserName             varchar(64)          not null,
    Password             varchar(64)          not null,
-   UniqueKey            varchar(32)          not null,
-   Timeout              numeric              not null,
    URL                  varchar(120)         not null,
    AppName              varchar(64)          not null,
    OutUserName          varchar(64)          not null,
@@ -8719,6 +8726,15 @@ create table MSPVendor (
 go
 
 insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap/', 'Yukon', '(none)', '(none)',10000,120000,15,'*Default Template');
+
+/*==============================================================*/
+/* Index: INDEX_1                                               */
+/*==============================================================*/
+create unique index INDEX_1 on MSPVendor (
+CompanyName ASC,
+AppName ASC
+)
+go
 
 /*==============================================================*/
 /* Table: MeterHardwareBase                                     */
