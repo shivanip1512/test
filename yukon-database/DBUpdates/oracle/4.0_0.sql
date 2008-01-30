@@ -886,7 +886,7 @@ create table CAPCONTROLCOMMENT  (
    UserID               NUMBER                         not null,
    Action               VARCHAR2(50)                    not null,
    CommentTime          DATE                            not null,
-   "Comment"            VARCHAR2(500)                   not null,
+   CapComment            VARCHAR2(500)                   not null,
    Altered              VARCHAR2(3)                     not null,
    constraint PK_CAPCONTROLCOMMENT  primary key (CommentID)
 );

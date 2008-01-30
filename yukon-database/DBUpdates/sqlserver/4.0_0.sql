@@ -1058,7 +1058,7 @@ create table CAPCONTROLCOMMENT  (
    UserID               numeric              not null,
    Action               varchar(50)          not null,
    CommentTime          datetime             not null,
-   Comment              varchar(500)         not null,
+   CapComment              varchar(500)         not null,
    Altered              varchar(3)           not null,
    constraint PK_CAPCONTROLCOMMENT primary key (CommentID)
 );
