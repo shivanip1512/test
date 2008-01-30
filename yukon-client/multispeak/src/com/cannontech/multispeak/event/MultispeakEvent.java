@@ -6,9 +6,7 @@
  */
 package com.cannontech.multispeak.event;
 
-import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
-import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author stacey
@@ -103,10 +101,5 @@ public abstract class MultispeakEvent implements MspEvent{
     public void updateReturnMessageCount() {
         if( getReturnMessages() > 0)
             returnMessages--;
-    }
-    
-    public String getObjectID(int deviceID) {
-        String key = getMspVendor().getUniqueKey();
-        return ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).getObjectID(key, deviceID);                        
     }
 }

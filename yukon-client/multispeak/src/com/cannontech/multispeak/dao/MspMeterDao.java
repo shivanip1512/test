@@ -6,9 +6,9 @@ import com.cannontech.multispeak.deploy.service.Meter;
 
 public interface MspMeterDao
 {
-    public List<Meter> getAMRSupportedMeters(String lastReceived, String key, int maxRecords);
+    public List<Meter> getAMRSupportedMeters(String lastReceived, int maxRecords);
     
-    public List<Meter> getCDSupportedMeters(String lastReceived, String key, int maxRecords);
+    public List<Meter> getCDSupportedMeters(String lastReceived, int maxRecords);
     
-    public boolean isCDSupportedMeter(String objectID, String key);
+    public boolean isCDSupportedMeter(String meterNumber);
 }

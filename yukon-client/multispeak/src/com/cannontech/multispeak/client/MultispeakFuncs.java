@@ -7,9 +7,7 @@
 package com.cannontech.multispeak.client;
 
 import java.rmi.RemoteException;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
-import java.util.List;
 
 import javax.xml.soap.SOAPException;
 
@@ -19,17 +17,10 @@ import org.apache.axis.message.PrefixedQName;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.message.SOAPHeader;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RoleDao;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.deploy.service.Customer;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
@@ -45,10 +36,7 @@ import com.cannontech.roles.yukon.MultispeakRole;
 public class MultispeakFuncs
 {
     public MultispeakDao multispeakDao;
-    public PaoDao paoDao;
-    public DeviceDao deviceDao;
     public RoleDao roleDao;
-    public MeterDao meterDao;
 
     /**
      * @param multispeakDao The multispeakDao to set.
@@ -57,22 +45,10 @@ public class MultispeakFuncs
         this.multispeakDao = multispeakDao;
     }
 
-	public void setDeviceDao(DeviceDao deviceDao) {
-        this.deviceDao = deviceDao;
-    }
-
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
     }
 
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
-    }
-    
     public void logStrings(String intfaceName, String methodName, String[] strings)
 	{
 		if (strings != null)
@@ -95,17 +71,17 @@ public class MultispeakFuncs
 		}
 	}
     
-	public void loadResponseHeader() 
+	public void loadResponseHeader() throws RemoteException 
 	{
-		try {
-			SOAPEnvelope env = getResponseMessageSOAPEnvelope();
-			MultispeakVendor mspVendor = getMultispeakVendor(MultispeakVendor.CANNON_MSP_COMPANYNAME, "");
-
-			// Set Header
-			env.addHeader(mspVendor.getHeader());
-		} catch (RemoteException e) {
-			CTILogger.error(e);
-		}
+		SOAPEnvelope env = getResponseMessageSOAPEnvelope();
+		try{
+		    MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(MultispeakVendor.CANNON_MSP_COMPANYNAME, "");
+	         // Set Header
+            env.addHeader(mspVendor.getHeader());
+        }
+        catch (NotFoundException e) {
+            throw new RemoteException(e.getMessage());
+        }
 	}
 
     public YukonMultispeakMsgHeader getResponseHeader() throws RemoteException {
@@ -120,50 +96,12 @@ public class MultispeakFuncs
         SOAPEnvelope env = ctx.getResponseMessage().getSOAPEnvelope();
         return env;
     }
-    
-    public String getObjectID(String key, int deviceID)
-    {
-        if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-        {
-            LiteYukonPAObject lPao = paoDao.getLiteYukonPAO(deviceID);
-            return (lPao == null ? null : lPao.getPaoName());
-        }
-        else //if(key.toLowerCase().startsWith("meternum")) // default value
-        {
-            LiteDeviceMeterNumber ldmn = deviceDao.getLiteDeviceMeterNumber(deviceID);
-            return (ldmn == null ? null : ldmn.getMeterNumber());
-        }
-    }
 
-    public Meter getMeter(String key, String objectId)
-    {
-        if( key.toLowerCase().startsWith("device") || key.toLowerCase().startsWith("pao"))
-            return meterDao.getForPaoName(objectId);
-        else //if(key.toLowerCase().startsWith("meternum")) // default value
-            return meterDao.getForMeterNumber(objectId);
-    }
-    
-    /**
-     * Returns a list of Meter objects for the unique key.  Meters returned will be greater than lastReceived.
-     * @param key
-     * @param lastReceived
-     * @return
-     */
-    public List<Meter> getMeters(String key, String lastReceived, int maxRecords) {
-        List<Meter> meters;
-        if( key.toLowerCase().startsWith("device") || 
-                key.toLowerCase().startsWith("pao"))
-            meters = meterDao.getMetersByPaoName(lastReceived, maxRecords);
-        
-        else //if(key.toLowerCase().startsWith("meternum"))
-            meters = meterDao.getMetersByMeterNumber(lastReceived, maxRecords);
-        return meters;
-    }
 	/**
 	 * This method should be called by every multispeak function!!!
 	 *
 	 */
-	public void init()
+	public void init() throws RemoteException
 	{
 		try {
 			CTILogger.info("MSP MESSAGE RECEIVED: " + MessageContext.getCurrentContext().getCurrentMessage().getSOAPPartAsString().toString());
@@ -223,42 +161,15 @@ public class MultispeakFuncs
     public MultispeakVendor getMultispeakVendorFromHeader() throws RemoteException {
         String companyName = getCompanyNameFromSOAPHeader();
         String appName = getAppNameFromSOAPHeader();
-        return getMultispeakVendor(companyName, appName);
-    }
-
-    /**
-     * Returns the MultispeakVendor for the companyName (uses toLower() for the company name so we can ignore the case)
-     * @param companyName
-     * @return
-     */
-    public MultispeakVendor getMultispeakVendor(String companyName, String appName) throws RemoteException
-    {
+        
         try{
             return multispeakDao.getMultispeakVendor(companyName, appName);
         }
-        catch (IncorrectResultSizeDataAccessException e) {
-            throw new AxisFault("Company '" +companyName + "' does not have a defined interface.");
-        }
-        catch (NotFoundException nfe) {
-            throw new AxisFault("Company '" +companyName + "' does not have a defined interface.");
+        catch (NotFoundException e) {
+            throw new RemoteException(e.getMessage());
         }
     }
  
-    /**
-     * Creates a new (MSP) ErrorObject 
-     * @param objectID The Multispeak objectID
-     * @param errorMessage The error message.
-     * @return
-     */
-    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType){
-        ErrorObject err = new ErrorObject();
-        err.setEventTime(new GregorianCalendar());
-        err.setObjectID(objectID);
-        err.setErrorString(errorMessage);
-        err.setNounType(nounType);
-        return err;
-    }
-    
     public String customerToString(Customer customer) {
         String returnStr = "";
         

@@ -7,7 +7,7 @@ import com.cannontech.multispeak.deploy.service.MeterRead;
 
 public interface MspMeterReadDao {
 
-    public MeterRead getMeterRead(Meter meter, String uniqueKey);
+    public MeterRead getMeterRead(Meter meter);
     
-    public MeterRead[] getMeterRead( List<Meter> meters, String uniqueKey);
+    public MeterRead[] getMeterRead( List<Meter> meters);
 }

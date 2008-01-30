@@ -10,6 +10,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.block.Block;
 import com.cannontech.multispeak.block.FormattedBlockService;
@@ -42,6 +43,7 @@ public class MR_EAImpl implements MR_EASoap_PortType
     public Multispeak multispeak;
     public MspRawPointHistoryDao mspRawPointHistoryDao;
     public MspValidationService mspValidationService;
+    public MeterDao meterDao;    
     
     @Required
     public void setMultispeakFuncs(MultispeakFuncs multispeakFuncs) {
@@ -73,8 +75,12 @@ public class MR_EAImpl implements MR_EASoap_PortType
             MspValidationService mspValidationService) {
         this.mspValidationService = mspValidationService;
     }
+    @Required
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
     
-    private void init() {
+    private void init() throws RemoteException {
         multispeakFuncs.init();
     }
 
@@ -158,10 +164,10 @@ public class MR_EAImpl implements MR_EASoap_PortType
         Date timerStart = new Date();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
                 
-        List<com.cannontech.amr.meter.model.Meter> meters = multispeakFuncs.getMeters(vendor.getUniqueKey(), 
-                                                                                      lastReceived,
-                                                                                      vendor.getMaxReturnRecords());
-        MeterRead[] meterReads = mspMeterReadDao.getMeterRead(meters, vendor.getUniqueKey());
+        List<com.cannontech.amr.meter.model.Meter> meters = meterDao.getMetersByMeterNumber(lastReceived, 
+                                                             vendor.getMaxReturnRecords());
+        
+        MeterRead[] meterReads = mspMeterReadDao.getMeterRead(meters);
 
         int numRemaining = (meterReads.length < vendor.getMaxReturnRecords() ? 0:1); //at least one item remaining, bad assumption.
         multispeakFuncs.getResponseHeader().setObjectsRemaining(new BigInteger(String.valueOf(numRemaining)));
@@ -217,9 +223,8 @@ public class MR_EAImpl implements MR_EASoap_PortType
     public FormattedBlock[] getLatestReadingByType(String readingType, String lastReceived) throws RemoteException {
         init();
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        List<com.cannontech.amr.meter.model.Meter> meters = multispeakFuncs.getMeters(vendor.getUniqueKey(), 
-                                                                                      lastReceived,
-                                                                                      vendor.getMaxReturnRecords());
+        List<com.cannontech.amr.meter.model.Meter> meters = meterDao.getMetersByMeterNumber(lastReceived, 
+                                                                                            vendor.getMaxReturnRecords());
         
         FormattedBlock formattedBlock = readingTypesMap.get(readingType).getFormattedBlock(meters);
         FormattedBlock[] formattedBlockArray = new FormattedBlock[]{formattedBlock};

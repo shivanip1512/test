@@ -47,7 +47,7 @@ public class CD_CBImpl implements CD_CBSoap_PortType
             MspValidationService mspValidationService) {
         this.mspValidationService = mspValidationService;
     }
-    private void init(){
+    private void init() throws RemoteException{
         multispeakFuncs.init();
     }
     
@@ -89,7 +89,7 @@ public class CD_CBImpl implements CD_CBSoap_PortType
         List<Meter> meterList = null;
         Date timerStart = new Date();
         try {
-            meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getUniqueKey(), vendor.getMaxReturnRecords());
+            meterList = mspMeterDao.getCDSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
         } catch(NotFoundException nfe) {
             //Not an error, it could happen that there are no more entries.
         }

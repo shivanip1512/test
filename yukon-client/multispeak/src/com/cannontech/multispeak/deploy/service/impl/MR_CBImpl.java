@@ -77,7 +77,7 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         this.mspValidationService = mspValidationService;
     }
     
-    private void init() {
+    private void init() throws RemoteException {
         multispeakFuncs.init();
     }
     
@@ -132,7 +132,7 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         List<Meter> meterList = null;
         Date timerStart = new Date();
         try {
-            meterList = mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getUniqueKey(), vendor.getMaxReturnRecords());
+            meterList = mspMeterDao.getAMRSupportedMeters(lastReceived, vendor.getMaxReturnRecords());
         } catch(NotFoundException nfe) {
             //Not an error, it could happen that there are no more entries.
         }

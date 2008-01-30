@@ -62,7 +62,7 @@ public class MR_CB_Test {
 			}
 			else if( todo == 1)
 			{
-                List<Meter>meters = ((MspMeterDaoImpl)YukonSpringHook.getBean("mspMeterDao")).getAMRSupportedMeters("0", "meternumber", 10000);
+                List<Meter>meters = ((MspMeterDaoImpl)YukonSpringHook.getBean("mspMeterDao")).getAMRSupportedMeters("0", 10000);
                 System.out.println(meters.size());
 /*				ArrayOfMeter meters = new ArrayOfMeter();
 				meters = instance.getAMRSupportedMeters("10224712");//new String ("MCT - Annandale Broadcast"));

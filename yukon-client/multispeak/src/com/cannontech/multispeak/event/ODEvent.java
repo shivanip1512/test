@@ -9,6 +9,8 @@ package com.cannontech.multispeak.event;
 import java.rmi.RemoteException;
 import java.util.GregorianCalendar;
 
+import com.cannontech.amr.meter.dao.impl.MeterDaoImpl;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.client.MultispeakDefines;
@@ -80,41 +82,43 @@ public class ODEvent extends MultispeakEvent{
      */
     public boolean messageReceived(Return returnMsg) {
 
-        String objectID = getObjectID(returnMsg.getDeviceID());
+        Meter meter = ((MeterDaoImpl)YukonSpringHook.getBean("meterDao")).getForId(returnMsg.getDeviceID());
         OutageDetectionEvent ode = new OutageDetectionEvent();
+        String meterNumber = meter.getMeterNumber();
+        
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(returnMsg.getTimeStamp());
         ode.setEventTime(cal);
-        ode.setObjectID(objectID);
-        ode.setOutageDetectDeviceID(objectID);
+        ode.setObjectID(meterNumber);
+        ode.setOutageDetectDeviceID(meterNumber);
         ode.setOutageDetectDeviceType(OutageDetectDeviceType.Meter);
         OutageLocation loc = new OutageLocation();
-        loc.setObjectID(objectID);
-        loc.setMeterNo(objectID);
+        loc.setObjectID(meterNumber);
+        loc.setMeterNo(meterNumber);
         ode.setOutageLocation(loc);
         ode.setComments(returnMsg.getResultString());
         
         if( returnMsg.getStatus() == 20 || returnMsg.getStatus() == 57 || returnMsg.getStatus() == 72)
         {   //Meter did not respond - outage assumed
-            CTILogger.info("OutageDetectionEvent(" + objectID + ") - Ping Failed:" + returnMsg.getResultString());
+            CTILogger.info("OutageDetectionEvent(" + meterNumber + ") - Ping Failed:" + returnMsg.getResultString());
             ode.setOutageEventType(OutageEventType.Outage);
             ode.setErrorString("Ping failed: " + returnMsg.getResultString());
         }
         else if( returnMsg.getStatus() == 31 || returnMsg.getStatus() == 32 || returnMsg.getStatus() == 33 || returnMsg.getStatus() == 65)
         {   //Unknown, but may not be an outage
-            CTILogger.info("OutageDetectionEvent(" + objectID + ") - Communication Failure:" + returnMsg.getResultString());
+            CTILogger.info("OutageDetectionEvent(" + meterNumber + ") - Communication Failure:" + returnMsg.getResultString());
             ode.setOutageEventType(OutageEventType.NoResponse);
             ode.setErrorString("Communication failure: " + returnMsg.getResultString());
         }
         else if( returnMsg.getStatus() == 1 || returnMsg.getStatus() == 17 || returnMsg.getStatus() == 74 || returnMsg.getStatus() == 0)
         {   //Meter responsed in some way or another, 0 status was perfect
-            CTILogger.info("OutageDetectionEvent(" + objectID + ") - Ping Successful");
+            CTILogger.info("OutageDetectionEvent(" + meterNumber + ") - Ping Successful");
             ode.setOutageEventType(OutageEventType.Restoration);
         }
         else 
         {   //No idea what code this is
-            CTILogger.info("Meter (" + objectID + ") - Unknown return status from ping: " +returnMsg.getStatus());
-            CTILogger.info("OutageDetectionEvent(" + objectID + ") - Ping Status Unknown");
+            CTILogger.info("Meter (" + meterNumber + ") - Unknown return status from ping: " +returnMsg.getStatus());
+            CTILogger.info("OutageDetectionEvent(" + meterNumber + ") - Ping Status Unknown");
             ode.setOutageEventType(OutageEventType.NoResponse);
             ode.setErrorString("Unknown return status: " + returnMsg.getResultString());
         }

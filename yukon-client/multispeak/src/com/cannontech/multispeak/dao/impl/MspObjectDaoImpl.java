@@ -1,6 +1,7 @@
 package com.cannontech.multispeak.dao.impl;
 
 import java.rmi.RemoteException;
+import java.util.GregorianCalendar;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
@@ -9,6 +10,7 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspObjectDao;
 import com.cannontech.multispeak.deploy.service.CB_MRSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
 
@@ -51,4 +53,12 @@ public class MspObjectDaoImpl implements MspObjectDao {
        return mspServiceLocation;
     }
 
+    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType){
+        ErrorObject err = new ErrorObject();
+        err.setEventTime(new GregorianCalendar());
+        err.setObjectID(objectID);
+        err.setErrorString(errorMessage);
+        err.setNounType(nounType);
+        return err;
+    }
 }

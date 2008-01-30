@@ -20,17 +20,11 @@ public class MspMeterReadDaoImpl implements MspMeterReadDao {
         this.attrDynamicDataSource = attrDynamicDataSource;
     }
     
-    public MeterRead getMeterRead(Meter meter, String uniqueKey) {
-        String meterID = ""; 
-        if( uniqueKey.toLowerCase().startsWith("device") || uniqueKey.toLowerCase().startsWith("pao"))
-            meterID = meter.getName();
-        else //if(key.toLowerCase().startsWith("meternum"))
-            meterID = meter.getMeterNumber();
-        
+    public MeterRead getMeterRead(Meter meter) {
         MeterRead meterRead = new MeterRead();
-        meterRead.setDeviceID(meterID);
-        meterRead.setMeterNo(meterID);
-        meterRead.setObjectID(meterID);
+        meterRead.setDeviceID(meter.getMeterNumber());
+        meterRead.setMeterNo(meter.getMeterNumber());
+        meterRead.setObjectID(meter.getMeterNumber());
 
         try {
             PointValueHolder demand = 
@@ -52,12 +46,12 @@ public class MspMeterReadDaoImpl implements MspMeterReadDao {
         return meterRead;
     }
 
-    public MeterRead[] getMeterRead( List<Meter> meters, String uniqueKey) {
+    public MeterRead[] getMeterRead( List<Meter> meters) {
         
         MeterRead[] meterRead = new MeterRead[meters.size()];
         int indexCount = 0;
         for (Meter meter : meters) {
-            meterRead[indexCount++] = getMeterRead(meter, uniqueKey);
+            meterRead[indexCount++] = getMeterRead(meter);
         }
         
         return meterRead;

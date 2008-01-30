@@ -29,7 +29,7 @@ public class OD_OAImpl implements OD_OASoap_PortType
         this.multispeakFuncs = multispeakFuncs;
     }
 
-    private void init() {
+    private void init() throws RemoteException {
         multispeakFuncs.init();
     }
     

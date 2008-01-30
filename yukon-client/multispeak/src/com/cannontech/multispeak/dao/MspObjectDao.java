@@ -3,6 +3,7 @@ package com.cannontech.multispeak.dao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.Customer;
+import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 
 public interface MspObjectDao {
@@ -46,4 +47,12 @@ public interface MspObjectDao {
      * @return
      */
     public ServiceLocation getMspServiceLocation(String meterNumber, MultispeakVendor mspVendor);
+
+    /**
+     * Creates a new (MSP) ErrorObject 
+     * @param objectID The Multispeak objectID
+     * @param errorMessage The error message.
+     * @return
+     */
+    public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType);
 }

@@ -9,11 +9,12 @@ package com.cannontech.multispeak.event;
 
 import java.rmi.RemoteException;
 
+import com.cannontech.amr.meter.dao.impl.MeterDaoImpl;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.multispeak.client.MultispeakDefines;
-import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.deploy.service.CB_CDSoap_BindingStub;
 import com.cannontech.multispeak.deploy.service.LoadActionCode;
@@ -105,10 +106,8 @@ public class CDEvent extends MultispeakEvent{
     
     public boolean messageReceived(Return returnMsg)
     {
-        String key = getMspVendor().getUniqueKey();
-        String objectID = ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).getObjectID(key, returnMsg.getDeviceID());                        
-        
-        setMeterNumber(objectID);
+        Meter meter = ((MeterDaoImpl)YukonSpringHook.getBean("meterDao")).getForId(returnMsg.getDeviceID());
+        setMeterNumber(meter.getMeterNumber());
         setResultMessage(returnMsg.getResultString());
 
         if( returnMsg.getStatus() == 0) {

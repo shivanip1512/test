@@ -16,7 +16,7 @@ public class MR_OAImpl implements MR_OASoap_PortType
         this.multispeakFuncs = multispeakFuncs;
     }
 
-    private void init() {
+    private void init() throws RemoteException {
         multispeakFuncs.init();
     }
     
