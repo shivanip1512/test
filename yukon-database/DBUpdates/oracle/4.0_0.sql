@@ -463,118 +463,89 @@ alter table CCSUBAREAASSIGNMENT
       references CAPCONTROLAREA (AreaID);
 /* @error ignore-end */
 
-/* @start-block */
-Create global temporary table mySubstation
+Create table mySubstation
 (
-	SubBusName varchar2(60),
-	subbusId number,
-	CCsubStationName varchar2(60)
+    SubBusName varchar2(60),
+    subbusId number,
+    CCsubStationName varchar2(60)
 );
 insert into
-	mySubstation
+    mySubstation
 select
-	paoname,
-	paobjectid,
-	paoname
+    paoname,
+    paobjectid,
+    paoname
 from
-	yukonpaobject
+    yukonpaobject
 where
-	type = 'CCSUBBUS';
+    type = 'CCSUBBUS';
 
+/* @start-block */
 declare 
 v_paoid number(6);
 v_ccsubstationname varchar2(60);
 
 cursor substation_curs is select distinct(CCSubStationName) from mySubstation;
 begin
-select max(paobjectid) into v_paoid from yukonpaobject;
-v_paoid := v_paoid + 1;
-open substation_curs;
-fetch substation_curs into v_ccsubstationname;
-
-while (substation_curs%found)
-	loop
-		insert into yukonpaobject (paobjectid, category, paoclass, paoname, type, description, 
-
-disableflag, paostatistics)
-		select 
-			v_paoid,
-			'CAPCONTROL',
-			'CAPCONTROL',
-			concat('S: ',v_ccsubstationname),
-			'CCSUBSTATION',
-			'(none)',
-			'N',
-			'-----' 
-		from 
-			yukonpaobject;
-		insert into capcontrolsubstation (substationid)
-		select
-			v_paoid
-		from 
-			yukonpaobject;
-		v_paoid := v_paoid + 1;
-		fetch substation_curs into v_ccsubstationname;
-	end loop;
-close substation_curs;
+    select max(paobjectid) into v_paoid from yukonpaobject;
+    open substation_curs;
+    loop
+        fetch substation_curs into v_ccsubstationname;
+        EXIT WHEN substation_curs%NOTFOUND;
+        v_paoid := v_paoid + 1;
+                insert into yukonpaobject (paobjectid, category, paoclass, paoname, type, description, disableflag, paostatistics)
+                select 
+                    v_paoid,
+                    'CAPCONTROL',
+                    'CAPCONTROL',
+                    concat('S: ',v_ccsubstationname),
+                    'CCSUBSTATION',
+                    '(none)',
+                    'N',
+                    '-----' 
+                from 
+                    dual;
+                commit;
+        insert into capcontrolsubstation (substationid)
+        select
+            v_paoid
+        from 
+            dual;
+        commit;
+    end loop;
+    close substation_curs;
 end;
+/* @end-block */
 
-
-Create global temporary table mySubstation2
+Create table mySubstation2
 (
-	SubBusName varchar2(60),
-	subbusId number,
-	CCsubStationName varchar2(60),
-	Substationid number,
-	areaname varchar2(60),
-	areaid number
+    SubBusName varchar2(60),
+    subbusId number,
+    CCsubStationName varchar2(60),
+    Substationid number,
+    areaname varchar2(60),
+    areaid number
 );
 insert into
-	mySubstation2
+    mySubstation2
 select 
-	s.*
-	, yp.paobjectid
-	, yp1.paoname
-	, yp1.paobjectid
+    s.*
+    , yp.paobjectid
+    , yp1.paoname
+    , yp1.paobjectid
 from
-	yukonpaobject yp
-	, mySubstation s
-	, yukonpaobject yp1
-	, ccsubareaassignment sa
+    yukonpaobject yp
+    , mySubstation s
+    , yukonpaobject yp1
+    , ccsubareaassignment sa
 where
-	yp.paoname = concat('S: ',s.ccsubstationname)
-	and yp.type = 'CCSUBSTATION'
-	and s.subbusid = sa.substationbusid
-	and sa.areaid = yp1.paobjectid;
+    yp.paoname = concat('S: ',s.ccsubstationname)
+    and yp.type = 'CCSUBSTATION'
+    and s.subbusid = sa.substationbusid
+    and sa.areaid = yp1.paobjectid;
+commit;
 
-Create global temporary table mySubstation3
-(
-	SubBusName varchar2(60),
-	subbusId number,
-	CCsubStationName varchar2(60),
-	Substationid number,
-	areaname varchar2(60),
-	areaid number
-);
-insert into
-	mySubstation3
-select 
-	s.*
-	, yp.paobjectid as Substationid
-	, yp1.paoname as areaname
-	, yp1.paobjectid as areaId
-from
-	yukonpaobject yp
-	, mySubstation s
-	, yukonpaobject yp1
-	, ccsubspecialareaassignment sa
-where
-	yp.paoname = concat('S: ',s.ccsubstationname)
-	and yp.type = 'CCSUBSTATION'
-	and s.subbusid = sa.substationbusid
-	and sa.areaid = yp1.paobjectid;
-
-create global temporary table ccsa_backup
+create table ccsa_backup
 (
    AreaID               NUMBER                          not null,
    SubstationBusID      NUMBER                          not null,
@@ -582,77 +553,60 @@ create global temporary table ccsa_backup
 );
 
 insert into 
-	ccsa_backup
+    ccsa_backup
 select 
-	*
+    *
 from 
-	ccsubareaassignment;
-
-create global temporary table ccssaa_backup  (
-   AreaID               NUMBER                          not null,
-   SubstationBusID      NUMBER                          not null,
-   DisplayOrder         NUMBER                          not null
-);
-insert into
-	ccssaa_backup
-select 
-	*
-from 
-	ccsubspecialareaassignment;
+    ccsubareaassignment;
+commit;
 
 alter table ccsubareaassignment drop constraint FK_CCSUBARE_CAPSUBAREAASSGN;
+commit;
 
 update 
-	ccsubareaassignment a
+    ccsubareaassignment a
 set 
-	a.substationbusid = (
-	select
-		mySubstation2.substationid
-	from 
-		mySubstation2
-	where 
-		a.substationbusid = mySubstation2.subbusid);
+    a.substationbusid = (
+    select
+        mySubstation2.substationid
+    from 
+        mySubstation2
+    where 
+        a.substationbusid = mySubstation2.subbusid);
+commit;
 
-update 
-	ccsubspecialareaassignment a
-set 
-	a.substationbusid = (
-	select
-		mySubstation3.substationid
-	from 
-		mySubstation3
-	where 
-		a.substationbusid = mySubstation3.subbusid);
-
+/* @start-block */
 declare 
-	v_ccsubbusid		mysubstation2.subbusid%TYPE;
-	v_lastsubstationid 	mysubstation2.substationid%TYPE;
-	v_index 		number(6) := 1;
-	v_ccsubstationid 	mysubstation2.substationid%TYPE;
+    v_ccsubbusid        mysubstation2.subbusid%TYPE;
+    v_lastsubstationid     mysubstation2.substationid%TYPE;
+    v_index         number(6) := 1;
+    v_ccsubstationid     mysubstation2.substationid%TYPE;
 cursor substation_curs2 is select subbusid, substationid from mySubstation2;
 begin
 open substation_curs2; 
 fetch substation_curs2 into v_ccsubbusid, v_ccsubstationid;
 
 while (substation_curs2%found)
-	loop
-		insert into ccsubstationsubbuslist (substationid,substationbusid, displayorder)
-		select 
-			v_ccsubstationid,
-			v_ccsubbusid, 
-			v_index 
-		from
-			dual;
-		v_lastsubstationid := v_ccsubstationid;
-		fetch substation_curs2 into v_ccsubbusid, v_ccsubstationid;
-		if (v_lastsubstationid = v_ccsubstationid) then
-			v_index := v_index + 1;
-		else
-			v_index := 1;
-		end if;
-	end loop;
+    loop
+        insert into ccsubstationsubbuslist (substationid,substationbusid, displayorder)
+        select 
+            v_ccsubstationid,
+            v_ccsubbusid, 
+            v_index 
+        from
+            dual;
+        v_lastsubstationid := v_ccsubstationid;
+        fetch substation_curs2 into v_ccsubbusid, v_ccsubstationid;
+        if (v_lastsubstationid = v_ccsubstationid) then
+            v_index := v_index + 1;
+        else
+            v_index := 1;
+        end if;
+        commit;
+    end loop;
 close substation_curs2;
 end;
+/* @end-block */
 
 alter table CCSUBAREAASSIGNMENT
    add constraint FK_CCSUBARE_CAPSUBAREAASSGN foreign key (SubstationBusID)
@@ -660,10 +614,7 @@ alter table CCSUBAREAASSIGNMENT
 
 drop table mySubstation;
 drop table mySubstation2;
-drop table mySubstation3;
 drop table ccsa_backup;
-drop table ccssaa_backup;
-/* @end-block */
 
 alter table DYNAMICCCSUBSTATION
    add constraint FK_DYNAMICC_REFERENCE_CAPCONTR foreign key (SubStationID)
@@ -725,20 +676,20 @@ FROM CAPBANK cb INNER JOIN
 
 create or replace view CCOPERATIONS_VIEW(cbcName, capbankname, opTime, operation, confTime, confStatus, feederName, feederId, subName, subBusId, substationid, region, BANKSIZE, protocol, ipAddress, serialNum, SlaveAddress, kvarAfter, kvarChange, kvarBefore) as
 SELECT 
-      yp3.PAOName AS cbcName, yp.PAOName AS capbankname, el.DateTime AS opTime, el.Text AS operation, 
-      el2.DateTime AS confTime, el2.Text AS confStatus, yp1.PAOName AS feederName, yp1.PAObjectID AS feederId, 
-        yp2.PAOName AS subName, yp2.PAObjectID AS subBusId, ssl.substationid AS substationid, yp4.paoname AS region, cb.BANKSIZE, 
-        cb.ControllerType AS protocol, p.Value AS ipAddress, cbc.SERIALNUMBER AS serialNum, da.SlaveAddress, 
+      yp3.PAOName cbcName, yp.PAOName capbankname, el.DateTime opTime, el.Text operation, 
+      el2.DateTime confTime, el2.Text confStatus, yp1.PAOName feederName, yp1.PAObjectID feederId, 
+        yp2.PAOName subName, yp2.PAObjectID subBusId, ssl.substationid substationid, yp4.paoname region, cb.BANKSIZE, 
+        cb.ControllerType protocol, p.Value ipAddress, cbc.SERIALNUMBER serialNum, da.SlaveAddress, 
         el2.kvarAfter, el2.kvarChange, el2.kvarBefore
 FROM   
-      (SELECT op.LogID AS oid, MIN(aaa.confid) AS cid FROM
+      (SELECT op.LogID oid, MIN(aaa.confid) cid FROM
               (SELECT LogID, PointID FROM CCEventLog 
         WHERE Text LIKE '%Close sent%' OR Text LIKE '%Open sent%') op
         LEFT OUTER JOIN 
-        (SELECT el.LogID AS opid, MIN(el2.LogID) AS confid 
+        (SELECT el.LogID opid, MIN(el2.LogID) confid 
         FROM CCEventLog el INNER JOIN CCEventLog el2 ON el2.PointID = el.PointID AND el.LogID < el2.LogID 
         LEFT OUTER JOIN
-        (SELECT a.LogID AS aid, MIN(b.LogID) AS next_aid FROM 
+        (SELECT a.LogID aid, MIN(b.LogID) next_aid FROM 
         CCEventLog a INNER JOIN CCEventLog b ON a.PointID = b.PointID AND a.LogID < b.LogID 
         WHERE (a.Text LIKE '%Close sent,%' OR a.Text LIKE '%Open sent,%') 
         AND (b.Text LIKE '%Close sent,%' OR b.Text LIKE '%Open sent,%')
@@ -764,9 +715,9 @@ GROUP BY op.LogID) OpConf INNER JOIN
         (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
         FROM DynamicPAOInfo WHERE (InfoKey LIKE '%udp ip%')) 
         p ON p.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        ccsubstationsubbuslist as ssl on ssl.substationbusid = el.subid  LEFT OUTER JOIN
-        ccsubareaassignment as csa on csa.substationbusid = ssl.substationid left outer join 
-        YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid;
+        ccsubstationsubbuslist ssl on ssl.substationbusid = el.subid  LEFT OUTER JOIN
+        ccsubareaassignment csa on csa.substationbusid = ssl.substationid left outer join 
+        YukonPAObject yp4 ON yp4.paobjectid = csa.areaid;
 
 
 /* Start YUK-4730 */
@@ -848,17 +799,17 @@ alter table CCSTRATEGYTIMEOFDAY
 
 /* Start YUK-4763 */
 alter table DynamicCCFeeder add LastWattPointTime date;
-update DynamicCCFeeder set LastWattPointTime = '1990-01-01 00:00:00';
+update DynamicCCFeeder set LastWattPointTime =  to_date('1990-01-01','yyyy/mm/dd');
 alter table DynamicCCFeeder modify LastWattPointTime date not null;
 alter table DynamicCCFeeder add LastVoltPointTime date;
-update DynamicCCFeeder set LastVoltPointTime = '1990-01-01 00:00:00';
+update DynamicCCFeeder set LastVoltPointTime = to_date('1990-01-01','yyyy/mm/dd');
 alter table DynamicCCFeeder modify LastVoltPointTime date not null;
 
 alter table DynamicCCSubstationbus add LastWattPointTime date;
-update DynamicCCSubstationbus set LastWattPointTime = '1990-01-01 00:00:00';
+update DynamicCCSubstationbus set LastWattPointTime = to_date('1990-01-01','yyyy/mm/dd');
 alter table DynamicCCSubstationbus modify LastWattPointTime date not null;
 alter table DynamicCCSubstationbus add LastVoltPointTime date;
-update DynamicCCSubstationbus set LastVoltPointTime = '1990-01-01 00:00:00';
+update DynamicCCSubstationbus set LastVoltPointTime = to_date('1990-01-01','yyyy/mm/dd');
 alter table DynamicCCSubstationbus modify LastVoltPointTime date not null;
 
 alter table capcontrolstrategy add likeDayFallBack char(1);
@@ -1332,6 +1283,15 @@ update yukonroleproperty SET defaultvalue = 'false' WHERE rolepropertyid = -1001
 insert into yukonroleproperty values ( -100107, -1001, 'Watt/Volt', 'true', 'display Watts/Volts');
 insert into yukonroleproperty values ( -100108, -1001, 'Three Phase', 'false', 'display 3-phase data for feeder'); 
 /* End YUK-5195 */
+
+/* Start YUK-5025 */
+/* @error ignore-begin */
+alter table LMHardwareBase
+   add constraint FK_LMHrdB_Rt foreign key (RouteID)
+      references Route (RouteID);
+/* @error ignore-end */
+/* End YUK-5025 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

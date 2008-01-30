@@ -625,36 +625,11 @@ where
 	and sa.areaid = yp1.paobjectid;
 
 select 
-	s.*
-	, yp.paobjectid as Substationid
-	, yp1.paoname as areaname
-	, yp1.paobjectid as areaId
-into 
-	#mySubstation3
-from
-	yukonpaobject yp
-	, #mySubstation s
-	, yukonpaobject yp1
-	, ccsubspecialareaassignment sa
-where
-	yp.paoname = 'S: ' + s.ccsubstationname
-	and yp.type = 'CCSUBSTATION'
-	and s.subbusid = sa.substationbusid
-	and sa.areaid = yp1.paobjectid;
-
-select 
 	*
 into
 	#ccsubareaassignment_backup
 from 
 	ccsubareaassignment;
-
-select 
-	*
-into
-	#ccsubspecialareaassignment_backup
-from 
-	ccsubspecialareaassignment;
 
 alter table ccsubareaassignment drop constraint FK_CCSUBARE_CAPSUBAREAASSGN;
 
@@ -667,17 +642,6 @@ from
 	, #mySubstation2
 where 
 	ccsubareaassignment.substationbusid = #mySubstation2.subbusid;
-
-update 
-	ccsubspecialareaassignment
-set 
-	ccsubspecialareaassignment.substationbusid = #mySubstation3.substationid
-from 
-	ccsubspecialareaassignment
-	, #mySubstation3
-where 
-	ccsubspecialareaassignment.substationbusid = #mySubstation3.subbusid;
-
 
 /* @start-block */
 declare @ccsubstationid numeric;
@@ -714,9 +678,7 @@ alter table CCSUBAREAASSIGNMENT
          
 drop table #mySubstation;
 drop table #mySubstation2;
-drop table #mySubstation3;
 drop table #ccsubareaassignment_backup;
-drop table #ccsubspecialareaassignment_backup;
 
 alter table DYNAMICCCSUBSTATION
    add constraint FK_DYNAMICC_REFERENCE_CAPCONTR foreign key (SubStationID)
@@ -1427,6 +1389,15 @@ update yukonroleproperty SET defaultvalue = 'false' WHERE rolepropertyid = -1001
 insert into yukonroleproperty values ( -100107, -1001, 'Watt/Volt', 'true', 'display Watts/Volts');
 insert into yukonroleproperty values ( -100108, -1001, 'Three Phase', 'false', 'display 3-phase data for feeder'); 
 /* End YUK-5195 */
+
+/* Start YUK-5025 */
+/* @error ignore-begin */
+alter table LMHardwareBase
+   add constraint FK_LMHrdB_Rt foreign key (RouteID)
+      references Route (RouteID);
+/* @error ignore-end */
+/* End YUK-5025 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
