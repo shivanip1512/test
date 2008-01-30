@@ -6,7 +6,9 @@
  */
 package com.cannontech.multispeak.emulator;
 
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -37,7 +39,6 @@ public class CB_MR_Test {
 			String endpointURL = "http://localhost:8080/soap/CB_MRSoap";
 			endpointURL = "http://209.101.158.56/mspamrintegration/CB_MR.asmx";  //SEDC Test Server
 //			endpointURL = "http://209.101.158.56:8080/mspamrintegration/CB_MR.asmx";  //SEDC Test Server and TCPTrace
-//			endpointURL = "http://10.100.10.25:80/soap/CB_MRSoap";
 		  	CB_MRSoap_BindingStub instance = new CB_MRSoap_BindingStub(new URL(endpointURL), new Service());
 			
             YukonMultispeakMsgHeader msgHeader =new YukonMultispeakMsgHeader();
@@ -50,7 +51,7 @@ public class CB_MR_Test {
 			
 			if (todo==0)
 			{
-			    Meter[] meters = instance.getMeterByServLoc("1223");	//1068048 whe, 1010156108 sn_head/amr_demo
+			    Meter[] meters = instance.getMeterByServLoc("901003000");	//1068048 whe, 1010156108 sn_head/amr_demo
 			    
 				if( meters!= null)
 				{
@@ -88,8 +89,10 @@ public class CB_MR_Test {
 					}
 				}
 			}
-		} catch (Exception e) {
+		} catch (RemoteException e) {
 			e.printStackTrace();
+		} catch (MalformedURLException e) {
+		    e.printStackTrace();
 		}
 	}
 }
