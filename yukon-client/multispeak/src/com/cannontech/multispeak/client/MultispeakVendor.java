@@ -28,14 +28,12 @@ public class MultispeakVendor
     public static final String CANNON_MSP_COMPANYNAME = "Cannon";
     
     private Integer vendorID = null;
-    private String companyName = CtiUtilities.STRING_NONE;
-    private String appName = CtiUtilities.STRING_NONE;
-    private String userName = CtiUtilities.STRING_NONE;
-    private String password = CtiUtilities.STRING_NONE;
-    private String outUserName = CtiUtilities.STRING_NONE;
-    private String outPassword = CtiUtilities.STRING_NONE;
-    //Valid values are meternumber | devicename
-    private String uniqueKey = "meternumber";
+    private String companyName;
+    private String appName;
+    private String userName;
+    private String password;
+    private String outUserName;
+    private String outPassword;
 
     private int maxReturnRecords = 10000;
     private long requestMessageTimeout = 120000;
@@ -72,7 +70,7 @@ public class MultispeakVendor
 
     
     public MultispeakVendor(Integer vendorID, String companyName, String appName, String userName, 
-            String password, String outUserName, String outPassword, String uniqueKey,  
+            String password, String outUserName, String outPassword,   
             int maxReturnRecords, long requestMessageTimeout, long maxInitiateRequestObjects, 
             String templateNameDefault, String url) {
         super();
@@ -84,7 +82,6 @@ public class MultispeakVendor
         this.password = password;
         this.outUserName = outUserName;
         this.outPassword = outPassword;
-        this.uniqueKey = uniqueKey;
         this.maxReturnRecords = maxReturnRecords;
         this.requestMessageTimeout = requestMessageTimeout;
         this.maxInitiateRequestObjects = maxInitiateRequestObjects;
@@ -94,14 +91,13 @@ public class MultispeakVendor
 
 
     public MultispeakVendor(Integer vendorID, String companyName, String userName, String password, 
-            String uniqueKey, String url)
+            String url)
     {
         super();
         this.vendorID = vendorID;
         this.companyName = companyName;
         this.userName = userName;
         this.password = password;
-        this.uniqueKey = uniqueKey;
         this.url = url;
     }
 
@@ -159,14 +155,6 @@ public class MultispeakVendor
     /**
      * @return
      */
-    public String getUniqueKey()
-    {
-        return uniqueKey;
-    }
-
-    /**
-     * @return
-     */
     public String getUrl()
     {
         return url;
@@ -194,14 +182,6 @@ public class MultispeakVendor
     public void setPassword(String string)
     {
         password = string;
-    }
-
-    /**
-     * @param string
-     */
-    public void setUniqueKey(String string)
-    {
-        uniqueKey = string;
     }
 
     /**
