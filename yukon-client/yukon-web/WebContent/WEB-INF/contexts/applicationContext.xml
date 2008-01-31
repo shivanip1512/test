@@ -400,6 +400,11 @@
         <property name="simpleReportService" ref="simpleReportService"/>
     </bean>
     
+    <bean id="simpleReportUrlFromNameTagPrototype" class="com.cannontech.web.reports.SimpleReportUrlFromNameTag">
+        <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
+        <property name="simpleReportService" ref="simpleReportService"/>
+    </bean>
+    
     <bean id="simpleReportLinkFromModelTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromModelTag">
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
     </bean>
