@@ -3,6 +3,8 @@ package com.cannontech.user;
 import java.util.Locale;
 import java.util.TimeZone;
 
+import org.springframework.core.style.ToStringCreator;
+
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public class SimpleYukonUserContext implements YukonUserContext {
@@ -33,5 +35,14 @@ public class SimpleYukonUserContext implements YukonUserContext {
         this.timeZone = timeZone;
     }
     public SimpleYukonUserContext() {
+    }
+    
+    @Override
+    public String toString() {
+        ToStringCreator to = new ToStringCreator(this);
+        to.append("yukonUser", yukonUser);
+        to.append("timeZone", timeZone);
+        to.append("locale", locale);
+        return to.toString();
     }
 }
