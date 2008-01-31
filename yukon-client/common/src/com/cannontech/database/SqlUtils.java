@@ -66,13 +66,13 @@ public final class SqlUtils {
     /**
      * This is a helper function for retrieving String values for the database
      * where the Oracle ""/null issue will be a problem. This function and the
-     * storeNoneSqlString create a contract where "" Strings are stored as 
+     * convertStringToDbValue create a contract where "" Strings are stored as 
      * " ".
      * 
      * Oracle:
      *   With a nulls allowed column:
      *     When the column contains a null: null
-     *     When the column contains an empty string (same as above): null
+     *     When the column contains an empty string (same as above): null *won't ever be inserted*
      *     When the column contains " ": ""
      *     When the column contains "   ": ""
      *     When the column contains "foobar": "foobar"
@@ -90,21 +90,22 @@ public final class SqlUtils {
      *     When the column contains "   ": ""
      *     When the column contains "foobar": "foobar"
      *   With a nulls not allowed column:
-     *     When the column contains a null: *illegal*
-     *     When the column contains an empty string: ""
+     *     When the column contains a null:  *illegal*
+     *     When the column contains an empty string: ""  *won't ever be inserted*
      *     When the column contains " ": ""
      *     When the column contains "   ": ""
      *     When the column contains "foobar": "foobar"
      *     
      * As you can see, the only difference will be when storing an empty String. For that
-     * reason, use the storeNoneSqlString function to write to the database.
+     * reason, use the convertStringToDbValue function to write to the database and 
+     * an empty string will never be inserted.
      * 
      * @param rs
      * @param columnNumber
      * @return
      * @throws SQLException
      */
-    public static String convertDbValueToString(String value) throws SQLException {
+    public static String convertDbValueToString(String value) {
         if (StringUtils.isWhitespace(value)) {
             return "";
         }
