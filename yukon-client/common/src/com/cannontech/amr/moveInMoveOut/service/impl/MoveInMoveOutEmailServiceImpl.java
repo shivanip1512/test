@@ -14,6 +14,7 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.Resource;
 
@@ -24,6 +25,7 @@ import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.FormattingTemplateProcessor;
+import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -36,6 +38,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
     private Logger logger = YukonLogManager.getLogger(MoveInMoveOutEmailServiceImpl.class);
 
+    private TemplateProcessorFactory templateProcessorFactory;
     private DateFormattingService dateFormattingService;
     private EmailService emailService;
     private PointFormattingService pointFormattingService;
@@ -85,7 +88,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
     private void createMoveInSuccessEmail(MoveInResult moveInResult,
                                           YukonUserContext userContext) {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new HashMap<String, Object>();
         msgData.put("status", "completed");
         msgData.put("statusMsg",
@@ -154,7 +157,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
     private void createMoveInScheduleEmail(MoveInResult moveInResult,
                                            YukonUserContext userContext) {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new TreeMap<String, Object>();
         msgData.put("status", "scheduled");
 
@@ -185,7 +188,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
     private void createMoveInFailureEmail(MoveInResult moveInResult,
                                           YukonUserContext userContext) {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new TreeMap<String, Object>();
         msgData.put("status", "failed");
         msgData.put("statusMsg",
@@ -215,7 +218,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
     private void createMoveOutSuccessEmail(MoveOutResult moveOutResult,
                                            YukonUserContext userContext) {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new HashMap<String, Object>();
         msgData.put("status", "completed");
         msgData.put("statusMsg",
@@ -263,7 +266,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
     private void createMoveOutScheduleEmail(MoveOutResult moveOutResult,
                                             YukonUserContext userContext) {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new TreeMap<String, Object>();
         msgData.put("status", "scheduled");
 
@@ -293,7 +296,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
 
     private void createMoveOutFailureEmail(MoveOutResult moveOutResult,
                                            YukonUserContext userContext) {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
         Map<String, Object> msgData = new TreeMap<String, Object>();
         msgData.put("status", "failed");
         msgData.put("statusMsg",
@@ -420,6 +423,12 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
     @Required
     public void setMoveOutSuccessEmail(Resource moveOutSuccessEmail) {
         this.moveOutSuccessEmail = moveOutSuccessEmail;
+    }
+    
+    @Autowired
+    public void setTemplateProcessorFactory(
+            TemplateProcessorFactory templateProcessorFactory) {
+        this.templateProcessorFactory = templateProcessorFactory;
     }
 
 }

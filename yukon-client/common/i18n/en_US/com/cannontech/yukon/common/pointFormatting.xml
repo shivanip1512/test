@@ -5,7 +5,8 @@
          com.cannontech.core.service.PointFormattingService
          com.cannontech.common.util.FormattingTemplateProcessor
          java.text.SimpleDateFormat
---><entry key="yukon.common.pointFormatting.FULL">{default} {status||{unit}} {time|MM/dd/yyyy HH:mm:ss Z}</entry>
+-->
+<entry key="yukon.common.pointFormatting.FULL">{default} {status||{unit}} {time|BOTH}</entry>
 <entry key="yukon.common.pointFormatting.SHORT">{default} {status||{unit}}</entry>
 <entry key="yukon.common.pointFormatting.SHORTDATE">{default} {status||{unit}} {time|MM/dd/yyyy}</entry>
 <entry key="yukon.common.pointFormatting.DATE">{time|MM/dd/yyyy HH:mm:ss Z}</entry>

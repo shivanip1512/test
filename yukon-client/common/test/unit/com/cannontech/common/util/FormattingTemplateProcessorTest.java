@@ -11,15 +11,17 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 
+import com.cannontech.core.service.impl.DateFormattingServiceImpl;
 import com.cannontech.user.SystemUserContext;
 
 public class FormattingTemplateProcessorTest {
     private static final SystemUserContext userContext = new SystemUserContext();
     DateFormat dateTimeInstance = DateFormat.getDateInstance(DateFormat.SHORT);
+    DateFormattingServiceImpl dateFormattingService = new DateFormattingServiceImpl();
     
     @Test
     public void testNumberFormat() {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
         String template = "{name} is {age|####.000#}";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -33,8 +35,24 @@ public class FormattingTemplateProcessorTest {
     }
     
     @Test
+    public void testNumberFormat2() {
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
+        String template = "{age1|2} {age2|3} {age3|4}";
+        
+        Map<String, Object> data = new HashMap<String, Object>();
+        
+        data.put("age1", 29.11223234234234234f);
+        data.put("age2", 800.89623234234234234f);
+        data.put("age3", -45.23237234234234f);
+        
+        String result = tp.process(template, data);
+        
+        Assert.assertEquals("29.11 800.896 -45.2324", result);
+    }
+    
+    @Test
     public void testDateFormat() throws ParseException {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
         String template = "{name} was born {birthDate|M/d/yyyy}";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -49,7 +67,7 @@ public class FormattingTemplateProcessorTest {
     
     @Test
     public void testListJoinAdvanced2() throws ParseException {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
         String template = "{name}'s favorite days are {dayList|, |it|{it|M/d/yy}}";
         
         Map<String, Object> data = new HashMap<String, Object>();
@@ -67,7 +85,7 @@ public class FormattingTemplateProcessorTest {
     
     @Test
     public void testListJoinAdvanced3() throws ParseException {
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(dateFormattingService, userContext);
         String template = "{name}'s favorite days are\n{dayList|\n|it|  {it|M/d/yy}}";
         
         Map<String, Object> data = new HashMap<String, Object>();

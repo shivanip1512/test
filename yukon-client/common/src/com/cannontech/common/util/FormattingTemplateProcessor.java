@@ -4,20 +4,23 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.math.NumberUtils;
 
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.user.YukonUserContext;
 
 public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
-    private static Map<String, SimpleDateFormat> dateFormatCache = new HashMap<String, SimpleDateFormat>();
+    private Map<String, DateFormat> dateFormatCache = new HashMap<String, DateFormat>();
     private final YukonUserContext userContext;
+    private final DateFormattingService dateFormattingService;
     
-    public FormattingTemplateProcessor(YukonUserContext userContext) {
+    public FormattingTemplateProcessor(DateFormattingService dateFormattingService, YukonUserContext userContext) {
+        this.dateFormattingService = dateFormattingService;
         this.userContext = userContext;
     }
 
@@ -27,13 +30,19 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
      * @param format
      * @return
      */
-    private SimpleDateFormat getDateFormatter(String format) {
-        SimpleDateFormat simpleDateFormat = dateFormatCache.get(format);
-        if (simpleDateFormat == null) {
-            simpleDateFormat = new SimpleDateFormat(format, userContext.getLocale());
-            dateFormatCache.put(format, simpleDateFormat);
+    private DateFormat getDateFormatter(String format) {
+        DateFormat dateFormat = dateFormatCache.get(format);
+        if (dateFormat == null) {
+            try {
+                DateFormatEnum formatEnum = DateFormatEnum.valueOf(format);
+                dateFormat = dateFormattingService.getDateFormatter(formatEnum, userContext);
+            } catch (IllegalArgumentException e) {
+                dateFormat = new SimpleDateFormat(format, userContext.getLocale());
+                dateFormat.setTimeZone(userContext.getTimeZone());
+            }
+            dateFormatCache.put(format, dateFormat);
         }
-        return simpleDateFormat;
+        return dateFormat;
     }
 
     protected CharSequence formatValue(Object value, String extra) {
@@ -41,6 +50,8 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
         if (value instanceof Number) {
             NumberFormat format;
             if (NumberUtils.isDigits(extra)) {
+                // I'm not sure that this is a good idea, but other 
+                // than a single '0', no digits make sense as a format string.
                 format = NumberFormat.getNumberInstance(userContext.getLocale());
                 int decimalDigits = NumberUtils.toInt(extra);
                 format.setMinimumFractionDigits(decimalDigits);
@@ -50,17 +61,9 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
             }
             result = format.format(value);
         } else if (value instanceof Date) {
-            synchronized (FormattingTemplateProcessor.class) {
+            synchronized (this) {
                 DateFormat format = getDateFormatter(extra);
-                format.setTimeZone(userContext.getTimeZone());
                 result = format.format(value);
-            }
-        } else if (value instanceof Calendar) {
-            synchronized (FormattingTemplateProcessor.class) {
-                Calendar valueCal = (Calendar) value;
-                DateFormat format = getDateFormatter(extra);
-                format.setCalendar(valueCal);
-                result = format.format(valueCal.getTime());
             }
         } else {
             result = super.formatValue(value, extra);

@@ -39,8 +39,23 @@ public interface DateFormattingService {
         START_OF_DAY, END_OF_DAY
     };
 
+    /**
+     * Convert a date to a string using the userContext for locale and timezone information.
+     * The type dictates a suggested style, but not a specific format.
+     * 
+     * @param date
+     * @param type
+     * @param userContext
+     * @return
+     */
     public String formatDate(Date date, DateFormatEnum type, YukonUserContext userContext);
 
+    /**
+     * This method is provided for completeness, but shouldn't not be used for regular code.
+     * @param type
+     * @param userContext
+     * @return
+     */
     public DateFormat getDateFormatter(DateFormatEnum type, YukonUserContext userContext);
 
     public Date flexibleDateParser(String dateStr, DateOnlyMode mode,

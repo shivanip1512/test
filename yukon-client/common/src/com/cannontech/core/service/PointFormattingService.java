@@ -63,17 +63,17 @@ public interface PointFormattingService {
      * syntax of a format string.
      * 
      * The available keys that can be used within the format string are:
-     *   value   - for status points, a String with the state text; 
-     *             for other types, a Double with the current value
-     *   default - for status points, same as 'value';
-     *             for other types, the current value formatted as a string with the
-     *             number of decimal places taken from PointUnit
-     *   status  - a Boolean that is true for status points and false for all others
-     *   state   - the state text or "" if not applicable
-     *   unit    - the value returned from getUnitMeasureName() for the points unit of measure,
-     *             may be "" if the point doesn't have an attached unit of measure
-     *   time    - a Calendar with the PointValueHolder's timestamp and the timeZone set
-     *             on it
+     *   value    - for status points, a String with the state text; 
+     *              for other types, a Double with the current value
+     *   decimals - the number of decimal digits the point is configured for
+     *   default  - for status points, same as 'value';
+     *              for other types, the current value formatted as a string with the
+     *              number of decimal places taken from PointUnit
+     *   status   - a Boolean that is true for status points and false for all others
+     *   state    - the state text or "" if not applicable
+     *   unit     - the value returned from getUnitMeasureName() for the points unit of measure,
+     *              may be "" if the point doesn't have an attached unit of measure
+     *   time     - a Date with the PointValueHolder's timestamp 
      *             
      * The format string is scanned for instances of the above key's before the DAO calls to
      * retrieve the information are made.

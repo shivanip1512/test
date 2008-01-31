@@ -9,11 +9,13 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FormattingTemplateProcessor;
+import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LongLoadProfileService;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -27,6 +29,7 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
     private Logger log = YukonLogManager.getLogger(LongLoadProfileServiceEmailCompletionCallbackImpl.class);
     private EmailService emailService = null;
     private DateFormattingService dateFormattingService = null;
+    private TemplateProcessorFactory templateProcessorFactory = null;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao = null;
     private Map<String, Object> msgData;
     private String email;
@@ -49,7 +52,7 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         Map<String, Object> data = new HashMap<String, Object>(msgData);
         data.putAll(extraData);
         
-        FormattingTemplateProcessor tp = new FormattingTemplateProcessor(userContext);
+        FormattingTemplateProcessor tp = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
         String subject = tp.process(baseSubjectFormat, data);
         String body = tp.process(bodyTemplate, data);
         String htmlBody = tp.process(htmlBodyTemplate, data);
@@ -197,7 +200,11 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         this.userContext = userContext;
     }
 
-    
+    @Autowired
+    public void setTemplateProcessorFactory(
+            TemplateProcessorFactory templateProcessorFactory) {
+        this.templateProcessorFactory = templateProcessorFactory;
+    }
 
 }
     

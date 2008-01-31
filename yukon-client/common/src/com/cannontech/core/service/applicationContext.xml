@@ -38,6 +38,8 @@
      -->
   </bean>
   
+  <bean id="templateProcessorFactory" class="com.cannontech.common.util.TemplateProcessorFactory"/>
+  
   <bean id="pointFormattingService"
       class="com.cannontech.core.service.impl.PointFormattingServiceImpl" abstract="false"
       scope="singleton" lazy-init="default" autowire="default" dependency-check="default">
@@ -56,5 +58,5 @@
       class="com.cannontech.core.service.impl.ActivityLoggerServiceImpl" abstract="false"
       scope="singleton" lazy-init="default" autowire="default" dependency-check="default">
   </bean>
-  
+
 </beans>

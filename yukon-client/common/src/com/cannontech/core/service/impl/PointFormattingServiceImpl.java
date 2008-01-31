@@ -1,7 +1,6 @@
 package com.cannontech.core.service.impl;
 
 import java.text.NumberFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -13,6 +12,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FormattingTemplateProcessor;
+import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.StateDao;
@@ -32,6 +32,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
     private StateDao stateDao;
     private UnitMeasureDao unitMeasureDao;
     private YukonUserContextMessageSourceResolver messageSourceResolver;
+    private TemplateProcessorFactory templateProcessorFactory;
     private Logger log = YukonLogManager.getLogger(PointFormattingServiceImpl.class);
 
     @Required
@@ -54,6 +55,12 @@ public class PointFormattingServiceImpl implements PointFormattingService {
         this.messageSourceResolver = messageSourceResolver;
     }
     
+    @Autowired
+    public void setTemplateProcessorFactory(
+            TemplateProcessorFactory templateProcessorFactory) {
+        this.templateProcessorFactory = templateProcessorFactory;
+    }
+    
     @Override
     public PointFormattingService getCachedInstance() {
         PointFormattingService impl = new PointFormattingService() {
@@ -64,11 +71,12 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             private Map<Integer, LitePointUnit> pointUnitCache = new HashMap<Integer, LitePointUnit>();
             
             public String getValueString(PointValueHolder data, String format, YukonUserContext userContext) {
-                FormattingTemplateProcessor templateProcessor = new FormattingTemplateProcessor(userContext);
+                FormattingTemplateProcessor templateProcessor = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
                 Object value = "";
                 String valueStr = "";
                 String unitString = "";
                 String state = "";
+                Integer decimalDigits = 4;
                 Boolean statusPoint = data.getType() == PointTypes.STATUS_POINT;
                 if (statusPoint) {
                     
@@ -111,7 +119,6 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                     }
 
                     if (templateProcessor.contains(format, "default")) {
-                        int decimalPlaces = 4;
                         try {
                             
                             // point unit
@@ -121,26 +128,25 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                                 pointUnitCache.put(data.getId(), pointUnit);
                             }
                             
-                            decimalPlaces = pointUnit.getDecimalPlaces();
+                            decimalDigits = pointUnit.getDecimalPlaces();
                         } catch (NotFoundException e) {
                             log.debug("Couldn't load LitePointUnit for point " + data.getId() + ", using default");
                         }
-                        NumberFormat numberInstance = NumberFormat.getNumberInstance();
-                        numberInstance.setMinimumFractionDigits(decimalPlaces);
-                        numberInstance.setMaximumFractionDigits(decimalPlaces);
+                        NumberFormat numberInstance = NumberFormat.getNumberInstance(userContext.getLocale());
+                        numberInstance.setMinimumFractionDigits(decimalDigits);
+                        numberInstance.setMaximumFractionDigits(decimalDigits);
                         valueStr = numberInstance.format(data.getValue());
                     }
                 }
                 Map<String,Object> params = new HashMap<String, Object>();
                 params.put("value", value);
+                params.put("decimals", decimalDigits);
                 params.put("default", valueStr);
                 params.put("status", statusPoint);
                 params.put("state", state);
                 params.put("unit", unitString);
                 Date pointDataTimeStamp = data.getPointDataTimeStamp();
-                Calendar pointDataCal = Calendar.getInstance(userContext.getTimeZone());
-                pointDataCal.setTime(pointDataTimeStamp);
-                params.put("time", pointDataCal);
+                params.put("time", pointDataTimeStamp);
                 String result = templateProcessor.process(format, params);
                 return result;
             }
