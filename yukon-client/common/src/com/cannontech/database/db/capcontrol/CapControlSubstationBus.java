@@ -26,10 +26,11 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     private String usePhaseData = "N";
     private Integer phaseB = new Integer(CtiUtilities.NONE_ZERO_ID);
     private Integer phaseC = new Integer(CtiUtilities.NONE_ZERO_ID);
+    private String controlFlag = "N";
 	public static final String SETTER_COLUMNS[] = { 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "MapLocationID", 
 		"CurrentVoltLoadPointID", "AltSubId", "SwitchPointId",
-		"DualBusEnabled", "MultiMonitorControl", "UsePhaseData", "PhaseB", "PhaseC"};
+		"DualBusEnabled", "MultiMonitorControl", "UsePhaseData", "PhaseB", "PhaseC", "ControlFlag"};
 	public static final String CONSTRAINT_COLUMNS[] = { "SubstationBusID"};
 	public static final String TABLE_NAME = "CapControlSubstationBus";
 
@@ -57,7 +58,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     		getSubstationBusID(), getCurrentVarLoadPointID(), getCurrentWattLoadPointID(),
     		getMapLocationID(), getCurrentVoltLoadPointID(), getAltSubPAOId(),
     		getSwitchPointID(), getDualBusEnabled(), getMultiMonitorControl(),
-            getUsePhaseData(), getPhaseB(), getPhaseC()};
+            getUsePhaseData(), getPhaseB(), getPhaseC(), getControlFlag()};
     
     	add( TABLE_NAME, addValues );
     }
@@ -126,6 +127,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             setUsePhaseData((String) results[8]);
             setPhaseB((Integer) results[9]);
             setPhaseC((Integer) results[10]);
+            setControlFlag((String) results[11]);
     	}
     	else {
     		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -176,7 +178,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     		getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), getMapLocationID(),
     		getCurrentVoltLoadPointID(), getAltSubPAOId(), getSwitchPointID(),
             getDualBusEnabled(), getMultiMonitorControl(), getUsePhaseData(),
-            getPhaseB(), getPhaseC()};
+            getPhaseB(), getPhaseC(), getControlFlag()};
     
     	Object constraintValues[] = { getSubstationBusID()};
     
@@ -318,6 +320,29 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
 
     public void setPhaseC(Integer phaseC) {
         this.phaseC = phaseC;
+    }
+    
+    public String getControlFlag() {
+        return controlFlag;
+    }
+
+    public void setControlFlag(String controlFlag) {
+        this.controlFlag = controlFlag;
+    }
+    
+    public boolean getControlFlagBoolean() {
+        if(controlFlag.equalsIgnoreCase("Y")) {
+            return true;
+        }
+        return false;
+    }
+
+    public void setControlFlagBoolean(boolean bool) {
+        if(bool) {
+            this.controlFlag = "Y";
+        }else {
+            this.controlFlag = "N";
+        }
     }
 
     public String getUsePhaseData() {

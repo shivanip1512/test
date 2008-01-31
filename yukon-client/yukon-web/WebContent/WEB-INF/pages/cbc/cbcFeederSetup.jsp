@@ -78,6 +78,22 @@
     <br/>
     <br/>
     </f:verbatim>
+    
+    <h:selectBooleanCheckbox id="Use_Totalized_Value_Checkbox" 
+        onclick="submit();"
+        value="#{capControlForm.PAOBase.capControlFeeder.controlFlagBoolean}"
+        rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}"/>
+    <x:outputLabel for="Use_Totalized_Value_Checkbox" 
+        value="Use Totalized Values" 
+        title="Check this box to use totalized phase values for control." 
+        styleClass="smallStaticLabel"
+        rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}"/>
+        
+    <f:verbatim>
+    <br/>
+    <br/>
+    </f:verbatim>
+    
     <x:inputHidden id="varPoint" forceId="true" value="#{capControlForm.PAOBase.capControlFeeder.currentVarLoadPointID }" />      
     <x:outputLabel for="feederVarDevice" value="Selected Point: " title="Data Point used for the current VAR value" rendered="#{!capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}" styleClass="medStaticLabel"/>
     <x:outputLabel for="feederVarDevice" value="Selected Phase A Point: " title="Data Point used for the current VAR value" rendered="#{capControlForm.PAOBase.capControlFeeder.usePhaseDataBoolean}" styleClass="medStaticLabel"/>

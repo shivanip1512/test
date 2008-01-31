@@ -15,11 +15,12 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
     private String usePhaseData = "N";
     private Integer phaseB = new Integer(CtiUtilities.NONE_ZERO_ID);
     private Integer phaseC = new Integer(CtiUtilities.NONE_ZERO_ID);
+    private String controlFlag = "NNNNNNNNNN";
 
 	public static final String SETTER_COLUMNS[] = { 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID",
 		"MapLocationID", "CurrentVoltLoadPointID", "MultiMonitorControl",
-        "UsePhaseData", "PhaseB", "PhaseC"
+        "UsePhaseData", "PhaseB", "PhaseC", "ControlFlag"
 	};
 	public static final String CONSTRAINT_COLUMNS[] = { "FeederID" };
 	public static final String TABLE_NAME = "CapControlFeeder";
@@ -50,7 +51,8 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
             getMultiMonitorControl(), 
             getUsePhaseData(),
             getPhaseB(),
-            getPhaseC()
+            getPhaseC(),
+            getControlFlag()
 		};
 		add( TABLE_NAME, addValues );
 	}
@@ -114,6 +116,7 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
             setUsePhaseData((String) results[5]);
             setPhaseB((Integer) results[6]);
             setPhaseC((Integer) results[7]);
+            setControlFlags((String) results[8]);
 		} else {
 			throw new Error(getClass() + " - Incorrect Number of results retrieved");
         }
@@ -164,7 +167,7 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
 			getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), 
 			getMapLocationID(), getCurrentVoltLoadPointID(),
             getMultiMonitorControl(), getUsePhaseData(),
-            getPhaseB(), getPhaseC()
+            getPhaseB(), getPhaseC(), getControlFlag()
 		};
 		Object constraintValues[] = { getFeederID() };
 		update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
@@ -214,6 +217,29 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
 
     public void setUsePhaseData(String usePhaseData) {
         this.usePhaseData = usePhaseData;
+    }
+    
+    public String getControlFlag() {
+        return controlFlag;
+    }
+
+    public void setControlFlags(String controlFlag) {
+        this.controlFlag = controlFlag;
+    }
+    
+    public boolean getControlFlagBoolean() {
+        if(controlFlag.equalsIgnoreCase("Y")) {
+            return true;
+        }
+        return false;
+    }
+
+    public void setControlFlagBoolean(boolean bool) {
+        if(bool) {
+            this.controlFlag = "Y";
+        }else {
+            this.controlFlag = "N";
+        }
     }
     
     public boolean getUsePhaseDataBoolean() {
