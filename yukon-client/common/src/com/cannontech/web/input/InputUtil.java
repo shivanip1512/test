@@ -27,7 +27,7 @@ public class InputUtil {
         }
     }
 
-    public static HashMap<String, String> extractProperties(InputRoot inputRoot, Object task) throws BeansException {
+    public static Map<String, String> extractProperties(InputRoot inputRoot, Object task) throws BeansException {
         HashMap<String,String> properties = new HashMap<String,String>();
         Map<String, ? extends InputSource<?>> inputs = inputRoot.getInputMap();
         BeanWrapper beanWrapper = new BeanWrapperImpl(task);

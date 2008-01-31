@@ -115,7 +115,7 @@ public class ReportsController extends MultiActionController  {
         
         // include input values map
         //-----------------------------------------------------------------------------------------
-        HashMap<String, String> inputMap = InputUtil.extractProperties(reportDefinition.getInputs(), reportModel);
+        Map<String, String> inputMap = InputUtil.extractProperties(reportDefinition.getInputs(), reportModel);
         mav.addObject("inputMap", inputMap);
         
         

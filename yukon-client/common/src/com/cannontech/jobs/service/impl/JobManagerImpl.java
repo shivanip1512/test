@@ -3,8 +3,8 @@ package com.cannontech.jobs.service.impl;
 import java.text.ParseException;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
@@ -222,7 +222,7 @@ public class JobManagerImpl implements JobManager {
     private void scheduleJobCommon(YukonJob job, YukonJobDefinition<?> jobDefinition, YukonTask task, YukonUserContext userContext) throws BeansException {
         InputRoot inputRoot = jobDefinition.getInputs();
 
-        HashMap<String, String> properties = InputUtil.extractProperties(inputRoot, task);
+        Map<String, String> properties = InputUtil.extractProperties(inputRoot, task);
         log.debug("extracted properties for " + jobDefinition + ": " + properties);
 
         job.setUserContext(userContext);
