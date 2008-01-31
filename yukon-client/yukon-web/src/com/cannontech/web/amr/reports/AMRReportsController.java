@@ -12,7 +12,6 @@ import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.simplereport.SimpleReportService;
-import com.cannontech.simplereport.SimpleReportViewJsp;
 import com.cannontech.simplereport.YukonReportDefinition;
 
 public class AMRReportsController extends MultiActionController  {
@@ -30,8 +29,7 @@ public class AMRReportsController extends MultiActionController  {
     public ModelAndView archivedDataReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
-        String jspPath = SimpleReportViewJsp.ARCHIVED_DATA_REPORT.getJspPath();
-        ModelAndView mav = new ModelAndView(jspPath);
+        ModelAndView mav = new ModelAndView("reports/htmlArchivedDataReportView.jsp");
         
         // model stuff
         String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
@@ -67,8 +65,7 @@ public class AMRReportsController extends MultiActionController  {
     public ModelAndView bulkImportResultsReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
-        String jspPath = SimpleReportViewJsp.BULK_IMPORT_RESULTS.getJspPath();
-        ModelAndView mav = new ModelAndView(jspPath);
+        ModelAndView mav = new ModelAndView("reports/htmlBulkImportResultsView.jsp");
         
         // model stuff
         String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
@@ -95,8 +92,7 @@ public class AMRReportsController extends MultiActionController  {
     public ModelAndView groupDevicesReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
-        String jspPath = SimpleReportViewJsp.GROUP_DEVICES.getJspPath();
-        ModelAndView mav = new ModelAndView(jspPath);
+        ModelAndView mav = new ModelAndView("reports/htmlGroupDevicesReportView.jsp");
         
         // model stuff
         String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
