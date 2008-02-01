@@ -408,6 +408,11 @@
     <bean id="simpleReportLinkFromModelTagPrototype" class="com.cannontech.web.reports.SimpleReportLinkFromModelTag">
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
     </bean>
+    
+    <bean id="cachingWidgetParameterHelper" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterHelperImpl" scope="session">
+       <property name="maxCacheSize" value="50" />
+       <aop:scoped-proxy/>
+    </bean>
 
     <bean id="trendWidget"
     	class="com.cannontech.web.widget.TrendWidget">
@@ -421,6 +426,7 @@
         <property name="deviceDao" ref="deviceDao" />
         <property name="attributeService" ref="attributeService" />
         <property name="dateFormattingService" ref="dateFormattingService" />
+        <property name="cachingWidgetParameterHelper" ref="cachingWidgetParameterHelper" />
         <property name="supportedAttributeGraphSet">
 			<set>
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">

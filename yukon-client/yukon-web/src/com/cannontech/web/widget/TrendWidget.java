@@ -38,15 +38,21 @@ public class TrendWidget extends WidgetControllerBase {
     private AttributeService attributeService = null;
     private Map<String, AttributeGraphType> supportedAttributeGraphMap = null;
     private DateFormattingService dateFormattingService = null;
+    private CachingWidgetParameterHelper cachingWidgetParameterHelper = null;
+    
+    private final String PARAMETER_CACHE_ID = "trendwidget";
 
+    @Required
     public void setDeviceDao(DeviceDao paoDao) {
         this.deviceDao = paoDao;
     }
 
+    @Required
     public void setAttributeService(AttributeService attributeService) {
         this.attributeService = attributeService;
     }
 
+    @Required
     public void setSupportedAttributeGraphSet(Set<AttributeGraphType> supportedAttributeGraphSet) {
         supportedAttributeGraphMap = new HashMap<String, AttributeGraphType>();
         for (AttributeGraphType agt : supportedAttributeGraphSet) {
@@ -55,22 +61,21 @@ public class TrendWidget extends WidgetControllerBase {
     }
 
     @Required
-    public DateFormattingService getDateFormattingService() {
-        return dateFormattingService;
-    }
-
     public void setDateFormattingService(
             DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
     }
 
+    @Required
+    public void setCachingWidgetParameterHelper(CachingWidgetParameterHelper cachingWidgetParameterHelper) {
+        this.cachingWidgetParameterHelper = cachingWidgetParameterHelper;
+    }
+    
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
 
         ModelAndView mav = new ModelAndView();
         
-        CachingWidgetParameterHelper cachingWidgetParameterHelper = new CachingWidgetParameterHelper(request, "trendWidget");
-
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
         // Get lite pao
@@ -78,7 +83,7 @@ public class TrendWidget extends WidgetControllerBase {
         YukonDevice device = deviceDao.getYukonDevice(deviceId);
 
         // Get the selected attribute graph
-        String selectedAttributeLabel = cachingWidgetParameterHelper.getStringParameter("selectedAttributeLabel", null, deviceId);
+        String selectedAttributeLabel = cachingWidgetParameterHelper.getCachedStringParameter(request, "selectedAttributeLabel", null, PARAMETER_CACHE_ID);
         
         AttributeGraphType selectedAttributeGraph = supportedAttributeGraphMap.get(selectedAttributeLabel);
 
@@ -112,7 +117,7 @@ public class TrendWidget extends WidgetControllerBase {
 
             // graph type (line/column)
             String defaultGraphType = selectedAttributeGraph.getGraphType().toString();
-            String graphTypeString = cachingWidgetParameterHelper.getStringParameter("graphType", defaultGraphType, deviceId);
+            String graphTypeString = cachingWidgetParameterHelper.getCachedStringParameter(request, "graphType", defaultGraphType, PARAMETER_CACHE_ID);
 
 
 
@@ -124,13 +129,11 @@ public class TrendWidget extends WidgetControllerBase {
             }
 
             // period
-            String periodString = cachingWidgetParameterHelper.getStringParameter("period", "YEAR", deviceId);
+            String periodString = cachingWidgetParameterHelper.getCachedStringParameter(request, "period", "YEAR", PARAMETER_CACHE_ID);
             
             
             ChartPeriod period = ChartPeriod.valueOf(periodString);
 
-            
-            
             // default end date (today)
             Calendar endDateCal = dateFormattingService.getCalendar(userContext);
             Date endDate = new Date();
@@ -160,8 +163,8 @@ public class TrendWidget extends WidgetControllerBase {
             // if no period, re adjust
             if (periodString.equals("NOPERIOD")) {
 
-                String startDateParam = cachingWidgetParameterHelper.getStringParameter("startDateParam", "", deviceId);
-                String endDateParam = cachingWidgetParameterHelper.getStringParameter("endDateParam", "", deviceId);
+                String startDateParam = cachingWidgetParameterHelper.getCachedStringParameter(request, "startDateParam", "", PARAMETER_CACHE_ID);
+                String endDateParam = cachingWidgetParameterHelper.getCachedStringParameter(request, "endDateParam", "", PARAMETER_CACHE_ID);
 
                 if (!startDateParam.equals("")) {
 
@@ -184,6 +187,10 @@ public class TrendWidget extends WidgetControllerBase {
                                                                   DateFormattingService.DateFormatEnum.DATE,
                                                                   userContext);
                 }
+            }
+            else {
+                cachingWidgetParameterHelper.removeFromCache("startDateParam", PARAMETER_CACHE_ID);
+                cachingWidgetParameterHelper.removeFromCache("endDateParam", PARAMETER_CACHE_ID);
             }
 
             // set mav

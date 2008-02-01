@@ -397,7 +397,7 @@ public abstract class WidgetParameterHelper {
     }
 
 
-    private static class IntParser extends ParameterParser {
+    public static class IntParser extends ParameterParser {
 
         protected String getType() {
             return "int";
@@ -414,7 +414,7 @@ public abstract class WidgetParameterHelper {
     }
 
 
-    private static class LongParser extends ParameterParser {
+    public static class LongParser extends ParameterParser {
 
         protected String getType() {
             return "long";
@@ -431,7 +431,7 @@ public abstract class WidgetParameterHelper {
     }
 
 
-    private static class FloatParser extends ParameterParser {
+    public static class FloatParser extends ParameterParser {
 
         protected String getType() {
             return "float";
@@ -448,7 +448,7 @@ public abstract class WidgetParameterHelper {
     }
 
 
-    private static class DoubleParser extends ParameterParser {
+    public static class DoubleParser extends ParameterParser {
 
         protected String getType() {
             return "double";
@@ -465,7 +465,7 @@ public abstract class WidgetParameterHelper {
     }
 
 
-    private static class BooleanParser extends ParameterParser {
+    public static class BooleanParser extends ParameterParser {
 
         protected String getType() {
             return "boolean";
