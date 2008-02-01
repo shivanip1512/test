@@ -38,12 +38,12 @@ public class CapControlNewActivityModel extends ReportModelBase
 
 
 	/** String values for column representation */
-	public final static String SUB_NAME_STRING = "Sub Name";
-	public final static String FEEDER_NAME_STRING = "Feeder Name";
+	public final static String SUB_NAME_STRING = "Substation Bus";
+	public final static String FEEDER_NAME_STRING = "Feeder";
 	public final static String DATE_TIME_STRING = "Date/Time";
-	public final static String CAP_BANK_NAME_STRING = "CapBank Name";
-	public final static String BANK_SIZE_STRING = "Bank Size";
-	public final static String CBC_NAME_STRING = "CBC Name";
+	public final static String CAP_BANK_NAME_STRING = "Cap Bank";
+	public final static String BANK_SIZE_STRING = "Cap Bank Size";
+	public final static String CBC_NAME_STRING = "CBC";
 	public final static String ACTION_STRING = "Action";
 	public final static String DESCRIPTION_STRING = "Description";
 	/** Class fields */
@@ -304,8 +304,8 @@ public class CapControlNewActivityModel extends ReportModelBase
 				new ColumnProperties(0, 1, 200, null),
 				new ColumnProperties(0, 1, 180, null),
 				new ColumnProperties(0, 1, 100, "MM/dd/yyyy  HH:mm:ss"),
-				new ColumnProperties(100, 1, 100, null),
-				new ColumnProperties(200, 1, 60, null),
+				new ColumnProperties(100, 1, 80, null),
+				new ColumnProperties(180, 1, 80, null),
 				new ColumnProperties(260, 1, 100, null),
 				new ColumnProperties(360, 1, 160, null),
 				new ColumnProperties(520, 1, 180, null)
@@ -319,7 +319,7 @@ public class CapControlNewActivityModel extends ReportModelBase
 	 */
 	public String getTitleString()
 	{
-		return "Cap Control - New Activity Report";
+		return "Cap Control New Activity Report";
 	}
 	
 	/**

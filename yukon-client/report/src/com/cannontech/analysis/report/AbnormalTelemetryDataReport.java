@@ -20,9 +20,8 @@ import org.jfree.report.elementfactory.TextFieldElementFactory;
 import org.jfree.ui.FloatDimension;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.analysis.tablemodel.AbnormalTelemetryDataModel;
-import com.cannontech.analysis.tablemodel.CapControlNewActivityModel;
+import com.cannontech.analysis.tablemodel.BareReportModel;
 
 public class AbnormalTelemetryDataReport extends SimpleYukonReportBase {
     
@@ -30,18 +29,18 @@ public class AbnormalTelemetryDataReport extends SimpleYukonReportBase {
     private static final ColumnLayoutData FEEDER_COLUMN = new ColumnLayoutData("Feeder", "feederName", 200);
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         SUBSTATION_COLUMN,
-        new ColumnLayoutData("Sub Var Point", "subVarPoint", 65),
+        new ColumnLayoutData("Substation Bus Var Point", "subVarPoint", 65),
         new ColumnLayoutData("Quality", "subVarQuality", 60),
-        new ColumnLayoutData("Sub Volt Point", "subVoltPoint", 65),
+        new ColumnLayoutData("Substation Bus Volt Point", "subVoltPoint", 65),
         new ColumnLayoutData("Quality", "subVoltQuality", 60),
-        new ColumnLayoutData("Sub Watt Point", "subWattPoint", 70),
+        new ColumnLayoutData("Substation Bus Watt Point", "subWattPoint", 70),
         new ColumnLayoutData("Quality", "subWattQuality", 60),
         FEEDER_COLUMN,
-        new ColumnLayoutData("Var Point", "varPoint", 60),
+        new ColumnLayoutData("Var Point Feeder", "varPoint", 60),
         new ColumnLayoutData("Quality", "fdrVarQuality", 60),
-        new ColumnLayoutData("Volt Point", "voltPoint", 60),
+        new ColumnLayoutData("Volt Point Feeder", "voltPoint", 60),
         new ColumnLayoutData("Quality", "fdrVoltQuality", 60),
-        new ColumnLayoutData("Watt Point", "wattPoint", 60),
+        new ColumnLayoutData("Watt Point Feeder", "wattPoint", 60),
         new ColumnLayoutData("Quality", "fdrWattQuality", 60)
     };
 
@@ -61,7 +60,7 @@ public class AbnormalTelemetryDataReport extends SimpleYukonReportBase {
     private Group createSubFeederGroup()
     {
         final Group subFeederGroup = new Group();
-        subFeederGroup.setName("substationBus"+ ReportFactory.NAME_GROUP);
+        subFeederGroup.setName("substation Bus"+ ReportFactory.NAME_GROUP);
         subFeederGroup.addField("substationBus");
         subFeederGroup.addField("feederName");
         
@@ -84,14 +83,14 @@ public class AbnormalTelemetryDataReport extends SimpleYukonReportBase {
         
         factory = ReportFactory.createGroupLabelElementDefault(cldFeeder.getColumnName(), 80.0f, 18.0f, cldFeeder.getWidth());
         factory.setText("Feeder: ");
-        factory.setAbsolutePosition(new Point2D.Float(0, 18) ); //override location, need to be lower than macroroute text      
+        factory.setAbsolutePosition(new Point2D.Float(0, 16) ); //override location, need to be lower than macroroute text      
         header.addElement(factory.createElement());
         
         tfactory = ReportFactory.createGroupTextFieldElementDefault(point2DFeeder, cldFeeder);
-        tfactory.setAbsolutePosition(new Point2D.Float(80, 18));    //override posX
+        tfactory.setAbsolutePosition(new Point2D.Float(80, 16));    //override posX
         header.addElement(tfactory.createElement());
 
-        header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 38));
+        header.addElement(ReportFactory.createBasicLine("rmGroupLine", 0.5f, 34));
         
         for (int i = AbnormalTelemetryDataModel.SUB_VAR_COLUMN; i < bodyColumns.length; i++) {
             if( i == AbnormalTelemetryDataModel.FEEDER_NAME_COLUMN) continue; // skip the feeder column
