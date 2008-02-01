@@ -111,7 +111,7 @@ public class CapControlDisabledDevicesController extends CapControlReportControl
         html += "</td>" + LINE_SEPARATOR;
         html += "</tr>" + LINE_SEPARATOR;
         html += "<tr>" + LINE_SEPARATOR;
-        html += "<td><input type='checkbox' name='"+ATT_DEVICE_TYPES+"' value='Sub Bus' checked>Sub Bus"+ LINE_SEPARATOR;
+        html += "<td><input type='checkbox' name='"+ATT_DEVICE_TYPES+"' value='Sub Bus' checked>Substation Bus"+ LINE_SEPARATOR;
         html += "</td>" + LINE_SEPARATOR;
         html += "</tr>" + LINE_SEPARATOR;
         html += "<tr>" + LINE_SEPARATOR;

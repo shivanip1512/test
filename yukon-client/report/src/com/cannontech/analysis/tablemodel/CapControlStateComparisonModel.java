@@ -51,7 +51,7 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
     }
     
     public String getTitle() {
-        return "CapControl State Comparison Report";
+        return "Cap Control State Comparison Report";
     }
 
     public int getRowCount() {

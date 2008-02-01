@@ -27,21 +27,21 @@ public class CapBankListModel extends ReportModelBase
 	public final static int SUB_NAME_COLUMN = 7;
 	
 	/** String values for column representation */
-	public final static String CB_NAME_STRING = "Bank Name";
+	public final static String CB_NAME_STRING = "Cap Bank";
 	public final static String ADDRESS_STRING  = "Address";
-	public final static String CB_SIZE_STRING = "Size";
-	public final static String CBC_NAME_STRING = "CBC Name";
+	public final static String CB_SIZE_STRING = "Cap Bank Size";
+	public final static String CBC_NAME_STRING = "CBC";
 	public final static String CBC_TYPE_STRING = "Type";
 	public final static String CB_SERIAL_NAME_STRING = "Serial #";
 	public final static String FEEDER_NAME_STRING = "Feeder";
-	public final static String SUB_NAME_STRING = "Subbus";
+	public final static String SUB_NAME_STRING = "Substation Bus";
 
 	private String orderBy = null;
 
 	protected static final String ATT_ORDER_BY = "orderBy";
 
 	/** A string for the title of the data */
-	private static String title = "Capacitor Bank Details Report";
+	private static String title = "Cap Bank Details Report";
 		
 	/**
 	 * Constructor.
@@ -272,9 +272,9 @@ public class CapBankListModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				//posX, posY, width, height, numberFormatString
-				new ColumnProperties(0, 1, 110, null),
-				new ColumnProperties(110, 1, 120, null),
-				new ColumnProperties(230, 1, 40, null),
+				new ColumnProperties(0, 1, 75, null),
+				new ColumnProperties(75, 1, 120, null),
+				new ColumnProperties(195, 1, 75, null),
 				new ColumnProperties(270, 1, 110, null),
 				new ColumnProperties(380, 1, 80, null),
 				new ColumnProperties(460, 1, 60, null),

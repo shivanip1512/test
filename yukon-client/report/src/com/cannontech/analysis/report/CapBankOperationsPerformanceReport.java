@@ -9,10 +9,10 @@ import com.cannontech.analysis.tablemodel.CapControlOperationsModel;
 public class CapBankOperationsPerformanceReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("Bank Name", "bankName", 80),
-        new ColumnLayoutData("Cbc Name", "cbcName", 80),
-        new ColumnLayoutData("Feeder Name", "feederName", 80),
-        new ColumnLayoutData("Sub Name", "subName", 80),
+        new ColumnLayoutData("Cap Bank", "bankName", 80),
+        new ColumnLayoutData("CBC", "cbcName", 80),
+        new ColumnLayoutData("Feeder", "feederName", 80),
+        new ColumnLayoutData("Substation Bus", "subName", 80),
         new ColumnLayoutData("Area", "region", 180),
         new ColumnLayoutData("Status", "text", 80),
         new ColumnLayoutData("Status Count", "qCount", 40),

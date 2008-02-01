@@ -55,7 +55,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     }
     
     public String getTitle() {
-        return "CapControl Disabled Devices Report";
+        return "Cap Control Disabled Devices Report";
     }
 
     public int getRowCount() {

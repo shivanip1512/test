@@ -8,8 +8,8 @@ import com.cannontech.analysis.tablemodel.CapControlMaintenancePendingModel;
 public class CapControlMaintenancePendingReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("CBC Name", "cbcName", 60),
-        new ColumnLayoutData("CapBank Name", "capBankName", 80),
+        new ColumnLayoutData("CBC", "cbcName", 60),
+        new ColumnLayoutData("Cap Bank", "capBankName", 80),
         new ColumnLayoutData("Address", "address", 80),
         new ColumnLayoutData("Driving Directions", "drivingDirections", 90),
         new ColumnLayoutData("Maintenance Area", "maintenanceAreaId", 90),

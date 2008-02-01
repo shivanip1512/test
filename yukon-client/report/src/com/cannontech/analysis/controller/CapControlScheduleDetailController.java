@@ -26,7 +26,7 @@ public class CapControlScheduleDetailController extends CapControlReportControll
     private TimeZone timeZone = TimeZone.getDefault();
     protected static final String ATT_ORDERBY = "orderBy";
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
-    private String[] orderByTypes = {"Schedule", "Sub Bus", "Feeder", "Outgoing Command", "Last Run Time", "Interval"};
+    private String[] orderByTypes = {"Schedule", "Substation Bus", "Feeder", "Outgoing Command", "Last Run Time", "Interval"};
     
     public CapControlScheduleDetailController() {
         super();

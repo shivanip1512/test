@@ -47,7 +47,7 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     }
     
     public String getTitle() {
-        return "CapBank Max Ops Alarms Report";
+        return "Cap Bank Max Ops Alarms Report";
     }
 
     public int getRowCount() {

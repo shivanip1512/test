@@ -44,7 +44,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	/** String values for column representation */
 	public final static String CAP_BANK_NAME_STRING = "Cap Bank";
 	public final static String SUB_BUS_NAME_STRING = "Substation Bus";
-	public final static String FEEDER_NAME_STRING = "Cap Feeder";
+	public final static String FEEDER_NAME_STRING = "Feeder";
 	public final static String CONTROL_STATUS_STRING = "Status";
 	public final static String LAST_STATUS_CHANGE_TIME_STRING  = "Status Changed Date/Time";
     public final static String OPERATIONAL_STATE_STRING = "Operational State";
@@ -52,7 +52,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
     
     public static final String[] ORDER_TYPE_STRINGS =
     {
-        "Order by Substation",
+        "Order by Substation Bus",
         "Order by Disabled",
         "Order by Operation Method",
         "Order by Status",
@@ -71,7 +71,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
     protected static final String ATT_ORDER_BY = "orderBy";
 	
 	/** A string for the title of the data */
-	private static String title = "Current Bank Status Report";
+	private static String title = "Cap Control Current Status Report";
 	private AuthDao authDao = DaoFactory.getAuthDao();
 	LiteYukonUser user = null;
 		

@@ -39,9 +39,7 @@ public class CapControlVarChangeController extends CapControlReportControllerBas
         html += "    <td valign='top'>" + LINE_SEPARATOR;
         html += "      <table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
         html += "        <tr>" + LINE_SEPARATOR;
-        html += "          <td valign='top' class='TitleHeader'>Query Options</td>" +LINE_SEPARATOR;
-        html += "        </tr>" + LINE_SEPARATOR;
-        html += "          <td>Percent change > than: <input type='text' name='" + ATT_QUERY_PERCENT +"' value='100' size='3'>";
+        html += "          <td>Var Percent change greater than: <input type='text' name='" + ATT_QUERY_PERCENT +"' value='100' size='3'>";
         html += "          </td>" + LINE_SEPARATOR;
         html += "        </tr>" + LINE_SEPARATOR;
         html += "      </table>" + LINE_SEPARATOR;

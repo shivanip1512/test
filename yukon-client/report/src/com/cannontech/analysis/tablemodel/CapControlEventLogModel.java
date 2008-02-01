@@ -39,7 +39,7 @@ public class CapControlEventLogModel extends ReportModelBase
 	
 	/** String values for column representation */
 	public final static String SUB_BUS_NAME_STRING = "Substation Bus";
-	public final static String FEEDER_NAME_STRING = "Cap Feeder";
+	public final static String FEEDER_NAME_STRING = "Feeder";
 	public final static String CAP_BANK_NAME_STRING = "Cap Bank";
 	public final static String EVENT_DATE_TIME_STRING  = "Event Date/Time";
 	public final static String STATUS_VALUE_STRING = "Status";
@@ -407,7 +407,7 @@ public class CapControlEventLogModel extends ReportModelBase
 		html += "          <td class='TitleHeader'>&nbsp;Schedule Activity Detail</td>" +LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;
-		html += "          <td><input type='radio' name='"+ATT_SCHEDULE_ACTIVITY +"' value='false' checked onclick='enableStates(document.reportForm, false);'>Ending Bank Status Activity" + LINE_SEPARATOR;
+		html += "          <td><input type='radio' name='"+ATT_SCHEDULE_ACTIVITY +"' value='false' checked onclick='enableStates(document.reportForm, false);'>Ending Cap Bank Status Activity" + LINE_SEPARATOR;
 		html += "          </td>" + LINE_SEPARATOR;
 		html += "        </tr>" + LINE_SEPARATOR;
 		html += "        <tr>" + LINE_SEPARATOR;

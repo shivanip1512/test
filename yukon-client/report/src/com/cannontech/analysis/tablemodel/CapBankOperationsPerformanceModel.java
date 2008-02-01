@@ -53,7 +53,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
     }
     
     public String getTitle() {
-        return "CapBank Operations Performance Report";
+        return "Cap Bank Operations Performance Report";
     }
 
     public int getRowCount() {

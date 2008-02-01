@@ -60,7 +60,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     }
     
     public String getTitle() {
-        return "CapControl Operations Report";
+        return "Cap Control Operations Report";
     }
 
     public int getRowCount() {

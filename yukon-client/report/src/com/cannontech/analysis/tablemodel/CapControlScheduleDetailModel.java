@@ -48,7 +48,7 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
     }
     
     public String getTitle() {
-        return "CapControl Schedule Detail Report";
+        return "Cap Control Schedule Detail Report";
     }
 
     public int getRowCount() {

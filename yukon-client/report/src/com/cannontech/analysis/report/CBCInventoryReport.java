@@ -9,17 +9,17 @@ import com.cannontech.analysis.tablemodel.CBCInventoryModel;
 public class CBCInventoryReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
-        new ColumnLayoutData("CBC Name", "cbcName", 60),
+        new ColumnLayoutData("CBC", "cbcName", 60),
         new ColumnLayoutData("IP Address", "ipAddress", 60),
         new ColumnLayoutData("Slave Address", "slaveAddress", 60),
         new ColumnLayoutData("Protocol", "protocol", 60),
         new ColumnLayoutData("Area", "region", 60),
-        new ColumnLayoutData("Sub Name", "subName", 60),
-        new ColumnLayoutData("Feeder Name", "feederName", 60),
-        new ColumnLayoutData("Bank Name", "bankName", 60),
-        new ColumnLayoutData("Bank Size", "bankSize", 60),
+        new ColumnLayoutData("Substation Bus", "subName", 60),
+        new ColumnLayoutData("Feeder", "feederName", 60),
+        new ColumnLayoutData("Cap Bank", "bankName", 60),
+        new ColumnLayoutData("Cap Bank Size", "bankSize", 60),
         new ColumnLayoutData("Control Type", "controlType", 60),
-        new ColumnLayoutData("Directions", "driveDirections", 60),
+        new ColumnLayoutData("Address", "driveDirections", 60),
     };
 
     public CBCInventoryReport(BareReportModel bareModel) {

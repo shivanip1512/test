@@ -42,7 +42,7 @@ public class CapControlOperationsController extends CapControlReportControllerBa
         String html = "";
         html += "<table width='100%' border='0' cellspacing='0' cellpadding='0' class='TableCell' checked>" + LINE_SEPARATOR;
         html += "<tr>" + LINE_SEPARATOR;
-        html += "<td class='TitleHeader'>&nbsp;Bank Status Quality</td>" +LINE_SEPARATOR;
+        html += "<td class='TitleHeader'>&nbsp;Cap Bank Status Quality</td>" +LINE_SEPARATOR;
         html += "</tr>" + LINE_SEPARATOR;
         html += "<tr>" + LINE_SEPARATOR;
         html += "<td><input type='checkbox' name='"+ATT_STATUS_QUALITIES+"' value='Normal' checked>Normal"+ LINE_SEPARATOR;

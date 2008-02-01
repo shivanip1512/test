@@ -53,7 +53,7 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
     }
     
     public String getTitle() {
-        return "CapControl Var Change Report";
+        return "Cap Control Var Change Report";
     }
 
     public int getRowCount() {

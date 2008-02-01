@@ -10,7 +10,7 @@ public class CBCOrderByTreeModel extends CheckBoxDBTreeModel
 {
 	public static final String[] ORDER_TYPE_STRINGS =
 	{
-		"Order by CapBank",
+		"Order by Cap Bank",
 		"Order by Feeder",
 		"Order by Substation Bus",
 		"Order by Size"

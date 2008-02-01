@@ -11,9 +11,9 @@ public class CapBankMaxOpsAlarmsReport extends SimpleYukonReportBase {
         
     	new ColumnLayoutData("Area Name", "areaName", 80),
         new ColumnLayoutData("Substation Name", "substationName", 80),
-        new ColumnLayoutData("Substation Bus Name", "subBusName", 80),
-        new ColumnLayoutData("Feeder Name", "feederName", 80),
-    	new ColumnLayoutData("CapBank Name", "capBankName", 80),
+        new ColumnLayoutData("Substation Bus Name", "subBusName", 120),
+        new ColumnLayoutData("Feeder", "feederName", 80),
+    	new ColumnLayoutData("Cap Bank", "capBankName", 80),
         new ColumnLayoutData("Max Daily Ops", "maxDailyOps", 80)
     };
 

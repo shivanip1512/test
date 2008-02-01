@@ -34,10 +34,10 @@ public class MaxDailyOpsModel extends ReportModelBase {
     
     /** String values for column representation */
     public final static String REGION_STRING = "Area";
-    public final static String SUB_NAME_STRING = "Sub Name";
+    public final static String SUB_NAME_STRING = "Substation Bus";
     public final static String FEEDER_NAME_STRING = "Feeder";
     public final static String CBC_NAME_STRING = "CBC";
-    public final static String CAP_NAME_STRING = "Cap";
+    public final static String CAP_NAME_STRING = "Cap Bank";
     public final static String CURRENT_WEEK_STRING = "Current Week";
     public final static String PREV_WEEK_1_STRING = "Prev Week 1";
     public final static String PREV_WEEK_2_STRING = "Prev Week 2";

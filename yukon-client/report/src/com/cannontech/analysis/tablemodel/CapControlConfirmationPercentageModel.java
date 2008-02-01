@@ -189,7 +189,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
     }
 
     public String getTitle() {
-        return "CapControl Confirmation Percentage Report";
+        return "Cap Control Confirmation Percentage Report";
     }
     
 }

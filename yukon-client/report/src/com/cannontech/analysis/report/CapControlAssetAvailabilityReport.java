@@ -11,9 +11,9 @@ public class CapControlAssetAvailabilityReport extends SimpleYukonReportBase {
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Area", "area", 100),
         new ColumnLayoutData("Substation", "substation", 100),
-        new ColumnLayoutData("Subbus", "subbus", 100),
+        new ColumnLayoutData("Substation Bus", "subbus", 100),
         new ColumnLayoutData("Feeder", "feeder", 100),
-        new ColumnLayoutData("Sub Count", "subcount", 100),
+        new ColumnLayoutData("Substation Bus Count", "subcount", 100),
         new ColumnLayoutData("Feeder Count", "feedcount", 100)
     };
 

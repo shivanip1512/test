@@ -58,7 +58,7 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 			RTU("RTU"),
 			CAPCONTROLSUBBUS("Substation Bus"),
             CAPCONTROLSUBSTATION("Substation"),
-			CAPCONTROLFEEDER("Cap Feeder"),
+			CAPCONTROLFEEDER("Feeder"),
 			CAPBANK("Cap Bank"),
             SCHEDULE("Schedule (Script)"),
             AREA("Area"),
@@ -360,7 +360,7 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 	 */
 	public String getHTMLOptionsTable()
 	{
-		String html = "N/A";
+		String html = "";
 //		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell' height='100%'>" + LINE_SEPARATOR;
 //		html += "  <tr>" + LINE_SEPARATOR;
 //		html += "    <td align='center' valign='middle'>None" + LINE_SEPARATOR;
