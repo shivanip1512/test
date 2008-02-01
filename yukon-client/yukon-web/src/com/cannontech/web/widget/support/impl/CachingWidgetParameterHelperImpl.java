@@ -30,7 +30,7 @@ public class CachingWidgetParameterHelperImpl implements CachingWidgetParameterH
         return paramPrefix + "." + name + "." + StringUtils.join(uniqueIdentifiers, ".");
     }
     
-    public Object getCachedParameter(HttpServletRequest request, String name, Object defaultVal, Object...uniqueIdentifiers) {
+    public synchronized Object getCachedParameter(HttpServletRequest request, String name, Object defaultVal, Object...uniqueIdentifiers) {
         
         Object foundVal = defaultVal;
         Boolean doCache = false;
