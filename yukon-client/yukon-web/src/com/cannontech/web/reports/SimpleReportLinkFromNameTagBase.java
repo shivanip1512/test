@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.PageContext;
+import javax.servlet.jsp.tagext.DynamicAttributes;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -20,7 +21,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.input.InputRoot;
 import com.cannontech.web.taglib.YukonTagSupport;
 
-public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport{
+public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport implements DynamicAttributes{
     
     private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     private SimpleReportService simpleReportService;
