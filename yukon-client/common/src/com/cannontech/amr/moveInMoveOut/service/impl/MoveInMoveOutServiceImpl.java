@@ -295,7 +295,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
         if (autoArchivingEnabled) {
 
-            String sql = " INSERT INTO DeviceEvent (DeviceId, Timestamp, Comment) " + " VALUES (?, ?, ?)";
+            String sql = " INSERT INTO DeviceEvent (DeviceId, Timestamp, DeviceEventComment) " + " VALUES (?, ?, ?)";
 
             jdbcTemplate.update(sql,
                                 oldMeter.getDeviceId(),
