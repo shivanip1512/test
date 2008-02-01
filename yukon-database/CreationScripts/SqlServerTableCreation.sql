@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/31/2008 11:03:11 PM                        */
+/* Created on:     1/31/2008 11:16:53 PM                        */
 /*==============================================================*/
 
 
@@ -3609,6 +3609,7 @@ create table CAPCONTROLSUBSTATIONBUS (
    usephasedata         char(1)              not null,
    phaseb               numeric              not null,
    phasec               numeric              not null,
+   ControlFlag          char(1)              not null,
    constraint SYS_C0013476 primary key (SubstationBusID)
 )
 go
@@ -4189,6 +4190,7 @@ create table CapControlFeeder (
    usephasedata         char(1)              not null,
    phaseb               numeric              not null,
    phasec               numeric              not null,
+   ControlFlag          char(1)              not null,
    constraint PK_CAPCONTROLFEEDER primary key (FeederID)
 )
 go

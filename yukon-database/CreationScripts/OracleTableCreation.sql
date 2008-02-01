@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     1/31/2008 11:01:49 PM                        */
+/* Created on:     1/31/2008 11:18:11 PM                        */
 /*==============================================================*/
 
 
@@ -1354,6 +1354,7 @@ create table CAPCONTROLSUBSTATIONBUS  (
    usephasedata         CHAR(1)                         not null,
    phaseb               NUMBER                          not null,
    phasec               NUMBER                          not null,
+   ControlFlag          CHAR(1)                         not null,
    constraint SYS_C0013476 primary key (SubstationBusID)
 );
 
@@ -1887,6 +1888,7 @@ create table CapControlFeeder  (
    usephasedata         CHAR(1)                         not null,
    phaseb               NUMBER                          not null,
    phasec               NUMBER                          not null,
+   ControlFlag          CHAR(1)                         not null,
    constraint PK_CAPCONTROLFEEDER primary key (FeederID)
 );
 

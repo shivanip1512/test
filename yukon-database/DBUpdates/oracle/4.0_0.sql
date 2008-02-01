@@ -1334,6 +1334,16 @@ update cceventlog set cVar = 0;
 alter table cceventlog modify cVar float not null;
 /* End YUK-5621 */
 
+/* Start YUK-5263 */
+alter table capcontrolfeeder add controlFlag varchar(1);
+update capcontrolfeeder set controlFlag = 'N';
+alter table capcontrolfeeder modify controlFlag varchar(1) not null;
+
+alter table capcontrolsubstationbus add controlFlag varchar(1);
+update capcontrolsubstationbus set controlFlag = 'N';
+alter table capcontrolsubstationbus modify controlFlag varchar(1) not null; 
+/* End YUK-5263 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
