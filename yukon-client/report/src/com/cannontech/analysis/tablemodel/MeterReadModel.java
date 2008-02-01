@@ -5,11 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,6 +22,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.util.NaturalOrderComparator;
 
 /**
  * Created on Dec 15, 2003
@@ -201,7 +200,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
     private SqlStatementBuilder buildWhereClause(String columnName) {
         SqlStatementBuilder sqlWhere = new SqlStatementBuilder();
         if (getPaoIDs() != null && getPaoIDs().length > 0) {
-            sqlWhere.append(" AND ",columnName, "IN (", getPaoIDs(), ") ");
+        	sqlWhere.append(" AND ",columnName, "IN (", getPaoIDs(), ") ");
         }
         
         if (getBillingGroups() != null && getBillingGroups().length > 0) {
@@ -555,8 +554,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         }
         else if( getOrderBy() == ORDER_BY_METER_NUMBER)
         {
-            thisVal = o1.getMeter().getMeterNumber();
-            anotherVal = o2.getMeter().getMeterNumber();
+            NaturalOrderComparator noComp = new NaturalOrderComparator(); 
+            return noComp.compare(o1.getMeter().getMeterNumber(), o2.getMeter().getMeterNumber()); 
         }
         if (getOrderBy() == ORDER_BY_DEVICE_NAME || thisVal.equalsIgnoreCase(anotherVal))
         {

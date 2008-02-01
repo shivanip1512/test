@@ -21,6 +21,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.NaturalOrderComparator;
 
 public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implements Comparator<StarsAMRDetail>
 {
@@ -499,8 +500,8 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
         }
         if( tempOrderBy == ORDER_BY_METER_NUMBER)
         {
-            thisVal = mpData1.getMeter().getMeterNumber();
-            anotherVal = mpData2.getMeter().getMeterNumber();
+            NaturalOrderComparator noComp = new NaturalOrderComparator(); 
+            return noComp.compare(mpData1.getMeter().getMeterNumber(), mpData2.getMeter().getMeterNumber());
         }
         
         return thisVal.compareToIgnoreCase(anotherVal);

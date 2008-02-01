@@ -2,6 +2,8 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 
@@ -10,12 +12,15 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.data.device.LPMeterData;
+import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.NaturalOrderComparator;
 
 public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadModel.ScheduledMeterReadRow>
 {
@@ -245,26 +250,105 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 		else if( getStatusCodeType() == StatusCodeType.SUCCESS_METER_READ_TYPE)
 			sql.append(" AND DRL.STATUSCODE = 0");
 
-		sql.append(" ORDER BY DRJL.STARTTIME, DRJL.STOPTIME, SCHEDULE.PAONAME ");
-		
-		//Order by the GroupBy option, this order is necessary for the Report to group additionally by Request
-		if (getGroupBy() == GroupBy.GROUP_BY_SCHEDULE_REQUESTS) {
-			sql.append(" , DRRL.STARTTIME, DRRL.STOPTIME " );
-		}			
-
-		//Order by the OrderBy option, this order is necessary for the ordering of the item band
-		if (getOrderBy() == OrderBy.ORDER_BY_DEVICE_NAME)
-			sql.append(" , PAO.PAONAME, TIMESTAMP " );
-		else if (getOrderBy() == OrderBy.ORDER_BY_METER_NUMBER)
-			sql.append(" , DMG.METERNUMBER, TIMESTAMP " );
-		else if (getOrderBy() == OrderBy.ORDER_BY_ROUTE_NAME)
-			sql.append(" , ROUTE.PAONAME, PAO.PAONAME, TIMESTAMP " );
-		else if (getOrderBy() == OrderBy.ORDER_BY_STATUS_CODE)
-			sql.append(" , MRL.STATUSCODE, PAO.PAONAME, TIMESTAMP " );
-
 		return sql;
 	}	
 	
+    public Comparator scheduledMeterReadComparator = new java.util.Comparator<ScheduledMeterReadRow>()
+    {
+        public int compare(ScheduledMeterReadRow smr1, ScheduledMeterReadRow smr2){
+            int tempCompareValue = 0;
+            NaturalOrderComparator noComp = new NaturalOrderComparator(); 
+            
+            tempCompareValue = smr1.scheduleStartTime.compareTo(smr2.scheduleStartTime);
+            if (tempCompareValue != 0) {
+                return tempCompareValue;
+            }
+
+            tempCompareValue = smr1.scheduleStopTime.compareTo(smr2.scheduleStopTime);
+            if (tempCompareValue != 0) {
+                return tempCompareValue;
+            }
+
+            tempCompareValue = smr1.scheduleName.compareTo(smr2.scheduleName);
+            if (tempCompareValue != 0) {
+                return tempCompareValue;
+            }
+            
+            //Order by the GroupBy option, this order is necessary for the Report to group additionally by Request
+            if (getGroupBy() == GroupBy.GROUP_BY_SCHEDULE_REQUESTS) {
+                
+                tempCompareValue = smr1.requestStartTime.compareTo(smr2.requestStartTime);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+                
+                tempCompareValue = smr1.requestStopTime.compareTo(smr2.requestStopTime);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+                
+            }           
+
+            //Order by the OrderBy option, this order is necessary for the ordering of the item band
+            if (getOrderBy() == OrderBy.ORDER_BY_DEVICE_NAME) {
+                tempCompareValue = smr1.paoName.compareTo(smr2.paoName);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+        
+                tempCompareValue = smr1.readTimestamp.compareTo(smr2.readTimestamp);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+        
+            } else if (getOrderBy() == OrderBy.ORDER_BY_METER_NUMBER) {
+                tempCompareValue = noComp.compare(smr1.meterNumber, smr2.meterNumber);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+        
+                tempCompareValue = smr1.readTimestamp.compareTo(smr2.readTimestamp);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+        
+            } else if (getOrderBy() == OrderBy.ORDER_BY_ROUTE_NAME) {
+                tempCompareValue = smr1.routeName.compareTo(smr2.routeName);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+        
+                tempCompareValue = smr1.paoName.compareTo(smr2.paoName);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+        
+                tempCompareValue = smr1.readTimestamp.compareTo(smr2.readTimestamp);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+                
+            } else if (getOrderBy() == OrderBy.ORDER_BY_STATUS_CODE) {
+                tempCompareValue = smr1.statusCode.compareTo(smr2.statusCode);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+
+                tempCompareValue = smr1.paoName.compareTo(smr2.paoName);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+                
+                tempCompareValue = smr1.readTimestamp.compareTo(smr2.readTimestamp);
+                if (tempCompareValue != 0) {
+                    return tempCompareValue;
+                }
+            }
+
+            return 0;
+        }
+    };
+    
 	@Override
 	public void collectData() {
 		//Reset all objects, new data being collected!
@@ -295,6 +379,8 @@ public class ScheduledMeterReadModel extends ReportModelBase<ScheduledMeterReadM
 				while( rset.next()) {
 					addDataRow(rset);
 				}
+
+                Collections.sort(getData(), scheduledMeterReadComparator);
 			}
 		}
 		catch( java.sql.SQLException e ) {

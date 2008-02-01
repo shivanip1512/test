@@ -17,6 +17,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.util.NaturalOrderComparator;
 
 /**
  * Created on Dec 15, 2003
@@ -398,7 +399,8 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
         }
         
         if (getOrderBy() == ORDER_BY_METER_NUMBER) {
-            return mpData1.getMeter().getMeterNumber().compareTo(mpData2.getMeter().getMeterNumber());
+            NaturalOrderComparator noComp = new NaturalOrderComparator(); 
+            return noComp.compare(mpData1.getMeter().getMeterNumber(), mpData2.getMeter().getMeterNumber()); 
         }
         
         return mpData1.getMeter().getName().compareToIgnoreCase(mpData2.getMeter().getName());

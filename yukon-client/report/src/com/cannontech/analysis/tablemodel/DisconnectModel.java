@@ -24,6 +24,7 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.NaturalOrderComparator;
 
 /**
  * Created on Feb 18, 2004
@@ -555,7 +556,8 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
         } 
 
         if (getOrderBy() == ORDER_BY_METER_NUMBER) {
-            return o1.getMeter().getMeterNumber().compareTo(o2.getMeter().getMeterNumber());
+            NaturalOrderComparator noComp = new NaturalOrderComparator();
+            return noComp.compare(o1.getMeter().getMeterNumber(), o2.getMeter().getMeterNumber());
         }
 
         if (getOrderBy() == ORDER_BY_TIMESTAMP) {

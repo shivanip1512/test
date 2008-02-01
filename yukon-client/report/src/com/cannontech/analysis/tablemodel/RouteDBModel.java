@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.util.NaturalOrderComparator;
 
 public class RouteDBModel extends CarrierDBModel 
 {
@@ -49,8 +50,8 @@ public class RouteDBModel extends CarrierDBModel
 			if( thisVal.equalsIgnoreCase(anotherVal)) {
 				    
 			    if( getOrderBy() == ORDER_BY_METER_NUMBER) {
-			        thisVal = o1.getMeterNumber();
-					anotherVal = o2.getMeterNumber();
+                    NaturalOrderComparator noComp = new NaturalOrderComparator(); 
+                    return noComp.compare(o1.getMeterNumber(), o2.getMeterNumber()); 
 			    }
 	
 			    if (getOrderBy() == ORDER_BY_METER_NAME || thisVal.equalsIgnoreCase(anotherVal)) {

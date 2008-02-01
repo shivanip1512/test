@@ -25,6 +25,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.util.NaturalOrderComparator;
 
 @SuppressWarnings("unchecked")
 public class PointDataSummaryModel extends ReportModelBase
@@ -210,22 +211,25 @@ public class PointDataSummaryModel extends ReportModelBase
     public Comparator lpDataSummaryComparator = new java.util.Comparator<LPMeterData>()
 	{
 		public int compare(LPMeterData o1, LPMeterData o2){
+            final MeterAndPointData mpData1 = o1.getMeterAndPointData();
+            final MeterAndPointData mpData2 = o2.getMeterAndPointData();
+            
 		    String thisVal = NULL_STRING;
 		    String anotherVal = NULL_STRING;
 		    if( getOrderBy() == ORDER_BY_DEVICE_NAME)
 		    {
-		        thisVal = o1.getMeterAndPointData().getMeter().getName();
-		        anotherVal = o2.getMeterAndPointData().getMeter().getName();
+		        thisVal = mpData1.getMeter().getName();
+		        anotherVal = mpData2.getMeter().getName();
 		    }
 		    if( getOrderBy() == ORDER_BY_PHYSICAL_ADDRESS)
 		    {
-                thisVal = o1.getMeterAndPointData().getMeter().getAddress();
-                anotherVal = o2.getMeterAndPointData().getMeter().getAddress();
+                thisVal = mpData1.getMeter().getAddress();
+                anotherVal = mpData2.getMeter().getAddress();
 		    }
 		    if( getOrderBy() == ORDER_BY_METER_NUMBER)
 		    {
-                thisVal = o1.getMeterAndPointData().getMeter().getMeterNumber();
-                anotherVal = o2.getMeterAndPointData().getMeter().getMeterNumber();
+                NaturalOrderComparator noComp = new NaturalOrderComparator(); 
+                return noComp.compare(mpData1.getMeter().getMeterNumber(), mpData2.getMeter().getMeterNumber()); 
 		    }
 	        return ( thisVal.compareToIgnoreCase(anotherVal));
 		}
