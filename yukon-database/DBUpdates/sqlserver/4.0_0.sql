@@ -1431,13 +1431,13 @@ go
 update cceventlog set aVar = 0;
 go
 alter table cceventlog alter column aVar float not null;
-
+go
 alter table cceventlog add bVar float;
 go
 update cceventlog set bVar = 0;
 go
 alter table cceventlog alter column bVar float not null;
-
+go
 alter table cceventlog add cVar float;
 go
 update cceventlog set cVar = 0;
