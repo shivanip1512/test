@@ -1425,6 +1425,26 @@ AppName ASC
 );
 /* End YUK-5250 */
 
+/* Start YUK-5621 */
+alter table cceventlog add aVar float;
+go
+update cceventlog set aVar = 0;
+go
+alter table cceventlog alter column aVar float not null;
+
+alter table cceventlog add bVar float;
+go
+update cceventlog set bVar = 0;
+go
+alter table cceventlog alter column bVar float not null;
+
+alter table cceventlog add cVar float;
+go
+update cceventlog set cVar = 0;
+go
+alter table cceventlog alter column cVar float not null;
+/* End YUK-5621 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

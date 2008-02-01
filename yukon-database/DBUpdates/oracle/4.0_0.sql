@@ -1320,6 +1320,20 @@ create unique index INDEX_1 on MSPVendor (
 );
 /* End YUK-5250 */
 
+/* Start YUK-5621 */
+alter table cceventlog add aVar float;
+update cceventlog set aVar = 0;
+alter table cceventlog modify aVar float not null;
+
+alter table cceventlog add bVar float;
+update cceventlog set bVar = 0;
+alter table cceventlog modify bVar float not null;
+
+alter table cceventlog add cVar float;
+update cceventlog set cVar = 0;
+alter table cceventlog modify cVar float not null;
+/* End YUK-5621 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
