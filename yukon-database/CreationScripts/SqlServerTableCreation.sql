@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     1/31/2008 11:16:53 PM                        */
+/* Created on:     2/1/2008 10:46:16 AM                         */
 /*==============================================================*/
 
 
@@ -149,6 +149,15 @@ if exists (select 1
             and   indid > 0
             and   indid < 255)
    drop index ApplianceBase.CstLdTy_CstLdInf_FK
+go
+
+if exists (select 1
+            from  sysindexes
+           where  id    = object_id('ApplianceBase')
+            and   name  = 'INDEX_AccountID'
+            and   indid > 0
+            and   indid < 255)
+   drop index ApplianceBase.INDEX_AccountID
 go
 
 if exists (select 1
@@ -3282,6 +3291,14 @@ go
 /*==============================================================*/
 create index CstLdTy_CstLdInf_FK on ApplianceBase (
 ApplianceCategoryID ASC
+)
+go
+
+/*==============================================================*/
+/* Index: INDEX_AccountID                                       */
+/*==============================================================*/
+create index INDEX_AccountID on ApplianceBase (
+AccountID ASC
 )
 go
 

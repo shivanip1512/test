@@ -1459,6 +1459,13 @@ go
 alter table capcontrolsubstationbus alter column controlFlag varchar(1) not null; 
 /* End YUK-5263 */
 
+/* Start YUK-4824 */
+create index INDEX_AccountID on ApplianceBase (
+AccountID ASC
+);
+go
+/* End YUK-4824 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
