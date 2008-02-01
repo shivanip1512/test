@@ -25,6 +25,15 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
     private Set<Integer> subbusIds;
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
+    private Integer imbalance;
+    
+    public final static String AREA_NAME_STRING = "Area";
+    public final static String SUBSTATION_NAME_STRING = "Substation";
+    public final static String SUBSTATIONBUS_NAME_STRING = "Substation Bus";
+    public final static int AREA_NAME_COLUMN = 0;
+    public final static int SUBSTATION_NAME_COLUMN = 1;
+    public final static int SUBSTATIONBUS_NAME_COLUMN = 2;
+    public final static int FEEDER_NAME_COLUMN = 3;
     
     // member variables
     private List<ModelRow> data = new ArrayList<ModelRow>();
@@ -39,9 +48,11 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
         public String feeder;
         public String capbank;
         public String capbankstate;
-        public String achange;
-        public String bchange;
-        public String cchange;
+        public String opTime;
+        public String operation;
+        public String avar;
+        public String bvar;
+        public String cvar;
     }
     
     @Override
@@ -66,8 +77,8 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
         
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
-        
-        jdbcOps.query(sql.toString(), new RowCallbackHandler() {
+        Integer[] args = {imbalance, imbalance,imbalance};
+        jdbcOps.query(sql.toString(), args ,new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 
                 VarImbalanceOnExecutionModel.ModelRow row = new VarImbalanceOnExecutionModel.ModelRow();
@@ -77,10 +88,12 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
                 row.substationbus = rs.getString("substationbus");
                 row.feeder = rs.getString("feeder");
                 row.capbank = rs.getString("capbank");
-                row.capbankstate = rs.getString("capbankstate");
-                row.achange = rs.getString("achange");
-                row.bchange = rs.getString("bchange");
-                row.cchange = rs.getString("cchange");
+                row.capbankstate = rs.getString("capbankstateinfo");
+                row.opTime = rs.getString("opTime");
+                row.operation = rs.getString("operation");
+                row.avar = rs.getString("aVarAtExecution");
+                row.bvar = rs.getString("bVarAtExecution");
+                row.cvar = rs.getString("cVarAtExecution");
                 
                 data.add(row);
             }
@@ -91,7 +104,54 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select blah from blah where blah");
+        StringBuffer sql = new StringBuffer ("select ypA.paoname as area ");
+        sql.append(", ypS.paoname as substation ");
+        sql.append(", ypSB.paoname as substationbus ");
+        sql.append(", ypF.paoname as feeder ");
+        sql.append(", ypC.paoname as capbank ");
+        sql.append(", cAction.datetime as opTime ");
+        sql.append(", cAction.Text as operation ");
+        sql.append(", cOutcome.datetime as confTime ");
+        sql.append(", cOutcome.text as confirmation ");
+        sql.append(", cOutcome.kvarBefore ");
+        sql.append(", cOutcome.kvarAfter ");
+        sql.append(", cOutcome.kvarChange ");
+        sql.append(", cOutcome.capbankstateinfo ");
+        sql.append(", cAction. aVar as aVarAtExecution ");
+        sql.append(", cAction.bVar as bVarAtExecution ");
+        sql.append(", cAction.cVar as cVarAtExecution ");
+        sql.append("from ");
+        sql.append("yukonpaobject ypA, ");
+        sql.append("yukonpaobject ypS, ");
+        sql.append("ccsubstationsubbuslist ss, ");
+        sql.append("ccsubareaassignment sa, ");
+        sql.append("yukonpaobject ypSB, ");
+        sql.append("yukonpaobject ypF, ");
+        sql.append("yukonpaobject ypC, ");
+        sql.append("capbank c, ");
+        sql.append("point p, ");
+        sql.append("cceventlog cAction, ");
+        sql.append("cceventlog cOutcome ");
+        sql.append("where ");
+        sql.append("cAction.pointid = cOutcome.pointid ");
+        sql.append("and p.pointid = cAction.pointid ");
+        sql.append("and cAction.actionId = cOutcome.actionId ");
+        sql.append("and cAction.actionid > 0 ");
+        sql.append("and (cAction.text like 'Open sent,%' or cAction.text like 'Close sent,%') ");
+        sql.append("and (cOutcome.text like 'Var:%') ");
+        sql.append("and ypSB.paobjectid = cAction.subID ");
+        sql.append("and ypF.paobjectid = cAction.feederID ");
+        sql.append("and c.deviceid = ypC.paobjectid ");
+        sql.append("and cAction.pointid = p.pointid ");
+        sql.append("and p.paobjectid = c.deviceid ");
+        sql.append("and cAction.subID = ss.substationbusid ");
+        sql.append("and ypS.paobjectid = ss.substationid ");
+        sql.append("and sa.substationbusid = ss.substationid ");
+        sql.append("and ypA.paobjectid = sa.areaid ");
+        sql.append("and (abs(cAction.aVar - cAction.bVar) >= ? ");
+        sql.append("or abs(cAction.aVar - cAction.cVar) >= ? ");
+        sql.append("or abs(cAction.bVar - cAction.cVar) >= ?) ");
+        sql.append("order by cAction.datetime desc ");
         
         String result = null;
         
@@ -154,6 +214,10 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
     @Required
     public void setJdbcOps(JdbcOperations jdbcOps) {
         this.jdbcOps = jdbcOps;
+    }
+    
+    public void setImbalance(Integer imbalance) {
+        this.imbalance = imbalance;
     }
     
 }

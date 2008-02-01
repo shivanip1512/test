@@ -83,6 +83,8 @@ public enum ReportTypes {
             "Report showing asset availability."),
     CAP_CONTROL_TIME_CONTROLLED_CAPBANKS("Time Controlled Cap Banks Report", TimeControlledCapBanksController.class, ReportGroup.CAP_CONTROL,
             "Report showing all time controlled capbanks."),
+    VAR_IMBALANCE_ON_EXECUTION("Var Imbalance on Execution Report", VarImbalanceOnExecutionController.class, ReportGroup.CAP_CONTROL,
+            "Report showing the var imbalance on execution."),
     
     COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
     //STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
