@@ -87,21 +87,21 @@
 	    		<td align="center" valign="top" width="200px">
 	    			<div id="valueFormatDiv" style="display:none"> 
 	    				<div id="valueWords"> </div>
-	    				<select id="valueFormatSelect" onchange="updateFormat(this, 'format');">
+	    				<select id="valueFormatSelect" onchange="updateFormat('valueFormatSelect', 'valueFormat', 'select');">
 	    					<option selected="selected">No Format</option>
 	    					<option>Custom</option>
 	    					<option>###.###</option>
 	    					<option>####.##</option>
 	    				</select> <br /> 
 	    				reading pattern: <br />
-	    				<input type="text" id="valueFormat" maxlength="30" value="" onkeyup="updateFormat(this, 'format');" /> <br/>
+	    				<input type="text" id="valueFormat" maxlength="30" value="" onkeyup="updateFormat('valueFormatSelect', 'valueFormat', 'text');" /> <br/>
 						max length (0 for no max): <br/>
-	    				<input type="text" id="maxLength" maxlength="30" value="" onkeyup="updateFormat(this, 'maxLength');" /> <br/>
+	    				<input type="text" id="maxLength" maxlength="30" value="" onkeyup="updateFormat(this, 'maxLength', 'maxLength');" /> <br/>
 	    				<a href="javascript:displayHelper($('valueHelper'));">Help with pattern</a>  <br />
 	    			</div> 
 	    			<div id="timestampFormatDiv" style="display:none"> 
 	    				<div id="timestampWords"> </div>
-	    				<select id="timestampFormatSelect" onchange="updateFormat(this, 'format');">
+	    				<select id="timestampFormatSelect" onchange="updateFormat('timestampFormatSelect', 'timestampFormat', 'select');">
 	    					<option selected="selected">No Format</option>
 	    					<option>Custom</option>
 	    					<option>dd/MM/yyyy</option>
@@ -110,12 +110,12 @@
 	    					<option>HH:mm:ss</option>
 	    				</select> <br /> 
 	    				timestamp pattern: <br/>
-	    				<input type="text" id="timestampFormat" maxlength="30" value="" onkeyup="updateFormat(this, 'format');"/> <br/> 
+	    				<input type="text" id="timestampFormat" maxlength="30" value="" onkeyup="updateFormat('timestampFormatSelect', 'timestampFormat', 'text');"/> <br/> 
 	    				<a href="javascript:displayHelper($('timestampHelper'));" >Help with pattern</a> <br/>
 	    			</div>
 	    			<div id="plainTextDiv" style="display:none">
 	    				Plain Text Input:<br />
-	    				<input type="text" id="plainTextFormat" maxlength="30" value="" onkeyup="updateFormat(this, 'format');">
+	    				<input type="text" id="plainTextFormat" maxlength="30" value="" onkeyup="updateFormat(this, 'plainTextFormat', 'text');">
 	    			</div>
 	    		</td>
 	  		</tr>

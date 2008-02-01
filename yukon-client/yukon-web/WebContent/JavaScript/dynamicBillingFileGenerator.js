@@ -239,14 +239,41 @@ function updateDelimiter(){
 	updatePreview();
 }
 
-function updateFormat(input, attribute){ 
+function updateFormat(input, attribute, method){ 
 
 	var selectedFields = $("selectedFields");
 	var index = selectedFields.selectedIndex;
-	if (index != -1){
-		selectedFields.options[index].setAttribute(attribute, input.value);
-	}
-	
+
+    if (index != -1 && method != 'noUpdate'){
+
+        if (method == 'maxLength') {
+            selectedFields.options[index].setAttribute('maxLength', $(attribute).value);
+        } else {
+            var patternIndex = $(input).selectedIndex;
+            if (patternIndex != null){
+                var inputValue = $(input).options[patternIndex].innerText;
+
+                if(method == 'select') {
+                    switch(inputValue) {
+                        case "No Format":
+                            $(attribute).value = "";
+                            break;
+                        case "Custom":
+                            break;
+                        default:
+                            $(attribute).value = inputValue;
+                            break;
+                    }
+            
+                    selectFormatOption($(input), $(attribute).value);
+                }
+                if (method == 'text') {
+                    selectFormatOption($(input), $(attribute).value);
+                }
+            }
+            selectedFields.options[index].setAttribute('format', $(attribute).value);
+        }
+    }
 	//make sure to save to the array 
 	save(); 
 	
