@@ -1425,7 +1425,7 @@ AppName ASC
 );
 /* End YUK-5250 */
 
-/* Start YUK-5621 */
+/* Start YUK-5261 */
 alter table cceventlog add aVar float;
 go
 update cceventlog set aVar = 0;
@@ -1443,7 +1443,7 @@ go
 update cceventlog set cVar = 0;
 go
 alter table cceventlog alter column cVar float not null;
-/* End YUK-5621 */
+/* End YUK-5261 */
 
 /* Start YUK-5263 */
 alter table capcontrolfeeder add controlFlag varchar(1);
