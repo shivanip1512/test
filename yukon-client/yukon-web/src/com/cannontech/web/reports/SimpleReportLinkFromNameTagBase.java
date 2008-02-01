@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
+import javax.servlet.jsp.PageContext;
 
 import org.springframework.beans.factory.annotation.Required;
 
@@ -23,7 +25,11 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport{
     private YukonReportDefinitionFactory<BareReportModel> reportDefinitionFactory;
     private SimpleReportService simpleReportService;
     
+    private Map<String, Object> identifierAttributes = new HashMap<String, Object>();
     
+    protected JspWriter out;
+    protected PageContext context;
+    protected HttpServletRequest httpRequest;
     
     /**
      * Method to override to provide specifc output of simple report url.
@@ -31,7 +37,18 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport{
      */
     @Override
     public abstract void doTag() throws JspException, IOException;
-     
+    
+    /**
+     * To be called in the doTag() method before using out or buildUrl()
+     * Context is not available before the doTag() method is invoked.
+     */
+    protected void setContext() {
+    	
+    	out = getJspContext().getOut();
+    	context = (PageContext)getJspContext();
+        httpRequest = (HttpServletRequest)context.getRequest();
+    }
+    
     /**
      * Build a parameter map from dynamic tag attributes that are required by report definition.
      * Add additional parameters that are typical defaults for a simple report url.
@@ -40,7 +57,7 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport{
      * @return
      */
     @SuppressWarnings("unchecked")
-    public Map<String, String> getpropertiesMap(String definitionName, Map<String, Object> identifierAttributes) { 
+    public Map<String, String> getpropertiesMap(String definitionName) { 
     
         // get definitionName, model, input root
         YukonReportDefinition<BareReportModel> reportDefinition = reportDefinitionFactory.getReportDefinition(definitionName);
@@ -69,7 +86,6 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport{
         propertiesMap.put("def", definitionName);
         
         return propertiesMap;
-        
     }
 
     /**
@@ -81,7 +97,7 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport{
      * @return
      * @throws IOException
      */
-    protected String buildUrl(String viewType, Map<String, String> propertiesMap, Boolean htmlOutput, HttpServletRequest httpRequest) throws IOException{
+    protected String buildUrl(String viewType, Map<String, String> propertiesMap, Boolean htmlOutput) throws IOException{
         
         // build safe URL query string
         String queryString = ServletUtil.buildSafeQueryStringFromMap(propertiesMap, htmlOutput);
@@ -102,6 +118,10 @@ public abstract class SimpleReportLinkFromNameTagBase extends YukonTagSupport{
     @Required
     public void setSimpleReportService(SimpleReportService simpleReportService) {
         this.simpleReportService = simpleReportService;
+    }
+    
+    public void setDynamicAttribute(String uri, String localName, Object value) throws JspException {
+        identifierAttributes.put(localName, value);
     }
 
 }
