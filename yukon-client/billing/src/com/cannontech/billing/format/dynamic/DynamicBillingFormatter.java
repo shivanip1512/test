@@ -167,7 +167,7 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 		}
 
 		// append new line and return the generated line
-		writeToFile.append("\n");
+        writeToFile.append(System.getProperty("line.separator"));
 		return writeToFile.toString();
 	}
 
@@ -217,7 +217,7 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 		if (dynamicFormat.getHeader().equals("")) {
 			return "";
 		} else {
-			return dynamicFormat.getHeader() + "\n";
+            return dynamicFormat.getHeader() + System.getProperty("line.separator");
 		}
 	}
 
@@ -226,7 +226,7 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 		if (dynamicFormat.getFooter().equals("")) {
 			return "";
 		} else {
-			return dynamicFormat.getFooter() + "\n";
+            return dynamicFormat.getFooter() + System.getProperty("line.separator");
 		}
 	}
 

@@ -74,7 +74,7 @@ public class DynamicBillingController extends MultiActionController {
 		ModelAndView mav = new ModelAndView("redirect:overview.jsp");
 
 		// delete the selected format
-		int formatId = ServletRequestUtils.getIntParameter(request, "formatId");
+		int formatId = ServletRequestUtils.getIntParameter(request, "availableFormat");
 		dynamicBillingFileDao.delete(formatId);
 
 		// retrieve the new list of format names after deletion

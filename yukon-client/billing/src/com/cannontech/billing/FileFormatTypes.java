@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
-import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -167,7 +166,7 @@ public final class FileFormatTypes {
 	}
     
     public static Map<Integer,String> getValidFormats() {
-        final String sql = "SELECT FORMATID,FORMATTYPE FROM BillingFileFormats WHERE FORMATID >= 0";
+        final String sql = "SELECT FORMATID,FORMATTYPE FROM BillingFileFormats WHERE FORMATID >= 0 Order By FormatType desc";
         final Map<Integer,String> resultMap = new HashMap<Integer,String>();
         try {
             jdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
