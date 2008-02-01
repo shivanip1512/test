@@ -233,6 +233,7 @@
         <property name="dateFormattingService" ref="dateFormattingService"/>
         <property name="meterDao" ref="meterDao"/>
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
+        <property name="attributeService" ref="attributeService" />
     </bean>
     
     <bean id="miniTdcWidget"

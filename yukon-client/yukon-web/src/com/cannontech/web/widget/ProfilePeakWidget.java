@@ -16,6 +16,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
@@ -23,6 +25,7 @@ import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.widget.support.WidgetControllerBase;
@@ -39,6 +42,7 @@ public class ProfilePeakWidget extends WidgetControllerBase {
     private DateFormattingService dateFormattingService = null;
     private MeterDao meterDao = null;
     private PaoCommandAuthorizationService commandAuthorizationService = null;
+    private AttributeService attributeService = null;
     
     public ModelAndView render(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
@@ -67,9 +71,10 @@ public class ProfilePeakWidget extends WidgetControllerBase {
         // Add the default report settings to the mav
         mav.addObject("reportType", "day");
 
-        Date now = new Date();
-        mav.addObject("startDate", COMMAND_FORMAT.format(TimeUtil.addDays(now, -5)));
-        mav.addObject("stopDate", COMMAND_FORMAT.format(now));
+        Date stopDate = new Date();
+        Date startDate = TimeUtil.addDays(stopDate, -5);
+        mav.addObject("startDate", COMMAND_FORMAT.format(startDate));
+        mav.addObject("stopDate", COMMAND_FORMAT.format(stopDate));
         
         if(preResult != null) {
             Map<String,String> preMap = getParsedPeakResultValuesMap(preResult, userContext, deviceId, 1);
@@ -86,6 +91,14 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             mav.addObject("postPeakValue",postMap.get("peakValueStr"));
         }
         
+        // point id
+        LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
+        int pointId = point.getPointID();
+        mav.addObject("pointId", pointId);
+        mav.addObject("startDateDate", startDate);
+        mav.addObject("stopDateDate", stopDate);
+        
+        // readable?
         boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
         mav.addObject("readable", readable);
 
@@ -196,6 +209,13 @@ public class ProfilePeakWidget extends WidgetControllerBase {
             mav.addObject("postPeriodStopDateDisplay",postMap.get("periodStopDateDisplay"));
             mav.addObject("postPeakValue",postMap.get("peakValueStr"));
         }
+        
+        // point id, start/end date millis - for report links
+        LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
+        int pointId = point.getPointID();
+        mav.addObject("pointId", pointId);
+        mav.addObject("startDateDate", preCommandStartDate);
+        mav.addObject("stopDateDate", preCommandStopDate);
 
         return mav;
     }
@@ -298,5 +318,10 @@ public class ProfilePeakWidget extends WidgetControllerBase {
     @Required
     public void setMeterDao(MeterDao meterDao) {
 		this.meterDao = meterDao;
+	}
+    
+    @Required
+	public void setAttributeService(AttributeService attributeService) {
+		this.attributeService = attributeService;
 	}
 }

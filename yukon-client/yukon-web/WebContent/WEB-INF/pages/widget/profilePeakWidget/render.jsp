@@ -51,6 +51,16 @@
 		</tr>
 	</table>
 	
+	<!-- Daily Usage Report -->
+	<br>
+	<b>Daily Usage Report:</b>
+	<cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${startDateDate}" stopDate="${stopDateDate}">HTML</cti:simpleReportLinkFromNameTag>
+    |
+    <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${startDateDate}" stopDate="${stopDateDate}">CSV</cti:simpleReportLinkFromNameTag>
+    |
+    <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${startDateDate}" stopDate="${stopDateDate}">PDF</cti:simpleReportLinkFromNameTag>
+	<br/><br/>
+	
 	<!-- Profile peak results section -->
 	<c:if test="${!empty preResult || !empty postResult}">
 		<br><b>Previous Profile Reports:</b>

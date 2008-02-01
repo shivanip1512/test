@@ -291,5 +291,51 @@
         </property>
     </bean>
     
+    <!-- Daily Usage Report -->
+   <bean id="dailyUsageModel" class="com.cannontech.analysis.tablemodel.DailyUsageModel"
+         scope="prototype">
+        <property name="rphDao" ref="rphDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="pointDao" ref="pointDao"/>
+        <property name="dateFormattingService" ref="dateFormattingService"/>
+        <property name="dbPersistentDao" ref="dbPersistentDao"/>
+    </bean>
+    
+    <bean id="dailyUsageDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="dailyUsageModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="pointId"/>
+                    <property name="displayName" value="Point ID"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="startDate"/>
+                    <property name="displayName" value="Start Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="stopDate"/>
+                    <property name="displayName" value="Stop Date"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.DateType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.DailyUsageReportLayoutData"/>
+        </property>
+    </bean>
+    
 </beans>
 
