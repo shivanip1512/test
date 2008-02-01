@@ -1089,7 +1089,7 @@ create table DEVICEEVENT (
    DeviceID             numeric              not null,
    TimeStamp            datetime             not null,
    DeviceEventComment              varchar(50)          not null,
-   constraint PK_DEVICEEVENT primary key (DeviceID)
+   constraint PK_DEVICEEVENT primary key (DeviceID, TimeStamp)
 );
 go
 /* End YUK-4810 */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/1/2008 10:46:16 AM                         */
+/* Created on:     2/1/2008 2:03:41 PM                          */
 /*==============================================================*/
 
 
@@ -4981,7 +4981,7 @@ create table DEVICEEVENT (
    DeviceID             numeric              not null,
    TimeStamp            datetime             not null,
    DeviceEventComment   varchar(50)          not null,
-   constraint PK_DEVICEEVENT primary key (DeviceID)
+   constraint PK_DEVICEEVENT primary key (DeviceID, TimeStamp)
 )
 go
 

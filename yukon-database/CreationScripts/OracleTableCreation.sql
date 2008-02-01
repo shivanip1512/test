@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/1/2008 10:38:44 AM                         */
+/* Created on:     2/1/2008 2:06:55 PM                          */
 /*==============================================================*/
 
 
@@ -2622,7 +2622,7 @@ create table DEVICEEVENT  (
    DeviceID             NUMBER                          not null,
    TimeStamp            DATE                            not null,
    DeviceEventComment   VARCHAR2(50)                    not null,
-   constraint PK_DEVICEEVENT primary key (DeviceID)
+   constraint PK_DEVICEEVENT primary key (DeviceID, TimeStamp)
 );
 
 /*==============================================================*/
