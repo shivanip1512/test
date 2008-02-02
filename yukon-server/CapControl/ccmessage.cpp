@@ -392,7 +392,10 @@ void CtiCCEventLogMsg::restoreGuts(RWvistream& strm)
          >> _kvarAfter
          >> _kvarChange
          >> _ipAddress
-         >> _actionId;
+         >> _actionId
+         >> _aVar 
+         >> _bVar 
+         >> _cVar;
 
       return;
 }
@@ -420,7 +423,10 @@ void CtiCCEventLogMsg::saveGuts(RWvostream& strm) const
          << _kvarAfter 
          << _kvarChange
          << _ipAddress
-         << _actionId;
+         << _actionId
+         << _aVar
+         << _bVar
+         << _cVar;
 
     return;
 }
@@ -448,6 +454,10 @@ CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
         _ipAddress  = right._ipAddress;
         _actionId   = right._actionId;
         _stateInfo  = right._stateInfo;
+
+        _aVar = right._aVar;
+        _bVar = right._bVar;
+        _cVar = right._cVar;
 
     }
 
@@ -1020,11 +1030,30 @@ void CtiCCSpecialAreasMsg::restoreGuts(RWvistream& strm)
 void CtiCCSpecialAreasMsg::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    {
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< _ccSpecialAreas->size()<<" entries." << endl;
+        }
+        for (int h=0;h < _ccSpecialAreas->size(); h++) 
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Area: "<<((CtiCCSpecial*)_ccSpecialAreas->at(h))->getPAOName()<<
+                    " : "<<((CtiCCSpecial*)_ccSpecialAreas->at(h))->getPAOId()<< endl;
+            }
+        }
+    }  
+
+
     strm << _ccSpecialAreas;
 }
 
-
-
+ULONG CtiCCSubstationsMsg::AllSubsSent= 0x00000001;
+ULONG CtiCCSubstationsMsg::SubDeleted = 0x00000002;
+ULONG CtiCCSubstationsMsg::SubAdded   = 0x00000004;
+ULONG CtiCCSubstationsMsg::SubModified= 0x00000008;
 /*===========================================================================
     CtiCCGeoAreasMsg
 ===========================================================================*/
@@ -1034,7 +1063,7 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
 /*---------------------------------------------------------------------------
     Constuctors
 ---------------------------------------------------------------------------*/
-CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations) : CtiCCMessage("CCSubstations"), _ccSubstations(NULL)
+CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULONG bitMask) : CtiCCMessage("CCSubstations"), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstations = new CtiCCSubstation_vec;
     if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
@@ -1106,6 +1135,7 @@ CtiCCSubstationsMsg& CtiCCSubstationsMsg::operator=(const CtiCCSubstationsMsg& r
 {
     if( this != &right )
     {
+        _msgInfoBitMask = right.getMsgInfoBitMask();
         if( _ccSubstations != NULL &&
             _ccSubstations->size() > 0 )
         {
@@ -1132,6 +1162,7 @@ CtiCCSubstationsMsg& CtiCCSubstationsMsg::operator=(const CtiCCSubstationsMsg& r
 void CtiCCSubstationsMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
+    strm >> _msgInfoBitMask;
 	strm >> _ccSubstations;
 }
 
@@ -1143,6 +1174,7 @@ void CtiCCSubstationsMsg::restoreGuts(RWvistream& strm)
 void CtiCCSubstationsMsg::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
+    strm << _msgInfoBitMask;
     strm << _ccSubstations;
 }
 

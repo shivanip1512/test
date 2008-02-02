@@ -502,7 +502,7 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
 
             updater << dynamicCCMonitorBankHistoryTable["value"].assign( _value )
             << dynamicCCMonitorBankHistoryTable["datetime"].assign( toRWDBDT((CtiTime)_timeStamp) )
-            << dynamicCCMonitorBankHistoryTable["scaninprogress"].assign( (_scanInProgress?'Y':'N') );
+            << dynamicCCMonitorBankHistoryTable["scaninprogress"].assign( (_scanInProgress?"Y":"N") );
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -541,7 +541,7 @@ void CtiCCMonitorPoint::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
             <<  _pointId
             << _value
             << toRWDBDT((CtiTime)_timeStamp)
-            << (_scanInProgress?'Y':'N');
+            << (_scanInProgress?"Y":"N");
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

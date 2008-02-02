@@ -254,7 +254,8 @@ public:
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
-    void addSubstationObjectsToList(list <LONG> *substationIds, CtiMultiMsg_vec &modifiedSubsList);
+    void addSubstationObjectsToList(list <LONG> *subBusIds, CtiMultiMsg_vec &modifiedSubsList);
+    void addSubBusObjectsToList(list <LONG> *subBusIds, CtiMultiMsg_vec &modifiedSubsList);
     void updateSubstationObjectList(LONG substationId, CtiMultiMsg_vec &modifiedStationsList);
     void clearDBReloadList();
     void setRegMask(LONG mask);
@@ -265,6 +266,11 @@ public:
 
     void setLinkStatusFlag(BOOL flag);
     BOOL getLinkStatusFlag(void);
+
+    BOOL getVoltReductionSystemDisabled(); 
+    void setVoltReductionSystemDisabled(BOOL disableFlag);
+    LONG getVoltDisabledCount();
+    void setVoltDisabledCount(LONG value);
 
     const CtiTime& getLinkDropOutTime() const;
     void  setLinkDropOutTime(const CtiTime& dropOutTime);
@@ -336,6 +342,10 @@ private:
     LONG _linkStatusPointId;
     BOOL _linkStatusFlag;
     CtiTime _linkDropOutTime;
+
+    BOOL _voltReductionSystemDisabled;
+    int  _voltDisabledCount;
+
 
 
     //The singleton instance of CtiCCSubstationBusStore

@@ -9,6 +9,7 @@
 
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2005
 -----------------------------------------------------------------------------*/
+
 #include "yukon.h"
 #include "mgr_paosched.h"
 #include "pao_event.h"
@@ -17,7 +18,9 @@
 #include "thread_monitor.h"
 #include "utility.h"
 #include "msg_signal.h"
+#include "ctistring.h"
 
+#include <stdlib.h>
 
 #include <rw/thr/prodcons.h>
 #include <rw/ctoken.h>
@@ -26,6 +29,7 @@
 #include <boost/regex.hpp>
      
 extern ULONG _CC_DEBUG;
+using namespace std;
 /* The singleton instance of CtiPAOScheduleManager */
 CtiPAOScheduleManager* CtiPAOScheduleManager::_instance = NULL;
 
@@ -334,7 +338,7 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                                 text += (*iter)->getScheduleName();
                                 
                                 string additional = string("Schedule ID ");
-                                additional += (*iter)->getScheduleId();
+                                additional += longToString((*iter)->getScheduleId());
                                 additional += " did not run at: ";
                                 additional += tempNextTime.asString();
 
@@ -403,8 +407,12 @@ void CtiPAOScheduleManager::runScheduledEvent(CtiPAOEvent *event)
                 delete executor;
             }
             break;
-        case 2:
+        case SendTimeSync:
             {
+                CtiCCExecutorFactory f;
+                CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SEND_TIME_SYNC, event->getPAOId()));
+                executor->Execute();
+                delete executor;
             }
             break;
         case 4:
@@ -448,36 +456,46 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
         {
             strategy = SelectedForVerificationBanks;
         }
-        else if (stringCompareIgnoreCase(command,"Verify CapBanks that have not operated in"))
+        else if (stringContainsIgnoreCase(command,"Verify CapBanks that have not operated in"))
         {
-            boost::cmatch what;
+            CtiString CmdStr(command);
+            CtiString token;
+            int val = 0;
             boost::regex re("[0-9]+");
-            if (boost::regex_search(command, what, re))
+            secsSinceLastOperation = 0;
+
+            if(!(token = CmdStr.match("[0-9]+ min")).empty())
             {
-                re.assign("minut(e|es)");
-                if (boost::regex_search(command, what, re))
-                {
-                    multiplier = 60;
-                }
-                re.assign("hou(r|rs)");
-                if (boost::regex_search(command, what, re))
-                {
-                    multiplier = 3600;
-                }
-                re.assign("da(y|ys)");
-                if (boost::regex_search(command, what, re))
-                {
-                    multiplier = 86400;
-                }
-                re.assign("wee(k|ks)");
-                if (boost::regex_search(command, what, re))
-                {
-                    multiplier = 604800;
-                }
-                
-                secsSinceLastOperation = atol(tempCommand.c_str()) * multiplier;
+                val = atoi((token.match(re)).c_str());
+                multiplier = 60;
+                secsSinceLastOperation += val * multiplier;
             }
-            strategy = BanksInactiveForXTime;
+            if(!(token = CmdStr.match("[0-9]+ hr")).empty())
+            {
+                val = atoi((token.match(re)).c_str());
+                multiplier = 3600;
+                secsSinceLastOperation += val * multiplier;
+            }
+            if(!(token = CmdStr.match("[0-9]+ day")).empty())
+            {
+                val = atoi((token.match(re)).c_str());
+                multiplier = 86400;
+                secsSinceLastOperation += val * multiplier;
+            }
+            if(!(token = CmdStr.match("[0-9]+ wk")).empty())
+            {
+                val = atoi((token.match(re)).c_str());
+                multiplier = 604800;
+                secsSinceLastOperation += val * multiplier;
+            }
+
+            if (secsSinceLastOperation > 0)
+            {                             
+                strategy = BanksInactiveForXTime;
+            }
+            else
+                retVal = SomethingElse;
+                
         }
         else if (!stringCompareIgnoreCase(command,"Verify Standalone CapBanks"))
         {
@@ -487,6 +505,10 @@ int CtiPAOScheduleManager::parseEvent(const string& _command, int &strategy, lon
     else if (findStringIgnoreCase(command,"Confirm Sub"))
     {
         retVal = ConfirmSub;
+    }
+    else if (findStringIgnoreCase(command,"Send Time Syncs"))
+    {
+        retVal = SendTimeSync;
     }
     
     return retVal;
@@ -512,7 +534,7 @@ void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
             text += schedule->getScheduleName();
             
             string additional = string("Schedule ID ");
-            additional += schedule->getScheduleId();
+            additional += longToString(schedule->getScheduleId());
             additional += " did not run at: ";
             additional += tempNextTime.asString();
         
@@ -727,28 +749,28 @@ void CtiPAOScheduleManager::refreshSchedulesFromDB()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        try
+       /* try
         {             
-
-            while (!_schedules.empty())
+            list <CtiPAOSchedule*>::iterator iter = _schedules.begin();
+            while (iter != _schedules.end())
             {
-                CtiPAOSchedule *schedToDelete = _schedules.front();
-                _schedules.pop_front();
+                CtiPAOSchedule *schedToDelete  = *iter;
+				iter++;
                 if (schedToDelete != NULL)
                 {
                     delete schedToDelete;
                 }
             }
-            _schedules.clear();
-            _schedules.assign(tempSchedules.begin(), tempSchedules.end());
-            setValid(true);
+            
         }
         catch (...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
-
+        } */
+        _schedules.clear();
+        _schedules.assign(tempSchedules.begin(), tempSchedules.end());
+        setValid(true);
     }
     catch (...)
     {
@@ -830,27 +852,27 @@ void CtiPAOScheduleManager::refreshEventsFromDB()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        try
+        /*try
         {
-            while (!_events.empty())
+            list <CtiPAOEvent*>::iterator iter = _events.begin();
+            while (iter != _events.end())
             {
-                CtiPAOEvent *evtToDelete = _events.front();
-                _events.pop_front();
+                CtiPAOEvent *evtToDelete = *iter;
+				iter++;
                 if (evtToDelete != NULL)
                 {
                     delete evtToDelete;
                 }
             }
-            _events.clear();
-            _events.assign(tempEvents.begin(), tempEvents.end());
-            setValid(true);
         }
         catch (...)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-        }
-
+        } */
+        _events.clear();
+        _events.assign(tempEvents.begin(), tempEvents.end());
+        setValid(true);
     }
     catch (...)
     {
@@ -937,3 +959,14 @@ void CtiPAOScheduleManager::updateDataBaseSchedules(std::list<CtiPAOSchedule*> &
 
 
 }
+
+string CtiPAOScheduleManager::longToString(LONG val)
+{
+    char tempchar[20] = "";
+    string retString = string("");
+    _snprintf(tempchar,20,"%d", 0, val);
+    retString += tempchar;
+
+    return retString;
+}
+

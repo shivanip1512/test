@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/02/14 20:54:19 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/02/02 01:03:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,6 +44,7 @@ public:
     {
         CapControlVerification = 0,
         ConfirmSub = 1,
+        SendTimeSync = 2,
         SomethingElse
     } CtiPAOScheduleOperation;
 
@@ -78,6 +79,7 @@ public:
     void updateDataBaseSchedules(list<CtiPAOSchedule*> &schedules);
     void runScheduledEvent(CtiPAOEvent *event);
     int parseEvent(const string& command, int &strategy, long &secsSinceLastOperation);
+    string longToString(LONG val);
 
 
 private:

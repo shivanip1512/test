@@ -93,8 +93,11 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
 
     _linkStatusPointId = 0;
     _linkStatusFlag = OPENED;
-    _linkDropOutTime = CtiTime();
-   
+    _linkDropOutTime = CtiTime(); 
+
+    _voltReductionSystemDisabled = FALSE;
+    _voltDisabledCount = 0;
+
     //Start the reset thread
     RWThreadFunction func = rwMakeThreadFunction( *this, &CtiCCSubstationBusStore::doResetThr );
     _resetthr = func;
@@ -970,18 +973,8 @@ void CtiCCSubstationBusStore::reset()
             if ( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Done Loading values into capcontrol - " << endl;
-            }  
-            map <long, CtiCCStrategyPtr>::iterator iter = _strategyid_strategy_map.begin();
-                        while (iter != _strategyid_strategy_map.end())
-                        {
-                            CtiCCStrategyPtr strat = iter->second;
-                            iter++;
-                            if (!stringCompareIgnoreCase(strat->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
-                            {
-                                strat->dumpTimeOfDayControllers();
-                            }
-                        }
+                dout << CtiTime() << " - Done Loading values into capctonrol - " << endl;
+            }       
         }
 
         _isvalid = TRUE;
@@ -3117,7 +3110,10 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
                      << msg->getKvarChange()  
                      << msg->getIpAddress()
                      << msg->getActionId()
-                     << msg->getStateInfo();
+                     << msg->getStateInfo()
+                     << msg->getAVar()
+                     << msg->getBVar()
+                     << msg->getCVar();
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -3249,18 +3245,6 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                     strategy_map->insert(make_pair(currentCCStrategy->getStrategyId(),currentCCStrategy));
                 }
                 reloadTimeOfDayStrategyFromDataBase(strategyId, strategy_map);
-
-                map <long, CtiCCStrategyPtr>::iterator iter = strategy_map->begin();
-                while (iter != strategy_map->end())
-                {
-                    CtiCCStrategyPtr strat = iter->second;
-                    iter++;
-                    if (!stringCompareIgnoreCase(strat->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
-                    {
-                        strat->dumpTimeOfDayControllers();
-                    }
-                }
-
 
                 if (strategyId > 0)
                 {    
@@ -3603,11 +3587,6 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDataBase(long strategyI
 
     try
     {
-        if (strategyToUpdate != NULL)
-        {
-            deleteStrategy(strategyId);
-        }
-
         CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
         RWDBConnection conn = getConnection();
         {
@@ -3666,10 +3645,10 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDataBase(long strategyI
                     if (currentCCStrategy != NULL)
                     {
                         currentCCStrategy->setTimeAndCloseValues(rdr);
-                        //currentCCStrategy->dumpTimeOfDayControllers();
                     }
-                }
 
+                    //currentCCStrategy->dumpTimeOfDayControllers();
+                }
 
 
                 if (strategyId > 0)
@@ -3875,6 +3854,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDataBase(long strategyI
                                          }
                                          currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
                                          currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                         currentCCSubstationBus->figureNextCheckTime();
                                          for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
                                          {
                                              ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
@@ -4816,7 +4796,6 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << capControlSubstationBusTable["currentvarloadpointid"]
                         << capControlSubstationBusTable["currentwattloadpointid"]
                         << capControlSubstationBusTable["maplocationid"]
-                        //<< capControlSubstationBusTable["strategyid"]
                         << capControlSubstationBusTable["currentvoltloadpointid"]
                         << capControlSubstationBusTable["AltSubID"] 
                         << capControlSubstationBusTable["SwitchPointID"] 
@@ -4824,7 +4803,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << capControlSubstationBusTable["multiMonitorControl"]
                         << capControlSubstationBusTable["usephasedata"]
                         << capControlSubstationBusTable["phaseb"]
-                        << capControlSubstationBusTable["phasec"];
+                        << capControlSubstationBusTable["phasec"]
+                        << capControlSubstationBusTable["controlflag"];
                         
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
@@ -4938,25 +4918,24 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                 {
                                     currentCCSubstationBus->setParentName(currentCCSubstation->getPAOName());
                                     list <LONG>::const_iterator iterBus = currentCCSubstation->getCCSubIds()->begin();
-                                    while (iterBus != currentCCSubstation->getCCSubIds()->end())
+                                    bool found = false;
+                                    for( ;iterBus != currentCCSubstation->getCCSubIds()->end(); iterBus++)
                                     { 
-                                        LONG busId = *iterBus;
-                                        if (busId == currentSubBusId)
+                                        if (*iterBus == currentSubBusId)
                                         {
-                                            (currentCCSubstation->getCCSubIds())->remove(busId);
-                                            iterBus = currentCCSubstation->getCCSubIds()->end();
+                                            found = true;
+                                            break;
                                         }
-                                        else
-                                            iterBus++;
                                     }
-                                    currentCCSubstation->getCCSubIds()->push_back(currentSubBusId);
+                                    if(!found)
+                                    {
+                                        currentCCSubstation->getCCSubIds()->push_back(currentSubBusId);
+                                    }
                                 }
 
                                 subbus_substation_map->insert(make_pair(currentSubBusId, currentSubstationId));
                             }
                         }
-
-
                         {
                             RWDBSelector selector = db.selector();
                                          selector <<  ccScheduleStrat["paobjectid"]
@@ -4995,7 +4974,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                  CtiDate today = CtiDate();
 
                                  if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                     today < CtiDate(endDay, endMon, today.year())  )
+                                      today < CtiDate(endDay, endMon, today.year())  )
                                  { 
                                      long busId, stratId;
                                      rdr["paobjectid"] >> busId;
@@ -5042,13 +5021,12 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                                       currentCCStrategy =  strategy_map->find(0)->second;
                                               }
                                               currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
+
                                               currentCCSubstationBus->setStrategyValues(currentCCStrategy);
-                                              /*string meth = currentCCStrategy->getControlMethod();
-                                              if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
+                                              if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
                                               {
-                                                  currentCCStrategy->dumpTimeOfDayControllers();
-                                              }  */
-                
+                                                  currentCCSubstationBus->figureNextCheckTime();
+                                              } 
                                           }
                                       
                                       }
@@ -5057,16 +5035,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                              }
                         }
 
-                        map <long, CtiCCStrategyPtr>::iterator iter = _strategyid_strategy_map.begin();
-                        while (iter != _strategyid_strategy_map.end())
-                        {
-                            CtiCCStrategyPtr strat = iter->second;
-                            iter++;
-                            if (!stringCompareIgnoreCase(strat->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod))
-                            {
-                                strat->dumpTimeOfDayControllers();
-                            }
-                        }
+                        
 
                         //while (!dualBusEnabledSubs.empty())
                         if (!altsub_sub_idmap->empty())
@@ -5442,12 +5411,12 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                         << capControlFeederTable["currentvarloadpointid"]
                         << capControlFeederTable["currentwattloadpointid"]
                         << capControlFeederTable["maplocationid"]
-                        //<< capControlFeederTable["strategyid"]
                         << capControlFeederTable["currentvoltloadpointid"]
                         << capControlFeederTable["multiMonitorControl"]
                         << capControlFeederTable["usephasedata"]
                         << capControlFeederTable["phaseb"]
-                        << capControlFeederTable["phasec"];
+                        << capControlFeederTable["phasec"]
+                        << capControlFeederTable["controlflag"];
                         
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlFeederTable);
@@ -7148,6 +7117,22 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
 
         try
         {
+            LONG areaId = substationToDelete->getParentId();
+            if (areaId != NULL)
+            {                   
+                CtiCCAreaPtr area = findAreaByPAObjectID(areaId);
+            }
+            CtiCCSpArea_vec::iterator itrSp = _ccSpecialAreas->begin();
+            while ( itrSp != _ccSpecialAreas->end() )
+            {
+                CtiCCSpecial *spArea = *itrSp;
+                if (spArea != NULL)
+                {
+                    spArea->getSubstationIds()->remove(substationId);
+                }
+                itrSp++;
+            }
+            
             string substationName = substationToDelete->getPAOName();
             _paobject_substation_map.erase(substationToDelete->getPAOId());
             _substation_area_map.erase(substationToDelete->getPAOId());
@@ -7197,25 +7182,25 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
             LONG subBusId;
             
             CtiCCSubstationPtr station = NULL;
-            list <LONG>::const_iterator iter = areaToDelete->getSubStationList()->begin();
+            list <LONG>::iterator iter = areaToDelete->getSubStationList()->begin();
             while (iter != areaToDelete->getSubStationList()->end())
             {   
                 stationId = *iter;
                 station = findSubstationByPAObjectID(stationId);
                 if (station != NULL)
                 {                   
-                    list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
+                    list <LONG>::iterator iterBus = station->getCCSubIds()->begin();
                     while (iterBus  != station->getCCSubIds()->end())
                     { 
                         subBusId = *iterBus;
-                        _subbus_substation_map.erase(subBusId);
+                        //_subbus_substation_map.erase(subBusId);
                         deleteSubBus(subBusId);
-                        iterBus++;
+                        iterBus = station->getCCSubIds()->erase(iterBus);
                     }
                 }
-                _substation_area_map.erase(stationId);
+                //_substation_area_map.erase(stationId);
                 deleteSubstation(stationId);
-                iter++;
+                iter = areaToDelete->getSubStationList()->erase(iter);
             }                
 
             try
@@ -7736,8 +7721,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
     CtiMultiMsg_vec modifiedSubsList;
     CtiMultiMsg_vec modifiedStationsList;
     ULONG msgBitMask = 0x00000000;
-
-
+    ULONG msgSubsBitMask = 0x00000000;
+    
     try
     {
         RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
@@ -7805,6 +7790,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                         }
                                         modifiedSubsList.push_back(tempSub);
                                         msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                                        msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                                     }
                                     else
                                     {
@@ -7845,6 +7831,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     }
                                     modifiedSubsList.push_back(tempSub);
                                     msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                                    msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
+ 
                                 }
                                 else
                                 {
@@ -7902,6 +7890,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                         {
                                             modifiedSubsList.push_back(tempSub);
                                             msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                                            msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                                         }
                                     }
                                 } 
@@ -7927,6 +7916,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                         {
                                             modifiedSubsList.push_back(tempSub);
                                             msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                                            msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                                         }
                                     }
                                 }
@@ -7944,6 +7934,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                 {
                                     modifiedSubsList.push_back(tempSub);
                                     msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                                    msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                                 }
                             }
                             deleteFeeder(reloadTemp.objectId);
@@ -7964,13 +7955,24 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     {
                         if (reloadTemp.action == ChangeTypeDelete)
                         {
+                            LONG parentStationId = NULL;
+                            CtiCCSubstationBusPtr tempSub = findSubBusByPAObjectID(reloadTemp.objectId);
+                            if (tempSub != NULL) 
+                            {
+                                parentStationId = tempSub->getParentId();
+                            }
                             deleteSubBus(reloadTemp.objectId); 
 
                             CtiCCExecutorFactory f;
                             CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadTemp.objectId));
                             executor->Execute();
                             delete executor;
-                            msgBitMask |= CtiCCSubstationBusMsg::AllSubBusesSent;
+
+                            if (parentStationId != NULL)
+                            {
+                                updateSubstationObjectList(parentStationId, modifiedStationsList);
+                                msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
+                            }
 
 
                         }
@@ -7987,7 +7989,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                 CtiMultiMsg_vec::iterator iter = modifiedSubsList.begin();
                                 while (iter != modifiedSubsList.end()) 
                                 {
-                                    if (((CtiCCSubstationBusPtr)iter)->getPAOId() == tempSub->getPAOId()) 
+                                    CtiCCSubstationBus* temp =   (CtiCCSubstationBus *)*iter;
+                                    if (temp->getPAOId() == reloadTemp.objectId)
                                     {  
                                         modifiedSubsList.erase(iter);
                                         iter = modifiedSubsList.end();
@@ -8002,10 +8005,35 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     modifiedSubsList.push_back(tempSub);
                                 }
 
-                                if (reloadTemp.action == ChangeTypeAdd) 
-                                    msgBitMask |= CtiCCSubstationBusMsg::SubBusAdded;
-                                else
-                                    msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                                msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                                msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
+
+                            }
+                            else
+                            {
+                                reloadSubBusFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, &_paobject_subbus_map, 
+                                             &_paobject_substation_map, &_pointid_subbus_map, 
+                                             &_altsub_sub_idmap, &_subbus_substation_map, _ccSubstationBuses);
+
+                                tempSub = findSubBusByPAObjectID(reloadTemp.objectId);
+
+                                CtiMultiMsg_vec::iterator iter = modifiedSubsList.begin();
+                                while (iter != modifiedSubsList.end()) 
+                                {
+                                    CtiCCSubstationBus* temp =   (CtiCCSubstationBus *)*iter;
+                                    if (temp->getPAOId() == reloadTemp.objectId)
+                                    {  
+                                        modifiedSubsList.erase(iter);
+                                        iter = modifiedSubsList.end();
+                                    }
+                                    else
+                                        iter++;
+                                }
+                                if (tempSub != NULL) 
+                                {
+                                    modifiedSubsList.push_back(tempSub);
+                                }
+                                msgBitMask |= CtiCCSubstationBusMsg::SubBusAdded;
                             }
                        }
                         break;
@@ -8021,7 +8049,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadTemp.objectId));
                             executor->Execute();
                             delete executor;
-                    
+
                         }
                         else  // ChangeTypeAdd, ChangeTypeUpdate
                         {   
@@ -8036,10 +8064,9 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                 CtiCCSubstation *station = findSubstationByPAObjectID(reloadTemp.objectId);
                                 if (station != NULL)
                                 {        
-                                    addSubstationObjectsToList(station->getCCSubIds(), modifiedSubsList);
-                                    modifiedStationsList.push_back(station);
+                                    addSubBusObjectsToList(station->getCCSubIds(), modifiedSubsList);
                                     updateSubstationObjectList(station->getPAOId(), modifiedStationsList);
-                                
+                                    msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                                 }
                                 
                             }
@@ -8052,10 +8079,10 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                 CtiCCSubstation *station = findSubstationByPAObjectID(reloadTemp.objectId);
                                 if (station != NULL)
                                 {        
-                                    addSubstationObjectsToList(station->getCCSubIds(), modifiedSubsList);
-                                    modifiedStationsList.push_back(station);
+                                    addSubBusObjectsToList(station->getCCSubIds(), modifiedSubsList);
                                     updateSubstationObjectList(station->getPAOId(), modifiedStationsList);
-                                
+
+                                    msgSubsBitMask |= CtiCCSubstationsMsg::SubAdded;
                                 }
                             }
                         }
@@ -8073,6 +8100,9 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             executor->Execute();
                             delete executor;
 
+
+                            msgSubsBitMask = CtiCCSubstationsMsg::AllSubsSent;;
+                            msgBitMask  = CtiCCSubstationBusMsg::AllSubBusesSent;;
                         }
                         else  // ChangeTypeAdd, ChangeTypeUpdate
                         {   
@@ -8101,10 +8131,11 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                             CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
                                             if (station != NULL)
                                             {        
-                                                addSubstationObjectsToList(station->getCCSubIds(), modifiedSubsList);
-                                                modifiedStationsList.push_back(station);
+                                                addSubBusObjectsToList(station->getCCSubIds(), modifiedSubsList);
                                                 updateSubstationObjectList(stationId, modifiedStationsList);
-                                          
+
+                                                msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
+                                                msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                                             }
                                             iter++;
                                         }
@@ -8126,9 +8157,11 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                         CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
                                         if (station != NULL)
                                         {        
-                                            addSubstationObjectsToList(station->getCCSubIds(), modifiedSubsList);
-                                            modifiedStationsList.push_back(station);
+                                            addSubBusObjectsToList(station->getCCSubIds(), modifiedSubsList);
                                             updateSubstationObjectList(stationId, modifiedStationsList);
+
+                                            msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
+                                            msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
 
                                         }
                                         iter++;
@@ -8148,8 +8181,11 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             CtiCCExecutorFactory f;
                             CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DELETE_ITEM, reloadTemp.objectId));
                             executor->Execute();
-                            delete executor;
+                            delete executor;   
 
+
+                            msgSubsBitMask = CtiCCSubstationsMsg::AllSubsSent;
+                            msgBitMask  = CtiCCSubstationBusMsg::AllSubBusesSent;;
                         }
                         else  // ChangeTypeAdd, ChangeTypeUpdate
                         {   
@@ -8167,20 +8203,6 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                 else
                                 {
                                        
-                                    /*list <LONG>::const_iterator iter = tempSpArea->getSubstationIds()->begin();
-                                    while (iter != tempSpArea->getSubstationIds()->end())
-                                    {   
-                                        LONG stationId = *iter;
-                                        CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
-                                        if (station != NULL)
-                                        {
-                                            addSubstationObjectsToList(station->getCCSubIds(), modifiedSubsList);
-                                            modifiedStationsList.push_back(station);
-                                            updateSubstationObjectList(stationId, modifiedStationsList);
-                                        }
-                                        iter++;
-                                    }  */
-                               
                                     reloadSpecialAreaFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map, 
                                                              &_paobject_specialarea_map, &_pointid_specialarea_map, _ccSpecialAreas);
                                     tempSpArea = findSpecialAreaByPAObjectID(reloadTemp.objectId);
@@ -8196,9 +8218,10 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                             CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
                                             if (station != NULL)
                                             {
-                                                addSubstationObjectsToList(station->getCCSubIds(), modifiedSubsList);
-                                                modifiedStationsList.push_back(station);
+                                                addSubBusObjectsToList(station->getCCSubIds(), modifiedSubsList);
                                                 updateSubstationObjectList(stationId, modifiedStationsList);
+                                                msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
+                                                msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
                                             }
                                             iter++;
                                         } 
@@ -8222,8 +8245,9 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                             CtiCCSubstation *station = findSubstationByPAObjectID(stationId);
                                             if (station != NULL)
                                             {
-                                                modifiedStationsList.push_back(station);
+                                                addSubBusObjectsToList(station->getCCSubIds(), modifiedSubsList);
                                                 updateSubstationObjectList(stationId, modifiedStationsList);
+                                                msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                                             }
                                             iter++;
                                         } 
@@ -8254,7 +8278,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     CtiMultiMsg_vec::iterator iter = modifiedSubsList.begin();
                                     while (iter != modifiedSubsList.end()) 
                                     {
-                                        if (((CtiCCSubstationBusPtr)iter)->getPAOId() == tempSub->getPAOId()) 
+                                        if (((CtiCCSubstationBusPtr)*iter)->getPAOId() == tempSub->getPAOId()) 
                                         {  
                                             modifiedSubsList.erase(iter);
                                             iter = modifiedSubsList.end();
@@ -8264,6 +8288,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                     }
                                     modifiedSubsList.push_back(tempSub);
                                     msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                                    msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                                 }
                                 else
                                 {
@@ -8276,7 +8301,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                             CtiMultiMsg_vec::iterator iter = modifiedSubsList.begin();
                                             while (iter != modifiedSubsList.end()) 
                                             {
-                                                if (((CtiCCSubstationBusPtr)iter)->getPAOId() == tempSub->getPAOId()) 
+                                                if (((CtiCCSubstationBusPtr)*iter)->getPAOId() == tempSub->getPAOId()) 
                                                 {  
                                                     modifiedSubsList.erase(iter);
                                                     iter = modifiedSubsList.end();
@@ -8286,6 +8311,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                                             }
                                             modifiedSubsList.push_back(tempSub);
                                             msgBitMask |= CtiCCSubstationBusMsg::SubBusModified;
+                                            msgSubsBitMask |= CtiCCSubstationsMsg::SubModified;
                                         }
                                     }
                                 }
@@ -8359,10 +8385,10 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
                 _lastindividualdbreloadtime.now();
 
-                if ( _wassubbusdeletedflag )
+                /*if ( _wassubbusdeletedflag )
                 {
                     msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent | CtiCCSubstationBusMsg::SubBusDeleted;
-                }
+                } */
 
                 for(LONG i=0;i<_ccSubstationBuses->size();i++)
                 {
@@ -8440,8 +8466,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 executor = f.createExecutor(new CtiCCSpecialAreasMsg(*_ccSpecialAreas));
                 executor->Execute();
                 delete executor; 
-                if (msgBitMask & CtiCCSubstationBusMsg::AllSubBusesSent) 
-                    executor = f.createExecutor(new CtiCCSubstationsMsg(*_ccSubstations));
+                if (msgSubsBitMask & CtiCCSubstationsMsg::AllSubsSent) 
+                    executor = f.createExecutor(new CtiCCSubstationsMsg(*_ccSubstations, msgSubsBitMask));
                 else
 				{
                     for (int ii = 0; ii < modifiedSubsList.size(); ii++) 
@@ -8455,7 +8481,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
 
                         }
                     }
-                    executor = f.createExecutor(new CtiCCSubstationsMsg((CtiCCSubstation_vec&)modifiedStationsList));
+                    executor = f.createExecutor(new CtiCCSubstationsMsg((CtiCCSubstation_vec&)modifiedStationsList, msgSubsBitMask));
                 } 
                 executor->Execute();
                 delete executor; 
@@ -8491,6 +8517,35 @@ void CtiCCSubstationBusStore::updateSubstationObjectList(LONG substationId, CtiM
         modifiedStationsList.push_back(station);
     }
 
+}
+
+
+void CtiCCSubstationBusStore::addSubBusObjectsToList(list <LONG> *subBusIds, CtiMultiMsg_vec &modifiedSubsList)
+{
+    list <LONG>::const_iterator busIter = subBusIds->begin();
+    while (busIter != subBusIds->end())
+    {
+    
+        CtiCCSubstationBus* tempSub = findSubBusByPAObjectID(*busIter);
+        if (tempSub != NULL)
+        {
+            CtiMultiMsg_vec::iterator iter = modifiedSubsList.begin();
+            while (iter != modifiedSubsList.end()) 
+            {
+                if (((CtiCCSubstationBusPtr)*iter)->getPAOId() == tempSub->getPAOId()) 
+                {  
+                    modifiedSubsList.erase(iter);
+                    iter = modifiedSubsList.end();
+                }
+                else
+                    iter++;
+            }
+            modifiedSubsList.push_back(tempSub);
+    
+        }
+        busIter++;
+    }
+    return;
 }
 
 
@@ -8775,6 +8830,27 @@ void CtiCCSubstationBusStore::setLinkDropOutTime(const CtiTime& dropOutTime)
     return;
 }
 
+BOOL CtiCCSubstationBusStore::getVoltReductionSystemDisabled() 
+{
+    return _voltReductionSystemDisabled;
+}
+
+void CtiCCSubstationBusStore::setVoltReductionSystemDisabled(BOOL disableFlag)
+{
+    _voltReductionSystemDisabled = disableFlag;
+    return;
+}
+
+LONG CtiCCSubstationBusStore::getVoltDisabledCount() 
+{
+    return _voltDisabledCount;
+}
+
+void CtiCCSubstationBusStore::setVoltDisabledCount(LONG value)
+{
+    _voltDisabledCount = value;
+    return;
+}
 
 void CtiCCSubstationBusStore::calculateParentPowerFactor(LONG subBusId)
 {

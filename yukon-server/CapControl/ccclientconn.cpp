@@ -179,10 +179,6 @@ void CtiCCClientConnection::_sendthr()
             CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
 
-            //ULONG msgBitMask = CtiCCAreaMsg::AllAreasSent;
-            ULONG msgBitMask = CtiCCSubstationBusMsg::AllSubBusesSent;
-
-            
             CtiCCExecutorFactory f;
             CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::REQUEST_ALL_DATA));
             executor->Execute();

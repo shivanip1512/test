@@ -41,7 +41,8 @@ typedef enum
     CC_AbnormalQuality = 3,
     CC_Fail = 4,
     CC_CommFail = 5,
-    CC_NoControl = 6
+    CC_NoControl = 6,
+    CC_UnSolicited = 7
 } CtiCCControlStatusQaulity;
 
 namespace capcontrol
@@ -117,6 +118,7 @@ public:
     BOOL getControlStatusFailFlag() const;
     BOOL getControlStatusCommFailFlag() const;
     BOOL getControlStatusNoControlFlag() const;
+    BOOL getControlStatusUnSolicitedFlag() const;
     LONG getControlStatusQuality() const;
 
     BOOL getOvUvSituationFlag() const;
@@ -190,6 +192,7 @@ public:
     CtiCCCapBank& setControlStatusFailFlag(BOOL flag);
     CtiCCCapBank& setControlStatusCommFailFlag(BOOL flag);
     CtiCCCapBank& setControlStatusNoControlFlag(BOOL flag);
+    CtiCCCapBank& setControlStatusUnSolicitedFlag(BOOL flag);
     CtiCCCapBank& setControlStatusQuality(CtiCCControlStatusQaulity quality);
 
     CtiCCCapBank& setOvUvSituationFlag(BOOL ovUvSituationFlag);
@@ -213,6 +216,7 @@ public:
     //int getAssumedOrigVerificationState();
     CtiCCCapBank& initVerificationControlStatus();
     CtiCCCapBank& addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg);
+    string getControlStatusText() const;
 
     CtiCCPointResponse* getPointResponse(CtiCCMonitorPoint* point);
 
@@ -324,6 +328,7 @@ private:
     BOOL _controlStatusFailFlag;
     BOOL _controlStatusCommFailFlag;
     BOOL _controlStatusNoControlFlag;
+    BOOL _controlStatusUnSolicitedFlag;
     BOOL _ovuvSituationFlag;
     
     CtiCCTwoWayPoints *_twoWayPoints;

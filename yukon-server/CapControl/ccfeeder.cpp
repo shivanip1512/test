@@ -601,6 +601,17 @@ LONG CtiCCFeeder::getPhaseCId() const
 }
 
 /*---------------------------------------------------------------------------
+    getTotalizedControlFlag
+
+    Returns the getPhaseC pointid of the feeder
+---------------------------------------------------------------------------*/
+BOOL CtiCCFeeder::getTotalizedControlFlag() const
+{
+    return _totalizedControlFlag;
+}
+
+
+/*---------------------------------------------------------------------------
     getPhaseAValue
 
     Returns the PhaseAValue VAr of the feeder
@@ -2082,7 +2093,8 @@ bool CtiCCFeeder::removeMaxKvar( long bankId )
     Creates a CtiRequestMsg to open the next cap bank to increase the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore)
+CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                                     string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue)
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
@@ -2136,7 +2148,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
         //setEventSequence(getEventSequence() + 1);
         INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId, stateInfo));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, 
+                                                capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
     }
     else
     {
@@ -2173,7 +2186,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     return reqMsg;
 }
 
-CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore )
+CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                                                 string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue )
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
@@ -2229,7 +2243,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
         //setEventSequence(getEventSequence() + 1); // should be sub's event sequence for verification...
         INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId, stateInfo));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0,
+                                                capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
     }                                                                                                                                                                                                                                 
     else
     {
@@ -2257,7 +2272,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     return reqMsg;
 }
 
-CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore )  
+CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                                                 string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue )  
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
@@ -2313,7 +2329,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
         //setEventSequence(getEventSequence() + 1);     // should be sub's sequence for verification
         INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId, stateInfo));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlVerificationCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control verification", kvarBefore, kvarBefore, 0, 
+                                                capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
     }
     else
     {
@@ -2348,7 +2365,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     Creates a CtiRequestMsg to close the next cap bank to decrease the
     var level for a strategy.
 ---------------------------------------------------------------------------*/
-CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore)
+CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents,
+                                                     string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue)
 {
     CtiRequestMsg* reqMsg = NULL;
     if( capBank == NULL )
@@ -2401,7 +2419,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
         //setEventSequence(getEventSequence() + 1);
         INT actionId = CCEventActionIdGen(capBank->getStatusPointId()) + 1;
         string stateInfo = capBank->getControlStatusQualityString();
-        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, capBank->getIpAddress(), actionId, stateInfo));
+        ccEvents.push_back(new CtiCCEventLogMsg(0, capBank->getStatusPointId(), getParentId(), getPAOId(), capControlCommandSent, getEventSequence(), capBank->getControlStatus(), textInfo, "cap control", kvarBefore, kvarBefore, 0, 
+                                                capBank->getIpAddress(), actionId, stateInfo, varAValue, varBValue, varCValue));
     }
     else
     {
@@ -2904,7 +2923,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         {
                             //DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                             string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Close, getIVControl(), getCurrentVarLoadPointValue());
-                            request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                            request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                             if( request == NULL )
                             {
@@ -2963,7 +2982,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
                         //DOUBLE controlValue = (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                         string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
-                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
     
                         if( request == NULL )
                         {
@@ -3054,7 +3073,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                         if( adjustedBankKVARReduction <= (-1.0*getKVARSolution()) )
                         {
                             string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Close, getIVControl(), getCurrentVarLoadPointValue());
-                            request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                            request = createDecreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                         }
                         else
                         {//cap bank too big
@@ -3118,7 +3137,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                     if( adjustedBankKVARIncrease <= getKVARSolution() )
                     {
                         string text = createTextString(CtiCCSubstationBus::IndividualFeederControlMethod, CtiCCCapBank::Open, getIVControl(), getCurrentVarLoadPointValue());
-                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                        request = createIncreaseVarRequest(capBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                     }
                     else
                     {//cap bank too big
@@ -3193,7 +3212,9 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
 
     Returns a boolean if the current day of the week can be a peak day
 ---------------------------------------------------------------------------*/
-BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality)
+BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, 
+                                             DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality,
+                                             DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue)
 {
     BOOL returnBoolean = TRUE;
     BOOL found = FALSE;
@@ -3410,7 +3431,10 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
 
                 INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
                 string stateInfo = currentCapBank->getControlStatusQualityString();
-                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control", varValueBeforeControl, currentVarLoadPointValue, change, currentCapBank->getIpAddress(), actionId, stateInfo));
+                ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, 
+                                                        getEventSequence(), currentCapBank->getControlStatus(), text, "cap control", 
+                                                        varValueBeforeControl, currentVarLoadPointValue, change, currentCapBank->getIpAddress(), 
+                                                        actionId, stateInfo,  varAValue, varBValue, varCValue));
                 
             }
             else
@@ -3504,29 +3528,16 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
-                            if (ratioA < minConfirmPercent*.01)
+                            if ((ratioA < minConfirmPercent*.01 && ratioA >= failurePercent*.01) &&
+                                (ratioB < minConfirmPercent*.01 && ratioB >= failurePercent*.01) &&
+                                (ratioC < minConfirmPercent*.01 && ratioC >= failurePercent*.01))
                             {
-                                if (ratioB < failurePercent*.01 && ratioC < failurePercent*.01 ) 
-                                    currentCapBank->setControlStatusQuality(CC_Partial);
-                                else
-                                    currentCapBank->setControlStatusQuality(CC_Significant);
-                            }
-                            else if (ratioB < minConfirmPercent*.01)
-                            {
-                                if (ratioA < failurePercent*.01 && ratioC < failurePercent*.01 ) 
-                                    currentCapBank->setControlStatusQuality(CC_Partial);
-                                else
-                                    currentCapBank->setControlStatusQuality(CC_Significant);
-                            }
-                            else if (ratioC < minConfirmPercent*.01)
-                            {
-                                if (ratioA < failurePercent*.01 && ratioB < failurePercent*.01 ) 
-                                    currentCapBank->setControlStatusQuality(CC_Partial);
-                                else
-                                    currentCapBank->setControlStatusQuality(CC_Significant);
-                            }
-                            else
                                 currentCapBank->setControlStatusQuality(CC_Significant);
+                            }
+                            else 
+                            {
+                                currentCapBank->setControlStatusQuality(CC_Partial);
+                            }
                         }
                         else
                         {
@@ -3590,30 +3601,16 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         else if( minConfirmPercent != 0 )
                         {
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
-                            if (ratioA < minConfirmPercent*.01)
+                            if ((ratioA < minConfirmPercent*.01 && ratioA >= failurePercent*.01) &&
+                                (ratioB < minConfirmPercent*.01 && ratioB >= failurePercent*.01) &&
+                                (ratioC < minConfirmPercent*.01 && ratioC >= failurePercent*.01))
                             {
-                                if (ratioB < failurePercent*.01 && ratioC < failurePercent*.01 ) 
-                                    currentCapBank->setControlStatusQuality(CC_Partial);
-                                else
-                                    currentCapBank->setControlStatusQuality(CC_Significant);
-                            }
-                            else if (ratioB < minConfirmPercent*.01)
-                            {
-                                if (ratioA < failurePercent*.01 && ratioC < failurePercent*.01 ) 
-                                    currentCapBank->setControlStatusQuality(CC_Partial);
-                                else
-                                    currentCapBank->setControlStatusQuality(CC_Significant);
-                            }
-                            else if (ratioC < minConfirmPercent*.01)
-                            {
-                                if (ratioA < failurePercent*.01 && ratioB < failurePercent*.01 ) 
-                                    currentCapBank->setControlStatusQuality(CC_Partial);
-                                else
-                                    currentCapBank->setControlStatusQuality(CC_Significant);
-                            }
-                            else
                                 currentCapBank->setControlStatusQuality(CC_Significant);
-                            
+                            }
+                            else 
+                            {
+                                currentCapBank->setControlStatusQuality(CC_Partial);
+                            }
                         }
                         else
                         {
@@ -3678,7 +3675,8 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                 string stateInfo = currentCapBank->getControlStatusQualityString();
                 ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, 
                                                         getEventSequence(), currentCapBank->getControlStatus(), text, "cap control", 
-                                                        varAValue+varBValue+varCValue, varAValue+varBValue+varCValue, changeA+changeB+changeC, currentCapBank->getIpAddress(), actionId, stateInfo));
+                                                        varAValue+varBValue+varCValue, varAValue+varBValue+varCValue, changeA+changeB+changeC, currentCapBank->getIpAddress(), actionId, stateInfo,
+                                                        varAValue, varBValue, varCValue));
                 
             }
             else
@@ -3973,7 +3971,11 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                //setEventSequence(currentFeeder->getEventSequence() + 1);
                INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
                string stateInfo = currentCapBank->getControlStatusQualityString();
-               ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), text, "cap control verification", varValueBeforeControl, currentVarLoadPointValue, change, currentCapBank->getIpAddress(), actionId, stateInfo));
+               ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), getParentId(), getPAOId(), 
+                                                       capBankStateUpdate, getEventSequence(), currentCapBank->getControlStatus(), 
+                                                       text, "cap control verification", varValueBeforeControl, 
+                                                       currentVarLoadPointValue, change, currentCapBank->getIpAddress(), actionId, 
+                                                       stateInfo, currentVarLoadPointValue));
                //setEventSequence(0);
            }
            else
@@ -4053,7 +4055,8 @@ CtiCCFeeder& CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateT
                         control = 4; //flip
                     }
                 string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue());
-                request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                               getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                 }
             }
             else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
@@ -4066,7 +4069,8 @@ CtiCCFeeder& CtiCCFeeder::startVerificationOnCapBank(const CtiTime& currentDateT
                     control = 4; //flip
                 }
                 string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue());
-                request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                               getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
             }
 
 
@@ -4130,7 +4134,8 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
                     }
                     //setEventSequence(getEventSequence());
                     string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
-                    request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                    request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                                   getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                 }
                 else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
                 {   
@@ -4159,7 +4164,8 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
                         }
                         //currentFeeder->setEventSequence(getEventSequence());
                         string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
-                        request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                        request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                     }
                 }
 
@@ -4192,7 +4198,8 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
                             control = 4; //flip
                         }
                         string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
-                        request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                        request = createDecreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                     }
                 }
                 else if (getCurrentVerificationCapBankOrigState() == CtiCCCapBank::Close)
@@ -4205,7 +4212,8 @@ BOOL CtiCCFeeder::sendNextCapBankVerificationControl(const CtiTime& currentDateT
                         control = 4; //flip
                     }
                     string text = createTextString(getControlMethod(), control, controlValue, getCurrentVarLoadPointValue()) ;
-                    request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                    request = createIncreaseVarVerificationRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(),
+                                                                   getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                 }
 
             }
@@ -4355,7 +4363,7 @@ BOOL CtiCCFeeder::isAlreadyControlled(LONG minConfirmPercent)
                     if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending || 
                         currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                     {
-                        if (getUsePhaseData())
+                        if (getUsePhaseData() && !getTotalizedControlFlag())
                         {
                             DOUBLE ratioA = fabs((getPhaseAValue() - getPhaseAValueBeforeControl()) /
                                                   (currentCapBank->getBankSize() / 3));
@@ -5051,6 +5059,18 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCId(LONG pointid)
 
 
 /*---------------------------------------------------------------------------
+    setTotalizedControlFlag 
+        
+    Sets the TotalizedControlFlag of the feeder
+---------------------------------------------------------------------------*/
+CtiCCFeeder& CtiCCFeeder::setTotalizedControlFlag(BOOL flag)
+{
+    _totalizedControlFlag = flag;
+    return *this;
+}
+
+
+/*---------------------------------------------------------------------------
     setPhaseAValue 
         
     Sets the PhaseAValue VAr  of the feeder
@@ -5254,7 +5274,7 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                             {
                                 DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(),CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 string text = createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
-                                request = createDecreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                                request = createDecreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                                 updatePointResponsePreOpValues(parentBank);
                                 bestBank = parentBank;
@@ -5306,7 +5326,7 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                     {
                                         DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                         string text = createTextString(getControlMethod(), CtiCCCapBank::Close, controlValue, getCurrentVarLoadPointValue());
-                                        request = createDecreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                                        request = createDecreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                                         updatePointResponsePreOpValues(currentCapBank);
                                         bestBank = currentCapBank;
@@ -5367,7 +5387,7 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                             {
                                 DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                 string text = createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
-                                request = createIncreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                                request = createIncreaseVarRequest(parentBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
 
                                 updatePointResponsePreOpValues(parentBank);
                                 bestBank = parentBank;
@@ -5419,7 +5439,7 @@ BOOL CtiCCFeeder::voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMult
                                     {
                                         DOUBLE controlValue = (stringCompareIgnoreCase(getControlUnits(), CtiCCSubstationBus::VoltControlUnits) ? getCurrentVoltLoadPointValue() : getCurrentVarLoadPointValue());
                                         string text = createTextString(getControlMethod(), CtiCCCapBank::Open, controlValue, getCurrentVarLoadPointValue());
-                                        request = createIncreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue());
+                                        request = createIncreaseVarRequest(currentCapBank, pointChanges, ccEvents, text, getCurrentVarLoadPointValue(), getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                            
                                         updatePointResponsePreOpValues(currentCapBank);
                                         bestBank = currentCapBank;
@@ -6409,6 +6429,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         _usePhaseData = right._usePhaseData;
         _phaseBid = right._phaseBid;
         _phaseCid = right._phaseCid;
+        _totalizedControlFlag = right._totalizedControlFlag;
         _phaseAvalue = right._phaseAvalue;
         _phaseBvalue = right._phaseBvalue;
         _phaseCvalue = right._phaseCvalue;
@@ -6490,6 +6511,9 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
     _usePhaseData = (tempBoolString=="y"?TRUE:FALSE);
     rdr["phaseb"] >> _phaseBid;
     rdr["phasec"] >> _phaseCid;
+    rdr["controlflag"] >> tempBoolString;
+    std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
+    _totalizedControlFlag = (tempBoolString=="y"?TRUE:FALSE);
 
 
     _strategyId = 0;

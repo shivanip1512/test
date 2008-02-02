@@ -478,6 +478,10 @@ BOOL CtiCCCapBank::getControlStatusNoControlFlag() const
 {
     return _controlStatusNoControlFlag;
 }
+BOOL CtiCCCapBank::getControlStatusUnSolicitedFlag() const
+{
+    return _controlStatusUnSolicitedFlag;
+}
 
 
 LONG CtiCCCapBank::getControlStatusQuality() const
@@ -535,6 +539,34 @@ LONG CtiCCCapBank::getControlStatus() const
 {
    return _controlstatus;
 }
+/*---------------------------------------------------------------------------
+    getControlStatus
+
+    Returns the control status of the cap bank
+---------------------------------------------------------------------------*/
+string CtiCCCapBank::getControlStatusText() const
+{
+    string retVal = "";
+     if (_controlstatus == CtiCCCapBank::Open )
+         retVal = "Open";
+     else if (_controlstatus == CtiCCCapBank::OpenQuestionable )
+         retVal = "OpenQuestionable";
+     else if (_controlstatus == CtiCCCapBank::OpenFail )
+         retVal = "OpenFail";
+     else if (_controlstatus == CtiCCCapBank::OpenPending )
+         retVal = "OpenPending";
+     else if (_controlstatus == CtiCCCapBank::Close )
+         retVal = "Close";
+     else if (_controlstatus == CtiCCCapBank::CloseQuestionable )
+         retVal = "CloseQuestionable";
+     else if (_controlstatus == CtiCCCapBank::CloseFail )
+         retVal = "CloseFail";
+     else if (_controlstatus == CtiCCCapBank::ClosePending )
+         retVal = "ClosePending";
+
+    return retVal;
+}
+
 
 /*---------------------------------------------------------------------------
     getOperationAnalogPointId
@@ -1163,6 +1195,25 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusNoControlFlag(BOOL flag)
 }
 
 /*---------------------------------------------------------------------------
+    setControlStatusNoControlFlag
+    
+    Sets the ControlStatusNoControlFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(BOOL flag)
+{
+
+    if (_controlStatusUnSolicitedFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _controlStatusUnSolicitedFlag = flag;
+
+    return *this;
+}
+
+
+
+/*---------------------------------------------------------------------------
     setControlStatusQuality
     
     Sets the ControlStatusQuality ..
@@ -1181,6 +1232,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             setControlStatusFailFlag(FALSE);
             setControlStatusCommFailFlag(FALSE);
             setControlStatusNoControlFlag(FALSE);
+            setControlStatusUnSolicitedFlag(FALSE);
             break;
         }
        
@@ -1192,6 +1244,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             setControlStatusFailFlag(FALSE);
             setControlStatusCommFailFlag(FALSE);
             setControlStatusNoControlFlag(FALSE);
+            setControlStatusUnSolicitedFlag(FALSE);
             break;
        
         }
@@ -1203,6 +1256,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             setControlStatusFailFlag(FALSE);
             setControlStatusCommFailFlag(FALSE);
             setControlStatusNoControlFlag(FALSE);
+            setControlStatusUnSolicitedFlag(FALSE);
             break;
         }
         case CC_Fail:
@@ -1213,6 +1267,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             setControlStatusFailFlag(TRUE);
             setControlStatusCommFailFlag(FALSE);
             setControlStatusNoControlFlag(FALSE);
+            setControlStatusUnSolicitedFlag(FALSE);
             break;
         }
         case CC_CommFail:
@@ -1223,6 +1278,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             setControlStatusFailFlag(FALSE);
             setControlStatusCommFailFlag(TRUE);
             setControlStatusNoControlFlag(FALSE);
+            setControlStatusUnSolicitedFlag(FALSE);
             break;
         }
         case CC_NoControl:
@@ -1233,6 +1289,18 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             setControlStatusFailFlag(FALSE);
             setControlStatusCommFailFlag(FALSE);
             setControlStatusNoControlFlag(TRUE);
+            setControlStatusUnSolicitedFlag(FALSE);
+            break;
+        }
+        case CC_UnSolicited:
+        {
+            setControlStatusPartialFlag(FALSE);
+            setControlStatusSignificantFlag(FALSE);
+            setControlStatusAbnQualityFlag(FALSE);
+            setControlStatusFailFlag(FALSE);
+            setControlStatusCommFailFlag(FALSE);
+            setControlStatusNoControlFlag(FALSE);
+            setControlStatusUnSolicitedFlag(TRUE);
             break;
         }
         case CC_Normal:
@@ -1244,6 +1312,7 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusQuality(CtiCCControlStatusQaulity qu
             setControlStatusFailFlag(FALSE);
             setControlStatusCommFailFlag(FALSE);
             setControlStatusNoControlFlag(FALSE);
+            setControlStatusUnSolicitedFlag(FALSE);
             break;
         }
     }
@@ -1286,6 +1355,11 @@ string CtiCCCapBank::getControlStatusQualityString()
         case CC_NoControl:
         {
             retString = "No Control";
+            break;
+        }
+        case CC_UnSolicited:
+        {
+            retString = "UnSolicited";
             break;
         }
         case CC_Normal:
@@ -2014,6 +2088,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _controlStatusFailFlag = right._controlStatusFailFlag;
         _controlStatusCommFailFlag = right._controlStatusCommFailFlag;
         _controlStatusNoControlFlag = right._controlStatusNoControlFlag;
+        _controlStatusUnSolicitedFlag = right._controlStatusUnSolicitedFlag;
         _controlStatusQuality = right._controlStatusQuality;
         
         _ipAddress = right._ipAddress;
@@ -2165,6 +2240,8 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _controlStatusFailFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
     _controlStatusCommFailFlag = (_additionalFlags[12]=='y'?TRUE:FALSE);
     _controlStatusNoControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE);
+    _controlStatusUnSolicitedFlag = (_additionalFlags[14]=='y'?TRUE:FALSE);
+
 
     if (_controlStatusPartialFlag)
         _controlStatusQuality = CC_Partial;
@@ -2178,6 +2255,8 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
         _controlStatusQuality = CC_CommFail;
     else if(_controlStatusNoControlFlag)
         _controlStatusQuality = CC_NoControl;
+    else if(_controlStatusUnSolicitedFlag)
+        _controlStatusQuality = CC_UnSolicited;
     else
         _controlStatusQuality = CC_Normal;
     
@@ -2265,6 +2344,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[11] = (_controlStatusFailFlag?'Y':'N');
             addFlags[12] = (_controlStatusCommFailFlag?'Y':'N');
             addFlags[13] = (_controlStatusNoControlFlag?'Y':'N');
+            addFlags[14] = (_controlStatusUnSolicitedFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
@@ -2279,7 +2359,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             _additionalFlags.append(char2string(*(addFlags+11))); 
             _additionalFlags.append(char2string(*(addFlags+12))); 
             _additionalFlags.append(char2string(*(addFlags+13))); 
-            _additionalFlags.append("NNNNNN");
+            _additionalFlags.append(char2string(*(addFlags+14))); 
+            _additionalFlags.append("NNNNN");
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 

@@ -222,11 +222,12 @@ public:
 
     CtiCCEventLogMsg(LONG logId, LONG pointId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value, 
                      string text, string userName, DOUBLE kvarBefore= 0, DOUBLE kvarAfter = 0, DOUBLE kvarChange = 0, 
-                     string ipAddress = string("(N/A)"), LONG actionId = -1, string stateInfo = string("(N/A)")) : 
+                     string ipAddress = string("(N/A)"), LONG actionId = -1, string stateInfo = string("(N/A)"),
+                     DOUBLE aVar = 0, DOUBLE bVar = 0, DOUBLE cVar = 0) : 
         _logId(logId), _timeStamp(CtiTime()), _pointId(pointId), _subId(subId),
         _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName),
         _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress), 
-        _actionId(actionId), _stateInfo(stateInfo) { }; //provided for polymorphic persitence only
+        _actionId(actionId), _stateInfo(stateInfo), _aVar(aVar), _bVar(bVar), _cVar(cVar) { }; //provided for polymorphic persitence only
 
     LONG getLogId() const { return _logId; };
     CtiTime getTimeStamp() const { return _timeStamp; };
@@ -244,13 +245,19 @@ public:
     string getIpAddress() const { return _ipAddress; };
     LONG getActionId() const { return _actionId; };
     string getStateInfo() const { return _stateInfo; };
+    DOUBLE getAVar() const { return _aVar; };
+    DOUBLE getBVar() const { return _bVar; };
+    DOUBLE getCVar() const { return _cVar; };
 
 
     void setLogId(LONG id) { _logId = id; return;};
     void setActionId(LONG id) { _actionId = id; return;};
     void setStateInfo(string stateInfo) { _stateInfo = stateInfo; return;};
 
-
+    void setAVar(DOUBLE val) { _aVar = val; return;};
+    void setBVar(DOUBLE val) { _bVar = val; return;};
+    void setCVar(DOUBLE val) { _cVar = val; return;};
+    void setABCVar(DOUBLE aVal, DOUBLE bVal, DOUBLE cVal) { _aVar = aVal; _bVar = bVal; _cVar = cVal; return;};
 
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
@@ -278,6 +285,10 @@ private:
     string _ipAddress;
     LONG _actionId;
     string _stateInfo;
+
+    DOUBLE _aVar;
+    DOUBLE _bVar;
+    DOUBLE _cVar;
     
 };
     
@@ -466,11 +477,12 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationsMsg )
 
 public:
 
-    CtiCCSubstationsMsg(CtiCCSubstation_vec& substationList);
+    CtiCCSubstationsMsg(CtiCCSubstation_vec& substationList, ULONG bitMask = 0);
     CtiCCSubstationsMsg(CtiCCSubstation* ccSubstations);
     CtiCCSubstationsMsg(const CtiCCSubstationsMsg& ccSubstations);
 
     virtual ~CtiCCSubstationsMsg();
+    ULONG getMsgInfoBitMask() const { return _msgInfoBitMask; };
 
     CtiCCSubstation_vec* getCCSubstations() const     { return _ccSubstations; }
 
@@ -480,9 +492,19 @@ public:
     void saveGuts( RWvostream&) const;
 
     CtiCCSubstationsMsg& operator=(const CtiCCSubstationsMsg& right);
+
+    // Possible bit mask settings
+    static ULONG AllSubsSent;
+    static ULONG SubDeleted;
+    static ULONG SubAdded;
+    static ULONG SubModified;
+
+
 private:
-    CtiCCSubstationsMsg() : CtiCCMessage("CCSubstations"), _ccSubstations(NULL){};
-    
+    CtiCCSubstationsMsg() : CtiCCMessage("CCSubstations"), _ccSubstations(NULL), _msgInfoBitMask(0){};
+
+
+    ULONG _msgInfoBitMask;
     CtiCCSubstation_vec* _ccSubstations;
 };
 

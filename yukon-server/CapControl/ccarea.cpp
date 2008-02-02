@@ -172,6 +172,7 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
 
         _additionalFlags = right._additionalFlags;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
+        _reEnableAreaFlag = right._reEnableAreaFlag;
     }
     return *this;
 }
@@ -221,6 +222,8 @@ void CtiCCArea::restore(RWDBReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
     setOvUvDisabledFlag(FALSE);
+    setReEnableAreaFlag(FALSE);
+
 
    //initialize strategy members
     setStrategyId(0);
@@ -293,7 +296,8 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
             
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
-			_additionalFlags = string(char2string(*addFlags));
+            addFlags[1] = (_reEnableAreaFlag?'Y':'N');
+            _additionalFlags = string(char2string(*addFlags));
             _additionalFlags.append("NNNNNNNNNNNNNNNNNNN");
 
             updater.clear();
@@ -370,6 +374,7 @@ void CtiCCArea::setDynamicData(RWDBReader& rdr)
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
 
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
+    _reEnableAreaFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
     
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
@@ -455,6 +460,15 @@ BOOL CtiCCArea::getDisableFlag() const
 BOOL CtiCCArea::getOvUvDisabledFlag() const
 {
     return _ovUvDisabledFlag;
+}
+/*---------------------------------------------------------------------------
+    getReEnableAreaFlag
+
+    Returns the ovuv disable flag of the area
+---------------------------------------------------------------------------*/
+BOOL CtiCCArea::getReEnableAreaFlag() const
+{
+    return _reEnableAreaFlag;
 }
 
 /*---------------------------------------------------------------------------
@@ -736,6 +750,19 @@ CtiCCArea& CtiCCArea::setOvUvDisabledFlag(BOOL flag)
     _ovUvDisabledFlag = flag;
     return *this;
 }
+
+
+/*---------------------------------------------------------------------------
+    setReEnableAreaFlag
+
+    Sets the reEnable Area flag of the area
+---------------------------------------------------------------------------*/
+CtiCCArea& CtiCCArea::setReEnableAreaFlag(BOOL flag)
+{
+    _reEnableAreaFlag = flag;
+    return *this;
+}
+
 
 
 CtiCCArea& CtiCCArea::setStrategyId(LONG strategyId)

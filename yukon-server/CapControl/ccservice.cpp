@@ -38,6 +38,10 @@ BOOL _END_DAY_ON_TRIP;
 ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 ULONG _MAX_KVAR;
 ULONG _MAX_KVAR_TIMEOUT;
+LONG _VOLT_REDUCTION_SYSTEM_OVERRIDE;
+ULONG _VOLT_REDUCTION_COMMANDS;
+ULONG _VOLT_REDUCTION_COMMAND_DELAY;
+
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
 CtiTime gInvalidCtiTime = CtiTime(gInvalidCtiDate,0,0,0);
@@ -411,6 +415,56 @@ void CtiCCService::Init()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
+    _VOLT_REDUCTION_SYSTEM_OVERRIDE = 0; //pointid
+    strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_SYSTEM_OVERRIDE");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _VOLT_REDUCTION_SYSTEM_OVERRIDE = atol(str.data())+1;
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _VOLT_REDUCTION_COMMANDS = 0; //number of command/retries for disable ovuv
+    strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_COMMANDS");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _VOLT_REDUCTION_COMMANDS = atoi(str.data())+1;
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _VOLT_REDUCTION_COMMAND_DELAY = 0; //pointid
+    strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_COMMAND_DELAY");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _VOLT_REDUCTION_COMMAND_DELAY = atoi(str.data())+1;
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
     _quit = false;
 }
 

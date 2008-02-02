@@ -2725,8 +2725,11 @@ void CtiCCCommandExecutor::EnableSystem()
         CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
         if (currentArea != NULL)
         {
-             currentArea->setDisableFlag(FALSE);
-             store->UpdateAreaDisableFlagInDB(currentArea);
+            if (currentArea->getReEnableAreaFlag())
+            {                                      
+                currentArea->setDisableFlag(FALSE);
+                store->UpdateAreaDisableFlagInDB(currentArea);
+            }
         }
     }
                
@@ -2778,8 +2781,12 @@ void CtiCCCommandExecutor::DisableSystem()
         CtiCCAreaPtr currentArea = (CtiCCArea*)ccAreas.at(i);
         if (currentArea != NULL)
         {
-             currentArea->setDisableFlag(TRUE);
-             store->UpdateAreaDisableFlagInDB(currentArea);
+            if (!currentArea->getDisableFlag())
+            {
+                currentArea->setReEnableAreaFlag(FALSE);
+                currentArea->setDisableFlag(TRUE);
+                store->UpdateAreaDisableFlagInDB(currentArea);
+            }
         }
     }
                
@@ -4426,7 +4433,7 @@ void CtiCCCommandExecutor::SendAllData()
     executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
     executor->Execute();
     delete executor;
-    executor = f.createExecutor(new CtiCCSubstationsMsg(*store->getCCSubstations(CtiTime().seconds())));
+    executor = f.createExecutor(new CtiCCSubstationsMsg(*(store->getCCSubstations(CtiTime().seconds())), CtiCCSubstationsMsg::AllSubsSent));
     executor->Execute();
     delete executor;
 

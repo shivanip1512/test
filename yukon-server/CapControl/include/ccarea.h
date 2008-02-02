@@ -64,6 +64,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     BOOL getDisableFlag() const;
     LONG getStrategyId() const;
     BOOL getOvUvDisabledFlag() const;
+    BOOL getReEnableAreaFlag() const;
 
     const string& getStrategyName() const;
     const string& getControlMethod() const;
@@ -106,6 +107,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& setDisableFlag(BOOL disable);
     CtiCCArea& setStrategyId(LONG strategyId);
     CtiCCArea& setOvUvDisabledFlag(BOOL flag);
+    CtiCCArea& setReEnableAreaFlag(BOOL flag);
 
     CtiCCArea& setStrategyName(const string& strategyname);
     CtiCCArea& setControlMethod(const string& method);
@@ -198,6 +200,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
 
     string _additionalFlags;
     BOOL _ovUvDisabledFlag;
+    BOOL _reEnableAreaFlag;
 
     std::list<long> _subStationIds;
 

@@ -172,6 +172,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getUsePhaseData() const;
     LONG getPhaseBId() const;
     LONG getPhaseCId() const;
+    BOOL getTotalizedControlFlag() const;
     DOUBLE getPhaseAValue() const;
     DOUBLE getPhaseBValue() const;
     DOUBLE getPhaseCValue() const;
@@ -286,6 +287,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setUsePhaseData(BOOL flag);
     CtiCCSubstationBus& setPhaseBId(LONG pointid);
     CtiCCSubstationBus& setPhaseCId(LONG pointid);
+    CtiCCSubstationBus& setTotalizedControlFlag(BOOL flag);
     CtiCCSubstationBus& setPhaseAValue(DOUBLE value);
     CtiCCSubstationBus& setPhaseBValue(DOUBLE value);
     CtiCCSubstationBus& setPhaseCValue(DOUBLE value);
@@ -545,6 +547,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _usePhaseData;
     LONG _phaseBid;
     LONG _phaseCid;
+    BOOL _totalizedControlFlag;
 
     DOUBLE _phaseAvalue;
     DOUBLE _phaseBvalue;

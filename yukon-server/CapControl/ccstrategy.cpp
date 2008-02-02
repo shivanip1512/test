@@ -193,12 +193,6 @@ void CtiCCStrategy::setTimeAndCloseValues(RWDBReader &rdr)
 
 CtiTODC_SVector& CtiCCStrategy::getTimeOfDayControllers()
 {
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - getTimeOfDayControllers " <<  endl;
-    }
-
-    dumpTimeOfDayControllers();
     return _todc;
 }
 void  CtiCCStrategy::dumpTimeOfDayControllers()

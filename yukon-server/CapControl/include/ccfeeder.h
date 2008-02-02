@@ -193,6 +193,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL getUsePhaseData() const;
     LONG getPhaseBId() const;
     LONG getPhaseCId() const;
+    BOOL getTotalizedControlFlag() const;
     DOUBLE getPhaseAValue() const;
     DOUBLE getPhaseBValue() const;
     DOUBLE getPhaseCValue() const;
@@ -307,6 +308,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setUsePhaseData(BOOL flag);
     CtiCCFeeder& setPhaseBId(LONG pointid);
     CtiCCFeeder& setPhaseCId(LONG pointid);
+    CtiCCFeeder& setTotalizedControlFlag(BOOL flag);
     CtiCCFeeder& setPhaseAValue(DOUBLE value);
     CtiCCFeeder& setPhaseBValue(DOUBLE value);
     CtiCCFeeder& setPhaseCValue(DOUBLE value);    
@@ -319,10 +321,13 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
     bool checkForMaxKvar( long, long );
     bool removeMaxKvar( long bankId );
-    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
-    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
+    CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                            string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
+    CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                            string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
     CtiRequestMsg* createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action, string typeOfControl);
-    BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
+    BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality,
+                                    DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
     BOOL capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, 
                                                      LONG failurePercent, //DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, 
                                                      LONG currentVarPointQuality, DOUBLE varAValueBeforeControl, DOUBLE varBValueBeforeControl,
@@ -365,8 +370,10 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     double computeRegression( CtiTime time );
     string createTextString(const string& controlMethod, int control, DOUBLE controlValue, DOUBLE monitorValue);
 
-    CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
-    CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, string textInfo, DOUBLE kvarBefore);
+    CtiRequestMsg* createIncreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                                        string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
+    CtiRequestMsg* createDecreaseVarVerificationRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                                        string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
     CtiCCFeeder& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL sendNextCapBankVerificationControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
 
@@ -524,7 +531,8 @@ private:
 
     BOOL _usePhaseData;
     LONG _phaseBid;
-    LONG _phaseCid;
+    LONG _phaseCid; 
+    BOOL _totalizedControlFlag;
 
     DOUBLE _phaseAvalue;
     DOUBLE _phaseBvalue;
