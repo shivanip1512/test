@@ -15,6 +15,8 @@ import com.cannontech.web.widget.support.WidgetParameterHelper;
 public class CachingWidgetParameterHelperImpl implements CachingWidgetParameterHelper, InitializingBean {
     
     private Integer maxCacheSize;
+    private Boolean accessOrder;
+    
     private MaxEntryLinkedHashMap<String, Object> cache;
     private String paramPrefix;
     
@@ -23,7 +25,7 @@ public class CachingWidgetParameterHelperImpl implements CachingWidgetParameterH
     }
     
     public void afterPropertiesSet() {
-        this.cache = new MaxEntryLinkedHashMap<String, Object>(maxCacheSize);
+        this.cache = new MaxEntryLinkedHashMap<String, Object>(maxCacheSize, accessOrder);
     }
     
     public String createParamName(String name, Object...uniqueIdentifiers) {
@@ -50,12 +52,11 @@ public class CachingWidgetParameterHelperImpl implements CachingWidgetParameterH
             }
         }
         
-        // key is removed from cache (if it exists) before inserting.
-        // this has effect of keeping more recently added/accessed keys at end of linked map
-        // so that when eventual culling of the herd occurs, it is the least-recently used
-        // parameter that gets removed - not the first added
+        if (foundVal == defaultVal) {
+            doCache = false;
+        }
+        
         if (doCache) {
-            cache.remove(cacheParamName);
             cache.put(cacheParamName, foundVal);
         }
         
@@ -101,6 +102,11 @@ public class CachingWidgetParameterHelperImpl implements CachingWidgetParameterH
     @Required
     public void setMaxCacheSize(Integer maxCacheSize) {
         this.maxCacheSize = maxCacheSize;
+    }
+
+    @Required
+    public void setAccessOrder(Boolean accessOrder) {
+        this.accessOrder = accessOrder;
     }
 
 

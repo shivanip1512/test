@@ -40,8 +40,6 @@ public class TrendWidget extends WidgetControllerBase {
     private DateFormattingService dateFormattingService = null;
     private CachingWidgetParameterHelper cachingWidgetParameterHelper = null;
     
-    private final String PARAMETER_CACHE_ID = "trendwidget";
-
     @Required
     public void setDeviceDao(DeviceDao paoDao) {
         this.deviceDao = paoDao;
@@ -83,7 +81,7 @@ public class TrendWidget extends WidgetControllerBase {
         YukonDevice device = deviceDao.getYukonDevice(deviceId);
 
         // Get the selected attribute graph
-        String selectedAttributeLabel = cachingWidgetParameterHelper.getCachedStringParameter(request, "selectedAttributeLabel", null, PARAMETER_CACHE_ID);
+        String selectedAttributeLabel = cachingWidgetParameterHelper.getCachedStringParameter(request, "selectedAttributeLabel", null, TrendWidget.class);
         
         AttributeGraphType selectedAttributeGraph = supportedAttributeGraphMap.get(selectedAttributeLabel);
 
@@ -117,7 +115,7 @@ public class TrendWidget extends WidgetControllerBase {
 
             // graph type (line/column)
             String defaultGraphType = selectedAttributeGraph.getGraphType().toString();
-            String graphTypeString = cachingWidgetParameterHelper.getCachedStringParameter(request, "graphType", defaultGraphType, PARAMETER_CACHE_ID);
+            String graphTypeString = cachingWidgetParameterHelper.getCachedStringParameter(request, "graphType", defaultGraphType, TrendWidget.class);
 
 
 
@@ -129,7 +127,7 @@ public class TrendWidget extends WidgetControllerBase {
             }
 
             // period
-            String periodString = cachingWidgetParameterHelper.getCachedStringParameter(request, "period", "YEAR", PARAMETER_CACHE_ID);
+            String periodString = cachingWidgetParameterHelper.getCachedStringParameter(request, "period", "YEAR", TrendWidget.class);
             
             
             ChartPeriod period = ChartPeriod.valueOf(periodString);
@@ -163,8 +161,8 @@ public class TrendWidget extends WidgetControllerBase {
             // if no period, re adjust
             if (periodString.equals("NOPERIOD")) {
 
-                String startDateParam = cachingWidgetParameterHelper.getCachedStringParameter(request, "startDateParam", "", PARAMETER_CACHE_ID);
-                String endDateParam = cachingWidgetParameterHelper.getCachedStringParameter(request, "endDateParam", "", PARAMETER_CACHE_ID);
+                String startDateParam = cachingWidgetParameterHelper.getCachedStringParameter(request, "startDateParam", "", TrendWidget.class);
+                String endDateParam = cachingWidgetParameterHelper.getCachedStringParameter(request, "endDateParam", "", TrendWidget.class);
 
                 if (!startDateParam.equals("")) {
 
@@ -189,8 +187,8 @@ public class TrendWidget extends WidgetControllerBase {
                 }
             }
             else {
-                cachingWidgetParameterHelper.removeFromCache("startDateParam", PARAMETER_CACHE_ID);
-                cachingWidgetParameterHelper.removeFromCache("endDateParam", PARAMETER_CACHE_ID);
+                cachingWidgetParameterHelper.removeFromCache("startDateParam", TrendWidget.class);
+                cachingWidgetParameterHelper.removeFromCache("endDateParam", TrendWidget.class);
             }
 
             // set mav

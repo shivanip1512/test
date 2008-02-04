@@ -412,6 +412,7 @@
     
     <bean id="cachingWidgetParameterHelper" class="com.cannontech.web.widget.support.impl.CachingWidgetParameterHelperImpl" scope="session">
        <property name="maxCacheSize" value="50" />
+       <property name="accessOrder" value="true" />
        <aop:scoped-proxy/>
     </bean>
 

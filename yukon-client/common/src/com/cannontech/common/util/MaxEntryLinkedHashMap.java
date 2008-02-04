@@ -6,6 +6,8 @@ import java.util.Map;
 public class MaxEntryLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
     
     private Integer maxEntries;
+    static final int DEFAULT_INITIAL_CAPACITY = 16;
+    static final float DEFAULT_LOAD_FACTOR = 0.75f;
     
     /**
      * LinkedHashMap that will remove eldest entries when size exceeds maxEntries.
@@ -16,6 +18,12 @@ public class MaxEntryLinkedHashMap<K, V> extends LinkedHashMap<K, V> {
         super();
         this.maxEntries = maxEntries;
     }
+    
+    public MaxEntryLinkedHashMap(Integer maxEntries, boolean accessOrder) {
+        super(DEFAULT_INITIAL_CAPACITY, DEFAULT_LOAD_FACTOR, accessOrder);
+        this.maxEntries = maxEntries;
+    }
+    
 
     @Override
     /**
