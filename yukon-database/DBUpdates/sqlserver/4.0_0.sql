@@ -3,7 +3,8 @@
 /******************************************/
 create table DYNAMICCCSPECIALAREA (
    AreaID               numeric              not null,
-   additionalflags      varchar(20)          not null
+   additionalflags      varchar(20)          not null,
+   ControlValue         numeric              not null
 );
 go
 
@@ -133,11 +134,11 @@ alter table CapControlFeeder  drop constraint FK_CCFDR_CCSTR;
 alter table CapControlFeeder drop column StrategyId;
 go
 
-create table CapControlSpecialArea( AreaID numeric not null );
-go
-
-alter table CapControlSpecialArea
-   add constraint PK_CapControlSpecialArea primary key clustered (AreaID);
+create table CAPCONTROLSPECIALAREA (
+   AreaID               numeric              not null,
+   ControlPointID       numeric              not null,
+   constraint PK_CapControlSpecialArea primary key (AreaID)
+)
 go
 
 create table CCSubSpecialAreaAssignment (

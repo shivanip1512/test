@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/1/2008 2:06:55 PM                          */
+/* Created on:     2/4/2008 11:07:29 AM                         */
 /*==============================================================*/
 
 
@@ -1336,6 +1336,7 @@ create table CAPCONTROLCOMMENT  (
 /*==============================================================*/
 create table CAPCONTROLSPECIALAREA  (
    AreaID               NUMBER                          not null,
+   ControlPointID       NUMBER                          not null,
    constraint PK_CapControlSpecialArea primary key (AreaID)
 );
 
@@ -3172,7 +3173,8 @@ create table DYNAMICCCAREA  (
 /*==============================================================*/
 create table DYNAMICCCSPECIALAREA  (
    AreaID               NUMBER                          not null,
-   additionalflags      VARCHAR2(20)                    not null
+   additionalflags      VARCHAR2(20)                    not null,
+   ControlValue         NUMBER                          not null
 );
 
 /*==============================================================*/

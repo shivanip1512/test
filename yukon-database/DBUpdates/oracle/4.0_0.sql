@@ -4,7 +4,8 @@
 
 create table DYNAMICCCSPECIALAREA  (
    AreaID               NUMBER                          not null,
-   additionalflags      VARCHAR2(20)                    not null
+   additionalflags      VARCHAR2(20)                    not null,
+   ControlValue         NUMBER                          not null
 );
 
 create table DYNAMICBILLINGFORMAT  (
@@ -126,10 +127,11 @@ alter table CapControlSubstationbus drop column StrategyId;
 alter table CapControlFeeder  drop constraint FK_CCFDR_CCSTR;
 alter table CapControlFeeder drop column StrategyId;
 
-create table CapControlSpecialArea( AreaID number not null );
-
-alter table CapControlSpecialArea
-   add constraint PK_CapControlSpecialArea primary key (AreaID);
+create table CAPCONTROLSPECIALAREA  (
+   AreaID               NUMBER                          not null,
+   ControlPointID       NUMBER                          not null,
+   constraint PK_CapControlSpecialArea primary key (AreaID)
+);
 
 create table CCSubSpecialAreaAssignment (
 

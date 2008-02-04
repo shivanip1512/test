@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/1/2008 2:03:41 PM                          */
+/* Created on:     2/4/2008 11:06:01 AM                         */
 /*==============================================================*/
 
 
@@ -3597,6 +3597,7 @@ go
 /*==============================================================*/
 create table CAPCONTROLSPECIALAREA (
    AreaID               numeric              not null,
+   ControlPointID       numeric              not null,
    constraint PK_CapControlSpecialArea primary key (AreaID)
 )
 go
@@ -5553,7 +5554,8 @@ go
 /*==============================================================*/
 create table DYNAMICCCSPECIALAREA (
    AreaID               numeric              not null,
-   additionalflags      varchar(20)          not null
+   additionalflags      varchar(20)          not null,
+   ControlValue         numeric              not null
 )
 go
 
