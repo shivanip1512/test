@@ -31,7 +31,7 @@
 				<tags:nameValue name="File Format">
 		            <select name="fileFormat">
 		            	<c:forEach var="format" items="${formatMap}">
-		            		<option value="${format.key}" ${(format.key == BILLING_BEAN.fileFormat)?'selected':''}>${format.value}</option>
+		            		<option value="${format.value}" ${(format.value == BILLING_BEAN.fileFormat)?'selected':''}>${format.key}</option>
 		            	</c:forEach>
 		            </select>
 				</tags:nameValue>

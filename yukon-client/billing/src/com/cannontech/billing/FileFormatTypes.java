@@ -2,9 +2,10 @@ package com.cannontech.billing;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.RowCallbackHandler;
@@ -165,21 +166,23 @@ public final class FileFormatTypes {
         return defaultValidFormatTypes;
 	}
     
-    public static Map<Integer,String> getValidFormats() {
+    public static Map<String, Integer> getValidFormats() {
         final String sql = "SELECT FORMATID,FORMATTYPE FROM BillingFileFormats WHERE FORMATID >= 0 Order By FormatType desc";
-        final Map<Integer,String> resultMap = new HashMap<Integer,String>();
+        final SortedMap<String, Integer> resultMap = new TreeMap<String, Integer>();
         try {
             jdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
                 public void processRow(ResultSet rs) throws SQLException {
-                    resultMap.put(rs.getInt("FORMATID"), rs.getString("FORMATTYPE"));
+                    resultMap.put(rs.getString("FORMATTYPE"), rs.getInt("FORMATID"));
                 }
             });
         } catch (DataAccessException e) {
             for (int x = 0; x < defaultValidFormatIDs.length; x++) {
-                resultMap.put(defaultValidFormatIDs[x], defaultValidFormatTypes[x]);
+                resultMap.put(defaultValidFormatTypes[x], defaultValidFormatIDs[x]);
             }
         }
-        return resultMap;
+       
+        Map<String, Integer> resultMapReturn = resultMap;
+        return resultMapReturn;
     }
     
     public static void setSimpleJdbcTemplate(final SimpleJdbcTemplate jdbcTemplate) {
