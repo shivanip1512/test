@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/4/2008 11:07:29 AM                         */
+/* Created on:     2/4/2008 4:35:46 PM                          */
 /*==============================================================*/
 
 
@@ -1314,6 +1314,7 @@ create table CAPBANKADDITIONAL  (
 /*==============================================================*/
 create table CAPCONTROLAREA  (
    AreaID               NUMBER                          not null,
+   ControlPointID       NUMBER                          not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 );
 
@@ -3165,6 +3166,7 @@ insert into DynamicBillingFormat values( 21, ',' ,'' ,'');
 create table DYNAMICCCAREA  (
    AreaID               NUMBER                          not null,
    additionalflags      VARCHAR2(20)                    not null,
+   ControlValue         NUMBER                          not null,
    constraint PK_DYNAMICCCAREA primary key (AreaID)
 );
 

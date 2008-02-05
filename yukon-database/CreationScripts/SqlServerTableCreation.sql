@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/4/2008 11:06:01 AM                         */
+/* Created on:     2/4/2008 4:33:57 PM                          */
 /*==============================================================*/
 
 
@@ -3573,6 +3573,7 @@ go
 /*==============================================================*/
 create table CAPCONTROLAREA (
    AreaID               numeric              not null,
+   ControlPointID       numeric              not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 )
 go
@@ -5545,6 +5546,7 @@ insert into DynamicBillingFormat values( 21, ',' ,'' ,'');
 create table DYNAMICCCAREA (
    AreaID               numeric              not null,
    additionalflags      varchar(20)          not null,
+   ControlValue         numeric              not null,
    constraint PK_DYNAMICCCAREA primary key (AreaID)
 )
 go

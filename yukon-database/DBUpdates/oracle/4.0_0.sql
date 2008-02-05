@@ -2,6 +2,15 @@
 /**** Oracle DBupdates   		       ****/
 /******************************************/
 
+/* Start YUK-5287 */
+alter table capcontrolarea add controlpointid numeric;
+update capcontrolarea set controlpointid = 0;
+alter table capcontrolarea modify controlpointid numeric not null;
+alter table dynamicccarea add controlvalue numeric;
+update dynamicccarea set controlvalue = 0;
+alter table dynamicccarea modify controlvalue numeric not null; 
+/* End YUK-5287 */
+
 create table DYNAMICCCSPECIALAREA  (
    AreaID               NUMBER                          not null,
    additionalflags      VARCHAR2(20)                    not null,
@@ -443,10 +452,10 @@ create table CCSUBSTATIONSUBBUSLIST  (
 
 /* @error ignore-begin */
 create table CAPCONTROLAREA  (
-   AreaID               number                          not null,
+   AreaID               NUMBER                          not null,
+   ControlPointID       NUMBER                          not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 );
-
 alter table CAPCONTROLAREA
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (AreaID)
       references YukonPAObject (PAObjectID);
@@ -1351,6 +1360,7 @@ create index INDEX_AccountID on ApplianceBase (
    AccountID ASC
 );
 /* End YUK-4824 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

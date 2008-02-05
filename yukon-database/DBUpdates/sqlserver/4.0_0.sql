@@ -1,6 +1,22 @@
 /******************************************/
 /**** SQLServer 2000 DBupdates         ****/
 /******************************************/
+
+/* Start YUK-5287 */
+alter table capcontrolarea add controlpointid numeric;
+go
+update capcontrolarea set controlpointid = 0;
+go
+alter table capcontrolarea alter column controlpointid numeric not null;
+go 
+alter table dynamicccarea add controlvalue numeric;
+go
+update dynamicccarea set controlvalue = 0;
+go
+alter table dynamicccarea alter column controlvalue numeric not null; 
+go
+/* End YUK-5287 */
+
 create table DYNAMICCCSPECIALAREA (
    AreaID               numeric              not null,
    additionalflags      varchar(20)          not null,
@@ -20,7 +36,7 @@ create table DYNAMICBILLINGFIELD (
 );
 go
 
- create table DynamicBillingFormat (
+create table DynamicBillingFormat (
 	 FormatID numeric NOT NULL,
 	 Delimiter varchar(20),
 	 Header varchar(255),
@@ -530,10 +546,12 @@ create table CCSUBSTATIONSUBBUSLIST  (
 );
 
 /* @error ignore-begin */
-create table CAPCONTROLAREA  (
-   AreaID               numeric                          not null,
+create table CAPCONTROLAREA (
+   AreaID               numeric              not null,
+   ControlPointID       numeric              not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 );
+go
 
 alter table CAPCONTROLAREA
    add constraint FK_CAPCONTR_REFERENCE_YUKONPAO foreign key (AreaID)
