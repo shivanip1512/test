@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/01/14 19:43:26 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/02/05 16:31:48 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -58,6 +58,7 @@ void CtiProtocolYmodem::destroy( void )
 
 void CtiProtocolYmodem::reinitalize( void )
 {
+   _error         = Working;
    _failCount     = 0;
    _bytesReceived = 0;
    _packetsReceived = 0;
