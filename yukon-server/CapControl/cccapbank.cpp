@@ -488,6 +488,10 @@ LONG CtiCCCapBank::getControlStatusQuality() const
 {
     return _controlStatusQuality;
 }
+BOOL CtiCCCapBank::getReEnableOvUvFlag() const
+{
+    return _reEnableOvUvFlag;
+}
 
 
 /*---------------------------------------------------------------------------
@@ -1211,6 +1215,22 @@ CtiCCCapBank& CtiCCCapBank::setControlStatusUnSolicitedFlag(BOOL flag)
     return *this;
 }
 
+/*---------------------------------------------------------------------------
+    setReEnableOvUvFlag
+    
+    Sets the ReEnableOvUvFlag ..
+---------------------------------------------------------------------------*/
+CtiCCCapBank& CtiCCCapBank::setReEnableOvUvFlag(BOOL flag)
+{
+
+    if (_reEnableOvUvFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _reEnableOvUvFlag = flag;
+
+    return *this;
+}
 
 
 /*---------------------------------------------------------------------------
@@ -2090,6 +2110,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _controlStatusNoControlFlag = right._controlStatusNoControlFlag;
         _controlStatusUnSolicitedFlag = right._controlStatusUnSolicitedFlag;
         _controlStatusQuality = right._controlStatusQuality;
+        _reEnableOvUvFlag = right._reEnableOvUvFlag;
         
         _ipAddress = right._ipAddress;
         _udpPortNumber = right._udpPortNumber;
@@ -2241,6 +2262,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _controlStatusCommFailFlag = (_additionalFlags[12]=='y'?TRUE:FALSE);
     _controlStatusNoControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE);
     _controlStatusUnSolicitedFlag = (_additionalFlags[14]=='y'?TRUE:FALSE);
+    _reEnableOvUvFlag = (_additionalFlags[15]=='y'?TRUE:FALSE);
 
 
     if (_controlStatusPartialFlag)
@@ -2345,6 +2367,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[12] = (_controlStatusCommFailFlag?'Y':'N');
             addFlags[13] = (_controlStatusNoControlFlag?'Y':'N');
             addFlags[14] = (_controlStatusUnSolicitedFlag?'Y':'N');
+            addFlags[15] = (_reEnableOvUvFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
@@ -2360,7 +2383,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             _additionalFlags.append(char2string(*(addFlags+12))); 
             _additionalFlags.append(char2string(*(addFlags+13))); 
             _additionalFlags.append(char2string(*(addFlags+14))); 
-            _additionalFlags.append("NNNNN");
+            _additionalFlags.append(char2string(*(addFlags+15))); 
+            _additionalFlags.append("NNNN");
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 

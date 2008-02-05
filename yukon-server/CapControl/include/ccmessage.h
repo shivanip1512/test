@@ -113,7 +113,9 @@ public:
         SEND_ALL_DISABLE_OVUV, //32
         SEND_ALL_SCAN_2WAY_DEVICE, //33        
         SEND_TIME_SYNC, //34
-        CHANGE_OPERATIONALSTATE //35
+        CHANGE_OPERATIONALSTATE,  //35
+        AUTO_ENABLE_OVUV, //36
+        AUTO_DISABLE_OVUV //37
     };
 
     CtiCCCommand(LONG command);

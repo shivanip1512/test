@@ -74,6 +74,8 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
     _paobject_feeder_map.clear();
     _paobject_capbank_map.clear();
 
+    _pointid_area_map.clear();
+    _pointid_specialarea_map.clear();
     _pointid_subbus_map.clear();
     _pointid_feeder_map.clear();
     _pointid_capbank_map.clear();
@@ -246,6 +248,38 @@ CtiCCState_vec* CtiCCSubstationBusStore::getCCCapBankStates(ULONG secondsFrom190
   This member exists mostly for efficiency in updating subbuses when point
   data shows up.
 ----------------------------------------------------------------------------*/  
+multimap< long, CtiCCSpecialPtr >::iterator CtiCCSubstationBusStore::findSpecialAreaByPointID(long point_id, int &saCount)
+{
+    multimap< long, CtiCCSpecialPtr >::iterator iter = _pointid_specialarea_map.lower_bound(point_id);
+    saCount = _pointid_specialarea_map.count(point_id);
+
+    if (saCount > 0) 
+    {
+        if (iter != _pointid_specialarea_map.end()) 
+            return iter;
+        else
+            return NULL;
+    }
+    else 
+        return NULL;
+}
+
+multimap< long, CtiCCAreaPtr >::iterator CtiCCSubstationBusStore::findAreaByPointID(long point_id, int &areaCount)
+{
+    multimap< long, CtiCCAreaPtr >::iterator iter = _pointid_area_map.lower_bound(point_id);
+    areaCount = _pointid_area_map.count(point_id);
+
+    if (areaCount > 0) 
+    {
+        if (iter != _pointid_area_map.end()) 
+            return iter;
+        else
+            return NULL;
+    }
+    else 
+        return NULL;
+}
+
 multimap< long, CtiCCSubstationBusPtr >::iterator CtiCCSubstationBusStore::findSubBusByPointID(long point_id, int &subCount)
 {
     multimap< long, CtiCCSubstationBusPtr >::iterator iter = _pointid_subbus_map.lower_bound(point_id);
@@ -294,6 +328,14 @@ multimap< long, CtiCCCapBankPtr >::iterator CtiCCSubstationBusStore::findCapBank
 
 }
 
+int CtiCCSubstationBusStore::getNbrOfAreasWithPointID(long point_id)
+{
+    return _pointid_area_map.count(point_id);
+}
+int CtiCCSubstationBusStore::getNbrOfSpecialAreasWithPointID(long point_id)
+{
+    return _pointid_specialarea_map.count(point_id);
+}
 int CtiCCSubstationBusStore::getNbrOfSubBusesWithPointID(long point_id)
 {
     return _pointid_subbus_map.count(point_id);
@@ -726,6 +768,8 @@ void CtiCCSubstationBusStore::reset()
                 _paobject_subbus_map.clear();
                 _paobject_feeder_map.clear();
                 _paobject_capbank_map.clear();
+                _pointid_area_map.clear();
+                _pointid_specialarea_map.clear();
                 _pointid_subbus_map.clear();
                 _pointid_feeder_map.clear();
                 _pointid_capbank_map.clear();
@@ -890,6 +934,8 @@ void CtiCCSubstationBusStore::reset()
             
             try
             {
+                _pointid_area_map = temp_point_area_map;
+                _pointid_specialarea_map = temp_point_specialarea_map;
                 _pointid_subbus_map = temp_point_subbus_map;
                 _pointid_feeder_map = temp_point_feeder_map;
                 _pointid_capbank_map = temp_point_capbank_map;
@@ -4302,7 +4348,8 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                         << yukonPAObjectTable["paoname"]
                         << yukonPAObjectTable["type"]
                         << yukonPAObjectTable["description"]
-                        << yukonPAObjectTable["disableflag"];
+                        << yukonPAObjectTable["disableflag"]
+                        << capControlAreaTable["controlpointid"];
  
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlAreaTable);
@@ -4331,7 +4378,10 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                             
                             ccGeoAreas->push_back( currentCCArea );
 
-
+                            if (currentCCArea->getControlPointId() > 0 )
+                            {   
+                                pointid_area_map->insert(make_pair(currentCCArea->getControlPointId(), currentCCArea));
+                            }
                         }
 
                     }
@@ -4412,7 +4462,8 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                     {
                         RWDBSelector selector = db.selector();
                         selector << dynamicCCAreaTable["areaid"]
-                        << dynamicCCAreaTable["additionalflags"];
+                        << dynamicCCAreaTable["additionalflags"]
+                        << dynamicCCAreaTable["controlvalue"];
 
                         selector.from(capControlAreaTable);
                         selector.from(dynamicCCAreaTable);
@@ -4543,7 +4594,8 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                         << yukonPAObjectTable["paoname"]
                         << yukonPAObjectTable["type"]
                         << yukonPAObjectTable["description"]
-                        << yukonPAObjectTable["disableflag"];
+                        << yukonPAObjectTable["disableflag"]
+                        << capControlSpecialAreaTable["controlpointid"];
  
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSpecialAreaTable);
@@ -4571,6 +4623,10 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                             
                             ccSpecialAreas->push_back( currentCCSpArea );
+                            if (currentCCSpArea->getControlPointId() > 0 )
+                            {   
+                                pointid_specialarea_map->insert(make_pair(currentCCSpArea->getControlPointId(), currentCCSpArea));
+                            }
                         }
 
                     }
@@ -4656,7 +4712,8 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                     {
                         RWDBSelector selector = db.selector();
                         selector << dynamicCCSpecialAreaTable["areaid"]
-                        << dynamicCCSpecialAreaTable["additionalflags"];
+                        << dynamicCCSpecialAreaTable["additionalflags"]
+                        << dynamicCCSpecialAreaTable["controlvalue"];
 
                         selector.from(capControlSpecialAreaTable);
                         selector.from(dynamicCCSpecialAreaTable);
@@ -7177,6 +7234,15 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
     {
         if (areaToDelete != NULL)
         {
+            try
+            {
+                _pointid_area_map.clear();
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
 
             LONG stationId;
             LONG subBusId;
@@ -7250,6 +7316,17 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
     {
         if (spAreaToDelete != NULL)
         {
+
+            try
+            {
+                _pointid_specialarea_map.clear();
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+
             LONG stationId;
             LONG subBusId;
             list <LONG>::const_iterator iter = spAreaToDelete->getSubstationIds()->begin();

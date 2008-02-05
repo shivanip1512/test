@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/mgr_mcsched.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/02/02 01:03:42 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/02/05 01:16:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/

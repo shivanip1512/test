@@ -92,6 +92,8 @@ private:
     void SendAllCapBankCommands();
     void SendTimeSync();
     void changeBankOperationalState();
+    void AutoEnableOvUv();
+    void AutoDisableOvUv();
     CtiCCCommand* _command;
 };
 

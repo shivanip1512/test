@@ -137,6 +137,8 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
+        _controlPointId = right._controlPointId;
+        _controlValue = right._controlValue;
 
         _strategyId = right._strategyId;
         _strategyName = right._strategyName;
@@ -221,6 +223,8 @@ void CtiCCArea::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
+
+    rdr["controlpointid"] >>_controlPointId;
     setOvUvDisabledFlag(FALSE);
     setReEnableAreaFlag(FALSE);
 
@@ -257,6 +261,8 @@ void CtiCCArea::restore(RWDBReader& rdr)
 
     setPFactor(0);
     setEstPFactor(0);
+
+    setControlValue(FALSE);
 
     _insertDynamicDataFlag = TRUE;
     //_dirty = FALSE;
@@ -303,7 +309,8 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
             updater.clear();
 
             updater.where(dynamicCCAreaTable["areaid"]==_paoid);
-            updater << dynamicCCAreaTable["additionalflags"].assign( string2RWCString(_additionalFlags) );
+            updater << dynamicCCAreaTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
+                    <<  dynamicCCAreaTable["controlvalue"].assign( _controlValue );
                     
 
             updater.execute( conn );
@@ -337,7 +344,8 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
             RWDBInserter inserter = dynamicCCAreaTable.inserter();
             //TS FLAG
             inserter << _paoid
-            <<  string2RWCString(addFlags);
+                <<  string2RWCString(addFlags)
+                <<  _controlValue;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -375,6 +383,9 @@ void CtiCCArea::setDynamicData(RWDBReader& rdr)
 
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
     _reEnableAreaFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
+
+    rdr["controlvalue"] >> _controlValue;
+
     
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
@@ -452,6 +463,27 @@ BOOL CtiCCArea::getDisableFlag() const
 {
     return _disableflag;
 }
+
+/*---------------------------------------------------------------------------
+    getControlValue
+
+    Returns the ControlValue of the area
+---------------------------------------------------------------------------*/
+BOOL CtiCCArea::getControlValue() const
+{
+    return _controlValue;
+}
+
+/*---------------------------------------------------------------------------
+    getControlPointId
+
+    Returns the ControlPointId of the area
+---------------------------------------------------------------------------*/
+LONG CtiCCArea::getControlPointId() const
+{
+    return _controlPointId;
+}
+
 /*---------------------------------------------------------------------------
     getOvUvDisabledFlag
 
@@ -739,6 +771,31 @@ CtiCCArea& CtiCCArea::setDisableFlag(BOOL disable)
     _disableflag = disable;
     return *this;
 }
+
+
+/*---------------------------------------------------------------------------
+    setControlPointId
+
+    Sets the ControlPointId of the area
+---------------------------------------------------------------------------*/
+CtiCCArea& CtiCCArea::setControlPointId(LONG pointId)
+{
+    _controlPointId = pointId;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setControlValue
+
+    Sets the ControlValue of the area
+---------------------------------------------------------------------------*/
+CtiCCArea& CtiCCArea::setControlValue(BOOL flag)
+{
+    _controlValue = flag;
+    return *this;
+}
+
+
 
 /*---------------------------------------------------------------------------
     setOvUvDisabledFlag

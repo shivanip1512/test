@@ -1616,6 +1616,8 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                             int subCount = 0;
                             int feedCount = 0;
                             int capCount = 0;
+                            int areaCount = 0;
+                            int saCount = 0;
                             if (CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subCount) != NULL)
                             {
                                 CtiCCSubstationBusPtr sub = CtiCCSubstationBusStore::getInstance()->findSubBusByPointID(dbChange->getId(), subCount)->second;
@@ -1633,6 +1635,18 @@ void CtiCapController::parseMessage(RWCollectable *message, ULONG secondsFrom190
                                 CtiCCCapBankPtr cap = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(dbChange->getId(), capCount)->second;
                                 objType = CtiCCSubstationBusStore::CapBank;
                                 changeId = cap->getPAOId();
+                            }
+                            else if (CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaCount) != NULL)
+                            {
+                                CtiCCAreaPtr area = CtiCCSubstationBusStore::getInstance()->findAreaByPointID(dbChange->getId(), areaCount)->second;
+                                objType = CtiCCSubstationBusStore::Area;
+                                changeId = area->getPAOId();
+                            }
+                            else if (CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), saCount) != NULL)
+                            {
+                                CtiCCSpecialPtr specialArea = CtiCCSubstationBusStore::getInstance()->findSpecialAreaByPointID(dbChange->getId(), saCount)->second;
+                                objType = CtiCCSubstationBusStore::SpecialArea;
+                                changeId = specialArea->getPAOId();
                             }
                         }
                         else if (resolvePAOCategory(dbChange->getCategory()) == PAO_CATEGORY_DEVICE &&
@@ -2717,6 +2731,103 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
             currentCapBank++;
             capCount--;
         }
+
+        CtiCCSpecial* currentSpArea = NULL;
+        int saCount = 0;
+        std::multimap< long, CtiCCSpecialPtr >::iterator saIter = store->findSpecialAreaByPointID(pointID, saCount);
+        while (saCount > 0)
+        {
+            try
+            {
+                currentSpArea = saIter->second;
+                if (currentSpArea != NULL)
+                {
+                    if( currentSpArea->getControlPointId() == pointID )
+                    {
+                       // if( timestamp > currentSpArea->getLastControlPointUpdateTime() )
+                        {
+                            if (currentSpArea->getControlValue() != value)
+                            {
+                                currentSpArea->setControlValue(value);
+                                if (currentSpArea->getControlValue())
+                                {
+                                    CtiCCExecutorFactory f;
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSpArea->getPAOId()));
+                                    executor->Execute();
+                                    delete executor;
+
+                                }
+                                else
+                                {
+                                    CtiCCExecutorFactory f;
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentSpArea->getPAOId()));
+                                    executor->Execute();
+                                    delete executor;
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            currentSpArea++;
+            saCount--;
+        }
+
+        CtiCCArea* currentArea = NULL;
+        int areaCount = 0;
+        std::multimap< long, CtiCCAreaPtr >::iterator areaIter = store->findAreaByPointID(pointID, areaCount);
+        while (areaCount > 0)
+        {
+            try
+            {
+                currentArea = areaIter->second;
+                if (currentArea != NULL)
+                {
+                    if( currentArea->getControlPointId() == pointID )
+                    {
+                        //if( timestamp > currentArea->getLastControlPointUpdateTime() )
+                        {
+                            if (currentArea->getControlValue() != value)
+                            {
+                                currentArea->setControlValue(value);
+
+                                if (currentArea->getControlValue())
+                                {
+                                    CtiCCExecutorFactory f;
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPAOId()));
+                                    executor->Execute();
+                                    delete executor;
+
+                                }
+                                else
+                                {
+                                    CtiCCExecutorFactory f;
+                                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_ENABLE_OVUV, currentArea->getPAOId()));
+                                    executor->Execute();
+                                    delete executor;
+
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+            }
+            currentArea++;
+            areaCount--;
+
+        }
+
         if (store->getLinkStatusPointId() > 0) 
         {
             if (store->getLinkStatusPointId() == pointID)

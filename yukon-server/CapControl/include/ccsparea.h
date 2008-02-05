@@ -55,6 +55,9 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     const string& getPAOType() const;
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
+    LONG getControlPointId() const;
+    BOOL getControlValue() const;
+
     LONG getStrategyId() const;
     const string& getStrategyName() const;
     const string& getControlMethod() const;
@@ -94,6 +97,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     CtiCCSpecial& setPAOType(const string& type);
     CtiCCSpecial& setPAODescription(const string& description);
     CtiCCSpecial& setDisableFlag(BOOL disable);
+    CtiCCSpecial& setControlPointId(LONG pointId);
+    CtiCCSpecial& setControlValue(BOOL flag);
     CtiCCSpecial& setStrategyId(LONG strategyId);
     CtiCCSpecial& setStrategyName(const string& strategyname);
     CtiCCSpecial& setControlMethod(const string& method);
@@ -156,7 +161,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     string _paodescription;
     BOOL _disableflag;
     LONG _strategyId;
-
+    LONG _controlPointId;
+    BOOL _controlValue;
     string _strategyName;
     string _controlmethod;
     LONG _maxdailyoperation;

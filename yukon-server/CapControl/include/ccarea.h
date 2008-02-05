@@ -63,6 +63,8 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     LONG getStrategyId() const;
+    LONG getControlPointId() const;
+    BOOL getControlValue() const;
     BOOL getOvUvDisabledFlag() const;
     BOOL getReEnableAreaFlag() const;
 
@@ -106,6 +108,8 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     CtiCCArea& setPAODescription(const string& description);
     CtiCCArea& setDisableFlag(BOOL disable);
     CtiCCArea& setStrategyId(LONG strategyId);
+    CtiCCArea& setControlPointId(LONG pointId);
+    CtiCCArea& setControlValue(BOOL flag);
     CtiCCArea& setOvUvDisabledFlag(BOOL flag);
     CtiCCArea& setReEnableAreaFlag(BOOL flag);
 
@@ -167,6 +171,9 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     string _paodescription;
     BOOL _disableflag;
     LONG _strategyId;
+
+    LONG _controlPointId;
+    BOOL _controlValue;
 
     string _strategyName;
     string _controlmethod;

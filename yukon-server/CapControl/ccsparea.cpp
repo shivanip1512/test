@@ -144,6 +144,37 @@ CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
         _pfactor = right._pfactor;
         _estPfactor = right._estPfactor;
 
+        _strategyName            = right._strategyName;                       
+        _controlmethod           = right._controlmethod;                     
+        _maxdailyoperation       = right._maxdailyoperation;             
+        _maxoperationdisableflag = right._maxoperationdisableflag;
+        _peaklag                 = right._peaklag;                       
+        _offpklag                = right._offpklag;                   
+        _peaklead                = right._peaklead;
+        _offpklead               = right._offpklead;                   
+        _peakVARlag              = right._peakVARlag;                       
+        _offpkVARlag             = right._offpkVARlag;                   
+        _peakVARlead             = right._peakVARlead;                       
+        _offpkVARlead            = right._offpkVARlead;                   
+        _peakstarttime           = right._peakstarttime;                     
+        _peakstoptime            = right._peakstoptime;                       
+        _controlinterval         = right._controlinterval;                 
+        _maxconfirmtime          = right._maxconfirmtime;                   
+        _minconfirmpercent       = right._minconfirmpercent;             
+        _failurepercent          = right._failurepercent;                   
+        _daysofweek              = right._daysofweek;                           
+        _controlunits            = right._controlunits;                      
+        _controldelaytime        = right._controldelaytime;               
+        _controlsendretries      = right._controlsendretries;     
+        _integrateflag           = right._integrateflag;         
+        _integrateperiod         = right._integrateperiod;  
+
+        _controlPointId = right._controlPointId;
+        _controlValue = right._controlValue;
+
+
+
+
         _substationIds.clear();
         _substationIds.assign(right._substationIds.begin(), right._substationIds.end());
           
@@ -196,6 +227,7 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
     setOvUvDisabledFlag(FALSE);
+    rdr["controlpointid"] >> _controlPointId;
 
     setStrategyId(0);
     setStrategyName("(none)");
@@ -230,6 +262,8 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
     setEstPFactor(0);
     setPFactor(0);
     setEstPFactor(0);
+
+    setControlValue(FALSE);
 
     _insertDynamicDataFlag = TRUE;
 
@@ -272,7 +306,8 @@ void CtiCCSpecial::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             updater.clear();
 
             updater.where(dynamicCCAreaTable["areaid"]==_paoid);
-            updater << dynamicCCAreaTable["additionalflags"].assign( string2RWCString(_additionalFlags) );
+            updater << dynamicCCAreaTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
+                << dynamicCCAreaTable["controlvalue"].assign( _controlValue );
 
             updater.execute( conn );
 
@@ -305,7 +340,8 @@ void CtiCCSpecial::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             RWDBInserter inserter = dynamicCCAreaTable.inserter();
             //TS FLAG
             inserter << _paoid
-            <<  string2RWCString(addFlags);
+            <<  string2RWCString(addFlags)
+            << _controlValue;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -342,6 +378,9 @@ void CtiCCSpecial::setDynamicData(RWDBReader& rdr)
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
 
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
+
+    rdr["controlvalue"] >> _controlValue;
+
 
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
@@ -419,6 +458,27 @@ BOOL CtiCCSpecial::getDisableFlag() const
 {
     return _disableflag;
 }
+
+/*---------------------------------------------------------------------------
+    getControlPointId
+
+    Returns the controlPoint Id of the area
+---------------------------------------------------------------------------*/
+LONG CtiCCSpecial::getControlPointId() const
+{
+    return _controlPointId;
+}
+
+/*---------------------------------------------------------------------------
+    getControlValue
+
+    Returns the ControlValue flag of the area
+---------------------------------------------------------------------------*/
+BOOL CtiCCSpecial::getControlValue() const
+{
+    return _controlValue;
+}
+
 /*---------------------------------------------------------------------------
     isDirty()
     
@@ -708,6 +768,28 @@ CtiCCSpecial& CtiCCSpecial::setDisableFlag(BOOL disable)
     _disableflag = disable;
     return *this;
 }
+
+/*---------------------------------------------------------------------------
+    setControlPointId
+
+    Sets the ControlPointId of the area
+---------------------------------------------------------------------------*/
+CtiCCSpecial& CtiCCSpecial::setControlPointId(LONG pointId)
+{
+    _controlPointId = pointId;
+    return *this;
+}
+/*---------------------------------------------------------------------------
+    setControlValue
+
+    Sets the ControlValue flag of the area
+---------------------------------------------------------------------------*/
+CtiCCSpecial& CtiCCSpecial::setControlValue(BOOL flag)
+{
+    _controlValue = flag;
+    return *this;
+}
+
 
 /*---------------------------------------------------------------------------
     setOvUvDisabledFlag

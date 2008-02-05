@@ -161,9 +161,13 @@ public:
 
     bool InsertCCEventLogInDB(CtiCCEventLogMsg* msg);
 
+    std::multimap< long, CtiCCSpecialPtr >::iterator findSpecialAreaByPointID(long point_id, int &saCount);
+    std::multimap< long, CtiCCAreaPtr >::iterator findAreaByPointID(long point_id, int &areaCount);
     std::multimap< long, CtiCCSubstationBusPtr >::iterator findSubBusByPointID(long point_id, int &subCount);
     std::multimap< long, CtiCCFeederPtr >::iterator findFeederByPointID(long point_id, int &feedCount);
     std::multimap< long, CtiCCCapBankPtr >::iterator findCapBankByPointID(long point_id, int &capCount);
+    int getNbrOfAreasWithPointID(long point_id);
+    int getNbrOfSpecialAreasWithPointID(long point_id) ;
     int getNbrOfSubBusesWithPointID(long point_id);
     int getNbrOfSubsWithAltSubID(long altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
