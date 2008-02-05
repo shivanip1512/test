@@ -556,8 +556,17 @@ public class Multispeak implements MessageListener {
         
         for  (int i = 0; i < addMeters.length; i++){
             Meter mspMeter = addMeters[i];
-            String meterNo = mspMeter.getMeterNo().trim();
-            String mspAddress = mspMeter.getNameplate().getTransponderID().trim();
+            String meterNo;
+            String mspAddress;
+            
+            ErrorObject invalidMeterError = isValidMeter(mspMeter, mspVendor);
+            if( invalidMeterError != null) {
+                errorObjects.add(invalidMeterError);
+                continue;
+            } else {
+                meterNo = mspMeter.getMeterNo().trim();
+                mspAddress = mspMeter.getNameplate().getTransponderID().trim();
+            }
             
             com.cannontech.amr.meter.model.Meter meter = null;
             try {
@@ -575,7 +584,7 @@ public class Multispeak implements MessageListener {
                     
                     boolean disabled = yukonPaobject.isDisabled();
                     String address = deviceCarrierSettings.getAddress().toString();
-                    if( address.equalsIgnoreCase(mspMeter.getNameplate().getTransponderID())) { //Same MeterNumber and Address
+                    if( address.equalsIgnoreCase(mspAddress)) { //Same MeterNumber and Address
                         ErrorObject err = isMeterDisabled(meter, mspVendor);
                         if (err != null) {
                             errorObjects.add(err);
@@ -904,8 +913,8 @@ public class Multispeak implements MessageListener {
     private void addImportData(Meter mspMeter, MultispeakVendor mspVendor, 
             String templatePaoName, String substationName){
 
-        String address = mspMeter.getNameplate().getTransponderID();
-        String meterNumber = mspMeter.getMeterNo();
+        String address = mspMeter.getNameplate().getTransponderID().trim();
+        String meterNumber = mspMeter.getMeterNo().trim();
         
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
         String billingGroup = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? "":mspServiceLocation.getBillingCycle();
@@ -1306,6 +1315,7 @@ public class Multispeak implements MessageListener {
      * Returns ErrorObject when meter is enabled.
      * Returns null when meter is disabled.
      * @param meter
+     * @param mspVendor
      * @return
      */
     private ErrorObject isMeterDisabled(com.cannontech.amr.meter.model.Meter meter, MultispeakVendor mspVendor) {
@@ -1318,6 +1328,45 @@ public class Multispeak implements MessageListener {
             logMSPActivity("MeterAddNotification",
                            "MeterNumber(" + meter.getMeterNumber() + ") - Meter is already active." + 
                            "DeviceName: " + meter.getName() + "; Address: " + meter.getAddress() + ". No updates were made.",
+                           mspVendor.getCompanyName());
+            return err;
+        }
+        return null;
+    }
+    
+    /**
+     * Returns ErrorObject when mspMeter is not valid.
+     * Returns null when mspMeter is valid.
+     * Validates    1) Meter.MeterNo field is not blank.
+     *              2) Meter.Nameplate is not null AND Meter.Nameplate.TransponderId is not blank 
+     * @param mspMeter
+     * @param mspVendor
+     * @return
+     */
+    private ErrorObject isValidMeter(Meter mspMeter, MultispeakVendor mspVendor) {
+
+        //Check for valid MeterNo 
+        if ( StringUtils.isBlank(mspMeter.getMeterNo()) ) {
+
+            ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
+                                                             "Error: MeterNo is invalid (empty or null).  No updates were made.",
+                                                             "Meter");
+            logMSPActivity("MeterAddNotification",
+                           "MeterNo is invalid (empty or null).  No updates were made.",
+                           mspVendor.getCompanyName());
+            return err;
+        }
+
+        //Check for valid TransponderID
+        if ( mspMeter.getNameplate() == null ||
+                StringUtils.isBlank(mspMeter.getNameplate().getTransponderID()) &&
+                StringUtils.isNumeric(mspMeter.getNameplate().getTransponderID()) ) {
+
+            ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
+                                                             "Error: MeterNumber(" + mspMeter.getMeterNo() + ") - TransponderID is invalid.  No updates were made.",
+                                                             "Meter");
+            logMSPActivity("MeterAddNotification",
+                           "MeterNumber(" + mspMeter.getMeterNo() + ") - TransponderID is invalid.  No updates were made.",
                            mspVendor.getCompanyName());
             return err;
         }
