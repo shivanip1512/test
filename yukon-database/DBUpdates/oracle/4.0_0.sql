@@ -157,7 +157,7 @@ alter table DYNAMICCCAREA
    add constraint PK_DYNAMICCCAREA primary key (AreaId);
 
 
-insert into DynamicCCSpecialArea (AreaId, Additionalflags) select areaid, 'NNNNNNNNNNNNNNNNNNNN' from CapControlSpecialArea;
+insert into DynamicCCSpecialArea (AreaId, Additionalflags, ControlValue) select areaid, 'NNNNNNNNNNNNNNNNNNNN', 0 from CapControlSpecialArea;
 
 alter table DynamicCCFeeder add PhaseAValue float;
 update DynamicCCFeeder set PhaseAValue = 0;
