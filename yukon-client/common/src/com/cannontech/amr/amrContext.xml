@@ -49,7 +49,7 @@
 
     <!-- Moving JobDefinitions -->
     <bean id="moveInJob"
-        class="com.cannontech.jobs.support.SimpleYukonJobDefinition" scope="prototype">
+        class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <property name="taskName">
             <idref local="moveInTask" />
         </property>
@@ -118,7 +118,7 @@
     </bean>
 
     <bean id="moveOutJob"
-        class="com.cannontech.jobs.support.SimpleYukonJobDefinition" scope="prototype">
+        class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <property name="taskName">
             <idref local="moveOutTask" />
         </property>
@@ -167,7 +167,8 @@
 
     <!--  Moving Tasks -->
     <bean id="moveInTask"
-        class="com.cannontech.amr.moveInMoveOut.tasks.MoveInTask">
+        class="com.cannontech.amr.moveInMoveOut.tasks.MoveInTask"
+        scope="prototype">
         <property name="moveInMoveOutService"
             ref="moveInMoveOutService" />
         <property name="moveInMoveOutEmailService"
@@ -175,7 +176,8 @@
     </bean>
 
     <bean id="moveOutTask"
-        class="com.cannontech.amr.moveInMoveOut.tasks.MoveOutTask">
+        class="com.cannontech.amr.moveInMoveOut.tasks.MoveOutTask"
+        scope="prototype">
         <property name="moveInMoveOutService"
             ref="moveInMoveOutService" />
         <property name="moveInMoveOutEmailService"
@@ -195,7 +197,7 @@
     
     
     <!-- Toggle Profiling Job Definition -->
-    <bean id="toggleProfilingJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition" scope="prototype">
+    <bean id="toggleProfilingJob" class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
         <property name="taskName">
             <idref local="toggleProfilingTask" />
         </property>
@@ -235,7 +237,9 @@
     </bean>
     
     <!--  Toggle Profiling Task -->
-    <bean id="toggleProfilingTask" class="com.cannontech.amr.toggleProfiling.tasks.ToggleProfilingTask">
+    <bean id="toggleProfilingTask" 
+        class="com.cannontech.amr.toggleProfiling.tasks.ToggleProfilingTask"  
+        scope="prototype">
         <property name="paoDao" ref="paoDao" />
         <property name="dbPersistentDao" ref="dbPersistentDao" />
     </bean>
