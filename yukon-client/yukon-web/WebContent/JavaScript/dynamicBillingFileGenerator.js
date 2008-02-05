@@ -251,7 +251,7 @@ function updateFormat(input, attribute, method){
         } else {
             var patternIndex = $(input).selectedIndex;
             if (patternIndex != null){
-                var inputValue = $(input).options[patternIndex].innerText;
+                var inputValue = $(input).options[patternIndex].value;
 
                 if(method == 'select') {
                     switch(inputValue) {
@@ -262,10 +262,9 @@ function updateFormat(input, attribute, method){
                             break;
                         default:
                             $(attribute).value = inputValue;
+                            selectFormatOption($(input), $(attribute).value);
                             break;
                     }
-            
-                    selectFormatOption($(input), $(attribute).value);
                 }
                 if (method == 'text') {
                     selectFormatOption($(input), $(attribute).value);

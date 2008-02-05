@@ -88,10 +88,10 @@
 	    			<div id="valueFormatDiv" style="display:none"> 
 	    				<div id="valueWords"> </div>
 	    				<select id="valueFormatSelect" onchange="updateFormat('valueFormatSelect', 'valueFormat', 'select');">
-	    					<option selected="selected">No Format</option>
-	    					<option>Custom</option>
-	    					<option>###.###</option>
-	    					<option>####.##</option>
+	    					<option value="No Format" selected="selected">No Format</option>
+	    					<option value="Custom">Custom</option>
+	    					<option value="###.###">###.###</option>
+	    					<option value="####.##">####.##</option>
 	    				</select> <br /> 
 	    				reading pattern: <br />
 	    				<input type="text" id="valueFormat" maxlength="30" value="" onkeyup="updateFormat('valueFormatSelect', 'valueFormat', 'text');" /> <br/>
