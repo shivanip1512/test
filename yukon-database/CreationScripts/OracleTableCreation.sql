@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/4/2008 4:35:46 PM                          */
+/* Created on:     2/5/2008 3:05:26 PM                          */
 /*==============================================================*/
 
 
@@ -6208,7 +6208,7 @@ create table MSPVendor  (
    constraint PK_MSPVENDOR primary key (VendorID)
 );
 
-insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'meterNumber', 0, 'http://127.0.0.1:8080/soap/', 'Yukon', '(none)', '(none)',10000,120000,15,'*Default Template');
+insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'http://127.0.0.1:8080/soap/', 'Yukon', '(none)', '(none)',10000,120000,15,'*Default Template');
 
 /*==============================================================*/
 /* Index: INDEX_1                                               */
