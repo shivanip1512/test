@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.data.load.LoadBlock;
 import com.cannontech.multispeak.block.data.load.LoadValList;
@@ -61,21 +63,34 @@ public class LoadFormattedBlockImpl extends FormattedBlockServiceImpl <LoadBlock
             PointValueHolder loadProfile =
                 attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.LOAD_PROFILE);
             loadBlock.populate(meter, loadProfile);
-        } catch (IllegalArgumentException e) {}      
+        } catch (IllegalArgumentException e) {
+            CTILogger.info("Ignoring Exception:", e);
+        } catch (NotFoundException e) {
+            CTILogger.info("Ignoring Exception:", e);
+        }      
         
         try {
             PointValueHolder kVar =
                 attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.KVAR);
             loadBlock.populate(meter, kVar);
 
-        } catch (IllegalArgumentException e) {}
+        } catch (IllegalArgumentException e) {
+            CTILogger.info("Ignoring Exception:", e);
+        } catch (NotFoundException e) {
+            CTILogger.info("Ignoring Exception:", e);
+        }      
         
         try {
             PointValueHolder voltage =
                 attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.VOLTAGE);
             loadBlock.populate(meter, voltage);
 
-        } catch (IllegalArgumentException e) {}
+        } catch (IllegalArgumentException e) {
+            CTILogger.info("Ignoring Exception:", e);
+        } catch (NotFoundException e) {
+            CTILogger.info("Ignoring Exception:", e);
+        }      
+
         return loadBlock;
     }
 }

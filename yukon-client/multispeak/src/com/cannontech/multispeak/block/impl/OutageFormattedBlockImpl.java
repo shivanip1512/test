@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.multispeak.block.data.outage.OutageBlock;
 import com.cannontech.multispeak.block.data.outage.OutageValList;
@@ -53,13 +55,18 @@ public class OutageFormattedBlockImpl extends FormattedBlockServiceImpl <OutageB
     }
     
     public OutageBlock getBlock(Meter meter) {
-        PointValueHolder outage = 
-            attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.BLINK_COUNT);
-        
-        OutageBlock outageBlock = new OutageBlock(meter.getMeterNumber(),
-                                      outage.getValue(),
-                                      outage.getPointDataTimeStamp()
-                                      );
+        OutageBlock outageBlock = new OutageBlock();
+        outageBlock.populate(meter);
+
+        try {
+            PointValueHolder outage = 
+                attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.BLINK_COUNT);
+            outageBlock.populate(meter, outage);
+        } catch (IllegalArgumentException e) {
+            CTILogger.info("Ignoring Exception:", e);
+        } catch (NotFoundException e) {
+            CTILogger.info("Ignoring Exception:", e);
+        }
         return outageBlock;
     }
 }
