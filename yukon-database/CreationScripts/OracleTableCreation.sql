@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/5/2008 3:05:26 PM                          */
+/* Created on:     2/5/2008 3:50:53 PM                          */
 /*==============================================================*/
 
 
@@ -47,8 +47,6 @@ drop index CstSrvCstProp_FK;
 drop index CstAcc_CstLdInfo_FK;
 
 drop index CstLdTy_CstLdInf_FK;
-
-drop index INDEX_AccountID;
 
 drop index Indx_ClcBaseUpdTyp;
 
@@ -1052,13 +1050,6 @@ create index CstAcc_CstLdInfo_FK on ApplianceBase (
 /*==============================================================*/
 create index CstLdTy_CstLdInf_FK on ApplianceBase (
    ApplianceCategoryID ASC
-);
-
-/*==============================================================*/
-/* Index: INDEX_AccountID                                       */
-/*==============================================================*/
-create index INDEX_AccountID on ApplianceBase (
-   AccountID ASC
 );
 
 /*==============================================================*/
