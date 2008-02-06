@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/5/2008 3:14:30 PM                          */
+/* Created on:     2/6/2008 4:27:05 PM                          */
 /*==============================================================*/
 
 
@@ -150,7 +150,6 @@ if exists (select 1
             and   indid < 255)
    drop index ApplianceBase.CstLdTy_CstLdInf_FK
 go
-
 
 if exists (select 1
             from  sysindexes
@@ -3818,8 +3817,8 @@ create table CCurtCurtailmentEvent (
    Message              varchar(255)         not null,
    State                varchar(10)          not null,
    StartTime            datetime             not null,
-   Identifier           numeric              not null,
    CCurtProgramTypeID   numeric              not null,
+   Identifier           numeric              not null,
    constraint PK_CCURTCURTAILMENTEVENT primary key (CCurtCurtailmentEventID)
 )
 go
