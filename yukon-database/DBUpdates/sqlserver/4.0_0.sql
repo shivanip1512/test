@@ -1478,6 +1478,17 @@ go
 alter table capcontrolsubstationbus alter column controlFlag varchar(1) not null; 
 /* End YUK-5263 */
 
+/* Start YUK-5310 */
+/* @error ignore-begin */
+ALTER TABLE SUBSTATION
+ DROP CONSTRAINT FK_SUBSTATI_FK_SUB_RT_ROUTE;
+
+alter table Substation
+   add constraint FK_Sub_Rt foreign key (LMRouteID)
+      references Route (RouteID);
+/* @error ignore-end */
+/* End YUK-5310 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
