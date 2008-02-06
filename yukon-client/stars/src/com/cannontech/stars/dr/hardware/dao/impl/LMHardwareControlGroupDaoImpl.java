@@ -36,6 +36,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     private static final String selectByOptOutStopRange;
     private static final String selectByInventoryIdAndGroupIdAndAccountId;
     private static final String selectByInventoryIdAndGroupIdAndAccountIdAndType;
+    private static final String selectAllByEnergyCompanyId;
     private static final ParameterizedRowMapper<LMHardwareControlGroup> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -46,22 +47,27 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     private static final String selectOldInventoryConfigInfo; 
     private static final ParameterizedRowMapper<LMHardwareConfiguration> oldControlInfoRowMapper;
     
+    private static final String selectDistinctGroupIdByAccountId;
+    private static final ParameterizedRowMapper<Integer> groupIdRowMapper;
+    
     static {
         
-        removeSql = "DELETE from " + TABLE_NAME + " WHERE ControlEntryID = ?";
+        removeSql = "DELETE from " + TABLE_NAME + " WHERE ControlEntryId = ?";
          
         selectAllSql = "SELECT ControlEntryId, InventoryId, LMGroupId, AccountId, GroupEnrollStart, GroupEnrollStop, OptOutStart, " +
-                "OptOutStop, Type, Relay, UserIdFirstAction, UserIdSecondAction from " + TABLE_NAME;
+                "OptOutStop, Type, Relay, UserIdFirstAction, UserIdSecondAction FROM " + TABLE_NAME;
     
-        selectById = selectAllSql + " WHERE ControlEntryID = ?";
+        selectById = selectAllSql + " WHERE ControlEntryId = ?";
         
-        selectByLMGroupId = selectAllSql + " WHERE LMGroupID = ?";
+        selectByLMGroupId = selectAllSql + " WHERE LMGroupId = ?";
         
-        selectByInventoryId = selectAllSql + " WHERE InventoryID = ?";
+        selectByInventoryId = selectAllSql + " WHERE InventoryId = ?";
         
-        selectByAccountId = selectAllSql + " WHERE AccountID = ?";
+        selectByAccountId = selectAllSql + " WHERE AccountId = ?";
         
-        selectByLMGroupIdAndAccountIdAndType = selectAllSql + " WHERE LMGroupID = ? AND AccountID = ? AND Type = ?";
+        selectDistinctGroupIdByAccountId = "SELECT DISTINCT LMGroupId FROM " + TABLE_NAME + " WHERE AccountId = ?";
+        
+        selectByLMGroupIdAndAccountIdAndType = selectAllSql + " WHERE LMGroupId = ? AND AccountId = ? AND Type = ? ORDER BY GroupEnrollStart";
         
         selectByEnrollStartRange = selectAllSql + " WHERE GroupEnrollStart > ? AND GroupEnrollStart <= ?";
         
@@ -71,17 +77,21 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         
         selectByOptOutStopRange = selectAllSql + " WHERE OptOutStop > ? AND OptOutStop <= ?";
         
-        selectByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE InventoryID = ? AND LMGroupID = ? AND AccountID = ?";
+        selectByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND LMGroupId = ? AND AccountId = ?";
         
-        selectByInventoryIdAndGroupIdAndAccountIdAndType = selectAllSql + " WHERE InventoryID = ? AND LMGroupID = ? AND AccountID = ? AND Type = ?";
+        selectByInventoryIdAndGroupIdAndAccountIdAndType = selectAllSql + " WHERE InventoryId = ? AND LMGroupId = ? AND AccountId = ? AND Type = ?";
         
-        selectOldInventoryConfigInfo = "select InventoryId, ApplianceId, AddressingGroupId, LoadNumber from LMHardwareConfiguration where InventoryId = ?";
+        selectOldInventoryConfigInfo = "SELECT InventoryId, ApplianceId, AddressingGroupId, LoadNumber FROM LMHardwareConfiguration WHERE InventoryId = ?";
         
-        selectOldInventoryLoadGroupConfigInfo = "select InventoryId, ApplianceId, AddressingGroupId, LoadNumber from LMHardwareConfiguration where InventoryId = ? and AddressingGroupId = ?";
+        selectOldInventoryLoadGroupConfigInfo = "SELECT InventoryId, ApplianceId, AddressingGroupId, LoadNumber FROM LMHardwareConfiguration WHERE InventoryId = ? and AddressingGroupId = ?";
+        
+        selectAllByEnergyCompanyId = selectAllSql + " WHERE AccountId IN (SELECT AccountId FROM ECToGenericMapping WHERE EnergyCompanyId = ?) ORDER BY AccountId";
         
         rowMapper = LMHardwareControlGroupDaoImpl.createRowMapper();
         
         oldControlInfoRowMapper = LMHardwareControlGroupDaoImpl.createOldConfigInfoRowMapper();
+        
+        groupIdRowMapper = LMHardwareControlGroupDaoImpl.createGroupIdRowMapper();
         
     }
     
@@ -132,6 +142,16 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     public List<LMHardwareControlGroup> getByAccountId(final int accountId) {
         try {
             List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectByAccountId, rowMapper, accountId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        } 
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Integer> getDistinctGroupIdsByAccountId(final int accountId) {
+        try {
+            List<Integer> list = simpleJdbcTemplate.query(selectDistinctGroupIdByAccountId, groupIdRowMapper, accountId);
             return list;
         } catch (DataAccessException e) {
             return Collections.emptyList();
@@ -217,14 +237,24 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         } 
     }
     
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<LMHardwareControlGroup> getAllByEnergyCompanyId(int energyCompanyId) {
+        try {
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectAllByEnergyCompanyId, rowMapper, energyCompanyId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        } 
+    }
+    
     private static final ParameterizedRowMapper<LMHardwareControlGroup> createRowMapper() {
         final ParameterizedRowMapper<LMHardwareControlGroup> rowMapper = new ParameterizedRowMapper<LMHardwareControlGroup>() {
             public LMHardwareControlGroup mapRow(ResultSet rs, int rowNum) throws SQLException {
                 LMHardwareControlGroup hardwareControlGroup = new LMHardwareControlGroup();
-                hardwareControlGroup.setControlEntryId(rs.getInt("ControlEntryID"));
-                hardwareControlGroup.setInventoryId(rs.getInt("InventoryID"));
-                hardwareControlGroup.setLmGroupId(rs.getInt("LMGroupID"));
-                hardwareControlGroup.setAccountId(rs.getInt("AccountID"));
+                hardwareControlGroup.setControlEntryId(rs.getInt("ControlEntryId"));
+                hardwareControlGroup.setInventoryId(rs.getInt("InventoryId"));
+                hardwareControlGroup.setLmGroupId(rs.getInt("LMGroupId"));
+                hardwareControlGroup.setAccountId(rs.getInt("AccountId"));
                 hardwareControlGroup.setGroupEnrollStart(rs.getTimestamp("GroupEnrollStart"));
                 hardwareControlGroup.setGroupEnrollStop(rs.getTimestamp("GroupEnrollStop"));
                 hardwareControlGroup.setOptOutStart(rs.getTimestamp("OptOutStart"));
@@ -243,14 +273,24 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         final ParameterizedRowMapper<LMHardwareConfiguration> oldConfigInfoRowMapper = new ParameterizedRowMapper<LMHardwareConfiguration>() {
             public LMHardwareConfiguration mapRow(ResultSet rs, int rowNum) throws SQLException {
                 LMHardwareConfiguration hardwareConfiguration = new LMHardwareConfiguration();
-                hardwareConfiguration.setInventoryId(rs.getInt("InventoryID"));
-                hardwareConfiguration.setApplianceId(rs.getInt("ApplianceID"));
-                hardwareConfiguration.setAddressingGroupId(rs.getInt("AddressingGroupID"));
+                hardwareConfiguration.setInventoryId(rs.getInt("InventoryId"));
+                hardwareConfiguration.setApplianceId(rs.getInt("ApplianceId"));
+                hardwareConfiguration.setAddressingGroupId(rs.getInt("AddressingGroupId"));
                 hardwareConfiguration.setLoadNumber(rs.getInt("LoadNumber"));
                 return hardwareConfiguration;
             }
         };
         return oldConfigInfoRowMapper;
+    }
+    
+    private static final ParameterizedRowMapper<Integer> createGroupIdRowMapper() {
+        ParameterizedRowMapper<Integer> rowMapper = new ParameterizedRowMapper<Integer>() {
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                int id = rs.getInt("LmGroupId");
+                return Integer.valueOf(id);
+            }
+        };
+        return rowMapper;
     }
     
     private FieldMapper<LMHardwareControlGroup> controlGroupFieldMapper = new FieldMapper<LMHardwareControlGroup>() {

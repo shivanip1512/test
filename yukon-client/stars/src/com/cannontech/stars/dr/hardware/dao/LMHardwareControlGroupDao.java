@@ -23,6 +23,8 @@ public interface LMHardwareControlGroupDao {
     
     public List<LMHardwareControlGroup> getByAccountId(int accountId);
     
+    public List<Integer> getDistinctGroupIdsByAccountId(final int accountId);
+    
     public List<LMHardwareControlGroup> getByLMGroupIdAndAccountIdAndType(int lmGroupId, int accountId, int type);
     
     public List<LMHardwareControlGroup> getByEnrollmentStartDateRange(Date first, Date second);
@@ -38,6 +40,8 @@ public interface LMHardwareControlGroupDao {
     public List<LMHardwareControlGroup> getByInventoryIdAndGroupIdAndAccountIdAndType(int inventoryId, int lmGroupId, int accountId, int type);
     
     public List<LMHardwareControlGroup> getAll();
+    
+    public List<LMHardwareControlGroup> getAllByEnergyCompanyId(int energyCompanyId);
     
     public List<LMHardwareConfiguration> getOldConfigDataByInventoryId(int inventoryId);
     

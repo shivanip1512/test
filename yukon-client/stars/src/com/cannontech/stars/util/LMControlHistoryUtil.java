@@ -18,6 +18,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMConfiguration;
 import com.cannontech.database.data.lite.stars.LiteLMControlHistory;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMControlHistory;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.db.pao.LMControlHistory;
@@ -41,7 +42,12 @@ import com.cannontech.stars.xml.serialize.types.StarsCtrlHistPeriod;
 
 public class LMControlHistoryUtil {
 	
-	private static Hashtable activeCtrlHist = new Hashtable();
+	public static final int TOTAL_CONTROL_TIME = 0;
+    public static final int TOTAL_OPTOUT_EVENTS = 1;
+    public static final int TOTAL_OPTOUT_TIME = 2;
+    public static final int TOTAL_CONTROL_DURING_OPTOUT_TIME = 3;
+    
+    private static Hashtable activeCtrlHist = new Hashtable();
 	
 	private static boolean isUpToDate(LiteStarsLMControlHistory liteCtrlHist) {
 		return (System.currentTimeMillis() - liteCtrlHist.getLastSearchedStopTime()) * 0.001 < LMCtrlHistTimerTask.TIMER_PERIOD * 2;
@@ -481,7 +487,6 @@ public class LMControlHistoryUtil {
          * Now that the summary is calculated by looking at all control history entries for a group and account each time we
          * need to do away with passing in this startDate, we need to override this every time with a value of ALL.
          */ 
-
         Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, tz );
         Date oneYearAgoDate = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, tz );
 
@@ -498,30 +503,15 @@ public class LMControlHistoryUtil {
         LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
         List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupID, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
         List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupID, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY);
-        //-------------------------------------------------------------------------------
         
         StarsLMControlHistory starsCtrlHist = buildStarsControlHistoryForPeriod(liteCtrlHist, period, tz);
-        StarsLMControlHistory currentStarsLMControlHistory = new StarsLMControlHistory();
-        ControlSummary summaryForToday = new ControlSummary();
- 
-        //New enrollment, opt out, and control history tracking
-        //-------------------------------------------------------------------------------
         /*
          * Wait until now to iterate through starsCtrlHist since the totals have already been
          * calculated from all types of ActiveRestore types
          */
-        for(int j = 0; j < starsCtrlHist.getControlHistoryCount(); j++) {
-            ControlHistory cntrlHist = starsCtrlHist.getControlHistory(j);
-            Date stop = new Date(cntrlHist.getStartDateTime().getTime() + cntrlHist.getControlDuration());
-            int newDuration = (int)calculateRealControlPeriodTime(cntrlHist.getControlDuration(), cntrlHist.getStartDateTime(), stop, enrollments, optOuts);
-            if(newDuration != -1)  {
-                cntrlHist.setControlDuration(newDuration);
-                /*Calculate summary.  This used to be done using the values straight from the LMControlHistory table on the most recent entry*/
-                long controlEnd = cntrlHist.getStartDateTime().getTime() + cntrlHist.getControlDuration();
-                if(controlEnd > startDate.getTime())  
-                    currentStarsLMControlHistory.addControlHistory(cntrlHist);
-            }
-        }
+        StarsLMControlHistory currentStarsLMControlHistory = adjustLMControlHistoryByEnrollmentAndOptOutTimes(starsCtrlHist, startDate, enrollments, optOuts);
+        
+        ControlSummary summaryForToday = new ControlSummary();
         
         if(period.getType() == StarsCtrlHistPeriod.PASTDAY_TYPE) {
             /*have to do each period separately here, otherwise carry-over control gets missed since StarsLMControlHistory
@@ -680,6 +670,9 @@ public class LMControlHistoryUtil {
     
     private static StarsLMControlHistory buildStarsControlHistoryForPeriod(LiteStarsLMControlHistory liteCtrlHist, StarsCtrlHistPeriod period, TimeZone tz) {
         StarsLMControlHistory starsCtrlHist = new StarsLMControlHistory();
+        /*TODO: is using the time zone here appropriate or will this make us miss control history since the 
+         *server time is what we care about as far as control history?
+         */
         Date startDate = LMControlHistoryUtil.getPeriodStartTime( period, tz );
         
         ControlHistory hist = null;
@@ -780,5 +773,150 @@ public class LMControlHistoryUtil {
         
         return recordedControl;
     }
+    
+    public static StarsLMControlHistory getSTARSFormattedLMControlHistory(int groupID, Date start, int energyCompanyId) {
+        LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( energyCompanyId );
+        Date oneYearAgoDate = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTYEAR, liteEC.getDefaultTimeZone() );
+        Date oneMonthAgoDate = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTMONTH, liteEC.getDefaultTimeZone() );
+        Date oneWeekAgoDate = LMControlHistoryUtil.getPeriodStartTime( StarsCtrlHistPeriod.PASTWEEK, liteEC.getDefaultTimeZone() );
+        LiteStarsLMControlHistory liteCtrlHist; 
+        StarsCtrlHistPeriod period;
+        if(start.getTime() >= oneWeekAgoDate.getTime()) {
+            liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, oneWeekAgoDate );
+            period = StarsCtrlHistPeriod.PASTWEEK;
+        }
+        else if(start.getTime() >= oneMonthAgoDate.getTime()) {
+            liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, oneMonthAgoDate );
+            period = StarsCtrlHistPeriod.PASTMONTH;
+        }
+        else if(start.getTime() >= oneYearAgoDate.getTime()) {
+            liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, oneYearAgoDate );
+            period = StarsCtrlHistPeriod.PASTYEAR;
+        }
+        else {
+            liteCtrlHist = StarsDatabaseCache.getInstance().getLMControlHistory( groupID, new Date(0) );
+            period = StarsCtrlHistPeriod.ALL;
+        }
+        return buildStarsControlHistoryForPeriod(liteCtrlHist, period, liteEC.getDefaultTimeZone());
+    }
+    
+    public static StarsLMControlHistory adjustLMControlHistoryByEnrollmentAndOptOutTimes(StarsLMControlHistory unadjustedCtrlHist, Date startDate, List<LMHardwareControlGroup> enrollments, List<LMHardwareControlGroup> optOuts) {
+        StarsLMControlHistory adjustedLMControlHistory = new StarsLMControlHistory();
+        
+        for(int j = 0; j < unadjustedCtrlHist.getControlHistoryCount(); j++) {
+            ControlHistory cntrlHist = unadjustedCtrlHist.getControlHistory(j);
+            Date stop = new Date(cntrlHist.getStartDateTime().getTime() + cntrlHist.getControlDuration());
+            int newDuration = (int)calculateRealControlPeriodTime(cntrlHist.getControlDuration(), cntrlHist.getStartDateTime(), stop, enrollments, optOuts);
+            if(newDuration != -1)  {
+                cntrlHist.setControlDuration(newDuration);
+                /*Calculate summary.  This used to be done using the values straight from the LMControlHistory table on the most recent entry*/
+                long controlEnd = cntrlHist.getStartDateTime().getTime() + cntrlHist.getControlDuration();
+                if(controlEnd > startDate.getTime())  
+                    adjustedLMControlHistory.addControlHistory(cntrlHist);
+            }
+        }
+        
+        return adjustedLMControlHistory;
+    }
+    
+    /*
+     * This method should be general enough that it can be used for both the LMControlDetail report AND the LMControlSummary report
+     */
+    public static long[] calculateCumulativeCustomerControlValues(StarsLMControlHistory starsCtrlHist, Date startDate, Date stopDate, List<LMHardwareControlGroup> enrollments, List<LMHardwareControlGroup> optOuts) {
+        Validate.notNull(starsCtrlHist);
+        Validate.notNull(startDate);
+        Validate.notNull(stopDate);
+        Validate.notNull(enrollments);
+        Validate.notNull(optOuts);
+        
+        long[] totals = new long[4];
+        totals[TOTAL_CONTROL_TIME] = 0;
+        totals[TOTAL_OPTOUT_TIME] = 0;
+        
+        for(int j = 0; j < starsCtrlHist.getControlHistoryCount(); j++) {
+            ControlHistory cntrlHist = starsCtrlHist.getControlHistory(j);
+            Date start = cntrlHist.getStartDateTime();
+            Date stop = new Date(cntrlHist.getStartDateTime().getTime() + cntrlHist.getControlDuration());
+            long newDuration = cntrlHist.getControlDuration();
+            long newOptOutControlTime = 0;
+            long totalOptOutTime = 0;
+            boolean notEnrolled = true;
+            
+            for(LMHardwareControlGroup enrollmentEntry : enrollments) {
+                //wasn't enrolled at all at the time
+                if(enrollmentEntry.getGroupEnrollStart().getTime() > stop.getTime() ||
+                        (enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().getTime() < start.getTime())) {
+                    notEnrolled = true;
+                    continue;
+                }
+                else {
+                    //period falls cleanly within the enrollment range, total remains the same
+                    if(enrollmentEntry.getGroupEnrollStart().getTime() < start.getTime() &&
+                            (enrollmentEntry.getGroupEnrollStop() == null || enrollmentEntry.getGroupEnrollStop().getTime() > stop.getTime())) {
+                        notEnrolled = false;
+                    }
+                    //enrollment started after the beginning of the period, subtract the difference
+                    if(enrollmentEntry.getGroupEnrollStart().getTime() > start.getTime()) { 
+                        newDuration = newDuration - (enrollmentEntry.getGroupEnrollStart().getTime() - start.getTime());
+                        notEnrolled = false;
+                    }
+                    //enrollment stopped before the end of the period, subtract the difference
+                    if(enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().getTime() < stop.getTime()) {
+                        newDuration = newDuration - (stop.getTime() - enrollmentEntry.getGroupEnrollStop().getTime());
+                        notEnrolled = false;
+                    }
+                }
+            }
+            
+            if(notEnrolled)
+                newDuration = -1;
+            else {
+                for(LMHardwareControlGroup optOutEntry : optOuts) {
+                    totalOptOutTime = totalOptOutTime + (optOutEntry.getOptOutStop().getTime() - optOutEntry.getOptOutStart().getTime());
+                    
+                    //period falls entirely within an opt out period.  Discard it.
+                    if(optOutEntry.getOptOutStart().getTime() < start.getTime() && optOutEntry.getOptOutStop() != null &&
+                            optOutEntry.getOptOutStop().getTime() > stop.getTime()) {
+                        newDuration = -1;
+                    }
+                    //opt out started during a control period and period stopped during the opt out.  
+                    //Subtract the difference of opt out start and the period's stop from duration.
+                    else if(optOutEntry.getOptOutStart().getTime() > start.getTime() && optOutEntry.getOptOutStart().getTime() < stop.getTime() && 
+                            (optOutEntry.getOptOutStop() == null || optOutEntry.getOptOutStop().getTime() > stop.getTime())) {
+                        newDuration = newDuration - (stop.getTime() - optOutEntry.getOptOutStart().getTime());
+                        newOptOutControlTime = newOptOutControlTime + (stop.getTime() - optOutEntry.getOptOutStart().getTime());
+                    }
+                    //opt out ended during a control period that started during the opt out
+                    //subtract the difference of opt out stop and period start.
+                    else if(optOutEntry.getOptOutStart().getTime() < start.getTime() && optOutEntry.getOptOutStop() != null &&
+                            optOutEntry.getOptOutStop().getTime() < stop.getTime()) {
+                        newDuration = newDuration - (optOutEntry.getOptOutStop().getTime() - start.getTime());
+                        newOptOutControlTime = newOptOutControlTime + (optOutEntry.getOptOutStop().getTime() - start.getTime());
+                    }
+                    //an opt out occurred cleanly in the middle of a control period
+                    //subtract the entire opt out duration from the control history total
+                    else if(optOutEntry.getOptOutStart().getTime() > start.getTime() && optOutEntry.getOptOutStop() != null &&
+                            optOutEntry.getOptOutStop().getTime() < stop.getTime()) {
+                        newDuration = newDuration - (optOutEntry.getOptOutStop().getTime() - optOutEntry.getOptOutStart().getTime());
+                        newOptOutControlTime = newOptOutControlTime + (optOutEntry.getOptOutStop().getTime() - optOutEntry.getOptOutStart().getTime());
+                    }
+                }
+            }
+            
+            if(totals[TOTAL_OPTOUT_TIME] == 0) 
+                totals[TOTAL_OPTOUT_TIME] = totalOptOutTime;
+            
+            if(newDuration > 0)  {
+                long controlEnd = cntrlHist.getStartDateTime().getTime() + cntrlHist.getControlDuration();
+                if( controlEnd >= startDate.getTime() && controlEnd <= stopDate.getTime()) {
+                    totals[TOTAL_CONTROL_TIME] = totals[TOTAL_CONTROL_TIME] + newDuration;
+                    totals[TOTAL_CONTROL_DURING_OPTOUT_TIME] = totals[TOTAL_CONTROL_DURING_OPTOUT_TIME] + newOptOutControlTime;
+                }
+            }
+        }
+        totals[TOTAL_OPTOUT_EVENTS] = optOuts.size();
+        return totals;
+    }
+    
     //-------------------------------------------------------------------------------
 }

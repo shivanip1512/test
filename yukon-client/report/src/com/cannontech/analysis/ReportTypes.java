@@ -97,6 +97,7 @@ public enum ReportTypes {
     EC_WORK_ORDER("Work Order", WorkOrderModel.class, ReportGroup.STARS),
     STARS_LM_SUMMARY("STARS Load Management Summary", StarsLMSummaryModel.class, ReportGroup.STARS),
     STARS_LM_DETAIL("STARS Load Management Detail", StarsLMDetailModel.class, ReportGroup.STARS),
+    LM_CONTROL_DETAIL("Detailed Customer Control Report", LMControlDetailController.class, ReportGroup.STARS),
     //TODO  STARS_AMR_SUMMARY("STARS AMR Summary", StarsAMRSummaryModel.class, ReportGroup.STARS),
     STARS_AMR_DETAIL("STARS AMR Detail", StarsAMRDetailModel.class, ReportGroup.STARS),
     

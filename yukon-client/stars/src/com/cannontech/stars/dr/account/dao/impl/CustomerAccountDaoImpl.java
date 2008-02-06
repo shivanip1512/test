@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
+import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
 public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private static final String insertSql;
@@ -22,26 +24,35 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private static final String selectSql;
     private static final String selectByIdSql;
     private static final String selectByAccountNumberSql;
+    private static final String selectAllUsefulAccountInfoFromECSql;
     private static final ParameterizedRowMapper<CustomerAccount> rowMapper;
+    private static final ParameterizedRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
     
     static {
         
-        insertSql = "INSERT INTO CustomerAccount (AccountID,AccountSiteID,AccountNumber,CustomerID,BillingAddressID,AccountNotes) VALUES (?,?,?,?,?,?)";
+        insertSql = "INSERT INTO CustomerAccount (AccountId,AccountSiteId,AccountNumber,CustomerId,BillingAddressId,AccountNotes) VALUES (?,?,?,?,?,?)";
         
-        removeSql = "DELETE FROM CustomerAccount WHERE AccountID = ?";
+        removeSql = "DELETE FROM CustomerAccount WHERE AccountId = ?";
         
-        updateSql = "UPDATE CustomerAccount SET AccountSiteID = ?, AccountNumber = ?, CustomerID = ?, BillingAddressID = ?, AccountNotes = ? WHERE AccountID = ?";
+        updateSql = "UPDATE CustomerAccount SET AccountSiteId = ?, AccountNumber = ?, CustomerId = ?, BillingAddressId = ?, AccountNotes = ? WHERE AccountId = ?";
         
-        selectSql = "SELECT AccountID,AccountSiteID,AccountNumber,CustomerID,BillingAddressID,AccountNotes FROM CustomerAccount";
+        selectSql = "SELECT AccountId,AccountSiteId,AccountNumber,CustomerId,BillingAddressId,AccountNotes FROM CustomerAccount";
         
-        selectByIdSql = selectSql + " WHERE AccountID = ?";
+        selectByIdSql = selectSql + " WHERE AccountId = ?";
         
         selectByAccountNumberSql = selectSql + " WHERE AccountNumber = ?";
         
+        selectAllUsefulAccountInfoFromECSql = "SELECT ca.AccountId, ca.AccountNumber, cont.ContLastName, cont.ContFirstName" +
+                " FROM CustomerAccount ca, Contact cont, Customer cust WHERE AccountId IN" +
+                " (SELECT AccountId FROM ECToAccountMapping WHERE EnergyCompanyId = ?) " +
+                "AND cust.CustomerId = ca.CustomerId AND cont.ContactId = cust.PrimaryContactId";
+        
         rowMapper = CustomerAccountDaoImpl.createRowMapper();
+        
+        specialAccountInfoRowMapper = CustomerAccountDaoImpl.createCustomerAccountWithNamesRowMapper();
     }
 
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
@@ -101,6 +112,16 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
             return Collections.emptyList();
         }
     }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<CustomerAccountWithNames> getAllAccountsWithNamesByEC(final int ecId) {
+        try {
+            List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(selectAllUsefulAccountInfoFromECSql, specialAccountInfoRowMapper, ecId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+        }
+    }
 
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
@@ -114,12 +135,26 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         final ParameterizedRowMapper<CustomerAccount> rowMapper = new ParameterizedRowMapper<CustomerAccount>() {
             public CustomerAccount mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final CustomerAccount account = new CustomerAccount();
-                account.setAccountId(rs.getInt("AccountID"));
+                account.setAccountId(rs.getInt("AccountId"));
                 account.setAccountNotes(rs.getString("AccountNotes"));
                 account.setAccountNumber(rs.getString("AccountNumber"));
-                account.setAccountSiteId(rs.getInt("AccountSiteID"));
-                account.setBillingAddressId(rs.getInt("BillingAddressID"));
-                account.setCustomerId(rs.getInt("CustomerID"));
+                account.setAccountSiteId(rs.getInt("AccountSiteId"));
+                account.setBillingAddressId(rs.getInt("BillingAddressId"));
+                account.setCustomerId(rs.getInt("CustomerId"));
+                return account;
+            }
+        };
+        return rowMapper;
+    }
+    
+    private static final ParameterizedRowMapper<CustomerAccountWithNames> createCustomerAccountWithNamesRowMapper() {
+        final ParameterizedRowMapper<CustomerAccountWithNames> rowMapper = new ParameterizedRowMapper<CustomerAccountWithNames>() {
+            public CustomerAccountWithNames mapRow(ResultSet rs, int rowNum) throws SQLException {
+                final CustomerAccountWithNames account = new CustomerAccountWithNames();
+                account.setAccountId(rs.getInt("AccountId"));
+                account.setAccountNumber(rs.getString("AccountNumber"));
+                account.setLastName(rs.getString("ContLastName"));
+                account.setFirstName(rs.getString("ContFirstName"));
                 return account;
             }
         };

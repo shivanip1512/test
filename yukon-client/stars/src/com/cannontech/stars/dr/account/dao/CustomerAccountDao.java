@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 
 public interface CustomerAccountDao {
 
@@ -19,5 +20,7 @@ public interface CustomerAccountDao {
     public CustomerAccount getByAccountNumber(String accountNumber) throws DataAccessException;
     
     public List<CustomerAccount> getAll();
+    
+    public List<CustomerAccountWithNames> getAllAccountsWithNamesByEC(final int ecId);
     
 }
