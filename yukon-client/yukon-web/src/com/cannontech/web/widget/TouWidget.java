@@ -51,12 +51,14 @@ public class TouWidget extends WidgetControllerBase {
         
         // Gets all the attributes that are needed to show time of use.
         List<TouAttributeMapping> touRatesList = touDao.getTouMappings();
-        Set<Attribute> existingAttributes = getExistingAttributes(meter, touRatesList);
-        List<KeyValuePair> touRates = touAttributesToHash(existingAttributes, touRatesList);
+        Set<Attribute> touAttributes = getExistingAttributes(meter, touRatesList);
+        List<KeyValuePair> touRates = touAttributesToHash(touAttributes, touRatesList);
+
+        // Gets the the attributes available on the given meter
+        Set<Attribute> existingAttributes = attributeService.getAllExistingAttributes(meter);
         
         // Adds the group to the mav object
         mav.addObject("meter", meter);
-        mav.addObject("isRead", false);
         mav.addObject("rateTypes", touRates);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);

@@ -78,7 +78,10 @@
             <value type="boolean">true</value>
         </property>
 
-		<property name="paoDao" ref="paoDao" />
+        <property name="attributeService" ref="attributeService" />
+		<property name="meterDao" ref="meterDao" />
+        <property name="meterReadService" ref="meterReadService" />
+        <property name="paoDao" ref="paoDao" />
     </bean>
     
     <bean id="ManualCommandController" class="com.cannontech.web.amr.manual.ManualCommandController" >

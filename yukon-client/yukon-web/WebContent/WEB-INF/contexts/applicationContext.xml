@@ -268,6 +268,7 @@
         <property name="paoDao" ref="paoDao"/>
         <property name="deviceDao" ref="deviceDao"/>
         <property name="meterDao" ref="meterDao"/>
+        <property name="meterReadService" ref="meterReadService"/>
         <property name="dateFormattingService" ref="dateFormattingService"/>
         <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator"/>
         <property name="attributeService" ref="attributeService"/>

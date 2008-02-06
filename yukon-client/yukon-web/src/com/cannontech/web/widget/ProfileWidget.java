@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,6 +21,7 @@ import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
@@ -65,6 +67,7 @@ public class ProfileWidget extends WidgetControllerBase {
     private ContactDao contactDao = null;
     private SimpleReportService simpleReportService = null;
     private ToggleProfilingService toggleProfilingService = null;
+    private MeterReadService meterReadService = null;
     
     private static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy hh:mma");
     /*
@@ -200,7 +203,7 @@ public class ProfileWidget extends WidgetControllerBase {
        
         // get lite device, set name
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
-        
+        Meter meter = meterDao.getForId(deviceId);
         
         // get info about each channels scanning status
         List<Map<String, Object>> availableChannels = getAvailableChannelInfo(deviceId);
@@ -232,6 +235,11 @@ public class ProfileWidget extends WidgetControllerBase {
             }
         }
         mav.addObject("email", email);
+
+        // Checks to see if the meter is readable
+        Set<Attribute> existingAttributes = attributeService.getAllExistingAttributes(meter);
+        boolean isReadable = meterReadService.isReadable(meter, existingAttributes, userContext.getYukonUser());
+        mav.addObject("isReadable", isReadable);
         
         // pending requests
         List<Map<String, String>> pendingRequests = getPendingRequests(device, userContext);
@@ -722,4 +730,10 @@ public class ProfileWidget extends WidgetControllerBase {
             ToggleProfilingService toggleProfilingService) {
         this.toggleProfilingService = toggleProfilingService;
     }
+
+    @Required
+    public void setMeterReadService(MeterReadService meterReadService) {
+        this.meterReadService = meterReadService;
+    }
+
 }

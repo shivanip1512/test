@@ -79,8 +79,8 @@
 		<td class="last">
 			<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
 		</td>
-		<td class="last" align="right">
-			<tags:widgetActionUpdate method="initiateLoadProfile" label="Start" labelBusy="Start" container="${widgetParameters.widgetId}_results"/>
+  	    <td class="last" align="right">
+			<tags:widgetActionUpdate hide="${!isReadable}" method="initiateLoadProfile" label="Start" labelBusy="Start" container="${widgetParameters.widgetId}_results"/>
 		</td>
 	</tr>
 	

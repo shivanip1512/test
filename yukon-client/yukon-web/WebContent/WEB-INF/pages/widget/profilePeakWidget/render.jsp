@@ -108,7 +108,7 @@
 										<br/>
 										<c:choose>
 											<c:when test="${preCommandDays <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${prePeriodStartDateDisplay}" lpStopDate="${prePeriodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
+                                                						<tags:longLoadProfile isReadable="${readable}" styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${prePeriodStartDateDisplay}" lpStopDate="${prePeriodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP($('lpDiv'))" onmouseout="javascript:toggleLP($('lpDiv'))">Profile N/A</span>
@@ -159,7 +159,7 @@
 										<br/>
 										<c:choose>
 											<c:when test="${postCommandDays <= 90}">
-												<tags:longLoadProfile styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postPeriodStartDateDisplay}" lpStopDate="${postPeriodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
+												<tags:longLoadProfile isReadable="${readable}" styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postPeriodStartDateDisplay}" lpStopDate="${postPeriodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
 											</c:when>
 											<c:otherwise>
 												<span onmouseover="javascript:toggleLP($('lpDiv2'))" onmouseout="javascript:toggleLP($('lpDiv2'))">Profile N/A</span>

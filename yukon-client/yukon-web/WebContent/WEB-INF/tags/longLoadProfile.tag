@@ -6,6 +6,7 @@
 <%@ attribute name="lpStopDate" required="false" type="java.lang.String"%>
 
 <%@ attribute name="profileRequestOrigin" required="true" type="java.lang.String"%>
+<%@ attribute name="isReadable" required="true" type="java.lang.Boolean"%>
 
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -14,7 +15,7 @@
 <cti:uniqueIdentifier prefix="llp_" var="thisId"/>
 
 <cti:includeScript link="/JavaScript/longLoadProfile.js"/>
-<a style="position:relative;" class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}','${profileRequestOrigin}')"><jsp:doBody/></a>
+<a style="position:relative;" class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}','${profileRequestOrigin}')"><c:if test="${isReadable}"><jsp:doBody/></c:if></a>
 <div style="position:relative;z-index:2;">
 <span id="${thisId}_indicator" style="visibility:hidden"><img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>"></span>
 <div id="${thisId}_holder" style="display:none; position:absolute; right: 0px; top: 5px; background-color: white; padding: .5em; border: 1px #888 solid;" class="longLoadProfileHolder">

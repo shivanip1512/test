@@ -45,7 +45,7 @@
 <c:if test="${not empty rateTypes}">
 	<div id="${widgetParameters.widgetId}_results"></div>
 	<div style="text-align: right">
-		<ct:widgetActionUpdate hide="${!readable}" method="read" label="Read Now"
+        <ct:widgetActionUpdate hide="${!readable}" method="read" label="Read Now"
 			labelBusy="Reading" container="${widgetParameters.widgetId}_results" />
 	</div>
 </c:if>

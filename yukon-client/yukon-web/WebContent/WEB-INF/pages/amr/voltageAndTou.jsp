@@ -67,7 +67,9 @@
 					</tr>
 				</table>
 				<br><br>
-				<input type="Submit" value="Read"/>
+                <c:if test="${isReadable}">
+                    <input type="Submit" value="Read"/>
+                </c:if>
 			</tags:boxContainer>
 		</form>
 		
