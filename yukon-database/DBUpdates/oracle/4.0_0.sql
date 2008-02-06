@@ -1369,10 +1369,10 @@ alter table Substation
 /* Start YUK-5311 */
 /* @error ignore-begin */
 create table ApplianceDualStageAirCondTemp  (
-   ApplianceID              numeric                not null,
-   StageOneTonnageID          numeric,
-   StageTwoTonnageID          numeric,
-   TypeID            numeric
+   ApplianceID              NUMBER                not null,
+   StageOneTonnageID          NUMBER,
+   StageTwoTonnageID          NUMBER,
+   TypeID            NUMBER
 );
 
 ALTER TABLE APPLIANCEDUALSTAGEAIRCOND
@@ -1428,6 +1428,13 @@ alter table ApplianceDualStageAirCond
       references ApplianceBase (ApplianceID);
 /* @error ignore-end */
 /* End YUK-5311 */
+
+/* Start YUK-5313 */
+/* @error ignore-begin */
+ALTER TABLE DEVICEREADJOBLOG
+MODIFY(DEVICEREADJOBLOGID NUMBER);
+/* @error ignore-end */
+/* End YUK-5313 */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
