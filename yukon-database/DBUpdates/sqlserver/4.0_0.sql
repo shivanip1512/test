@@ -1489,6 +1489,67 @@ alter table Substation
 /* @error ignore-end */
 /* End YUK-5310 */
 
+/* Start YUK-5311 */
+/* @error ignore-begin */
+create table ApplianceDualStageAirCondTemp  (
+   ApplianceID              numeric                not null,
+   StageOneTonnageID          numeric,
+   StageTwoTonnageID          numeric,
+   TypeID            numeric
+);
+go
+ALTER TABLE APPLIANCEDUALSTAGEAIRCOND
+ DROP CONSTRAINT FK_DUALSTAGE_APPLNCBSE;
+go
+ALTER TABLE APPLIANCEDUALSTAGEAIRCOND
+ DROP CONSTRAINT FK_DUALSTAGE_STGTWONTRY;
+go
+ALTER TABLE APPLIANCEDUALSTAGEAIRCOND
+ DROP CONSTRAINT FK_DUALSTAGE_STNENTRY;
+go
+ALTER TABLE APPLIANCEDUALSTAGEAIRCOND
+ DROP CONSTRAINT FK_DUALSTAGE_TYPENTRY;
+go
+INSERT INTO APPLIANCEDUALSTAGEAIRCONDTEMP (
+   APPLIANCEID, 
+   STAGEONETONNAGEID,
+   STAGETWOTONNAGEID,  
+   TYPEID) 
+select
+   ApplianceID,
+   StageOneTonnageID,
+   StateTwoTonnageID,
+   TypeID   
+from
+   APPLIANCEDUALSTAGEAIRCOND
+;
+go
+drop table ApplianceDualStageAirCond;
+go
+sp_rename 'ApplianceDualStageAirCondTemp','ApplianceDualStageAirCond';
+go
+alter table ApplianceDualStageAirCond
+   add constraint PK_APPLIANCEDUALSTAGEAIRCOND primary key (ApplianceID);
+go   
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_TYPENTRY foreign key (TypeID)
+      references YukonListEntry (EntryID);
+go
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_STNENTRY foreign key (StageOneTonnageID)
+      references YukonListEntry (EntryID);
+go
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_STGTWONTRY foreign key (StageTwoTonnageID)
+      references YukonListEntry (EntryID);
+go
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_APPLNCBSE foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID);
+go
+/* @error ignore-end */
+/* End YUK-5311 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

@@ -1366,6 +1366,69 @@ alter table Substation
 /* @error ignore-end */
 /* End YUK-5310 */
 
+/* Start YUK-5311 */
+/* @error ignore-begin */
+create table ApplianceDualStageAirCondTemp  (
+   ApplianceID              numeric                not null,
+   StageOneTonnageID          numeric,
+   StageTwoTonnageID          numeric,
+   TypeID            numeric
+);
+
+ALTER TABLE APPLIANCEDUALSTAGEAIRCOND
+ DROP CONSTRAINT FK_DUALSTAGE_APPLNCBSE;
+
+ALTER TABLE APPLIANCEDUALSTAGEAIRCOND
+ DROP CONSTRAINT FK_DUALSTAGE_STGTWONTRY;
+
+ALTER TABLE APPLIANCEDUALSTAGEAIRCOND
+ DROP CONSTRAINT FK_DUALSTAGE_STNENTRY;
+
+ALTER TABLE APPLIANCEDUALSTAGEAIRCOND
+ DROP CONSTRAINT FK_DUALSTAGE_TYPENTRY;
+
+INSERT INTO APPLIANCEDUALSTAGEAIRCONDTEMP (
+   APPLIANCEID, 
+   STAGEONETONNAGEID,
+   STAGETWOTONNAGEID,  
+   TYPEID) 
+select
+   ApplianceID,
+   StageOneTonnageID,
+   StateTwoTonnageID,
+   TypeID   
+from
+   APPLIANCEDUALSTAGEAIRCOND
+;
+
+drop table ApplianceDualStageAirCond;
+
+alter table
+   ApplianceDualStageAirCondTemp
+rename to
+   ApplianceDualStageAirCond;
+
+alter table ApplianceDualStageAirCond
+   add constraint PK_APPLIANCEDUALSTAGEAIRCOND primary key (ApplianceID);
+   
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_TYPENTRY foreign key (TypeID)
+      references YukonListEntry (EntryID);
+
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_STNENTRY foreign key (StageOneTonnageID)
+      references YukonListEntry (EntryID);
+
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_STGTWONTRY foreign key (StageTwoTonnageID)
+      references YukonListEntry (EntryID);
+
+alter table ApplianceDualStageAirCond
+   add constraint FK_DUALSTAGE_APPLNCBSE foreign key (ApplianceID)
+      references ApplianceBase (ApplianceID);
+/* @error ignore-end */
+/* End YUK-5311 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
