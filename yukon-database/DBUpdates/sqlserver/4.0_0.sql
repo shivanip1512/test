@@ -1465,17 +1465,17 @@ alter table cceventlog alter column cVar float not null;
 /* End YUK-5261 */
 
 /* Start YUK-5263 */
-alter table capcontrolfeeder add controlFlag varchar(1);
+alter table capcontrolfeeder add controlFlag char(1);
 go
 update capcontrolfeeder set controlFlag = 'N';
 go
-alter table capcontrolfeeder alter column controlFlag varchar(1) not null;
+alter table capcontrolfeeder alter column controlFlag char(1) not null;
 go
-alter table capcontrolsubstationbus add controlFlag varchar(1);
+alter table capcontrolsubstationbus add controlFlag char(1);
 go
 update capcontrolsubstationbus set controlFlag = 'N';
 go
-alter table capcontrolsubstationbus alter column controlFlag varchar(1) not null; 
+alter table capcontrolsubstationbus alter column controlFlag char(1) not null; 
 /* End YUK-5263 */
 
 /* Start YUK-5310 */

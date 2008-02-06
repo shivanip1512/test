@@ -1346,13 +1346,13 @@ alter table cceventlog modify cVar float not null;
 /* End YUK-5621 */
 
 /* Start YUK-5263 */
-alter table capcontrolfeeder add controlFlag varchar(1);
+alter table capcontrolfeeder add controlFlag char(1);
 update capcontrolfeeder set controlFlag = 'N';
-alter table capcontrolfeeder modify controlFlag varchar(1) not null;
+alter table capcontrolfeeder modify controlFlag char(1) not null;
 
-alter table capcontrolsubstationbus add controlFlag varchar(1);
+alter table capcontrolsubstationbus add controlFlag char(1);
 update capcontrolsubstationbus set controlFlag = 'N';
-alter table capcontrolsubstationbus modify controlFlag varchar(1) not null; 
+alter table capcontrolsubstationbus modify controlFlag char(1) not null; 
 /* End YUK-5263 */
 
 /* Start YUK-5310 */
