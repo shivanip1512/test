@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.112 $
-* DATE         :  $Date: 2008/01/28 19:01:59 $
+* REVISION     :  $Revision: 1.113 $
+* DATE         :  $Date: 2008/02/06 17:49:50 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -137,7 +137,7 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::GetStatus_Internal,         Emetcon::IO_Read,           Memory_StatusPos,             Memory_StatusLen));
     cs.insert(CommandStore(Emetcon::GetValue_PFCount,           Emetcon::IO_Read,           Memory_PowerfailCountPos,     Memory_PowerfailCountLen));
     cs.insert(CommandStore(Emetcon::GetValue_IED,               Emetcon::IO_Function_Read,  0,                            13));  //  filled in by "getvalue ied" code
-    cs.insert(CommandStore(Emetcon::GetValue_IEDDemand,         Emetcon::IO_Function_Read,  FuncRead_IED_RealTime,         9));   //  magic number
+    cs.insert(CommandStore(Emetcon::GetValue_IEDDemand,         Emetcon::IO_Function_Read,  FuncRead_IED_RealTime,        12));   //  magic number
     cs.insert(CommandStore(Emetcon::GetStatus_IEDDNP,           Emetcon::IO_Function_Read,  FuncRead_IED_Precanned_Last,  13));
     cs.insert(CommandStore(Emetcon::GetConfig_IEDTime,          Emetcon::IO_Function_Read,  FuncRead_IED_TOU_MeterStatus, 13));  //  magic number
     cs.insert(CommandStore(Emetcon::GetConfig_IEDDNP,           Emetcon::IO_Function_Read,  FuncRead_IED_DNPTablePos,     FuncRead_IED_DNPTableLen));
