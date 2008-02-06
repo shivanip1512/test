@@ -81,6 +81,14 @@
                     <x:panelTab id="tabSubSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcSubSetup.jsp"/>
                     </x:panelTab>
+                    
+                    <x:panelTab id="tabAreaSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCArea']}">
+                        <jsp:include page="/WEB-INF/pages/cbc/ccAreaSetup.jsp"/>
+                    </x:panelTab>
+                    
+                    <x:panelTab id="tabSpecialAreaSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSpecialArea']}">
+                        <jsp:include page="/WEB-INF/pages/cbc/ccSpecialAreaSetup.jsp"/>
+                    </x:panelTab>
 
                     <x:panelTab id="tabSubSchedSetup" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcSubSchedule.jsp"/>

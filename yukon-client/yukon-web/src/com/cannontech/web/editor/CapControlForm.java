@@ -401,6 +401,22 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             ((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().setPhaseC(new Integer(val));
         }
 	}
+	
+	public void areaNoPointClicked(ActionEvent ae) {
+        String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptId");
+        if (val == null) {
+            return;
+        }
+        ((CapControlArea) getDbPersistent()).getCapControlArea().setControlPointId(new Integer(val));
+    }
+	
+	public void specialAreaNoPointClicked(ActionEvent ae) {
+        String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptId");
+        if (val == null) {
+            return;
+        }
+        ((CapControlSpecialArea) getDbPersistent()).getCapControlSpecialArea().setControlPointId(new Integer(val));
+    }
 
 	public void twoWayPtsTeeClick(ActionEvent ae) {
 		String val = (String) FacesContext.getCurrentInstance().getExternalContext().getRequestParameterMap().get("ptID");
@@ -1761,9 +1777,21 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         if(pointNameMap == null) {
             pointNameMap = new HashMap();
             int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
-            int voltPoint = getControlPoint (PointUnits.UOMID_KVOLTS);
+            if (varPoint != PointTypes.SYS_PID_SYSTEM) {
+                pointNameMap.put(varPoint, pointDao.getPointName(varPoint));
+            }
             int wattPoint = getControlPoint (PointUnits.UOMID_KW);
+            if (wattPoint != PointTypes.SYS_PID_SYSTEM) {
+                pointNameMap.put(wattPoint, pointDao.getPointName(wattPoint));      
+            }
+            int voltPoint = getControlPoint (PointUnits.UOMID_KVOLTS);
+            if (voltPoint != PointTypes.SYS_PID_SYSTEM) {
+                pointNameMap.put(voltPoint, pointDao.getPointName(voltPoint));
+            }
             int switchPointID = PointTypes.SYS_PID_SYSTEM;
+            if (switchPointID != PointTypes.SYS_PID_SYSTEM) {
+                pointNameMap.put(switchPointID, pointDao.getPointName(switchPointID));
+            }
             if (getDbPersistent() instanceof CapControlSubBus) {
                 CapControlSubBus sub = (CapControlSubBus) getDbPersistent();
                 CapControlSubstationBus subBus = sub.getCapControlSubstationBus();
@@ -1779,12 +1807,16 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 int phaseCPoint = feederthinger.getPhaseC();
                 pointNameMap.put(phaseBPoint, pointDao.getPointName(phaseBPoint));
                 pointNameMap.put(phaseCPoint, pointDao.getPointName(phaseCPoint));
-            }
-            pointNameMap.put(varPoint, pointDao.getPointName(varPoint));
-            pointNameMap.put(wattPoint, pointDao.getPointName(wattPoint));            
-            pointNameMap.put(voltPoint, pointDao.getPointName(voltPoint));
-            if (switchPointID != PointTypes.SYS_PID_SYSTEM) {
-                pointNameMap.put(switchPointID, pointDao.getPointName(switchPointID));
+            }else if(getDbPersistent() instanceof CapControlArea) {
+                CapControlArea area = (CapControlArea) getDbPersistent();
+                com.cannontech.database.db.capcontrol.CapControlArea areaThinger = area.getCapControlArea();
+                int controlPointId = areaThinger.getControlPointId();
+                pointNameMap.put(controlPointId, pointDao.getPointName(controlPointId));
+            }else if(getDbPersistent() instanceof CapControlSpecialArea) {
+                CapControlSpecialArea area = (CapControlSpecialArea) getDbPersistent();
+                com.cannontech.database.db.capcontrol.CapControlSpecialArea areaThinger = area.getCapControlSpecialArea();
+                int controlPointId = areaThinger.getControlPointId();
+                pointNameMap.put(controlPointId, pointDao.getPointName(controlPointId));
             }
             pointNameMap.put(0, "(none)");
         }
@@ -1801,11 +1833,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             int varPoint = getControlPoint (PointUnits.UOMID_KVAR);
             int wattPoint = getControlPoint(PointUnits.UOMID_KW);
             int voltPoint = getControlPoint(PointUnits.UOMID_KVOLTS);
-            
-            paoNameMap.put(varPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(varPoint).getPaobjectID()));
-            paoNameMap.put(wattPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(wattPoint).getPaobjectID()));
-            paoNameMap.put(voltPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(voltPoint).getPaobjectID()));
-            paoNameMap.put(0, paoDao.getYukonPAOName(pointDao.getLitePoint(0).getPaobjectID()));
+            if(varPoint != PointTypes.SYS_PID_SYSTEM) {
+                paoNameMap.put(varPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(varPoint).getPaobjectID()));
+            }
+            if(wattPoint != PointTypes.SYS_PID_SYSTEM) {
+                paoNameMap.put(wattPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(wattPoint).getPaobjectID()));
+            }
+            if(voltPoint != PointTypes.SYS_PID_SYSTEM) {
+                paoNameMap.put(voltPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(voltPoint).getPaobjectID()));
+            }
             if(getDbPersistent() instanceof CapControlSubBus) {
                 CapControlSubstationBus sub = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
                 int phaseBPoint = sub.getPhaseB();
@@ -1819,6 +1855,16 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 int phaseCPoint = feederthinger.getPhaseC();
                 paoNameMap.put(phaseBPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseBPoint).getPaobjectID()));
                 paoNameMap.put(phaseCPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseCPoint).getPaobjectID()));
+            }else if(getDbPersistent() instanceof CapControlArea) {
+                CapControlArea area = (CapControlArea) getDbPersistent();
+                com.cannontech.database.db.capcontrol.CapControlArea areaThinger = area.getCapControlArea();
+                int controlPointId = areaThinger.getControlPointId();
+                paoNameMap.put(controlPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(controlPointId).getPaobjectID()));
+            }else if(getDbPersistent() instanceof CapControlSpecialArea) {
+                CapControlSpecialArea area = (CapControlSpecialArea) getDbPersistent();
+                com.cannontech.database.db.capcontrol.CapControlSpecialArea areaThinger = area.getCapControlSpecialArea();
+                int controlPointId = areaThinger.getControlPointId();
+                paoNameMap.put(controlPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(controlPointId).getPaobjectID()));
             }
             paoNameMap.put(0, "(none)");
         }
