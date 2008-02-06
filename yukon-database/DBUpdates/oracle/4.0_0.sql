@@ -3,12 +3,12 @@
 /******************************************/
 
 /* Start YUK-5287 */
-alter table capcontrolarea add controlpointid numeric;
+alter table capcontrolarea add controlpointid number;
 update capcontrolarea set controlpointid = 0;
-alter table capcontrolarea modify controlpointid numeric not null;
-alter table dynamicccarea add controlvalue numeric;
+alter table capcontrolarea modify controlpointid number not null;
+alter table dynamicccarea add controlvalue number;
 update dynamicccarea set controlvalue = 0;
-alter table dynamicccarea modify controlvalue numeric not null; 
+alter table dynamicccarea modify controlvalue number not null; 
 /* End YUK-5287 */
 
 create table DYNAMICCCSPECIALAREA  (
