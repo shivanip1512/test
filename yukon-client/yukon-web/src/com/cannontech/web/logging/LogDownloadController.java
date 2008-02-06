@@ -44,9 +44,10 @@ public class LogDownloadController extends LogController {
         if(logFile != null){
             //set response header to the log filename
             response.setHeader("Content-Disposition", "attachment; filename=" + logFile.getName());
+            response.setHeader("Content-Length", Long.toString(logFile.length()));
 
             //Download the file thru the response object
-            FileCopyUtils.copy(logFile.toURL().openStream(), response.getOutputStream());
+            FileCopyUtils.copy(logFile.toURI().toURL().openStream(), response.getOutputStream());
         }
         
         return null;
