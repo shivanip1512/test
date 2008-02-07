@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2007/09/11 18:14:59 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2008/02/07 23:33:55 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -848,12 +848,14 @@ INT CtiProtocolExpresscom::data(string str)
 INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, string str)
 {
     INT status = NoError;
-    BYTE flags;
+    BYTE flags = 0;
     BYTE msgBlock[124];
     INT i = 0;
 
     msgBlock[0] = priority;
-    flags = (hourFlag & 0x01) | (deleteFlag & 0x02) | (clearFlag & 0x04);
+    flags |= (hourFlag ? 0x01 : 0x00); 
+    flags |= (deleteFlag ? 0x02 : 0x00);
+    flags |= (clearFlag ? 0x04 : 0x00);
     msgBlock[1] = flags;
     msgBlock[2] = timePeriod;
 
@@ -863,7 +865,7 @@ INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL d
         i++;
     }
 
-    status = data(msgBlock, i, 0x02, 0x0 );
+    status = data(msgBlock, i+3, 0x02, 0x00 );
     return status;
 
 }
@@ -871,9 +873,12 @@ INT CtiProtocolExpresscom::dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL d
 INT CtiProtocolExpresscom::data(PBYTE data, BYTE length, BYTE dataTransmitType, BYTE targetPort)
 {
     INT status = NoError;
-
+    BYTE txTypePort = 0;
+    txTypePort |= ((dataTransmitType << 4) & 0xf0);
+    txTypePort |= (targetPort & 0x0f);
     _message.push_back( mtData );
-    _message.push_back( (dataTransmitType & 0xf0) | (targetPort & 0x0f) );
+
+    _message.push_back( txTypePort );
     _message.push_back( length );
 
     for(int i = 0; i < length; i++)
