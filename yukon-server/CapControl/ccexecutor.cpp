@@ -1121,7 +1121,8 @@ void CtiCCCommandExecutor::SendTimeSync()
                 CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
                 {
                     controlID = currentCapBank->getControlDeviceId();
-                    if (controlID > 0)
+                    if (controlID > 0 &&
+                        stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                     {   
                         pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
                     }
@@ -1155,7 +1156,8 @@ void CtiCCCommandExecutor::SendTimeSync()
                 CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
                 {
                     controlID = currentCapBank->getControlDeviceId();
-                    if (controlID > 0)
+                    if (controlID > 0 &&
+                        stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                     {   
                         pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
                     }
@@ -1198,7 +1200,8 @@ void CtiCCCommandExecutor::SendTimeSync()
                         CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
                         {
                             controlID = currentCapBank->getControlDeviceId();
-                            if (controlID > 0)
+                            if (controlID > 0 && 
+                                stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                             {   
                                 pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
                             }
@@ -1252,7 +1255,8 @@ void CtiCCCommandExecutor::SendTimeSync()
                                 CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
                                 {
                                     controlID = currentCapBank->getControlDeviceId();
-                                    if (controlID > 0)
+                                    if (controlID > 0 &&
+                                        stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                                     {   
                                         pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
                                     }
@@ -1307,7 +1311,8 @@ void CtiCCCommandExecutor::SendTimeSync()
                                 CtiCCCapBankPtr currentCapBank = (CtiCCCapBankPtr)ccCapBanks[k];
                                 {
                                     controlID = currentCapBank->getControlDeviceId();
-                                    if (controlID > 0)
+                                    if (controlID > 0 &&
+                                        stringContainsIgnoreCase( currentCapBank->getControlDeviceType(),"CBC 702"))
                                     {   
                                         pilMessages.push_back(new CtiRequestMsg(controlID,"putconfig timesync"));
                                     }

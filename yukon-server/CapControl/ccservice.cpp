@@ -397,7 +397,7 @@ void CtiCCService::Init()
     }
 
 
-    _LIKEDAY_OVERRIDE_TIMEOUT = 2400;  //hours
+    _LIKEDAY_OVERRIDE_TIMEOUT = 604800;  //secs. = 7 days
 
     strcpy(var, "CAP_CONTROL_LIKEDAY_OVERRIDE_TIMEOUT");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )

@@ -8885,7 +8885,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
                         }
                     }
                 }
-                controlid_action_map.erase(iter);
+                iter = controlid_action_map.erase(iter);
             }
 
         }
@@ -8908,7 +8908,7 @@ BOOL CtiCCSubstationBus::isDataOldAndFallBackNecessary()
             if (currentFeeder->isDataOldAndFallBackNecessary(getControlUnits()))
             {
                 currentFeeder->setLikeDayControlFlag(TRUE);
-                currentFeeder->setLastOperationTime(timeNow);
+                //currentFeeder->setLastOperationTime(timeNow);
                 retVal = TRUE;
                
             }

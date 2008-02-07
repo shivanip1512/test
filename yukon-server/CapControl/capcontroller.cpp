@@ -1363,153 +1363,184 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Registering for point changes." << endl;
     }
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+    {
 
-    CtiPointRegistrationMsg* regMsg;// = new CtiPointRegistrationMsg();
-    string simple_registration = gConfigParms.getValueAsString("CAP_CONTROL_SIMPLE_REGISTRATION", "false");
-    if(simple_registration == "true" || simple_registration == "TRUE")
-    {   
-        //register for all points
-        regMsg = new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
-    }
-    else
-    { 
-        //register for each point specifically
-        regMsg = new CtiPointRegistrationMsg();
+        CtiCCArea_vec& ccAreas = *store->getCCGeoAreas(CtiTime().seconds());
+        CtiCCSpArea_vec& ccSpAreas =  *store->getCCSpecialAreas(CtiTime().seconds());
+        
+        CtiPointRegistrationMsg* regMsg;// = new CtiPointRegistrationMsg();
+        string simple_registration = gConfigParms.getValueAsString("CAP_CONTROL_SIMPLE_REGISTRATION", "false");
+        if(simple_registration == "true" || simple_registration == "TRUE")
+        {   
+            //register for all points
+            regMsg = new CtiPointRegistrationMsg(REG_ALL_PTS_MASK);
+        }
+        else
+        { 
+            //register for each point specifically
+            regMsg = new CtiPointRegistrationMsg();
 
-        for(LONG i=0;i<subBuses.size();i++)
-        {
-            CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)subBuses.at(i);
 
-            if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
+            LONG i=0;
+            for(i=0;i<ccAreas.size();i++)
             {
-                regMsg->insert(currentSubstationBus->getCurrentVarLoadPointId());
-            }
-            if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
-            {
-                regMsg->insert(currentSubstationBus->getCurrentWattLoadPointId());
-            }
-            if (currentSubstationBus->getCurrentVoltLoadPointId() > 0)
-            {
-                regMsg->insert(currentSubstationBus->getCurrentVoltLoadPointId());
-            }
-            if (currentSubstationBus->getEstimatedVarLoadPointId() > 0)
-            {
-                regMsg->insert(currentSubstationBus->getEstimatedVarLoadPointId());
-            }
-            if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
-            {
-                regMsg->insert(currentSubstationBus->getDailyOperationsAnalogPointId());
-            }
-            if (currentSubstationBus->getPowerFactorPointId() > 0)
-            {
-                regMsg->insert(currentSubstationBus->getPowerFactorPointId());
-            }
-            if (currentSubstationBus->getEstimatedPowerFactorPointId() > 0)
-            {
-                regMsg->insert(currentSubstationBus->getEstimatedPowerFactorPointId());
-            }
-            if (currentSubstationBus->getSwitchOverPointId() > 0)
-            {
-                regMsg->insert(currentSubstationBus->getSwitchOverPointId());
-            }
-            if (currentSubstationBus->getPhaseBId() > 0) 
-            {
-                regMsg->insert(currentSubstationBus->getPhaseBId());
-            }
-            if (currentSubstationBus->getPhaseCId() > 0) 
-            {
-                regMsg->insert(currentSubstationBus->getPhaseCId());
+                CtiCCArea* currentArea = (CtiCCArea*)ccAreas.at(i);
+      
+                if( currentArea->getControlPointId() > 0 )
+                {
+                    regMsg->insert(currentArea->getControlPointId());
+                }
             }
 
-            
-            
-            CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
-
-            for(LONG j=0; j < ccFeeders.size(); j++)
+            for(i=0;i<ccSpAreas.size();i++)
             {
-                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+                CtiCCSpecial* currentSpArea = (CtiCCSpecial*)ccSpAreas.at(i);
 
-                if( currentFeeder->getCurrentVarLoadPointId() > 0 )
+                if( currentSpArea->getControlPointId() > 0 )
                 {
-                    regMsg->insert(currentFeeder->getCurrentVarLoadPointId());
-                }
-                if( currentFeeder->getCurrentWattLoadPointId() > 0 )
-                {
-                    regMsg->insert(currentFeeder->getCurrentWattLoadPointId());
-                }
-                if ( currentFeeder->getCurrentVoltLoadPointId() > 0)
-                {
-                    regMsg->insert(currentFeeder->getCurrentVoltLoadPointId());
-                }
-                if (currentFeeder->getEstimatedVarLoadPointId() > 0)
-                {
-                    regMsg->insert(currentFeeder->getEstimatedVarLoadPointId());
-                }
-                if (currentFeeder->getDailyOperationsAnalogPointId() > 0)
-                {
-                    regMsg->insert(currentFeeder->getDailyOperationsAnalogPointId());
-                }
-                if (currentFeeder->getPowerFactorPointId() > 0)
-                {
-                    regMsg->insert(currentFeeder->getPowerFactorPointId());
-                }
-                if (currentFeeder->getEstimatedPowerFactorPointId() > 0)
-                {
-                    regMsg->insert(currentFeeder->getEstimatedPowerFactorPointId());
+                    regMsg->insert(currentSpArea->getControlPointId());
                 }
 
-                if (currentFeeder->getPhaseBId() > 0) 
-                 {
-                     regMsg->insert(currentFeeder->getPhaseBId());
-                 }
-                 if (currentFeeder->getPhaseCId() > 0) 
-                 {
-                     regMsg->insert(currentFeeder->getPhaseCId());
-                 }
-
-                CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-
-                for(LONG k=0;k<ccCapBanks.size();k++)
+            }
+      
+            for(i=0;i<subBuses.size();i++)
+            {
+                CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)subBuses.at(i);
+      
+                if( currentSubstationBus->getCurrentVarLoadPointId() > 0 )
                 {
-                    CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
-
-                    if( currentCapBank->getStatusPointId() > 0 )
+                    regMsg->insert(currentSubstationBus->getCurrentVarLoadPointId());
+                }
+                if( currentSubstationBus->getCurrentWattLoadPointId() > 0 )
+                {
+                    regMsg->insert(currentSubstationBus->getCurrentWattLoadPointId());
+                }
+                if (currentSubstationBus->getCurrentVoltLoadPointId() > 0)
+                {
+                    regMsg->insert(currentSubstationBus->getCurrentVoltLoadPointId());
+                }
+                if (currentSubstationBus->getEstimatedVarLoadPointId() > 0)
+                {
+                    regMsg->insert(currentSubstationBus->getEstimatedVarLoadPointId());
+                }
+                if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
+                {
+                    regMsg->insert(currentSubstationBus->getDailyOperationsAnalogPointId());
+                }
+                if (currentSubstationBus->getPowerFactorPointId() > 0)
+                {
+                    regMsg->insert(currentSubstationBus->getPowerFactorPointId());
+                }
+                if (currentSubstationBus->getEstimatedPowerFactorPointId() > 0)
+                {
+                    regMsg->insert(currentSubstationBus->getEstimatedPowerFactorPointId());
+                }
+                if (currentSubstationBus->getSwitchOverPointId() > 0)
+                {
+                    regMsg->insert(currentSubstationBus->getSwitchOverPointId());
+                }
+                if (currentSubstationBus->getPhaseBId() > 0) 
+                {
+                    regMsg->insert(currentSubstationBus->getPhaseBId());
+                }
+                if (currentSubstationBus->getPhaseCId() > 0) 
+                {
+                    regMsg->insert(currentSubstationBus->getPhaseCId());
+                }
+      
+                
+                
+                CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
+      
+                for(LONG j=0; j < ccFeeders.size(); j++)
+                {
+                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+      
+                    if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                     {
-                        regMsg->insert(currentCapBank->getStatusPointId());
+                        regMsg->insert(currentFeeder->getCurrentVarLoadPointId());
                     }
-                    if( currentCapBank->getOperationAnalogPointId() > 0 )
+                    if( currentFeeder->getCurrentWattLoadPointId() > 0 )
                     {
-                        regMsg->insert(currentCapBank->getOperationAnalogPointId());
+                        regMsg->insert(currentFeeder->getCurrentWattLoadPointId());
+                    }
+                    if ( currentFeeder->getCurrentVoltLoadPointId() > 0)
+                    {
+                        regMsg->insert(currentFeeder->getCurrentVoltLoadPointId());
+                    }
+                    if (currentFeeder->getEstimatedVarLoadPointId() > 0)
+                    {
+                        regMsg->insert(currentFeeder->getEstimatedVarLoadPointId());
+                    }
+                    if (currentFeeder->getDailyOperationsAnalogPointId() > 0)
+                    {
+                        regMsg->insert(currentFeeder->getDailyOperationsAnalogPointId());
+                    }
+                    if (currentFeeder->getPowerFactorPointId() > 0)
+                    {
+                        regMsg->insert(currentFeeder->getPowerFactorPointId());
+                    }
+                    if (currentFeeder->getEstimatedPowerFactorPointId() > 0)
+                    {
+                        regMsg->insert(currentFeeder->getEstimatedPowerFactorPointId());
+                    }
+      
+                    if (currentFeeder->getPhaseBId() > 0) 
+                     {
+                         regMsg->insert(currentFeeder->getPhaseBId());
+                     }
+                     if (currentFeeder->getPhaseCId() > 0) 
+                     {
+                         regMsg->insert(currentFeeder->getPhaseCId());
+                     }
+      
+                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+      
+                    for(LONG k=0;k<ccCapBanks.size();k++)
+                    {
+                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
+      
+                        if( currentCapBank->getStatusPointId() > 0 )
+                        {
+                            regMsg->insert(currentCapBank->getStatusPointId());
+                        }
+                        if( currentCapBank->getOperationAnalogPointId() > 0 )
+                        {
+                            regMsg->insert(currentCapBank->getOperationAnalogPointId());
+                        }
                     }
                 }
+            }
+            if (CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId() > 0) 
+            {
+                regMsg->insert(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
             }
         }
-        if (CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId() > 0) 
         {
-            regMsg->insert(CtiCCSubstationBusStore::getInstance()->getLinkStatusPointId());
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - End Registering for point changes." << endl;
         }
-    }
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - End Registering for point changes." << endl;
-    }
+    
 
-    /*for(LONG x=0;x<regMsg->getCount();x++)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        LONG pid = regMsg->operator [](x);
-        dout << CtiTime() << " - Registered for Point Id: " << pid << endl;
-    }*/
-    try
-    {
-        getDispatchConnection()->WriteConnQue(regMsg);
+        /*for(LONG x=0;x<regMsg->getCount();x++)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            LONG pid = regMsg->operator [](x);
+            dout << CtiTime() << " - Registered for Point Id: " << pid << endl;
+        }*/
+        try
+        {
+            getDispatchConnection()->WriteConnQue(regMsg);
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+        regMsg = NULL;
     }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> logger_guard(dout);
-        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
-    regMsg = NULL;
 }
 /*---------------------------------------------------------------------------
     parseMessage
@@ -3472,7 +3503,8 @@ void CtiCapController::refreshCParmGlobals(bool force)
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
-        _LIKEDAY_OVERRIDE_TIMEOUT = 2400;  //minutes
+        _LIKEDAY_OVERRIDE_TIMEOUT = 604800;  //secs. = 7 days
+
 
         strcpy(var, "CAP_CONTROL_LIKEDAY_OVERRIDE_TIMEOUT");
         if( !(str = gConfigParms.getValueAsString(var)).empty() )

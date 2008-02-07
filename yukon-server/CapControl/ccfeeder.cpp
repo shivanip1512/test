@@ -7191,6 +7191,8 @@ BOOL CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& current
     {   
         {
             int capCount = 0;
+            long ptId = iter->first;
+
             CtiCCCapBankPtr bank = CtiCCSubstationBusStore::getInstance()->findCapBankByPointID(iter->first, capCount)->second;;
             if (bank != NULL)
             {
@@ -7208,7 +7210,7 @@ BOOL CtiCCFeeder::checkForAndProvideNeededFallBackControl(const CtiTime& current
                 }
             }
         }
-        controlid_action_map.erase(iter);
+        iter = controlid_action_map.erase(iter);
     }
 
     return retVal;
