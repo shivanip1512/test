@@ -672,7 +672,7 @@ public boolean isInputValid()
 				return false;
 			}
 			if((endMonth == nextStartMonth && endDay >= nextStartDay )
-				|| (nextEndMonth == startMonth && startDay >= nextEndDay))
+				|| (nextEndMonth == startMonth && startDay <= nextEndDay))
 			{
 				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
 				return false;
