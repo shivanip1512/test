@@ -3,8 +3,12 @@ update Invoice set AuthorizedNumber = ' ';
 alter table Invoice alter column AuthorizedNumber varchar(60) not null;
 
 /* Start YUK-5001 */
+/* Start YUK-5318 */
+/* @error ignore-begin */
 alter table LMHardwareToMeterMapping
    add constraint PK_LMHARDWARETOMETERMAPPING primary key (LMHardwareInventoryID, MeterInventoryID);
+/* @error ignore-end */
+/* End YUK-5318 */
 
 delete from LMThermostatSeasonEntry where SeasonID in (select SeasonID from LMThermostatSeason where ScheduleID in (select ScheduleID from LMThermostatSchedule where ThermostatTypeID in (select EntryID from YukonListEntry where YukonDefinitionID = 3100)));
 go
