@@ -1485,6 +1485,15 @@ ALTER TABLE SUBSTATIONTOROUTEMAPPING
 /* @error ignore-end */
 /* End YUK-5324 */
 
+/* Start YUK-5325 */
+/* @error ignore-begin */
+insert into YukonRoleProperty values(-20010,-200,'Auto Process Batch Configs','false','Automatically process batch configs using the DailyTimerTask.');
+alter table YukonUserRole
+   add constraint FK_YkUsRl_RlPrp foreign key (RolePropertyID)
+      references YukonRoleProperty (RolePropertyID); 
+/* @error ignore-end */
+/* End YUK-5325 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
