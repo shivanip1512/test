@@ -1498,6 +1498,14 @@ alter table YukonUserRole
 /* @error ignore-end */
 /* End YUK-5325 */
 
+/* Start YUK-5218 */
+/* @error ignore-begin */
+create unique index Indx_SchedName on PAOSchedule (
+ScheduleName ASC
+);
+/* @error ignore-end */
+/* End YUK-5218 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
