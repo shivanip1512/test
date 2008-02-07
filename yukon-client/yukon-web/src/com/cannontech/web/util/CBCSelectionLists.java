@@ -35,13 +35,13 @@ public class CBCSelectionLists {
 	/* constants for indexing the tabbed pane
      * 
 	 */
-    public static final int CapBankControllerSetup = 7;
+    public static final int CapBankControllerSetup = 9;
     public static final int General = 0;
-    public static final int CapBankSetup = 6;
+    public static final int CapBankSetup = 8;
 	public static final int CapControlSubBusSetup = 1;
-	public static final int CapControlFeederCapBank = 5;
-    public static final int CapControlStrategyEditor = 14;
-    public static final int CapControlFeederSetup = 3;
+	public static final int CapControlFeederCapBank = 7;
+    public static final int CapControlStrategyEditor = 16;
+    public static final int CapControlFeederSetup = 5;
     
     /* MyFaces 1.10 does not seem to show the correct time with h:outPutText, */
 	/* so we only show date for now within our pages */
