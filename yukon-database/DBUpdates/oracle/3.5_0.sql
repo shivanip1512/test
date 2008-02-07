@@ -403,18 +403,18 @@ alter table MSPInterface
    add constraint FK_Intrfc_Vend foreign key (VendorID)
       references MSPVendor (VendorID);
       
-alter table ImportData
-	modify SubstationName varchar2(64) not null;
-
-alter table ImportFail
-	modify SubstationName varchar2(64) not null;
-	
 create index Indx_RwPtHisPtIDTst on RAWPOINTHISTORY (
 	POINTID ASC,
 	TIMESTAMP ASC
 );
 /* @error ignore-end */
 
+alter table ImportData
+	modify SubstationName varchar2(64);
+
+alter table ImportFail
+	modify SubstationName varchar2(64);
+	
 alter table MCTConfigMapping
 	drop constraint FK_McCfgM_Dev;
 alter table MCTConfigMapping
