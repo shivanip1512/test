@@ -58,9 +58,13 @@ insert into YukonRoleProperty values(-100104, -1001, 'Volts', 'true', 'display V
 insert into YukonRoleProperty values(-100200, -1002, 'Total Op Count', 'true', 'display Total Operation Count');
 insert into YukonRoleProperty values(-100201, -1002, 'Bank Size', 'true', 'display Bank Size');
 
+/* Start YUK-5316 */
+/* @error ignore-begin */
 alter table CCurtCurtailmentEvent add CCurtProgramTypeID number;
 update CCurtCurtailmentEvent set CCurtProgramTypeID = 0;
 alter table CCurtCurtailmentEvent modify CCurtProgramTypeID number not null;
+/* @error ignore-end */
+/* End YUK-5316 */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
