@@ -1477,6 +1477,14 @@ ALTER TABLE IMPORTPENDINGCOMM
 /* @error ignore-end */
 /* End YUK-5323 */
 
+/* Start YUK-5324 */
+/* @error ignore-begin */
+ALTER TABLE SUBSTATIONTOROUTEMAPPING
+ RENAME CONSTRAINT PK_SUB_RTE_MAP
+ TO PK_SUBSTATIONTOROUTEMAPPING;
+/* @error ignore-end */
+/* End YUK-5324 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
