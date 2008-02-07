@@ -1586,6 +1586,12 @@ go
 /* @error ignore-end */
 /* End YUK-5316 */
 
+/* Start YUK-5323 */
+/* @error ignore-begin */
+sp_rename 'PK_IMPPENDINGCOMM','PK_IMPORTPENDINGCOMM'
+/* @error ignore-end */
+/* End YUK-5323 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

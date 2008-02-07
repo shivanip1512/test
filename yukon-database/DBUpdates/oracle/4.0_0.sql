@@ -1469,6 +1469,14 @@ ALTER TABLE CCURTCURTAILMENTEVENT
 /* @error ignore-end */
 /* End YUK-5316 */
 
+/* Start YUK-5323 */
+/* @error ignore-begin */
+ALTER TABLE IMPORTPENDINGCOMM
+ RENAME CONSTRAINT PK_IMPPENDINGCOMM
+ TO PK_IMPORTPENDINGCOMM;
+/* @error ignore-end */
+/* End YUK-5323 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
