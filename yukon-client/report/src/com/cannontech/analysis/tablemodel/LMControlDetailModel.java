@@ -11,8 +11,10 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
+import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.util.LMControlHistoryUtil;
@@ -23,6 +25,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     
     private CustomerAccountDao customerAccountDao = (CustomerAccountDao) YukonSpringHook.getBean("customerAccountDao");
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
+    private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
     private static DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
     
     private List<ModelRow> data = Collections.emptyList();
@@ -35,8 +38,9 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
         public String program;
         public Date enrollmentStart;
         public Date enrollmentStop;
-        public String controlHours;
-        public String optOutHours;
+        public Double controlHours;
+        public Double totalOptOutHoursDuringControl;
+        public Double totalOptOutHours;
         public Integer optOutEvents;
     }
     
@@ -75,7 +79,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
         -for each group under an account, calculate true control hours
         -also for each group under an account, calculate total number of opt out hours and events*/
         //SUPERHACK-------------------------------------------------------------------------
-        HashMap<Integer, String> groupIdToProgramName = new HashMap<Integer, String>(10);
+        HashMap<Integer, ProgramLoadGroup> groupIdToProgram = new HashMap<Integer, ProgramLoadGroup>(10);
         HashMap<Integer, StarsLMControlHistory> groupIdToSTARSControlHistory = new HashMap<Integer, StarsLMControlHistory>(10);
         
         data = new ArrayList<ModelRow>(accounts.size());
@@ -96,8 +100,9 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                     List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.OPT_OUT_ENTRY);
                     
                     long[] controlTotals = LMControlHistoryUtil.calculateCumulativeCustomerControlValues(allControlEventsForAGroup, getStartDate(), getStopDate(), enrollments, optOuts);
-                    row.controlHours = decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_CONTROL_TIME] / 3600) + " Hours";
-                    row.optOutHours = decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_OPTOUT_TIME] / 3600) + " Hours";
+                    row.controlHours = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_CONTROL_TIME] / 3600));
+                    row.totalOptOutHours = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_OPTOUT_TIME] / 3600));
+                    row.totalOptOutHoursDuringControl = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_CONTROL_DURING_OPTOUT_TIME] / 3600));
                     row.optOutEvents = new Integer(Long.valueOf(controlTotals[LMControlHistoryUtil.TOTAL_OPTOUT_TIME]).toString());
                     
                     /*These are sorted by date.  For reporting purposes, we'll take the first enrollment start date we can find for
@@ -110,7 +115,12 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                         row.enrollmentStop = enrollments.get(enrollments.size() - 1).getGroupEnrollStop();
                     }
                     
-                    row.program = "PROGRAMMMMMM " + groupId;
+                    ProgramLoadGroup program = groupIdToProgram.get(groupId);
+                    if(program == null) {
+                        program = applianceAndProgramDao.getProgramByLMGroupId(groupId);
+                        groupIdToProgram.put(groupId, program);
+                    }
+                    row.program = program.getProgramName();
                     
                     data.add(row);
                 }
