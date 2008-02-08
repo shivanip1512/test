@@ -1,12 +1,38 @@
 package com.cannontech.dbeditor.editor.device;
 
+import java.awt.GridBagConstraints;
+
 import javax.swing.JOptionPane;
 
 import com.cannontech.common.gui.util.AdvancedPropertiesDialog;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.config.ConfigTwoWay;
-import com.cannontech.database.data.device.*;
+import com.cannontech.database.data.device.CarrierBase;
+import com.cannontech.database.data.device.DNPBase;
+import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
+import com.cannontech.database.data.device.GridAdvisorBase;
+import com.cannontech.database.data.device.IDLCBase;
+import com.cannontech.database.data.device.IEDBase;
+import com.cannontech.database.data.device.KV;
+import com.cannontech.database.data.device.MCT210;
+import com.cannontech.database.data.device.MCT213;
+import com.cannontech.database.data.device.MCT240;
+import com.cannontech.database.data.device.MCT248;
+import com.cannontech.database.data.device.MCT250;
+import com.cannontech.database.data.device.MCT400SeriesBase;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.device.PagingTapTerminal;
+import com.cannontech.database.data.device.RTCBase;
+import com.cannontech.database.data.device.RTM;
+import com.cannontech.database.data.device.RemoteBase;
+import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.device.SNPPTerminal;
+import com.cannontech.database.data.device.Schlumberger;
+import com.cannontech.database.data.device.Series5Base;
+import com.cannontech.database.data.device.Sixnet;
+import com.cannontech.database.data.device.WCTPTerminal;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.DeviceTypes;
@@ -46,7 +72,7 @@ public class DeviceBaseEditorPanel extends com.cannontech.common.gui.util.DataIn
 	private javax.swing.JTextField ivjPasswordTextField = null;
 	private javax.swing.JComboBox ivjSlaveAddressComboBox = null;
 	private javax.swing.JLabel ivjSlaveAddressLabel = null;
-	private javax.swing.JPanel ivjCommunicationPanel = null;
+	private javax.swing.JPanel communicationPanel = null;
 	private javax.swing.JButton ivjJButtonAdvanced = null;
 	private javax.swing.JComboBox ivjJComboBoxAmpUseType = null;
 	private javax.swing.JLabel ivjJLabelCCUAmpUseType = null;
@@ -512,162 +538,170 @@ private DeviceAdvancedDialupEditorPanel getAdvancedPanel()
 	return advancedPanel;
 }
 
-/**
- * Return the ConfigurationPanel property value.
- * @return javax.swing.JPanel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JPanel getCommunicationPanel() {
-	if (ivjCommunicationPanel == null) {
+	if (communicationPanel == null) {
 		try {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder1;
 			ivjLocalBorder1 = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder1.setTitleFont(new java.awt.Font("Dialog", java.awt.Font.BOLD, 12));
 			ivjLocalBorder1.setTitle("Communication");
-			ivjCommunicationPanel = new javax.swing.JPanel();
-			java.awt.GridBagConstraints consGridBagConstraints29 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints31 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints30 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints32 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints34 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints33 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints35 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints37 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints38 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints36 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints40 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints39 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints42 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints43 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints41 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints44 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints46 = new java.awt.GridBagConstraints();
-			java.awt.GridBagConstraints consGridBagConstraints45 = new java.awt.GridBagConstraints();
-			consGridBagConstraints35.insets = new java.awt.Insets(7,11,7,33);
-			consGridBagConstraints35.ipadx = -14;
-			consGridBagConstraints35.gridy = 2;
-			consGridBagConstraints35.gridx = 2;
-			consGridBagConstraints37.insets = new java.awt.Insets(5,33,6,2);
-			consGridBagConstraints37.gridy = 3;
-			consGridBagConstraints37.gridx = 0;
-			consGridBagConstraints29.insets = new java.awt.Insets(3,3,3,17);
-			consGridBagConstraints29.ipadx = -5;
-			consGridBagConstraints29.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints29.weightx = 1.0;
-			consGridBagConstraints29.gridwidth = 2;
-			consGridBagConstraints29.gridy = 0;
-			consGridBagConstraints29.gridx = 1;
-			consGridBagConstraints31.insets = new java.awt.Insets(6,33,4,2);
-			consGridBagConstraints31.gridy = 1;
-			consGridBagConstraints31.gridx = 0;
-			consGridBagConstraints32.insets = new java.awt.Insets(4,3,5,17);
-			consGridBagConstraints32.ipadx = -5;
-			consGridBagConstraints32.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints32.weightx = 1.0;
-			consGridBagConstraints32.gridwidth = 2;
-			consGridBagConstraints32.gridy = 1;
-			consGridBagConstraints32.gridx = 1;
-			consGridBagConstraints33.insets = new java.awt.Insets(8,33,6,2);
-			consGridBagConstraints33.ipady = -3;
-			consGridBagConstraints33.gridy = 2;
-			consGridBagConstraints33.gridx = 0;
-			consGridBagConstraints34.insets = new java.awt.Insets(5,3,3,11);
-			consGridBagConstraints34.ipadx = 18;
-			consGridBagConstraints34.gridy = 2;
-			consGridBagConstraints34.gridx = 1;
-			consGridBagConstraints30.insets = new java.awt.Insets(3,33,7,2);
-			consGridBagConstraints30.ipady = -3;
-			consGridBagConstraints30.gridy = 0;
-			consGridBagConstraints30.gridx = 0;
-			consGridBagConstraints38.insets = new java.awt.Insets(3,3,3,17);
-			consGridBagConstraints38.ipadx = -5;
-			consGridBagConstraints38.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints38.weightx = 1.0;
-			consGridBagConstraints38.gridwidth = 2;
-			consGridBagConstraints38.gridy = 3;
-			consGridBagConstraints38.gridx = 1;
-			consGridBagConstraints40.insets = new java.awt.Insets(4,3,1,17);
-			consGridBagConstraints40.ipadx = -5;
-			consGridBagConstraints40.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints40.weightx = 1.0;
-			consGridBagConstraints40.gridwidth = 2;
-			consGridBagConstraints40.gridy = 5;
-			consGridBagConstraints40.gridx = 1;
-			consGridBagConstraints43.insets = new java.awt.Insets(5,33,4,2);
-			consGridBagConstraints43.gridy = 6;
-			consGridBagConstraints43.gridx = 0;
-			consGridBagConstraints36.insets = new java.awt.Insets(4,33,5,19);
-			consGridBagConstraints36.ipady = 1;
-			consGridBagConstraints36.gridwidth = 3;
-			consGridBagConstraints36.gridy = 8;
-			consGridBagConstraints36.gridx = 0;
-			consGridBagConstraints39.insets = new java.awt.Insets(4,33,2,2);
-			consGridBagConstraints39.gridy = 5;
-			consGridBagConstraints39.gridx = 0;
-			consGridBagConstraints42.insets = new java.awt.Insets(3,3,4,17);
-			consGridBagConstraints42.ipadx = -5;
-			consGridBagConstraints42.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints42.weightx = 1.0;
-			consGridBagConstraints42.gridwidth = 2;
-			consGridBagConstraints42.gridy = 4;
-			consGridBagConstraints42.gridx = 1;
-			consGridBagConstraints44.insets = new java.awt.Insets(2,3,2,17);
-			consGridBagConstraints44.ipady = 4;
-			consGridBagConstraints44.ipadx = 37;
-			consGridBagConstraints44.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints44.weightx = 1.0;
-			consGridBagConstraints44.gridwidth = 2;
-			consGridBagConstraints44.gridy = 6;
-			consGridBagConstraints44.gridx = 1;
-			consGridBagConstraints44.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			consGridBagConstraints43.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			consGridBagConstraints46.insets = new java.awt.Insets(3,3,3,17);
-			consGridBagConstraints46.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			consGridBagConstraints46.weightx = 1.0;
-			consGridBagConstraints46.gridwidth = 2;
-			consGridBagConstraints46.gridy = 7;
-			consGridBagConstraints46.gridx = 1;
-			consGridBagConstraints46.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			consGridBagConstraints45.insets = new java.awt.Insets(4,33,7,2);
-			consGridBagConstraints45.gridy = 7;
-			consGridBagConstraints45.gridx = 0;
-			consGridBagConstraints45.anchor = java.awt.GridBagConstraints.NORTHWEST;
-			consGridBagConstraints41.insets = new java.awt.Insets(3,33,5,2);
-			consGridBagConstraints41.gridy = 4;
-			consGridBagConstraints41.gridx = 0;
-			ivjCommunicationPanel.setName("CommunicationPanel");
-			ivjCommunicationPanel.setBorder(ivjLocalBorder1);
-			ivjCommunicationPanel.setLayout(new java.awt.GridBagLayout());
-			ivjCommunicationPanel.add(getRouteComboBox(), consGridBagConstraints29);
-			ivjCommunicationPanel.add(getRouteLabel(), consGridBagConstraints30);
-			ivjCommunicationPanel.add(getPortLabel(), consGridBagConstraints31);
-			ivjCommunicationPanel.add(getPortComboBox(), consGridBagConstraints32);
-			ivjCommunicationPanel.add(getPostCommWaitLabel(), consGridBagConstraints33);
-			ivjCommunicationPanel.add(getPostCommWaitSpinner(), consGridBagConstraints34);
-			ivjCommunicationPanel.add(getWaitLabel(), consGridBagConstraints35);
-			ivjCommunicationPanel.add(getDialupSettingsPanel(), consGridBagConstraints36);
-			ivjCommunicationPanel.add(getPasswordLabel(), consGridBagConstraints37);
-			ivjCommunicationPanel.add(getPasswordTextField(), consGridBagConstraints38);
-			ivjCommunicationPanel.add(getSlaveAddressLabel(), consGridBagConstraints39);
-			ivjCommunicationPanel.add(getSlaveAddressComboBox(), consGridBagConstraints40);
-			ivjCommunicationPanel.add(getJLabelCCUAmpUseType(), consGridBagConstraints41);
-			ivjCommunicationPanel.add(getJComboBoxAmpUseType(), consGridBagConstraints42);
-			ivjCommunicationPanel.add(getSenderLabel(), consGridBagConstraints43);
-			ivjCommunicationPanel.add(getSenderTextField(), consGridBagConstraints44);
-			ivjCommunicationPanel.add(getSecurityCodeLabel(), consGridBagConstraints45);
-			ivjCommunicationPanel.add(getSecurityCodeTextField(), consGridBagConstraints46);
-			ivjCommunicationPanel.setMaximumSize(new java.awt.Dimension(394,252));
-			ivjCommunicationPanel.setPreferredSize(new java.awt.Dimension(394,265));
-			ivjCommunicationPanel.setMinimumSize(new java.awt.Dimension(0,0));
-
-            // user code end
+			communicationPanel = new javax.swing.JPanel();
+			
+			communicationPanel.setMaximumSize(new java.awt.Dimension(394,252));
+            communicationPanel.setPreferredSize(new java.awt.Dimension(394,265));
+            communicationPanel.setMinimumSize(new java.awt.Dimension(0,0));
+            
+            communicationPanel.setName("CommunicationPanel");
+            communicationPanel.setBorder(ivjLocalBorder1);
+            communicationPanel.setLayout(new java.awt.GridBagLayout());
+			
+			GridBagConstraints routeComboBoxConstraint = new GridBagConstraints();
+			GridBagConstraints portLabelConstraint = new GridBagConstraints();
+			GridBagConstraints routeLabelConstraint = new GridBagConstraints();
+			GridBagConstraints portComboBoxConstraint = new GridBagConstraints();
+			GridBagConstraints postCommWaitSpinnerConstraint = new GridBagConstraints();
+			GridBagConstraints postCommWaitLabelConstraint = new GridBagConstraints();
+			GridBagConstraints waitLabelConstraint = new GridBagConstraints();
+			GridBagConstraints passwordLabelConstraint = new GridBagConstraints();
+			GridBagConstraints passwordTextFieldConstraint = new GridBagConstraints();
+			GridBagConstraints dialupSettingsPanelConstraint = new GridBagConstraints();
+			GridBagConstraints slaveAddressComboBoxConstraint = new GridBagConstraints();
+			GridBagConstraints slaveAddressLabelConstraint = new GridBagConstraints();
+			GridBagConstraints ampUseTypeComboBoxConstraint = new GridBagConstraints();
+			GridBagConstraints senderLabelConstraint = new GridBagConstraints();
+			GridBagConstraints ccuAmpUseTypeLabelConstraint = new GridBagConstraints();
+			GridBagConstraints senderTextFieldConstraint = new GridBagConstraints();
+			GridBagConstraints securityCodeTextFieldConstraint = new GridBagConstraints();
+			GridBagConstraints securityCodeLabelConstraint = new GridBagConstraints();
+			
+			waitLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			waitLabelConstraint.gridy = 2;
+			waitLabelConstraint.gridx = 2;
+			communicationPanel.add(getWaitLabel(), waitLabelConstraint);
+			
+			passwordLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			passwordLabelConstraint.gridy = 3;
+			passwordLabelConstraint.gridx = 0;
+			communicationPanel.add(getPasswordLabel(), passwordLabelConstraint);
+			
+			portLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			portLabelConstraint.gridy = 1;
+			portLabelConstraint.gridx = 0;
+			portLabelConstraint.anchor = GridBagConstraints.NORTHWEST;
+			communicationPanel.add(getPortLabel(), portLabelConstraint);
+			
+			portComboBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
+			portComboBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			portComboBoxConstraint.weightx = 1.0;
+			portComboBoxConstraint.gridwidth = 2;
+			portComboBoxConstraint.gridy = 1;
+			portComboBoxConstraint.gridx = 1;
+			portComboBoxConstraint.anchor = GridBagConstraints.NORTHWEST;
+			communicationPanel.add(getPortComboBox(), portComboBoxConstraint);
+			
+			postCommWaitLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			postCommWaitLabelConstraint.gridy = 2;
+			postCommWaitLabelConstraint.gridx = 0;
+			communicationPanel.add(getPostCommWaitLabel(), postCommWaitLabelConstraint);
+			
+			postCommWaitSpinnerConstraint.insets = new java.awt.Insets(5,5,5,5);
+			postCommWaitSpinnerConstraint.gridy = 2;
+			postCommWaitSpinnerConstraint.gridx = 1;
+			communicationPanel.add(getPostCommWaitSpinner(), postCommWaitSpinnerConstraint);
+			
+			routeLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			routeLabelConstraint.anchor = GridBagConstraints.NORTHWEST;
+			routeLabelConstraint.gridy = 0;
+			routeLabelConstraint.gridx = 0;
+			communicationPanel.add(getRouteLabel(), routeLabelConstraint);
+			
+	        routeComboBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
+            routeComboBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+            routeComboBoxConstraint.weightx = 1.0;
+            routeComboBoxConstraint.gridwidth = 2;
+            routeComboBoxConstraint.gridy = 1;
+            routeComboBoxConstraint.gridx = 0;
+            routeComboBoxConstraint.anchor = java.awt.GridBagConstraints.NORTHWEST;
+            communicationPanel.add(getRouteComboBox(), routeComboBoxConstraint);
+			
+			passwordTextFieldConstraint.insets = new java.awt.Insets(5,5,5,5);
+			passwordTextFieldConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			passwordTextFieldConstraint.weightx = 1.0;
+			passwordTextFieldConstraint.gridwidth = 2;
+			passwordTextFieldConstraint.gridy = 3;
+			passwordTextFieldConstraint.gridx = 1;
+			communicationPanel.add(getPasswordTextField(), passwordTextFieldConstraint);
+			
+			slaveAddressComboBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
+			slaveAddressComboBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			slaveAddressComboBoxConstraint.weightx = 1.0;
+			slaveAddressComboBoxConstraint.gridwidth = 2;
+			slaveAddressComboBoxConstraint.gridy = 5;
+			slaveAddressComboBoxConstraint.gridx = 1;
+			communicationPanel.add(getSlaveAddressComboBox(), slaveAddressComboBoxConstraint);
+			
+			senderLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			senderLabelConstraint.gridy = 6;
+			senderLabelConstraint.gridx = 0;
+			senderLabelConstraint.anchor = java.awt.GridBagConstraints.NORTHWEST;
+            communicationPanel.add(getSenderLabel(), senderLabelConstraint);
+			
+			dialupSettingsPanelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			dialupSettingsPanelConstraint.gridwidth = 3;
+			dialupSettingsPanelConstraint.gridy = 8;
+			dialupSettingsPanelConstraint.gridx = 0;
+			communicationPanel.add(getDialupSettingsPanel(), dialupSettingsPanelConstraint);
+			
+			slaveAddressLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			slaveAddressLabelConstraint.gridy = 5;
+			slaveAddressLabelConstraint.gridx = 0;
+			communicationPanel.add(getSlaveAddressLabel(), slaveAddressLabelConstraint);
+			
+			ampUseTypeComboBoxConstraint.insets = new java.awt.Insets(5,5,5,5);
+			ampUseTypeComboBoxConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			ampUseTypeComboBoxConstraint.weightx = 1.0;
+			ampUseTypeComboBoxConstraint.gridwidth = 2;
+			ampUseTypeComboBoxConstraint.gridy = 4;
+			ampUseTypeComboBoxConstraint.gridx = 1;
+			communicationPanel.add(getJComboBoxAmpUseType(), ampUseTypeComboBoxConstraint);
+			
+			senderTextFieldConstraint.insets = new java.awt.Insets(5,5,5,5);
+			senderTextFieldConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			senderTextFieldConstraint.weightx = 1.0;
+			senderTextFieldConstraint.gridwidth = 2;
+			senderTextFieldConstraint.gridy = 6;
+			senderTextFieldConstraint.gridx = 1;
+			senderTextFieldConstraint.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			communicationPanel.add(getSenderTextField(), senderTextFieldConstraint);
+			
+			
+			securityCodeTextFieldConstraint.insets = new java.awt.Insets(5,5,5,5);
+			securityCodeTextFieldConstraint.fill = java.awt.GridBagConstraints.HORIZONTAL;
+			securityCodeTextFieldConstraint.weightx = 1.0;
+			securityCodeTextFieldConstraint.gridwidth = 2;
+			securityCodeTextFieldConstraint.gridy = 7;
+			securityCodeTextFieldConstraint.gridx = 1;
+			securityCodeTextFieldConstraint.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			communicationPanel.add(getSecurityCodeTextField(), securityCodeTextFieldConstraint);
+			
+			securityCodeLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			securityCodeLabelConstraint.gridy = 7;
+			securityCodeLabelConstraint.gridx = 0;
+			securityCodeLabelConstraint.anchor = java.awt.GridBagConstraints.NORTHWEST;
+			communicationPanel.add(getSecurityCodeLabel(), securityCodeLabelConstraint);
+			
+			ccuAmpUseTypeLabelConstraint.insets = new java.awt.Insets(5,5,5,5);
+			ccuAmpUseTypeLabelConstraint.gridy = 4;
+			ccuAmpUseTypeLabelConstraint.gridx = 0;
+			communicationPanel.add(getJLabelCCUAmpUseType(), ccuAmpUseTypeLabelConstraint);
+			
+			
+			
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
-	return ivjCommunicationPanel;
+	return communicationPanel;
 }
 
 /**
@@ -1338,10 +1372,10 @@ private javax.swing.JComboBox getRouteComboBox() {
 		try {
 			ivjRouteComboBox = new javax.swing.JComboBox();
 			ivjRouteComboBox.setName("RouteComboBox");
-			ivjRouteComboBox.setPreferredSize(new java.awt.Dimension(162,20));
-			ivjRouteComboBox.setMinimumSize(new java.awt.Dimension(162,20));
+			ivjRouteComboBox.setPreferredSize(new java.awt.Dimension(200,20));
+			ivjRouteComboBox.setMinimumSize(new java.awt.Dimension(200,20));
 			// user code begin {1}
-			ivjRouteComboBox.setMaximumSize(new java.awt.Dimension(162,20));
+			ivjRouteComboBox.setMaximumSize(new java.awt.Dimension(200,20));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
@@ -1364,14 +1398,10 @@ private javax.swing.JLabel getRouteLabel() {
 			ivjRouteLabel.setName("RouteLabel");
 			ivjRouteLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjRouteLabel.setText("Communication Route:");
-			// user code begin {1}
-			ivjRouteLabel.setPreferredSize(new java.awt.Dimension(172,19));
-			ivjRouteLabel.setAlignmentX(0.0F);
-			ivjRouteLabel.setMinimumSize(new java.awt.Dimension(172,19));
-			ivjRouteLabel.setMaximumSize(new java.awt.Dimension(172,19));
+			ivjRouteLabel.setPreferredSize(new java.awt.Dimension(150,19));
+			ivjRouteLabel.setMinimumSize(new java.awt.Dimension(150,19));
+			ivjRouteLabel.setMaximumSize(new java.awt.Dimension(150,19));
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1393,12 +1423,8 @@ private javax.swing.JLabel getSecurityCodeLabel() {
 			ivjSecurityCodeLabel.setPreferredSize(new java.awt.Dimension(172,19));
 			ivjSecurityCodeLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjSecurityCodeLabel.setMinimumSize(new java.awt.Dimension(172,19));
-			// user code begin {1}
 			ivjSecurityCodeLabel.setVisible(false);
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1409,7 +1435,6 @@ private javax.swing.JLabel getSecurityCodeLabel() {
  * Return the SecurityCodeTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getSecurityCodeTextField() {
 	if (ivjSecurityCodeTextField == null) {
 		try {
@@ -1420,12 +1445,8 @@ private javax.swing.JTextField getSecurityCodeTextField() {
 			ivjSecurityCodeTextField.setPreferredSize(new java.awt.Dimension(157,24));
 			ivjSecurityCodeTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjSecurityCodeTextField.setMinimumSize(new java.awt.Dimension(120, 20));
-			// user code begin {1}
 			ivjSecurityCodeTextField.setVisible(false);
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1436,7 +1457,6 @@ private javax.swing.JTextField getSecurityCodeTextField() {
  * Return the SenderLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getSenderLabel() {
 	if (ivjSenderLabel == null) {
 		try {
@@ -1447,12 +1467,8 @@ private javax.swing.JLabel getSenderLabel() {
 			ivjSenderLabel.setPreferredSize(new java.awt.Dimension(172,19));
 			ivjSenderLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjSenderLabel.setMinimumSize(new java.awt.Dimension(172,19));
-			// user code begin {1}
 			ivjSenderLabel.setVisible(false);
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1463,7 +1479,6 @@ private javax.swing.JLabel getSenderLabel() {
  * Return the SenderTextField property value.
  * @return javax.swing.JTextField
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JTextField getSenderTextField() {
 	if (ivjSenderTextField == null) {
 		try {
@@ -1474,12 +1489,8 @@ private javax.swing.JTextField getSenderTextField() {
 			ivjSenderTextField.setPreferredSize(new java.awt.Dimension(120, 20));
 			ivjSenderTextField.setFont(new java.awt.Font("sansserif", 0, 14));
 			ivjSenderTextField.setMinimumSize(new java.awt.Dimension(120, 20));
-			// user code begin {1}
 			ivjSenderTextField.setVisible(false);
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1490,7 +1501,6 @@ private javax.swing.JTextField getSenderTextField() {
  * Return the SlaveAddressComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getSlaveAddressComboBox() {
 	if (ivjSlaveAddressComboBox == null) {
 		try {
@@ -1500,8 +1510,6 @@ private javax.swing.JComboBox getSlaveAddressComboBox() {
 			ivjSlaveAddressComboBox.setPreferredSize(new java.awt.Dimension(162,20));
 			ivjSlaveAddressComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjSlaveAddressComboBox.setMinimumSize(new java.awt.Dimension(162,20));
-			// user code begin {1}
-
 			ivjSlaveAddressComboBox.addItem( IEDBase.SLAVE_STAND_ALONE );
 			ivjSlaveAddressComboBox.addItem( IEDBase.SLAVE_MASTER );
 			ivjSlaveAddressComboBox.addItem( IEDBase.SLAVE_SLAVE1 );
@@ -1509,10 +1517,7 @@ private javax.swing.JComboBox getSlaveAddressComboBox() {
 			ivjSlaveAddressComboBox.addItem( IEDBase.SLAVE_SLAVE3 );
 			ivjSlaveAddressComboBox.addItem( IEDBase.SLAVE_SLAVE4 );
 			
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1523,7 +1528,6 @@ private javax.swing.JComboBox getSlaveAddressComboBox() {
  * Return the SlaveAddressLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getSlaveAddressLabel() {
 	if (ivjSlaveAddressLabel == null) {
 		try {
@@ -1534,10 +1538,7 @@ private javax.swing.JLabel getSlaveAddressLabel() {
 			ivjSlaveAddressLabel.setPreferredSize(new java.awt.Dimension(172,19));
 			ivjSlaveAddressLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjSlaveAddressLabel.setMinimumSize(new java.awt.Dimension(172,19));
-			// user code begin {1}
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1548,7 +1549,6 @@ private javax.swing.JLabel getSlaveAddressLabel() {
  * Return the TOUComboBox property value.
  * @return javax.swing.JComboBox
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JComboBox getTOUComboBox() {
 	if (ivjTOUComboBox == null) {
 		try {
@@ -1559,13 +1559,9 @@ private javax.swing.JComboBox getTOUComboBox() {
 			ivjTOUComboBox.setPreferredSize(new java.awt.Dimension(162,20));
 			ivjTOUComboBox.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjTOUComboBox.setMinimumSize(new java.awt.Dimension(162,20));
-			// user code begin {1}
 			ivjTOUComboBox.setEnabled(false);
 			ivjTOUComboBox.setVisible(false);
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1576,7 +1572,6 @@ private javax.swing.JComboBox getTOUComboBox() {
  * Return the TOULabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getTOULabel() {
 	if (ivjTOULabel == null) {
 		try {
@@ -1585,15 +1580,11 @@ private javax.swing.JLabel getTOULabel() {
 			ivjTOULabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjTOULabel.setText("TOU Schedule: ");
 			ivjTOULabel.setVisible(false);
-			// user code begin {1}
 			ivjTOULabel.setEnabled(false);
-			// user code end
 			ivjTOULabel.setPreferredSize(new java.awt.Dimension(172,19));
 			ivjTOULabel.setMaximumSize(new java.awt.Dimension(172,19));
 			ivjTOULabel.setMinimumSize(new java.awt.Dimension(172,19));
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1604,7 +1595,6 @@ private javax.swing.JLabel getTOULabel() {
  * Return the TypeLabel property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getTypeLabel() {
 	if (ivjTypeLabel == null) {
 		try {
@@ -1615,11 +1605,7 @@ private javax.swing.JLabel getTypeLabel() {
 			ivjTypeLabel.setPreferredSize(new java.awt.Dimension(83, 20));
 			ivjTypeLabel.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjTypeLabel.setMinimumSize(new java.awt.Dimension(83, 20));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1629,7 +1615,6 @@ private javax.swing.JLabel getTypeLabel() {
  * Return the DeviceTypeTextField property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getTypeTextField() {
 	if (ivjTypeTextField == null) {
 		try {
@@ -1641,11 +1626,7 @@ private javax.swing.JLabel getTypeTextField() {
 			ivjTypeTextField.setPreferredSize(new java.awt.Dimension(200, 23));
 			ivjTypeTextField.setFont(new java.awt.Font("dialog.bold", 1, 14));
 			ivjTypeTextField.setMinimumSize(new java.awt.Dimension(200, 23));
-			// user code begin {1}
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
