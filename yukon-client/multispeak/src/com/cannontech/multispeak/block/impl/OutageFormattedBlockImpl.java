@@ -63,9 +63,9 @@ public class OutageFormattedBlockImpl extends FormattedBlockServiceImpl <OutageB
                 attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.BLINK_COUNT);
             outageBlock.populate(meter, outage);
         } catch (IllegalArgumentException e) {
-            CTILogger.info("Ignoring Exception:", e);
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
         } catch (NotFoundException e) {
-            CTILogger.info("Ignoring Exception:", e);
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
         }
         return outageBlock;
     }

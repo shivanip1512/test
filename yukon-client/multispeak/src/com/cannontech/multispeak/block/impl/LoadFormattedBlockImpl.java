@@ -64,10 +64,10 @@ public class LoadFormattedBlockImpl extends FormattedBlockServiceImpl <LoadBlock
                 attrDynamicDataSource.getPointValue(meter, BuiltInAttribute.LOAD_PROFILE);
             loadBlock.populate(meter, loadProfile);
         } catch (IllegalArgumentException e) {
-            CTILogger.info("Ignoring Exception:", e);
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
         } catch (NotFoundException e) {
-            CTILogger.info("Ignoring Exception:", e);
-        }      
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
+        }
         
         try {
             PointValueHolder kVar =
@@ -75,9 +75,9 @@ public class LoadFormattedBlockImpl extends FormattedBlockServiceImpl <LoadBlock
             loadBlock.populate(meter, kVar);
 
         } catch (IllegalArgumentException e) {
-            CTILogger.info("Ignoring Exception:", e);
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
         } catch (NotFoundException e) {
-            CTILogger.info("Ignoring Exception:", e);
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
         }      
         
         try {
@@ -86,9 +86,9 @@ public class LoadFormattedBlockImpl extends FormattedBlockServiceImpl <LoadBlock
             loadBlock.populate(meter, voltage);
 
         } catch (IllegalArgumentException e) {
-            CTILogger.info("Ignoring Exception:", e);
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
         } catch (NotFoundException e) {
-            CTILogger.info("Ignoring Exception:", e);
+            CTILogger.debug("Ignoring Exception:" + e.getMessage());
         }      
 
         return loadBlock;

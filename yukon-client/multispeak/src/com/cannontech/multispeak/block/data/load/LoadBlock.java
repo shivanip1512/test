@@ -142,7 +142,7 @@ public class LoadBlock implements Block{
                     hasData = true;
                 }
             } catch (IllegalArgumentException e) {
-                CTILogger.error(e);
+                CTILogger.debug(e);
             } catch (NotFoundException e){
                 CTILogger.error(e);
             }
