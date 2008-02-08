@@ -216,7 +216,10 @@ public class MR_EAImpl implements MR_EASoap_PortType
     public FormattedBlock getLatestReadingByMeterNoAndType(String meterNo, String readingType) throws RemoteException {
         init();
         com.cannontech.amr.meter.model.Meter meter = mspValidationService.isYukonMeterNumber(meterNo);
-        return readingTypesMap.get(readingType).getFormattedBlock(meter);
+        FormattedBlockService<Block> formattedBlockServ = 
+            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+
+        return formattedBlockServ.getFormattedBlock(meter);
     }
     
     @Override
@@ -226,7 +229,10 @@ public class MR_EAImpl implements MR_EASoap_PortType
         List<com.cannontech.amr.meter.model.Meter> meters = meterDao.getMetersByMeterNumber(lastReceived, 
                                                                                             vendor.getMaxReturnRecords());
         
-        FormattedBlock formattedBlock = readingTypesMap.get(readingType).getFormattedBlock(meters);
+        FormattedBlockService<Block> formattedBlockServ = 
+            mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+
+        FormattedBlock formattedBlock = formattedBlockServ.getFormattedBlock(meters);
         FormattedBlock[] formattedBlockArray = new FormattedBlock[]{formattedBlock};
         return formattedBlockArray;
     }
@@ -234,10 +240,10 @@ public class MR_EAImpl implements MR_EASoap_PortType
     @Override
     public FormattedBlock[] getReadingsByDateAndType(Calendar startDate, Calendar endDate, String readingType, String lastReceived) throws RemoteException {
         init();
-        FormattedBlockService<Block> formattedBlock = 
+        FormattedBlockService<Block> formattedBlockServ = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
-        FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlock, startDate.getTime(), endDate.getTime(), lastReceived);
+        FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlock(formattedBlockServ, startDate.getTime(), endDate.getTime(), lastReceived);
         FormattedBlock[] formattedBlocks = new FormattedBlock[]{mspBlock};
      
         return formattedBlocks;
@@ -249,11 +255,11 @@ public class MR_EAImpl implements MR_EASoap_PortType
         //Validate the meterNo is in Yukon
         mspValidationService.isYukonMeterNumber(meterNo); 
 
-        FormattedBlockService<Block> formattedBlock = 
+        FormattedBlockService<Block> formattedBlockServ = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
         
         MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
-        FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlock, 
+        FormattedBlock mspBlock = mspRawPointHistoryDao.retrieveBlockByMeterNo(formattedBlockServ, 
                                                                                startDate.getTime(), 
                                                                                endDate.getTime(),
                                                                                meterNo,
@@ -287,10 +293,11 @@ public class MR_EAImpl implements MR_EASoap_PortType
             throw new RemoteException(message);
         }
         
-        FormattedBlockService<Block> formattedBlock = 
+        FormattedBlockService<Block> formattedBlockServ = 
             mspValidationService.isValidBlockReadingType(readingTypesMap, readingType);
+        
         errorObjects = multispeak.BlockMeterReadEvent(vendor, meterNo, 
-                                                      formattedBlock, transactionID);
+                                                      formattedBlockServ, transactionID);
 
         multispeakFuncs.logErrorObjects(MultispeakDefines.MR_CB_STR, "initiateMeterReadByMeterNumberRequest", errorObjects);
         return errorObjects;
