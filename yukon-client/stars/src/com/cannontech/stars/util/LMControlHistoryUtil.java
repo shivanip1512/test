@@ -872,7 +872,11 @@ public class LMControlHistoryUtil {
                 newDuration = -1;
             else {
                 for(LMHardwareControlGroup optOutEntry : optOuts) {
-                    totalOptOutTime = totalOptOutTime + (optOutEntry.getOptOutStop().getTime() - optOutEntry.getOptOutStart().getTime());
+                    if(optOutEntry.getOptOutStop() != null)
+                        totalOptOutTime = totalOptOutTime + (optOutEntry.getOptOutStop().getTime() - optOutEntry.getOptOutStart().getTime());
+                    //currently an ongoing opt out
+                    else
+                        totalOptOutTime = totalOptOutTime + (new Date().getTime() - optOutEntry.getOptOutStart().getTime());
                     
                     //period falls entirely within an opt out period.  Discard it.
                     if(optOutEntry.getOptOutStart().getTime() < start.getTime() && optOutEntry.getOptOutStop() != null &&
