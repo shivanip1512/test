@@ -1360,7 +1360,7 @@ public class Multispeak implements MessageListener {
         //Check for valid TransponderID
         if ( mspMeter.getNameplate() == null ||
                 StringUtils.isBlank(mspMeter.getNameplate().getTransponderID()) &&
-                StringUtils.isNumeric(mspMeter.getNameplate().getTransponderID()) ) {
+                StringUtils.isNumeric(mspMeter.getNameplate().getTransponderID().trim()) ) {
 
             ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
                                                              "Error: MeterNumber(" + mspMeter.getMeterNo() + ") - TransponderID is invalid.  No updates were made.",
