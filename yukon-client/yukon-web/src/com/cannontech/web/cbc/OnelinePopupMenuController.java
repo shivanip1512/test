@@ -2,7 +2,7 @@ package com.cannontech.web.cbc;
 
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -107,7 +107,7 @@ public class OnelinePopupMenuController extends MultiActionController {
             if (connection != null) connection.close();
         }
         
-        Map<String,Object> infoMap = new HashMap<String,Object>();
+        Map<String,Object> infoMap = new LinkedHashMap<String,Object>(19);
         infoMap.put("Maintenance Area ID:", info.getMaintAreaID());
         infoMap.put("Pole Number:", info.getPoleNumber());
         infoMap.put("Latitude:", info.getLatit());
@@ -209,7 +209,10 @@ public class OnelinePopupMenuController extends MultiActionController {
     public ModelAndView capBankMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        
         final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
+        final int cbcDeviceId = capBank.getControlDeviceID();
+        final LiteYukonPAObject cbcPaoObject = paoDao.getLiteYukonPAO(cbcDeviceId);
         
         mav.addObject("paoId", id);
         
@@ -225,8 +228,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         int confirm = CBCCommand.CONFIRM_OPEN;
         mav.addObject("confirm", confirm);
         
-        LiteYukonPAObject lite = paoDao.getLiteYukonPAO(id);
-        boolean isTwoWay = CBCUtils.isTwoWay(lite);
+        boolean isTwoWay = CBCUtils.isTwoWay(cbcPaoObject);
         String scanOptionDis = Boolean.toString(!isTwoWay);
         String childCapMaintPaoId = "CapBankMaint_" + id + "_" + scanOptionDis;
         mav.addObject("childCapMaintPaoId", childCapMaintPaoId);
@@ -412,7 +414,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         mav.addObject("paoId", id);
         mav.addObject("returnUrl", returnUrl);
-        Map<String,Object> varChangeMap = new HashMap<String,Object>();
+        Map<String,Object> varChangeMap = new LinkedHashMap<String,Object>(3);
         varChangeMap.put("Before:", capBank.getBeforeVars());
         varChangeMap.put("After:", capBank.getAfterVars());
         varChangeMap.put("% Change:", capBank.getPercentChange());

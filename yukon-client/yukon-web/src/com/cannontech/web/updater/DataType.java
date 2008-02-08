@@ -1,5 +1,11 @@
 package com.cannontech.web.updater;
 
 public enum DataType {
-    POINT
+    POINT,
+    CBCAREA,
+    CBCSPECIALAREA,
+    SUBSTATION,
+    SUBBUS,
+    FEEDER,
+    CAPBANK
 }

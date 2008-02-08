@@ -71,6 +71,12 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		else
 			return null;
 	}
+	
+	public StreamableCapObject getObject(int id) {
+	    StreamableCapObject area = cache.getObject(id);
+	    if (filter.valid(area)) return area;
+	    return null;
+	}
 
 	public CapBankDevice getCapBankDevice(int capBankDeviceID) {
 		CapBankDevice cap = cache.getCapBankDevice(capBankDeviceID);

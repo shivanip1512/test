@@ -1,14 +1,15 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <%@ page import="com.cannontech.common.constants.LoginController" %>
-<%@ page import="com.cannontech.database.data.capcontrol.CapControlArea" %>
-<%@ page import="com.cannontech.database.data.capcontrol.CapControlSpecialArea" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
 <%@ page import="com.cannontech.core.dao.PaoDao" %>
 
 <cti:standardPage title="Substations" module="capcontrol">
+
 <%@include file="cbc_inc.jspf"%>
 
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
@@ -22,7 +23,6 @@
     LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
     final CBCDisplay cbcDisplay = new CBCDisplay(user);
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
-    String nd = "\"return nd();\"";
     String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
@@ -58,19 +58,11 @@ if(special){
 </cti:breadCrumbs>
   
 <script type="text/javascript">
-	Event.observe(window, 'load', function () {callBack();});
- 								
-	function getSubstationMenu(id){
-   		var html = new String($F('cmd_substation_'+id));
-   		overlib(html, FULLHTML, STICKY);
-   	}
-    
     // handles analysis links (which are not functional for a substation - show error alert)
 	function loadPointChartGreyBox(title, url) {
 		alert(title + ' is not available for a Substation.\n\nChoose specific Substation Bus or Feeder within a Substation');
 		return void(0);
 	}
-    
 </script>
 
 <cti:titledContainer title="<%="Substation In Area:  " + area%>" id="last_titled_container">
@@ -96,11 +88,12 @@ if(special){
             <form id="subForm" action="feeders.jsp" method="post">
             <input type="hidden" name="<%=CCSessionInfo.STR_SUBID%>" />
           
-            <table id="subHeaderTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
+            <table id="subHeaderTable" width="100%" cellspacing="0" cellpadding="0" >
               <tr class="columnHeader lAlign">              
                 <td>
                 <input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubStation');"/>
                 Sub Name</td>
+                <td width="2%"></td>
                 <td>State</td>
                 <td>Available<br/> kVARS</td>
                 <td>Unavailable <br/>kVARS</td>
@@ -110,74 +103,66 @@ if(special){
               </tr>
 			</table>
 <div>
-<table id="subTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
+<table id="subTable" width="100%" cellspacing="0" cellpadding="0" >
 <%
 String css = "tableCell";
 for( int i = 0; i < areaSubs.size(); i++ ) {
     css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
     SubStation substation = areaSubs.get(i);
-    
-	String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailableForSubStation(substation, user) );
-	String varsDisabled =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStation(substation, user));
-	String closedVars = CBCUtils.format( CBCUtils.calcVarsClosedForCapBanks(filterCapControlCache.getCapBanksBySubStation(substation), user));
-	String trippedVars = CBCUtils.format( CBCUtils.calcVarsTrippedForCapBanks(filterCapControlCache.getCapBanksBySubStation(substation), user));
 %>
-
+            <c:set var="thisSubStationId" value="<%=substation.getCcId()%>"/>
+            <input type="hidden" id="paoId_${thisSubStationId}" value="${thisSubStationId}"></input>
+            
 	        <tr class="<%=css%>">
 				<td>
-				<input type="checkbox" name="cti_chkbxSubStation" value="<%=substation.getCcId()%>" />
-				<a href="#" class="<%=css%>" onclick="postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', <%=substation.getCcId()%>)" id="anc_<%=substation.getCcId()%>">
-				<%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%>
-				</a>
-				<% if(substation.getSpecialAreaEnabled()){
-					String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId()); %>
-					 <font color="red">SA <%=spcAreaName%></font>
-				<%}%>
+				    <input type="checkbox" name="cti_chkbxSubStation" value="${thisSubStationId}" />
+				    <a href="javascript:postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', ${thisSubStationId});" 
+                       class="<%=css%>" 
+                       id="anc_${thisSubStationId}">
+				        <%=substation.getCcName()%>
+				    </a>
+				    <% if (substation.getSpecialAreaEnabled()){
+				        String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId()); %>
+					   <font color="red">SA <%=spcAreaName%></font>
+				    <% } %>
 				</td>
-				<td>
-				
-			<%
-							if( hasControl ) {
-							%>
-				<!--Create  popup menu html-->
-				<input id="cmd_substation_<%=substation.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />
-				<a type="state" name="cti_dyn" id="<%=substation.getCcId()%>"
-					style="color: <%=cbcDisplay.getHTMLFgColor(substation)%>;"
-					href="javascript:void(0);"
-					<%=popupEvent%>="getSubstationMenu('<%=substation.getCcId()%>');">
-			<%
-			} else {
-			%>
-				<a type="state" name="cti_dyn" id="<%=substation.getCcId()%>" style="color: <%=cbcDisplay.getHTMLFgColor(substation)%>;" >
-			<%
-			}
-			%>
-			<%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
-			</a>
-				</td>
-				<td><%=varsAvailable %> </td>
-                <td><%=varsDisabled %> </td>
-                <td><%=closedVars %> </td>
-                <td><%=trippedVars %> </td>
-                <td><a type="param2" name="cti_dyn" id="<%=substation.getCcId()%>">
-                <%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_POWER_FACTOR_COLUMN)%></a>
+                
+                <td>
+                    <ct:warningImg paoId="${thisSubStationId}" type="SUBSTATION"/>
                 </td>
+                
+				<td>
+                    <a id="substation_state_${thisSubStationId}" 
+                       style="<%=css%>"
+                    <% if( hasControl ) { %>
+					   href="javascript:void(0);"
+					   <%=popupEvent%>="getSubstationMenu('${thisSubStationId}');"
+                    <% } %> >
+                        <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="STATE" />
+                    </a>
+                    <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${thisSubStationId}')" initialize="true" value="SUBSTATION/${thisSubStationId}/STATE"/>
+            	</td>
+                
+				<td><cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="KVARS_AVAILABLE" /></td>
+                <td><cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="KVARS_UNAVAILABLE" /></td>
+                <td><cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="KVARS_CLOSED" /></td>
+                <td><cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="KVARS_TRIPPED" /></td>
+                <td><cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="PFACTOR" /></td>
             </tr>
 <% } %>
 
             </table>
 	</div>
-	<input type="hidden" id="lastUpdate" value="" />
-		        
 </form>
 <%}%>
 <script type="text/javascript">
     Event.observe(window, 'load', function() { new CtiNonScrollTable('subTable','subHeaderTable');});
+    Event.observe(window, 'load', checkPageExpire);
 </script>
+
 </cti:titledContainer>
-<div style = "display:none" id = "outerDiv">
-<cti:titledContainer title="Current Status">
-    <div id="cmd_msg_div" />
-</cti:titledContainer>
-</div>
+
+<ct:commandMsgDiv/>
+
+    <ct:dataUpdateEnabler disableHighlight="true"/>
 </cti:standardPage>

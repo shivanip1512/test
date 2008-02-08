@@ -1,6 +1,128 @@
 var manMsgID = 0;
 var GB_IMG_DIR = "../../editor/css/greybox/";
 
+function checkPageExpire() {
+    var inputElements = $$('input');
+    var paoIds = inputElements.findAll(function(it) {
+        return it.id.startsWith('paoId_')
+    }).pluck('value').toJSON();
+
+    var url = '/spring/capcontrol/pageExpire';
+    new Ajax.Request(url, {
+        'method': 'POST',
+        'parameters' : {'paoIds': paoIds},
+        onSuccess: function(transport) {
+            var html = transport.responseText;
+            var expired = eval(html);
+            if (expired) {
+                if (confirm('This page has been updated.  Would you like to load the changes?')) {
+                    window.location.reload();
+                }    
+                return;    
+            }
+            setTimeout(checkPageExpire, 15000);
+        }
+    });    
+}
+
+function getAreaMenu(id) {
+    var url = '/spring/capcontrol/tier/popupmenu?menu=areaMenu&id=' + id;
+    getMenuFromURL(url);
+}
+
+function getSpecialAreaMenu(id){
+    var url = '/spring/capcontrol/tier/popupmenu?menu=specialAreaMenu&id=' + id;
+    getMenuFromURL(url); 
+}
+
+function getSubstationMenu(id) {
+    var url = '/spring/capcontrol/tier/popupmenu?menu=subStationMenu&id=' + id;
+    getMenuFromURL(url);
+}
+
+function getSubBusMenu(id) {
+   var url = '/spring/capcontrol/tier/popupmenu?menu=subBusMenu&id=' + id;
+   getMenuFromURL(url);
+}
+
+function getFeederMenu(id) {
+    var url = '/spring/capcontrol/tier/popupmenu?menu=feederMenu&id=' + id;
+    getMenuFromURL(url);    
+}
+
+function getCapBankMenu(id) {
+    var url = '/spring/capcontrol/tier/popupmenu?menu=capBankMenu&id=' + id;
+    getMenuFromURL(url); 
+    hiLiteTRow ('tr_cap_'+id , 'yellow');
+}
+
+function getCapBankSystemMenu(id) {
+    var url = '/spring/capcontrol/tier/popupmenu?menu=capBankSystemMenu&id=' + id;
+    getMenuFromURL(url); 
+    hiLiteTRow ('tr_cap_'+id , 'yellow');
+}
+
+function getCapBankTempMoveBack(id, redirectURL){
+    var url = '/spring/capcontrol/tier/popupmenu?menu=capBankTempMoveBack&id=' + id;
+    if (redirectURL) url += '&redirectURL=' + redirectURL;
+    
+    getMenuFromURL(url);
+    hiLiteTRow ('tr_cap_'+id , 'yellow');
+}
+
+function getMenuFromURL(url) {
+        new Ajax.Request(url, {
+        method: 'POST',
+        onSuccess: function(transport) {
+            var html = transport.responseText;
+            //alert(html);
+            overlib(html, FULLHTML, STICKY);
+        }
+    });
+}
+
+function updateStateColorGenerator(id) {
+    return function(data) {
+        var anchorTag = $(id);
+        var state = data.value;
+        var color;
+        if (state.startsWith('ENABLED')) {
+            color = '#3C8242';
+        } else if (state.startsWith('DISABLED')) {
+            color = '#FF0000';
+        } else if (state.indexOf('Pending') != -1) {
+            color = '#F09100';
+        }    
+        anchorTag.style.color = color;
+    };
+}
+
+function updateWarningImage(id) {
+    return function(data) {
+        var alertSpan = $(id + '_alert');
+        var okSpan = $(id + '_ok');
+        
+        var isWarning = eval(data.value);
+        if (isWarning) {
+            okSpan.hide();
+            alertSpan.show();
+        } else {
+            alertSpan.hide();
+            okSpan.show();
+        }
+    }
+}
+
+function hiLiteTRow (id, color) {
+    $(id).style.backgroundColor = color;
+}
+
+//returned when a cap bank menu is triggered to disappear
+function hidePopupHiLite (rowID, color) {
+    nd();
+    hiLiteTRow (rowID, color);
+}
+
 // -------------------------------------------
 //post events with a form rather than using the URL line.
 // Accepts a form name and any number of [ParamName,ParamValue] pairs.
@@ -29,7 +151,6 @@ function postMany( frmName )
             }
         }
     }
-
     f.submit();
 }
 
@@ -752,8 +873,8 @@ function pause(numberMillis) {
             	row.setStyle({'display' : ''});
             	var cells = row.getElementsByTagName('td');
 	            var sub = cells[1];
-	            var spans = sub.getElementsByTagName('span');
-	            var subName = new String (spans[0].innerHTML);
+                var anchor = sub.getElementsByTagName('a')[0];
+                var subName = anchor.text;
 	            subBusNames.push(trim(subName));
        		}
        		$('feederFilter').selectedIndex = 0;
@@ -763,8 +884,8 @@ function pause(numberMillis) {
 	            var row = rows[i];
 	            var cells = row.getElementsByTagName('td');
 	            var sub = cells[1];
-	            var spans = sub.getElementsByTagName('span');
-	            var subName = new String (spans[0].innerHTML);
+	            var anchor = sub.getElementsByTagName('a')[0];
+	            var subName = anchor.text;
 	            var selectedSubBus = new String (select.options[select.selectedIndex].text);
 	            //displayed name always contains a white space at the end
 	            if (trim(subName) == trim (selectedSubBus)){

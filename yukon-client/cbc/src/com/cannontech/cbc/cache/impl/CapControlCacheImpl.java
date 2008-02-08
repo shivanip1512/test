@@ -600,7 +600,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private synchronized void handleDeletedSub(int id) {   
         subBusMap.remove(id);
         subToBankMap.remove(id);
-        getUpdatedObjMap().removeId(id);
+        getUpdatedObjMap().remove(id);
     }
     
     /**
@@ -609,7 +609,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     private synchronized void handleDeletedSubstation(int id) {   
         subStationMap.remove(id);
-        getUpdatedObjMap().removeId(id);
+        getUpdatedObjMap().remove(id);
     }
     
     /**
@@ -865,6 +865,28 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         return area;
     }
     
+    public synchronized StreamableCapObject getObject(int id) throws NotFoundException {
+        StreamableCapObject object = cbcAreaMap.get(id);
+        if (object != null) return object;
+        
+        object = cbcSpecialAreaMap.get(id);
+        if (object != null) return object;
+        
+        object = subStationMap.get(id);
+        if (object != null) return object;
+        
+        object = subBusMap.get(id);
+        if (object != null) return object;
+        
+        object = feederMap.get(id);
+        if (object != null) return object;
+        
+        object = capBankMap.get(id);
+        if (object != null) return object;
+        
+        throw new NotFoundException("StreamableCapObject with id: " + id + " not found.");
+    }
+    
     public synchronized CBCWebUpdatedObjectMap getUpdatedObjMap() {
         if (updatedObjMap == null)
             updatedObjMap = new CBCWebUpdatedObjectMap();
@@ -921,13 +943,13 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
 
     private void clearCacheMap(final Map<Integer,?> map) {
         Set<Integer> keySet = map.keySet();
-        getUpdatedObjMap().removeIds(keySet);
+        getUpdatedObjMap().remove(keySet);
         map.clear();
     }
     
     private void removeFromCacheMap(final Map<Integer,?> map, final Integer id) {
         map.remove(id);
-        getUpdatedObjMap().removeId(id);
+        getUpdatedObjMap().remove(id);
     }
     
     public void setPaoDao(PaoDao paoDao) {

@@ -31,8 +31,8 @@ import com.cannontech.yukon.cbc.SubStation;
 public class CBCDisplay {
 
     public static final String SYMBOL_SIGNAL_QUALITY = "(*)";
-    public static final String STR_NA = "  NA";
-    public static final String DASH_LINE = "  ----";
+    public static final String STR_NA = "NA";
+    public static final String DASH_LINE = "----";
     public static final String STR_UNKNOWN = "Unknown";
     public short dateTimeFormat = ModifiedDate.FRMT_DEFAULT;
     public short shortTimeFormat = ModifiedDate.FRMT_NOSECS_NOYR;
@@ -120,6 +120,10 @@ public class CBCDisplay {
         this.user = user;
     }
 
+    public LiteYukonUser getUser() {
+        return user;
+    }
+        
     /**
      * getValueAt method for CapBanks.
      */
@@ -252,12 +256,21 @@ public class CBCDisplay {
         }
 
         case CB_STATUS_POPUP: {
-            String before = capBank.getBeforeVars();
-            String after = capBank.getAfterVars();
-            String change = capBank.getPercentChange();
-            String msg = new String(" <b>kVAR PhaseA PhaseB PhaseC Total</b><br/><hr></br>");
-            msg += new String(" Before: " + before + " <br/> After: " + after + " <br/> % Change: " + change);
-            return msg;
+            String before = capBank.getBeforeVars().trim();
+            String after = capBank.getAfterVars().trim();
+            String change = capBank.getPercentChange().trim();
+            final StringBuilder sb = new StringBuilder();
+            sb.append("<b>kVAR PhaseA PhaseB PhaseC Total</b><br><hr><br>");
+            sb.append("Before: ");
+            sb.append(before);
+            sb.append("<br>");
+            sb.append("After: ");
+            sb.append(after);
+            sb.append("<br>");
+            sb.append("% Change: ");
+            sb.append(change);
+            String message = sb.toString();
+            return message;
         }
 
         default: return null;
@@ -299,7 +312,7 @@ public class CBCDisplay {
         }
     }
 
-    public Object getAreaValueAt(CBCArea area, int col) {
+    public String getAreaValueAt(CBCArea area, int col) {
         if (area == null) return "";
 
         switch (col) {
@@ -423,7 +436,7 @@ public class CBCDisplay {
             //add an asterisk if the quality was low
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVAR))
             {
-                retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
 
             retVal += " / ";
@@ -459,7 +472,7 @@ public class CBCDisplay {
 
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KW))
             {
-                retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
             retVal += " / ";
 
@@ -472,7 +485,7 @@ public class CBCDisplay {
             }
             if (!CBCUtils.signalQualityNormal(subBus, PointUnits.UOMID_KVOLTS))
             {
-                retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
 
             return retVal;
@@ -651,7 +664,7 @@ public class CBCDisplay {
                                                          decPlaces);
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVAR))
             {
-                retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
 
             retVal += " / ";
@@ -678,7 +691,7 @@ public class CBCDisplay {
 
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KW))
             {
-                retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
 
             retVal += " / ";
@@ -692,7 +705,7 @@ public class CBCDisplay {
             }
             if (!CBCUtils.signalQualityNormal(feeder, PointUnits.UOMID_KVOLTS))
             {
-                retVal += "<font color = 'red'><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
+                retVal += "<font color=\"red\"><bold>"+ SYMBOL_SIGNAL_QUALITY + "</bold></font>";
             }
             return retVal;
         }

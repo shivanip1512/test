@@ -36,7 +36,7 @@ public com.roguewave.tools.v2_0.Comparator getComparator()
 	{
 		public int compare(Object x, Object y) 
 		{
-			return (int) (((StreamableCapObject)x).getCcId().intValue() - ((StreamableCapObject)y).getCcId().intValue() );
+			return (((StreamableCapObject)x).getCcId().intValue() - ((StreamableCapObject)y).getCcId().intValue() );
 		}
 	};
 	
@@ -57,7 +57,7 @@ public String getCxxStringId() {
 /**
  * getJavaClass method comment.
  */
-public Class getJavaClass() {
+public Class<?> getJavaClass() {
 	return StreamableCapObject.class;
 }
 /**

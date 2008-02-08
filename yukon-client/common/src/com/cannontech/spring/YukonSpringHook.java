@@ -1,7 +1,6 @@
 package com.cannontech.spring;
 
 import java.util.Timer;
-import java.util.concurrent.ScheduledExecutorService;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.access.BeanFactoryLocator;

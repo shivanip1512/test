@@ -1,6 +1,6 @@
 /* see the dataUpdateEnabler.tag to see where this is referenced */
 
-function initiateCannonDataUpdate(url, delayMs) {
+function initiateCannonDataUpdate(url, delayMs, disableHighlight) {
     var lastUpdate = 0;
     var processResponseCallback = function(transport) {
         // looks like stuff is working, hide error div
@@ -17,10 +17,28 @@ function initiateCannonDataUpdate(url, delayMs) {
                 // data was sent and is different than current
                 it.innerHTML = newData;
                 // make it glow
-                new Effect.Highlight(it, {'duration': 3.5, 'startcolor': '#FFE900'});
+                if (!disableHighlight) {
+                    new Effect.Highlight(it, {'duration': 3.5, 'startcolor': '#FFE900'});
+                }    
             }
            
         });
+        
+        // update the colors
+        var updatableColorElements = $$('span[cannonColorUpdater]');
+        updatableColorElements.each(function(it) {
+            var id = it.readAttribute('cannonColorUpdater');
+            // use the cannonUpdater "id" to look up value in response
+            var newData = responseStruc.data[id];
+            if (newData && newData != it.style.color) {
+                // data was sent and is different than current
+                it.style.color = newData;
+                it.childElements().each(function(child) {
+                    child.style.color = newData;
+                });
+            }
+        });
+        
         // find all of the callbacks
         cannonDataUpdateRegistrations.each(function(it) {
             
@@ -52,16 +70,19 @@ function initiateCannonDataUpdate(url, delayMs) {
         setTimeout(doUpdate, delayMs * 5);
     };
     var doUpdate = function() {
-        // get all elements that have the cannonUpdater attribute on them
-        var updatableElements = $$('span[cannonUpdater]');
         // if none exist on this page, get out
         // build up JS object to be used for request
         var requestData = $H();
         requestData.fromDate = lastUpdate;
+
+        // get all elements that have the cannonUpdater attribute on them
+        var updatableElements = $$('span[cannonUpdater]');
         // create an array of strings, with the value of the cannonUpdater attribute for each element
         // use readAttribute to avoid IE weirdness
         requestData.data = updatableElements.invoke('readAttribute', 'cannonUpdater');
         
+        var updatableColorElements = $$('span[cannonColorUpdater]');
+        requestData.data = requestData.data.concat(updatableColorElements.invoke('readAttribute', 'cannonColorUpdater'));
         
         // add elements from JS registrations
         cannonDataUpdateRegistrations.each(function(it) {
@@ -72,7 +93,6 @@ function initiateCannonDataUpdate(url, delayMs) {
         
         // trim down to removed duplicates (there probably won't be any)
         requestData.data = requestData.data.uniq();
-        
         
         if (updatableElements.length == 0) {
             return;

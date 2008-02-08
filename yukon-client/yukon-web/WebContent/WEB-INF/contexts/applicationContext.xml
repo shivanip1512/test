@@ -344,6 +344,24 @@
                 <entry key="POINT">
                     <ref local="pointUpdateBackingService" />
                 </entry>
+                <entry key="CBCAREA">
+                    <ref local="cbcAreaUpdateBackingService" />
+                </entry>
+                <entry key="CBCSPECIALAREA">
+                    <ref local="cbcSpecialAreaUpdateBackingService" />
+                </entry>
+                <entry key="SUBSTATION">
+                    <ref local="subStationUpdateBackingService"/>
+                </entry>
+                <entry key="SUBBUS">
+                    <ref local="subBusUpdateBackingService"/>
+                </entry>
+                <entry key="FEEDER">
+                    <ref local="feederUpdateBackingService"/>
+                </entry>
+                <entry key="CAPBANK">
+                    <ref local="capBankUpdateBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -378,6 +396,67 @@
         <property name="updaterService">
             <ref local="dataUpdaterService" />
         </property>
+    </bean>
+    
+    <bean id="cbcAreaUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
+        <property name="capControlCache" ref="cbcCache"/>
+        <property name="formattingService" ref="cbcAreaFormattingService"/>        
+    </bean>
+    
+    <bean id="cbcSpecialAreaUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
+        <property name="capControlCache" ref="cbcCache"/>
+        <property name="formattingService" ref="cbcSpecialAreaFormattingService"/>        
+    </bean>
+    
+    <bean id="subStationUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
+        <property name="capControlCache" ref="cbcCache"/>
+        <property name="formattingService" ref="subStationFormattingService"/>        
+    </bean>
+    
+    <bean id="subBusUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
+        <property name="capControlCache" ref="capControlCache"/>
+        <property name="formattingService" ref="subBusFormattingService"/>
+    </bean>
+    
+    <bean id="feederUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
+        <property name="capControlCache" ref="capControlCache"/>
+        <property name="formattingService" ref="feederFormattingService"/>    
+    </bean>
+    
+    <bean id="capBankUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
+        <property name="capControlCache" ref="capControlCache"/>
+        <property name="formattingService" ref="capBankFormattingService"/>
+    </bean>
+    
+    <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
+          abstract="true">
+        <property name="filterCacheFactory" ref="filterCacheFactory"/>
+    </bean>
+    
+    <bean id="abstractAreaFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractAreaFormatingService"
+          parent="abstractFormattingService" abstract="true">
+    </bean>
+    
+    <bean id="cbcAreaFormattingService" class="com.cannontech.web.updater.capcontrol.CBCAreaFormattingService"
+          parent="abstractAreaFormattingService"/>
+    
+    <bean id="cbcSpecialAreaFormattingService" class="com.cannontech.web.updater.capcontrol.CBCSpecialAreaFormattingService"
+          parent="abstractAreaFormattingService"/>
+    
+    <bean id="subStationFormattingService" class="com.cannontech.web.updater.capcontrol.SubStationFormattingService"
+          parent="abstractAreaFormattingService"/>
+    
+    <bean id="subBusFormattingService" class="com.cannontech.web.updater.capcontrol.SubBusFormattingService"
+          parent="abstractFormattingService"/>
+    
+    <bean id="feederFormattingService" class="com.cannontech.web.updater.capcontrol.FeederFormattingService"
+          parent="abstractFormattingService"/>
+    
+    <bean id="capBankFormattingService" class="com.cannontech.web.updater.capcontrol.CapBankFormattingService"
+          parent="abstractFormattingService"/>
+    
+    <bean id="capControlValueTagPrototype" class="com.cannontech.web.updater.capcontrol.CapControlValueTag">
+        <property name="updaterService" ref="dataUpdaterService" />
     </bean>
     
     <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag">
@@ -481,6 +560,9 @@
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
     
+    <bean id="pointStatusColorTagPrototype" class="com.cannontech.web.taglib.PointStatusColorTag">
+        <property name="pointDataRegistrationService" ref="pointDataUpdateRegistrationService"/>
+    </bean>
     
     <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">
         

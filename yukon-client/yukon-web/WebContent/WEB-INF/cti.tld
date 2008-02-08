@@ -521,6 +521,43 @@
   </tag>
   
   <tag>
+    <name>pointStatusColor</name>
+    <tag-class>com.cannontech.web.taglib.PointStatusColorTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>pointId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>format</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>  
+  
+  <tag>
+    <name>capControlValue</name>
+    <tag-class>com.cannontech.web.updater.capcontrol.CapControlValueTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>paoId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>format</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>  
+  
+  <tag>
     <name>dataUpdaterCallback</name>
     <tag-class>com.cannontech.web.updater.DataUpdaterCallbackTag</tag-class>
     <body-content>empty</body-content>
@@ -659,6 +696,33 @@
     </attribute>
     <attribute>
       <name>viewType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <dynamic-attributes>true</dynamic-attributes>
+  </tag>
+  
+  <tag>
+    <name>simpleReportUrlFromNameTag</name>
+    <tag-class>com.cannontech.web.reports.SimpleReportUrlFromNameTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>definitionName</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>viewType</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>var</name>
+      <required>false</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>htmlOutput</name>
       <required>true</required>
       <rtexprvalue>true</rtexprvalue>
     </attribute>

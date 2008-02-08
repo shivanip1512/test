@@ -1,18 +1,26 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-<cti:standardPage title="Feeders" module="capcontrol">
-<%@include file="cbc_inc.jspf"%>
 <%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.core.dao.PaoDao" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.cbc.util.CBCUtils" %>
 
+<%@page import="com.cannontech.database.data.point.PointTypes"%>
+<c:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
+
+<cti:standardPage title="Feeders" module="capcontrol">
+
+<%@include file="cbc_inc.jspf"%>
 	
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
+
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
@@ -20,13 +28,12 @@
     PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
     FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
-	final CBCDisplay cbcDisplay = new CBCDisplay(user);
     CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
-	String nd = "\"return nd();\"";
 	String currentPageURL = request.getRequestURL().toString();
 	int subid = ccSession.getLastSubID();
 	Integer areaId = ccSession.getLastAreaId();
 	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+    boolean hideOneLine = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.HIDE_ONELINE));
 	
     boolean showFlip = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
     if (popupEvent == null) popupEvent = "onmouseover";
@@ -47,38 +54,24 @@
 	
 	
 %>
-<script type="text/javascript"> 
-	function togglePopup( v ){
-		if( document.getElementById(v + '_true') != null )
-		{
-			$(v + '_true').toggle();
-		}
-		else if( document.getElementById(v) != null ){
-			$(v).toggle();
-		}
-	}
-</script>
+
+<c:set var="hasControl" value="<%=CBCWebUtils.hasControlRights(session)%>"/>
+
 <cti:standardMenu/>
+
 <cti:breadCrumbs>
-<%
-if(special){
-%>
+<% if (special){ %>
   	<cti:crumbLink url="subareas.jsp" title="Home" />
   	<cti:crumbLink url="specialSubAreas.jsp" title="Special Substation Areas" />
-<%
-} else{
-%>
+<% } else{ %>
 	<cti:crumbLink url="subareas.jsp" title="Home" />
 	<cti:crumbLink url="subareas.jsp" title="Substation Areas" />
-<%
-}
-%>
+<% } %>
     <cti:crumbLink url="substations.jsp" title="Substations" />
     <cti:crumbLink url="feeders.jsp" title="Feeders" />
 </cti:breadCrumbs>
 
 <script type="text/javascript">
-   	Event.observe(window, 'load', function () {callBack();});
    	Event.observe(window, 'load', function () {highlightLast();});
     
     GreyBox.preloadGreyBoxImages();
@@ -124,51 +117,10 @@ if(special){
 		return overlib (html, STICKY, WIDTH, width, HEIGHT, height, OFFSETX, offsetx, OFFSETY, offsety, MOUSEOFF, FULLHTML, ABOVE);
 	}
 	
-	//returned when a cap bank menu is triggered to disappear
-	function hidePopupHiLite (rowID, color) {
-		nd();
-		hiLiteTRow (rowID, color);
-	}
-
-	function hiLiteTRow (id, color) {
-   		$(id).style.backgroundColor = color;
-   	}
-   	
    	function onGreyBoxClose () {
    	   window.parent.location.replace('feeders.jsp');
    	}
-   	
-   	function getSubBusMenu(id){
-   		var html = new String($F('cmd_sub_'+id));
-   		overlib(html, FULLHTML, STICKY);
-   	}
-   	
-   	function getSubstationMenu(id){
-   		var html = new String($F('cmd_substation_'+id));
-   		overlib(html, FULLHTML, STICKY);
-   	}
-   	
-   	function getFeederMenu(id){
-   		var html = new String($F('cmd_fdr_'+id));
-   		overlib(html, FULLHTML, STICKY);
-   	}
-   	
-   	function getCapBankMenu(id){
-   		var html = new String($F('cmd_cap_'+id+'_field'));
-   		overlib(html, FULLHTML, STICKY);
-   		hiLiteTRow ('tr_cap_'+id , 'yellow');
-   	}
-   	
-   	function getCapBankSystemMenu(id){
-   		var html = new String($F('cmd_cap_'+id+'_system'));
-   		overlib(html, FULLHTML, STICKY);
-   		hiLiteTRow ('tr_cap_'+id , 'yellow');
-   	}
-   	   	
-   	function getCapBankTempMoveBack(id){
-   		var html = new String($F('cmd_cap_move_back_' + id));
-   		overlib(html, FULLHTML, STICKY);
-   	}
+
  </script>
 <%
 String css = "tableCell";
@@ -176,48 +128,43 @@ String css = "tableCell";
 <input type="hidden" id="lastAccessedID" value="<%= lastAccessed %>">
 
 	<cti:titledContainer title="Substation">
-		<table id="substationTable" width="98%" border="0" cellspacing="0" cellpadding="0">
+		<table id="substationTable" width="100%" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader lAlign">
 				<th>Substation Name</th>
+                <th width="2%"></th>
 				<th>State</th>
 			</tr>
-			<%
-			if( substation != null ) {
-			%>
-			<tr class="altTableCell" id="tr_substation_<%=substation.getCcId()%>">
-				<td id="anc_<%=substation.getCcId()%>">
-					<input type="checkbox" name="cti_chkbxSubStation" value="<%=substation.getCcId()%>"/>
-					<%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%> 
-					<% if(substation.getSpecialAreaEnabled()){
-					 	String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId());
-					 %>
-						 <font color="red">SA <%=spcAreaName%></font>
-					<%}%>
-				</td>
-				
-				<td >
-				<%
-				if( hasControl ) {
-				%>
-					<!--Create  popup menu html-->
-					<input id="cmd_substation_<%=substation.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />				
-					<a type="state" name="cti_dyn" id="<%=substation.getCcId()%>" style="color: <%=cbcDisplay.getHTMLFgColor(substation)%>;" 
-						href="javascript:void(0);"
-					    <%=popupEvent%>="getSubstationMenu('<%=substation.getCcId()%>');">
-				<%
-				} else {
-				%>
-					<a type="state" name="cti_dyn" id="<%=substation.getCcId()%>" style="color: <%=cbcDisplay.getHTMLFgColor(substation)%>;" >
-				<%
-				}
-				%>
-					<%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
-					</a>
-				</td>
-			</tr>
-			<%
-			}
-			%>
+            <% if (substation != null) { %>
+                <c:set var="thisSubStationId" value="<%=substation.getCcId()%>"/>
+                <input type="hidden" id="paoId_${thisSubStationId}" value="${thisSubStationId}"></input>
+                
+                <tr class="altTableCell" id="tr_substation_${thisSubStationId}">
+                    <td id="anc_${thisSubStationId}">
+                        <input type="checkbox" name="cti_chkbxSubStation" value="${thisSubStationId}"></input>
+                        <%=substation.getCcName()%>
+                        <% if (substation.getSpecialAreaEnabled()) {
+                            String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId());
+                        %>
+                        <font color="red">SA <%=spcAreaName%></font>
+                        <% } %>
+                    </td>
+                    
+                    <td>
+                        <ct:warningImg paoId="${thisSubStationId}" type="SUBSTATION"/>
+                    </td>
+                    
+                    <td>
+                        <a id="substation_state_${thisSubStationId}"
+                            <% if (hasControl) { %>
+                                href="javascript:void(0);"
+                                <%=popupEvent%>="getSubstationMenu('${thisSubStationId}');">
+                            <% } %>
+                            <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="STATE" />
+                        </a>
+                        <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${thisSubStationId}')" initialize="true" value="SUBSTATION/${thisSubStationId}/STATE"/>
+                    </td>
+                </tr>
+			<% } %>
 		</table>
 	</cti:titledContainer>
 	
@@ -225,19 +172,18 @@ String css = "tableCell";
 
 	<cti:titledContainer title="Substation Bus">
 
-		<table id="subTable" width="98%" border="0" cellspacing="0"
-			cellpadding="0">
+		<table id="subTable" width="100%" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader lAlign">
 				<td><input type="checkbox" name="chkAllSubBusesBx" onclick="checkAll(this, 'cti_chkbxSubBuses');" /></td>
 				<td id="subSelect">
-				<select id='subBusFilter' onchange='applySubBusFilter(this);'>
-				<option>All SubBuses</option>
-				<% for( SubBus sub: subBuses) {%>
-					<option><%=sub.getCcName()%></option>
-				<%}%>
-				</select>
+				    <select id='subBusFilter' onchange='applySubBusFilter(this);'>
+				    <option>All SubBuses</option>
+				    <% for (SubBus sub: subBuses) {%>
+					   <option><%=sub.getCcName()%></option>
+				    <% } %>
+				    </select>
 				</td>
-				<td/>
+				<td width="2%"></td>
 				<td>State</td>
 				<td>Target</td>
 				<td>kVAR Load / Est.</td>
@@ -252,87 +198,77 @@ css = "tableCell";
 for( SubBus subBus: subBuses ) {
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 %>
-			<tr class="<%=css%>" id="tr_sub_<%=subBus.getCcId()%>">
-				<td id="anc_<%=subBus.getCcId()%>"><input type="checkbox" name="cti_chkbxSubBuses" value="<%=subBus.getCcId()%>"/>
-					<input type="image" id="showSnap<%=subBus.getCcId()%>" src="images/nav-plus.gif" onclick="showRowElems( 'subSnapShot<%=subBus.getCcId()%>', 'showSnap<%=subBus.getCcId()%>'); return false;"/>
-				</td>
-				<td id="subName">
-				<a href="/capcontrol/oneline/OnelineCBCServlet?id=<%=subBus.getCcId()%>&redirectURL=<%=currentPageURL %>" title="Click to view One-Line" ><span><%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_NAME_COLUMN)%></span></a>
-				<% if( subBus.getVerificationFlag().booleanValue() ) {%>
-					<span class="popupImg" onmouseover="statusMsg(this, 'This SubBus is currently being<br>used in a Verification schedule');" >(v)</span>
-				<%}%>
-				</td>
-				
-				<td>        
-                
-                    <input type="warning" name="cti_dyn" id="<%=subBus.getCcId()%>" style="display:none">
-                    </input>
-                    
-                    <span id ="warning_ok_<%=subBus.getCcId()%>" style="display:">
-                        <img src="/capcontrol/images/Green.gif"/>
-                    </span>
-                    <span id ="warning_alert_<%=subBus.getCcId()%>" style="display:none" 
-                          onmouseover="showDynamicPopup($('subWarningPopup_<%=subBus.getCcId()%>'));" 
-                          onmouseout="nd();"
-                          >
-                            <img src="/capcontrol/images/Yellow.gif"/>
-                    </span>
+            <c:set var="thisSubBusId" value="<%=subBus.getCcId()%>"/>
+            <input type="hidden" id="paoId_${thisSubBusId}" value="${thisSubBusId}"></input>
             
-                    <div class="ccVarLoadPopup" id="subWarningPopup_<%=subBus.getCcId()%>" style="display:none" > 
-                      <span type="param11" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_WARNING_POPUP)%></span>
-                    </div>
-
+			<tr class="<%=css%>" id="tr_sub_${thisSubBusId}">
+				
+                <td id="anc_${thisSubBusId}"><input type="checkbox" name="cti_chkbxSubBuses" value="${thisSubBusId}"/>
+					<input type="image" id="showSnap${thisSubBusId}" src="images/nav-plus.gif" onclick="showRowElems( 'subSnapShot${thisSubBusId}', 'showSnap${thisSubBusId}'); return false;"/>
+				</td>
+                
+				<td id="subName">
+                    <a
+                        <% if (!hideOneLine) { %>
+				            href="${onelineCBCServlet}?id=${thisSubBusId}&redirectURL=<%=currentPageURL %>" title="Click to view One-Line"
+                        <% } %> ><%=subBus.getCcName()%></a>
+				    <% if( subBus.getVerificationFlag().booleanValue() ) {%>
+					   <span class="popupImg" onmouseover="statusMsg(this, 'This SubBus is currently being<br>used in a Verification schedule');" >(v)</span>
+				    <% } %>
+				</td>
+                
+				<td>
+                    <ct:warningImg paoId="${thisSubBusId}" type="SUBBUS"/>      
                 </td>
 				
-				<td >
-				<% if( hasControl ) {%>
-					<!--Create  popup menu html-->
-					<input id="cmd_sub_<%=subBus.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />				
-					<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>"
-						style="color: <%=cbcDisplay.getHTMLFgColor(subBus)%>;"
-						href="javascript:void(0);"
-						<%=popupEvent%> ="getSubBusMenu('<%=subBus.getCcId()%>');"> 
-				<% } else {%>
-					<a type="state" name="cti_dyn" id="<%=subBus.getCcId()%>" style="color: <%=cbcDisplay.getHTMLFgColor(subBus)%>;" >
-				<%}%>
-					<%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_CURRENT_STATE_COLUMN)%>
+				<td>
+					<a id="subbus_state_${thisSubBusId}"
+    				    <% if (hasControl) { %>
+						  href="javascript:void(0);"
+						  <%=popupEvent%>="getSubBusMenu('${thisSubBusId}');" 
+				        <% } %> >
+                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="STATE" />
 					</a>
+                    <cti:dataUpdaterCallback function="updateStateColorGenerator('subbus_state_${thisSubBusId}')" initialize="true" value="SUBBUS/${thisSubBusId}/STATE"/>
 				</td>
-				<td><a onmouseover="showDynamicPopup($('subPFPopup_<%=subBus.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>'))"
+                
+				<td>
+                    <c:set var="isPowerFactorControlled" value="<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>"/>
+                    <a onmouseover="showDynamicPopup($('subPFPopup_${thisSubBusId}_${isPowerFactorControlled}'))"
 						onmouseout="nd();"
-					   	type="param1" 
-					   	name="cti_dyn" 
-					   	id="<%=subBus.getCcId()%>">
-						<%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_COLUMN)%>
+					   	id="${thisSubBusId}">
+						<cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET"/>
 					</a>
-					<div class="ccPFPopup" id="subPFPopup_<%=subBus.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(subBus.getControlUnits())%>" style="display:none" > 
-					  <span type="param9" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_TARGET_POPUP)%></span>
+					<div class="ccPFPopup" id="subPFPopup_${thisSubBusId}_${isPowerFactorControlled}" style="display: none;" >
+                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="TARGET_MESSAGE"/>     
 					</div>
 				</td>
-				<td><a onmouseover="showDynamicPopup($('subVarLoadPopup_<%=subBus.getCcId()%>'));" 
-				       	onmouseout="nd();"
-						type="param2" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_COLUMN)%></a>
-				<div class="ccVarLoadPopup" id="subVarLoadPopup_<%=subBus.getCcId()%>" style="display:none" > 
-				  <span type="param10" name="cti_dyn" id="<%=subBus.getCcId()%>"><%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_VAR_LOAD_POPUP)%></span>
-				</div>
+				<td>
+                    <a onmouseover="showDynamicPopup($('subVarLoadPopup_${thisSubBusId}'));" 
+				       onmouseout="nd();"
+					   id="${thisSubBusId}">
+                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD"/>   
+                    </a>
+				    <div class="ccVarLoadPopup" id="subVarLoadPopup_${thisSubBusId}" style="display: none;" > 
+                        <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KVAR_LOAD_MESSAGE"/>
+				    </div>
 				</td>
-				<td><a type="param3" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_TIME_STAMP_COLUMN)%></a>
+				<td>
+                    <a id="dateTime_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="DATE_TIME"/></a>
 				</td>
-				<td><a type="param4" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_POWER_FACTOR_COLUMN)%></a>
+				<td>
+                    <a id="pFactor_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="PFACTOR"/></a>
 				</td>
-				<td><a type="param5" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_WATTS_COLUMN)%></a>
+				<td>
+                    <a id="kwVolts_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="KW_VOLTS"/></a>
 				</td>
-				<td><a type="param6" name="cti_dyn" id="<%=subBus.getCcId()%>">
-				<%=cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_DAILY_OPERATIONS_COLUMN)%></a>
+				<td>
+                    <a id="dailyMaxOps_${thisSubBusId}"><cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="DAILY_MAX_OPS"/></a>
 				</td>
 			</tr>
 			<tr class="tableCellSnapShot">
 				<td colspan="11">
-				<table id="subSnapShot<%=subBus.getCcId()%>">
+				<table id="subSnapShot${thisSubBusId}">
 				
 					<%
 					if (subBus != null) {
@@ -394,9 +330,7 @@ for( SubBus subBus: subBuses ) {
 
 	<cti:titledContainer title="Feeders">
 
-    <!--form id="fdrForm" action="feeders.jsp" method="post"-->
-		<!-- <table id=fdrHeaderTable width="100%" border="0" cellspacing="0" cellpadding="0">  -->
-		<table id="fdrTable" width="98%" border="0" cellspacing="0" cellpadding="0">
+		<table id="fdrTable" width="100%" cellspacing="0" cellpadding="0">
         	<tr class="columnHeader lAlign">
          		<td><input type="checkbox" name="chkAllFdrsBx" onclick="checkAll(this, 'cti_chkbxFdrs');" />
          			<select id='feederFilter' onchange='applyFeederSelectFilter(this);'>
@@ -406,7 +340,7 @@ for( SubBus subBus: subBuses ) {
 						<%}%>
 					</select>
 				</td>
-				<td/>
+				<td></td>
          		<td>State</td>
          		<td>Target</td>
          		<td>kVAR Load / Est.</td>
@@ -415,91 +349,74 @@ for( SubBus subBus: subBuses ) {
          		<td>kW / Volts</td>
          		<td>Daily/Max Ops</td>
          	</tr>
-       	<!-- </table>  -->
-		
 <%
 css = "tableCell";
-for( int i = 0; i < feeders.size(); i++ )
-{
+for (int i = 0; i < feeders.size(); i++ ) {
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	Feeder feeder = feeders.get(i);
 %>
+                <c:set var="thisFeederId" value="<%=feeder.getCcId()%>"/>
+                <input type="hidden" id="paoId_${thisFeederId}" value="${thisFeederId}"></input>
+                
 				<tr class="<%=css%>">
 					<td>
-						<input type="checkbox" name="cti_chkbxFdrs" value="<%=feeder.getCcId()%>"/>
-						<span><%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_NAME_COLUMN)%></span>
+						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}"/>
+						<span><%=feeder.getCcName()%></span>
 					</td>
 					
 					<td>        
-                
-	                    <input type="warning" name="cti_dyn" id="<%=feeder.getCcId()%>" style="display:none">
-	                    </input>
-	                    
-	                    <span id ="warning_ok_<%=feeder.getCcId()%>" style="display:">
-	                        <img src="/capcontrol/images/Green.gif"/>
-	                    </span>
-	                    <span id ="warning_alert_<%=feeder.getCcId()%>" style="display:none" 
-	                          onmouseover="showDynamicPopup($('subWarningPopup_<%=feeder.getCcId()%>'));" 
-	                          onmouseout="nd();"
-	                          >
-	                            <img src="/capcontrol/images/Yellow.gif"/>
-	                    </span>
-	            
-	                    <div class="ccVarLoadPopup" id="subWarningPopup_<%=feeder.getCcId()%>" style="display:none" > 
-	                      <span type="param11" name="cti_dyn" id="<%=feeder.getCcId()%>"><%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_WARNING_POPUP)%></span>
-	                    </div>
-
+                        <ct:warningImg paoId="${thisFeederId}" type="FEEDER"/>
                     </td>
 					
 					<td>
-<%
-if( hasControl ) {
-%>
-						<input id="cmd_fdr_<%=feeder.getCcId()%>" type="hidden" name = "cmd_dyn" value= "" />	
-						<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>"
-							style="color: <%=cbcDisplay.getHTMLFgColor(feeder)%>;"
-							href="javascript:void(0);"
-						    <%=popupEvent%> ="getFeederMenu('<%=feeder.getCcId()%>');"> 
-<%
-	} else {
-	%>
-	<a type="state" name="cti_dyn" id="<%=feeder.getCcId()%>" style="color: <%=cbcDisplay.getHTMLFgColor(feeder)%>;" >
-<%}%><%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_CURRENT_STATE_COLUMN)%>
+                        <a id="feeder_state_${thisFeederId}"    
+                            <% if (hasControl) { %>
+                                href="javascript:void(0);"
+                                <%=popupEvent%>="getFeederMenu('${thisFeederId}');" 
+                            <% } %> >
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="STATE"/>    
 						</a>
+                        <cti:dataUpdaterCallback function="updateStateColorGenerator('feeder_state_${thisFeederId}')" initialize="true" value="FEEDER/${thisFeederId}/STATE"/>
 					</td>
-					<td><a onmouseover="showDynamicPopup($('feederPFPopup_<%=feeder.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(feeder.getControlUnits())%>'));"
+                    
+					<td>
+                        <c:set var="isPowerFactorControlled" value="<%=CBCUtils.isPowerFactorControlled(feeder.getControlUnits())%>"/>
+                        <a onmouseover="showDynamicPopup($('feederPFPopup_${thisFeederId}_${isPowerFactorControlled}'));"
 						   onmouseout="nd();"
-						   type="param1" name="cti_dyn" id="<%=feeder.getCcId()%>">
-					<%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_TARGET_COLUMN)%></a>
-					<div class="ccPFPopup" id="feederPFPopup_<%=feeder.getCcId()%>_<%=CBCUtils.isPowerFactorControlled(feeder.getControlUnits())%>" style="display:none" > 
-					  <span type="param8" name="cti_dyn" id="<%=feeder.getCcId()%>"><%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_TARGET_POPUP)%></span>
-					</div>
+						   id="${isPowerFactorControlled}">
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET"/>
+                        </a>
+                        <div class="ccPFPopup" id="feederPFPopup_${thisFeederId}_${isPowerFactorControlled}" style="display: none;">
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="TARGET_MESSAGE"/>    
+					   </div>
 					</td>
-					<td ><a onmouseover="showDynamicPopup($('feederVarLoadPopup_<%=feeder.getCcId()%>'));" 
-					       	onmouseout="nd();"
-							type="param2" name="cti_dyn" id="<%=feeder.getCcId()%>">
-					<%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_VAR_LOAD_COLUMN)%></a>
-					<div class="ccVarLoadPopup" id="feederVarLoadPopup_<%=feeder.getCcId()%>" style="display:none" > 
-					  <span type="param9" name="cti_dyn" id="<%=feeder.getCcId()%>"><%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_VAR_LOAD_POPUP)%></span>
-					</div>
+                    
+					<td>
+                        <a onmouseover="showDynamicPopup($('feederVarLoadPopup_${thisFeederId}'));" 
+					       onmouseout="nd();"
+						  id="${thisFeederId}">
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD"/>
+                        </a>
+                        <div class="ccVarLoadPopup" id="feederVarLoadPopup_${thisFeederId}" style="display: none;">
+                            <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KVAR_LOAD_MESSAGE"/> 
+                        </div>
 					</td>
-					<td><a type="param3" name="cti_dyn" id="<%=feeder.getCcId()%>">
-					<%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_TIME_STAMP_COLUMN)%></a>
+                    
+					<td>
+                        <a id="dateTime_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DATE_TIME"/></a>
 					</td>
-					<td><a type="param4" name="cti_dyn" id="<%=feeder.getCcId()%>">
-					<%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_POWER_FACTOR_COLUMN)%></a>
+					<td>
+                        <a id="pFactor_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="PFACTOR"/></a>
 					</td>
-					<td><a type="param5" name="cti_dyn" id="<%=feeder.getCcId()%>">
-					<%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_WATTS_COLUMN)%></a>
+					<td>
+                        <a id="kwVolts_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="KW_VOLTS"/></a>
 					</td>
-					<td><a type="param6" name="cti_dyn" id="<%=feeder.getCcId()%>">
-					<%=cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_DAILY_OPERATIONS_COLUMN)%></a>
+					<td>
+                        <a id="dailyMaxOps_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DAILY_MAX_OPS"/></a>
 					</td>
-					<td id="hiddenSubName" style="display:none"><%=filterCapControlCache.getSubBusNameForFeeder(feeder)%></td>
+					<td id="hiddenSubName" style="display: none;"><%=filterCapControlCache.getSubBusNameForFeeder(feeder)%></td>
 				</tr>
-<%
-}
-%>
+<% } %>
 		</table>
 
     </cti:titledContainer>
@@ -509,12 +426,12 @@ if( hasControl ) {
 	<cti:titledContainer title="Capacitor Banks" id="last_titled_container">
 		<!--  <table id="capBankHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">-->
         <div id="capBankDiv">
-		<table id="capBankTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
+		<table id="capBankTable" width="100%" cellspacing="0" cellpadding="0" >
             <tr class="columnHeader lAlign">
                 <td><input type="checkbox" name="chkAllBanksBx" onclick="checkAll(this, 'cti_chkbxBanks');" /> </td>
-                <td></td>    
                 <td>CBC Name</td>
                 <td>CB Name (Order) <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" /></td>                    
+                <td width="2%"></td>    
                 <td>State <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/> <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span> </td>
                 
                 <td>Date/Time</td>
@@ -531,135 +448,124 @@ for( int i = 0; i < capBanks.size(); i++ ) {
     LiteYukonPAObject obj = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
     String rowColor = ((i % 2) == 0) ? "#eeeeee" : "white";
 %>
-			<tr class="<%=css%>" id="tr_cap_<%=capBank.getCcId()%>">
-				<td><input type="checkbox" name="cti_chkbxBanks" value="<%=capBank.getCcId()%>"/></td>
-				<td>		
-				
-					<input type="warning" name="cti_dyn" id="<%=capBank.getCcId()%>" style="display:none">
-					</input>
-					
-					<span id ="warning_ok_<%=capBank.getCcId()%>" style="display:">
-				       	<img src="/capcontrol/images/Green.gif"/>
-				    </span>
-				    <span id ="warning_alert_<%=capBank.getCcId()%>" style="display:none" 
-						  onmouseover="showDynamicPopup($('capWarningPopup_<%=capBank.getCcId()%>'));" 
-				       	  onmouseout="nd();"
-				       	  >
-				       	  	<img src="/capcontrol/images/Yellow.gif"/>
-				    </span>
-			
-					<div class="ccVarLoadPopup" id="capWarningPopup_<%=capBank.getCcId()%>" style="display:none" > 
-					  <span type="param7" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_POPUP)%></span>
-					</div>
+            <c:set var="thisCapBankId" value="<%=capBank.getCcId()%>"/>
+            <c:set var="rowColor" value="<%=rowColor%>"/>
+            <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}"></input>            
 
-				</td>
+			<tr class="<%=css%>" id="tr_cap_${thisCapBankId}">
+				
+                <td>
+                    <input type="checkbox" name="cti_chkbxBanks" value="${thisCapBankId}"/>
+                </td>
+                
 				<td>
-				<%
-				String name = "---";
-				Integer cdId = capBank.getControlDeviceID();
-				if (cdId.intValue() != 0) {
-				    name = DaoFactory.getPaoDao().getYukonPAOName(cdId);    
-				}
-				%> 
-				<%=name%>
+				    <%
+				    String name = "---";
+				    Integer cdId = capBank.getControlDeviceID();
+				    if (cdId.intValue() != 0) {
+				        name = DaoFactory.getPaoDao().getYukonPAOName(cdId);    
+				    }
+				    %> 
+				    <%=name%>
 				</td>
-				<td>
-				<%
-				if( hasControl ) {
-				%>
-					<input id="cmd_cap_<%=capBank.getCcId()%>_field" type="hidden" name = "cmd_dyn" value= "" />
-                    <!--2-way device designator-->
-                    <input id="2_way_<%=capBank.getCcId()%>" type="hidden" value="<%=CBCUtils.isTwoWay(obj)%>"/>
-                    <input id="showFlip_<%=capBank.getCcId()%>" type="hidden" value="<%=showFlip%>"/>
-                    <input id="is701x_<%=capBank.getCcId()%>" type="hidden" value="<%=CBCUtils.is701xDevice(obj)%>"/>
-                    <a href="javascript:void(0);"
-                    <%=popupEvent%> ="getCapBankMenu('<%=capBank.getCcId()%>');" 
-                    onmouseout = "hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');">
-                    	<%=cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN)%>
-					</a>
-					<%
-					} else {
-					%>
-					<span>
-						<%=cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_NAME_COLUMN)%>
-					</span>
-					<%
-					}
-					%>
+				
+                <td>
+				    <% if (hasControl) { %>
+                        <!--2-way device designator-->
+                        <input id="2_way_${thisCapBankId}" type="hidden" value="<%=CBCUtils.isTwoWay(obj)%>"/>
+                        <input id="showFlip_${thisCapBankId}" type="hidden" value="<%=showFlip%>"/>
+                        <input id="is701x_${thisCapBankId}" type="hidden" value="<%=CBCUtils.is701xDevice(obj)%>"/>
+                        <a href="javascript:void(0);"
+                           <%=popupEvent%> ="getCapBankMenu('${thisCapBankId}');" 
+                           onmouseout = "hidePopupHiLite('tr_cap_${thisCapBankId}', '<%=rowColor%>');">
+                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
+                        </a>
+					<% } else { %>
+                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
+					<% } %>
 					<!-- -------------------------------------->
-					<%
-					if (CBCUtils.isTwoWay(obj)) {
-					%>					
-					<a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>', 500, 600)" >
-						<img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestamp information.<br>for the cap bank controller device');" />
-					</a>
-					<%
-					}
-					%>
-					<a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=<%=capBank.getCcId()%>', 500, 600)" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank');">x</a>
+					<% if (CBCUtils.isTwoWay(obj)) { %>					
+                        <a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>', 500, 600)" >
+                            <img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestamp information.<br>for the cap bank controller device');" />
+					   </a>
+					<% } %>
+					<a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank');">x</a>
 				</td>
-				<td >
-					<%
-					if( hasControl ) {
-					%>
-					<input id="cmd_cap_<%=capBank.getCcId()%>_system" type="hidden" name = "cmd_dyn" value= "" />
-					<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>"
-						style="color: <%=cbcDisplay.getHTMLFgColor(capBank)%>;"
-						href="javascript:void(0);"
-					    onclick ="getCapBankSystemMenu('<%=capBank.getCcId()%>');"
-					    onmouseout = "hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');"
-					    >
-					<%
-					} else {
-					%>
-					<a type="state" name="cti_dyn" id="<%=capBank.getCcId()%>" href="javascript:void(0);" style="color: <%=cbcDisplay.getHTMLFgColor(capBank)%>;" >
-					<%
-					}
-					%>
-					<%=cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN)%>
-					</a>
-				<span id="cap_opcnt_span<%=capBank.getCcId()%>" style="display:none; " >
-					<label for="opcount" id="opcnt_label"> Op Count: </label>
-					<input type="text" name="opcount" id="opcnt_input<%=capBank.getCcId()%>" maxlength="5" size="5"/>
-					<a href="javascript:void(0);" onclick="return executeCapBankCommand (<%=capBank.getCcId()%>,12,false,'Reset_OpCount', 'cap_opcnt_span<%=capBank.getCcId()%>');" >Reset</a>
-				</span>
-					<div id="capBankStatusPopup_<%=capBank.getCcId()%>" style="display:none" > 
-					  <span type="param6" name="cti_dyn" id="<%=capBank.getCcId()%>"><%=cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_POPUP)%></span>
+
+                <td>
+                    <ct:warningImg paoId="${thisCapBankId}" type="CAPBANK"/>
+                </td>
+
+				<td>
+                    
+                    <cti:pointStatusColor pointId="<%=capBank.getStatusPointID()%>">
+                        <a id="capbank_status_${thisCapBankId}"
+                            <c:if test="${hasControl}">
+                                href="javascript:void(0);"
+                                onclick ="getCapBankSystemMenu('${thisCapBankId}');"
+					            onmouseout = "hidePopupHiLite('tr_cap_${thisCapBankId}', '${rowColor}');"
+                            </c:if> 
+                        >
+					       <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS"/>
+                        </a>
+                    </cti:pointStatusColor>
+                    <%-- <cti:dataUpdaterCallback function="updateCBStatusColorGenerator('capbank_status_${thisCapBankId}')" initialize="true" value="CAPBANK/${thisCapBankId}/CB_STATUS"/> --%>
+                    
+				    <span id="cap_opcnt_span${thisCapBankId}" style="display: none;" >
+					   <label for="opcount" id="opcnt_label"> Op Count: </label>
+					   <input type="text" name="opcount" id="opcnt_input${thisCapBankId}" maxlength="5" size="5"/>
+					   <a href="javascript:void(0);" onclick="return executeCapBankCommand ('${thisCapBankId}', 12, 'Reset_OpCount', false, 'cap_opcnt_span${thisCapBankId}');" >Reset</a>
+				    </span>
+					<div id="capBankStatusPopup_${thisCapBankId}" style="display: none;">
+                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS_MESSAGE"/>     
 					</div>
 				</td>
-				<td><a type="param1" name="cti_dyn" id="<%=capBank.getCcId()%>"
-				    onmouseover = "showDynamicPopup($('capBankStatusPopup_<%=capBank.getCcId()%>'))"
-				    onmouseout = "hidePopupHiLite('tr_cap_<%=capBank.getCcId()%>', '<%=rowColor%>');">
-					<%=cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_TIME_STAMP_COLUMN)%></a>
+                
+				<td>
+                    <a id="dateTime_${thisCapBankId}"
+				       onmouseover = "showDynamicPopup($('capBankStatusPopup_${thisCapBankId}'))"
+				       onmouseout = "hidePopupHiLite('tr_cap_${thisCapBankId}', '<%=rowColor%>');">
+                        <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DATE_TIME"/> 
+                    </a>
 				</td>
-				<td><%=cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_BANK_SIZE_COLUMN)%></td>
+                
+				<td>
+                    <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_SIZE"/>
+                </td>
+                
                 <td>
-                    <input id="cmd_cap_move_back_<%=capBank.getCcId()%>" type="hidden" value="" />
                     <a href="javascript:void(0);"
-                    <% if( capBank.isBankMoved() ) { %>
+                    <% if (capBank.isBankMoved()) { %>
 	                    class="warning" 
-	                    <%=popupEvent%>="getCapBankTempMoveBack('<%=capBank.getCcId()%>');" 
-	                    onmouseout = <%=nd%> 
+	                    <%=popupEvent%>="getCapBankTempMoveBack('${thisCapBankId}');" 
+	                    onmouseout = "hidePopupHiLite('tr_cap_${thisCapBankId}', '<%=rowColor%>');" 
                     <% } else { %>
                         onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
-                        onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)','tempmove.jsp?bankid='+<%=capBank.getCcId()%>, 500, 710, onGreyBoxClose);"
+                        onmouseout="nd();"
+                        onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)','tempmove.jsp?bankid=<%=capBank.getCcId()%>', 500, 710, onGreyBoxClose);"
                     <% } %>
-                    	><span><%=cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_PARENT_COLUMN)%></span>
+                    	>
+                            <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT"/>
                     	</a>                    
                     </td>
 					<td>
-						<a type="param2" name="cti_dyn" id="<%=capBank.getCcId()%>">
-						<%=cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN)%></a>
+						<a id="${thisCapBankId}">
+						  <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DAILY_MAX_OPS"/>
+                        </a>
 					</td>
 				</tr>
 				<% } %>
 			</table>
 		</div>
 		<input type="hidden" id="lastUpdate" value="">
+        
 	</cti:titledContainer>
-    <div style = "display:none" id = "outerDiv">
-        <cti:titledContainer title="Current Status">
-            <div id="cmd_msg_div" />
-        </cti:titledContainer>
-    </div>
+    
+<script type="text/javascript" language="JavaScript">
+Event.observe(window, 'load', checkPageExpire);
+</script>    
+    
+<ct:commandMsgDiv/>
+
+    <ct:dataUpdateEnabler disableHighlight="true"/>
 </cti:standardPage>

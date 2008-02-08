@@ -23,16 +23,22 @@ public abstract class WebUpdatedPAObjectMap<E> implements WebUpdatedDAO<E> {
 	}
 
     @Override
-    public synchronized void removeId(E e) {
+    public synchronized void remove(E e) {
         timestampMap.remove(e);
     }
 	
 	@Override
-	public synchronized void removeIds(Collection<E> ids) {
+	public synchronized void remove(Collection<E> ids) {
 	    for (final E e : ids) {
-	        removeId(e);
+	        remove(e);
 	    }
 	}
+	
+	@Override
+    public synchronized boolean containsKey(E e) {
+        boolean result = timestampMap.containsKey(e);
+        return result;
+    }
 	
     @Override
     public synchronized List<E> getUpdatedIdsSince(Date timeStamp, E... keyList) {

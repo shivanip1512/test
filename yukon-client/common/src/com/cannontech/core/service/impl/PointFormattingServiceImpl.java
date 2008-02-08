@@ -1,5 +1,6 @@
 package com.cannontech.core.service.impl;
 
+import java.awt.Color;
 import java.text.NumberFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.gui.util.Colors;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;
@@ -76,6 +78,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 String valueStr = "";
                 String unitString = "";
                 String state = "";
+                Color stateColor = null;
                 Integer decimalDigits = 4;
                 Boolean statusPoint = data.getType() == PointTypes.STATUS_POINT;
                 if (statusPoint) {
@@ -96,6 +99,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                     }
                     
                     state = liteState.getStateText();
+                    stateColor = Colors.getColor(liteState.getFgColor());
                     value = liteState.getStateText();
                     valueStr = liteState.getStateText();
                     
@@ -144,6 +148,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 params.put("default", valueStr);
                 params.put("status", statusPoint);
                 params.put("state", state);
+                params.put("stateColor", stateColor);
                 params.put("unit", unitString);
                 Date pointDataTimeStamp = data.getPointDataTimeStamp();
                 params.put("time", pointDataTimeStamp);

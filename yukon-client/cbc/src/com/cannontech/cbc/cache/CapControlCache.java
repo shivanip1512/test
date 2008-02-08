@@ -26,6 +26,8 @@ public interface CapControlCache {
     
     public CBCSpecialArea getCBCSpecialArea(int id);
     
+    public StreamableCapObject getObject(int id);
+    
     public LiteWrapper[] getOrphanedSubBuses();
     
     public LiteWrapper[] getOrphanedSubstations();

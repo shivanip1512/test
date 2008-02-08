@@ -108,4 +108,8 @@ public class ColorUtil
 		return html_color;
 	}
 	
+	public static String getHTMLColor(int color) {
+	    return getHTMLColor(new Color(color));
+	}
+	
 }

@@ -1,20 +1,24 @@
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+
 <%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
-<%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
+
 <cti:standardPage title="Special Substation Bus Areas" module="capcontrol">
+
 <%@include file="cbc_inc.jspf"%>
 
-	<%
-        FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
-		LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
-		final CBCDisplay cbcDisplay = new CBCDisplay(user);
-		CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
-			    String nd = "\"return nd();\"";
-			    String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
-			    if (popupEvent == null) popupEvent = "onmouseover";
-	%>
+<%
+	FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
+	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+	final CBCDisplay cbcDisplay = new CBCDisplay(user);
+	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
+	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+	if (popupEvent == null) popupEvent = "onmouseover";
+%>
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
 <!-- necessary DIV element for the OverLIB popup library -->
@@ -28,23 +32,22 @@
 </cti:breadCrumbs>
 
 <%
-String allowCtlVal = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.ALLOW_CONTROLS);
+String allowCtlVal = DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SYSTEM_WIDE_CONTROLS);
 if (allowCtlVal!=null) {
 	boolean allowControl = Boolean.valueOf(allowCtlVal);
-		if (allowControl) {
-%>
+	if (allowControl) {%>
 			<div id="systemCommandLink" align="right" > </div>
-	<%
-	} 
-	}
-	%>    
+	<%} 
+}%>    
+
 <cti:titledContainer title="Special Substation Areas" id="last_titled_container">
 	<form id="areaForm" action="substations.jsp" method="post">
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREAID%>" />
-        <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-	        <tr class="columnHeader lAlign">				
+        <table id="areaHeaderTable" width="100%" cellspacing="0" cellpadding="0">
+			<tr class="columnHeader lAlign">				
 				<td>Area Name</td>
+                <td width="2%"></td>
                 <td>State</td>
                 <td>Setup</td>
                 <td>Available<br/> kVARS</td>
@@ -54,76 +57,69 @@ if (allowCtlVal!=null) {
                 <td>PFactor/Est.</td>
 			</tr>
         </table>
-        <div >
-		<table id="areaTable" width="98%" border="0" cellspacing="0" cellpadding="0" >
+        <div>
+			<table id="areaTable" width="100%" cellspacing="0" cellpadding="0" >
 <%
 	String css = "tableCell";
-	String cssSub = "tableCell";
 	List<CBCSpecialArea> areas = filterCapControlCache.getSpecialCbcAreas();
 	for( CBCSpecialArea area : areas ) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
-	
 		List<SubStation> areaStations = filterCapControlCache.getSubstationsBySpecialArea(area.getPaoID());
-		List<CapBankDevice> areaCapBanks = filterCapControlCache.getCapBanksBySpecialArea(area.getPaoID());
-	
-		//new additions for the available and closed vars
-		String varsAvailable = CBCUtils.format( CBCUtils.calcVarsAvailableForSubStations(areaStations, user) );
-		String varsUnavailable =  CBCUtils.format (CBCUtils.calcVarsUnavailableForSubStations(areaStations, user) );
-		String closedVars = CBCUtils.format( CBCUtils.calcVarsClosedForCapBanks(areaCapBanks, user) );
-		String trippedVars = CBCUtils.format( CBCUtils.calcVarsTrippedForCapBanks(areaCapBanks, user) );
-		String currPF = cbcDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
-		String estPF = cbcDisplay.getPowerFactorText(CBCUtils.calcAvgEstPF(areaStations), true);
-		String areaState = (area.getDisableFlag()) ? "DISABLED" : "ENABLED";
-		if( area.getOvUvDisabledFlag() ) {
-			areaState += "-V";
-		}
 %>
+			<c:set var="thisAreaId" value="<%=area.getPaoID()%>"/>
+            <input type="hidden" id="paoId_${thisAreaId}" value="${thisAreaId}"></input>
+            
 	        <tr class="<%=css%>">
 				<td>
-				<input type="checkbox" name="cti_chkbxAreas" value="<%=area.getPaoID()%>"/>
-				<input type="image" id="showAreas<%=area.getPaoID()%>"
+				<input type="checkbox" name="cti_chkbxAreas" value="${thisAreaId}"/>
+				<input type="image" id="showAreas${thisAreaId}"
 					src="images/nav-plus.gif"
-					onclick="showRowElems( 'allAreas<%=area.getPaoID()%>', 'showAreas<%=area.getPaoID()%>'); return false;"/>
-				<a href="#" class="<%=css%>" onclick="postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '<%=area.getPaoID()%>')">
+					onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
+				<a href="javascript:postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '${thisAreaId}');" class="<%=css%>">
 				<%=area.getPaoName()%></a>
 				</td>
+                
                 <td>
-                <!--Create  popup menu html-->               
-                <div id = "serverMessage<%=area.getPaoID()%>" style="display:none" > </div>
-                <input id="cmd_area_<%=area.getPaoID()%>" type="hidden" name = "cmd_dyn" value= "" />
-                <a id="area_state_<%=area.getPaoID()%>" name="area_state" 
-                    style="<%=css%>"
-                    href="javascript:void(0);"
-                    <%=popupEvent%>="getSpecialAreaMenu('<%=area.getPaoID()%>');">
-                <%=areaState%>
-                </a>
+                    <ct:warningImg paoId="${thisAreaId}" type="CBCSPECIALAREA"/>
                 </td>
-				<td><%=areaStations.size()%> Substation(s)</td>
-				<td><%=varsAvailable%></td>
-				<td><%=varsUnavailable%></td>
-				<td><%=closedVars%></td>
-				<td><%=trippedVars%></td>
-				<td><%=currPF%> / <%=estPF%></td>
+                
+                <td>
+					<a id="area_state_${thisAreaId}"
+                   	   name="area_state" 
+                       class="<%=css%>"
+                       href="javascript:void(0);"
+					   <%=popupEvent%>="getSpecialAreaMenu('${thisAreaId}');">
+						<cti:capControlValue paoId="${thisAreaId}" type="CBCSPECIALAREA" format="STATE" />
+					</a>
+					<cti:dataUpdaterCallback function="updateStateColorGenerator('area_state_${thisAreaId}')" initialize="true" value="CBCSPECIALAREA/${thisAreaId}/STATE"/>
+                </td>
+				<td><cti:capControlValue paoId="<%=area.getPaoID()%>" type="CBCSPECIALAREA" format="SETUP" /> Substation(s)</td>
+				<td><cti:capControlValue paoId="<%=area.getPaoID()%>" type="CBCSPECIALAREA" format="KVARS_AVAILABLE" /></td>
+				<td><cti:capControlValue paoId="<%=area.getPaoID()%>" type="CBCSPECIALAREA" format="KVARS_UNAVAILABLE" /></td>
+				<td><cti:capControlValue paoId="<%=area.getPaoID()%>" type="CBCSPECIALAREA" format="KVARS_CLOSED" /></td>
+				<td><cti:capControlValue paoId="<%=area.getPaoID()%>" type="CBCSPECIALAREA" format="KVARS_TRIPPED" /></td>
+				<td><cti:capControlValue paoId="<%=area.getPaoID()%>" type="CBCSPECIALAREA" format="PFACTOR" /></td>
 			</tr>
 			<tr>
-				<td colspan ="8">
-					<table id="allAreas<%=area.getPaoID()%>" width="100%" border="0" cellspacing="0" cellpadding="0">
+				<td colspan="2">
+					<table id="allAreas${thisAreaId}" width="100%" cellspacing="0" cellpadding="2">
 <%
-	if (areaStations.size() > 0) {		
+if (areaStations.size() > 0) {		
 	for( int j = 0; j < areaStations.size(); j++ ) {
 		SubStation substation = areaStations.get(j);
 		List<Feeder> subFeeders = filterCapControlCache.getFeedersBySubStation(substation);
 		List<CapBankDevice> subCapBanks = filterCapControlCache.getCapBanksBySubStation(substation);
-		cssSub = ("tableCell".equals(cssSub) ? "altTableCell" : "tableCell");
 %>
-				        <tr class="<%=cssSub%>" style="display: none;">
-							<td width="20%"><font class="lIndent"><%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
-							<td align="left"><%=subFeeders.size()%> Feeder(s), <%=subCapBanks.size()%> Bank(s)</td>
+				        <tr class="<%=css%>" style="display: none;">
+							<td><font class="lIndent"><%=cbcDisplay.getSubstationValueAt(substation, CBCDisplay.SUB_NAME_COLUMN)%></font></td>
+							<td align="right"><%=subFeeders.size()%> Feeder(s)</td>
+							<td align="right"><%=subCapBanks.size()%> Bank(s)</td>
 						</tr>
 		<%}%>
 	<%}%>
   					</table>
   				</td>
+				<td class="<%=css%>" colspan="6"></td>
   			</tr>
 <%}%>
 
@@ -131,82 +127,26 @@ if (allowCtlVal!=null) {
 	</div>
 </form>
 			
-<script type="text/javascript">
+<script type="text/javascript" language="JavaScript">
 Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','areaHeaderTable');});
-Event.observe(window, 'load', function () {
-    getServerData();     
-});
+Event.observe(window, 'load', checkPageExpire);
 
 //register the event handler for the system command
 if ($('systemCommandLink')) {
-	Event.observe(window, 'load', function () { new Ajax.PeriodicalUpdater('systemCommandLink', 
-	    '/spring/capcontrol/cbcAjaxController?action=updateSystemCommandMenu', {
-	    method:'post', 
-	    asynchronous:true, 
-	    frequency: 5, 
-	    onFailure: badThingsHappened,
-	    onSuccess: allIsWell});
-	});
-}
-
-function badThingsHappened() {
-  $('bigFatErrorDiv').show();
-}
-
-function allIsWell() {
-	$('bigFatErrorDiv').hide();
-}
-
-function getServerData() {
-	var els = document.getElementsByName('area_state');
-	for (var i=0; i < els.length; i++) {
-	var strings = els[i].id.split('_');
-        var id = strings[2];
-	     new Ajax.PeriodicalUpdater("serverMessage"+id, '/servlet/CBCServlet', {
-	     method:'post', 
-	     asynchronous:true, 
-	     parameters:'specialAreaId='+id, 
-	     frequency:5, 
-	     onSuccess: updateAreaMenu});
-	}
-}
-
-function updateAreaMenu (resp) {
-    var msgs = resp.responseText.split(':');
-    var areaname = msgs[0];
-    var areaId = msgs[1];
-    var areastate = new String(msgs[2]);
-    var showOVUV = new String(msgs[3]);
-    //update state
-    var stateElem = document.getElementById ('area_state_' + areaId);
-    stateElem.innerHTML = areastate;
-    //update menu
-    if (areastate == 'ENABLED' || areastate == 'ENABLED-V') {
-        var html = generateAreaMenu(areaId,areaname, 0, showOVUV);
-        var elem = document.getElementById('cmd_area_' + areaId); 
-        elem.value = html;
-        stateElem.style.color = '#3C8242';
-    } else if (areastate == 'DISABLED' || areastate == 'DISABLED-V') {
-        var html = generateAreaMenu(areaId,areaname, 1, showOVUV);
-        var elem = document.getElementById('cmd_area_' + areaId); 
-        elem.value = html;
-        stateElem.style.color = '#FF0000';
-    }
-}
-
-function getSpecialAreaMenu(id){
-    var html = new String($F('cmd_area_'+id));
-    overlib(html, FULLHTML, STICKY);
-}
+    Event.observe(window, 'load', function () { 
+        new Ajax.PeriodicalUpdater('systemCommandLink', 
+            '/spring/capcontrol/cbcAjaxController?action=updateSystemCommandMenu', {
+            method: 'post', 
+            frequency: 5, 
+            onFailure: function() { $('cannonUpdaterErrorDiv').show();}
+        });
+    });
+}    
 </script>
-</cti:titledContainer>
-<div id="bigFatErrorDiv" style="background: red none repeat scroll 0%; display: none; position: fixed; bottom: 0pt; left: 0pt; width: auto; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; color: white; font-weight: bold;">
-	Your session is invalid.  Refresh this page.
-</div>
-<div style = "display:none" id = "outerDiv">
-	<cti:titledContainer title="Current Status">
-    	<div id="cmd_msg_div" />
-     </cti:titledContainer>
-</div>
 
+</cti:titledContainer>
+
+<ct:commandMsgDiv/>
+
+    <ct:dataUpdateEnabler disableHighlight="true"/>
 </cti:standardPage>

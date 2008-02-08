@@ -1,5 +1,6 @@
 package com.cannontech.common.util;
 
+import java.awt.Color;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -45,6 +46,7 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
         return dateFormat;
     }
 
+    @Override
     protected CharSequence formatValue(Object value, String extra) {
         CharSequence result;
         if (value instanceof Number) {
@@ -65,6 +67,9 @@ public class FormattingTemplateProcessor extends SimpleTemplateProcessor {
                 DateFormat format = getDateFormatter(extra);
                 result = format.format(value);
             }
+        } else if (value instanceof Color) {
+            Color color = (Color) value;
+            result = String.format(extra, color.getRed(), color.getGreen(), color.getBlue());
         } else {
             result = super.formatValue(value, extra);
         }

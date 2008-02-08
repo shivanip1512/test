@@ -4,7 +4,6 @@ import com.cannontech.message.util.VectorExtract;
 import com.cannontech.message.util.VectorInsert;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
-import com.roguewave.vsj.VirtualInputStream;
 import com.roguewave.vsj.VirtualOutputStream;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -23,6 +22,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
      * This method is called from CollectableStreamer to create a new instance
      * of Schedule.
      */
+    @Override
     public Object create(com.roguewave.vsj.VirtualInputStream vstr)
             throws java.io.IOException {
         return new CBCSpecialArea();
@@ -31,6 +31,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
     /**
      * getCxxClassId method comment.
      */
+    @Override
     public int getCxxClassId() {
         return CTI_CCSPECIALAREA_ID;
     }
@@ -38,6 +39,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
     /**
      * getCxxStringId method comment.
      */
+    @Override
     public String getCxxStringId() {
         return DefineCollectable.NO_STRINGID;
     }
@@ -45,7 +47,8 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
     /**
      * getJavaClass method comment.
      */
-    public Class getJavaClass() {
+    @Override
+    public Class<CBCSpecialArea> getJavaClass() {
         return CBCSpecialArea.class;
     }
 
@@ -53,6 +56,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
      * restoreGuts method comment.
      */
 
+    @Override
     public void restoreGuts(Object obj,
             com.roguewave.vsj.VirtualInputStream vstr,
             com.roguewave.vsj.CollectableStreamer polystr)
@@ -83,7 +87,9 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
         String paoDescription = (String) vstr.restoreObject(SimpleMappings.CString);
         area.setPaoDescription(paoDescription);
         
-        area.setDisableFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
+        Boolean disableFlag = ((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false);
+        area.setDisableFlag(disableFlag);
+        area.setCcDisableFlag(disableFlag);
         area.setCcSubIds( VectorExtract.extractIntArray(vstr, polystr));
         area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
         area.setPowerFactorValue( new Double( vstr.extractDouble() ) );
@@ -95,6 +101,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
     /**
      * saveGuts method comment.
      */
+    @Override
     public void saveGuts(Object obj, VirtualOutputStream vstr, CollectableStreamer polystr) throws java.io.IOException {
     	CBCSpecialArea area = (CBCSpecialArea) obj;
         

@@ -28,10 +28,16 @@
                     <ref bean="onelineLegendController"/>
                 </entry>
                 <entry key="/oneline/popupmenu">
-                    <ref bean="popupmenuControl"/>
+                    <ref bean="onelinePopupMenuController"/>
                 </entry>
                 <entry key="commandexecutor">
                     <ref bean="capControlCommandController"/>
+                </entry>
+                <entry key="/pageExpire">
+                    <ref bean="pageExpireController"/>
+                </entry>
+                <entry key="/tier/popupmenu">
+                    <ref bean="tierPopupMenuController"/>
                 </entry>
 			</map>
 		</property>
@@ -70,6 +76,9 @@
 	</bean>
 
 	<!-- Controllers -->
+    <bean id="pageExpireController" class="com.cannontech.web.cbc.PageExpireController">
+        <property name="capControlCache" ref="capControlCache"/>
+    </bean>
 
 	<bean id="capBankAdditionalController"
 		class="com.cannontech.web.editor.CapBankAdditionalServlet" />
@@ -115,17 +124,20 @@
         <property name="capControlCache" ref="capControlCache" />
     </bean>
 
-    <bean id="popupmenuControl" class="com.cannontech.web.cbc.OnelinePopupMenuController">
-        <property name="methodNameResolver">
-            <bean class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
-                <property name="paramName" value="menu"/>
-            </bean>
-        </property>
+    <bean id="onelinePopupMenuController" class="com.cannontech.web.cbc.OnelinePopupMenuController">
+        <property name="methodNameResolver" ref="menuMethodNameResolver"/>
         <property name="capControlCache" ref="capControlCache"/>
         <property name="capControlCommentService" ref="capControlCommentService"/>
         <property name="paoDao" ref="paoDao"/>
         <property name="cbcDao" ref="cbcDao" />
         <property name="dataSource" ref="yukonDataSource"/>
+    </bean>
+    
+    <bean id="tierPopupMenuController" class="com.cannontech.web.cbc.TierPopupMenuController">
+        <property name="methodNameResolver" ref="menuMethodNameResolver"/>
+        <property name="capControlCache" ref="capControlCache"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="authDao" ref="authDao"/>
     </bean>
     
 	<!-- Method name resolvers -->
@@ -135,5 +147,9 @@
 			<value>action</value>
 		</property>
 	</bean>
+    
+    <bean id="menuMethodNameResolver" class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver">
+       <property name="paramName" value="menu"/>
+    </bean>
     
 </beans>

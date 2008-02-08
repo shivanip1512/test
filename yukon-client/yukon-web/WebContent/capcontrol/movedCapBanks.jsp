@@ -1,6 +1,10 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+
 <cti:standardPage title="Temp Move Report" module="capcontrol">
+
 <%@include file="cbc_inc.jspf"%>
+
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.yukon.cbc.CapBankDevice" %>
@@ -12,10 +16,14 @@
 <%@ page import="java.util.Iterator" %>
 <%@ page import="com.cannontech.cbc.util.CBCDisplay" %>
 
+<c:url var="movedCapBanksUrl" value="/capcontrol/movedCapBanks.jsp"/>
+
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
+
 <cti:standardMenu/>
+
 <cti:breadCrumbs>
 	<cti:crumbLink url="subareas.jsp" title="Home" />
 </cti:breadCrumbs>
@@ -50,23 +58,23 @@ List movedCaps = new ArrayList(10);
          </tr>
        </table>
        <div>
-			<table id="movedCBTable" width="98%" border="0" cellspacing="0" cellpadding="0">
+			<table id="movedCBTable" width="100%" border="0" cellspacing="0" cellpadding="0">
 <%
 String css = "tableCell";
-for( int i = 0; i < movedCaps.size(); i++ )
-{
+for (int i = 0; i < movedCaps.size(); i++) {
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	CapBankDevice cap = (CapBankDevice)movedCaps.get(i);
+	String rowColor = ((i % 2) == 0) ? "#eeeeee" : "white";
 %>
-				<tr class="<%=css%>">
+                <c:set var="thisCapBankId" value="<%=cap.getCcId()%>"/>
+				<tr id="tr_cap_${thisCapBankId}" class="<%=css%>">
 					<td id="<%=cap.getCcName()%>">
-			          	<input id="cmd_<%=cap.getCcId()%>" type="hidden" value= "" name="pf_hidden" />
 			          	<a href="javascript:void(0);"
-			          			class="warning" <%= popupEvent %>="return overlib($F('cmd_<%=cap.getCcId()%>'),
-			          			STICKY, WIDTH,155, HEIGHT,50, OFFSETX,-15,OFFSETY,-15, MOUSEOFF, FULLHTML);"
-
-										onmouseout = <%=nd %> >
-										<%=cbcDisplay.getCapBankValueAt(cap, CBCDisplay.CB_PARENT_COLUMN)%>
+			          	   class="warning"
+                           <%=popupEvent%>="getCapBankTempMoveBack('${thisCapBankId}', '${movedCapBanksUrl}')"
+                           onmouseout = "hidePopupHiLite('tr_cap_${thisCapBankId}', '<%=rowColor%>');"
+                        > 
+                            <%=cbcDisplay.getCapBankValueAt(cap, CBCDisplay.CB_PARENT_COLUMN)%>
 						</a>					
 					</td>
 					<td><%=DaoFactory.getPaoDao().getYukonPAOName( cap.getOrigFeederID() )%></td>

@@ -16,9 +16,11 @@ import java.util.List;
 
 public interface WebUpdatedDAO<E> {
 
-    public void removeId(E e);
+    public void remove(E e);
     
-    public void removeIds(Collection<E> ids);
+    public void remove(Collection<E> ids);
+    
+    public boolean containsKey(E e);
     
     public List<E> getUpdatedIdsSince(Date timeStamp, E... ids);
     

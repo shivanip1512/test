@@ -1,392 +1,3 @@
-//function to generate HTML for the command menu
-var MOVED_CB_REDIRECT_URL = 999;
-function updateCommandMenu(result) {
-
- if (result != null) {
- 	var cmds = document.getElementsByName ('cmd_dyn');
- 	for (var i = 0; i < result.length; i++) { 		
-        var xmlID = getElementTextNS(result[i], 0, 'id');
-        
-        for (var j=0; j < cmds.length; j++) {
-        	
-        	//cmdName = cmd_sub_1213
-        	var cmdId = cmds[j].id;
-        	//['cmd','sub','1213']
-        	var temp = cmdId.split('_');
-        	var type = temp[1];
-        	var id =   temp[2];
-        	//special case since we allow field and system commands for cap banks
-        	var sub_type = temp[3];
-    
-        	var opts;
-            
-            if (id == xmlID) {
- 				//sub command is unique in that it requires additional params to be extracted from the result
- 				if (type == 'substation') {
- 					 var verify = getElementTextNS(result[i], 0,'param3');
- 					 var name = getElementTextNS(result[i], 0,'param1');
- 					 var allow_ovuv = getElementTextNS(result[i], 0,'param4');
- 					 if ( verify == 'true'){
- 					 	opts = [true, name, allow_ovuv];
- 					 } else {
- 					 	opts= [false, name, allow_ovuv];
- 					 } 
-				} else if (type == 'sub') {
- 					 var verify = getElementTextNS(result[i], 0,'param7');
- 					 var name = getElementTextNS(result[i], 0,'param8');
- 					 var allow_ovuv = getElementTextNS(result[i], 0,'param12');
- 					 if ( verify == 'true'){
- 					 	opts = [true, name, allow_ovuv];
- 					 } else {
- 					 	opts= [false, name, allow_ovuv];
- 					 } 
-				} else if (type == 'fdr') {
- 				 	var name = getElementTextNS(result[i], 0,'param7');
- 				 	var allow_ovuv = getElementTextNS(result[i], 0,'param11');
- 				 	opts = [false, name, allow_ovuv];
-				} else if (type =='cap') {
- 					var name = getElementTextNS(result[i], 0,'param3');
- 				 	var allow_ovuv = getElementTextNS(result[i], 0,'param4');
- 				 	var all_manual_sts = getElementTextNS(result[i], 0,'param5');
-                    if (document.getElementById ('2_way_' + id))
-                    	var is2_Way = document.getElementById ('2_way_' + id).value;
-                    if (document.getElementById ('is701x_' + id))
-                    	var is701x = document.getElementById ('is701x_' + id).value;
- 				 	if (document.getElementById ('showFlip_' + id))
- 				 		var showFlip = document.getElementById ('showFlip_' + id).value;
- 				 	showFlip = (showFlip == "true") && (is701x == "true");
- 				 	opts = [false, name, sub_type, allow_ovuv, all_manual_sts, is2_Way, showFlip];
- 				 	document.getElementById ('cmd_cap_move_back_' + id).value = generate_CB_Move_Back (id, name);		       	
-                 }
-				//otherwise the only thing left is to get state
- 				var state = getElementTextNS(result[i], 0,'state');
- 				update_Command_Menu	(type, id, state, opts);
-        	}
-        }
- 	}
-  }
-}
-
-//switch to get the html for menu based on type
-function update_Command_Menu (type, id, state, opts) {
-	//all elements on the page must have a unique id if they are
-	//accessed using document.getElementById
-	//In case of manual and field commands options we have 2 divs for 1 cap bank
-	//if we will just identify it by id it will not be unique
-	//Will result in [xxx] is null or not an object error whenever the element with a non-unique id is
-	//accessed using document.getElementById
-	var cmd_div_uniq_id = 'cmdDiv';
-	   
-	var header = "<HTML><BODY><div id='" + cmd_div_uniq_id + id + "' ";
-	header += " style='background-color:white; border:1px solid black;'>";
-	//!!!!!!!!!!!!!!attempt to use ctiTitledContainer!!!!!!!!!!!!!!!!!!!!!
-	//header += " class='cmdPopupMenu' >";
-	//var container = new CTITitledContainer (opts[1]);
-	//var _start_Tag = container.startTag();
-	//var _end_Tag = container.endTag();
-	//header += _start_Tag;
-	//var footer = _end_Tag; 
-	
-	footer = " </div></BODY></HTML>";	
-	var html = header;
-	switch (type) {
-		case 'substation':
-			html += generateSubstationMenu (id, state, opts);
-			break;
-		case 'sub':
-			html += generateSubMenu (id, state, opts);
-			break;
-		case 'fdr':
-			html += generateFeederMenu (id, state, opts);
-			break;
-		case 'cap':
-			html += generateCapBankMenu (id, state, opts);
-			break;
-	}
-	html += footer;
-	//update document to the generated html
-	var html_id = 'cmd_'+type+'_'+id;
-	if (type == 'cap')
-		html_id += '_' + opts[2];
-	
-
-	document.getElementById(html_id).value = html;
-	 	
-}
-
-//function to generate
-//html for the sub command menu
-function generateSubstationMenu (id, state, opts) {
-	var ALL_SUBSTATION_CMDS = {
- 		confirm_close:21,
- 		enable_sub:22,
-	 	disable_sub:23,
-	 	reset_op_cnt:12,
-	 	send_all_open:29, 
-	 	send_all_close:30, 
-	 	send_all_enable_ovuv:31, 
-	 	send_all_disable_ovuv:32,
-	 	send_all_2way_scan:33,
-	 	send_timesync:34
-	 }
-	 var enableOvUv = opts[2];
-	var table_footer = "</table>";
-	var table_body = "<table >";
-	table_body += "<tr><td class='top'>" + opts[1] + "</td>";
-	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>";
-	if (id > 0) {
- 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.confirm_close, 'Confirm_Sub');
- 		if (!state.match('DISABLED')) {
- 			table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.disable_sub, 'Disable_Sub');
- 		} else {
- 			table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.enable_sub, 'Enable_Sub');
- 		}
- 	
- 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.reset_op_cnt, 'Reset_Op_Counts');
- 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_open, 'Open_All_CapBanks');
- 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_close, 'Close_All_CapBanks');
- 		if (enableOvUv == 'true') {
-	 		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
-			table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
-		}
-		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_all_2way_scan, 'Scan_All_2way_CBCs');
-		table_body += add_AJAX_Function('substation', id, ALL_SUBSTATION_CMDS.send_timesync, 'Send_All_TimeSync');
- 	}
-	table_body+= table_footer;
-	return table_body;
-}
-
-//function to generate
-//html for the sub command menu
-function generateSubMenu (id, state, opts) {
-	var ALL_SUB_CMDS = {
- 		confirm_close:9,
- 		enable_sub:0,
-	 	disable_sub:1,
-	 	reset_op_cnt:12,
-	 	send_all_open:29, 
-	 	send_all_close:30, 
-	 	send_all_enable_ovuv:31, 
-	 	send_all_disable_ovuv:32,
-	 	send_all_2way_scan:33,
-	 	send_timesync:34,
-	 	v_all_banks:40,
-	 	v_fq_banks:41,
-	 	v_failed_banks:42,
-	 	v_question_banks:43,
-	 	v_disable_verify:44,
-        v_standalone_banks:46
-    }
-    var enableOvUv = opts[2];
-	var table_footer = "</table>";
-	var table_body = "<table >";
-	table_body += "<tr><td class='top'>" + opts[1] + "</td>";
-	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>";
-	if (id > 0) {
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.confirm_close, 'Confirm_Sub');
- 		if (!state.match('DISABLED')) {
- 			table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.disable_sub, 'Disable_Sub');
- 		} else {
- 			table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.enable_sub, 'Enable_Sub');
- 		}
- 	
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.reset_op_cnt, 'Reset_Op_Counts');
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_open, 'Open_All_CapBanks');
- 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_close, 'Close_All_CapBanks');
- 		if (enableOvUv == 'true') {
-            table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
-            table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
-        }
-		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_all_2way_scan, 'Scan_All_2way_CBCs');
-		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.send_timesync, 'Send_All_TimeSync');
-		if (!opts[0]){
-	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_all_banks, 'Verify_All_Banks');
-	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_fq_banks, 'Verify_Failed_And_Questionable_Banks');
-	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_failed_banks, 'Verify_Failed_Banks');
-	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_question_banks, 'Verify_Questionable_Banks');
-	 		table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_standalone_banks, 'Verify_Standalone_Banks');
- 		} else {
- 			table_body += add_AJAX_Function('sub', id, ALL_SUB_CMDS.v_disable_verify, 'Verify_Stop');	
- 		}
- 	}
-	table_body+= table_footer;
-	return table_body;
-}
-
-//function to generate
-//html for the feeder command menu
-function generateFeederMenu (id, state, opts) {
-    var ALL_FDR_CMDS = {
-	 	enable_fdr:2,
-		disable_fdr:3,
-		reset_op_cnt:12,
-		send_all_open:29, 
-		send_all_close:30, 
-		send_all_enable_ovuv:31, 
-		send_all_disable_ovuv:32,
-		send_all_2way_scan:33,
-	 	send_timesync:34	
-	}
-    var enableOvUv = opts[2];
-    var table_footer = "</table>";
-    var table_body = "<table >";
-    table_body += "<tr><td class='top'>" + opts[1] + "</td>";
-	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>"
-    if (id > 0) {
-        if (!state.match('DISABLED')) {
-            table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.disable_fdr, 'Disable_Feeder');
-        } else {
-            table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.enable_fdr, 'Enable_Feeder');
-        }
-        table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.reset_op_cnt, 'Reset_Op_Counts');
-        table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_open, 'Open_All_CapBanks');
-        table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_close, 'Close_All_CapBanks');
-        if (enableOvUv == 'true') {
-            table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_enable_ovuv, 'Enable_OV/UV');
-            table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_disable_ovuv, 'Disable_OV/UV');
-        }
-	    table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_all_2way_scan, 'Scan_All_2way_CBCs');
-	    table_body += add_AJAX_Function('feeder', id, ALL_FDR_CMDS.send_timesync, 'Send_All_TimeSync');
-    }
-	table_body+= table_footer;
-	return table_body;
-}
-
-							
-
-//function to generate the cap bank move back menu
-function generate_CB_Move_Back (id, name, red) {
-	 //start and end of div html
-	 var div_start_tag = "<HTML><BODY><div id='cb_move_back_" + id + "' ";
-	 var div_end_tag = " </div></BODY></HTML>";
-	 //css for the div
-	 div_start_tag += " style='background:white; border:1px solid black;'>";
-	 //init return variable
-	 var html = div_start_tag;
-	 //generate the table
-	 var table_footer = "</table>";
-	 var table_body = "<table >";
-	 table_body += "<tr><td class='top'>" + name + "</td></tr>"
-	 table_body += add_AJAX_Function('cap_move_back', id, 11, 'Temp_Move_Back', false, red);
-	 table_body+= table_footer;
-	 //append table to the div
-	 html += table_body;
-	 //append end tag to the div
-	 html += div_end_tag;
- 
- return html;			  
-}
-
-function generateAreaMenu (id, name, enable, showOVUV) {
-	
-    //start and end of div html
-    var div_start_tag = "<HTML><BODY><div id='area" + id + "'";
-    var div_end_tag = " </div></BODY></HTML>";
-    //css for the div
-    div_start_tag += " style='background:white; border:1px solid black;'>";
-    //init return variable
-    var html = div_start_tag;
-    //generate the table
-    var table_footer = "</table>";
-    var table_body = "<table >";
-         
-    table_body += "<tr><td class='top'>" + name+ "</td>";
-	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>"
-    table_body += add_AJAX_Function('area', id, 21, 'Confirm_Area');
-    if (enable == 1){
-		table_body += add_AJAX_Function('area', id, 22, 'Enable_Area');
-	} else{
-        table_body += add_AJAX_Function('area', id, 23, 'Disable_Area');
-	}
-    table_body += add_AJAX_Function('area', id, 29, 'Open_All_CapBanks');
- 	table_body += add_AJAX_Function('area', id, 30, 'Close_All_CapBanks');
- 	if (showOVUV == 'true') {
-	 	table_body += add_AJAX_Function('area', id, 31, 'Enable_OV/UV');
-		table_body += add_AJAX_Function('area', id, 32, 'Disable_OV/UV');
-	}
-	table_body += add_AJAX_Function('area', id, 33, 'Scan_All_2way_CBCs');
-	table_body += add_AJAX_Function('area', id, 34, 'Send_All_TimeSync');
-     
-     table_body+= table_footer;
-     //append table to the div
-     html += table_body;
-     //append end tag to the div
-     html += div_end_tag;
- 
- return html;             
-}
-
-//function to generate cap bank menu
-function generateCapBankMenu (id, state, opts) {
- var ALL_CAP_CMDS = {
- 	confirm_open:8,
- 	open_capbank:6,
- 	close_capbank:7,
- 	bank_enable_ovuv:17,
- 	bank_disable_ovuv:18,
- 	enable_capbank:4,
- 	disable_capbank:5,
- 	reset_op_cnt:12,
-    scan_2way_dev:24,
-    flip_7010: 27,
-    send_timesync:34
- 	}
- var table_footer = "</table>";
- var table_body = "<table >";
- //opts = [false, name, sub_type, allow_ovuv, all_manual_sts];
- var allow_ovuv = opts[3];
- //contains all the possible manual states for a cap bank
- var manual_states = opts[4];
- 	table_body += "<tr><td class='top'>" + opts[1] + "</td>";
-	table_body += "<td class='top' onclick='cClick()'><a href='javascript:void(0)'>X</a></td></tr>"
-	if (id > 0) {
-		if (opts[2] == 'field') {
-		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.confirm_open, 'Confirm', false);
-		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.open_capbank, 'Open_Capacitor', false);
-		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.close_capbank, 'Close_Capacitor', false);
-           if (opts[5] == 'true')
-            {
-                table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.scan_2way_dev, 'Init_Scan', false);
-                table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.send_timesync, 'Send_TimeSync', false);
-            }
-		
-		if (allow_ovuv == 'true') {
-		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.bank_enable_ovuv, 'Enable_OV/UV', false);
-		   table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.bank_disable_ovuv, 'Disable_OV/UV', false);	
-		   }
-		
-		if (opts[6])
-			{
-		   		table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.flip_7010, 'Flip', false);	
-			}
-		}
-		else if (opts[2] == 'system') {
-		     
-		     if (state.indexOf('DISABLED') > -1) {
-		     	table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.enable_capbank, 'Enable_CapBank', false);
-		     }
-		     else {
-		     	table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.disable_capbank, 'Disable_CapBank', false);	
-		     }
-		     table_body += add_AJAX_Function('cap', id, ALL_CAP_CMDS.reset_op_cnt, 'Reset_Op_Counts', false);
-		//split the string up into elements
-		//states = "Open:0,Close:1"
-		var states = manual_states.split(',');
-		for (var i=0; i < states.length; i++) {
-		    //Open:1
-		    var st = states[i];
-		    var temp = st.split (':');
-		    var state_name = temp[0];
-		    var raw_st_id = temp[1];
-		    table_body += add_AJAX_Function('cap', id, raw_st_id, state_name, true);
-		    }
-		
-		}
-		
-	}
-	table_body+= table_footer;
-	return table_body;
-}
 
 //helper function to set opcounts
 function enableResetOpCountSpan (pao_id) {
@@ -394,59 +5,6 @@ function enableResetOpCountSpan (pao_id) {
     var elem = document.getElementById('cap_opcnt_span'+pao_id);
 	elem.style.display = '';
 }
-
-
-//function that returns html string for js ajax function that will
-//execute on the server when the user clicks on the 
-//command menu 
-function add_AJAX_Function (type, pao_id, cmd_id, cmd_name, is_manual_state, red) {
-var ajax_func = "<tr><td>";
-ajax_func += "<a  href='javascript:void(0);'";
-ajax_func += " class='optDeselect'" 
-ajax_func += " onmouseover='changeOptionStyle(this);' "
-ajax_func += " onclick=";
-var str_cmd = '\"' + cmd_name + '\"';
-switch (type) {
-	case 'substation':
-	ajax_func +=  	"'executeSubstationCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
-	break;
- case 'sub':
-	ajax_func +=  	"'executeSubCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
-	break;
- case 'feeder':
- 	ajax_func +=  	"'executeFeederCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
-	break;
- case 'cap':
- 	//special case for reset op-counts
-	if (cmd_id == 12) {
-		var temp_str = "'enableResetOpCountSpan(" + pao_id + ");'"; 
-		ajax_func += temp_str;
-	}
- 	else
- 		ajax_func +=  	"'executeCapBankCommand (" + pao_id + "," + cmd_id + "," + is_manual_state + "," + str_cmd + "); '";
-	
-	break;
- case 'cap_move_back':
-    if (red == 999)
-    	ajax_func +=    "'execute_CapBankMoveBack (" + 	pao_id + "," + cmd_id + "," + red + "); '";
-	else
-  		ajax_func +=    "'execute_CapBankMoveBack (" + 	pao_id + "," + cmd_id + "); '";
-		
-    break;
- case 'area':
- 
-    ajax_func += "'execute_SubAreaCommand (" + pao_id + "," + cmd_id + "," + str_cmd + "); '";
-    break;
-}
-myString = new String(cmd_name);
-rExp = /_/gi;
-newString = new String (" ");
-results = myString.replace(rExp, newString);
-ajax_func += ">"+ results +"</a>";
-ajax_func += "</td></tr>";
-return ajax_func;
-}
-
 
 //AJAX command functions
 ///////////////////////////////////////////////
@@ -472,20 +30,15 @@ function executeSubCommand (paoId, command, cmd_name) {
 }
 
 function executeFeederCommand (paoId, command, cmd_name) {
-	
 	new Ajax.Request ('/servlet/CBCServlet', 
 	{method:'post', 
 	 parameters:'cmdID='+command+'&paoID='+paoId + '&controlType=FEEDER_TYPE', 
 	 onSuccess: function () { display_status(cmd_name, "Success", "green"); },
 	 onFailure: function () { display_status(cmd_name, "Failed", "red"); }, 
 	 asynchronous:true });
-	var cmdDiv = document.getElementById ('cmdDiv' + paoId);
-	cmdDiv.style.display = 'none';
 }
 
-function executeCapBankCommand (paoId, command, is_manual_state, cmd_name, cmd_div_name) {
-	var unique_id = 'cmdDiv'+paoId;
-	var cmdDiv = document.getElementById (unique_id);
+function executeCapBankCommand (paoId, command, cmd_name, is_manual_state, cmd_div_name) {
 	var RESET_OP_CNT = 12;
 	if (is_manual_state) {
 		new Ajax.Request ('/servlet/CBCServlet', 
@@ -499,7 +52,8 @@ function executeCapBankCommand (paoId, command, is_manual_state, cmd_name, cmd_d
 		//special case for reset_op_counts command
 		if (command == RESET_OP_CNT) {
 			handleOpcountRequest (command, paoId, cmd_name)					
-			cmdDiv = handleOpcountDiv (cmd_div_name);
+			var cmdDiv = handleOpcountDiv (cmd_div_name);
+            cmdDiv.style.display = 'none';
 		}
 		else {
 			new Ajax.Request ('/servlet/CBCServlet', 
@@ -508,31 +62,30 @@ function executeCapBankCommand (paoId, command, is_manual_state, cmd_name, cmd_d
 			onSuccess: function () { display_status(cmd_name, "Success", "green"); },
 			onFailure: function () { display_status(cmd_name, "Failed", "red"); }, 
 			asynchronous:true });
-			cmdDiv = document.getElementById (unique_id);
 		}
 	}
-        cmdDiv.style.display = 'none';
+        
 }
 
-function execute_CapBankMoveBack (paoId, command, redirect) {
-	var red = '/capcontrol/feeders.jsp';
-	var replace = 'feeders.jsp';
-	if (redirect == MOVED_CB_REDIRECT_URL) {
-		red = '/capcontrol/movedCapBanks.jsp';
-		replace = 'movedCapBanks.jsp'
-		}
-	new Ajax.Request('/servlet/CBCServlet', 
-	{ method:'post', 
-	  parameters:'paoID='+ paoId +'&cmdID=' + command + '&controlType=CAPBANK_TYPE&redirectURL=' + red,
-		onSuccess: function () { window.location.replace (replace);
-	},
-		onFailure: function () { display_status('Move Bank', "Failed", "red"); },
-	asynchronous:true
+function execute_CapBankMoveBack (paoId, command, redirectURL) {
+	//var red = '/capcontrol/feeders.jsp';
+	//var replace = 'feeders.jsp';
+	//if (redirect == MOVED_CB_REDIRECT_URL) {
+	//	red = '/capcontrol/movedCapBanks.jsp';
+	//	replace = 'movedCapBanks.jsp'
+	//	}
+
+    var url = '/servlet/CBCServlet';
+	new Ajax.Request(url, { 
+        method: 'POST', 
+	    parameters: 'paoID='+ paoId +'&cmdID=' + command + '&controlType=CAPBANK_TYPE&redirectURL=' + redirectURL,
+		onSuccess: function() {
+            window.location.replace(redirectURL);
+        },
+		onFailure: function() {
+            display_status('Move Bank', "Failed", "red"); 
+        }
 	});
-	var cmdDiv = document.getElementById ('cb_move_back_' + paoId);
-	cmdDiv.style.display = 'none';
-	
-		
 } 
 
 function execute_SubAreaCommand (pao_id, cmd_id, cmd_name) {
@@ -543,10 +96,6 @@ function execute_SubAreaCommand (pao_id, cmd_id, cmd_name) {
         onFailure: function () { display_status(cmd_name, "Failed", "red"); },
     asynchronous:true
     });
-    var cmdDiv = document.getElementById ('area' + pao_id);
-    cmdDiv.style.display = 'none';
-
-
 }
 
 
@@ -594,31 +143,18 @@ return endTag;
 //'msg' in the body that with 'color' for background
 
 function display_status(cmd_name, msg, color) {
-var msg_div = $('cmd_msg_div');
-msg_div.style.color = color;
-$("outerDiv").style.position = 'absolute';
-var last_titled_cont  = $('last_titled_container'); 
-if (last_titled_cont != null) {
-	$("outerDiv").style.left = last_titled_cont.style.width;
-	$("outerDiv").style.top =  last_titled_cont.style.height;
-}
-else {
-	$("outerDiv").style.left = 0;
-	$("outerDiv").style.top =  0;
-}
-$("outerDiv").style.width = 200; 
-//var titledCont = new CTITitledContainer (cmd_name);
-
-msg_div.innerHTML = cmd_name + ":" + msg;
-var timeout = 0;
-if (color == "red") {
-	$("outerDiv").style.display = 'block';
-    $('outerDiv').show();
-	timeout = 8000;
-	}
- else {
- 	$('outerDiv').show();
-	timeout = 2000;
+    var msg_div = $('cmd_msg_div');
+    msg_div.style.color = color;
+    msg_div.innerHTML = cmd_name + " : " + msg;
+    
+    var timeout = 0;
+    if (color == "red") {
+	   $("outerDiv").style.display = 'block';
+        $('outerDiv').show();
+	   timeout = 8000;
+	}  else {
+ 	  $('outerDiv').show();
+	   timeout = 2000;
 	}
 	setTimeout ('hideMsgDiv()', timeout);	
 }

@@ -1,7 +1,6 @@
 package com.cannontech.cbc.util;
 
 import java.sql.Connection;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -9,17 +8,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 
-import org.springframework.dao.IncorrectResultSizeDataAccessException;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowMapper;
-
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController701x;
@@ -153,9 +147,10 @@ public final class CBCUtils {
         double sumOfVars = 0.0;
         double sumOfWatts = 0.0;
 
-        if (subs == null)
-            return CapControlConst.PF_INVALID_VALUE;
+        if (subs == null) return CapControlConst.PF_INVALID_VALUE;
 
+        if (subs.length == 0) return 0.0;
+        
         int numberOfSubs = subs.length;
 
         for (int i = 0; i < numberOfSubs; i++) {
@@ -184,28 +179,29 @@ public final class CBCUtils {
         double sumOfVars = 0.0;
         double sumOfWatts = 0.0;
 
-        if (subs == null) {
-            return CapControlConst.PF_INVALID_VALUE;
-        }else {
-            for (SubStation sub: subs) {
-                List<SubBus> subBuses = ccCache.getSubBusesBySubStation(sub);
-                for (SubBus subBus : subBuses) {
-                    if (subBus != null) {
-                        sumOfVars += subBus.getCurrentVarLoadPointValue().doubleValue();
-                        sumOfWatts += Math.abs(subBus.getCurrentWattLoadPointValue().doubleValue());
-                    }
+        if (subs == null) return CapControlConst.PF_INVALID_VALUE;
+
+        if (subs.isEmpty()) return 0.0;
+        
+        for (SubStation sub: subs) {
+            List<SubBus> subBuses = ccCache.getSubBusesBySubStation(sub);
+            for (SubBus subBus : subBuses) {
+                if (subBus != null) {
+                    sumOfVars += subBus.getCurrentVarLoadPointValue().doubleValue();
+                    sumOfWatts += Math.abs(subBus.getCurrentWattLoadPointValue().doubleValue());
                 }
             }
-            retVal = sumOfWatts / (Math.sqrt(Math.pow(sumOfVars, 2.0) + Math.pow(sumOfWatts, 2.0)));
-            if (sumOfVars < 0) {
-                retVal = retVal * (-1);
-            }
-            return retVal;
         }
+        retVal = sumOfWatts / (Math.sqrt(Math.pow(sumOfVars, 2.0) + Math.pow(sumOfWatts, 2.0)));
+
+        if (sumOfVars < 0) {
+            retVal = retVal * (-1);
+        }
+        return retVal;
     }
 
     /**
-     * Calculates the estimaged average PowerFactor for an array of SubBuses
+     * Calculates the estimated average PowerFactor for an array of SubBuses
      * that have valid PowerFactor values.
      */
     public static final double calcAvgEstPF(SubBus[] subs) {
@@ -214,8 +210,9 @@ public final class CBCUtils {
         double sumOfVars = 0.0;
         double sumOfWatts = 0.0;
 
-        if (subs == null)
-            return CapControlConst.PF_INVALID_VALUE;
+        if (subs == null) return CapControlConst.PF_INVALID_VALUE;
+        
+        if (subs.length == 0) return 0.0;
 
         int numberOfSubs = subs.length;
 
@@ -235,7 +232,7 @@ public final class CBCUtils {
     }
     
     /**
-     * Calculates the estimaged average PowerFactor for an array of SubBuses
+     * Calculates the estimated average PowerFactor for an array of SubBuses
      * that have valid PowerFactor values.
      */
     public static final double calcAvgEstPF(List<SubStation> subs) {
@@ -243,24 +240,25 @@ public final class CBCUtils {
         double sumOfVars = 0.0;
         double sumOfWatts = 0.0;
 
-        if (subs == null) {
-            return CapControlConst.PF_INVALID_VALUE;
-        } else {
-            for(SubStation sub: subs) {
-                List<SubBus> buses = ccCache.getSubBusesBySubStation(sub);
-                for (SubBus bus: buses) {
-                    if( bus != null) {
-                        sumOfVars += bus.getEstimatedVarLoadPointValue().doubleValue();
-                        sumOfWatts += Math.abs(bus.getCurrentWattLoadPointValue().doubleValue());
-                    }
+        if (subs == null) return CapControlConst.PF_INVALID_VALUE;
+        
+        if (subs.isEmpty()) return 0.0;
+        
+        for(SubStation sub: subs) {
+            List<SubBus> buses = ccCache.getSubBusesBySubStation(sub);
+            for (SubBus bus: buses) {
+                if( bus != null) {
+                    sumOfVars += bus.getEstimatedVarLoadPointValue().doubleValue();
+                    sumOfWatts += Math.abs(bus.getCurrentWattLoadPointValue().doubleValue());
                 }
             }
-            retVal = sumOfWatts / (Math.sqrt(Math.pow(sumOfVars, 2.0) + Math.pow(sumOfWatts, 2.0)));
-            if (sumOfVars < 0) {
-                retVal = retVal * (-1);
-            }
-            return retVal;
         }
+        retVal = sumOfWatts / (Math.sqrt(Math.pow(sumOfVars, 2.0) + Math.pow(sumOfWatts, 2.0)));
+        
+        if (sumOfVars < 0) {
+            retVal = retVal * (-1);
+        }
+        return retVal;
     }
 
     public static String format(int val) {
@@ -602,7 +600,7 @@ public final class CBCUtils {
     public static boolean isPointQualNormal(PointQualityCheckable checkable, Integer type) {
         return checkable.getCurrentPtQuality(type.intValue()) == PointQualityCheckable.PointQuality.NormalQuality.value();
     }
-
+    
     public static boolean isController(int id) {
         LiteYukonPAObject lite = null;
         try{
