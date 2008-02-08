@@ -68,13 +68,6 @@ function executeCapBankCommand (paoId, command, cmd_name, is_manual_state, cmd_d
 }
 
 function execute_CapBankMoveBack (paoId, command, redirectURL) {
-	//var red = '/capcontrol/feeders.jsp';
-	//var replace = 'feeders.jsp';
-	//if (redirect == MOVED_CB_REDIRECT_URL) {
-	//	red = '/capcontrol/movedCapBanks.jsp';
-	//	replace = 'movedCapBanks.jsp'
-	//	}
-
     var url = '/servlet/CBCServlet';
 	new Ajax.Request(url, { 
         method: 'POST', 
