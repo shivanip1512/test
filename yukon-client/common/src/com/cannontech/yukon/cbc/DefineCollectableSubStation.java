@@ -51,6 +51,8 @@ public class DefineCollectableSubStation extends DefineCollectableStreamableCapO
         sub.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
         sub.setSpecialAreaEnabled(((int)vstr.extractUnsignedInt() == 1)? new Boolean(true) : new Boolean(false));
         sub.setSpecialAreaId(vstr.extractInt());
+        sub.setVoltReductionFlag( ((int)vstr.extractUnsignedInt() == 1)? new Boolean(true) : new Boolean(false) );
+        
 	}
     
 	/**
@@ -66,5 +68,7 @@ public class DefineCollectableSubStation extends DefineCollectableStreamableCapO
         vstr.insertDouble( sub.getEstimatedPFValue().doubleValue() );
         vstr.insertUnsignedInt( (sub.getSpecialAreaEnabled().booleanValue() == true) ? 1 : 0 );
         vstr.insertUnsignedInt( sub.getSpecialAreaId() );
+        vstr.insertUnsignedInt( (sub.getVoltReductionFlag().booleanValue() == true) ? 1 : 0 );
+		
 	}
 }

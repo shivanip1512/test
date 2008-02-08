@@ -91,6 +91,8 @@ public class DefineCollectableCBCArea extends
         area.setStations( VectorExtract.extractIntArray(vstr, polystr));
         area.setPowerFactorValue( new Double( vstr.extractDouble() ) );
         area.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
+        area.setVoltReductionFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
+        
     }
 
     /**
@@ -115,5 +117,7 @@ public class DefineCollectableCBCArea extends
         VectorInsert.insertIntArray(area.getStations(), vstr, polystr);
         vstr.insertDouble( area.getPowerFactorValue().doubleValue() );
         vstr.insertDouble( area.getEstimatedPFValue().doubleValue() );
+        vstr.insertUnsignedInt((area.getVoltReductionFlag().booleanValue()) ? 1 : 0);
+        
     }
 }

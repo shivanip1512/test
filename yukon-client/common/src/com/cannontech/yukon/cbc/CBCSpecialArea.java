@@ -4,6 +4,7 @@ public class CBCSpecialArea extends StreamableCapObject {
 
     private Boolean disableFlag;
     private Boolean ovUvDisabledFlag;
+    private Boolean voltReductionFlag;
     private String paoDescription;
     private String paoType;
     private String paoName;
@@ -141,6 +142,14 @@ public class CBCSpecialArea extends StreamableCapObject {
     public void setEstimatedPFValue(Double estimatedPFValue) {
         this.estimatedPFValue = estimatedPFValue;
     }
+
+	public Boolean getVoltReductionFlag() {
+		return voltReductionFlag;
+	}
+
+	public void setVoltReductionFlag(Boolean voltReductionFlag) {
+		this.voltReductionFlag = voltReductionFlag;
+	}
 
 }
 

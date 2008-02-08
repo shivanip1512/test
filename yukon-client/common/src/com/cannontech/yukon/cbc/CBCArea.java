@@ -14,7 +14,8 @@ public class CBCArea extends StreamableCapObject {
     int[] stations = null;
     private Double powerFactorValue = null;
     private Double estimatedPFValue = null;
-
+    private Boolean voltReductionFlag;
+    
     public int[] getStations() {
 		return stations;
 	}
@@ -139,5 +140,13 @@ public class CBCArea extends StreamableCapObject {
     public void setEstimatedPFValue(Double estimatedPFValue) {
         this.estimatedPFValue = estimatedPFValue;
     }
+
+	public Boolean getVoltReductionFlag() {
+		return voltReductionFlag;
+	}
+
+	public void setVoltReductionFlag(Boolean voltReductionFlag) {
+		this.voltReductionFlag = voltReductionFlag;
+	}
 
 }

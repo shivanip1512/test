@@ -12,6 +12,7 @@ public class SubStation extends StreamableCapObject //implements PointQualityChe
     private Boolean specialAreaEnabled;
     private Integer specialAreaId;
 	private Boolean verificationFlag = false;
+	private Boolean voltReductionFlag = false;
     
 	public SubStation(){
 		super();
@@ -89,4 +90,14 @@ public class SubStation extends StreamableCapObject //implements PointQualityChe
     public void setVerificationFlag(Boolean bool) {
         verificationFlag = bool;
     }
+
+
+	public Boolean getVoltReductionFlag() {
+		return voltReductionFlag;
+	}
+
+
+	public void setVoltReductionFlag(Boolean voltReductionFlag) {
+		this.voltReductionFlag = voltReductionFlag;
+	}
 }

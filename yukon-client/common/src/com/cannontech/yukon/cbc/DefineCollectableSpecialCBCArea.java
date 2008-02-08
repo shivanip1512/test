@@ -53,20 +53,43 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
      * restoreGuts method comment.
      */
 
-    public void restoreGuts(Object obj, VirtualInputStream vstr, CollectableStreamer polystr) throws java.io.IOException {
+    public void restoreGuts(Object obj,
+            com.roguewave.vsj.VirtualInputStream vstr,
+            com.roguewave.vsj.CollectableStreamer polystr)
+            throws java.io.IOException {
+        
         CBCSpecialArea area = (CBCSpecialArea) obj;
 
-        area.setPaoID(new Integer((int) vstr.extractUnsignedInt()));
-        area.setPaoCategory((String) vstr.restoreObject(SimpleMappings.CString));
-        area.setPaoClass((String) vstr.restoreObject(SimpleMappings.CString));
-        area.setPaoName((String) vstr.restoreObject(SimpleMappings.CString));
-        area.setPaoType((String) vstr.restoreObject(SimpleMappings.CString));
-        area.setPaoDescription((String) vstr.restoreObject(SimpleMappings.CString));
+        int paoId = (int) vstr.extractUnsignedInt();
+        area.setPaoID(paoId);
+        area.setCcId(paoId);
+        
+        String newCcCategory = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoCategory(newCcCategory);
+        area.setCcCategory(newCcCategory);
+        
+        String newClass = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoClass(newClass);
+        area.setCcClass(newClass);
+        
+        String name = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoName(name);
+        area.setCcName(name);
+        
+        String paoType = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoType(paoType);
+        area.setCcType(paoType);
+        
+        String paoDescription = (String) vstr.restoreObject(SimpleMappings.CString);
+        area.setPaoDescription(paoDescription);
+        
         area.setDisableFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
-        area.setCcSubIds(VectorExtract.extractIntArray(vstr,polystr));
+        area.setCcSubIds( VectorExtract.extractIntArray(vstr, polystr));
         area.setOvUvDisabledFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
         area.setPowerFactorValue( new Double( vstr.extractDouble() ) );
         area.setEstimatedPFValue( new Double( vstr.extractDouble() ) );
+        area.setVoltReductionFlag(((int) vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false));
+        
     }
 
     /**
@@ -86,6 +109,8 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
         vstr.insertUnsignedInt((area.getOvUvDisabledFlag().booleanValue()) ? 1 : 0);
         vstr.insertDouble( area.getPowerFactorValue().doubleValue() );
         vstr.insertDouble( area.getEstimatedPFValue().doubleValue() );
+        vstr.insertUnsignedInt((area.getVoltReductionFlag().booleanValue()) ? 1 : 0);
+        
     }
 }
 
