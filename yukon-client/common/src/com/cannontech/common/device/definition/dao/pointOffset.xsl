@@ -5,7 +5,7 @@
   <xsl:output omit-xml-declaration="yes"/>
   <xsl:param name="group" select="MCT"/>
   <xsl:key name="list" match="device" use="displayGroup/@value" />
-  <xsl:template match="deviceDefinition">
+  <xsl:template match="deviceDefinitions">
     <html>
         <title>Yukon Device Definitions</title>
         <style type="text/css">
