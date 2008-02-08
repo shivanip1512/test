@@ -63,6 +63,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
     BOOL getOvUvDisabledFlag() const;
+    BOOL getVoltReductionFlag() const;
     const string& getParentName() const;
     LONG getParentId() const;
     LONG getDisplayOrder() const;
@@ -70,6 +71,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     DOUBLE getEstPFactor() const;
     BOOL getSaEnabledFlag() const;
     LONG getSaEnabledId() const;
+    LONG getVoltReductionControlId() const;
+
     
     list <LONG>* getCCSubIds(){return &_subBusIds;};
 
@@ -81,6 +84,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     CtiCCSubstation& setPAODescription(const string& description);
     CtiCCSubstation& setDisableFlag(BOOL disable);
     CtiCCSubstation& setOvUvDisabledFlag(BOOL flag);
+    CtiCCSubstation& setVoltReductionFlag(BOOL flag);
     CtiCCSubstation& setParentName(const string& name);
     CtiCCSubstation& setParentId(LONG parentId);
     CtiCCSubstation& setDisplayOrder(LONG displayOrder);
@@ -88,6 +92,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     CtiCCSubstation& setEstPFactor(DOUBLE estpfactor);
     CtiCCSubstation& setSaEnabledFlag(BOOL flag);
     CtiCCSubstation& setSaEnabledId(LONG saId);
+    CtiCCSubstation& setVoltReductionControlId(LONG pointid);
     
     DOUBLE calculatePowerFactor(DOUBLE kvar, DOUBLE kw);
     BOOL isDirty() const;
@@ -122,11 +127,14 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
 
     string _additionalFlags;
     BOOL _ovUvDisabledFlag;
+    BOOL _voltReductionFlag;
 
     DOUBLE _pfactor;
     DOUBLE _estPfactor;
     BOOL _saEnabledFlag;
     LONG _saEnabledId;
+
+    LONG _voltReductionControlId;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

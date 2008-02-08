@@ -4378,9 +4378,9 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                             
                             ccGeoAreas->push_back( currentCCArea );
 
-                            if (currentCCArea->getControlPointId() > 0 )
+                            if (currentCCArea->getVoltReductionControlPointId() > 0 )
                             {   
-                                pointid_area_map->insert(make_pair(currentCCArea->getControlPointId(), currentCCArea));
+                                pointid_area_map->insert(make_pair(currentCCArea->getVoltReductionControlPointId(), currentCCArea));
                             }
                         }
 
@@ -4623,9 +4623,9 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                             
                             ccSpecialAreas->push_back( currentCCSpArea );
-                            if (currentCCSpArea->getControlPointId() > 0 )
+                            if (currentCCSpArea->getVoltReductionControlPointId() > 0 )
                             {   
-                                pointid_specialarea_map->insert(make_pair(currentCCSpArea->getControlPointId(), currentCCSpArea));
+                                pointid_specialarea_map->insert(make_pair(currentCCSpArea->getVoltReductionControlPointId(), currentCCSpArea));
                             }
                         }
 

@@ -55,8 +55,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     const string& getPAOType() const;
     const string& getPAODescription() const;
     BOOL getDisableFlag() const;
-    LONG getControlPointId() const;
-    BOOL getControlValue() const;
+    LONG getVoltReductionControlPointId() const;
+    BOOL getVoltReductionControlValue() const;
 
     LONG getStrategyId() const;
     const string& getStrategyName() const;
@@ -97,8 +97,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     CtiCCSpecial& setPAOType(const string& type);
     CtiCCSpecial& setPAODescription(const string& description);
     CtiCCSpecial& setDisableFlag(BOOL disable);
-    CtiCCSpecial& setControlPointId(LONG pointId);
-    CtiCCSpecial& setControlValue(BOOL flag);
+    CtiCCSpecial& setVoltReductionControlPointId(LONG pointId);
+    CtiCCSpecial& setVoltReductionControlValue(BOOL flag);
     CtiCCSpecial& setStrategyId(LONG strategyId);
     CtiCCSpecial& setStrategyName(const string& strategyname);
     CtiCCSpecial& setControlMethod(const string& method);
@@ -161,8 +161,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     string _paodescription;
     BOOL _disableflag;
     LONG _strategyId;
-    LONG _controlPointId;
-    BOOL _controlValue;
+    LONG _voltReductionControlPointId;
+    BOOL _voltReductionControlValue;
     string _strategyName;
     string _controlmethod;
     LONG _maxdailyoperation;

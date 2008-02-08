@@ -154,6 +154,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getOvUvDisabledFlag() const;
     BOOL getCorrectionNeededNoBankAvailFlag() const;
     BOOL getLikeDayControlFlag() const;
+    BOOL getVoltReductionFlag() const;
+    LONG getVoltReductionControlId() const;
     
     const string& getSolution() const;
     DOUBLE getTargetVarValue() const;
@@ -269,6 +271,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setOvUvDisabledFlag(BOOL flag);
     CtiCCSubstationBus& setCorrectionNeededNoBankAvailFlag(BOOL flag);
     CtiCCSubstationBus& setLikeDayControlFlag(BOOL flag);
+    CtiCCSubstationBus& setVoltReductionFlag(BOOL flag);
+    CtiCCSubstationBus& setVoltReductionControlId(LONG pointid);
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
     CtiCCSubstationBus& setSolution(const string& text);
     CtiCCSubstationBus& setTargetVarValue(DOUBLE value);
@@ -519,7 +523,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _ovUvDisabledFlag;
     BOOL _correctionNeededNoBankAvailFlag;
     BOOL _likeDayControlFlag;
+    BOOL _voltReductionFlag;
 
+    LONG _voltReductionControlId;
     LONG _currentCapBankToVerifyAssumedOrigState;
     int _verificationStrategy;
     LONG _capBankToVerifyInactivityTime;

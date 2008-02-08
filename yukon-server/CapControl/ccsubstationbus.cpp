@@ -1089,6 +1089,17 @@ BOOL CtiCCSubstationBus::getLikeDayControlFlag() const
 {
     return _likeDayControlFlag;
 }
+BOOL CtiCCSubstationBus::getVoltReductionFlag() const
+{
+    return _voltReductionFlag;
+}
+
+LONG CtiCCSubstationBus::getVoltReductionControlId() const
+{
+    return _voltReductionControlId;
+}
+
+
 LONG CtiCCSubstationBus::getCurrentVerificationFeederId() const
 {
     return _currentVerificationFeederId;
@@ -5598,6 +5609,23 @@ CtiCCSubstationBus& CtiCCSubstationBus::setLikeDayControlFlag(BOOL flag)
     return *this;
 }
 
+CtiCCSubstationBus& CtiCCSubstationBus::setVoltReductionControlId(LONG pointid)
+{
+    _voltReductionControlId = pointid;
+    return *this;
+}
+
+CtiCCSubstationBus& CtiCCSubstationBus::setVoltReductionFlag(BOOL flag)
+{
+    if (_voltReductionFlag != flag) 
+    {
+        _dirty = TRUE;
+    }
+    _voltReductionFlag = flag;
+    return *this;
+}
+
+
 CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVerificationFeederId(LONG feederId)
 {
     if( _currentVerificationFeederId != feederId )
@@ -6466,12 +6494,13 @@ void CtiCCSubstationBus::dumpDynamicData(RWDBConnection& conn, CtiTime& currentD
             addFlags[11] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[12] = (_correctionNeededNoBankAvailFlag?'Y':'N');
             addFlags[13] = (_likeDayControlFlag?'Y':'N');
+            addFlags[14] = (_voltReductionFlag?'Y':'N');
 			_additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2))+ 
                                          char2string(*(addFlags+3)) + char2string(*(addFlags+4)) +  char2string(*(addFlags+5)) +
                                          char2string(*(addFlags+6)) + char2string(*(addFlags+7)) + char2string(*(addFlags+8)) +
                                          char2string(*(addFlags+9)) + char2string(*(addFlags+10)) + char2string(*(addFlags+11)) +
-                                         char2string(*(addFlags+12)) +char2string(*(addFlags+13)));
-            _additionalFlags.append("NNNNNN");
+                                         char2string(*(addFlags+12)) +char2string(*(addFlags+13)) +char2string(*(addFlags+14)));
+            _additionalFlags.append("NNNNN");
 
             updater.clear();
 
@@ -9152,6 +9181,7 @@ void CtiCCSubstationBus::restoreGuts(RWvistream& istrm)
     >> _phaseCvalue
     >> _likeDayControlFlag
     >> _displayOrder
+    >> _voltReductionFlag
     >> _ccfeeders;
 
     _lastcurrentvarpointupdatetime = CtiTime(tempTime2);
@@ -9254,6 +9284,7 @@ void CtiCCSubstationBus::saveGuts(RWvostream& ostrm ) const
     << _phaseCvalue
     << _likeDayControlFlag
     << _displayOrder
+    << _voltReductionFlag
     << _ccfeeders;
 }
 
@@ -9348,6 +9379,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _correctionNeededNoBankAvailFlag = right._correctionNeededNoBankAvailFlag;
         _likeDayControlFlag = right._likeDayControlFlag;
+        _voltReductionFlag = right._voltReductionFlag;
+        _voltReductionControlId = right._voltReductionControlId;
 
         _altDualSubId = right._altDualSubId;
         _switchOverPointId = right._switchOverPointId;
@@ -9475,6 +9508,8 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     rdr["controlflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _totalizedControlFlag = (tempBoolString=="y"?TRUE:FALSE);
+
+    _voltReductionControlId = 0; //TEMPORARY.  Need to add to capcontrolsubstationbus table.
 
     _parentId =  0;
     _decimalplaces = 2;
@@ -9712,6 +9747,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _ovUvDisabledFlag = (_additionalFlags[11]=='y'?TRUE:FALSE);
         _correctionNeededNoBankAvailFlag = (_additionalFlags[12]=='y'?TRUE:FALSE); 
         _likeDayControlFlag = (_additionalFlags[13]=='y'?TRUE:FALSE); 
+        _voltReductionFlag = (_additionalFlags[14]=='y'?TRUE:FALSE); 
 
         rdr["currverifycbid"] >> _currentVerificationCapBankId;
         rdr["currverifyfeederid"] >> _currentVerificationFeederId;

@@ -92,7 +92,8 @@ void CtiCCArea::restoreGuts(RWvistream& istrm)
     }
 
     istrm >> _pfactor
-        >> _estPfactor;
+        >> _estPfactor
+        >> _voltReductionControlValue;
 }
 
 /*---------------------------------------------------------------------------
@@ -120,7 +121,8 @@ void CtiCCArea::saveGuts(RWvostream& ostrm ) const
         ostrm << (long)*iter;
     }
     ostrm << _pfactor
-       << _estPfactor;
+       << _estPfactor
+        << _voltReductionControlValue;
 }
 
 /*---------------------------------------------------------------------------
@@ -137,8 +139,8 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _paotype = right._paotype;
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
-        _controlPointId = right._controlPointId;
-        _controlValue = right._controlValue;
+        _voltReductionControlPointId = right._voltReductionControlPointId;
+        _voltReductionControlValue = right._voltReductionControlValue;
 
         _strategyId = right._strategyId;
         _strategyName = right._strategyName;
@@ -224,7 +226,7 @@ void CtiCCArea::restore(RWDBReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
 
-    rdr["controlpointid"] >>_controlPointId;
+    rdr["controlpointid"] >>_voltReductionControlPointId;
     setOvUvDisabledFlag(FALSE);
     setReEnableAreaFlag(FALSE);
 
@@ -262,7 +264,7 @@ void CtiCCArea::restore(RWDBReader& rdr)
     setPFactor(0);
     setEstPFactor(0);
 
-    setControlValue(FALSE);
+    setVoltReductionControlValue(FALSE);
 
     _insertDynamicDataFlag = TRUE;
     //_dirty = FALSE;
@@ -310,7 +312,7 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 
             updater.where(dynamicCCAreaTable["areaid"]==_paoid);
             updater << dynamicCCAreaTable["additionalflags"].assign( string2RWCString(_additionalFlags) )
-                    <<  dynamicCCAreaTable["controlvalue"].assign( _controlValue );
+                    <<  dynamicCCAreaTable["controlvalue"].assign( _voltReductionControlValue );
                     
 
             updater.execute( conn );
@@ -345,7 +347,7 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
             //TS FLAG
             inserter << _paoid
                 <<  string2RWCString(addFlags)
-                <<  _controlValue;
+                <<  _voltReductionControlValue;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -378,13 +380,15 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
 }
 void CtiCCArea::setDynamicData(RWDBReader& rdr)
 {   
+    string tempBoolString;
+
     rdr["additionalflags"] >> _additionalFlags;
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
 
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
     _reEnableAreaFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
 
-    rdr["controlvalue"] >> _controlValue;
+    rdr["controlvalue"] >> _voltReductionControlValue;
 
     
     _insertDynamicDataFlag = FALSE;
@@ -469,9 +473,9 @@ BOOL CtiCCArea::getDisableFlag() const
 
     Returns the ControlValue of the area
 ---------------------------------------------------------------------------*/
-BOOL CtiCCArea::getControlValue() const
+BOOL CtiCCArea::getVoltReductionControlValue() const
 {
-    return _controlValue;
+    return _voltReductionControlValue;
 }
 
 /*---------------------------------------------------------------------------
@@ -479,9 +483,9 @@ BOOL CtiCCArea::getControlValue() const
 
     Returns the ControlPointId of the area
 ---------------------------------------------------------------------------*/
-LONG CtiCCArea::getControlPointId() const
+LONG CtiCCArea::getVoltReductionControlPointId() const
 {
-    return _controlPointId;
+    return _voltReductionControlPointId;
 }
 
 /*---------------------------------------------------------------------------
@@ -778,9 +782,9 @@ CtiCCArea& CtiCCArea::setDisableFlag(BOOL disable)
 
     Sets the ControlPointId of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setControlPointId(LONG pointId)
+CtiCCArea& CtiCCArea::setVoltReductionControlPointId(LONG pointId)
 {
-    _controlPointId = pointId;
+    _voltReductionControlPointId = pointId;
     return *this;
 }
 
@@ -789,9 +793,9 @@ CtiCCArea& CtiCCArea::setControlPointId(LONG pointId)
 
     Sets the ControlValue of the area
 ---------------------------------------------------------------------------*/
-CtiCCArea& CtiCCArea::setControlValue(BOOL flag)
+CtiCCArea& CtiCCArea::setVoltReductionControlValue(BOOL flag)
 {
-    _controlValue = flag;
+    _voltReductionControlValue = flag;
     return *this;
 }
 

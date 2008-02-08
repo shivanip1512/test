@@ -100,7 +100,8 @@ void CtiCCSubstation::restoreGuts(RWvistream& istrm)
     istrm >> _pfactor
         >> _estPfactor
         >> _saEnabledFlag
-        >> _saEnabledId;
+        >> _saEnabledId
+        >> _voltReductionFlag;
     
 
 }
@@ -135,7 +136,8 @@ void CtiCCSubstation::saveGuts(RWvostream& ostrm ) const
     ostrm << _pfactor
         << _estPfactor
         << _saEnabledFlag
-        << _saEnabledId;
+        << _saEnabledId
+        << _voltReductionFlag;
 
 
 }
@@ -160,6 +162,8 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
 
         _additionalFlags = right._additionalFlags;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
+        _voltReductionFlag = right._voltReductionFlag;
+        _voltReductionControlId = right._voltReductionControlId;
 
         _pfactor = right._pfactor;
         _estPfactor = right._estPfactor;
@@ -217,11 +221,17 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
     rdr["disableflag"] >> tempBoolString;
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
+
+    _voltReductionControlId = 0;  //TEMPORARY.  need to add to substation table.
+
     setOvUvDisabledFlag(FALSE);
+    setVoltReductionFlag(FALSE);
     setPFactor(0);
     setEstPFactor(0);
     setSaEnabledFlag(FALSE);
     setSaEnabledId(0);
+
+
 
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;
@@ -259,8 +269,9 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
             unsigned char addFlags[] = {'N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N','N'};
             addFlags[0] = (_ovUvDisabledFlag?'Y':'N');
             addFlags[1] = (_saEnabledFlag?'Y':'N');
-            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)));
-            _additionalFlags.append("NNNNNNNNNNNNNNNNNN");
+            addFlags[2] = (_voltReductionFlag?'Y':'N');
+            _additionalFlags = string(char2string(*addFlags) + char2string(*(addFlags+1)) + char2string(*(addFlags+2)));
+            _additionalFlags.append("NNNNNNNNNNNNNNNNN");
 
             updater.clear();
 
@@ -338,6 +349,7 @@ void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
     std::transform(_additionalFlags.begin(), _additionalFlags.end(), _additionalFlags.begin(), tolower);
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
     _saEnabledFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
+    _voltReductionFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
     rdr["saenabledid"] >> _saEnabledId;
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
@@ -416,12 +428,32 @@ BOOL CtiCCSubstation::getDisableFlag() const
 /*---------------------------------------------------------------------------
     getOvUvDisabledFlag
 
-    Returns the ovuv disable flag of the area
+    Returns the ovuv disable flag of the substation
 ---------------------------------------------------------------------------*/
 BOOL CtiCCSubstation::getOvUvDisabledFlag() const
 {
     return _ovUvDisabledFlag;
 }
+/*---------------------------------------------------------------------------
+    getVoltReductionFlag
+
+    Returns the VoltReduction flag of the substation
+---------------------------------------------------------------------------*/
+BOOL CtiCCSubstation::getVoltReductionFlag() const
+{
+    return _voltReductionFlag;
+}
+
+/*---------------------------------------------------------------------------
+    getVoltReductionControlId
+
+    Returns the VoltReduction pointId of the substation
+---------------------------------------------------------------------------*/
+LONG CtiCCSubstation::getVoltReductionControlId() const
+{
+    return _voltReductionControlId;
+}
+
 
 /*---------------------------------------------------------------------------
     getParentId
@@ -572,13 +604,44 @@ CtiCCSubstation& CtiCCSubstation::setDisableFlag(BOOL disable)
 /*---------------------------------------------------------------------------
     setOvUvDisabledFlag
 
-    Sets the ovuv disable flag of the area
+    Sets the ovuv disable flag of the substation
 ---------------------------------------------------------------------------*/
 CtiCCSubstation& CtiCCSubstation::setOvUvDisabledFlag(BOOL flag)
 {
+    if (_ovUvDisabledFlag != flag)
+    {
+        _dirty = TRUE;
+    }
     _ovUvDisabledFlag = flag;
     return *this;
 }
+/*---------------------------------------------------------------------------
+    setVoltReductionFlag
+
+    Sets the VoltReduction flag of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setVoltReductionFlag(BOOL flag)
+{                 
+    if (_voltReductionFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _voltReductionFlag = flag;
+    return *this;
+}
+
+/*---------------------------------------------------------------------------
+    setVoltReductionControlId
+
+    Sets the VoltReductionControlId of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstation& CtiCCSubstation::setVoltReductionControlId(LONG pointid)
+{
+    _voltReductionControlId = pointid;
+    return *this;
+}
+
+
 /*---------------------------------------------------------------------------
     setParentId
 

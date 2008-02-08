@@ -1388,9 +1388,9 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             {
                 CtiCCArea* currentArea = (CtiCCArea*)ccAreas.at(i);
       
-                if( currentArea->getControlPointId() > 0 )
+                if( currentArea->getVoltReductionControlPointId() > 0 )
                 {
-                    regMsg->insert(currentArea->getControlPointId());
+                    regMsg->insert(currentArea->getVoltReductionControlPointId());
                 }
             }
 
@@ -1398,9 +1398,9 @@ void CtiCapController::registerForPoints(const CtiCCSubstationBus_vec& subBuses)
             {
                 CtiCCSpecial* currentSpArea = (CtiCCSpecial*)ccSpAreas.at(i);
 
-                if( currentSpArea->getControlPointId() > 0 )
+                if( currentSpArea->getVoltReductionControlPointId() > 0 )
                 {
-                    regMsg->insert(currentSpArea->getControlPointId());
+                    regMsg->insert(currentSpArea->getVoltReductionControlPointId());
                 }
 
             }
@@ -2773,14 +2773,14 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 currentSpArea = saIter->second;
                 if (currentSpArea != NULL)
                 {
-                    if( currentSpArea->getControlPointId() == pointID )
+                    if( currentSpArea->getVoltReductionControlPointId() == pointID )
                     {
                        // if( timestamp > currentSpArea->getLastControlPointUpdateTime() )
                         {
-                            if (currentSpArea->getControlValue() != value)
+                            if (currentSpArea->getVoltReductionControlValue() != value)
                             {
-                                currentSpArea->setControlValue(value);
-                                if (currentSpArea->getControlValue())
+                                currentSpArea->setVoltReductionControlValue(value);
+                                if (currentSpArea->getVoltReductionControlValue())
                                 {
                                     CtiCCExecutorFactory f;
                                     CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentSpArea->getPAOId()));
@@ -2820,15 +2820,15 @@ void CtiCapController::pointDataMsg( long pointID, double value, unsigned qualit
                 currentArea = areaIter->second;
                 if (currentArea != NULL)
                 {
-                    if( currentArea->getControlPointId() == pointID )
+                    if( currentArea->getVoltReductionControlPointId() == pointID )
                     {
                         //if( timestamp > currentArea->getLastControlPointUpdateTime() )
                         {
-                            if (currentArea->getControlValue() != value)
+                            if (currentArea->getVoltReductionControlValue() != value)
                             {
-                                currentArea->setControlValue(value);
+                                currentArea->setVoltReductionControlValue(value);
 
-                                if (currentArea->getControlValue())
+                                if (currentArea->getVoltReductionControlValue())
                                 {
                                     CtiCCExecutorFactory f;
                                     CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::AUTO_DISABLE_OVUV, currentArea->getPAOId()));
