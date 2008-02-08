@@ -1506,6 +1506,33 @@ ScheduleName ASC
 /* @error ignore-end */
 /* End YUK-5218 */
 
+/* Start YUK-5329 */
+/* @error ignore-begin */
+insert into StateGroup values (-8, 'TwoStateActive', 'Status');
+
+alter table STATEGROUP
+   add constraint SYS_C0013128 primary key (STATEGROUPID);
+
+alter table POINT
+   add constraint Ref_STATGRP_PT foreign key (STATEGROUPID)
+      references STATEGROUP (STATEGROUPID);
+      
+CREATE UNIQUE INDEX PK_STATE ON STATE
+(STATEGROUPID, RAWSTATE);
+      
+ALTER TABLE STATE ADD (
+  CONSTRAINT PK_STATE
+ PRIMARY KEY
+ (STATEGROUPID, RAWSTATE)
+);
+      
+alter table STATE
+   add constraint SYS_C0013342 foreign key (STATEGROUPID)
+      references STATEGROUP (STATEGROUPID);
+
+/* @error ignore-end */
+/* End YUK-5329 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
