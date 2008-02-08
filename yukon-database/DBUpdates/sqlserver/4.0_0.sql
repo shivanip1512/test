@@ -41,10 +41,15 @@ create table DynamicBillingFormat (
 	 Delimiter varchar(20),
 	 Header varchar(255),
 	 Footer varchar(255),
-	 primary key (FormatID),
-	 Foreign key (FormatID) REFERENCES BillingFileFormats (FormatID)
- );
+	 constraint PK_DYNAMICBILLINGFORMAT primary key (FormatID)
+);
 go 
+
+alter table DYNAMICBILLINGFORMAT
+   add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
+      references BillingFileFormats (FormatID);
+go
+
 alter table BillingFileFormats ALTER COLUMN FormatType varchar(100);
 go
 
