@@ -374,7 +374,20 @@ public class ReportFuncs
             }
             return schedules;   
 
-        }else {
+        }
+        else if( filter.equals(ReportFilter.PROGRAM)) {
+            List <LiteYukonPAObject> allPaos = cache.getAllYukonPAObjects();
+            List <LiteYukonPAObject> programs = new ArrayList<LiteYukonPAObject>();
+            
+            if( allPaos != null) {
+                for (LiteYukonPAObject lPao : allPaos) {
+                    if(lPao.getType() == PAOGroups.LM_DIRECT_PROGRAM )                     
+                        programs.add(lPao);
+                }
+            }
+            return programs;   
+        }
+        else {
             return new ArrayList<Object>(0);    //and empty list of nothing objects. 
         }
     }

@@ -7,22 +7,22 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.analysis.report.LMControlDetailReport;
+import com.cannontech.analysis.report.LMControlSummaryReport;
 import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.analysis.tablemodel.LMControlDetailModel;
+import com.cannontech.analysis.tablemodel.LMControlSummaryModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
-public class LMControlDetailController extends ReportControllerBase {
+public class LMControlSummaryController extends ReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.PROGRAM
             };
     
-    public LMControlDetailController() {
+    public LMControlSummaryController() {
         super();
-        model = new LMControlDetailModel();
-        report = new LMControlDetailReport(model);
+        model = new LMControlSummaryModel();
+        report = new LMControlSummaryReport(model);
     }
 
     public String getHTMLOptionsTable() {
@@ -46,7 +46,7 @@ public class LMControlDetailController extends ReportControllerBase {
     }
     
     public void setRequestParameters(HttpServletRequest request) {
-        LMControlDetailModel lmControlDetailModel = (LMControlDetailModel) model;
+        LMControlSummaryModel lmControlSummaryModel = (LMControlSummaryModel) model;
         super.setRequestParameters(request);
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
         if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
@@ -64,7 +64,7 @@ public class LMControlDetailController extends ReportControllerBase {
             for (int id : programsArray) {
                 programsSet.add(id);
             }
-            lmControlDetailModel.setProgramIds(programsSet);
+            lmControlSummaryModel.setProgramIds(programsSet);
         }
     }
 }
