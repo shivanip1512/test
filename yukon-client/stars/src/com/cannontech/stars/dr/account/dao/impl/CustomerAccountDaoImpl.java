@@ -15,7 +15,6 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
-import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 
 public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private static final String insertSql;

@@ -49,7 +49,6 @@
 
     <bean id="applianceAndProgramDao"
         class="com.cannontech.stars.dr.account.dao.impl.ApplianceAndProgramDaoImpl">
-        <property name="nextValueHelper" ref="nextValueHelper" />
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
 

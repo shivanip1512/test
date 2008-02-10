@@ -63,8 +63,6 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
             SCHEDULE("Schedule (Script)"),
             AREA("Area"),
             PORT("Port"),
-            ACCOUNTNUMBER("Account Number"),
-            LASTNAME("Last Name"),
             PROGRAM("Program");
 
 		private String filterTitle;

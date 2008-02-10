@@ -2,7 +2,6 @@ package com.cannontech.stars.dr.account.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import org.springframework.dao.DataAccessException;
@@ -11,23 +10,22 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
-import com.cannontech.stars.dr.account.model.AccountProgram;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 
 public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
-    //private static final String selectByAccountIdSql;
+    private static final String selectAllProgramsForECSql;
     private static final String selectProgramByLMGroupId;
     private static final ParameterizedRowMapper<ProgramLoadGroup> programGroupRowMapper;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
-    private NextValueHelper nextValueHelper;
     
     static {
-        
-        /*selectByAccountIdSql = "SELECT ca.AccountId,yp.PAObjectId,lmwp.ProgramId,ywc.AlternateDisplayName FROM CustomerAccount ca, YukonPAObject yp," +
-                " LMProgramWebPublishing lmwp, YukonWebConfiguration ywc, ApplianceBase app,  WHERE ";*/
+        selectAllProgramsForECSql = "SELECT yp.PAObjectId,lmwp.ProgramId,ywc.AlternateDisplayName,yp.PAOName,-1 AS LMGroupDeviceId FROM YukonPAObject yp," +
+                " LMProgramWebPublishing lmwp, YukonWebConfiguration ywc WHERE lmwp.DeviceId = yp.PAObjectId AND lmwp.WebSettingsId = ywc.ConfigurationId" +
+                " AND yp.Type = '" + PAOGroups.STRING_LM_DIRECT_PROGRAM[0] + "' AND lmwp.ApplianceCategoryId in" +
+                " (SELECT ItemId FROM ECToGenericMapping WHERE MappingCategory = 'ApplianceCategory' AND EnergyCompanyId = ?)";
         
         selectProgramByLMGroupId = "SELECT yp.PAObjectId, lmwp.ProgramId, ywc.AlternateDisplayName, yp.PAOName, lmpdg.LMGroupDeviceId FROM " +
                 "YukonPAObject yp, LMProgramWebPublishing lmwp, YukonWebConfiguration ywc, LMProgramDirectGroup lmpdg WHERE " +
@@ -43,12 +41,14 @@ public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
         return prog;
     }
     
-    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
-        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<ProgramLoadGroup> getAllProgramsForAnEC(final int energyCompanyId) throws DataAccessException {
+        List<ProgramLoadGroup> prog = simpleJdbcTemplate.query(selectAllProgramsForECSql, programGroupRowMapper, energyCompanyId);
+        return prog;
     }
     
-    public void setNextValueHelper(final NextValueHelper nextValueHelper) {
-        this.nextValueHelper = nextValueHelper;
+    public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
     private static final ParameterizedRowMapper<ProgramLoadGroup> createProgramGroupRowMapper() {
