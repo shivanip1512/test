@@ -1,9 +1,9 @@
 package com.cannontech.web.loadprofile;
 
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
@@ -24,6 +24,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.common.device.commands.CommandDateFormatFactory;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -52,7 +53,8 @@ public class LoadProfileController extends MultiActionController {
     private DateFormattingService dateFormattingService;
     private MeterDao meterDao;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    private static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy hh:mma");
+    private static SimpleDateFormat inputDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+    private static SimpleDateFormat cmdDateFormat = CommandDateFormatFactory.createLoadProfileCommandDateFormatter();
     /*
      * Long load profile email message format
      * NOTE: Outlook will sometimes strip extra line breaks of its own accord.  For some
@@ -74,11 +76,60 @@ public class LoadProfileController extends MultiActionController {
             
             String email = ServletRequestUtils.getRequiredStringParameter(request, "email");
             int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
-            String startDateStr = ServletRequestUtils.getStringParameter(request, "startDate", "");
-            Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
-            String stopDateStr = ServletRequestUtils.getStringParameter(request, "stopDate", "");
-            Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.END_OF_DAY, userContext);
             String profileRequestOrigin = ServletRequestUtils.getRequiredStringParameter(request, "profileRequestOrigin");
+            
+            Date startDate = null;
+            Date stopDate = null;
+            Date maxStopDate = new Date();
+            maxStopDate = DateUtils.truncate(maxStopDate, Calendar.SECOND);
+            
+            String peakDateStr = ServletRequestUtils.getStringParameter(request, "peakDate", null);
+            String startDateStr = ServletRequestUtils.getStringParameter(request, "startDate", "");
+            String stopDateStr = ServletRequestUtils.getStringParameter(request, "stopDate", "");
+            
+            if (peakDateStr != null) {
+                
+                String beforeDaysStr = ServletRequestUtils.getRequiredStringParameter(request, "beforeDays");
+                String afterDaysStr = ServletRequestUtils.getRequiredStringParameter(request, "afterDays");
+                
+                // before peak
+                if (beforeDaysStr.equalsIgnoreCase("ALL")) {
+                    startDate = inputDateFormat.parse(startDateStr);
+                    startDate = DateUtils.truncate(startDate, Calendar.DATE);
+                }
+                else {
+                    startDate = inputDateFormat.parse(peakDateStr);
+                    startDate = DateUtils.truncate(startDate, Calendar.DATE);
+                    startDate = DateUtils.addDays(startDate, -Integer.parseInt(beforeDaysStr));
+                }
+                
+                // after peak
+                if (afterDaysStr.equalsIgnoreCase("ALL")) {
+                    stopDate = inputDateFormat.parse(stopDateStr);
+                    stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+                    stopDate = DateUtils.addDays(stopDate, 1);
+                }
+                else {
+                    stopDate = inputDateFormat.parse(peakDateStr);
+                    stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+                    stopDate = DateUtils.addDays(stopDate, Integer.parseInt(afterDaysStr));
+                    stopDate = DateUtils.addDays(stopDate, 1);
+                }
+                
+            }
+            else {
+                
+                startDate = inputDateFormat.parse(startDateStr);
+                startDate = DateUtils.truncate(startDate, Calendar.DATE);
+                
+                stopDate = inputDateFormat.parse(stopDateStr);
+                stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+                stopDate = DateUtils.addDays(stopDate, 1);
+            }
+            
+            if (stopDate.after(maxStopDate)) {
+                stopDate = maxStopDate;
+            }
             
             Validate.isTrue(startDate == null || stopDate == null || startDate.before(stopDate), 
                             "Start Date must be before Stop Date");
@@ -102,8 +153,8 @@ public class LoadProfileController extends MultiActionController {
             msgData.put("deviceName", device.getPaoName());
             msgData.put("meterNumber", meterNum.getMeterNumber());
             msgData.put("physAddress", device.getAddress());
-            msgData.put("startDate", dateFormat.format(startDate));
-            msgData.put("stopDate", dateFormat.format(stopDate));
+            msgData.put("startDate", cmdDateFormat.format(startDate));
+            msgData.put("stopDate", cmdDateFormat.format(stopDate));
             long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
             msgData.put("totalDays", Long.toString(numDays));
             
@@ -156,10 +207,8 @@ public class LoadProfileController extends MultiActionController {
                 Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
                 Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
             
-                SimpleDateFormat format = new SimpleDateFormat("MM/dd/yy");
-                
-                mav.addObject("startDate", format.format(startDate));
-                mav.addObject("stopDate", format.format(stopDate));
+                mav.addObject("startDate", cmdDateFormat.format(startDate));
+                mav.addObject("stopDate", cmdDateFormat.format(stopDate));
             
             } catch (ParseException e) {
                 mav.addObject("success", false);
@@ -168,12 +217,12 @@ public class LoadProfileController extends MultiActionController {
             
         } else {
             Date now = new Date();
-            String stopDate = dateFormat.format(now);
+            String stopDate = cmdDateFormat.format(now);
             mav.addObject("stopDate", stopDate);
             
             int startOffset = ServletRequestUtils.getIntParameter(request, "startOffset", 7);
             Date weekAgo = DateUtils.addDays(now, -startOffset);
-            String startDate = dateFormat.format(weekAgo);
+            String startDate = cmdDateFormat.format(weekAgo);
             mav.addObject("startDate", startDate);
         }
         
@@ -222,8 +271,8 @@ public class LoadProfileController extends MultiActionController {
             HashMap<String, String> data = new HashMap<String, String>();
             
             data.put("email", info.runner.toString());
-            data.put("from", dateFormat.format(info.from));
-            data.put("to", dateFormat.format(info.to));
+            data.put("from", cmdDateFormat.format(info.from));
+            data.put("to", cmdDateFormat.format(info.to));
             data.put("command", info.request.getCommandString());
             data.put("requestId", Long.toString(info.request.getUserMessageID()));
             pendingRequests.add(data);

@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -34,6 +35,8 @@ public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryMod
     private static String title = "Archived Data";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     
+    HashMap<Date, MaxValRow> maxValsByDate = new HashMap<Date, MaxValRow>();
+    
     
     static public class ModelRow {
         public Date pointDataTimeStamp;
@@ -50,14 +53,61 @@ public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryMod
         
         List<PointValueHolder> pvhList = rphDao.getPointData(pointId, startDateDate, stopDateDate);
         
+//        Integer currentRowIdx = 0;
         for(PointValueHolder pvh : pvhList) {
+            
             RawPointHistoryModel.ModelRow row = new RawPointHistoryModel.ModelRow();
-            row.pointDataTimeStamp = pvh.getPointDataTimeStamp();
+            
+            Date pointDataTimeStamp = pvh.getPointDataTimeStamp();
+//            Double pointValue = pvh.getValue();
+            
+            row.pointDataTimeStamp = pointDataTimeStamp;
             row.valueHolder = pvh;
             data.add(row);
+            
+// CODE TO FIND MAX VALUE PER DAY - MAY BE USED TO CREATE HIGHLIGHTER FUNCTION
+//            Date day = DateUtils.truncate(pointDataTimeStamp, Calendar.DATE);
+//            
+//            if (maxValsByDate.containsKey(day)) {
+//                MaxValRow maxValRow = maxValsByDate.get(day);
+//                if (pointValue >= maxValRow.getValue()) {
+//                    maxValRow.setRowIdx(currentRowIdx);
+//                    maxValRow.setValue(pointValue);
+//                }
+//            }
+//            else {
+//                MaxValRow maxValRow = new MaxValRow(currentRowIdx, pointValue);
+//                maxValsByDate.put(day, maxValRow);
+//            }
+//            
+//            currentRowIdx += 1;
         }
 
         CTILogger.info("Report Records Collected from Database: " + data.size());
+    }
+    
+    private class MaxValRow {
+        
+        private Integer rowIdx;
+        private Double value;
+        
+        public MaxValRow(Integer rowIdx, Double value) {
+            this.rowIdx = rowIdx;
+            this.value = value;
+        }
+        
+        public Integer getRowIdx() {
+            return rowIdx;
+        }
+        public void setRowIdx(Integer rowIdx) {
+            this.rowIdx = rowIdx;
+        }
+        public Double getValue() {
+            return value;
+        }
+        public void setValue(Double value) {
+            this.value = value;
+        }
     }
     
     @Override
@@ -75,7 +125,7 @@ public class RawPointHistoryModel extends BareReportModelBase<RawPointHistoryMod
         info.put("Stop Date", dateFormattingService.formatDate(new Date(stopDate), DateFormattingService.DateFormatEnum.BOTH, userContext));
         return info;
     }
-
+    
     @Override
     protected ModelRow getRow(int rowIndex) {
         return data.get(rowIndex);

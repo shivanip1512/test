@@ -35,14 +35,19 @@
 
     <ct:widgetContainer deviceId="${deviceId}" identify="false">
     
-        <div class="widgetColumns">
-            <div class="left" style="width:95%">
+        <table class="widgetColumns">
+            
+            <tr>
                 <c:choose>
                 
                     <c:when test="${lmPointExists}">
-                        <ct:widget bean="meterInformationWidget" width="500px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
-                        <br/>
-                        <ct:widget bean="profilePeakWidget"  width="700px" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"  hideEnabled="false"/>
+                        <td class="widgetColumnCell" valign="top">
+                            <ct:widget bean="profilePeakWidget"  width="700px" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"  hideEnabled="false"/>
+                        </td>
+                    
+                        <td class="widgetColumnCell" valign="top">
+                            <ct:widget bean="meterInformationWidget" width="500px" identify="false" deviceId="${deviceId}" hideEnabled="false" />
+                        </td>
                     </c:when>
                     
                     <c:otherwise>
@@ -53,10 +58,19 @@
                         <cti:deviceName deviceId="${deviceId}"></cti:deviceName> is not configured for 
                         High Bill Processing. <input type="button" value="Configure Now" onclick="javascript:createLPPoint('${highBillUrl}')"></input>
                     </c:otherwise>
-                    
+                
                 </c:choose>
-            </div>
-        </div>
+            </tr>
+            
+            <tr>
+                <td class="widgetColumnCell" colspan="2" valign="top">
+                    <ct:widget bean="hbcTrendWidget" tabularDataViewer="hbcArchivedDataReport" defaultAttribute="LOAD_PROFILE" />
+                </td>
+            </tr>
+            
+        </table>
+    
+       
     
     </ct:widgetContainer>
     <div style="clear: both"></div>

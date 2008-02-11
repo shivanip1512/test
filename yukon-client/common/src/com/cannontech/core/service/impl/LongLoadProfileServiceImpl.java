@@ -1,6 +1,5 @@
 package com.cannontech.core.service.impl;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -64,7 +63,6 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     private Map<Long, LongLoadProfileService.CompletionCallback> currentRequestIds = new HashMap<Long, LongLoadProfileService.CompletionCallback>();
     private MapQueue<Integer,ProfileRequestInfo> pendingDeviceRequests = new MapQueue<Integer,ProfileRequestInfo>();
     private Map<Integer,ProfileRequestInfo> currentDeviceRequests = new HashMap<Integer,ProfileRequestInfo>();
-    private DateFormat cmdDateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 
     public void initialize() {
         porterConnection.addMessageListener(new MessageListener() {

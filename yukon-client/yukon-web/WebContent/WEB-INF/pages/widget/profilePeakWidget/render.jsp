@@ -4,6 +4,7 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <cti:includeScript link="/JavaScript/hideReveal.js"/>
 <cti:includeScript link="/JavaScript/longLoadProfile.js"/>
+<cti:includeScript link="/JavaScript/peakDayProfile.js"/>
 <cti:includeScript link="/JavaScript/calendarControl.js"/>
 
 <cti:includeCss link="/WebConfig/yukon/styles/calendarControl.css"/>
@@ -83,7 +84,7 @@
 				<th width="200px">
 					Peak Day Total Usage
 				</th>
-				<th>&nbsp;</th>
+				<th>Profile</th>
 			</tr>
 				<c:if test="${! empty preResult}">
 					<c:choose>
@@ -106,17 +107,7 @@
 									<!-- Load Profile collection -->
 									<c:if test="${widgetParameters.collectLPVisible}">
 										<br/>
-										<c:choose>
-											<c:when test="${preCommandDays <= 90}">
-                                                						<tags:longLoadProfile isReadable="${readable}" styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${prePeriodStartDateDisplay}" lpStopDate="${prePeriodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
-											</c:when>
-											<c:otherwise>
-												<span onmouseover="javascript:toggleLP($('lpDiv'))" onmouseout="javascript:toggleLP($('lpDiv'))">Profile N/A</span>
-												<div id="lpDiv"  class="widgetPopup" style="top 0; display:none;">
-													The current load profile request will gather more than 90 days of load profile.  Multiple requests of this size could affect overall system performance while being completed.   Please contact the system administrator or break the request into smaller data ranges.
-												</div>
-											</c:otherwise>
-										</c:choose>
+										<tags:peakDayProfile isReadable="${readable}" deviceId="${widgetParameters.deviceId}" peakDate="${prePeakValue}" startDate="${prePeriodStartDateDisplay}" stopDate="${prePeriodStopDateDisplay}" styleClass="Link1" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:peakDayProfile>
 									</c:if>
 								</td>
 							</tr>
@@ -157,17 +148,7 @@
 									<!-- Load Profile collection -->
 									<c:if test="${widgetParameters.collectLPVisible}">
 										<br/>
-										<c:choose>
-											<c:when test="${postCommandDays <= 90}">
-												<tags:longLoadProfile isReadable="${readable}" styleClass="Link1" deviceId="${widgetParameters.deviceId}" lpStartDate="${postPeriodStartDateDisplay}" lpStopDate="${postPeriodStopDateDisplay}" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:longLoadProfile>
-											</c:when>
-											<c:otherwise>
-												<span onmouseover="javascript:toggleLP($('lpDiv2'))" onmouseout="javascript:toggleLP($('lpDiv2'))">Profile N/A</span>
-												<div id="lpDiv2"  class="widgetPopup" style="top 0; display:none;">
-													The current load profile request will gather more than 90 days of load profile.  Multiple requests of this size could affect overall system performance while being completed.   Please contact the system administrator or break the request into smaller data ranges.
-												</div>
-											</c:otherwise>
-										</c:choose>
+										<tags:peakDayProfile isReadable="${readable}" deviceId="${widgetParameters.deviceId}" peakDate="${postPeakValue}" startDate="${postPeriodStartDateDisplay}" stopDate="${postPeriodStopDateDisplay}" styleClass="Link1" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:peakDayProfile>
 									</c:if>
 								</td>
 							</tr>

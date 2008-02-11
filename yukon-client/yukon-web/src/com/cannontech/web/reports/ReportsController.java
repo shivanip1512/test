@@ -123,19 +123,6 @@ public class ReportsController extends MultiActionController  {
         return mav;
     }
     
-    public ModelAndView trendDataHtmlView(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	
-    	ModelAndView mav = htmlView(request, response);
-    	
-    	mav.setViewName("simple/trendDataHtmlView.jsp");
-    	
-    	String deviceId = ServletRequestUtils.getRequiredStringParameter(request, "deviceId");
-    	mav.addObject("deviceId", deviceId);
-    	
-    	return mav;
-    
-    }
-    
     
     /**
      * csvView - export report data as CSV file

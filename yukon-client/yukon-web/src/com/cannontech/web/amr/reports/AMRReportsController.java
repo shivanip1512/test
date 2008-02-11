@@ -20,16 +20,40 @@ public class AMRReportsController extends MultiActionController  {
     private SimpleReportService simpleReportService;
     
     /**
+     * For viewing the Archived Data report crumbs back to high bill complaint page
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    public ModelAndView hbcArchivedDataReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        
+        // mav
+        ModelAndView mav = new ModelAndView("reports/htmlHBCArchivedDataReportView.jsp");
+        
+        setupArchivedDataReportMav(request, mav);
+        
+        return mav;
+    }
+    
+    /**
      * For viewing the Archived Data report with crumbs to device detail page
      * @param request
      * @param response
      * @return
      * @throws Exception
      */
-    public ModelAndView archivedDataReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView csrArchivedDataReport(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         // mav
-        ModelAndView mav = new ModelAndView("reports/htmlArchivedDataReportView.jsp");
+        ModelAndView mav = new ModelAndView("reports/htmlCSRArchivedDataReportView.jsp");
+        
+        setupArchivedDataReportMav(request, mav);
+        
+        return mav;
+    }
+    
+    private void setupArchivedDataReportMav(HttpServletRequest request, ModelAndView mav) throws Exception {
         
         // model stuff
         String definitionName = ServletRequestUtils.getRequiredStringParameter(request, "def");
@@ -51,8 +75,6 @@ public class AMRReportsController extends MultiActionController  {
         LitePoint point = pointDao.getLitePoint(pointId);
         Integer deviceId = point.getPaobjectID();
         mav.addObject("deviceId", deviceId);
-        
-        return mav;
     }
     
     /**

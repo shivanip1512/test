@@ -131,7 +131,7 @@
 			</td>
 			<td class="widgetColumnCell" valign="top">
 
-				<ct:widget bean="trendWidget" />
+				<ct:widget bean="csrTrendWidget" tabularDataViewer="csrArchivedDataReport" />
 				
 				<c:if test="${disconnectSupported}">
 					<ct:widget bean="disconnectMeterWidget" />
