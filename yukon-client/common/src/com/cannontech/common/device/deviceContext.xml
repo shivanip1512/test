@@ -91,6 +91,38 @@
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
     </bean>
     
+    <bean id="loadProfileScanIndicatingDevice" class="com.cannontech.common.device.groups.dao.impl.providers.helpers.LoadProfileScanIndicatingDevice" />
+    <bean id="loadProfileScanningMetersGroupProvider" class="com.cannontech.common.device.groups.dao.impl.providers.ScanningMetersGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
+        <property name="scanIndicatingDevice" ref="loadProfileScanIndicatingDevice"/>
+    </bean>
+    
+    <bean id="voltageProfileScanIndicatingDevice" class="com.cannontech.common.device.groups.dao.impl.providers.helpers.VoltageProfileScanIndicatingDevice" />
+    <bean id="voltageProfileScanningMetersGroupProvider" class="com.cannontech.common.device.groups.dao.impl.providers.ScanningMetersGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
+        <property name="scanIndicatingDevice" ref="voltageProfileScanIndicatingDevice"/>
+    </bean>
+    
+    <bean id="integrityScanIndicatingDevice" class="com.cannontech.common.device.groups.dao.impl.providers.helpers.IntegrityScanIndicatingDevice" />
+    <bean id="integrityScanningMetersGroupProvider" class="com.cannontech.common.device.groups.dao.impl.providers.ScanningMetersGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
+        <property name="scanIndicatingDevice" ref="integrityScanIndicatingDevice"/>
+    </bean>
+    
+    <bean id="accumulatorScanIndicatingDevice" class="com.cannontech.common.device.groups.dao.impl.providers.helpers.AccumulatorScanIndicatingDevice" />
+    <bean id="accumulatorScanningMetersGroupProvider" class="com.cannontech.common.device.groups.dao.impl.providers.ScanningMetersGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
+        <property name="scanIndicatingDevice" ref="accumulatorScanIndicatingDevice"/>
+    </bean>
+    
     <bean id="deviceGroupEditorDao"
         class="com.cannontech.common.device.groups.editor.dao.impl.DeviceGroupEditorDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
@@ -108,6 +140,10 @@
                 <entry key="ROLODEX" value-ref="rolodexDeviceGroupProvider"/>
                 <entry key="ROUTE" value-ref="routeGroupProvider"/>
                 <entry key="DEVICETYPE" value-ref="deviceTypeGroupProvider"/>
+                <entry key="SCANNING_LOAD_PROFILE" value-ref="loadProfileScanningMetersGroupProvider"/>
+                <entry key="SCANNING_VOLTAGE_PROFILE" value-ref="voltageProfileScanningMetersGroupProvider"/>
+                <entry key="SCANNING_INTEGRITY" value-ref="integrityScanningMetersGroupProvider"/>
+                <entry key="SCANNING_ACCUMULATOR" value-ref="accumulatorScanningMetersGroupProvider"/>
             </map>
         </property>
         <property name="staticProvider" ref="staticDeviceGroupProvider"/>

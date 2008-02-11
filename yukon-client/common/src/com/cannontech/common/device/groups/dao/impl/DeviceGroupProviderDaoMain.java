@@ -72,10 +72,10 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         // not in system cache, go look it up
         DeviceGroup group = getProvider(base).getGroup(base, groupName);
         
-        // if this is a system group, let's cache it
+        // if this is a non-editable group, let's cache it
         if (group instanceof StoredDeviceGroup) {
             StoredDeviceGroup storedDeviceGroup = (StoredDeviceGroup) group;
-            if (storedDeviceGroup.isSystemGroup()) {
+            if (!storedDeviceGroup.isEditable()) {
                 systemGroupCache.put(storedDeviceGroup.getFullName(), storedDeviceGroup);
             }
         }

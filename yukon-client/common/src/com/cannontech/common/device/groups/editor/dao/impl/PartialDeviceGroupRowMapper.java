@@ -5,6 +5,7 @@ import java.sql.SQLException;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 
+import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.database.SqlUtils;
@@ -36,9 +37,9 @@ public class PartialDeviceGroupRowMapper implements ParameterizedRowMapper<Parti
             partialDeviceGroup.setParentGroupId(parentId);
         }
         
-        String systemGroupStr = rs.getString("systemgroup");
-        boolean systemGroup = systemGroupStr.equalsIgnoreCase("Y");
-        group.setSystemGroup(systemGroup);
+        String permissionStr = rs.getString("Permission");
+        DeviceGroupPermission permission = DeviceGroupPermission.valueOf(permissionStr);
+        group.setPermission(permission);
         
         String typeStr = rs.getString("type");
         DeviceGroupType type = DeviceGroupType.valueOf(typeStr);
