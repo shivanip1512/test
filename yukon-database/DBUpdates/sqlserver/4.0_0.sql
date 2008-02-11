@@ -445,13 +445,13 @@ go
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade;
+          on delete cascade;
 go
 
 alter table DEVICECONFIGURATIONITEM
    add constraint FK_DEVICECO_REF_DEVICEC2 foreign key (DeviceConfigurationID)
       references DEVICECONFIGURATION (DeviceConfigurationID)
-         on update cascade on delete cascade;
+          on delete cascade;
 go
 
 
@@ -711,7 +711,7 @@ alter table DYNAMICCCSUBSTATION
 alter table CAPCONTROLSUBSTATION
    add constraint FK_CAPCONTR_REF_YUKONPA2 foreign key (SubstationID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade;
+          on delete cascade;
 go
 
 alter table CAPCONTROLSPECIALAREA
@@ -850,7 +850,7 @@ go
 alter table JOBPROPERTY
    add constraint FK_JobProperty_Job foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade;
+          on delete cascade;
 go
 
 if exists (select 1
@@ -890,7 +890,7 @@ go
 alter table JOBSCHEDULEDREPEATING
    add constraint FK_JOBSCHED_REFERENCE_JOB foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade;
+          on delete cascade;
 go
 
 if exists (select 1
@@ -914,7 +914,7 @@ go
 alter table JOBSTATUS
    add constraint FK_JobStatus_Job foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade;
+          on delete cascade;
 go
 /* End YUK-4730 */
 
@@ -974,7 +974,7 @@ go
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
       references Route (RouteID)
-         on update cascade on delete cascade;
+          on delete cascade;
 go
 /* End YUK-4759 */
 
@@ -985,7 +985,7 @@ go
 alter table DynamicPAOStatistics
    add constraint FK_PASt_YkPA foreign key (PAOBjectID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade;
+          on delete cascade;
 go
 /* End YUK-4721 */
 
@@ -1311,7 +1311,7 @@ alter table DeviceTypeCommand
 alter table DYNAMICBILLINGFIELD
    add constraint FK_DBF_REF_BFF foreign key (FormatID)
       references BillingFileFormats (FormatID)
-         on update cascade on delete cascade;
+          on delete cascade;
 go
 alter table DYNAMICBILLINGFORMAT
    add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
@@ -1611,6 +1611,30 @@ alter table YukonUserRole
       references YukonRoleProperty (RolePropertyID); 
 /* @error ignore-end */
 /* End YUK-5325 */
+
+/* Start YUK-5332 */
+alter table DYNAMICPAOSTATISTICSHISTORY drop constraint FK_DYNPAOSTHIST_YKNPAO;
+alter table DYNAMICPAOSTATISTICSHISTORY
+   add constraint FK_DYNPAOSTHIST_YKNPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
+         on delete cascade;
+go
+
+alter table MCTConfigMapping drop constraint FK_McCfgM_Dev;
+alter table MCTConfigMapping
+   add constraint FK_McCfgM_Dev foreign key (MctID)
+      references DEVICE (DEVICEID)
+         on delete cascade;
+go
+
+alter table PROFILEPEAKRESULT drop constraint FK_PROFILEPKRSLT_DEVICE;
+alter table PROFILEPEAKRESULT
+   add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
+      references DEVICE (DEVICEID)
+         on delete cascade;
+go
+/* End YUK-5332 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

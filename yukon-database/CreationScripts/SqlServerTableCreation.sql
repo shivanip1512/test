@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/6/2008 4:27:05 PM                          */
+/* Created on:     2/11/2008 1:54:43 PM                         */
 /*==============================================================*/
 
 
@@ -9264,7 +9264,7 @@ create table Route (
    RouteID              numeric              not null,
    DeviceID             numeric              not null,
    DefaultRoute         char(1)              not null,
-   constraint SYS_RoutePK primary key (RouteID)
+   constraint SYS_RoutePK primary key nonclustered (RouteID)
 )
 go
 
@@ -9274,7 +9274,7 @@ INSERT INTO Route VALUES (0,0,'N');
 /* Index: Indx_RouteDevID                                       */
 /*==============================================================*/
 create unique index Indx_RouteDevID on Route (
-DeviceID DESC,
+DeviceID ASC,
 RouteID ASC
 )
 go
@@ -12617,7 +12617,7 @@ go
 alter table CAPCONTROLSUBSTATION
    add constraint FK_CAPCONTR_REF_YUKONPA2 foreign key (SubstationID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table CAPCONTROLSUBSTATIONBUS
@@ -13199,13 +13199,13 @@ go
 alter table DEVICECONFIGURATIONDEVICEMAP
    add constraint FK_DEVICECO_REFERENCE_YUKONPAO foreign key (DeviceID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table DEVICECONFIGURATIONITEM
    add constraint FK_DEVICECO_REF_DEVICEC2 foreign key (DeviceConfigurationID)
       references DEVICECONFIGURATION (DeviceConfigurationID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table DEVICEDIALUPSETTINGS
@@ -13226,7 +13226,7 @@ go
 alter table DEVICEGROUPMEMBER
    add constraint FK_DeviceGroupMember_DEVICE foreign key (YukonPaoId)
       references DEVICE (DEVICEID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table DEVICEIDLCREMOTE
@@ -13302,7 +13302,7 @@ go
 alter table DYNAMICBILLINGFIELD
    add constraint FK_DBF_REF_BFF foreign key (FormatID)
       references BillingFileFormats (FormatID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table DYNAMICBILLINGFORMAT
@@ -13333,7 +13333,7 @@ go
 alter table DYNAMICPAOSTATISTICSHISTORY
    add constraint FK_DYNPAOSTHIST_YKNPAO foreign key (PAObjectID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table DYNAMICPOINTDISPATCH
@@ -13539,7 +13539,7 @@ go
 alter table DynamicPAOStatistics
    add constraint FK_PASt_YkPA foreign key (PAOBjectID)
       references YukonPAObject (PAObjectID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table DynamicPointAlarming
@@ -13815,25 +13815,25 @@ go
 alter table JOBPROPERTY
    add constraint FK_JobProperty_Job foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table JOBSCHEDULEDONETIME
    add constraint FK_JobScheduledOneTime_Job foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table JOBSCHEDULEDREPEATING
    add constraint FK_JOBSCHED_REFERENCE_JOB foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table JOBSTATUS
    add constraint FK_JobStatus_Job foreign key (JobID)
       references JOB (JobID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table LMCONTROLAREAPROGRAM
@@ -13969,13 +13969,13 @@ go
 alter table LMEnergyExchangeCustomerReply
    add constraint FK_LMENERGY_REFEXCSTR_LMENERGY foreign key (OfferID, RevisionNumber)
       references LMEnergyExchangeOfferRevision (OfferID, RevisionNumber)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table LMEnergyExchangeHourlyCustomer
    add constraint FK_ExHrCs_ExCsRp foreign key (CustomerID, OfferID, RevisionNumber)
       references LMEnergyExchangeCustomerReply (CustomerID, OfferID, RevisionNumber)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table LMEnergyExchangeHourlyOffer
@@ -14221,7 +14221,7 @@ go
 alter table LMProgramCurtailCustomerList
    add constraint FK_LMPrgCrt_LMPrCstLst foreign key (ProgramID)
       references LMProgramCurtailment (DeviceID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table LMProgramCurtailment
@@ -14382,7 +14382,7 @@ go
 alter table MCTConfigMapping
    add constraint FK_McCfgM_Dev foreign key (MctID)
       references DEVICE (DEVICEID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table MCTConfigMapping
@@ -14543,7 +14543,7 @@ go
 alter table PROFILEPEAKRESULT
    add constraint FK_PROFILEPKRSLT_DEVICE foreign key (DeviceId)
       references DEVICE (DEVICEID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table PointAlarming
@@ -14649,7 +14649,7 @@ go
 alter table SubstationToRouteMapping
    add constraint FK_Sub_Rte_Map_RteID foreign key (RouteID)
       references Route (RouteID)
-         on update cascade on delete cascade
+         on delete cascade
 go
 
 alter table SubstationToRouteMapping
