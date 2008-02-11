@@ -1,6 +1,6 @@
 package com.cannontech.cbc.cache.filters;
 
-public interface CacheFilter
+public interface CacheFilter<E>
 {
-	public boolean valid( Object o );
+	public boolean valid(E e);
 }

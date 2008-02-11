@@ -3,6 +3,7 @@ package com.cannontech.cbc.cache;
 import java.util.List;
 
 import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CBCArea;
@@ -21,6 +22,8 @@ public interface CapControlCache {
     public List<SubStation> getSubstationsBySpecialArea(int areaId);
     
     public int getParentAreaID(int childID);
+    
+    public StreamableCapObject getArea(final int paoId) throws NotFoundException;
     
     public CBCArea getCBCArea(int id);
     

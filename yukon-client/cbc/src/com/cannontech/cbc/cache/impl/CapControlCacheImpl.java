@@ -94,6 +94,16 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         refreshTimer.scheduleWithFixedDelay(task, STARTUP_REF_RATE, NORMAL_REF_RATE, TimeUnit.MILLISECONDS);
     }
     
+    public synchronized StreamableCapObject getArea(final int paoId) throws NotFoundException {
+        StreamableCapObject object;
+        try {
+            object = this.getCBCArea(paoId);
+        } catch (NotFoundException checkingForCBCSpecialArea) {
+            object = this.getCBCSpecialArea(paoId);
+        }
+        return object;
+    }
+    
     /**
      * @return SubBus
      */
