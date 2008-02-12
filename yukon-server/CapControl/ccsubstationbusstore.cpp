@@ -896,7 +896,19 @@ void CtiCCSubstationBusStore::reset()
 
             {
                reloadClientLinkStatusPointFromDatabase();
+            } 
+
+            /************************************************************
+             ********    Loading Operation Statistics            ********
+             ************************************************************/
+            {
+/*                 reloadOperationStatsFromDatabase(0,&temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
+                                                       &_paobject_substation_map,
+                                                       &_paobject_area_map,
+                                                       &_paobject_specialarea_map);
+*/                                                       
             }
+
             /************************************************************
              ********    Loading Orphans                         ********
              ************************************************************/
@@ -2759,6 +2771,9 @@ bool CtiCCSubstationBusStore::UpdateBusVerificationFlagsInDB(CtiCCSubstationBus*
     }
     return false;
 }
+
+
+
 
 /*---------------------------------------------------------------------------
     UpdateBusDisableFlagInDB
@@ -6538,6 +6553,107 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
+}
+
+
+void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
+                                                        map< long, CtiCCFeederPtr > *paobject_feeder_map,
+                                                        map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
+                                                        map< long, CtiCCSubstationPtr > *paobject_substation_map,
+                                                        map< long, CtiCCAreaPtr > *paobject_area_map,
+                                                        map< long, CtiCCSpecialPtr > *paobject_specialarea_map )
+{   
+    try
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+        {
+            if ( conn.isValid() )
+            {   
+
+                CtiTime currentDateTime;
+                RWDBDatabase db = getDatabase();
+                RWDBTable dynamicCCOpStatsTable = db.table("dynamicccoperationstatistics");
+                RWDBTable capBankTable = db.table("capbank");
+                
+                {
+                    RWDBSelector selector = db.selector();
+                    selector << dynamicCCOpStatsTable["paobjectid"]
+                    << dynamicCCOpStatsTable["userdefopcount"] 
+                    << dynamicCCOpStatsTable["userdefconffail"]
+                    << dynamicCCOpStatsTable["dailyopcount"] 
+                    << dynamicCCOpStatsTable["dailyconffail"] 
+                    << dynamicCCOpStatsTable["weeklyopcount"] 
+                    << dynamicCCOpStatsTable["weeklyconffail"] 
+                    << dynamicCCOpStatsTable["monthlyopcount"] 
+                    << dynamicCCOpStatsTable["montlyconffail"]; 
+
+                    selector.from(dynamicCCOpStatsTable);
+
+                    if (paoId > 0)
+                    {                
+                        selector.where(dynamicCCOpStatsTable["paobjectid"]== paoId);
+                    }
+
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    CtiCCCapBankPtr currentCCCapBank = NULL;
+                    CtiCCFeederPtr currentFeeder = NULL;
+                    CtiCCSubstationBusPtr currentSubBus = NULL;
+                    CtiCCSubstationPtr currentStation = NULL;
+                    CtiCCAreaPtr currentArea = NULL;
+                    RWDBNullIndicator isNull;
+                    while ( rdr() )
+                    {
+                        LONG paoId;
+                        rdr["paobjectid"] >> paoId;
+                        currentCCCapBank = findCapBankByPAObjectID(paoId);
+                        currentFeeder = findFeederByPAObjectID(paoId);
+                        currentSubBus = findSubBusByPAObjectID(paoId);
+                        currentStation = findSubstationByPAObjectID(paoId);
+                        currentArea = findAreaByPAObjectID(paoId);
+                        if (currentCCCapBank != NULL)
+                        {
+                            currentCCCapBank->getOperationStats().setDynamicData(rdr);
+                        }
+                        if (currentFeeder != NULL)
+                        {
+                           // currentFeeder->getOpsStatistics().setDynamicData(rdr);
+                        }
+                        if (currentSubBus != NULL)
+                        {
+                           // currentSubBus->getOpsStatistics().setDynamicData(rdr);
+                        }
+
+                        if (currentStation != NULL)
+                        {
+                           // currentStation->getOpsStatistics().setDynamicData(rdr);
+                        }
+
+                        if (currentFeeder != NULL)
+                        {
+                           // currentArea->getOpsStatistics().setDynamicData(rdr);
+                        }
+
+
+                        
+                    }
+                }
+            }
+        }
+
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
 }
 
 

@@ -33,7 +33,7 @@
 #include "msg_cmd.h"
 #include "ccstrategy.h"
 #include "sorted_vector.h"
-
+#include "regression.h"
 
 //For Sorted Vector, the vector will use this to determine position in the vector.
 struct CtiCCCapBank_less 
@@ -203,7 +203,10 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     const CtiTime& getLastVarPointTime() const;
     const CtiTime& getLastWattPointTime() const;
     const CtiTime& getLastVoltPointTime() const;
-
+    const CtiRegression& getRegression();
+    const CtiRegression& getRegressionA();
+    const CtiRegression& getRegressionB();
+    const CtiRegression& getRegressionC();
 
     CtiCCCapBank_SVector& getCCCapBanks();
     void deleteCCCapBank(long capBankId);
@@ -237,7 +240,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPeakStartTime(LONG starttime);
     CtiCCFeeder& setPeakStopTime(LONG stoptime);
     CtiCCFeeder& setCurrentVarLoadPointId(LONG currentvarid);
-    CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval);
+    CtiCCFeeder& setCurrentVarLoadPointValue(DOUBLE currentvarval, CtiTime timestamp);
     CtiCCFeeder& setCurrentWattLoadPointId(LONG currentwattid);
     CtiCCFeeder& setCurrentWattLoadPointValue(DOUBLE currentwattval);
     CtiCCFeeder& setCurrentVoltLoadPointId(LONG currentvoltid);
@@ -308,10 +311,10 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setUsePhaseData(BOOL flag);
     CtiCCFeeder& setPhaseBId(LONG pointid);
     CtiCCFeeder& setPhaseCId(LONG pointid);
+    CtiCCFeeder& setPhaseAValue(DOUBLE value, CtiTime timestamp);
+    CtiCCFeeder& setPhaseBValue(DOUBLE value, CtiTime timestamp);
+    CtiCCFeeder& setPhaseCValue(DOUBLE value, CtiTime timestamp);    
     CtiCCFeeder& setTotalizedControlFlag(BOOL flag);
-    CtiCCFeeder& setPhaseAValue(DOUBLE value);
-    CtiCCFeeder& setPhaseBValue(DOUBLE value);
-    CtiCCFeeder& setPhaseCValue(DOUBLE value);    
     CtiCCFeeder& setPhaseAValueBeforeControl(DOUBLE value);
     CtiCCFeeder& setPhaseBValueBeforeControl(DOUBLE value);
     CtiCCFeeder& setPhaseCValueBeforeControl(DOUBLE value);
@@ -326,12 +329,14 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiRequestMsg* createDecreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
                                             string textInfo, DOUBLE kvarBefore, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
     CtiRequestMsg* createForcedVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, int action, string typeOfControl);
-    BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality,
-                                    DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
+    BOOL capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, 
+                                    DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality,
+                                    DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, const CtiRegression& reg);
     BOOL capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, 
                                                      LONG failurePercent, //DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, 
                                                      LONG currentVarPointQuality, DOUBLE varAValueBeforeControl, DOUBLE varBValueBeforeControl,
-                                                     DOUBLE varCValueBeforeControl, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue) ;
+                                                     DOUBLE varCValueBeforeControl, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue,
+                                            const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
     string createPhaseControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue,DOUBLE varBValue, DOUBLE varCValue, 
                                                   DOUBLE ratioA, DOUBLE ratioB, DOUBLE ratioC);
     string createControlStatusUpdateText(const int capControlStatus, DOUBLE varAValue, DOUBLE ratioA);
@@ -352,7 +357,13 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     void updateIntegrationVPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
     void updateIntegrationWPoint(const CtiTime &currentDateTime, const CtiTime &nextCheckTime);
     CtiCCFeeder& figureEstimatedVarLoadPointValue();
-    BOOL isAlreadyControlled(LONG minConfirmPercent);
+    BOOL isAlreadyControlled(LONG minConfirmPercent, 
+                             LONG currentVarPointQuality, DOUBLE varAValueBeforeControl, 
+                             DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl, 
+                             DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, 
+                             DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue,
+                             const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
+
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
     BOOL attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime);
     BOOL checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime, LONG sendRetries);
@@ -379,7 +390,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     std::list <LONG>* getPointIds() {return &_pointIds;};
 
-    BOOL isVerificationAlreadyControlled(LONG minConfirmPercent);
+    BOOL isVerificationAlreadyControlled(long minConfirmPercent, long quality, double oldVarValue, double newVarValue);
     BOOL areThereMoreCapBanksToVerify();
     CtiCCFeeder& getNextCapBankToVerify();
 
@@ -388,6 +399,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCCapBank* getMonitorPointParentBank(CtiCCMonitorPoint* point);
 
     BOOL isDataOldAndFallBackNecessary(string controlUnits);
+
+    CtiCCOperationStats getOperationStats();
 
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -410,6 +423,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
+    //void statusUpdateRateOfChange( CtiCCCapBank* capbank, bool openPending, double currentVarLoadPointValue );
+    //void statusUpdateConfirmPercent( CtiCCCapBank* capbank, bool openPending, long minConfirmPercent, long failurePercent, double change );
 
     //Possible states
     /*static const string Enabled;
@@ -544,6 +559,8 @@ private:
     CtiTime _lastWattPointTime;
     CtiTime _lastVoltPointTime;
 
+    CtiCCOperationStats _operationStats;
+
 
     //don't stream
     BOOL _insertDynamicDataFlag;
@@ -554,6 +571,12 @@ private:
 
     std::list <long> _pointIds;
     vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
+
+    bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
+    CtiRegression regression;
+    CtiRegression regressionA;
+    CtiRegression regressionB;
+    CtiRegression regressionC;
 };
 
 

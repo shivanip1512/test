@@ -248,6 +248,13 @@ public:
     void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,  
                                       map< long, long> *controlid_action_map,
                                       CtiTime &lastSendTime, int fallBackConstant);
+    void reloadOperationStatsFromDatabase(long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
+                                                        map< long, CtiCCFeederPtr > *paobject_feeder_map,
+                                                        map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
+                                                        map< long, CtiCCSubstationPtr > *paobject_substation_map,
+                                                        map< long, CtiCCAreaPtr > *paobject_area_map,
+                                                        map< long, CtiCCSpecialPtr > *paobject_specialarea_map );
+
     void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
                        map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map);
     BOOL isCapBankOrphan(long capBankId);

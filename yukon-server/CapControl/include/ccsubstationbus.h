@@ -184,6 +184,11 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     const CtiTime& getLastWattPointTime() const;
     const CtiTime& getLastVoltPointTime() const;
 
+    const CtiRegression& getRegression();
+    const CtiRegression& getRegressionA();
+    const CtiRegression& getRegressionB();
+    const CtiRegression& getRegressionC();
+
     CtiFeeder_vec& getCCFeeders();
     CtiTODC_SVector& CtiCCSubstationBus::getTODControls();
     void deleteCCFeeder(long feederId);
@@ -214,7 +219,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPeakStartTime(LONG starttime);
     CtiCCSubstationBus& setPeakStopTime(LONG stoptime);
     CtiCCSubstationBus& setCurrentVarLoadPointId(LONG currentvarid);
-    CtiCCSubstationBus& setCurrentVarLoadPointValue(DOUBLE currentvarval);
+    CtiCCSubstationBus& setCurrentVarLoadPointValue(DOUBLE currentvarval, CtiTime timestamp);
     CtiCCSubstationBus& setCurrentWattLoadPointId(LONG currentwattid);
     CtiCCSubstationBus& setCurrentWattLoadPointValue(DOUBLE currentwattval);
     CtiCCSubstationBus& setCurrentVoltLoadPointId(LONG currentvoltid);
@@ -292,9 +297,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPhaseBId(LONG pointid);
     CtiCCSubstationBus& setPhaseCId(LONG pointid);
     CtiCCSubstationBus& setTotalizedControlFlag(BOOL flag);
-    CtiCCSubstationBus& setPhaseAValue(DOUBLE value);
-    CtiCCSubstationBus& setPhaseBValue(DOUBLE value);
-    CtiCCSubstationBus& setPhaseCValue(DOUBLE value);
+    CtiCCSubstationBus& setPhaseAValue(DOUBLE value, CtiTime time);
+    CtiCCSubstationBus& setPhaseBValue(DOUBLE value, CtiTime time);
+    CtiCCSubstationBus& setPhaseCValue(DOUBLE value, CtiTime time);
     CtiCCSubstationBus& setPhaseAValueBeforeControl(DOUBLE value);
     CtiCCSubstationBus& setPhaseBValueBeforeControl(DOUBLE value);
     CtiCCSubstationBus& setPhaseCValueBeforeControl(DOUBLE value);
@@ -394,6 +399,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void setTODControls(CtiCCStrategyPtr strategy);
 
     vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
+
+
+    CtiCCOperationStats getOperationStats();
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -565,6 +573,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiTime _lastWattPointTime;
     CtiTime _lastVoltPointTime;
 
+
+    CtiCCOperationStats _operationStats;
+
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
@@ -581,6 +592,11 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     std::map <long, CtiCCMonitorPointPtr> _mpid_mp_map;
     std::map <long, CtiCCPointResponsePtr> _cbid_prmap_map;
 
+    bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
+    CtiRegression regression;
+    CtiRegression regressionA;
+    CtiRegression regressionB;
+    CtiRegression regressionC;
 
 };
 

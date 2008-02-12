@@ -41,24 +41,37 @@ extern BOOL _ALLOW_PARALLEL_TRUING;
 extern BOOL _LOG_MAPID_INFO;
 extern BOOL _END_DAY_ON_TRIP;
 extern ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
+extern bool _RATE_OF_CHANGE;
+extern unsigned long _RATE_OF_CHANGE_DEPTH;
 
 RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus::CtiCCSubstationBus()
+CtiCCSubstationBus::CtiCCSubstationBus() : _operationStats()
 {
+    regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
-CtiCCSubstationBus::CtiCCSubstationBus(RWDBReader& rdr)
+CtiCCSubstationBus::CtiCCSubstationBus(RWDBReader& rdr) : _operationStats()
 {
     restore(rdr);
+    _operationStats.setPAOId(_paoid);
+
+    regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
+    regressionC = CtiRegression(_RATE_OF_CHANGE_DEPTH);
 }
 
-CtiCCSubstationBus::CtiCCSubstationBus(const CtiCCSubstationBus& sub)
+CtiCCSubstationBus::CtiCCSubstationBus(const CtiCCSubstationBus& sub) : _operationStats()
 {
     operator=(sub);
+    _operationStats.setPAOId(_paoid);
 }
 
 /*---------------------------------------------------------------------------
@@ -82,6 +95,11 @@ CtiCCSubstationBus::~CtiCCSubstationBus()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
+}
+
+CtiCCOperationStats CtiCCSubstationBus::getOperationStats()
+{
+    return _operationStats;
 }
 
 /*---------------------------------------------------------------------------
@@ -1184,6 +1202,24 @@ CtiTODC_SVector& CtiCCSubstationBus::getTODControls()
 {
     return _todControls;
 }
+
+const CtiRegression& CtiCCSubstationBus::getRegression()
+{
+    return regression;
+}
+const CtiRegression& CtiCCSubstationBus::getRegressionA()
+{
+    return regressionA;
+}
+const CtiRegression& CtiCCSubstationBus::getRegressionB()
+{
+    return regressionB;
+}
+const CtiRegression& CtiCCSubstationBus::getRegressionC()
+{
+    return regressionC;
+}
+
 /*---------------------------------------------------------------------------
     setPAOId
 
@@ -1469,13 +1505,22 @@ CtiCCSubstationBus& CtiCCSubstationBus::setTotalizedControlFlag(BOOL flag)
         
     Sets the setPhaseAValue Var of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(DOUBLE value)
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(DOUBLE value, CtiTime timestamp)
 {
     if (_phaseAvalue != value)
     {
         _dirty = TRUE;
     }
     _phaseAvalue = value;
+    if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
+    {
+        regressionA.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " RATE OF CHANGE: Adding to regressionA  " << timestamp.seconds() << "  and " << value << endl;
+        }
+    }
     return *this;
 }
 
@@ -1484,13 +1529,22 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseAValue(DOUBLE value)
         
     Sets the setPhaseBValue Var of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(DOUBLE value)
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(DOUBLE value, CtiTime timestamp)
 {
     if (_phaseBvalue != value)
     {
         _dirty = TRUE;
     }
     _phaseBvalue = value;
+    if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
+    {
+        regressionB.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " RATE OF CHANGE: Adding to regressionB  " << timestamp.seconds() << "  and " << value << endl;
+        }
+    }
     return *this;
 }
 
@@ -1501,13 +1555,22 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPhaseBValue(DOUBLE value)
         
     Sets the setPhaseCValue Var of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(DOUBLE value)
+CtiCCSubstationBus& CtiCCSubstationBus::setPhaseCValue(DOUBLE value, CtiTime timestamp)
 {
     if (_phaseCvalue != value)
     {
         _dirty = TRUE;
     }
     _phaseCvalue = value;
+    if( _RATE_OF_CHANGE && !getRecentlyControlledFlag() )
+    {
+        regressionC.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " RATE OF CHANGE: Adding to regressionC  " << timestamp.seconds() << "  and " << value << endl;
+        }
+    }
     return *this;
 }
 
@@ -1750,17 +1813,22 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointId(LONG currentvar
 
     Sets the current var load point value of the substation
 ---------------------------------------------------------------------------*/
-CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(DOUBLE currentvarval)
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVarLoadPointValue(DOUBLE value, CtiTime timestamp)
 {
-    if( _currentvarloadpointvalue != currentvarval )
+    if( _currentvarloadpointvalue != value )
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = TRUE;
     }
-    _currentvarloadpointvalue = currentvarval;
+    _currentvarloadpointvalue = value;
+    if(_RATE_OF_CHANGE && !getRecentlyControlledFlag())
+    {
+        regression.appendWithoutFill(std::make_pair(timestamp.seconds(),value));
+        if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " RATE OF CHANGE: Adding to regression  " << timestamp.seconds() << "  and " << value << endl;
+        }
+    }
     return *this;
 }
 
@@ -1784,10 +1852,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentWattLoadPointValue(DOUBLE curr
 {
     if( _currentwattloadpointvalue != currentwattval )
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = TRUE;
     }
     _currentwattloadpointvalue = currentwattval;
@@ -1813,10 +1877,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setCurrentVoltLoadPointValue(DOUBLE curr
 {
     if( _currentvoltloadpointvalue != currentvoltval )
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = TRUE;
     }
     _currentvoltloadpointvalue = currentvoltval;
@@ -4196,8 +4256,13 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
 
             if( currentFeeder->getRecentlyControlledFlag() )
             {
-                if( currentFeeder->isAlreadyControlled(minConfirmPercent) ||
-                    currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries) )
+                if( currentFeeder->isAlreadyControlled(minConfirmPercent, currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(), 
+                                           currentFeeder->getPhaseBValueBeforeControl(), currentFeeder->getPhaseCValueBeforeControl(), 
+                                           currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(), 
+                                           currentFeeder->getVarValueBeforeControl(), currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getRegression(), 
+                                           currentFeeder->getRegressionA(), currentFeeder->getRegressionB(), currentFeeder->getRegressionC() )
+                    || currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries) 
+                  )
                 {
 
                     if (currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag())
@@ -4205,14 +4270,16 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                         currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent, 
                                                            failPercent, currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(),
                                                            currentFeeder->getPhaseBValueBeforeControl(),currentFeeder->getPhaseCValueBeforeControl(), 
-                                                           currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue()); 
+                                                           currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(),
+                                                           currentFeeder->getRegressionA(), currentFeeder->getRegressionB(), currentFeeder->getRegressionC() ); 
                   
                     }
                     else
                     {
                         currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, minConfirmPercent,failPercent,currentFeeder->getVarValueBeforeControl(),
                                                                   currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValue(),
-                                                                  currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
+                                                                  currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(),
+                                                                  currentFeeder->getRegression());
                     }
                     
                 }
@@ -4249,14 +4316,14 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent, 
                                                    failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
                                                    getPhaseBValueBeforeControl(),getPhaseCValueBeforeControl(), 
-                                                   getPhaseAValue(), getPhaseBValue(), getPhaseCValue()); 
+                                                   getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), regressionA, regressionB, regressionC); 
 
             }
             else
             {
                 currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),
                                                           getCurrentVarLoadPointValue(), getCurrentVarPointQuality(), getPhaseAValue(),
-                                                          getPhaseBValue(), getPhaseCValue());
+                                                          getPhaseBValue(), getPhaseCValue(), regression);
             }
             setRecentlyControlledFlag(FALSE);
             figureEstimatedVarLoadPointValue();
@@ -4283,7 +4350,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                         currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent, 
                                                            failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
                                                            getPhaseBValueBeforeControl(),getPhaseCValueBeforeControl(), 
-                                                           getPhaseAValue(), getPhaseBValue(), getPhaseCValue()); 
+                                                           getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), regressionA, regressionB, regressionC); 
                    
                     }
                     else
@@ -4291,7 +4358,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                         currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,
                                                                   getVarValueBeforeControl(),getCurrentVarLoadPointValue(), 
                                                                   getCurrentVarPointQuality(), getPhaseAValue(),
-                                                                  getPhaseBValue(), getPhaseCValue());
+                                                                  getPhaseBValue(), getPhaseCValue(), regression);
                     }
                     setRecentlyControlledFlag(FALSE);
                     figureEstimatedVarLoadPointValue();
@@ -4326,15 +4393,20 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 currentFeeder->setEventSequence(getEventSequence());
                 if( currentFeeder->getCurrentVarLoadPointId() > 0 )
                 {
-                    if( currentFeeder->isAlreadyControlled(minConfirmPercent) ||
-                        currentFeeder->isPastMaxConfirmTime(CtiTime(), maxConfirmTime,sendRetries) )
+                    if( currentFeeder->isAlreadyControlled(minConfirmPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(), 
+                                                       getPhaseBValueBeforeControl(), getPhaseCValueBeforeControl(), 
+                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), 
+                                                       getVarValueBeforeControl(), getCurrentVarLoadPointValue(), regression, regressionA, regressionB, regressionC )
+                        || currentFeeder->isPastMaxConfirmTime(CtiTime(),maxConfirmTime,sendRetries) 
+                      )
                     {
                         if (currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag())
                         {
                             currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent, 
                                                                failPercent, currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(),
                                                                currentFeeder->getPhaseBValueBeforeControl(),currentFeeder->getPhaseCValueBeforeControl(), 
-                                                               currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue()); 
+                                                               currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(),
+                                                               currentFeeder->getRegressionA(), currentFeeder->getRegressionB(), currentFeeder->getRegressionC() ); 
                      
                         }
                         else
@@ -4342,7 +4414,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                             currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,
                                                                       currentFeeder->getVarValueBeforeControl(),currentFeeder->getCurrentVarLoadPointValue(), 
                                                                       currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValue(),
-                                                                      currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
+                                                                      currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(), currentFeeder->getRegression());
                         }
                     }
                     if( currentFeeder->getRecentlyControlledFlag() )
@@ -4357,14 +4429,14 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                         currentFeeder->capBankControlPerPhaseStatusUpdate(pointChanges, ccEvents, minConfirmPercent, 
                                                            failPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(),
                                                            getPhaseBValueBeforeControl(),getPhaseCValueBeforeControl(), 
-                                                           getPhaseAValue(), getPhaseBValue(), getPhaseCValue()); 
+                                                           getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), regressionA, regressionB, regressionC);
                    
                     }
                     else
                     {
                         currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents,minConfirmPercent,failPercent,getVarValueBeforeControl(),
                                                                   getCurrentVarLoadPointValue(), getCurrentVarPointQuality(), getPhaseAValue(),
-                                                                  getPhaseBValue(), getPhaseCValue());
+                                                                  getPhaseBValue(), getPhaseCValue(), regression);
                     }
                     figureEstimatedVarLoadPointValue();
                 }
@@ -4372,7 +4444,7 @@ BOOL CtiCCSubstationBus::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChange
                 {
                     currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, 0,0,getVarValueBeforeControl(),
                                                               getCurrentVarLoadPointValue(), getCurrentVarPointQuality(), currentFeeder->getPhaseAValue(),
-                                                              currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
+                                                              currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(), currentFeeder->getRegression());
                     //setRecentlyControlledFlag(FALSE);
                     figureEstimatedVarLoadPointValue();
                     {
@@ -4413,7 +4485,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
     DOUBLE change = 0;
     DOUBLE oldValue = 0;
     DOUBLE newValue = 0;
-
+    CtiTime time;
 
     LONG minConfirmPercent = getMinConfirmPercent();
     LONG maxConfirmTime = getMaxConfirmTime();
@@ -4453,14 +4525,28 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
                                !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                            {
-                               oldValue =  currentFeeder->getVarValueBeforeControl();
                                newValue =  currentFeeder->getCurrentVarLoadPointValue();
+                               if( _RATE_OF_CHANGE && currentFeeder->getRegression().depthMet() )
+                               {
+                                   oldValue =  currentFeeder->getRegression().regression(time.seconds());
+                               }
+                               else
+                               {
+                                   oldValue =  currentFeeder->getVarValueBeforeControl();
+                               }
                                change = newValue - oldValue;
                            }
                            else
                            {
-                               oldValue =  getVarValueBeforeControl();
                                newValue =  getCurrentVarLoadPointValue();
+                               if( _RATE_OF_CHANGE && regression.depthMet() )
+                               {
+                                   oldValue =  getRegression().regression(time.seconds());
+                               }
+                               else
+                               {
+                                   oldValue =  getVarValueBeforeControl();
+                               }
                                change = newValue - oldValue;
                            }
                            if( change < 0 )
@@ -4569,15 +4655,29 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
                                !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
                            {
-                               oldValue =  currentFeeder->getVarValueBeforeControl();
                                newValue =  currentFeeder->getCurrentVarLoadPointValue();
-                               change = oldValue - newValue;
+                               if( _RATE_OF_CHANGE && currentFeeder->getRegression().depthMet() )
+                               {
+                                   oldValue =  currentFeeder->getRegression().regression(time.seconds());
+                               }
+                               else
+                               {
+                                   oldValue =  currentFeeder->getVarValueBeforeControl();
+                               }
+                               change = newValue - oldValue;
                            }
                            else
                            {
-                               oldValue =  getVarValueBeforeControl();
                                newValue =  getCurrentVarLoadPointValue();
-                               change = oldValue - newValue;
+                               if( _RATE_OF_CHANGE && regression.depthMet() )
+                               {
+                                   oldValue =  regression.regression(time.seconds());
+                               }
+                               else
+                               {
+                                   oldValue =  getVarValueBeforeControl();
+                               }
+                               change = newValue - oldValue;
                            }
                            
                            if( change < 0 )
@@ -5167,231 +5267,124 @@ BOOL CtiCCSubstationBus::isAlreadyControlled()
     BOOL found = FALSE;
     LONG minConfirmPercent = getMinConfirmPercent();
 
-    if( !_IGNORE_NOT_NORMAL_FLAG ||
-        getCurrentVarPointQuality() == NormalQuality )
+    if( _IGNORE_NOT_NORMAL_FLAG && getCurrentVarPointQuality() != NormalQuality )
     {
-        if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) ||
-            !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+        return returnBoolean;
+    }
+
+    if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) ||
+        !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+    {
+        if( minConfirmPercent <= 0 )
         {
-            if( minConfirmPercent  > 0 )
+            return returnBoolean;
+        }
+        for(LONG i=0;i<_ccfeeders.size();i++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
+            if( !currentFeeder->getRecentlyControlledFlag() )
             {
-                for(LONG i=0;i<_ccfeeders.size();i++)
-                {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                    if( currentFeeder->getRecentlyControlledFlag() )
-                    {
-                        if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
-                        {
-                            minConfirmPercent = currentFeeder->getMinConfirmPercent();
-                        }
-                        if( currentFeeder->isAlreadyControlled(minConfirmPercent) )
-                        {
-                            returnBoolean = TRUE;
-                            break;
-                        }
-                    }
-                }
+                continue;
+            }
+            if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
+            {
+                minConfirmPercent = currentFeeder->getMinConfirmPercent();
+            }
+            if( currentFeeder->isAlreadyControlled(minConfirmPercent, currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(), 
+                                           currentFeeder->getPhaseBValueBeforeControl(), currentFeeder->getPhaseCValueBeforeControl(), 
+                                           currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(), 
+                                           currentFeeder->getVarValueBeforeControl(), currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getRegression(), 
+                                           currentFeeder->getRegressionA(), currentFeeder->getRegressionB(), currentFeeder->getRegressionC() ))
+            {
+                returnBoolean = TRUE;
+                break;
             }
         }
-        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::SubstationBusControlMethod) )
+    }
+    else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::SubstationBusControlMethod) )
+    {
+        if( minConfirmPercent <= 0 )
         {
-            if( minConfirmPercent > 0 )
-            {
-                DOUBLE oldCalcValue = getVarValueBeforeControl();
-                DOUBLE newCalcValue = getCurrentVarLoadPointValue();
-
-                if (getUsePhaseData() && !getTotalizedControlFlag())      
-                {
-                    oldCalcValue = getPhaseAValueBeforeControl() + getPhaseBValueBeforeControl() + getPhaseCValueBeforeControl();
-                    newCalcValue = getPhaseAValue() + getPhaseBValue() + getPhaseCValue();
-                }
-
-                CtiCCFeeder* currentFeeder = NULL;
-                for(LONG i=0;i<=_ccfeeders.size();i++)
-                {
-                    if (i == 0)
-                        currentFeeder = (CtiCCFeeder*)_ccfeeders.at(getLastFeederControlledPosition());
-                    else
-                        currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i - 1);
-
-                    if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
-                    {
-                        if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
-                        {
-                            minConfirmPercent = currentFeeder->getMinConfirmPercent();
-                        }
-
-                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                        for(LONG j=0;j<ccCapBanks.size();j++)
-                        {
-                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                            if( currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId() )
-                            {
-                                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                                    currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                                {
-
-                                    if (getUsePhaseData() && !getTotalizedControlFlag())
-                                    {
-                                        DOUBLE ratioA = fabs((getPhaseAValue() - getPhaseAValueBeforeControl()) /
-                                                              (currentCapBank->getBankSize() / 3));
-                                        DOUBLE ratioB = fabs((getPhaseBValue() - getPhaseBValueBeforeControl()) /
-                                                              (currentCapBank->getBankSize() / 3));
-                                        DOUBLE ratioC = fabs((getPhaseCValue() - getPhaseCValueBeforeControl()) /
-                                                              (currentCapBank->getBankSize() / 3));
-                                   
-                                        if( ratioA >= minConfirmPercent*.01 &&
-                                            ratioB >= minConfirmPercent*.01 &&
-                                            ratioC >= minConfirmPercent*.01 )
-                                        {
-                                            returnBoolean = TRUE;
-                                        }
-                                        else
-                                        {
-                                            returnBoolean = FALSE;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        DOUBLE change = newCalcValue - oldCalcValue;
-                                        DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
-                                        if( ratio >= minConfirmPercent*.01 )
-                                        {
-                                            returnBoolean = TRUE;
-                                        }
-                                        else
-                                        {
-                                            returnBoolean = FALSE;
-                                        }
-                                    }
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                    returnBoolean = FALSE;
-                                }
-                                found = TRUE;
-                                break;
-                            }
-                        }
-                        break;
-                    }
-                }
-            }
+            return returnBoolean;
         }
-        else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::ManualOnlyControlMethod) )
+
+        CtiCCFeeder* currentFeeder = NULL;
+        for(LONG i=0;i<=_ccfeeders.size();i++)
         {
-            if( minConfirmPercent > 0 )
+            if (i == 0)
+                currentFeeder = (CtiCCFeeder*)_ccfeeders.at(getLastFeederControlledPosition());
+            else
+                currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i - 1);
+
+            if( currentFeeder->getPAOId() != getLastFeederControlledPAOId() )
             {
-                for(LONG i=0;i<_ccfeeders.size();i++)
+                continue;
+            }
+
+            if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
+            {
+                minConfirmPercent = currentFeeder->getMinConfirmPercent();
+            }
+
+            returnBoolean = currentFeeder->isAlreadyControlled(minConfirmPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(), 
+                                       getPhaseBValueBeforeControl(), getPhaseCValueBeforeControl(), 
+                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), 
+                                       getVarValueBeforeControl(), getCurrentVarLoadPointValue(), regression, regressionA, regressionB, regressionC ); 
+            
+            break;
+        }
+
+    }
+    else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::ManualOnlyControlMethod) )
+    {
+        if( minConfirmPercent <= 0 )
+        {
+            return returnBoolean;
+        }
+        for(LONG i=0;i<_ccfeeders.size();i++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
+            if( currentFeeder->getRecentlyControlledFlag() )
+            {
+                continue;
+            }
+            if( currentFeeder->getCurrentVarLoadPointId() > 0 )
+            { //use feeder values
+                if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                    if( currentFeeder->getRecentlyControlledFlag() )
-                    {
-                        if( currentFeeder->getCurrentVarLoadPointId() > 0 )
-                        {
-                            if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
-                            {
-                                minConfirmPercent = currentFeeder->getMinConfirmPercent();
-                            }
-                            if( currentFeeder->isAlreadyControlled(minConfirmPercent) )
-                            {
-                                returnBoolean = TRUE;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            DOUBLE oldCalcValue = getVarValueBeforeControl();
-                            DOUBLE newCalcValue = getCurrentVarLoadPointValue();
-                            for(LONG i=0;i<_ccfeeders.size();i++)
-                            {
-                                if (i == 0)
-                                    currentFeeder = (CtiCCFeeder*)_ccfeeders.at(getLastFeederControlledPosition());
-                                else
-                                    currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i - 1);
-
-                                if( currentFeeder->getPAOId() == getLastFeederControlledPAOId() )
-                                {
-                                    if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
-                                    {
-                                        minConfirmPercent = currentFeeder->getMinConfirmPercent();
-                                    }
-                                    CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                                    for(LONG j=0;j<ccCapBanks.size();j++)
-                                    {
-                                        CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                                        if( currentCapBank->getPAOId() == currentFeeder->getLastCapBankControlledDeviceId() )
-                                        {
-                                            if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
-                                                currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                                            {
-                                                if (getUsePhaseData())
-                                                {
-                                                    DOUBLE ratioA = fabs((getPhaseAValue() - getPhaseAValueBeforeControl()) /
-                                                                          (currentCapBank->getBankSize() / 3));
-                                                    DOUBLE ratioB = fabs((getPhaseBValue() - getPhaseBValueBeforeControl()) /
-                                                                          (currentCapBank->getBankSize() / 3));
-                                                    DOUBLE ratioC = fabs((getPhaseCValue() - getPhaseCValueBeforeControl()) /
-                                                                          (currentCapBank->getBankSize() / 3));
-                                               
-                                                    if( ratioA >= minConfirmPercent*.01 &&
-                                                        ratioB >= minConfirmPercent*.01 &&
-                                                        ratioC >= minConfirmPercent*.01 )
-                                                    {
-                                                        returnBoolean = TRUE;
-                                                    }
-                                                    else
-                                                    {
-                                                        returnBoolean = FALSE;
-                                                    }
-                                                    found = TRUE;
-                                                }
-                                                else
-                                                {
-                                                    DOUBLE change = newCalcValue - oldCalcValue;
-                                                    DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
-                                                    if( ratio >= minConfirmPercent*.01 )
-                                                    {
-                                                        returnBoolean = TRUE;
-                                                    }
-                                                    else
-                                                    {
-                                                        returnBoolean = FALSE;
-                                                    }
-                                                }
-                                            }
-                                            else
-                                            {
-                                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                                dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                                returnBoolean = FALSE;
-                                            }
-                                            found = TRUE;
-                                            break;
-                                        }
-                                    }
-                                    break;
-                                }
-
-                            }
-                        }
-                    }
+                    minConfirmPercent = currentFeeder->getMinConfirmPercent();
                 }
-                if (found == FALSE)
+                if( currentFeeder->isAlreadyControlled(minConfirmPercent, currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(), 
+                                           currentFeeder->getPhaseBValueBeforeControl(), currentFeeder->getPhaseCValueBeforeControl(), 
+                                           currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(), 
+                                           currentFeeder->getVarValueBeforeControl(), currentFeeder->getCurrentVarLoadPointValue(), 
+                                           currentFeeder->getRegression(), currentFeeder->getRegressionA(), currentFeeder->getRegressionB(), currentFeeder->getRegressionC() ))
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Last Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
                     returnBoolean = TRUE;
+                    break;
+                }
+            }
+            else
+            { // use substation values.
+                if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
+                {
+                    minConfirmPercent = currentFeeder->getMinConfirmPercent();
+                }
+                if( currentFeeder->isAlreadyControlled(minConfirmPercent, getCurrentVarPointQuality(), getPhaseAValueBeforeControl(), 
+                                           getPhaseBValueBeforeControl(), getPhaseCValueBeforeControl(), 
+                                           getPhaseAValue(), getPhaseBValue(), getPhaseCValue(), 
+                                           getVarValueBeforeControl(), getCurrentVarLoadPointValue(), regression, regressionA, regressionB, regressionC ))
+                {
+                    returnBoolean = TRUE;
+                    break;
                 }
             }
         }
-        else
-        {
-            CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << CtiTime() << " - Invalid control method in: " << __FILE__ << " at: " << __LINE__ << endl;
-        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Invalid control method in: " << __FILE__ << " at: " << __LINE__ << endl;
     }
 
     return returnBoolean;
@@ -5457,10 +5450,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPerformingVerificationFlag(BOOL perfo
 {
     if( _performingVerificationFlag != performingVerificationFlag )
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = TRUE;
     }
 
@@ -5472,10 +5461,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setVerificationDoneFlag(BOOL verificatio
 {
     if( _verificationDoneFlag != verificationDoneFlag )
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = TRUE;
     }
 
@@ -5489,10 +5474,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setOverlappingVerificationFlag(BOOL over
 {
     if( _overlappingSchedulesVerificationFlag != overlapFlag )
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = TRUE;
     }
 
@@ -5506,10 +5487,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPreOperationMonitorPointScanFlag( BOO
 {
     if( _preOperationMonitorPointScanFlag != flag )
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = TRUE;
     }
 
@@ -5522,10 +5499,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setOperationSentWaitFlag( BOOL flag)
 {
     if( _operationSentWaitFlag != flag )
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = TRUE;
     }
 
@@ -5538,10 +5511,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::setPostOperationMonitorPointScanFlag( BO
 {
     if( _postOperationMonitorPointScanFlag != flag )
     {
-        /*{
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }*/
         _dirty = TRUE;
     }
 
@@ -5979,126 +5948,83 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
     BOOL foundFeeder = FALSE;
     LONG minConfirmPercent = getMinConfirmPercent();
 
-    if( !_IGNORE_NOT_NORMAL_FLAG ||
-        getCurrentVarPointQuality() == NormalQuality )
+    if( !_IGNORE_NOT_NORMAL_FLAG || getCurrentVarPointQuality() == NormalQuality )
     {
         if( (!stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
             !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod)) &&
             _ALLOW_PARALLEL_TRUING )
         {
-            if( minConfirmPercent > 0 )
-            {                   
-                for(LONG i = 0; i < _ccfeeders.size(); i++)
+            if( minConfirmPercent <= 0 )
+            {
+                return returnBoolean;
+            }
+            for(LONG i = 0; i < _ccfeeders.size(); i++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
+                if( !currentFeeder->getPerformingVerificationFlag() )
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                    if( currentFeeder->getPerformingVerificationFlag() )
-                    {
-                        if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
-                        {
-                            minConfirmPercent = currentFeeder->getMinConfirmPercent();
-                        }
-                        foundFeeder = TRUE;
-                        if( currentFeeder->isVerificationAlreadyControlled(minConfirmPercent) )
-                        {
-                            returnBoolean = TRUE;
-                            break;
-                        }
-                    }
+                    continue;
                 }
-                if (foundFeeder == FALSE)
+                if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Verification Feeder NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                    minConfirmPercent = currentFeeder->getMinConfirmPercent();
+                }
+                foundFeeder = TRUE;
+                if( currentFeeder->isVerificationAlreadyControlled(minConfirmPercent, 
+                                                                   currentFeeder->getCurrentVarPointQuality(),
+                                                                   currentFeeder->getVarValueBeforeControl(), 
+                                                                   currentFeeder->getCurrentVarLoadPointValue()) )
+                {
                     returnBoolean = TRUE;
+                    break;
                 }
             }
+            if (foundFeeder == FALSE)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - Verification Feeder NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                returnBoolean = TRUE;
+            }
+
         }
         else if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::SubstationBusControlMethod) ||
                  !_ALLOW_PARALLEL_TRUING)
         {
             if( minConfirmPercent > 0 )
             {
-                DOUBLE oldCalcValue = getVarValueBeforeControl();
-                DOUBLE newCalcValue = getCurrentVarLoadPointValue();
-                
+                return returnBoolean;
+            }
+            long quality = getCurrentVarPointQuality();
+            double oldCalcValue = getVarValueBeforeControl();
+            DOUBLE newCalcValue = getCurrentVarLoadPointValue();
+            
 
-                for(LONG i=0;i<_ccfeeders.size();i++)
+            for(LONG i=0;i<_ccfeeders.size();i++)
+            {
+                CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
+
+                if( currentFeeder->getPAOId() != getCurrentVerificationFeederId() )
                 {
-                    CtiCCFeeder* currentFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-
-                    if( currentFeeder->getPAOId() == getCurrentVerificationFeederId() )
-                    {
-                        if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                            !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod))
-                        {
-                            oldCalcValue = currentFeeder->getVarValueBeforeControl();    
-                            newCalcValue = currentFeeder->getCurrentVarLoadPointValue(); 
-                        }
-
-
-                        CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
-                        for(LONG j=0;j<ccCapBanks.size();j++)
-                        {
-                            if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
-                            {
-                                minConfirmPercent = currentFeeder->getMinConfirmPercent();
-                            }
-                            CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[j];
-                            if( currentCapBank->getPAOId() == getCurrentVerificationCapBankId() )
-                            {
-                                if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending )
-                                {
-                                    DOUBLE change = newCalcValue - oldCalcValue;
-                                    DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
-                                    if( ratio >= minConfirmPercent*.01 )
-                                    {
-                                        returnBoolean = TRUE;
-                                    }
-                                    else
-                                    {
-                                        returnBoolean = FALSE;
-                                    }
-                                    foundCap = TRUE;
-                                }
-                                else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
-                                {
-                                    DOUBLE change = oldCalcValue - newCalcValue;
-                                    DOUBLE ratio = fabs(change/currentCapBank->getBankSize());
-                                    if( ratio >= minConfirmPercent*.01 )
-                                    {
-                                        returnBoolean = TRUE;
-                                    }
-                                    else
-                                    {
-                                        returnBoolean = FALSE;
-                                    }
-                                    foundCap = TRUE;
-                                }
-
-                                else if (currentFeeder->getPorterRetFailFlag())
-                                {
-                                    currentFeeder->setPorterRetFailFlag(false);
-                                    returnBoolean =  TRUE;
-                                }
-                                else
-                                {
-                                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - Last Verification Cap Bank: "<<getCurrentVerificationCapBankId()<<" controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
-                                    returnBoolean = TRUE;
-                                }
-                                foundCap = TRUE;
-                                break;
-                            }
-                        }
-                        break;
-                    }
+                    continue;
                 }
-                if (foundCap == FALSE)
+
+                if (stringCompareIgnoreCase(currentFeeder->getStrategyName(),"(none)"))
                 {
-                    CtiLockGuard<CtiLogger> logger_guard(dout);
-                    dout << CtiTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
+                    minConfirmPercent = currentFeeder->getMinConfirmPercent();
+                }
+                if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                    !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                {
+
+                    quality = currentFeeder->getCurrentVarPointQuality();
+                    oldCalcValue = currentFeeder->getVarValueBeforeControl();    
+                    newCalcValue = currentFeeder->getCurrentVarLoadPointValue(); 
+                }
+                if( currentFeeder->isVerificationAlreadyControlled(minConfirmPercent,quality,oldCalcValue,newCalcValue) )
+                {
                     returnBoolean = TRUE;
                 }
+                break;
             }
         }
         else
@@ -6119,11 +6045,12 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
 
         if (currentCCFeeder->getPerformingVerificationFlag())
         {
-            if (currentCCFeeder->isVerificationAlreadyControlled(getMinConfirmPercent()) || currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()))
+            if (currentCCFeeder->isVerificationAlreadyControlled(getMinConfirmPercent(), getCurrentVarPointQuality(), getVarValueBeforeControl(), getCurrentVarLoadPointValue())
+                 || currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()))
             {
 
                 if ( getControlSendRetries() > 0 &&
-                     !currentCCFeeder->isVerificationAlreadyControlled(getMinConfirmPercent()) && 
+                     !currentCCFeeder->isVerificationAlreadyControlled(getMinConfirmPercent(), getCurrentVarPointQuality(), getVarValueBeforeControl(), getCurrentVarLoadPointValue()) && 
                     currentDateTime.seconds() < currentCCFeeder->getLastOperationTime().seconds() + getMaxConfirmTime())
                 {
                     if(currentCCFeeder->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime(), getControlSendRetries()))
@@ -7587,9 +7514,16 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
             }
             else if(currentFeeder->getRecentlyControlledFlag())//recently controlled...
             {
-                if (currentFeeder->isPastMaxConfirmTime(currentDateTime, getMaxConfirmTime(), getControlSendRetries()) || currentFeeder->isAlreadyControlled(getMinConfirmPercent())) 
+                bool pastTime = currentFeeder->isPastMaxConfirmTime(currentDateTime, getMaxConfirmTime(), getControlSendRetries());
+                bool controled = currentFeeder->isAlreadyControlled(getMinConfirmPercent(), currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValueBeforeControl(), 
+                                           currentFeeder->getPhaseBValueBeforeControl(), currentFeeder->getPhaseCValueBeforeControl(), 
+                                           currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(), 
+                                           currentFeeder->getVarValueBeforeControl(), currentFeeder->getCurrentVarLoadPointValue(), currentFeeder->getRegression(),
+                                           currentFeeder->getRegressionA(), currentFeeder->getRegressionB(), currentFeeder->getRegressionC() );
+
+                if ( pastTime || controled ) 
                 {
-                    if (!currentFeeder->isAlreadyControlled(getMinConfirmPercent()) )
+                    if (!controled )
                     {
                         if (currentFeeder->attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime()))
                         {
@@ -7598,7 +7532,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
                         else if( currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, getMinConfirmPercent(), getFailurePercent(), 
                                                               currentFeeder->getVarValueBeforeControl(), currentFeeder->getCurrentVarLoadPointValue(),
                                                               currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValue(),
-                                                              currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue()) )
+                                                              currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(), currentFeeder->getRegression()) )
                         {
                             currentFeeder->scanAllMonitorPoints();
                             if (currentFeeder->getOperationSentWaitFlag())
@@ -7613,7 +7547,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
                         currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, getMinConfirmPercent(), getFailurePercent(), 
                                                               currentFeeder->getVarValueBeforeControl(), currentFeeder->getCurrentVarLoadPointValue(),
                                                               currentFeeder->getCurrentVarPointQuality(), currentFeeder->getPhaseAValue(),
-                                                              currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
+                                                              currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(), currentFeeder->getRegression());
                         currentFeeder->scanAllMonitorPoints();
                         if (currentFeeder->getOperationSentWaitFlag())
                             currentFeeder->setOperationSentWaitFlag(FALSE);
@@ -9440,6 +9374,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
             _todControls.push_back(tmp);
         }
         _percentToClose = right._percentToClose;
+
+        _operationStats = right._operationStats;
+
+        regression = right.regression;
+        regressionA = right.regressionA;
+        regressionB = right.regressionB;
+        regressionC = right.regressionC;
     }
     return *this;
 }
@@ -9626,9 +9567,10 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setIVControl(0);
     setIWControl(0);
 
-    setPhaseAValue(0);
-    setPhaseBValue(0);
-    setPhaseCValue(0);
+    CtiTime time;
+    setPhaseAValue(0,time);
+    setPhaseBValue(0,time);
+    setPhaseCValue(0,time);
     setPhaseAValueBeforeControl(0);
     setPhaseBValueBeforeControl(0);
     setPhaseCValueBeforeControl(0);
@@ -9863,6 +9805,22 @@ string CtiCCSubstationBus::getVerificationString()
     }
     text += " Banks";
     return text;
+}
+
+bool CtiCCSubstationBus::checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC)
+{
+    if(!_RATE_OF_CHANGE)
+        return false;
+    if( getUsePhaseData() && !getTotalizedControlFlag() )
+    {
+        if( regA.depthMet() && regB.depthMet() && regC.depthMet() )
+            return true;
+    }
+    else
+    {
+        return reg.depthMet();
+    }
+    return false;
 }
 
 /* Public Static members */

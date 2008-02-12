@@ -64,7 +64,8 @@ ccpointresponse.obj \
 cctwowaycbcpoints.obj \
 ccarea.obj \
 ccsparea.obj \
-ccsubstation.obj
+ccsubstation.obj \
+ccoperationstats.obj 
 
 
 TARGS = capcontrol.exe

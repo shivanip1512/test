@@ -29,18 +29,20 @@ ULONG _SEND_TRIES;
 BOOL _USE_FLIP_FLAG;
 ULONG _POINT_AGE;
 ULONG _SCAN_WAIT_EXPIRE;
-BOOL _ALLOW_PARALLEL_TRUING;
-BOOL _RETRY_FAILED_BANKS;
+BOOL  _ALLOW_PARALLEL_TRUING;
+BOOL  _RETRY_FAILED_BANKS;
 ULONG _DB_RELOAD_WAIT;
-BOOL _LOG_MAPID_INFO;
+BOOL  _LOG_MAPID_INFO;
 ULONG _LINK_STATUS_TIMEOUT;
-BOOL _END_DAY_ON_TRIP;
+BOOL  _END_DAY_ON_TRIP;
 ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 ULONG _MAX_KVAR;
 ULONG _MAX_KVAR_TIMEOUT;
 LONG _VOLT_REDUCTION_SYSTEM_OVERRIDE;
 ULONG _VOLT_REDUCTION_COMMANDS;
 ULONG _VOLT_REDUCTION_COMMAND_DELAY;
+bool _RATE_OF_CHANGE;
+unsigned long _RATE_OF_CHANGE_DEPTH;
 
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
@@ -357,6 +359,20 @@ void CtiCCService::Init()
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CAP_CONTROL_MAX_KVAR_TIMEOUT: " << _MAX_KVAR_TIMEOUT << endl;
+    }
+
+    _RATE_OF_CHANGE = gConfigParms.isTrue("CAP_CONTROL_RATE_OF_CHANGE");
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_RATE_OF_CHANGE: " << _RATE_OF_CHANGE << endl;
+    }
+
+    _RATE_OF_CHANGE_DEPTH = gConfigParms.getValueAsULong("CAP_CONTROL_RATE_OF_CHANGE_DEPTH", 10);
+    if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - CAP_CONTROL_RATE_OF_CHANGE_DEPTH: " << _RATE_OF_CHANGE_DEPTH << endl;
     }
 
     _LOG_MAPID_INFO = FALSE;

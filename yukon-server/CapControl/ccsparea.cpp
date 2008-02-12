@@ -28,6 +28,7 @@
 #include "capcontroller.h"
 #include "resolvers.h"
 #include "utility.h"
+#include "ccOperationStats.h"
 
 extern ULONG _CC_DEBUG;
 
@@ -36,16 +37,17 @@ RWDEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSpecial::CtiCCSpecial()
+CtiCCSpecial::CtiCCSpecial() : _operationStats()
 {
 }
 
-CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr)
+CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr) : _operationStats()
 {
     restore(rdr);
+    _operationStats.setPAOId(_paoid);
 }
 
-CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)
+CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)  : _operationStats()
 {
     operator=(special);
 }
@@ -179,6 +181,9 @@ CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
 
         _substationIds.clear();
         _substationIds.assign(right._substationIds.begin(), right._substationIds.end());
+
+
+        _operationStats = right._operationStats;
           
     }
     return *this;

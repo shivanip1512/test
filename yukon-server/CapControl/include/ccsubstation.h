@@ -75,6 +75,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
 
     
     list <LONG>* getCCSubIds(){return &_subBusIds;};
+    CtiCCOperationStats getOperationStats();
 
     CtiCCSubstation& setPAOId(LONG id);
     CtiCCSubstation& setPAOCategory(const string& category);
@@ -135,6 +136,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     LONG _saEnabledId;
 
     LONG _voltReductionControlId;
+    CtiCCOperationStats _operationStats;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

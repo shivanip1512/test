@@ -78,7 +78,7 @@ class CtiTime;
 #define CC_DEBUG_RIDICULOUS        0x20000000
 #define CC_DEBUG_DELETION          0x40000000
 #define CC_DEBUG_OPTIONALPOINT     0x80000000
-
+#define CC_DEBUG_RATE_OF_CHANGE    0x00000080
 
 extern CtiTime gInvalidCtiTime;
 extern ULONG gInvalidCtiTimeSeconds;

@@ -37,18 +37,20 @@ RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSubstation::CtiCCSubstation()
+CtiCCSubstation::CtiCCSubstation() : _operationStats()
 {
 }
 
-CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr)
+CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr) : _operationStats()
 {
     restore(rdr);
+    _operationStats.setPAOId(_paoid);
 }
 
-CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation)
+CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation) : _operationStats()
 {
     operator=(substation);
+    _operationStats.setPAOId(_paoid);
 }
 
 /*---------------------------------------------------------------------------
@@ -172,6 +174,8 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
 
         _subBusIds.clear();
         _subBusIds.assign(right._subBusIds.begin(), right._subBusIds.end());
+
+        _operationStats = right._operationStats;
 
     }
     return *this;

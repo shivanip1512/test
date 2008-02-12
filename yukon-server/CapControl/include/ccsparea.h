@@ -34,6 +34,7 @@ using std::list;
 #include "msg_pcrequest.h"
 #include "msg_cmd.h"
 #include "ccstrategy.h"
+#include "ccOperationStats.h"
               
 class CtiCCSpecial : public RWCollectable
 {
@@ -132,6 +133,7 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     void setStrategyValues(CtiCCStrategyPtr strategy);
 
     list <LONG>* getSubstationIds() {return &_substationIds;};
+    CtiCCOperationStats getOperationStats();
 
 
     BOOL isDirty() const;
@@ -198,6 +200,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
     std::list <LONG> _substationIds;
     BOOL _isSpecial;
+
+    CtiCCOperationStats _operationStats;
 
    //don't stream
     BOOL _insertDynamicDataFlag;

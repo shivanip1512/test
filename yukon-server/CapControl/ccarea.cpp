@@ -36,16 +36,17 @@ RWDEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCArea::CtiCCArea()
+CtiCCArea::CtiCCArea() : _operationStats()
 {
 }
 
-CtiCCArea::CtiCCArea(RWDBReader& rdr)
+CtiCCArea::CtiCCArea(RWDBReader& rdr) : _operationStats()
 {
     restore(rdr);
+    _operationStats.setPAOId(_paoid);
 }
 
-CtiCCArea::CtiCCArea(const CtiCCArea& area)
+CtiCCArea::CtiCCArea(const CtiCCArea& area) : _operationStats()
 {
     operator=(area);
 }
@@ -177,6 +178,8 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _additionalFlags = right._additionalFlags;
         _ovUvDisabledFlag = right._ovUvDisabledFlag;
         _reEnableAreaFlag = right._reEnableAreaFlag;
+
+        _operationStats = right._operationStats;
     }
     return *this;
 }

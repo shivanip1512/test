@@ -32,26 +32,29 @@ RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCCapBank::CtiCCCapBank()
+CtiCCCapBank::CtiCCCapBank() : _operationStats()
 {
     _twoWayPoints = NULL;
     _ovuvSituationFlag = false;
-
+    
 }
 
-CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
+CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr) : _operationStats()
 {
     restore(rdr);
      _monitorPoint.clear();
      _pointResponses.clear();
      _twoWayPoints = NULL;
      _ovuvSituationFlag = false;
+     _operationStats.setPAOId(_paoid);
 }
 
-CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)
+CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)  : _operationStats()
 {
     operator=(cap);
     _twoWayPoints = NULL;
+
+    _operationStats.setPAOId(_paoid);
 
 
 }
@@ -97,6 +100,13 @@ CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
     return _twoWayPoints;
 
 }
+
+CtiCCOperationStats CtiCCCapBank::getOperationStats()
+{
+    return _operationStats;
+
+}
+
 
 /*---------------------------------------------------------------------------
     getPAOId
@@ -2123,6 +2133,8 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _sBeforeVars = right._sBeforeVars;
         _sPercentChange = right._sPercentChange;
         _ovuvSituationFlag = right._ovuvSituationFlag;
+
+        _operationStats = right._operationStats;
 
 
     }
