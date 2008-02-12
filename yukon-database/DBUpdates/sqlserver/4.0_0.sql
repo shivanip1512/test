@@ -45,11 +45,6 @@ create table DynamicBillingFormat (
 );
 go 
 
-alter table DYNAMICBILLINGFORMAT
-   add constraint FK_DYNAMICB_REF_BILLI_BILLINGF foreign key (FormatID)
-      references BillingFileFormats (FormatID);
-go
-
 alter table BillingFileFormats ALTER COLUMN FormatType varchar(100);
 go
 
@@ -1177,7 +1172,7 @@ insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1);
 
 /* Start YUK-4859, YUK-5197 */
 IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCCAP_INVENTORY_VIEW]'))
-DROP VIEW [CCCAP_INVENTORY_VIEW]
+DROP VIEW [CCCAP_INVENTORY_VIEW];
 go
 create view CCCAP_INVENTORY_VIEW as
 SELECT
@@ -1636,6 +1631,17 @@ go
 /* End YUK-5332 */
 
 /* Start YUK-5312 */
+DROP INDEX [INDX_CCRTEEPRTWIN_PWNID_PSID] ON [CCurtEEParticipantWindow];
+go
+DROP INDEX [INDX_CCURTEEPRWIN] ON [CCurtEEPricingWindow];
+go
+DROP INDEX [INDX_CCURTGROUP_ECID_GRPNM] ON [CCurtGroup];
+go
+DROP INDEX [INDX_CCRTGRPCSTNOTIF_GID_CID] ON [CCurtGroupCustomerNotif];
+go
+DROP INDEX [INDX_CCURTPRGGRP_GRPID_PRGID] ON [CCurtProgramGroup];
+go
+
 ALTER TABLE [ActivityLog]
 ALTER COLUMN [Description] [varchar] (240) NULL;
 GO
@@ -1675,6 +1681,49 @@ GO
 ALTER TABLE [CCurtProgramGroup]
 ALTER COLUMN [CCurtProgramID] [numeric] (18, 0) NOT NULL;
 GO
+
+ALTER TABLE [MeterHardwareBase]
+ALTER COLUMN [MeterTypeID] [numeric] (18, 0) NOT NULL;
+GO
+
+ALTER TABLE [Warehouse]
+ALTER COLUMN [Notes] [varchar] (300) NULL;
+GO
+
+ALTER TABLE [WorkOrderBase]
+ALTER COLUMN [AdditionalOrderNumber] [varchar] (24) NULL;
+GO
+
+CREATE UNIQUE NONCLUSTERED INDEX [INDX_CCRTEEPRTWIN_PWNID_PSID] ON [CCurtEEParticipantWindow] 
+(
+	[CCurtEEPricingWindowID] ASC,
+	[CCurtEEParticipantSelectionID] ASC
+);
+go
+CREATE UNIQUE NONCLUSTERED INDEX [INDX_CCURTEEPRWIN] ON [CCurtEEPricingWindow] 
+(
+	[Offset] ASC,
+	[CCurtEEPricingID] ASC
+);
+go
+CREATE UNIQUE NONCLUSTERED INDEX [INDX_CCURTGROUP_ECID_GRPNM] ON [CCurtGroup] 
+(
+	[EnergyCompanyID] ASC,
+	[CCurtGroupName] ASC
+);
+go
+CREATE UNIQUE NONCLUSTERED INDEX [INDX_CCRTGRPCSTNOTIF_GID_CID] ON [CCurtGroupCustomerNotif] 
+(
+	[CustomerID] ASC,
+	[CCurtGroupID] ASC
+);
+go
+CREATE UNIQUE NONCLUSTERED INDEX [INDX_CCURTPRGGRP_GRPID_PRGID] ON [dbo].[CCurtProgramGroup] 
+(
+	[CCurtProgramID] ASC,
+	[CCurtGroupID] ASC
+);
+go
 /* End YUK-5312 */
 
 /******************************************************************************/
