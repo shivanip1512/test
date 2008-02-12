@@ -41,3 +41,16 @@ alter table ScheduleTimePeriod
       references DeliverySchedule (ScheduleID);
 /* @error ignore-end */
 /* End YUK-5017, YUK-5001*/
+
+/* Start YUK-5312 */
+/* @error ignore-begin */
+ALTER TABLE METERHARDWAREBASE
+MODIFY(METERTYPEID  NOT NULL);
+
+ALTER TABLE WAREHOUSE
+MODIFY(NOTES  NULL);
+
+ALTER TABLE WORKORDERBASE
+MODIFY(ADDITIONALORDERNUMBER  NULL);
+/* @error ignore-end */
+/* End YUK-5312 */

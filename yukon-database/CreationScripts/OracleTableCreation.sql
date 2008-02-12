@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/6/2008 3:51:01 PM                          */
+/* Created on:     2/8/2008 4:02:31 PM                          */
 /*==============================================================*/
 
 
@@ -6696,7 +6696,7 @@ INSERT INTO Route VALUES (0,0,'N');
 /* Index: Indx_RouteDevID                                       */
 /*==============================================================*/
 create unique index Indx_RouteDevID on Route (
-   DeviceID DESC,
+   DeviceID ASC,
    RouteID ASC
 );
 

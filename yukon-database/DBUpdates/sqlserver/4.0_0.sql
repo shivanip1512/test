@@ -1635,6 +1635,48 @@ alter table PROFILEPEAKRESULT
 go
 /* End YUK-5332 */
 
+/* Start YUK-5312 */
+ALTER TABLE [ActivityLog]
+ALTER COLUMN [Description] [varchar] (240) NULL;
+GO
+
+ALTER TABLE [BillingFileFormats]
+ALTER COLUMN [FormatType] [varchar] (100) NOT NULL;
+GO
+
+ALTER TABLE [CCurtEEParticipantWindow]
+ALTER COLUMN [CCurtEEParticipantSelectionID] [numeric] (18, 0) NOT NULL;
+GO
+
+ALTER TABLE [CCurtEEParticipantWindow]
+ALTER COLUMN [CCurtEEPricingWindowID] [numeric] (18, 0) NOT NULL;
+GO
+
+ALTER TABLE [CCurtEEPricingWindow]
+ALTER COLUMN [CCurtEEPricingID] [numeric] (18, 0) NOT NULL;
+GO
+
+ALTER TABLE [CCurtGroup]
+ALTER COLUMN [EnergyCompanyID] [numeric] (18, 0) NOT NULL;
+GO
+
+ALTER TABLE [CCurtGroupCustomerNotif]
+ALTER COLUMN [CCurtGroupID] [numeric] (18, 0) NOT NULL;
+GO
+
+ALTER TABLE [CCurtGroupCustomerNotif]
+ALTER COLUMN [CustomerID] [numeric] (18, 0) NOT NULL;
+GO
+
+ALTER TABLE [CCurtProgramGroup]
+ALTER COLUMN [CCurtGroupID] [numeric] (18, 0) NOT NULL;
+GO
+
+ALTER TABLE [CCurtProgramGroup]
+ALTER COLUMN [CCurtProgramID] [numeric] (18, 0) NOT NULL;
+GO
+/* End YUK-5312 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/11/2008 1:54:43 PM                         */
+/* Created on:     2/12/2008 8:31:50 AM                         */
 /*==============================================================*/
 
 
@@ -3103,7 +3103,7 @@ create table ActivityLog (
    CustomerID           numeric              null,
    PaoID                numeric              null,
    Action               varchar(80)          not null,
-   Description          varchar(240)         not null,
+   Description          varchar(240)         null,
    constraint PK_ACTIVITYLOG primary key (ActivityLogID)
 )
 go
@@ -3864,8 +3864,8 @@ go
 create table CCurtEEParticipantWindow (
    CCurtEEParticipantWindowID numeric              not null,
    EnergyToBuy          numeric(19,2)        not null,
-   CCurtEEPricingWindowID numeric              null,
-   CCurtEEParticipantSelectionID numeric              null,
+   CCurtEEPricingWindowID numeric              not null,
+   CCurtEEParticipantSelectionID numeric              not null,
    constraint PK_CCURTEEPARTICIPANTWINDOW primary key (CCurtEEParticipantWindowID)
 )
 go
@@ -3907,7 +3907,7 @@ create table CCurtEEPricingWindow (
    CCurtEEPricingWindowID numeric              not null,
    EnergyPrice          numeric(19,2)        not null,
    Offset               numeric              not null,
-   CCurtEEPricingID     numeric              null,
+   CCurtEEPricingID     numeric              not null,
    constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindowID)
 )
 go
@@ -3957,7 +3957,7 @@ go
 /*==============================================================*/
 create table CCurtGroup (
    CCurtGroupID         numeric              not null,
-   EnergyCompanyID      numeric              null,
+   EnergyCompanyID      numeric              not null,
    CCurtGroupName       varchar(255)         not null,
    constraint PK_CCURTGROUP primary key (CCurtGroupID)
 )
@@ -3978,8 +3978,8 @@ go
 create table CCurtGroupCustomerNotif (
    CCurtGroupCustomerNotifID numeric              not null,
    Attribs              varchar(255)         not null,
-   CustomerID           numeric              null,
-   CCurtGroupID         numeric              null,
+   CustomerID           numeric              not null,
+   CCurtGroupID         numeric              not null,
    constraint PK_CCURTGROUPCUSTOMERNOTIF primary key (CCurtGroupCustomerNotifID)
 )
 go
@@ -4020,8 +4020,8 @@ go
 /*==============================================================*/
 create table CCurtProgramGroup (
    CCurtProgramGroupID  numeric              not null,
-   CCurtProgramID       numeric              null,
-   CCurtGroupID         numeric              null,
+   CCurtProgramID       numeric              not null,
+   CCurtGroupID         numeric              not null,
    constraint PK_CCURTPROGRAMGROUP primary key (CCurtProgramGroupID)
 )
 go
