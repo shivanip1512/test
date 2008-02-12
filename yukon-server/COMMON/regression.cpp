@@ -8,11 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2007/06/13 15:28:28 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/02/12 04:15:29 $
 *
 * HISTORY      :
 * $Log: regression.cpp,v $
+* Revision 1.6  2008/02/12 04:15:29  jrichter
+* YUK-4375
+* report: VAR/PF confirmation percentage for last 7 days & 30 days
+*
 * Revision 1.5  2007/06/13 15:28:28  jotteson
 * YUK-3797
 * Added more control over the number of points used in a regression, also added regression functions that return more data.
@@ -92,7 +96,7 @@ void CtiRegression::setMinDepth( size_t n )
     _minDepth = n;
 }
 
-int CtiRegression::getCurDepth( )
+int CtiRegression::getCurDepth( ) const
 {
     return _regData.size();
 }
@@ -122,12 +126,21 @@ void CtiRegression::resize( size_t n )
     }
 }
 
+int CtiRegression::getRegDepth() const
+{
+    return _regDepth;
+}
+
+bool CtiRegression::depthMet() const
+{
+    return ( _regDepth == _regData.size() );
+}
 /*
  *  Compute the regession using the stored values with the X value passed into this function
  *
  *  returns: The y coordinate of y = mx + b.
  */
-double CtiRegression::regression( double xprojection )
+double CtiRegression::regression( double xprojection ) const
 {
     double y = 0.0;
     double xorigin;             // Regress computes relative to the front element's x coord.

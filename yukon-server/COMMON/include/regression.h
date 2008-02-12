@@ -9,10 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/08/07 21:04:52 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/02/12 04:15:29 $
 * HISTORY      :
 * $Log: regression.h,v $
+* Revision 1.5  2008/02/12 04:15:29  jrichter
+* YUK-4375
+* report: VAR/PF confirmation percentage for last 7 days & 30 days
+*
 * Revision 1.4  2007/08/07 21:04:52  mfisher
 * removed "using namespace std;" from header files
 *
@@ -63,14 +67,15 @@ public:
     void resize( size_t n );
     void setDepth( size_t n );
     void setMinDepth( size_t n );
-    int  getCurDepth();
-
+    int  getCurDepth() const;
+    int  getRegDepth() const;
+    bool depthMet() const;
     /*
      *  Compute the regession using the stored values with the X value passed into this function
      *
      *  returns: The y coordinate of y = mx + b.
      */
-    double regression( double xprojection );
+    double regression( double xprojection ) const;
     bool linearConstantIntervalRegression( double &slope, double &intercept );
 };
 #endif // #ifndef __REGRESSION_H__
