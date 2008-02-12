@@ -36,6 +36,11 @@ insert into YukonRoleProperty values(-20894,-201,'Opt Out Today Only','false','P
 go
 /* @error ignore-end */
 
+/* Start YUK-5345 */
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCINVENTORY_VIEW]'))
+DROP VIEW [CCINVENTORY_VIEW];
+go
+/* End YUK-5345 */
 create view CCINVENTORY_VIEW as
 SELECT yp3.Description AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, yp2.PAObjectID AS fdrId, 
                       yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS Bankname, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
@@ -59,7 +64,11 @@ FROM CAPBANK cb INNER JOIN
                       capbankadditional capa on capa.deviceid = cb.deviceid;
 go
 
-
+/* Start YUK-5345 */
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCOPERATIONS_VIEW]'))
+DROP VIEW [CCOPERATIONS_VIEW];
+go
+/* End YUK-5345 */
 create view CCOPERATIONS_VIEW as
 SELECT 
 	yp3.PAOName AS cbcName, yp.PAOName AS bankname, el.DateTime AS opTime, el.Text AS operation, 
