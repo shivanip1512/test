@@ -3,6 +3,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteCommand"%> 
 <%@ page import="com.cannontech.database.db.command.CommandCategory"%>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils" %>
 
 <style type="text/css">
 div.scroll { font-size: 12px; 
@@ -42,8 +43,80 @@ div.scroll { font-size: 12px;
         document.commandForm.submit();
     }
     function loadCommand() {
-        document.commandForm.command.value = document.commandForm.commonCommand.value;
+        
+        var originalCmd = document.commandForm.commonCommand.value;
+        
+        var replacementCmd = replaceCommandParams(originalCmd);
+        
+        replacementCmd != null ? document.commandForm.command.value = replacementCmd : document.commandForm.command.value = originalCmd;
     }
+    
+    function replaceCommandParams(cmd) {
+    
+        var params = new Array();
+        var replacements = new Array();
+    
+        for (i = 0; i < cmd.length; i++) {
+        
+            // search for ?' or ?" to that indicates the beginning of a prompt replacement
+            if (cmd[i] == '?') {
+                
+                var startIdx = i;
+                var endIdx = null;
+                
+                // quoted prompt string if quote immediately follows ?
+                if ((cmd[i+1] == "'" || cmd[i+1] == '"')) {
+                    for (j = i+2; j < cmd.length; j++) {
+                        if (cmd[j] == "'" || cmd[j] == '"') {
+                            endIdx = j;
+                            break;    
+                        }
+                    }
+                }
+                
+                // unquoted prompt string
+                // ends at space or quote that is to be preserved, or eol
+                else {
+                    for (j = i+1; j < cmd.length; j++) {
+                        if (cmd[j] == ' ' || cmd[j] == "'" || cmd[j] == '"') {
+                            endIdx = j - 1;
+                            break;    
+                        }
+                    }
+                    if (endIdx == null) {
+                        endIdx = cmd.length;
+                    }
+                }
+                
+                // pull the parameter prompt from the command
+                var param = cmd.substring(startIdx, endIdx + 1)
+                
+                // clean it up for display and prompt user for replacement
+                var displayParam = param.replace(/'/g, '').replace(/"/g, '').replace('?', '');
+                var replacement = prompt("Enter value for command parameter:\n\n " + displayParam, "");
+                
+                if (replacement == null) {
+                    return null;
+                }
+                
+                // save original prompt string and replacement
+                params.push(param);
+                replacements.push(replacement);
+            
+                // move index forward past this prompt to continue parsing command
+                i = endIdx;
+            }
+        }
+    
+        // do replacements
+        for(i = 0; i < params.length; i++) {
+            cmd = cmd.replace(params[i], replacements[i])
+        }
+    
+        return cmd;
+    }
+    
+    
 </SCRIPT>
     
 <% 
@@ -132,10 +205,10 @@ div.scroll { font-size: 12px;
     for (int i = 0; i < YC_BEAN.getLiteDeviceTypeCommandsVector().size(); i++) {
 		LiteDeviceTypeCommand ldtc = (LiteDeviceTypeCommand)YC_BEAN.getLiteDeviceTypeCommandsVector().get(i);
 		LiteCommand lc = DaoFactory.getCommandDao().getCommand(ldtc.getCommandID());
-		String commandString = lc.getCommand();
+		String commandString = StringEscapeUtils.escapeHtml(lc.getCommand());
         if( ldtc.isVisible() && YC_BEAN.isAllowCommand(commandString, lYukonUser, commandObject)) {
 %>
-						<option value='<%=commandString%>' <%=(commandString.equalsIgnoreCase(tempCommand))? "selected":""%> ><%=lc.getLabel()%></option>
+						<option value="<%=commandString%>" <%=(commandString.equalsIgnoreCase(tempCommand))? "selected":""%> ><%=lc.getLabel()%></option>
 <%
 		}
 	}
