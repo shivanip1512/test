@@ -2650,7 +2650,6 @@ void CtiCCCommandExecutor::DisableArea()
                 if (currentSubstation != NULL)
                 {
                     currentSubstation->setSaEnabledFlag(FALSE);
-                    currentSubstation->setSaEnabledId(0);
                 }
             }
             //store->setValid(false);  //This is to do a full DATABASE RELOAD.

@@ -4253,17 +4253,15 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                     if (!currentCCSpArea->getDisableFlag())
                                     {
                                         currentStation->setSaEnabledFlag(TRUE);
-                                        currentStation->setSaEnabledId(currentSpAreaId);
                                     }
                                     else
                                     {
                                         currentStation->setSaEnabledFlag(FALSE);
-                                        currentStation->setSaEnabledId(0);
                                     }
+                                    currentStation->setSaEnabledId(currentSpAreaId);
                                 }
                                 substation_specialarea_map->insert(make_pair(currentSubId, currentSpAreaId));
                                 currentCCSpArea->getSubstationIds()->push_back(currentSubId);
-
                             }
                         }
                     }
@@ -7455,7 +7453,6 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
                 if ( station != NULL)
                 {
                     station->setSaEnabledFlag(FALSE);
-                    station->setSaEnabledId(0);
                 }
                 _substation_specialarea_map.erase(stationId);
                 iter++;
