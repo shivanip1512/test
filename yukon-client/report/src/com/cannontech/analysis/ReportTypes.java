@@ -85,7 +85,9 @@ public enum ReportTypes {
             "Report showing all time controlled capbanks."),
     VAR_IMBALANCE_ON_EXECUTION("Var Imbalance on Execution Report", VarImbalanceOnExecutionController.class, ReportGroup.CAP_CONTROL,
             "Report showing the var imbalance on execution."),
-    
+    CBC_SPECIALAREA_ADDRESSING("CBC Special Area Addressing Report", CBCSpecialAreaAddressingController.class, ReportGroup.CAP_CONTROL,
+            "Report showing the special area addressing for cbc."),
+            
     COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
     //STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
     //STATISTIC_HISTORY_DEVICE_DATA("Historical Daily Device Statistics", StatisticHistoryDeviceModel.class, ReportGroup.STATISTICAL),
