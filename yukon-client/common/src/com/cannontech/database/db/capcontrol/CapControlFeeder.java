@@ -15,7 +15,7 @@ public class CapControlFeeder extends com.cannontech.database.db.DBPersistent {
     private String usePhaseData = "N";
     private Integer phaseB = new Integer(CtiUtilities.NONE_ZERO_ID);
     private Integer phaseC = new Integer(CtiUtilities.NONE_ZERO_ID);
-    private String controlFlag = "NNNNNNNNNN";
+    private String controlFlag = "N";
 
 	public static final String SETTER_COLUMNS[] = { 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID",
