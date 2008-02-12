@@ -1588,13 +1588,15 @@ go
 
 /* Start YUK-5323 */
 /* @error ignore-begin */
-sp_rename 'PK_IMPPENDINGCOMM','PK_IMPORTPENDINGCOMM'
+sp_rename 'PK_IMPPENDINGCOMM','PK_IMPORTPENDINGCOMM';
+go
 /* @error ignore-end */
 /* End YUK-5323 */
 
 /* Start YUK-5324 */
 /* @error ignore-begin */
-sp_rename 'PK_SUB_RTE_MAP','PK_SUBSTATIONTOROUTEMAPPING'
+sp_rename 'PK_SUB_RTE_MAP','PK_SUBSTATIONTOROUTEMAPPING';
+go
 /* @error ignore-end */
 /* End YUK-5324 */ 
 
@@ -1648,6 +1650,10 @@ GO
 
 ALTER TABLE [BillingFileFormats]
 ALTER COLUMN [FormatType] [varchar] (100) NOT NULL;
+GO
+
+ALTER TABLE [BillingFileFormats]
+ALTER COLUMN [SystemFormat] [smallint] NOT NULL;
 GO
 
 ALTER TABLE [CCurtEEParticipantWindow]
