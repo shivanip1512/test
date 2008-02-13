@@ -205,14 +205,14 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         int nextValue = nextValueHelper.getNextValue("DeviceGroup");
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("insert into DeviceGroup");
-        sql.append("(DeviceGroupId, GroupName, ParentDeviceGroupId, SystemGroup, Type)");
+        sql.append("(DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type)");
         sql.append("values");
         sql.append("(?, ?, ?, ?, ?)");
         
         String rawName = SqlUtils.convertStringToDbValue(groupName);
 
         try {
-            jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), "N", type.name());
+            jdbcTemplate.update(sql.toString(), nextValue, rawName, group.getId(), DeviceGroupPermission.EDIT_MOD.toString(), type.name());
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Cannot create group with the same name as an existing group with the same parent.", e);
         }
