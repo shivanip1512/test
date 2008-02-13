@@ -235,7 +235,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     public boolean isArea(int id) {
         try {
-            getCBCArea(id);
+            getArea(id);
             return true;
         } catch (NotFoundException e) {
             return false;
@@ -556,20 +556,33 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Returns the Parent Area ID for the given child id
      */
     public synchronized int getParentAreaID(int childID) throws NotFoundException {
-        if( isArea(childID)){
+        int id;
+        SubStation station;
+        
+    	if( isArea(childID)){
         	return childID;
         }
     	else if( isSubstation(childID) ) {
-            return getSubstation(childID).getParentID();
+            station = getSubstation(childID);
         }else if( isSubBus(childID)){
-        	return getSubstation(getSubBus(childID).getParentID()).getParentID();
+        	station = getSubstation(getSubBus(childID).getParentID());
         }else if( isFeeder(childID) ) {
-            return getSubstation(getSubBus(getFeeder(new Integer(childID)).getParentID()).getParentID()).getParentID();
+        	station = getSubstation(getSubBus(getFeeder(new Integer(childID)).getParentID()).getParentID());
         } else if( isCapBank(childID) ) {
-            return getSubstation(getSubBus(getFeeder(new Integer(getCapBankDevice(new Integer(childID)).getParentID())).getParentID()).getParentID()).getParentID();
+        	station = getSubstation(getSubBus(getFeeder(new Integer(getCapBankDevice(new Integer(childID)).getParentID())).getParentID()).getParentID());
         } else {
-            return CtiUtilities.NONE_ZERO_ID;
+            station = null;
         }
+        
+        if( station == null) {
+        	id = CtiUtilities.NONE_ZERO_ID;
+        } else {
+	        id = station.getParentID();
+			if (id < 0) {
+				id = station.getSpecialAreaId();
+			}
+        }
+    	return id;
     }    
     /**
     * @param CBCSubAreas
@@ -665,7 +678,9 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private synchronized void handleDeletedSubs(CBCSubstationBuses busesMsg) {
         for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ ){
         	//remove old
-        	handleDeletedSub( busesMsg.getSubBusAt(i).getCcId() );
+        	SubBus bus = busesMsg.getSubBusAt(i);
+        	handleDeletedFeeders( bus.getCcFeeders() );
+        	handleDeletedSub( bus.getCcId() );
         }
     }
     
@@ -741,8 +756,21 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         removeFromCacheMap(cbcSpecialAreaMap, deviceID);
     }
     
+    private synchronized void handleDeletedCaps( Vector<CapBankDevice> vec ) {
+    	for( CapBankDevice cap : vec ) {
+    		handleDeletedCap(cap.getCcId());
+    	}
+    }
+
     private synchronized void handleDeletedCap(int deviceID) {
         removeFromCacheMap(capBankMap, deviceID);
+    }
+    
+    private synchronized void handleDeletedFeeders( Vector<Feeder> v ) {
+    	for( Feeder f : v ) {
+    		handleDeletedCaps( f.getCcCapBanks() );
+    		handleDeletedFeeder(f.getCcId());
+    	}
     }
     
     private synchronized void handleDeletedFeeder(int deviceID) {
