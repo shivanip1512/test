@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.115 $
-* DATE         :  $Date: 2007/11/21 19:55:47 $
+* REVISION     :  $Revision: 1.116 $
+* DATE         :  $Date: 2008/02/13 16:12:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2097,6 +2097,7 @@ bool processInputFunction(CHAR Char)
     case 0x7a:              // alt-z
         {
             gConfigParms.RefreshConfigParameters();
+            LoadPorterGlobals();
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
