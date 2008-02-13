@@ -351,6 +351,7 @@ public final class CBCUtils {
         String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
         for (CapBankDevice capBank : capBanks) {
             Integer controlStatus = capBank.getControlStatus();
+            if(controlStatus > 7) continue;  // don't count cb's with states that aren't standard states
             String operationalState = capBank.getOperationalState();
             Boolean disabled = capBank.getCcDisableFlag();
             if(disabled) {
@@ -371,6 +372,7 @@ public final class CBCUtils {
         String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
         for (CapBankDevice capBank : capBanks) {
             Integer controlStatus = capBank.getControlStatus();
+            if(controlStatus > 7) continue;  // don't count cb's with states that aren't standard states
             String operationalState = capBank.getOperationalState();
             Boolean disabled = capBank.getCcDisableFlag();
             if(disabled) {
@@ -397,6 +399,7 @@ public final class CBCUtils {
         String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
         for (CapBankDevice capBank : capBanks) {
             Integer controlStatus = capBank.getControlStatus();
+            if(controlStatus > 7) continue;  // don't count cb's with states that aren't standard states
             String operationalState = capBank.getOperationalState();
             Boolean disabled = capBank.getCcDisableFlag();
             if(disabled) {
@@ -423,6 +426,7 @@ public final class CBCUtils {
         String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
         for (CapBankDevice capBank : capBanks) {
             Integer controlStatus = capBank.getControlStatus();
+            if(controlStatus > 7) continue;  // don't count cb's with states that aren't standard states
             String operationalState = capBank.getOperationalState();
             Boolean disabled = capBank.getCcDisableFlag();
             if(disabled) {
