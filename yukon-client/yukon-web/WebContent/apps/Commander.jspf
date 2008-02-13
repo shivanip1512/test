@@ -56,17 +56,18 @@ div.scroll { font-size: 12px;
         var params = new Array();
         var replacements = new Array();
     
-        for (i = 0; i < cmd.length; i++) {
+        var cmdIdx = 0;
+        while(cmdIdx < cmd.length) {
         
             // search for ?' or ?" to that indicates the beginning of a prompt replacement
-            if (cmd[i] == '?') {
+            if (cmd[cmdIdx] == '?') {
                 
-                var startIdx = i;
+                var startIdx = cmdIdx;
                 var endIdx = null;
                 
                 // quoted prompt string if quote immediately follows ?
-                if ((cmd[i+1] == "'" || cmd[i+1] == '"')) {
-                    for (j = i+2; j < cmd.length; j++) {
+                if ((cmd[cmdIdx + 1] == "'" || cmd[cmdIdx + 1] == '"')) {
+                    for (j = cmdIdx + 2; j < cmd.length; j++) {
                         if (cmd[j] == "'" || cmd[j] == '"') {
                             endIdx = j;
                             break;    
@@ -77,7 +78,7 @@ div.scroll { font-size: 12px;
                 // unquoted prompt string
                 // ends at space or quote that is to be preserved, or eol
                 else {
-                    for (j = i+1; j < cmd.length; j++) {
+                    for (j = cmdIdx + 1; j < cmd.length; j++) {
                         if (cmd[j] == ' ' || cmd[j] == "'" || cmd[j] == '"') {
                             endIdx = j - 1;
                             break;    
@@ -104,13 +105,16 @@ div.scroll { font-size: 12px;
                 replacements.push(replacement);
             
                 // move index forward past this prompt to continue parsing command
-                i = endIdx;
+                cmdIdx = endIdx;
+                continue;
             }
+            
+            cmdIdx++;
         }
     
         // do replacements
-        for(i = 0; i < params.length; i++) {
-            cmd = cmd.replace(params[i], replacements[i])
+        for(paramIdx = 0; paramIdx < params.length; paramIdx++) {
+            cmd = cmd.replace(params[paramIdx], replacements[paramIdx])
         }
     
         return cmd;
