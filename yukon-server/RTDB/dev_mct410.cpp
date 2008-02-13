@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.152 $
-* DATE         :  $Date: 2008/01/21 21:01:48 $
+* REVISION     :  $Revision: 1.153 $
+* DATE         :  $Date: 2008/02/13 16:08:22 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2729,8 +2729,7 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                 pointString = getName() + " / Outage " + CtiNumStr(outagenum + i) + " : " + timeString + " for ";
 
                 if( getDynamicInfo(Keys::Key_MCT_SSpec)         == Sspec &&
-                    getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_NewOutage_Min &&
-                    getDynamicInfo(Keys::Key_MCT_SSpecRevision) <= SspecRev_NewOutage_Max )
+                    getDynamicInfo(Keys::Key_MCT_SSpecRevision) >= SspecRev_NewOutage_Min )
                 {
                     /*
                     Units of outage:
@@ -2754,9 +2753,6 @@ INT CtiDeviceMCT410::decodeGetValueOutage( INMESS *InMessage, CtiTime &TimeNow, 
                     if( multiplier == 2 && cycles == 0xffff )
                     {
                         pointString += "(outage greater than 45 days)";
-
-                        cycles *= 60;  //  minutes to seconds
-                        cycles *= 60;  //  seconds to cycles
                     }
                     else
                     {
