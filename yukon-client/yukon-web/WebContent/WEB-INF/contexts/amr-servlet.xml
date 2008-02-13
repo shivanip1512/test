@@ -47,6 +47,7 @@
     </bean>
     
     <bean id="BulkImporterHomeController" class="com.cannontech.web.bulkimporter.BulkImporterHomeController">
+        <property name="roleDao" ref="roleDao"/>
     </bean>
     
     <bean id="ProfileController" class="com.cannontech.web.amr.profile.ProfileController">

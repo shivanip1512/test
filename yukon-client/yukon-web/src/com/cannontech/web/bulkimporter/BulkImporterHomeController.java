@@ -3,12 +3,18 @@ package com.cannontech.web.bulkimporter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
+import com.cannontech.core.dao.RoleDao;
+import com.cannontech.roles.yukon.SystemRole;
+
 public class BulkImporterHomeController implements Controller  {
-    
+
+    private RoleDao roleDao = null;
+
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
         
         ModelAndView mav = new ModelAndView("bulkimporter/importer.jsp");
@@ -21,6 +27,10 @@ public class BulkImporterHomeController implements Controller  {
         
         // init results table headers
         addColumnInfoToMav(mav);
+        
+        // checking importer for communication access
+        boolean isCommunicationEnabled = Boolean.parseBoolean(roleDao.getGlobalPropertyValue(SystemRole.BULK_IMPORTER_COMMUNICATIONS_ENABLED));
+        mav.addObject("importerCommunicationsEnabled", isCommunicationEnabled);
         
         return mav;
     }
@@ -41,6 +51,11 @@ public class BulkImporterHomeController implements Controller  {
         mav.addObject("failureColumnNames", FailureColumnNames);
         mav.addObject("pendingCommsColumnNames", PendingCommColumnNames);
         mav.addObject("failureCommsColumnNames", FailureCommColumnNames);
+    }
+
+    @Required
+    public void setRoleDao(RoleDao roleDao) {
+        this.roleDao = roleDao;
     }
     
 }

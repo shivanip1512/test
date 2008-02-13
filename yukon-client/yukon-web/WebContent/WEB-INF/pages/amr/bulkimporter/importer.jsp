@@ -52,12 +52,20 @@
         
         </tags:nameValue>
         
-        
-    
         <%-- FORCE IMPORT EVENT --%>
         <tags:nameValue name="Force Manual Import Event">
             <input type="submit" name="forceManualImportEvent" value="Import">
         </tags:nameValue>
+        
+        <%-- TOGGLE BULK IMPORTER COMMUNICATION --%>
+        <c:choose>
+            <c:when test="${importerCommunicationsEnabled}">
+                <tags:nameValue name="Bulk Importer Communications">Currently On</tags:nameValue>
+            </c:when>
+            <c:otherwise>
+                <tags:nameValue name="Bulk Importer Communications">Currently Off</tags:nameValue>
+            </c:otherwise>
+        </c:choose>
         
         <%-- CLEAR IMPORTS --%>
         <tags:nameValue name="Clear Imports">

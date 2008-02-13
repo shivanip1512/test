@@ -36,6 +36,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -66,6 +67,7 @@ import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
+import com.cannontech.roles.yukon.SystemRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yimp.util.ImportFuncs;
@@ -240,6 +242,7 @@ public void runImport(List<ImportData> imps) {
     DeviceGroupService deviceGroupService = (DeviceGroupService) YukonSpringHook.getBean("deviceGroupService");
     DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = (DeviceGroupMemberEditorDao) YukonSpringHook.getBean("deviceGroupMemberEditorDao");
     DeviceGroupEditorDao deviceGroupEditorDao = (DeviceGroupEditorDao) YukonSpringHook.getBean("deviceGroupEditorDao");
+    RoleDao roleDao = (RoleDao) YukonSpringHook.getBean("roleDao");
     
     StoredDeviceGroup alternateGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.ALTERNATE);
     StoredDeviceGroup billingGroupBase = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
@@ -605,7 +608,10 @@ public void runImport(List<ImportData> imps) {
                 deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
 
                 //write pending communication entry for porter thread to pick up
-                Transaction.createTransaction(Transaction.INSERT, pc).execute();
+                boolean importerCommunications = Boolean.parseBoolean(roleDao.getGlobalPropertyValue(SystemRole.BULK_IMPORTER_COMMUNICATIONS_ENABLED));
+                if (importerCommunications){
+                    Transaction.createTransaction(Transaction.INSERT, pc).execute();
+                }
                 
 				successVector.add(imps.get(j));
 				log.info(current400Series.getPAOType() + " with name " + name + " with address " + address + " successfully imported.");
