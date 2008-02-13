@@ -1732,6 +1732,25 @@ CREATE UNIQUE NONCLUSTERED INDEX [INDX_CCURTPRGGRP_GRPID_PRGID] ON [dbo].[CCurtP
 go
 /* End YUK-5312 */
 
+/* Start YUK-5330 */
+DROP INDEX [Indx_RouteDevID] ON [Route];
+go
+CREATE UNIQUE NONCLUSTERED INDEX [Indx_RouteDevID] ON [Route] 
+(
+	[DeviceID] ASC,
+	[RouteID] ASC
+);
+go
+
+DROP INDEX [Indx_STATEGRP_Nme] ON [STATEGROUP];
+go
+CREATE UNIQUE NONCLUSTERED INDEX [Indx_STATEGRP_Nme] ON [STATEGROUP] 
+(
+	[NAME] ASC
+);
+go
+/* End YUK-5330 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/8/2008 4:02:31 PM                          */
+/* Created on:     2/13/2008 9:51:41 AM                         */
 /*==============================================================*/
 
 
@@ -877,7 +877,7 @@ create table ActivityLog  (
    CustomerID           NUMBER,
    PaoID                NUMBER,
    Action               VARCHAR2(80)                    not null,
-   Description          VARCHAR2(240)                   not null,
+   Description          VARCHAR2(240),
    constraint PK_ACTIVITYLOG primary key (ActivityLogID)
 );
 
@@ -1589,8 +1589,8 @@ create unique index INDX_CCURTEEPARTSEL_CCURTEEPR on CCurtEEParticipantSelection
 create table CCurtEEParticipantWindow  (
    CCurtEEParticipantWindowID NUMBER                          not null,
    EnergyToBuy          NUMBER(19,2)                    not null,
-   CCurtEEPricingWindowID NUMBER,
-   CCurtEEParticipantSelectionID NUMBER,
+   CCurtEEPricingWindowID NUMBER                          not null,
+   CCurtEEParticipantSelectionID NUMBER                          not null,
    constraint PK_CCURTEEPARTICIPANTWINDOW primary key (CCurtEEParticipantWindowID)
 );
 
@@ -1628,7 +1628,7 @@ create table CCurtEEPricingWindow  (
    CCurtEEPricingWindowID NUMBER                          not null,
    EnergyPrice          NUMBER(19,2)                    not null,
    Offset               NUMBER                          not null,
-   CCurtEEPricingID     NUMBER,
+   CCurtEEPricingID     NUMBER                          not null,
    constraint PK_CCURTEEPRICINGWINDOW primary key (CCurtEEPricingWindowID)
 );
 
@@ -1674,7 +1674,7 @@ create table CCurtEconomicEventNotif  (
 /*==============================================================*/
 create table CCurtGroup  (
    CCurtGroupID         NUMBER                          not null,
-   EnergyCompanyID      NUMBER,
+   EnergyCompanyID      NUMBER                          not null,
    CCurtGroupName       VARCHAR2(255)                   not null,
    constraint PK_CCURTGROUP primary key (CCurtGroupID)
 );
@@ -1693,8 +1693,8 @@ create unique index INDX_CCURTGROUP_ECID_GRPNM on CCurtGroup (
 create table CCurtGroupCustomerNotif  (
    CCurtGroupCustomerNotifID NUMBER                          not null,
    Attribs              VARCHAR2(255)                   not null,
-   CustomerID           NUMBER,
-   CCurtGroupID         NUMBER,
+   CustomerID           NUMBER                          not null,
+   CCurtGroupID         NUMBER                          not null,
    constraint PK_CCURTGROUPCUSTOMERNOTIF primary key (CCurtGroupCustomerNotifID)
 );
 
@@ -1731,8 +1731,8 @@ create index INDX_CCURTPGM_PRGNM_PRGTYPEID on CCurtProgram (
 /*==============================================================*/
 create table CCurtProgramGroup  (
    CCurtProgramGroupID  NUMBER                          not null,
-   CCurtProgramID       NUMBER,
-   CCurtGroupID         NUMBER,
+   CCurtProgramID       NUMBER                          not null,
+   CCurtGroupID         NUMBER                          not null,
    constraint PK_CCURTPROGRAMGROUP primary key (CCurtProgramGroupID)
 );
 
@@ -6812,7 +6812,7 @@ insert into StateGroup values (-8, 'TwoStateActive', 'Status');
 /* Index: Indx_STATEGRP_Nme                                     */
 /*==============================================================*/
 create unique index Indx_STATEGRP_Nme on STATEGROUP (
-   NAME DESC
+   NAME ASC
 );
 
 /*==============================================================*/

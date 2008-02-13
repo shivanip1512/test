@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/12/2008 8:31:50 AM                         */
+/* Created on:     2/13/2008 9:49:57 AM                         */
 /*==============================================================*/
 
 
@@ -9394,7 +9394,7 @@ insert into StateGroup values (-8, 'TwoStateActive', 'Status');
 /* Index: Indx_STATEGRP_Nme                                     */
 /*==============================================================*/
 create unique index Indx_STATEGRP_Nme on STATEGROUP (
-NAME DESC
+NAME ASC
 )
 go
 

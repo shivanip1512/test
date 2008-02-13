@@ -1567,6 +1567,21 @@ MODIFY(CCURTGROUPID  NOT NULL);
 /* @error ignore-end */
 /* End YUK-5312 */
 
+/* Start YUK-5330 */
+DROP INDEX Indx_RouteDevID;
+CREATE UNIQUE INDEX Indx_RouteDevID ON Route 
+(
+    DeviceID,
+    RouteID
+);
+
+DROP INDEX Indx_STATEGRP_Nme;
+CREATE UNIQUE INDEX Indx_STATEGRP_Nme ON STATEGROUP 
+(
+	NAME
+);
+/* End YUK-5330 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
