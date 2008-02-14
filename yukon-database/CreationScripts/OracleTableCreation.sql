@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/14/2008 9:58:05 AM                         */
+/* Created on:     2/14/2008 11:27:46 AM                        */
 /*==============================================================*/
 
 
@@ -8638,6 +8638,7 @@ insert into YukonRoleProperty values(-1017,-1,'notification_port','1515','TCP/IP
 insert into YukonRoleProperty values(-1018,-1,'export_file_directory','(none)','File location of all export operations');
 insert into YukonRoleProperty values(-1019,-1,'batched_switch_command_timer','auto','Specifies whether the STARS application should automatically process batched switch commands');
 insert into YukonRoleProperty values(-1020,-1,'stars_activation','false','Specifies whether STARS functionality should be allowed in this web deployment.');
+insert into YukonRoleProperty values(-1021,-1,'importer_communications_enabled','true','Specifies whether communications will be allowed by the bulk importer.'); 
 
 /* Energy Company Role Properties */
 insert into YukonRoleProperty values(-1100,-2,'admin_email_address','info@cannontech.com','Sender address of emails sent on behalf of energy company, e.g. control odds and opt out notification emails.');

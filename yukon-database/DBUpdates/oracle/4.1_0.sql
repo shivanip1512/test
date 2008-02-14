@@ -41,6 +41,10 @@ update Job set TimeZone = ' ';
 alter table Job modify TimeZone varchar2(40) not null;
 /* End YUK-5204 */
 
+/* Start YUK-5350 */
+insert into YukonRoleProperty values(-1021,-1,'importer_communications_enabled','true','Specifies whether communications will be allowed by the bulk importer.'); 
+/* End YUK-5350
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
