@@ -947,7 +947,6 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
                     subList.add(sub);
                 }
             }
-            Collections.sort(subList,CBCUtils.CCNAME_COMPARATOR );
             return subList;
         } catch (NotFoundException areaNotFoundTryingSpecialArea) {
             getCBCSpecialArea(areaId);
@@ -960,7 +959,6 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
                     subList.add(sub);
                 }
             }
-            Collections.sort(subList,CBCUtils.CCNAME_COMPARATOR );
             return subList;
         }
     }

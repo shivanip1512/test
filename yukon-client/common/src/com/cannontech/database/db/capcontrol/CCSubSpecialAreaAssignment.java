@@ -5,12 +5,15 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.DBPersistent;
@@ -53,7 +56,8 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         allSubs.append("CCSubSpecialAreaAssignment");
         allSubs.append("WHERE AreaID = ?");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        return yukonTemplate.query(allSubs.toString(), new Integer[] { areaID }, new RowMapper() {
+        List<CCSubSpecialAreaAssignment> list;
+        list = yukonTemplate.query(allSubs.toString(), new Integer[] { areaID }, new RowMapper() {
             public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
             CCSubSpecialAreaAssignment assign = new CCSubSpecialAreaAssignment();
             assign.setAreaID(rs.getInt(1));
@@ -61,7 +65,24 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
             assign.setDisplayOrder(rs.getInt(3));
             return assign;
            }
-       });
+        });
+        Collections.sort(list, new Comparator<CCSubSpecialAreaAssignment>() {
+            public int compare(CCSubSpecialAreaAssignment o1, CCSubSpecialAreaAssignment o2) {
+                try {
+                    Integer strA = o1.getDisplayOrder();
+                    Integer strB = o2.getDisplayOrder();
+
+                    return strA.compareTo(strB);
+                } catch (Exception e) {
+                    CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
+                    return 0;
+                }
+
+            }
+    	}
+    );
+
+        return list;
     }
 
     public void update() throws SQLException {

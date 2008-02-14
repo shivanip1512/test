@@ -4,17 +4,21 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.yukon.cbc.StreamableCapObject;
 
-public class CCSubAreaAssignment extends DBPersistent {
+public class CCSubAreaAssignment extends DBPersistent{
     private Integer areaID;
     private Integer substationBusID;
     private Integer displayOrder;
@@ -52,9 +56,25 @@ public class CCSubAreaAssignment extends DBPersistent {
                 CCSubAreaAssignment assign = new CCSubAreaAssignment();
                 assign.setAreaID(rs.getInt(1));
                 assign.setSubstationBusID(rs.getInt(2));
+                assign.setDisplayOrder(rs.getInt(3));
                 subStationsForAreaList.add(assign);
             }
         });
+        Collections.sort(subStationsForAreaList, new Comparator<CCSubAreaAssignment>() {
+	            public int compare(CCSubAreaAssignment o1, CCSubAreaAssignment o2) {
+	                try {
+	                    Integer strA = o1.getDisplayOrder();
+	                    Integer strB = o2.getDisplayOrder();
+	
+	                    return strA.compareTo(strB);
+	                } catch (Exception e) {
+	                    CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
+	                    return 0;
+	                }
+	
+	            }
+        	}
+        );
         return subStationsForAreaList;
     }
 
