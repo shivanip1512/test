@@ -59,6 +59,64 @@ go
 insert into YukonRoleProperty values(-1021,-1,'importer_communications_enabled','true','Specifies whether communications will be allowed by the bulk importer.'); 
 /* End YUK-5350
 
+/* Start YUK-5337 */
+INSERT INTO DeviceGroup
+(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
+SELECT MAX(DeviceGroupID)+1,'Scanning Meters',0,'Y','STATIC' FROM DeviceGroup WHERE DeviceGroupId<100;
+go
+
+INSERT INTO DeviceGroup
+(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
+SELECT MAX(DeviceGroupID)+1,'Load Profile',0,'Y','SCANNING_LOAD_PROFILE' FROM DeviceGroup WHERE DeviceGroupId<100;
+go
+INSERT INTO DeviceGroup
+(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
+SELECT MAX(DeviceGroupID)+1,'Voltage Profile',0,'Y','SCANNING_VOLTAGE_PROFILE' FROM DeviceGroup WHERE DeviceGroupId<100;
+go
+INSERT INTO DeviceGroup
+(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
+SELECT MAX(DeviceGroupID)+1,'Integrity',0,'Y','SCANNING_INTEGRITY' FROM DeviceGroup WHERE DeviceGroupId<100;
+go
+INSERT INTO DeviceGroup
+(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
+SELECT MAX(DeviceGroupID)+1,'Accumulator',0,'Y','SCANNING_ACCUMULATOR' FROM DeviceGroup WHERE DeviceGroupId<100;
+go
+
+UPDATE DeviceGroup
+SET ParentDeviceGroupId = (SELECT DeviceGroupId FROM DeviceGroup WHERE GroupName='Scanning Meters')
+WHERE Type IN ('SCANNING_LOAD_PROFILE','SCANNING_VOLTAGE_PROFILE','SCANNING_INTEGRITY','SCANNING_ACCUMULATOR');
+go
+
+ALTER TABLE DeviceGroup ALTER COLUMN SystemGroup nvarchar(50);
+go
+EXEC sp_rename 'DeviceGroup.SystemGroup', 'Permission', 'COLUMN';
+go
+
+UPDATE DeviceGroup
+SET Permission = 'NOEDIT_NOMOD'
+WHERE Permission = 'Y'
+AND Type = 'STATIC'
+AND GroupName IN ('Scanning Meters');
+go
+
+UPDATE DeviceGroup
+SET Permission = 'NOEDIT_MOD'
+WHERE Permission = 'Y'
+AND Type = 'STATIC';
+go
+
+UPDATE DeviceGroup
+SET Permission = 'NOEDIT_NOMOD'
+WHERE Permission = 'Y'
+AND Type != 'STATIC';
+go
+
+UPDATE DeviceGroup
+SET Permission = 'EDIT_MOD'
+WHERE Permission = 'N';
+go
+/* End YUK-5337 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

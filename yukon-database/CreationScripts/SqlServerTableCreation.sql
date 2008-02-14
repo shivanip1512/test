@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/14/2008 11:26:30 AM                        */
+/* Created on:     2/14/2008 4:38:20 PM                         */
 /*==============================================================*/
 
 
@@ -4979,24 +4979,30 @@ create table DEVICEGROUP (
    DeviceGroupId        numeric(18,0)        not null,
    GroupName            varchar(255)         not null,
    ParentDeviceGroupId  numeric(18,0)        null,
-   SystemGroup          char(1)              not null,
+   Permission           nvarchar(50)         not null,
    Type                 varchar(255)         not null,
    constraint PK_DEVICEGROUP primary key (DeviceGroupId)
 )
 go
 
-insert into DeviceGroup values (0,' ',null,'Y','STATIC');
-insert into DeviceGroup values (1,'Meters',0,'Y','STATIC');
-insert into DeviceGroup values (2,'Billing',1,'Y','STATIC');
-insert into DeviceGroup values (3,'Collection',1,'Y','STATIC');
-insert into DeviceGroup values (4,'Alternate',1,'Y','STATIC');
-insert into DeviceGroup values (8,'Flags',1,'Y','STATIC');
-insert into DeviceGroup values (9,'Inventory',8,'Y','STATIC');
-insert into DeviceGroup values (10,'DisconnectedStatus',8,'Y','STATIC');
-insert into DeviceGroup values (11,'UsageMonitoring',8,'Y','STATIC');
-INSERT INTO DeviceGroup values (12,'System',0,'Y','STATIC');
-INSERT INTO DeviceGroup values (13,'Routes',12,'Y','ROUTE');
-INSERT INTO DeviceGroup values (14,'Device Types',12,'Y','DEVICETYPE'); 
+insert into DeviceGroup values (0,' ',null,'NOEDIT_MOD','STATIC');
+insert into DeviceGroup values (1,'Meters',0,'NOEDIT_MOD','STATIC');
+insert into DeviceGroup values (2,'Billing',1,'NOEDIT_MOD','STATIC');
+insert into DeviceGroup values (3,'Collection',1,'NOEDIT_MOD','STATIC');
+insert into DeviceGroup values (4,'Alternate',1,'NOEDIT_MOD','STATIC');
+insert into DeviceGroup values (8,'Flags',1,'NOEDIT_MOD','STATIC');
+insert into DeviceGroup values (9,'Inventory',8,'NOEDIT_MOD','STATIC');
+insert into DeviceGroup values (10,'DisconnectedStatus',8,'NOEDIT_MOD','STATIC');
+insert into DeviceGroup values (11,'UsageMonitoring',8,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup values (12,'System',0,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup values (13,'Routes',12,'NOEDIT_NOMOD','ROUTE');
+INSERT INTO DeviceGroup values (14,'Device Types',12,'NOEDIT_NOMOD','DEVICETYPE'); 
+INSERT INTO DeviceGroup values (15,'Scanning Meters',0,'NOEDIT_NOMOD','STATIC');
+INSERT INTO DeviceGroup values (16,'Load Profile',15,'NOEDIT_NOMOD','SCANNING_LOAD_PROFILE');
+INSERT INTO DeviceGroup values (17,'Voltage Profile',15,'NOEDIT_NOMOD','SCANNING_VOLTAGE_PROFILE');
+INSERT INTO DeviceGroup values (18,'Integrity',15,'NOEDIT_NOMOD','SCANNING_INTEGRITY');
+INSERT INTO DeviceGroup values (19,'Accumulator',15,'NOEDIT_NOMOD','SCANNING_ACCUMULATOR');
+
 
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
