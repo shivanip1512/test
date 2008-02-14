@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/13/2008 9:51:41 AM                         */
+/* Created on:     2/14/2008 9:58:05 AM                         */
 /*==============================================================*/
 
 
@@ -1337,6 +1337,7 @@ create table CAPCONTROLSPECIALAREA  (
 /*==============================================================*/
 create table CAPCONTROLSUBSTATION  (
    SubstationID         NUMBER                          not null,
+   VoltReductionPointId NUMBER                          not null,
    constraint PK_CAPCONTROLSUBSTATION primary key (SubstationID)
 );
 
@@ -1357,6 +1358,7 @@ create table CAPCONTROLSUBSTATIONBUS  (
    phaseb               NUMBER                          not null,
    phasec               NUMBER                          not null,
    ControlFlag          CHAR(1)                         not null,
+   VoltReductionPointId NUMBER                          not null,
    constraint SYS_C0013476 primary key (SubstationBusID)
 );
 

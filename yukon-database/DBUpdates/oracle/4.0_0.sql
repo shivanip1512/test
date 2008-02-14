@@ -1582,6 +1582,16 @@ CREATE UNIQUE INDEX Indx_STATEGRP_Nme ON STATEGROUP
 );
 /* End YUK-5330 */
 
+/* Start YUK-5351 */
+alter table capcontrolsubstationbus add voltReductionPointId number;
+update capcontrolsubstationbus set voltReductionPointId = 0;
+alter table capcontrolsubstationbus modify voltReductionPointId number not null;
+
+alter table capcontrolsubstation add voltReductionPointId number;
+update capcontrolsubstation set voltReductionPointId = 0;
+alter table capcontrolsubstation modify voltReductionPointId number not null;
+/* End YUK-5351 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

@@ -1751,6 +1751,20 @@ CREATE UNIQUE NONCLUSTERED INDEX [Indx_STATEGRP_Nme] ON [STATEGROUP]
 go
 /* End YUK-5330 */
 
+/* Start YUK-5351 */
+alter table capcontrolsubstationbus add voltReductionPointId numeric;
+go
+update capcontrolsubstationbus set voltReductionPointId = 0;
+go
+alter table capcontrolsubstationbus alter column voltReductionPointId numeric not null;
+go
+alter table capcontrolsubstation add voltReductionPointId numeric;
+go
+update capcontrolsubstation set voltReductionPointId = 0;
+go
+alter table capcontrolsubstation alter column voltReductionPointId numeric not null;
+/* End YUK-5351 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
