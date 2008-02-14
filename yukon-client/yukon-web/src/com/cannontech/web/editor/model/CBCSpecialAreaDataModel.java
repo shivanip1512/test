@@ -78,7 +78,6 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
         List<Integer> assignedIDs = CBCSpecialAreaData.toIntegerList(getAssigned());
         List<Integer> unassignedIDs = CBCSpecialAreaData.toIntegerList(getUnassigned());
         Connection connection = CBCDBUtil.getConnection();
-        handleAssignedIDs(assignedIDs, connection);
         handleUnassignedIDs(unassignedIDs, connection);
         assignNewSubs(assignedIDs, connection);
 
@@ -103,25 +102,6 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
         ArrayList<Integer> idsToRemove = CCSubSpecialAreaAssignment.getAsIntegerList(childList);
         idsToRemove.retainAll(unassignedIDs);
         CCSubSpecialAreaAssignment.deleteSubs(idsToRemove, areaID);
-    }
-
-    public void handleAssignedIDs(List<Integer> assignedIDs, Connection connection) {
-        for (Integer id : assignedIDs) {
-            // see if it belongs to a different area than current
-            // if yes - delete assignment from the old sub
-            Integer areaID = CCSubSpecialAreaAssignment.getAreaIDForSub(id);
-            if (areaID != null && !areaID.equals(areaPers.getPAObjectID())) {
-                CCSubSpecialAreaAssignment objToDelete = new CCSubSpecialAreaAssignment();
-                objToDelete.setAreaID(areaID);
-                objToDelete.setSubstationBusID(id);
-                objToDelete.setDbConnection(connection);
-                try {
-                    objToDelete.delete();
-                } catch (SQLException e) {
-                    CTILogger.error(e);
-                }
-            }
-        }
     }
 
     public JSFAssignmentModel getAssignmentModel() {

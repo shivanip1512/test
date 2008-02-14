@@ -3,6 +3,7 @@ package com.cannontech.database.db.capcontrol;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -111,15 +112,15 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         this.substationBusID = substationBusID;
     }
 
-    public static Integer getAreaIDForSub(Integer subID) {
+    public static List<Integer> getAreaIdsForSub(Integer subID) {
         SqlStatementBuilder allSubs = new SqlStatementBuilder();
         allSubs.append("SELECT AreaID FROM");
         allSubs.append("CCSubSpecialAreaAssignment");
         allSubs.append("WHERE SubstationBusID = ?");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        Integer areaID;
+        List<Integer> areaID;
         try {
-            areaID = yukonTemplate.queryForInt(allSubs.toString(), new Integer[] { subID });
+            areaID = yukonTemplate.queryForList(allSubs.toString(), new Integer[] { subID }, new int[]{Types.INTEGER}, Integer.class );
         } catch (EmptyResultDataAccessException erda) {
             areaID = null;
         }
