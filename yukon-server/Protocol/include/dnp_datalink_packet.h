@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/03/10 21:06:34 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/02/15 21:06:10 $
 *
 * Copyright (c) 2003 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,23 +20,24 @@
 namespace Cti       {
 namespace Protocol  {
 namespace DNP       {
+namespace DatalinkPacket {
+
+    enum
+    {
+        FramingLength       =   2,
+        HeaderLength        =  10,
+        HeaderCountedLength =   5,
+        BlockCountMax       =  16,
+        BlockLength         =  16,
+        CRCLength           =   2,
+        DataLengthMax       = 282,
+        PayloadLengthMax    = 250,
+    };
 
 #pragma pack( push, 1 )
 
-namespace DatalinkPacket
-{
-    enum
-    {
-        FramingLength =   2,
-        HeaderLength  =  10,
-        DataLength    = 282,
-        BlockCount    =  16,
-        BlockLength   =  16,
-        CRCLength     =   2
-    };
-
     //  the primary and secondary control byte
-    struct header_control_primary
+    struct dlp_control_primary
     {
         unsigned char functionCode  : 4;
         unsigned char fcv           : 1;
@@ -45,7 +46,7 @@ namespace DatalinkPacket
         unsigned char direction     : 1;
     };
 
-    struct header_control_secondary
+    struct dlp_control_secondary
     {
         unsigned char functionCode  : 4;
         unsigned char dfc           : 1;
@@ -56,15 +57,15 @@ namespace DatalinkPacket
 
 
     //  the formatted and raw structure of the header
-    struct header_formatted
+    struct dlp_header_formatted
     {
         unsigned char framing[FramingLength];
         unsigned char len;
 
         union _control
         {
-            header_control_primary   p;
-            header_control_secondary s;
+            dlp_control_primary   p;
+            dlp_control_secondary s;
         } control;
 
         unsigned short destination;
@@ -72,36 +73,37 @@ namespace DatalinkPacket
         unsigned short crc;
     };
 
+
     //  the header combines both formatted and raw for clearer access
-    union header
+    union dlp_header
     {
-        header_formatted fmt;
-        unsigned char    raw[HeaderLength];
+        dlp_header_formatted fmt;
+        unsigned char        raw[HeaderLength];
     };
 
 
     //  in case we ever need to access it in a non-block-oriented fashion
-    union data
+    union dlp_data
     {
         //  this union runds up to 288 (16*18) because of the block array;
         //    the total usable size is 282, so the last block is only 14 instead of 18
 
         //  unsigned char raw[DataLength];
-        unsigned char blocks[BlockCount][BlockLength + CRCLength];
+        unsigned char blocks[BlockCountMax][BlockLength + CRCLength];
     };
-}
 
-//  the packet combines all of the previous into one big blob
-struct datalink_packet
-{
-    DatalinkPacket::header header;
-    DatalinkPacket::data   data;
-};
+    //  the packet combines all of the previous into one big blob
+    struct dl_packet
+    {
+        dlp_header header;
+        dlp_data   data;
+    };
 
 #pragma pack( pop )
 
-}
-}
-}
+};
+};
+};
+};
 
 #endif // #ifndef __DNP_DATALINK_PACKET_H__
