@@ -15,7 +15,7 @@ public interface DBPersistentDao {
      * Write a DBChangeMsg for database CHANGE_TYPE_UPDATE
      * @param item
      */
-    public void performDBChange(DBPersistent item, int transactionType);
+    public void performDBChange(DBPersistent item, int transactionType) throws PersistenceException;
 
 
     /**

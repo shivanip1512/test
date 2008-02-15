@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.dao.DataAccessException;
 
 import com.cannontech.common.device.YukonDevice;
@@ -12,27 +13,37 @@ import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.Transaction;
-import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
 
 public class AttributeServiceImpl implements AttributeService {
 
+    private DBPersistentDao dbPersistentDao = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private PointService pointService = null;
     private PointDao pointDao;
 
+    @Required
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+
+    @Required
     public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
         this.deviceDefinitionDao = deviceDefinitionDao;
     }
 
+    @Required
     public void setPointService(PointService pointService) {
         this.pointService = pointService;
     }
 
+    @Required
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
     }
@@ -102,11 +113,9 @@ public class AttributeServiceImpl implements AttributeService {
                                                                                       attribute);
             PointBase point = pointService.createPoint(device.getDeviceId(), template);
             try {
-                Transaction t = Transaction.createTransaction(Transaction.INSERT, point);
-                t.execute();
-            } catch (TransactionException e) {
-                throw new DataAccessException("Could not create point for device: " + device,
-                                              e) {
+                dbPersistentDao.performDBChange(point, Transaction.INSERT);
+            } catch (PersistenceException e) {
+                throw new DataAccessException("Could not create point for device: " + device, e) {
                 };
             }
 

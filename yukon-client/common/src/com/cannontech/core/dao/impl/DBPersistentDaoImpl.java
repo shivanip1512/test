@@ -57,7 +57,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.DBPersistentDao#performDBChange(com.cannontech.database.db.DBPersistent, com.cannontech.yukon.IServerConnection, int)
      */
-    public void performDBChange(DBPersistent item, IServerConnection connToDispatch, int transactionType)
+    public void performDBChange(DBPersistent item, IServerConnection connToDispatch, int transactionType) throws PersistenceException
     {
         int dbChangeType = -1;
         

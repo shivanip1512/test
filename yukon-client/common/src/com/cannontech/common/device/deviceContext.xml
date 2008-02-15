@@ -19,6 +19,7 @@
     </bean>
     
     <bean id="attributeService" class="com.cannontech.common.device.attribute.service.AttributeServiceImpl" scope="singleton">
+        <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
         <property name="pointDao" ref="pointDao"/>
