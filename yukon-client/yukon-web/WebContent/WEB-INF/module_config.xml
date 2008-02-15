@@ -311,7 +311,7 @@
     <option id="multispeak">
     	<sublinks>
     	  <option id="interfaces">
-    		<link>/msp_setup.jsp</link>
+    		<link>/msp_setup.jsp?init</link>
     	  </option>
     	  <option id="mappings">
     		<link>/spring/multispeak/setup/routemapping/mappings</link>
