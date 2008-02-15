@@ -91,6 +91,7 @@ function yukonGeneral_moveOptionPositionInSelect(selectElement, direction) {
 		selectList.options[index[j] + direction].selected = true;
 	}
 	
+    return true;
 }
 
 function yukonGeneral_addOtpionToTopOfSelect(selectObj,optValue,optText) {

@@ -391,14 +391,35 @@ function showProgramConfig(form) {
 	}
 }
 
-function moveUp(selectElement) {
-    yukonGeneral_moveOptionPositionInSelect(selectElement, -1);
-    setContentChanged(true);
+function move(selectElement, direction) {
+    var selectedIndex = selectElement.selectedIndex;
+    var isSuccess = yukonGeneral_moveOptionPositionInSelect(selectElement, direction);
+    if (isSuccess) {
+        updateProgramSelect(selectElement);
+        setContentChanged(true);
+    }
 }
 
-function moveDown(selectElement) {
-    yukonGeneral_moveOptionPositionInSelect(selectElement, 1);
-    setContentChanged(true);
+function updateProgramSelect(selectElement) {
+    var programSelectElement = $('Program');
+    var programOptions = $A(programSelectElement.options).clone();
+    var selectOptions = $A(selectElement.options).clone();
+    
+    var selectAProgramOption = programOptions[0];
+    
+    while (programSelectElement.options.length > 0) {
+        programSelectElement.options[0] = null;            
+    }
+    
+    programSelectElement.options[0] = selectAProgramOption;
+    for (var x = 0; x < selectOptions.length; x++) {
+        var option = new Option(selectOptions[x].text, selectOptions[x].value);
+        programSelectElement.options[x + 1] = option;
+    }
+    
+    var selectedIndex = selectElement.selectedIndex + 1;
+    programSelectElement.selectedIndex = selectedIndex;
+    showProgramConfig($('form1'));
 }
 
 function prepareSubmit(form) {
@@ -571,9 +592,9 @@ function init() {
                                       * means virtual program<br>
                                     </td>
                                     <td align="center"> 
-                                      <input type="button" name="MoveUp" value="Move Up" onclick="moveUp(ProgramsAssigned)" <%= viewOnly %>>
+                                      <input type="button" name="MoveUp" value="Move Up" onclick="move(ProgramsAssigned, -1)" <%= viewOnly %>>
                                       <br>
-                                      <input type="button" name="MoveDown" value="Move Down" onclick="moveDown(ProgramsAssigned)" <%= viewOnly %>>
+                                      <input type="button" name="MoveDown" value="Move Down" onclick="move(ProgramsAssigned, 1)" <%= viewOnly %>>
                                     </td>
                                   </tr>
                                 </table>
