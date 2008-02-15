@@ -503,6 +503,7 @@ public void runImport(List<ImportData> imps) {
                 t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
                 dmg = (DeviceMeterGroup)t.execute();
                 if( !dmg.getMeterNumber().equals(meterNumber)) {
+                    dmg.setMeterNumber(meterNumber);
                     t = Transaction.createTransaction( Transaction.UPDATE, dmg);
                     dmg = (DeviceMeterGroup)t.execute();
                 }
