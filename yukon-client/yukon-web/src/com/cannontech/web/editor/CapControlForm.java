@@ -877,22 +877,22 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 setEditingCBCStrategy(false);
             }
             updateDBObject(dbPers, facesMsg);
-            if(!(getDbPersistent() instanceof CapControlStrategy)) {
-                int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
-                seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
-            }else {
-                if(((CapControlStrategy)dbPers).getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
-                    CCStrategyTimeOfDaySet ccStrategyTimeOfDay = getStrategyTimeOfDay();
-                    if(CapControlStrategy.todExists(ccStrategyTimeOfDay.getStrategyId())) {
-                        ccStrategyTimeOfDay.update(connection);
-                    }else {
-                        getStrategyTimeOfDay().setStrategyId(((CapControlStrategy)dbPers).getStrategyID());
-                        getStrategyTimeOfDay().add(connection);
-                    }
-                }else {
-                    CapControlStrategy.deleteTod(((CapControlStrategy)getDbPersistent()).getStrategyID());
-                    strategyTimeOfDay = new CCStrategyTimeOfDaySet();
-                }
+            if(getDbPersistent() instanceof CapControlStrategy) {
+				if(((CapControlStrategy)dbPers).getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
+					CCStrategyTimeOfDaySet ccStrategyTimeOfDay = getStrategyTimeOfDay();
+					if(CapControlStrategy.todExists(ccStrategyTimeOfDay.getStrategyId())) {
+						ccStrategyTimeOfDay.update(connection);
+					}else {
+						getStrategyTimeOfDay().setStrategyId(((CapControlStrategy)dbPers).getStrategyID());
+						getStrategyTimeOfDay().add(connection);
+					}
+				}else {
+					CapControlStrategy.deleteTod(((CapControlStrategy)getDbPersistent()).getStrategyID());
+					strategyTimeOfDay = new CCStrategyTimeOfDaySet();
+				}
+            } else if(getDbPersistent() instanceof YukonPAObject) {
+            	int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
+            	seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
             }
             pointNameMap = null;
             paoNameMap = null;
