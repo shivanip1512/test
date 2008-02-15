@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2008/01/15 22:11:57 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2008/02/15 21:03:46 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -711,6 +711,7 @@ void DNPInterface::recordPoints( int group, const pointlist_t &points )
         }
 
         case Counter::Group:
+        case CounterFrozen::Group:
         case CounterEvent::Group:
         {
             for( itr = points.begin(); itr != points.end(); itr++ )

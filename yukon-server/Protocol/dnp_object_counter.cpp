@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2006/01/24 20:08:18 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/02/15 21:08:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -326,6 +326,27 @@ int CounterFrozen::restore(const unsigned char *buf, int len)
 
     switch(getVariation())
     {
+        /*
+        CF_Delta32Bit                  =  3,
+        CF_Delta16Bit                  =  4,
+        CF_Binary32BitWithTimeOfFreeze =  5,
+        CF_Binary16BitWithTimeOfFreeze =  6,
+        CF_Delta32BitWithTimeOfFreeze  =  7,
+        CF_Delta16BitWithTimeOfFreeze  =  8,
+        CF_Delta32BitNoFlag            = 11,
+        CF_Delta16BitNoFlag            = 12,
+        */
+
+        case CF_Binary32Bit:
+        {
+            pos += restoreVariation(buf + pos, len - pos, C_Binary32Bit);
+            break;
+        }
+        case CF_Binary32BitNoFlag:
+        {
+            pos += restoreVariation(buf + pos, len - pos, C_Binary32BitNoFlag);
+            break;
+        }
         case CF_Binary16Bit:
         {
             pos += restoreVariation(buf + pos, len - pos, C_Binary16Bit);

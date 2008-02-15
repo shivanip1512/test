@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/01/24 20:08:18 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/02/15 21:08:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,6 +91,12 @@ public:
     enum
     {
         Group = 21
+    };
+
+    enum
+    {
+        //  Frozen counters are offset by this amount when they are returned as normal pulse accumulators
+        CounterFrozenOffset = 20000
     };
 
     virtual int restore(const unsigned char *buf, int len);
