@@ -10,7 +10,7 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class HolidaySchedule extends com.cannontech.database.db.DBPersistent
 {
-	private Integer holidayScheduleID;
+	private Integer holidayScheduleId;
 	private String holidayScheduleName;
 
 
@@ -34,7 +34,7 @@ public HolidaySchedule() {
  */
 public void add() throws java.sql.SQLException 
 {
-	Object addValues[] = { getHolidayScheduleID(), getHolidayScheduleName()};
+	Object addValues[] = { getHolidayScheduleId(), getHolidayScheduleName()};
 
 	add( TABLE_NAME, addValues );
 }
@@ -44,15 +44,15 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getHolidayScheduleID());
+	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getHolidayScheduleId());
 }
 /**
  * Insert the method's description here.
  * Creation date: (8/24/2001 1:31:31 PM)
  */
-public Integer getHolidayScheduleID()
+public Integer getHolidayScheduleId()
 {
-	return holidayScheduleID;
+	return holidayScheduleId;
 }
 /**
  * Insert the method's description here.
@@ -95,7 +95,7 @@ public final static Integer getNextHolidayScheduleID()
  */
 public void retrieve() throws java.sql.SQLException
 {
-	Object constraintValues[] = { getHolidayScheduleID()};
+	Object constraintValues[] = { getHolidayScheduleId()};
 
 	Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 
@@ -110,8 +110,8 @@ public void retrieve() throws java.sql.SQLException
  * Creation date: (8/24/2001 1:39:07 PM)
  * @param id java.lang.Integer
  */
-public void setHolidayScheduleID(Integer id) {
-	holidayScheduleID = id;
+public void setHolidayScheduleId(Integer id) {
+	holidayScheduleId = id;
 	}
 /**
  * Insert the method's description here.
@@ -129,7 +129,7 @@ public void setHolidayScheduleName(String name) {
 public void update() throws java.sql.SQLException
 {
 	Object setValues[] = { getHolidayScheduleName()};
-	Object constraintValues[] = { getHolidayScheduleID()};
+	Object constraintValues[] = { getHolidayScheduleId()};
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
 }

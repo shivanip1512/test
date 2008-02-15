@@ -509,7 +509,7 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 	 * in the database with all their attributes populated
 	 *
 	 */
-	public static int[] getAllPAOSUsingStrategy( int stratID, int excludedPAOID )
+	public static int[] getAllPAOSUsingSeasonStrategy( int stratID, int excludedPAOID )
 	{
 		java.sql.Connection conn = null;
 		java.sql.PreparedStatement pstmt = null;
@@ -546,6 +546,42 @@ public class CapControlStrategy extends com.cannontech.database.db.DBPersistent 
 
 		return retVect.toArray();
 	}
+	
+    public static int[] getAllPAOSUsingHolidayStrategy( int stratId, int excludedPAOId ) {
+        java.sql.Connection conn = null;
+        java.sql.PreparedStatement pstmt = null;
+        java.sql.ResultSet rset = null;
+        NativeIntVector retVect = new NativeIntVector(16);
+
+       //Get all the data from the database                
+       String sql = 
+            "select s.paobjectid from CCHolidayStrategyAssignment" +
+            " s where s.strategyid = " + stratId + " and s.paobjectid <> " + excludedPAOId;
+
+        try {       
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+
+            if( conn == null ) {
+                throw new IllegalStateException("Error getting database connection.");
+            }
+            else {
+                pstmt = conn.prepareStatement(sql.toString());          
+                rset = pstmt.executeQuery();
+    
+                while( rset.next() ) {
+                    retVect.add( rset.getInt(1) );
+                }
+            }       
+        }
+        catch( java.sql.SQLException e ) {
+            CTILogger.error( e.getMessage(), e );
+        }
+        finally {
+            SqlUtils.close(rset, pstmt, conn );
+        }
+
+        return retVect.toArray();
+    }
 
 	/**
 	 * Generates a DBChange msg.

@@ -54,7 +54,7 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-	com.cannontech.database.db.holiday.DateOfHoliday.deleteAllDateHolidays(getHolidaySchedule().getHolidayScheduleID(), getDbConnection());
+	com.cannontech.database.db.holiday.DateOfHoliday.deleteAllDateHolidays(getHolidaySchedule().getHolidayScheduleId(), getDbConnection());
 
 	getHolidaySchedule().delete();	
 }
@@ -109,7 +109,7 @@ private com.cannontech.database.db.holiday.HolidaySchedule getHolidaySchedule()
  */
 public Integer getHolidayScheduleID()
 {
-	return getHolidaySchedule().getHolidayScheduleID();
+	return getHolidaySchedule().getHolidayScheduleId();
 }
 /**
  * Insert the method's description here.
@@ -129,7 +129,7 @@ public void retrieve() throws java.sql.SQLException
 	getHolidaySchedule().retrieve();
 
 	java.util.Vector holidayDates = com.cannontech.database.db.holiday.DateOfHoliday.getAllHolidayDates(
-				getHolidaySchedule().getHolidayScheduleID(), getDbConnection() );
+				getHolidaySchedule().getHolidayScheduleId(), getDbConnection() );
 
 	for( int i = 0; i < holidayDates.size(); i++ )
 		getHolidayDatesVector().add( holidayDates.get(i) );
@@ -158,7 +158,7 @@ public void setDbConnection(java.sql.Connection conn)
  */
 public void setHolidayScheduleID( Integer newID )
 {
-	getHolidaySchedule().setHolidayScheduleID( newID );
+	getHolidaySchedule().setHolidayScheduleId( newID );
 	
 	for( int i = 0; i < getHolidayDatesVector().size(); i++ )
 		((com.cannontech.database.db.holiday.DateOfHoliday)getHolidayDatesVector().get(i)).setHolidayScheduleID(newID);
@@ -189,7 +189,7 @@ public void update() throws java.sql.SQLException
 	getHolidaySchedule().update();
 
 	//delete all the Dates
-	com.cannontech.database.db.holiday.DateOfHoliday.deleteAllDateHolidays(getHolidaySchedule().getHolidayScheduleID(), getDbConnection());
+	com.cannontech.database.db.holiday.DateOfHoliday.deleteAllDateHolidays(getHolidaySchedule().getHolidayScheduleId(), getDbConnection());
 
 	for (int i = 0; i < getHolidayDatesVector().size(); i++)
 		((com.cannontech.database.db.holiday.DateOfHoliday) getHolidayDatesVector().elementAt(i)).add();	

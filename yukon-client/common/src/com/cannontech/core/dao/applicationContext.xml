@@ -155,5 +155,9 @@
   <bean id="seasonScheduleDao" class="com.cannontech.core.dao.impl.SeasonScheduleDaoImpl">
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
+  
+  <bean id="holidayScheduleDao" class="com.cannontech.core.dao.impl.HolidayScheduleDaoImpl">
+      <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean>
     
 </beans>

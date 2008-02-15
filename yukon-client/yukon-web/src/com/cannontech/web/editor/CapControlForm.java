@@ -31,7 +31,6 @@ import org.apache.myfaces.custom.tree2.TreeStateBase;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.cbc.dao.*;
-import com.cannontech.cbc.db.DBPersistentUtils;
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.cbc.exceptions.FormWarningException;
 import com.cannontech.cbc.exceptions.MultipleDevicesOnPortException;
@@ -78,10 +77,12 @@ import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.database.db.capcontrol.CapControlStrategy;
 import com.cannontech.database.db.capcontrol.CapControlSubstationBus;
 import com.cannontech.database.db.device.DeviceScanRate;
+import com.cannontech.database.db.holiday.HolidaySchedule;
 import com.cannontech.database.db.pao.PAOSchedule;
 import com.cannontech.database.db.pao.PAOScheduleAssign;
 import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.season.SeasonSchedule;
+import com.cannontech.database.model.Holiday;
 import com.cannontech.database.model.Season;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
@@ -107,6 +108,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private int itemID = -1;
 	// contains <Integer(stratID), CapControlStrategy>
 	private HashMap<Integer, CapControlStrategy> cbcStrategiesMap = null;
+	private HashMap<Integer, CapControlStrategy> cbcHolidayStrategiesMap = null;
 	// contains LiteYukonPAObject
 	private List<LiteYukonPAObject> unassignedBanks = null;
 	// contains LiteYukonPAObject
@@ -121,7 +123,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private SelectItem[] kwkvarPaos = null;
 	private SelectItem[] kwkvarPoints = null;
 	private SelectItem[] cbcStrategies = null;
+	private SelectItem[] cbcHolidayStrategies = null;
     private SelectItem[] cbcSchedules = null;
+    private SelectItem[] cbcHolidaySchedules = null;
 	// variables that hold sub bus info
 	protected List<LiteYukonPAObject> subBusList = null;
     private Integer oldSubBus = null;
@@ -143,7 +147,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private EditorDataModel dataModel = null;
     private EditorDataModel currentStratModel = null;
     private SeasonScheduleDao seasonScheduleDao;
+    private HolidayScheduleDao holidayScheduleDao;
     private Integer scheduleId = -1000;
+    private Integer holidayScheduleId = -1000;
+    private Integer holidayStrategyId = -1000;
     private CCStrategyTimeOfDaySet strategyTimeOfDay = null;
     
     private static CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
@@ -177,6 +184,32 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return scheduleId;
     }
     
+    /**
+     * Returns the scheduleID of the current pao.
+     */
+    public Integer getHolidayScheduleId() {
+        if(holidayScheduleId < -1) {
+            Integer paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
+            holidayScheduleId = holidayScheduleDao.getScheduleForPao(paoId).getHolidayScheduleId();
+        }
+        return holidayScheduleId;
+    }
+    
+    /**
+     * Returns the scheduleID of the current pao.
+     */
+    public Integer getHolidayStrategyId() {
+        if(holidayStrategyId < -1) {
+            Integer paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
+            holidayStrategyId = holidayScheduleDao.getStrategyForPao(paoId);
+        }
+        return holidayStrategyId;
+    }
+    
+    public void setHolidayStrategyId(Integer holidayStrategyId) {
+        this.holidayStrategyId = holidayStrategyId;
+    }
+    
     public SelectItem[] getCbcStrategies() {
 		if (cbcStrategies == null) {
 			List<CapControlStrategy> cbcDBStrats = CapControlStrategy.getAllCBCStrategies();
@@ -189,6 +222,18 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		return cbcStrategies;
 	}
     
+    public SelectItem[] getCbcHolidayStrategies() {
+        if (cbcHolidayStrategies == null) {
+            List<CapControlStrategy> cbcDBStrats = CapControlStrategy.getAllCBCStrategies();
+            cbcHolidayStrategies = new SelectItem[cbcDBStrats.size()];
+            for (int i = 0; i < cbcDBStrats.size(); i++) {
+                cbcHolidayStrategies[i] = new SelectItem(cbcDBStrats.get(i).getStrategyID(), cbcDBStrats.get(i).getStrategyName());
+                getCbcStrategiesMap().put(cbcDBStrats.get(i).getStrategyID(),cbcDBStrats.get(i));
+            }
+        }
+        return cbcHolidayStrategies;
+    }
+    
     public SelectItem[] getCbcSchedules() {
         if (cbcSchedules== null) {
             SeasonSchedule[] cbcDBSchedules = SeasonSchedule.getAllCBCSchedules();
@@ -198,6 +243,17 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             }
         }
         return cbcSchedules;
+    }
+    
+    public SelectItem[] getCbcHolidaySchedules() {
+        if (cbcHolidaySchedules== null) {
+            HolidaySchedule[] cbcDBSchedules = holidayScheduleDao.getAllHolidaySchedules();
+            cbcHolidaySchedules = new SelectItem[cbcDBSchedules.length];
+            for (int i = 0; i < cbcDBSchedules.length; i++) {
+                cbcHolidaySchedules[i] = new SelectItem(cbcDBSchedules[i].getHolidayScheduleId(), cbcDBSchedules[i].getHolidayScheduleName());
+            }
+        }
+        return cbcHolidaySchedules;
     }
     
     public Map<Season, Integer> getAssignedStratMap(){
@@ -214,7 +270,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         
         return assignedStratMap;
     }
-
+    
 	public HashMap<Integer, CapControlStrategy> getCbcStrategiesMap() {
 		if (cbcStrategiesMap == null) {
 			cbcStrategiesMap = new HashMap<Integer, CapControlStrategy>(32);
@@ -223,6 +279,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		}
 		return cbcStrategiesMap;
 	}
+	
+	public HashMap<Integer, CapControlStrategy> getCbcHolidayStrategiesMap() {
+        if (cbcHolidayStrategiesMap == null) {
+            cbcHolidayStrategiesMap = new HashMap<Integer, CapControlStrategy>(32);
+            // force us to init our map with the correct data
+            getCbcHolidayStrategies();
+        }
+        return cbcHolidayStrategiesMap;
+    }
 
 	public SelectItem[] getKwkvarPaos() {
 		if (kwkvarPaos == null) {
@@ -271,6 +336,9 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public void newScheduleSelected (ValueChangeEvent vce) {
         assignedStratMap = null;
+    }
+    
+    public void newHolidayScheduleSelected (ValueChangeEvent vce) {
     }
 
 	public TreeNode getVarTreeData() {
@@ -832,6 +900,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 }
                 catch (FormWarningException e) {
                     String errorString = e.getMessage();
+                    CTILogger.error(errorString, e);
                     facesMsg.setDetail(errorString);
                     facesMsg.setSeverity(FacesMessage.SEVERITY_WARN);
                 }
@@ -893,6 +962,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             } else if(getDbPersistent() instanceof YukonPAObject) {
             	int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
             	seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
+            	holidayScheduleDao.saveHolidayScheduleStrategyAssigment(paoId, getHolidayScheduleId(), getHolidayStrategyId());
             }
             pointNameMap = null;
             paoNameMap = null;
@@ -1170,7 +1240,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 stratID = ((CapControlStrategy)getDbPersistent()).getStrategyID().intValue();
             }
 			// decide if we need to do any special handling of this transaction based on what other PAOs use this Strategy
-			int[] paos = CapControlStrategy.getAllPAOSUsingStrategy(stratID, itemID);
+			int[] paos = CapControlStrategy.getAllPAOSUsingSeasonStrategy(stratID, itemID);
 			if (paos.length <= 0) {
 				// update the current PAOBase object just in case it uses the strategy we are deleting
 				updateDBObject(getDbPersistent(), null);
@@ -2017,8 +2087,16 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         this.scheduleId = id;
     }
     
+    public void setHolidayScheduleId(Integer id) {
+        this.holidayScheduleId = id;
+    }
+    
     public void setSeasonScheduleDao(SeasonScheduleDao seasonScheduleDao) {
         this.seasonScheduleDao = seasonScheduleDao;
+    }
+    
+    public void setHolidayScheduleDao(HolidayScheduleDao holidayScheduleDao) {
+        this.holidayScheduleDao = holidayScheduleDao;
     }
 
 	public List<LiteYukonPAObject> getUnassignedSubBuses() {
@@ -2028,5 +2106,5 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public void setUnassignedSubBuses(List<LiteYukonPAObject> unassignedSubBuses) {
 		this.unassignedSubBuses = unassignedSubBuses;
 	}
-
+	
 }

@@ -14,6 +14,10 @@
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
+  <bean id="holidayScheduleDao" class="com.cannontech.core.dao.impl.HolidayScheduleDaoImpl">
+      <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean>
+  
   <bean id="substationBusDao" class="com.cannontech.cbc.dao.impl.SubstationBusDaoImpl">
     <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
