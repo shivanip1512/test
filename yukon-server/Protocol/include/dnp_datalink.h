@@ -10,15 +10,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/09/04 16:38:13 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/02/15 21:10:25 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #ifndef __DNP_DATALINK_H__
 #define __DNP_DATALINK_H__
 #pragma warning( disable : 4786)
-
 
 #include "dsm2.h"
 #include "xfer.h"
@@ -33,22 +32,14 @@ class Datalink
 {
 private:
 
-    //  initial config data
-    unsigned short _src, _dst;
-
-    bool _dl_confirm;
-
-    //  datalink control statuses
-    bool _send_confirm;
-    bool _reset_sent;
-    bool _fcb_out, _fcb_in;
-
-    //  used in all cases
-    datalink_packet _packet;
-    datalink_packet _control_packet;
-
-    int _comm_errors;
-    int _protocol_errors;
+    enum PacketDetails
+    {
+        Packet_MaxPayloadLen      = DatalinkPacket::DataLengthMax - (DatalinkPacket::BlockCountMax * DatalinkPacket::CRCLength),
+        Packet_HeaderLen          = DatalinkPacket::HeaderLength,
+        Packet_HeaderLenUncounted =   5,  //  the number of bytes in the header that are counted (i.e. only those after the len octet)
+        Packet_FramingLen         = DatalinkPacket::FramingLength,
+        Packet_CRCLen             = DatalinkPacket::CRCLength,
+    };
 
     enum IOState
     {
@@ -75,46 +66,65 @@ private:
         State_Control_Reply_ResetLink
     } _control_state;
 
+    //  initial config data
+    unsigned short _src, _dst;
+
+    bool _dl_confirm;
+
+    //  datalink control statuses
+    bool _send_confirm;
+    bool _reset_sent;
+    bool _fcb_out, _fcb_in;
+
+    int _comm_errors;
+    int _protocol_errors;
+
     //  outbound-specific
-    unsigned long _out_data_len;
     unsigned long _out_sent;
-    unsigned char _out_data[250];
+    unsigned char _out_data[Packet_MaxPayloadLen];
+    unsigned long _out_data_len;
 
     //  inbound-specific
     unsigned long _in_recv;
     unsigned long _in_expected;
     unsigned long _in_actual;
-    unsigned char _in_data[250];
+    unsigned char _in_data[Packet_MaxPayloadLen];
     int           _in_data_len;
 
-protected:
+    typedef DatalinkPacket::dl_packet packet;
+
+    packet _packet, _control_packet;
 
     enum PrimaryControlFunction;
     enum SecondaryControlFunction;
 
-    void constructDataPacket( datalink_packet &packet, unsigned char *buf, unsigned long len );
+    void constructDataPacket( packet &p, unsigned char *buf, unsigned long len );
 
-    bool isControlPending( void );
-    bool processControl( const datalink_packet &packet );
+    bool isControlPending( void ) const;
+    bool processControl( const packet &p );
     int  generateControl( CtiXfer &xfer );
     int  decodeControl  ( CtiXfer &xfer, int status );
+    int  decodePacket   ( CtiXfer &xfer, packet &p, unsigned long received );
 
-    void constructPrimaryControlPacket  ( datalink_packet &packet, PrimaryControlFunction   function, bool fcv, bool fcb );
-    void constructSecondaryControlPacket( datalink_packet &packet, SecondaryControlFunction function, bool dfc );
+    void constructPrimaryControlPacket  ( packet &p, PrimaryControlFunction   function, bool fcv, bool fcb );
+    void constructSecondaryControlPacket( packet &p, SecondaryControlFunction function, bool dfc );
 
-    void sendPacket( datalink_packet &packet, CtiXfer &xfer );
-    void recvPacket( datalink_packet &packet, CtiXfer &xfer );
+    void sendPacket( packet &packet, CtiXfer &xfer );
+    void recvPacket( packet &packet, CtiXfer &xfer );
 
-    bool isValidDataPacket( const datalink_packet &packet );
-    bool isValidAckPacket ( const datalink_packet &packet );
+    bool isValidDataPacket( const packet &p ) const;
+    bool isValidAckPacket ( const packet &p ) const;
 
-    int  calcPacketLength( int headerLen );
-    bool isEntirePacket( const datalink_packet &packet, unsigned long in_recv );
+    static unsigned calcPacketLength( unsigned headerLen );
+    static bool     isEntirePacket( const packet &p, unsigned long received );
 
-    bool areFramingBytesValid( const datalink_packet &packet );
-    bool areCRCsValid        ( const datalink_packet &packet );
+    static bool areFramingBytesValid( const packet &p );
 
-    void putPacketPayload( const datalink_packet &packet, unsigned char *buf, int *len );
+    static bool isHeaderCRCValid( const DatalinkPacket::dlp_header &header );
+    static bool isDataBlockCRCValid( const unsigned char *block, unsigned length );
+    static bool arePacketCRCsValid( const packet &packet );
+
+    void putPacketPayload( const packet &p, unsigned char *buf, int *len );
 
     enum PrimaryControlFunction
     {
@@ -131,15 +141,6 @@ protected:
         Control_SecondaryACK               = 0x0,
         Control_SecondaryNACK              = 0x1,
         Control_SecondaryLinkStatus        = 0xb
-    };
-
-    enum DatalinkPacketEnum
-    {
-        Packet_MaxPayloadLen      = 250,
-        Packet_HeaderLen          =  10,
-        Packet_HeaderLenCounted   =   5,  //  the number of bytes in the header that are counted (i.e. only those after the len octet)
-        Packet_HeaderLenUncounted =   5,  //  the number of bytes that aren't counted
-        Packet_FramingLen         =   2,
     };
 
     enum MiscNumeric
@@ -171,8 +172,8 @@ public:
     bool isTransactionComplete( void );
     bool errorCondition( void );
 
-    bool getInboundData( unsigned char *buf );
-    int  getInboundDataLength( void );
+    bool getInPayload( unsigned char *buf );
+    int  getInPayloadLength( void );
 
     IM_EX_PROT static unsigned short crc(const unsigned char *buf, const int len);
 

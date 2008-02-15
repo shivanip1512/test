@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2007/09/04 16:38:13 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/02/15 21:10:25 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,7 +80,7 @@ void Datalink::resetLink( void )
 void Datalink::setToOutput( unsigned char *buf, unsigned int len )
 {
     //  if it's too big or there's nothing to copy, set our buffer to zip
-    if( len > Packet_MaxPayloadLen || buf == NULL )
+    if( len > DatalinkPacket::PayloadLengthMax || buf == NULL )
     {
         _out_data_len   = 0;
         _io_state       = State_IO_Failed;
@@ -249,20 +249,44 @@ int Datalink::decode( CtiXfer &xfer, int status )
             {
                 case State_IO_Input:
                 {
-                    //  ACH:  this is dumb...  i don't like this variable floating around...
-                    //          we should only be dealing with whole packets
+                    _in_recv += decodePacket(xfer, _packet, _in_recv);
 
-                    //  FIX:  THIS IS PATENTLY FALSE - THIS CANNOT BE SET UNTIL WE HAVE VERIFIED THE INPUT
-                    _in_recv += _in_actual;
-
-                    if( isEntirePacket(_packet, _in_recv) )
+                    //  if we're NOT datalink confirm, we fail immediately on a bad CRC;
+                    //    otherwise, we pass the whole packet to processControl and let them fail it
+                    if( !_dl_confirm && _in_recv >= DatalinkPacket::HeaderLength && !isHeaderCRCValid(_packet.header) )
                     {
-                        //  check to see if the packet is okay
-                        if( processControl(_packet) )
-                        {
-                            putPacketPayload(_packet, _in_data, &_in_data_len);
+                        _io_state = State_IO_Failed;
 
-                            _io_state = State_IO_Complete;
+                        retVal = BADCRC;
+                    }
+                    //  a possible optimization could be that all control packets are known
+                    //    to be DatalinkPacket::HeaderLength long, so we don't need the isEntirePacket()
+                    //    check here in addition to processControl()
+                    else if( isEntirePacket(_packet, _in_recv) )
+                    {
+                        //  see above note about CRC checking
+                        if( !_dl_confirm && !arePacketCRCsValid(_packet) )
+                        {
+                            _io_state = State_IO_Failed;
+
+                            retVal = BADCRC;
+                        }
+                        //  check to see if the packet is okay
+                        else if( processControl(_packet) )
+                        {
+                            if( _packet.header.fmt.destination == _src &&
+                                _packet.header.fmt.source      == _dst )
+                            {
+                                putPacketPayload(_packet, _in_data, &_in_data_len);
+
+                                _io_state = State_IO_Complete;
+                            }
+                            else
+                            {
+                                _io_state = State_IO_Failed;
+
+                                retVal = WRONGADDRESS;
+                            }
                         }
                         else
                         {
@@ -306,8 +330,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
 
                 case State_IO_OutputRecvAck:
                 {
-                    //  THIS IS PATENTLY FALSE - THIS CANNOT BE SET UNTIL WE HAVE VERIFIED THE INPUT
-                    _in_recv += _in_actual;
+                    _in_recv += decodePacket(xfer, _packet, _in_recv);
 
                     if( isEntirePacket(_packet, _in_recv) )
                     {
@@ -353,7 +376,7 @@ int Datalink::decode( CtiXfer &xfer, int status )
 }
 
 
-void Datalink::constructDataPacket( datalink_packet &packet, unsigned char *buf, unsigned long len )
+void Datalink::constructDataPacket( Datalink::packet &packet, unsigned char *buf, unsigned long len )
 {
     int pos, block_len, num_blocks;
     unsigned short block_crc;
@@ -362,8 +385,8 @@ void Datalink::constructDataPacket( datalink_packet &packet, unsigned char *buf,
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
 
-    packet.header.fmt.len  = Packet_HeaderLenCounted;  //  add on the header length
-    packet.header.fmt.len += len;                      //  add the data length
+    packet.header.fmt.len  = DatalinkPacket::HeaderCountedLength;  //  add on the header length
+    packet.header.fmt.len += len;                                  //  add the data length
 
     packet.header.fmt.destination = _dst;
     packet.header.fmt.source      = _src;
@@ -391,12 +414,12 @@ void Datalink::constructDataPacket( datalink_packet &packet, unsigned char *buf,
 
     while( pos < len )
     {
-        current_block = packet.data.blocks[pos/16];
+        current_block = packet.data.blocks[pos/DatalinkPacket::BlockLength];
         block_len     = len - pos;
 
-        if( block_len > 16 )
+        if( block_len > DatalinkPacket::BlockLength )
         {
-            block_len = 16;
+            block_len = DatalinkPacket::BlockLength;
         }
 
         //  copy in this block of data
@@ -414,12 +437,12 @@ void Datalink::constructDataPacket( datalink_packet &packet, unsigned char *buf,
 }
 
 
-void Datalink::constructPrimaryControlPacket( datalink_packet &packet, PrimaryControlFunction function, bool fcv, bool fcb )
+void Datalink::constructPrimaryControlPacket( Datalink::packet &packet, PrimaryControlFunction function, bool fcv, bool fcb )
 {
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
 
-    packet.header.fmt.len  = Packet_HeaderLenCounted;  //  control packets are empty
+    packet.header.fmt.len  = DatalinkPacket::HeaderCountedLength;  //  control packets are empty
 
     packet.header.fmt.destination = _dst;
     packet.header.fmt.source      = _src;
@@ -436,12 +459,12 @@ void Datalink::constructPrimaryControlPacket( datalink_packet &packet, PrimaryCo
 }
 
 
-void Datalink::constructSecondaryControlPacket( datalink_packet &packet, SecondaryControlFunction function, bool dfc )
+void Datalink::constructSecondaryControlPacket( Datalink::packet &packet, SecondaryControlFunction function, bool dfc )
 {
     packet.header.fmt.framing[0] = 0x05;
     packet.header.fmt.framing[1] = 0x64;
 
-    packet.header.fmt.len  = Packet_HeaderLenCounted;  //  control packets are empty
+    packet.header.fmt.len  = DatalinkPacket::HeaderCountedLength;  //  control packets are empty
 
     packet.header.fmt.destination = _dst;
     packet.header.fmt.source      = _src;
@@ -458,7 +481,7 @@ void Datalink::constructSecondaryControlPacket( datalink_packet &packet, Seconda
 }
 
 
-void Datalink::sendPacket( datalink_packet &packet, CtiXfer &xfer )
+void Datalink::sendPacket( Datalink::packet &packet, CtiXfer &xfer )
 {
     xfer.setOutBuffer((unsigned char *)&packet);
     xfer.setOutCount(calcPacketLength(packet.header.fmt.len));
@@ -470,53 +493,12 @@ void Datalink::sendPacket( datalink_packet &packet, CtiXfer &xfer )
 }
 
 
-void Datalink::recvPacket( datalink_packet &packet, CtiXfer &xfer)
+void Datalink::recvPacket( Datalink::packet &packet, CtiXfer &xfer )
 {
-    if( _in_recv < Packet_HeaderLen )
+    if( _in_recv < DatalinkPacket::HeaderLength )
     {
         //  get the header first so we know how much to expect
-        _in_expected = Packet_HeaderLen - _in_recv;
-    }
-    else if( packet.header.fmt.framing[0] != 0x05 ||
-             packet.header.fmt.framing[1] != 0x64 )
-    {
-        int offset;
-
-        //  look for the framing bytes
-        for( offset = 0; offset < _in_recv; offset++ )
-        {
-            //  if we can look for both framing bytes at once...
-            if( (offset + 1) < _in_recv )
-            {
-                //  if we found the start of the header
-                if( packet.header.raw[offset]   == 0x05 &&
-                    packet.header.raw[offset+1] == 0x64 )
-                {
-                    //  move everything to the start of the packet
-                    for( int i = 0; i < (_in_recv - offset); i++ )
-                    {
-                        packet.header.raw[i] = packet.header.raw[offset+i];
-                    }
-
-                    break;
-                }
-            }
-            else  //  otherwise just look for 0x05
-            {
-                if( packet.header.raw[offset]   == 0x05 )
-                {
-                    //  just the one byte, that's easy enough to move
-                    packet.header.raw[0] = 0x05;
-
-                    break;
-                }
-            }
-        }
-
-        //  adjust our count to reflect valid bytes so far
-        _in_recv -= offset;
-
-        _in_expected = Packet_HeaderLen - _in_recv;
+        _in_expected = DatalinkPacket::HeaderLength - _in_recv;
     }
     else
     {
@@ -534,17 +516,17 @@ void Datalink::recvPacket( datalink_packet &packet, CtiXfer &xfer)
 }
 
 
-bool Datalink::isControlPending( void )
+bool Datalink::isControlPending( void ) const
 {
     return (_control_state != State_Control_Ready);
 }
 
 
-bool Datalink::processControl( const datalink_packet &packet )
+bool Datalink::processControl( const Datalink::packet &packet )
 {
     bool retVal = false;
 
-    if( areCRCsValid(packet) )
+    if( arePacketCRCsValid(packet) )
     {
         if( packet.header.fmt.control.p.direction == 0 )  //  incoming message
         {
@@ -840,7 +822,7 @@ int Datalink::decodeControl( CtiXfer &xfer, int status )
             {
                 if( isEntirePacket(_control_packet, _in_recv) )
                 {
-                    if( areCRCsValid(_control_packet) &&
+                    if( arePacketCRCsValid(_control_packet) &&
                         _control_packet.header.fmt.control.s.direction    == 0 &&
                         _control_packet.header.fmt.control.s.primary      == 0 &&
                         _control_packet.header.fmt.control.s.functionCode == Control_SecondaryLinkStatus )
@@ -917,11 +899,53 @@ int Datalink::decodeControl( CtiXfer &xfer, int status )
 }
 
 
-bool Datalink::isValidDataPacket( const datalink_packet &packet )
+int Datalink::decodePacket( CtiXfer &xfer, packet &p, unsigned long received )
+{
+    unsigned long in_actual = xfer.getInCountActual();
+
+    if( !received )
+    {
+        unsigned long offset;
+
+        //  look for the framing bytes
+        for( offset = 0; offset < in_actual; offset++ )
+        {
+            if( p.header.raw[offset] == 0x05 )
+            {
+                //  if we can look for both framing bytes at once...
+                if( (offset + 1) < in_actual )
+                {
+                    //  if we found the start of the header
+                    if( p.header.raw[offset+1] == 0x64 )
+                    {
+                        //  move everything to the start of the packet
+                        memmove(p.header.raw, p.header.raw + offset, in_actual - offset);
+
+                        break;
+                    }
+                }
+                else  //  otherwise just look for 0x05
+                {
+                    //  just the one byte, that's easy enough to move
+                    p.header.raw[0] = 0x05;
+
+                    break;
+                }
+            }
+        }
+
+        in_actual -= offset;
+    }
+
+    return in_actual;
+}
+
+
+bool Datalink::isValidDataPacket( const Datalink::packet &packet ) const
 {
     bool retVal = false;
 
-    if( areCRCsValid( packet ) )
+    if( arePacketCRCsValid( packet ) )
     {
         if( packet.header.fmt.control.p.primary   == 1 &&
             packet.header.fmt.control.p.direction == 0 )
@@ -942,11 +966,11 @@ bool Datalink::isValidDataPacket( const datalink_packet &packet )
 }
 
 
-bool Datalink::isValidAckPacket( const datalink_packet &packet )
+bool Datalink::isValidAckPacket( const Datalink::packet &packet ) const
 {
     bool retVal = false;
 
-    if( areCRCsValid( packet ) )
+    if( arePacketCRCsValid( packet ) )
     {
         if( packet.header.fmt.control.s.primary   == 0 &&
             packet.header.fmt.control.s.direction == 0 )
@@ -992,38 +1016,37 @@ bool Datalink::errorCondition( void )
 }
 
 
-int Datalink::calcPacketLength( int headerLen )
+unsigned Datalink::calcPacketLength( unsigned headerLen )
 {
-    int packetLength, dataLength, numBlocks;
+    unsigned packetLength = 0;
 
-    if( headerLen > Packet_HeaderLenCounted)
+    if( headerLen >= DatalinkPacket::HeaderCountedLength )
     {
-        //  get the true payload size by subtracting off the header bytes
-        dataLength = headerLen - Packet_HeaderLenCounted;
+        packetLength = DatalinkPacket::HeaderLength;
 
-        numBlocks  =  dataLength / 16;
-        numBlocks += (dataLength % 16)?1:0;
+        //  get the payload size by subtracting off the header bytes
+        unsigned dataLength = headerLen - DatalinkPacket::HeaderCountedLength;
 
-        packetLength  = Packet_HeaderLen;
-        packetLength += dataLength;
-        packetLength += numBlocks * 2;  //  add on the CRC bytes
-    }
-    else
-    {
-        packetLength = Packet_HeaderLen;
+        if( dataLength )
+        {
+            unsigned numBlocks = (dataLength + DatalinkPacket::BlockLength - 1) / DatalinkPacket::BlockLength;
+
+            packetLength += dataLength;
+            packetLength += numBlocks * DatalinkPacket::CRCLength;  //  add on the CRC bytes
+        }
     }
 
     return packetLength;
 }
 
 
-bool Datalink::isEntirePacket( const datalink_packet &packet, unsigned long in_recv )
+bool Datalink::isEntirePacket( const Datalink::packet &packet, unsigned long in_recv )
 {
     bool retVal = false;
 
-    if( in_recv >= Packet_HeaderLen )
+    if( in_recv >= DatalinkPacket::HeaderLength )
     {
-        if( calcPacketLength(packet.header.fmt.len) == in_recv )
+        if( calcPacketLength(packet.header.fmt.len) <= in_recv )
         {
             retVal = true;
         }
@@ -1033,13 +1056,13 @@ bool Datalink::isEntirePacket( const datalink_packet &packet, unsigned long in_r
 }
 
 
-int Datalink::getInboundDataLength( void )
+int Datalink::getInPayloadLength( void )
 {
     return _in_data_len;
 }
 
 
-bool Datalink::getInboundData( unsigned char *buf )
+bool Datalink::getInPayload( unsigned char *buf )
 {
     bool retval = false;
 
@@ -1053,70 +1076,59 @@ bool Datalink::getInboundData( unsigned char *buf )
 }
 
 
-bool Datalink::areCRCsValid( const datalink_packet &packet )
+bool Datalink::isHeaderCRCValid( const DatalinkPacket::dlp_header &header )
 {
-    bool valid;
+    unsigned length = DatalinkPacket::HeaderLength - DatalinkPacket::CRCLength;
 
-    int pos, len, block_len;
-    unsigned short header_crc, block_crc;
-
-    const unsigned char  *current_block;
-    const unsigned short *current_crc;
+    return crc(header.raw, length) == header.fmt.crc;
+}
 
 
-    //  default to true, set to false if any don't match
-    valid = true;
+bool Datalink::isDataBlockCRCValid( const unsigned char *block, unsigned length )
+{
+    unsigned short block_crc = *(reinterpret_cast<const unsigned short *>(block + length));
 
-    //  compute the header's CRC
-    header_crc = crc((unsigned char *)&packet.header, 8);
+    return crc(block, length) == block_crc;
+}
 
-    if( header_crc != packet.header.fmt.crc )
+
+bool Datalink::arePacketCRCsValid( const Datalink::packet &packet )
+{
+    bool crcs_valid = isHeaderCRCValid(packet.header);
+
+    if( crcs_valid )
     {
-        valid = false;
-    }
-    else
-    {
-        pos = 0;
-        len = packet.header.fmt.len - Packet_HeaderLenCounted;
+        int packet_length = packet.header.fmt.len - DatalinkPacket::HeaderCountedLength;
 
-        while( valid && pos < len )
+        for( int pos = 0; crcs_valid && pos < packet_length; pos += DatalinkPacket::BlockLength )
         {
             //  note that each "block" is 18 bytes long, to allow for easy indexing of the
             //    data - 16 bytes of data + 2 bytes of CRC...
             //  we index by the data bytes we're looking at, not by the data+crc bytes
-            current_block = packet.data.blocks[pos/16];
-            block_len     = len - pos;
+            const unsigned char *block = packet.data.blocks[pos/DatalinkPacket::BlockLength];
 
-            if( block_len > 16 )
+            int block_length = packet_length - pos;
+
+            if( block_length > DatalinkPacket::BlockLength )
             {
-                block_len = 16;
+                block_length = DatalinkPacket::BlockLength;
             }
 
-            pos += block_len;
-
-            block_crc   = crc(current_block, block_len);
-
-            current_crc = (const unsigned short *)(current_block + block_len);
-
-            //  compare the CRCs
-            if( block_crc != *current_crc )
-            {
-                valid = false;
-            }
+            crcs_valid &= isDataBlockCRCValid(block, block_length);
         }
     }
 
-    return valid;
+    return crcs_valid;
 }
 
 
-void Datalink::putPacketPayload( const datalink_packet &packet, unsigned char *buf, int *len )
+void Datalink::putPacketPayload( const Datalink::packet &packet, unsigned char *buf, int *len )
 {
     unsigned const char *current_block;
     int payload_len, block_len, pos;
 
     //  subtract the header length
-    payload_len = packet.header.fmt.len - Packet_HeaderLenCounted;
+    payload_len = packet.header.fmt.len - DatalinkPacket::HeaderCountedLength;
 
     if( buf != NULL )
     {
@@ -1124,13 +1136,13 @@ void Datalink::putPacketPayload( const datalink_packet &packet, unsigned char *b
 
         while( pos < payload_len )
         {
-            current_block = packet.data.blocks[pos/16];
+            current_block = packet.data.blocks[pos/DatalinkPacket::BlockLength];
 
             block_len = payload_len - pos;
 
-            if( block_len > 16 )
+            if( block_len > DatalinkPacket::BlockLength )
             {
-                block_len = 16;
+                block_len = DatalinkPacket::BlockLength;
             }
 
             memcpy(buf + pos, current_block, block_len);
