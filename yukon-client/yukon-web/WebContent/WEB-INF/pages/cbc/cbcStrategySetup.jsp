@@ -72,17 +72,19 @@
 		  	   <f:selectItems value="#{capControlForm.cbcHolidaySchedules}" />
 			</x:selectOneMenu> 
 			<f:verbatim></td></tr><tr><td></f:verbatim> 
-			<h:outputText value="Strategy:" />
+			<h:outputText value="Strategy:" 
+			rendered="#{capControlForm.holidayScheduleId > 0}"/>
 			<f:verbatim></td><td></f:verbatim> 
 			<x:selectOneMenu id="Holiday_Strategy_Selection"
 				onchange="submit();"
 				disabled="#{capControlForm.editingCBCStrategy}"
-				value="#{capControlForm.holidayStrategyId}">
-
+				value="#{capControlForm.holidayStrategyId}"
+				rendered="#{capControlForm.holidayScheduleId > 0}">
 				<f:selectItems value="#{capControlForm.cbcHolidayStrategies}" />
 			</x:selectOneMenu> <x:commandLink
 				action="#{capControlForm.dataModel.createEditorLink}"
-				value="Edit" title="Click here to edit this strategy.">
+				value="Edit" title="Click here to edit this strategy."
+				rendered="#{capControlForm.holidayScheduleId > 0}">
 				<f:param name="strattype" id="stratType"
 					value="#{selLists.strategyEditorType}" />
 				<f:param name="stratitemid" id="stratItemid"
