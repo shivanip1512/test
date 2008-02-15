@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/09/04 16:38:13 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/02/15 21:12:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -84,7 +84,7 @@ int Transport::initForOutput(unsigned char *buf, unsigned len, unsigned short ds
         _payload_out.length = len;
         _payload_out.sent   = 0;
 
-        _sequence = 0;
+        _sequence_out = 0;
 
         _ioState = Output;
     }
@@ -157,7 +157,7 @@ int Transport::generate( CtiXfer &xfer )
                 //  set up the transport header
                 _out_packet.header.first = first;
                 _out_packet.header.final = final;
-                _out_packet.header.seq   = _sequence;
+                _out_packet.header.seq   = _sequence_out;
 
                 //  copy the app layer chunk into the outbound packet
                 memcpy( (void *)_out_packet.data, (void *)&(_payload_out.data[_payload_out.sent]), _current_packet_length );
@@ -213,7 +213,8 @@ int Transport::decode( CtiXfer &xfer, int status )
             {
                 int transportPayloadLen;
 
-                _sequence++;
+                _sequence_out = (_sequence_out + 1) & 0x3f;
+
                 _payload_out.sent += _current_packet_length;
 
                 if( _payload_out.length <= _payload_out.sent )
@@ -234,30 +235,45 @@ int Transport::decode( CtiXfer &xfer, int status )
 
             case Input:
             {
-                int dataLen;
+                unsigned dataLen;
 
                 //  copy out the data
-                if( _datalink.getInboundDataLength() >= HeaderLen )
+                if( _datalink.getInPayloadLength() >= HeaderLen )
                 {
-                    dataLen = _datalink.getInboundDataLength() - HeaderLen;
-                    _datalink.getInboundData((unsigned char *)&_in_packet);
+                    dataLen = _datalink.getInPayloadLength() - HeaderLen;
+                    _datalink.getInPayload((unsigned char *)&_in_packet);
 
-                    if( _payload_in.received + dataLen < _payload_in.length_max )
-                    {
-                        memcpy(&_payload_in.data[_payload_in.received], _in_packet.data, dataLen);
-                        _payload_in.received += dataLen;
-                    }
-                    else
+                    if( _payload_in.received + dataLen >= _payload_in.length_max )
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " **** Checkpoint - (" << _payload_in.received + dataLen << ") >= (" << _payload_in.length_max << ") in Cti::Protocol::DNP::Transport::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                     }
-
-                    //  ACH: verify incoming sequence numbers
-
-                    if( _in_packet.header.final )
+                    else
                     {
-                        _ioState = Complete;
+                        memcpy(&_payload_in.data[_payload_in.received], _in_packet.data, dataLen);
+                        _payload_in.received += dataLen;
+                    }
+
+                    if( _in_packet.header.first )
+                    {
+                        _sequence_in = _in_packet.header.seq;
+                    }
+
+                    if( _sequence_in == _in_packet.header.seq )
+                    {
+                        if( _in_packet.header.final )
+                        {
+                            _ioState = Complete;
+                        }
+                        else
+                        {
+                            _sequence_in++;
+                            _sequence_in &= 0x3f;
+                        }
+                    }
+                    else
+                    {
+                        _ioState = Failed;
                     }
                 }
                 else

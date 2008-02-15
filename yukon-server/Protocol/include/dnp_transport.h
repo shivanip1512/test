@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/10/04 15:50:54 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/02/15 21:12:45 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ private:
     payload_t _payload_in,
               _payload_out;
 
-    unsigned int    _current_packet_length,  _sequence;
+    unsigned int    _current_packet_length, _sequence_in, _sequence_out;
     unsigned short  _source_address, _destination_address;
 
     enum IOState
