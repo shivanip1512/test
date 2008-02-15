@@ -9,7 +9,6 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.report.CapControlScheduleDetailReport;
 import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.analysis.tablemodel.CapBankOperationsPerformanceModel;
 import com.cannontech.analysis.tablemodel.CapControlScheduleDetailModel;
 import com.cannontech.analysis.tablemodel.CapControlFilterable;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
@@ -63,6 +62,7 @@ String html = "";
         return report;
     }
 
+    @SuppressWarnings("unchecked")
     public ReportModelBase getModel() {
         return report.getModel();
     }
