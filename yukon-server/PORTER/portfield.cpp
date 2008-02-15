@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.214 $
-* DATE         :  $Date: 2008/01/21 20:47:15 $
+* REVISION     :  $Revision: 1.215 $
+* DATE         :  $Date: 2008/02/15 21:04:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -418,7 +418,7 @@ VOID PortThread(void *pid)
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
 
@@ -752,7 +752,7 @@ INT ResetCommsChannel(CtiPortSPtr Port, CtiDeviceSPtr &Device)
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return status;
@@ -1767,7 +1767,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         catch(...)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            dout << CtiTime() << " **** EXCEPTION on port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
 
                         break;
@@ -1924,7 +1924,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                         {
                             {
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             }
                         }
 
@@ -2953,7 +2953,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " EXCEPTION CAUGHT " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " EXCEPTION CAUGHT on port " << Port->getName() << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(status == RETRY_SUBMITTED)
@@ -2989,7 +2989,7 @@ INT CheckAndRetryMessage(INT CommResult, CtiPortSPtr Port, INMESS *InMessage, OU
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
         }
     }
@@ -3672,7 +3672,7 @@ INT PerformRequestedCmd ( CtiPortSPtr aPortRecord, CtiDeviceSPtr dev, INMESS *aI
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** EXCEPTION **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            dout << CtiTime() << " **** EXCEPTION on port " << aPortRecord->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
     }
 
@@ -3972,7 +3972,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** Checkpoint port " << shPort->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     return bSubstitutionMade;
@@ -3991,7 +3991,8 @@ BOOL findExclusionFreeOutMessage(void *data, void* d)
 
     try
     {
-        if(OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic  ||
+        if(OutMessage &&
+           OutMessage->MessageFlags & MessageFlag_ApplyExclusionLogic  ||
            !stringCompareIgnoreCase(gConfigParms.getValueAsString("PORTER_EXCLUSION_TEST"),"true") )     // Indicates an excludable message!
         {
             CtiDeviceSPtr Device = DeviceManager.getEqual( OutMessage->DeviceID );
@@ -4099,7 +4100,7 @@ INT ProcessExclusionLogic(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDeviceSPtr 
     catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << CtiTime() << " **** EXCEPTION Checkpoint on port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
     // 030503 CGP END Exclusion logic.
 
@@ -4269,7 +4270,7 @@ INT IdentifyDeviceFromOutMessage(CtiPortSPtr Port, OUTMESS *&OutMessage, CtiDevi
                 catch(...)
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint port " << Port->getName() << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 status = CONTINUE_LOOP;
