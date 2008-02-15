@@ -21,7 +21,6 @@
 		<config>src/com/cannontech/core/dynamic/applicationContext.xml</config>
 		<config>src/com/cannontech/core/service/applicationContext.xml</config>
 		<config>src/com/cannontech/jobs/jobContext.xml</config>
-		<config>src/com/cannontech/report/reportContext.xml</config>
 		<config>src/com/cannontech/hibernate/hibernateContext.xml</config>
 	</configs>
 	<configSets>
@@ -45,7 +44,6 @@
 				<config>src/com/cannontech/core/service/applicationContext.xml</config>
 				<config>src/com/cannontech/mainContext.xml</config>
 				<config>src/com/cannontech/jobs/jobContext.xml</config>
-				<config>src/com/cannontech/report/reportContext.xml</config>
 				<config>src/com/cannontech/hibernate/hibernateContext.xml</config>
 			</configs>
 		</configSet>
