@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2006/10/19 20:12:17 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2008/02/15 21:07:24 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -530,12 +530,12 @@ unsigned ObjectBlock::serialize( unsigned char *buf ) const
 
 int ObjectBlock::restore( const unsigned char *buf, int len )
 {
-    int pos, bitpos, qty;
+    int pos, bitpos, objlen, objbitlen, qty;
     Object *tmpObj;
     unsigned short tmp;
 
-    pos    = 0;
-    bitpos = 0;
+    pos     = bitpos    = 0;
+    objlen  = objbitlen = 0;
 
     if( len > ObjectBlockMinSize )
     {
@@ -593,7 +593,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Invalid qualifier block type " << buf[len] << " for response **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Invalid qualifier block type " << static_cast<unsigned>(buf[pos]) << " for response **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 pos = len;
@@ -604,7 +604,7 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Unknown qualifier block type " << buf[len] << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Unknown qualifier block type " << static_cast<unsigned>(buf[pos]) << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 pos = len;
@@ -665,17 +665,11 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
                 (_group == 10 && _variation == 1) ||  //  single-bit binary output
                 (_group == 12 && _variation == 3) )   //  single-bit pattern mask
             {
-                bitpos += restoreBitObject(buf + pos, bitpos, len - pos, tmpObj);
-
-                while( bitpos >= 8 )
-                {
-                    bitpos -= 8;
-                    pos++;
-                }
+                objbitlen = restoreBitObject(buf + pos, bitpos, len - pos, tmpObj);
             }
             else
             {
-                pos += restoreObject(buf + pos, len - pos, tmpObj);
+                objlen = restoreObject(buf + pos, len - pos, tmpObj);
             }
 
             if( tmpObj != NULL )
@@ -683,6 +677,16 @@ int ObjectBlock::restore( const unsigned char *buf, int len )
                 _objectList.push_back(tmpObj);
 
                 _objectIndices.push_back(idx);
+
+                bitpos += objbitlen;
+
+                while( bitpos >= 8 )
+                {
+                    bitpos -= 8;
+                    pos++;
+                }
+
+                pos += objlen;
             }
             else
             {
@@ -843,6 +847,10 @@ void ObjectBlock::getPoints( Interface::pointlist_t &points, const TimeCTO *cto 
                         else if( (*o_itr)->getGroup() == AnalogOutput::Group )
                         {
                             pMsg->setId(pMsg->getId() + AnalogOutput::AnalogOutputOffset);
+                        }
+                        else if( (*o_itr)->getGroup() == CounterFrozen::Group )
+                        {
+                            pMsg->setId(pMsg->getId() + CounterFrozen::CounterFrozenOffset);
                         }
 
                         i_itr++;
