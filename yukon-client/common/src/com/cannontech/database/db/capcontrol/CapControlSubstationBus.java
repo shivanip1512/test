@@ -27,10 +27,12 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     private Integer phaseB = new Integer(CtiUtilities.NONE_ZERO_ID);
     private Integer phaseC = new Integer(CtiUtilities.NONE_ZERO_ID);
     private String controlFlag = "N";
+    private Integer voltReductionPointId = 0;
 	public static final String SETTER_COLUMNS[] = { 
 		"CurrentVarLoadPointID", "CurrentWattLoadPointID", "MapLocationID", 
 		"CurrentVoltLoadPointID", "AltSubId", "SwitchPointId",
-		"DualBusEnabled", "MultiMonitorControl", "UsePhaseData", "PhaseB", "PhaseC", "ControlFlag"};
+		"DualBusEnabled", "MultiMonitorControl", "UsePhaseData",
+		"PhaseB", "PhaseC", "ControlFlag", "VoltReductionPointId"};
 	public static final String CONSTRAINT_COLUMNS[] = { "SubstationBusID"};
 	public static final String TABLE_NAME = "CapControlSubstationBus";
 
@@ -58,7 +60,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     		getSubstationBusID(), getCurrentVarLoadPointID(), getCurrentWattLoadPointID(),
     		getMapLocationID(), getCurrentVoltLoadPointID(), getAltSubPAOId(),
     		getSwitchPointID(), getDualBusEnabled(), getMultiMonitorControl(),
-            getUsePhaseData(), getPhaseB(), getPhaseC(), getControlFlag()};
+            getUsePhaseData(), getPhaseB(), getPhaseC(), getControlFlag(), getVoltReductionPointId()};
     
     	add( TABLE_NAME, addValues );
     }
@@ -128,6 +130,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
             setPhaseB((Integer) results[9]);
             setPhaseC((Integer) results[10]);
             setControlFlag((String) results[11]);
+            setVoltReductionPointId((Integer) results[12]);
     	}
     	else {
     		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -178,7 +181,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     		getCurrentVarLoadPointID(), getCurrentWattLoadPointID(), getMapLocationID(),
     		getCurrentVoltLoadPointID(), getAltSubPAOId(), getSwitchPointID(),
             getDualBusEnabled(), getMultiMonitorControl(), getUsePhaseData(),
-            getPhaseB(), getPhaseC(), getControlFlag()};
+            getPhaseB(), getPhaseC(), getControlFlag(), getVoltReductionPointId()};
     
     	Object constraintValues[] = { getSubstationBusID()};
     
@@ -205,7 +208,7 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
      *  the pointID for its VAR point, if returns null if the
      *  pointID is not yet used.
      */
-    public static com.cannontech.common.util.NativeIntVector getUsedVARPointIDs( Integer excludedSubBusId, Integer excludedFeederID ){
+    public static NativeIntVector getUsedVARPointIDs( Integer excludedSubBusId, Integer excludedFeederID ){
     	java.sql.Connection conn = null;
     	java.sql.PreparedStatement pstmt = null;
     	java.sql.ResultSet rset = null;
@@ -248,7 +251,6 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
     	return vect;
     }
     
-    //	setters and getters for the SwitchPointId field 
     public Integer getSwitchPointID() {
     	return switchPointID;
     }
@@ -366,6 +368,14 @@ public class CapControlSubstationBus extends com.cannontech.database.db.DBPersis
         }else {
             this.usePhaseData = "N";
         }
+    }
+    
+    public Integer getVoltReductionPointId() {
+        return voltReductionPointId;
+    }
+    
+    public void setVoltReductionPointId(Integer voltReductionPointId) {
+        this.voltReductionPointId = voltReductionPointId;
     }
     
     public static int[] getUnassignedSubBusIDs() {

@@ -141,69 +141,6 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         connection.close();
     }
 
-   /* public static CapControlArea getDefaultArea() {
-        Connection connection = PoolManager.getInstance()
-                                           .getConnection(CtiUtilities.getDatabaseAlias());
-        CapControlArea noneArea = new CapControlArea();
-        synchronized (noneArea) {
-            try {
-                noneArea = retrieveArea(connection);
-            } catch (EmptyResultDataAccessException erda) {
-                addArea(connection);
-                close(connection);
-                getDefaultArea();
-
-            }
-
-        }
-        close(connection);
-        return noneArea;
-    }*/
-
-/*    private static void close(Connection connection) {
-        if (connection == null) {
-            try {
-                connection.close();
-            } catch (SQLException e) {
-                CTILogger.error(e);
-            }
-        }
-    }*/
-
-/*    private static CapControlArea retrieveArea(Connection connection) {
-        Integer areaID;
-        SqlStatementBuilder builder = new SqlStatementBuilder();
-        builder.append("select areaid from capcontrolarea as c, yukonpaobject as y where");
-        builder.append("c.areaid = y.paobjectid");
-        builder.append("and");
-        builder.append("y.paoname like '(none)'");
-        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        CapControlArea noneArea = new CapControlArea();
-        areaID = yukonTemplate.queryForInt(builder.toString());
-        noneArea.setCapControlPAOID(areaID);
-        noneArea.setDbConnection(connection);
-        try {
-            noneArea.retrieve();
-            return noneArea;
-        } catch (SQLException e) {
-            noneArea = null;
-            CTILogger.error(e);
-        }
-        return noneArea;
-    }*/
-
-/*    private static void addArea(Connection connection) {
-        CapControlArea area = new CapControlArea();
-        area.setPAOName("(none)");
-        area.getCapControlArea().setStrategyID(0);
-        area.setDbConnection(connection);
-        try {
-            area.add();
-        } catch (SQLException e) {
-            CTILogger.error(e);
-        }
-    }*/
-
     @SuppressWarnings("unchecked")
     public static List<Integer> getAllAreaIDs() {
         SqlStatementBuilder builder = new SqlStatementBuilder();

@@ -2,18 +2,17 @@ package com.cannontech.database.db.capcontrol;
 
 import java.sql.SQLException;
 
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.DBPersistent;
 
 public class CapControlSpecialArea extends DBPersistent {
     private Integer areaID;
-    private Integer controlPointId = new Integer(0);
+    private Integer voltReductionPointId = new Integer(0);
     public static final String CONSTRAINT_COLUMNS[] = { "AreaId" };
-    public static final String SETTER_COLUMNS[] = {"controlPointId"};
+    public static final String SETTER_COLUMNS[] = {"voltReductionPointId"};
     public static final String TABLE_NAME = "CapControlSpecialArea";
 
     public void add() throws SQLException {
-        Object[] values = { getAreaID(), getControlPointId()};
+        Object[] values = { getAreaID(), getVoltReductionPointId()};
         add(TABLE_NAME, values);
     }
 
@@ -27,7 +26,7 @@ public class CapControlSpecialArea extends DBPersistent {
         Object results[] = retrieve(SETTER_COLUMNS, TABLE_NAME, CONSTRAINT_COLUMNS, constraintValues);
 
         if (results.length == SETTER_COLUMNS.length) {
-            setControlPointId((Integer) results[0]);
+            setVoltReductionPointId((Integer) results[0]);
             
         } else {
             throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -35,7 +34,7 @@ public class CapControlSpecialArea extends DBPersistent {
     }
 
     public void update() throws SQLException {
-        Object setValues[]= {getControlPointId()}; 
+        Object setValues[]= {getVoltReductionPointId()}; 
         Object constraintValues[] = { getAreaID() };
         update(TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues);
     }
@@ -48,12 +47,12 @@ public class CapControlSpecialArea extends DBPersistent {
         this.areaID = areaID;
     }
     
-    public Integer getControlPointId() {
-        return controlPointId;
+    public Integer getVoltReductionPointId() {
+        return voltReductionPointId;
     }
 
-    public void setControlPointId(Integer controlPointId) {
-        this.controlPointId = controlPointId;
+    public void setVoltReductionPointId(Integer controlPointId) {
+        this.voltReductionPointId = controlPointId;
     }
 
 }

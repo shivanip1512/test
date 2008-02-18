@@ -5,8 +5,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        formatSelectedPoint ('areaControlPointDiv');
-        var areaControlPointPicker = new PointPicker('controlPoint','com.cannontech.common.search.criteria.StatusPointCriteria','pointName:areaControlPoint;deviceName:areaDevice','areaControlPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
+        formatSelectedPoint ('areaVoltReductionPointDiv');
+        var areaVoltReductionPointPicker = new PointPicker('areaVoltReductionPointValue','com.cannontech.common.search.criteria.StatusPointCriteria','pointName:areaVoltReductionPoint;deviceName:areaDevice','areaVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
     </script>
 </f:verbatim>
 
@@ -41,25 +41,25 @@
     <br />
     <fieldset>
     <legend>
-    Control Point Setup
+    Volt Reduction Control Point Setup
     </legend>
     </f:verbatim>
-    <x:div id="areaControlPointDiv" forceId="true">
+    <x:div id="areaVoltReductionPointDiv" forceId="true">
     <f:verbatim>
     <br/>
     </f:verbatim>
     
-    <x:inputHidden id="controlPoint" forceId="true" value="#{capControlForm.PAOBase.capControlArea.controlPointId }" />
+    <x:inputHidden id="areaVoltReductionPointValue" forceId="true" value="#{capControlForm.PAOBase.capControlArea.voltReductionPointId }" />
     <x:outputLabel for="areaDevice" value="Selected Point: " title="Point used for control." styleClass="medStaticLabel"/>
-    <x:outputText id="areaDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlArea.controlPointId]}"/> 
+    <x:outputText id="areaDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlArea.voltReductionPointId]}"/> 
     <x:outputText id="areaDevicePointSeperator" forceId="true" value=" : " />
-    <x:outputText id="areaControlPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlArea.controlPointId]}" /> 
+    <x:outputText id="areaVoltReductionPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlArea.voltReductionPointId]}" /> 
     
     <f:verbatim>
     <br/>
     </f:verbatim>
     
-    <h:outputLink  value="javascript:areaControlPointPicker.showPicker()" >
+    <h:outputLink  value="javascript:areaVoltReductionPointPicker.showPicker()" >
     <h:outputText value="Select point"/>
     </h:outputLink>
                  
@@ -68,11 +68,11 @@
     <br/>
     </f:verbatim>
     
-    <x:commandLink id="varPoint_setNone" 
+    <x:commandLink id="areaVoltReductionPoint_setNone" 
         title="Do not use a point for control." 
         styleClass="medStaticLabel"
-        value="No Control Point" 
-        actionListener="#{capControlForm.areaNoPointClicked}">
+        value="No Volt Reduction Point" 
+        actionListener="#{capControlForm.areaNoVoltReductionPointClicked}">
     <f:param name="ptId" value="0"/>
     </x:commandLink>
 
