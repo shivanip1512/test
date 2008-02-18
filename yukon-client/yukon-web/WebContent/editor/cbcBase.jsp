@@ -78,8 +78,12 @@
                         <jsp:include page="/WEB-INF/pages/cbc/cbcGeneralEditor.jsp"/>
                     </x:panelTab>
 
-                    <x:panelTab id="tabSubSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
+                    <x:panelTab id="tabSubBusSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
                         <jsp:include page="/WEB-INF/pages/cbc/cbcSubSetup.jsp"/>
+                    </x:panelTab>
+                    
+                    <x:panelTab id="tabSubstationSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
+                        <jsp:include page="/WEB-INF/pages/cbc/ccSubstationSetup.jsp"/>
                     </x:panelTab>
                     
                     <x:panelTab id="tabAreaSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCArea']}">
