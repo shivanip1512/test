@@ -1765,6 +1765,46 @@ go
 alter table capcontrolsubstation alter column voltReductionPointId numeric not null;
 /* End YUK-5351 */
 
+/* Start YUK-5363 */
+create table CCHOLIDAYSTRATEGYASSIGNMENT  (
+   PAObjectId           numeric                          not null,
+   HolidayScheduleId    numeric                          not null,
+   StrategyId           numeric                          not null,
+   constraint PK_CCHOLIDAYSTRATEGYASSIGNMENT primary key (PAObjectId)
+);
+
+insert into HolidaySchedule values ( -1, 'No Holiday');
+insert into dateOfHoliday values(-1, 'None', 1,1,1969);
+
+insert into CCHolidayStrategyAssignment
+( paobjectid, holidayscheduleid, strategyid )
+select substationbusid, -1, 0 from capcontrolsubstationbus;
+
+insert into CCHolidayStrategyAssignment
+( paobjectid, holidayscheduleid, strategyid )
+select feederid, -1, 0 from capcontrolfeeder;
+
+insert into CCHolidayStrategyAssignment
+( paobjectid, holidayscheduleid, strategyid )
+select areaid, -1, 0 from capcontrolarea;
+
+insert into CCHolidayStrategyAssignment
+( paobjectid, holidayscheduleid, strategyid )
+select areaid, -1, 0 from capcontrolspecialarea;
+
+alter table CCHOLIDAYSTRATEGYASSIGNMENT
+   add constraint FK_CCHSA_PAOID foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID);
+
+alter table CCHOLIDAYSTRATEGYASSIGNMENT
+   add constraint FK_CCHSA_SCHEDID foreign key (HolidayScheduleId)
+      references HolidaySchedule (HolidayScheduleID);
+
+alter table CCHOLIDAYSTRATEGYASSIGNMENT
+   add constraint FK_CCHOLIDAY_CAPCONTR foreign key (StrategyId)
+      references CapControlStrategy (StrategyID);
+/* End YUK-5363 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

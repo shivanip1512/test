@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/14/2008 4:36:46 PM                         */
+/* Created on:     2/18/2008 10:34:22 AM                        */
 /*==============================================================*/
 
 
@@ -243,6 +243,8 @@ drop table CCEventLog cascade constraints;
 drop table CCFeederBankList cascade constraints;
 
 drop table CCFeederSubAssignment cascade constraints;
+
+drop table CCHOLIDAYSTRATEGYASSIGNMENT cascade constraints;
 
 drop table CCMONITORBANKLIST cascade constraints;
 
@@ -1415,6 +1417,16 @@ create table CCFeederSubAssignment  (
    FeederID             NUMBER                          not null,
    DisplayOrder         NUMBER                          not null,
    constraint PK_CCFEEDERSUBASSIGNMENT primary key (SubStationBusID, FeederID)
+);
+
+/*==============================================================*/
+/* Table: CCHOLIDAYSTRATEGYASSIGNMENT                           */
+/*==============================================================*/
+create table CCHOLIDAYSTRATEGYASSIGNMENT  (
+   PAObjectId           NUMBER                          not null,
+   HolidayScheduleId    NUMBER                          not null,
+   StrategyId           NUMBER                          not null,
+   constraint PK_CCHOLIDAYSTRATEGYASSIGNMENT primary key (PAObjectId)
 );
 
 /*==============================================================*/
@@ -3290,6 +3302,8 @@ create table DateOfHoliday  (
    constraint PK_DATEOFHOLIDAY primary key (HolidayScheduleID, HolidayName)
 );
 
+insert into dateOfHoliday values(-1, 'None', 1,1,1969);
+
 /*==============================================================*/
 /* Table: DateOfSeason                                          */
 /*==============================================================*/
@@ -5037,6 +5051,7 @@ create table HolidaySchedule  (
 );
 
 insert into HolidaySchedule values( 0, 'Empty Holiday Schedule' );
+insert into HolidaySchedule values(-1, 'No Holiday');
 
 /*==============================================================*/
 /* Index: Indx_HolSchName                                       */
@@ -9938,6 +9953,18 @@ alter table CCFeederSubAssignment
 alter table CCFeederSubAssignment
    add constraint FK_CCSub_CCFeed foreign key (SubStationBusID)
       references CAPCONTROLSUBSTATIONBUS (SubstationBusID);
+
+alter table CCHOLIDAYSTRATEGYASSIGNMENT
+   add constraint FK_CCHSA_PAOID foreign key (PAObjectId)
+      references YukonPAObject (PAObjectID);
+
+alter table CCHOLIDAYSTRATEGYASSIGNMENT
+   add constraint FK_CCHSA_SCHEDID foreign key (HolidayScheduleId)
+      references HolidaySchedule (HolidayScheduleID);
+
+alter table CCHOLIDAYSTRATEGYASSIGNMENT
+   add constraint FK_CCHOLIDAY_CAPCONTR foreign key (StrategyId)
+      references CapControlStrategy (StrategyID);
 
 alter table CCMONITORBANKLIST
    add constraint FK_CCMONBNKLIST_BNKID foreign key (BankID)
