@@ -23,7 +23,6 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
-import com.cannontech.core.dynamic.exception.DynamicDataAccessException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -67,7 +66,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
             LiteState liteState = stateDao.getLiteState(stateGroupId, (int) pointValue.getValue());
             mav.addObject("state", getDisconnectedState(liteState.getStateRawState()));
             
-        } catch(DynamicDataAccessException ddae) {
+        } catch(NotFoundException e) {
             isConfigured = false;
         }
         
