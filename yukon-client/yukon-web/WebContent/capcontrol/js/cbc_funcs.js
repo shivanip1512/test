@@ -1026,7 +1026,7 @@ function showOneLine () {
    var validElems = new Array();
    getValidChecks( elemSubs, validElems );
    if ( validElems.length <= 0 ) {
-        alert('Please select a Substation to view');
+        alert('Please select a Substation Bus to view');
         return;
         }
     else {      
