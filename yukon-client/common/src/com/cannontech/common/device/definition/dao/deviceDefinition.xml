@@ -10452,6 +10452,30 @@
                 <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="Analog">
+                <name>Daily Control Limit</name>
+                <offset value="10006"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency UV Set Point</name>
+                <offset value="10007"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency OV Set Point</name>
+                <offset value="10008"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency OVUV Track Time</name>
+                <offset value="10009"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
                 <name>Neutral Current Sensor</name>
                 <offset value="10010"/>
                 <multiplier value="1.0"/>
@@ -10462,6 +10486,30 @@
                 <offset value="10011"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Trip Delay Time</name>
+                <offset value="10015"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Close Delay Time</name>
+                <offset value="10016"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Bank Control Time</name>
+                <offset value="10017"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Re-Close Delay Time</name>
+                <offset value="10018"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="Analog">
                 <name>IP Address</name>
@@ -10690,6 +10738,30 @@
                 <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="Analog">
+                <name>Daily Control Limit</name>
+                <offset value="10006"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency UV Set Point</name>
+                <offset value="10007"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency OV Set Point</name>
+                <offset value="10008"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency OVUV Track Time</name>
+                <offset value="10009"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
                 <name>Neutral Current Sensor</name>
                 <offset value="10010"/>
                 <multiplier value="1.0"/>
@@ -10700,6 +10772,30 @@
                 <offset value="10011"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Trip Delay Time</name>
+                <offset value="10015"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Close Delay Time</name>
+                <offset value="10016"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Bank Control Time</name>
+                <offset value="10017"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Re-Close Delay Time</name>
+                <offset value="10018"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="Analog">
                 <name>IP Address</name>
@@ -10928,6 +11024,30 @@
                 <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="Analog">
+                <name>Daily Control Limit</name>
+                <offset value="10006"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency UV Set Point</name>
+                <offset value="10007"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency OV Set Point</name>
+                <offset value="10008"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency OVUV Track Time</name>
+                <offset value="10009"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
                 <name>Neutral Current Sensor</name>
                 <offset value="10010"/>
                 <multiplier value="1.0"/>
@@ -10938,6 +11058,30 @@
                 <offset value="10011"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Trip Delay Time</name>
+                <offset value="10015"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Close Delay Time</name>
+                <offset value="10016"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Bank Control Time</name>
+                <offset value="10017"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Re-Close Delay Time</name>
+                <offset value="10018"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="Analog">
                 <name>IP Address</name>
@@ -11166,6 +11310,30 @@
                 <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="Analog">
+                <name>Daily Control Limit</name>
+                <offset value="10006"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Counts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency UV Set Point</name>
+                <offset value="10007"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency OV Set Point</name>
+                <offset value="10008"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Volts"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Emergency OVUV Track Time</name>
+                <offset value="10009"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
                 <name>Neutral Current Sensor</name>
                 <offset value="10010"/>
                 <multiplier value="1.0"/>
@@ -11176,6 +11344,30 @@
                 <offset value="10011"/>
                 <multiplier value="1.0"/>
                 <unitofmeasure value="Amps"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Trip Delay Time</name>
+                <offset value="10015"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Close Delay Time</name>
+                <offset value="10016"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Bank Control Time</name>
+                <offset value="10017"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Minutes"/>
+            </point>
+            <point init="true" type="Analog">
+                <name>Re-Close Delay Time</name>
+                <offset value="10018"/>
+                <multiplier value="1.0"/>
+                <unitofmeasure value="Seconds"/>
             </point>
             <point init="true" type="Analog">
                 <name>IP Address</name>

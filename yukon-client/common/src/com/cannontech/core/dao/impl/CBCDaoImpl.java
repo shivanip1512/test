@@ -97,10 +97,18 @@ public class CBCDaoImpl  implements CBCDao{
     	pointGroupConfig.add(CBCPointGroup.STATUS, "Control Ignored Indicator");
     	
     	// Configurable Parameters
+    	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Daily Control Limit");
     	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Control UV Set Point");
     	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Control OV Set Point");
     	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Control OVUV Track Time");
+    	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency UV Set Point");
+    	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency OV Set Point");
+    	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Emergency OVUV Track Time");
     	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Neutral Current Alarm Set Point");
+    	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Trip Delay Time");
+    	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Close Delay Time");
+    	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Re-Close Delay Time");
+    	pointGroupConfig.add(CBCPointGroup.CONFIGURABLE_PARAMETERS, "Bank Control Time");
     	
     }
     
