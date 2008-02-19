@@ -874,7 +874,7 @@ function pause(numberMillis) {
             	var cells = row.getElementsByTagName('td');
 	            var sub = cells[1];
                 var anchor = sub.getElementsByTagName('a')[0];
-                var subName = anchor.text;
+                var subName = anchor.innerHTML;
 	            subBusNames.push(trim(subName));
        		}
        		$('feederFilter').selectedIndex = 0;
@@ -885,7 +885,7 @@ function pause(numberMillis) {
 	            var cells = row.getElementsByTagName('td');
 	            var sub = cells[1];
 	            var anchor = sub.getElementsByTagName('a')[0];
-	            var subName = anchor.text;
+	            var subName = anchor.innerHTML;
 	            var selectedSubBus = new String (select.options[select.selectedIndex].text);
 	            //displayed name always contains a white space at the end
 	            if (trim(subName) == trim (selectedSubBus)){
