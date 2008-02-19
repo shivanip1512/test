@@ -137,7 +137,7 @@ public class Validator
             return false;
         }
         
-        String  regex = "\\b[a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@([a-zA-Z0-9]+\\.)+[a-zA-Z]{2,4}\\b";
+        String  regex = "\\b[a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@([a-zA-Z0-9-_]+\\.)+[a-zA-Z]{2,4}\\b";
         String in = ea;
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(in);
