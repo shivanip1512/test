@@ -92,8 +92,8 @@ public class GPUFFProtocol {
 		put((byte) 0x01); 	// This is the START of the GPUFF - FPLD block.  Device Values is a 0x01
 		put((byte) 0x34);	// FLAGS: Time & Voltage included.
 		put((byte)((fault ? 0x80 : 0x00) | (event ? 0x40 : 0x00) | (noAC? 0x40 : 0x00)));
-		put(dvTime.getTime()/1000);
-		put((int)(getDvBattery() * DEFAULT_SCALING));
+		put((int)(dvTime.getTime()/1000));
+		put((short)(getDvBattery() * DEFAULT_SCALING));
 		put(getDvTemp());
 		
 		return;
