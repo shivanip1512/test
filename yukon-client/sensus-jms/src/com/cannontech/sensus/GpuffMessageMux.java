@@ -8,6 +8,7 @@ import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.util.Formatter;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -52,9 +53,13 @@ public class GpuffMessageMux {
 								if(pkt.getLength() > 0) {	
 									String report = "UDP packet received: " + pkt.getAddress()+ ":" + 
 									pkt.getPort() + " ["+ pkt.getLength() + "] bytes.";
+
+									Formatter hexFormatter = new Formatter();
 									for( int i=0; i < pkt.getLength(); i++) {
-										report += " " + Integer.toHexString(pkt.getData()[i]);									
+										hexFormatter.format(" %02x", (0x000000ff & (int)(pkt.getData()[i])));
 									}
+									report += hexFormatter.out().toString();
+																		
 									System.out.print(report + "\n");
 									log.info(report);
 									
@@ -101,6 +106,11 @@ public class GpuffMessageMux {
 	}
 	public void writePacket(byte[] writebuf, int writeLen) {
 
+		Formatter hexFormatter = new Formatter();
+		for( int i=0; i < writeLen; i++) {
+			hexFormatter.format(" %02x", (0x000000ff & (int)writebuf[i]));
+		}
+
         for (URL itr : udpTargetAddressSet) {
 			try {
 				// send request
@@ -108,16 +118,11 @@ public class GpuffMessageMux {
 				DatagramPacket packet = new DatagramPacket(writebuf, writeLen, address, itr.getPort());
 
 				String report = "UDP packet     send: " + packet.getAddress()+ ":" + 
-				packet.getPort() + " ["+ packet.getLength() + "] bytes.";
-				for( int i=0; i < packet.getLength(); i++) {
-					report += " " + Integer.toHexString(packet.getData()[i]);									
-				}
+				packet.getPort() + " ["+ packet.getLength() + "] bytes." + hexFormatter.out().toString();				
+								
 				System.out.print(report + "\n");
-				log.info(report);
-				
-				outSocket.send(packet);
-		
-				
+				log.info(report);				
+				outSocket.send(packet);				
 			} catch (IOException e) {
 				System.out.print(e);
 				log.warn("caught IOException in writePacket", e);
