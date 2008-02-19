@@ -667,6 +667,8 @@ public Object getValue(Object o) {
 	String link = getLinkToPanel().getLinkTo();
 	if(link.length() > 0 ) {
 		dynamicText.setLinkTo(link);
+	} else {
+		dynamicText.setLinkTo(null);
 	}
 	
 	int att = PointAttributes.VALUE;

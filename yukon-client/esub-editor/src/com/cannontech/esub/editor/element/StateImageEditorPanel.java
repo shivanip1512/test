@@ -378,6 +378,8 @@ public Object getValue(Object o) {
 	String link = getLinkToPanel().getLinkTo();
 	if(link.length() > 0 ) {
 		stateImage.setLinkTo(link);
+	} else {
+		stateImage.setLinkTo(null);
 	}
 	stateImage.setPoint(getPointSelectionPanel().getSelectedPoint());
     

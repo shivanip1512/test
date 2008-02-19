@@ -390,6 +390,8 @@ public Object getValue(Object o) {
 	String link = getLinkToPanel().getLinkTo();
 	if(link.length() > 0) {
 		staticText.setLinkTo(link);
+	}else{
+		staticText.setLinkTo(null);
 	}
 	staticText.setText( getTextTextField().getText() );
 	staticText.setFont( getFontComboBox().getSelectedItem().toString(),

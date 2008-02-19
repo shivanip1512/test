@@ -180,6 +180,8 @@ public class StaticImageEditorPanel extends DataInputPanel {
 		String link = getLinkToPanel().getLinkTo();
 		if(link.length() > 0) {
 			staticImage.setLinkTo(link);
+		} else {
+			staticImage.setLinkTo(null);
 		}
 		
 		return staticImage;
