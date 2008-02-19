@@ -21,16 +21,6 @@ public interface CapControlConst
    public final static int BANK_CLOSE_PENDING = 7;
    public final static int BANK_TIME_OF_DAY = 8;
    
-   public final static String STRING_BANK_OPEN = "Open";
-   public final static String STRING_BANK_CLOSE = "Close";
-   public final static String STRING_BANK_OPEN_QUESTIONABLE = "OpenQuestionable";
-   public final static String STRING_BANK_CLOSEQUESTIONABLE = "CloseQuestionable";
-   public final static String STRING_BANK_OPEN_FAIL = "OpenFail";
-   public final static String STRING_BANK_CLOSE_FAIL = "CloseFail";
-   public final static String STRING_BANK_OPEN_PENDING = "OpenPending";
-   public final static String STRING_BANK_CLOSE_PENDING = "ClosePending";
-   public final static String STRING_BANK_TIME_OF_DAY = "TimeOfDay";
-   
    public final static int CAPBANKSTATUS_STATEGROUP_ID = 3;
    public final static int ONELINE_SUBSTATE_STATEGROUP_ID = 6;
    public final static int ONELINE_VERIFY_STATEGROUP_ID = 7;
@@ -46,18 +36,6 @@ public interface CapControlConst
    public final static int CC_FAIL_QUAL = 4;
    public final static int CC_COMMFAIL_QUAL = 5;
    public final static int CC_NO_CONTROL_QUAL = 6;
-   
-   public final static String[] CONTROL_STATUS_STRINGS_ARRAY = {
-       STRING_BANK_OPEN,
-       STRING_BANK_CLOSE,
-       STRING_BANK_OPEN_QUESTIONABLE,
-       STRING_BANK_CLOSEQUESTIONABLE,
-       STRING_BANK_OPEN_FAIL,
-       STRING_BANK_CLOSE_FAIL,
-       STRING_BANK_OPEN_PENDING,
-       STRING_BANK_CLOSE_PENDING,
-       STRING_BANK_TIME_OF_DAY
-   };
    
    public static final String CMD_TYPE_SUB = "SUB_TYPE";
    public static final String CMD_TYPE_SUBSTATION = "SUBSTATION_TYPE";

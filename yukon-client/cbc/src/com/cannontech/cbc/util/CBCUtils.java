@@ -14,6 +14,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.capcontrol.CapBankController701x;
@@ -51,8 +52,9 @@ import com.cannontech.yukon.cbc.SubStation;
 public final class CBCUtils {
     public static final int TEMP_MOVE_REFRESH = 1000;
     // responsible for how to render data for CBC displays
-    public static CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
-    public static AuthDao authDao = DaoFactory.getAuthDao();
+    private static final CapControlCache ccCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
+    private static final AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
+    private static final StateDao stateDao = YukonSpringHook.getBean("stateDao", StateDao.class);
 
     public static final Comparator<SubBus> SUB_DISPLAY_COMPARATOR = new Comparator<SubBus>() {
         @Override
@@ -279,19 +281,16 @@ public final class CBCUtils {
 
     public static boolean isTwoWay(LiteYukonPAObject obj) {
         DBPersistent dbPers = LiteFactory.convertLiteToDBPersAndRetrieve(obj);
-        if (dbPers instanceof TwoWayDevice)
-            return true;
-        else
-            return false;
+        if (dbPers instanceof TwoWayDevice) return true;
+        
+        return false;
     }
 
     public static boolean is701xDevice(LiteYukonPAObject obj) {
         DBPersistent dbPers = LiteFactory.convertLiteToDBPersAndRetrieve(obj);
-        if (dbPers instanceof CapBankController701x)
-            return true;
-        else
-            return false;
-
+        if (dbPers instanceof CapBankController701x) return true;
+        
+        return false;
     }
 
     public static String getAreaNameForSubStationIdFromCache(int subID) {	
@@ -312,8 +311,7 @@ public final class CBCUtils {
 		return getAreaNameForSubStationIdFromCache(stationId);
     }
     public static Integer getStateGroupIDByGroupName(String groupName) {
-        LiteStateGroup[] allStateGroups = DaoFactory.getStateDao()
-                                                    .getAllStateGroups();
+        LiteStateGroup[] allStateGroups = stateDao.getAllStateGroups();
         for (int i = 0; i < allStateGroups.length; i++) {
             LiteStateGroup group = allStateGroups[i];
             if (group.getStateGroupName().equalsIgnoreCase(groupName)) {
@@ -329,6 +327,18 @@ public final class CBCUtils {
         return showCapBankAddInfo;
     }
 
+    public static String getCapControlStateText(final int index) throws NotFoundException {
+        final List<LiteState> stateList = stateDao.getLiteStateGroup(
+            CapControlConst.CAPBANKSTATUS_STATEGROUP_ID).getStatesList();
+        
+        if (index >= stateList.size()) 
+            throw new NotFoundException("State with index of " + index + " not found");
+        
+        LiteState state = stateList.get(index);
+        String text = state.getStateText();
+        return text;
+    }
+    
     /**
      * returns the sum of VARS on switched capbanks for every ENABLED cap object 
      * on a SubBus
@@ -348,17 +358,24 @@ public final class CBCUtils {
         double returnVal = 0.0;
         List<CapBankDevice> capBanks = new ArrayList<CapBankDevice>(feeder.getCcCapBanks());
         List<String> availableStates = getAvailableStatesList(user);
-        String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
+        
         for (CapBankDevice capBank : capBanks) {
-            Integer controlStatus = capBank.getControlStatus();
-            if(controlStatus > 7) continue;  // don't count cb's with states that aren't standard states
-            String operationalState = capBank.getOperationalState();
-            Boolean disabled = capBank.getCcDisableFlag();
-            if(disabled) {
-                operationalState = "Disabled";
+            String controlStateText;
+            try {
+                Integer controlStatusIndex = capBank.getControlStatus();
+                controlStateText = getCapControlStateText(controlStatusIndex);
+            } catch (NotFoundException ignoreAndContinue) {
+                // don't count cb's with states that aren't standard states
+                continue;
             }
-            String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
-            if(availableStates.contains(typeAndState)){
+                
+            String operationalState = capBank.getOperationalState();
+
+            boolean disabled = capBank.getCcDisableFlag();
+            if (disabled) operationalState = "Disabled";
+            
+            String typeAndState = operationalState + ":" + controlStateText;
+            if (availableStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
             }
         }
@@ -369,17 +386,24 @@ public final class CBCUtils {
         double returnVal = 0.0;
         List<CapBankDevice> capBanks = new ArrayList<CapBankDevice>(feeder.getCcCapBanks());
         List<String> unavailableStates = getUnavailableStatesList(user); 
-        String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
+        
         for (CapBankDevice capBank : capBanks) {
-            Integer controlStatus = capBank.getControlStatus();
-            if(controlStatus > 7) continue;  // don't count cb's with states that aren't standard states
-            String operationalState = capBank.getOperationalState();
-            Boolean disabled = capBank.getCcDisableFlag();
-            if(disabled) {
-                operationalState = "Disabled";
+            String controlStateText;
+            try {
+                Integer controlStatusIndex = capBank.getControlStatus();
+                controlStateText = getCapControlStateText(controlStatusIndex);
+            } catch (NotFoundException ignoreAndContinue) {
+                // don't count cb's with states that aren't standard states
+                continue;  
             }
-            String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
-            if(unavailableStates.contains(typeAndState)){
+            
+            String operationalState = capBank.getOperationalState();
+            
+            boolean disabled = capBank.getCcDisableFlag();
+            if (disabled) operationalState = "Disabled";
+
+            String typeAndState = operationalState + ":" + controlStateText;
+            if (unavailableStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
             }
         }
@@ -396,17 +420,24 @@ public final class CBCUtils {
             return returnVal;
         }
         List<String> trippedStates = getTrippedStatesList(user); 
-        String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
+
         for (CapBankDevice capBank : capBanks) {
-            Integer controlStatus = capBank.getControlStatus();
-            if(controlStatus > 7) continue;  // don't count cb's with states that aren't standard states
-            String operationalState = capBank.getOperationalState();
-            Boolean disabled = capBank.getCcDisableFlag();
-            if(disabled) {
-                operationalState = "Disabled";
+            String controlStateText;
+            try {
+                Integer controlStatusIndex = capBank.getControlStatus();
+                controlStateText = getCapControlStateText(controlStatusIndex);
+            } catch (NotFoundException ignoreAndContinue) {
+                // don't count cb's with states that aren't standard states
+                continue;  
             }
-            String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
-            if(trippedStates.contains(typeAndState)){
+                
+            String operationalState = capBank.getOperationalState();
+            
+            boolean disabled = capBank.getCcDisableFlag();
+            if (disabled) operationalState = "Disabled";
+
+            String typeAndState = operationalState + ":" + controlStateText;
+            if (trippedStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
             }
         }
@@ -423,17 +454,24 @@ public final class CBCUtils {
             return returnVal;
         }
         List<String> closedStates = getClosedStatesList(user); 
-        String[] controlStatusStrings = CapControlConst.CONTROL_STATUS_STRINGS_ARRAY;
+
         for (CapBankDevice capBank : capBanks) {
-            Integer controlStatus = capBank.getControlStatus();
-            if(controlStatus > 7) continue;  // don't count cb's with states that aren't standard states
-            String operationalState = capBank.getOperationalState();
-            Boolean disabled = capBank.getCcDisableFlag();
-            if(disabled) {
-                operationalState = "Disabled";
+            String controlStateText;
+            try {
+                Integer controlStatusIndex = capBank.getControlStatus();
+                controlStateText = getCapControlStateText(controlStatusIndex);
+            } catch (NotFoundException ignoreAndContinue) {
+                // don't count cb's with states that aren't standard states
+                continue;  
             }
-            String typeAndState = operationalState + ":" + controlStatusStrings[controlStatus];
-            if(closedStates.contains(typeAndState)){
+                
+            String operationalState = capBank.getOperationalState();
+            
+            boolean disabled = capBank.getCcDisableFlag();
+            if (disabled) operationalState = "Disabled";
+
+            String typeAndState = operationalState + ":" + controlStateText;
+            if (closedStates.contains(typeAndState)){
                 returnVal += capBank.getBankSize();
             }
         }
@@ -605,6 +643,7 @@ public final class CBCUtils {
         return checkable.getCurrentPtQuality(type.intValue()) == PointQualityCheckable.PointQuality.NormalQuality.value();
     }
     
+    @SuppressWarnings("static-access")
     public static boolean isController(int id) {
         LiteYukonPAObject lite = null;
         try{
@@ -650,8 +689,7 @@ public final class CBCUtils {
      * group
      */
     public static LiteState[] getCBCStateNames() {
-        return DaoFactory.getStateDao()
-                         .getLiteStates(StateGroupUtils.STATEGROUPID_CAPBANK);
+        return stateDao.getLiteStates(StateGroupUtils.STATEGROUPID_CAPBANK);
     }
     
     /**
