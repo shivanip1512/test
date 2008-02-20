@@ -5,18 +5,18 @@ import com.cannontech.yukon.cbc.CBCCommand;
 public enum CommandHolder {
     
     CONFIRM_AREA(CBCCommand.CONFIRM_AREA, "Confirm_Area", "Confirm Area"),
-    CONFIRM_SUBSTATION(CBCCommand.CONFIRM_SUBSTATION, "Confirm_Sub", "Confirm Sub"),
-    CONFIRM_SUBBUS(CBCCommand.CONFIRM_SUB, "Confirm_Sub", "Confirm Sub"),
+    CONFIRM_SUBSTATION(CBCCommand.CONFIRM_SUBSTATION, "Confirm_Sub", "Confirm SubStation"),
+    CONFIRM_SUBBUS(CBCCommand.CONFIRM_SUB, "Confirm_Sub", "Confirm SubBus"),
     
     ENABLE_AREA(CBCCommand.ENABLE_AREA, "Enable_Area", "Enable Area"),
-    ENABLE_SUBSTATION(CBCCommand.ENABLE_AREA, "Enable_Sub", "Enable Sub"),
-    ENABLE_SUBBUS(CBCCommand.ENABLE_SUBBUS, "Enable_Sub", "Enable Sub"),
+    ENABLE_SUBSTATION(CBCCommand.ENABLE_AREA, "Enable_Sub", "Enable SubStation"),
+    ENABLE_SUBBUS(CBCCommand.ENABLE_SUBBUS, "Enable_Sub", "Enable SubBus"),
     ENABLE_FEEDER(CBCCommand.ENABLE_FEEDER, "Enable_Feeder", "Enable Feeder"),
     ENABLE_CAPBANK(CBCCommand.ENABLE_CAPBANK, "Enable_CapBank", "Enable CapBank"),
     
     DISABLE_AREA(CBCCommand.DISABLE_AREA, "Disable_Area", "Disable Area"),
-    DISABLE_SUBSTATION(CBCCommand.DISABLE_AREA, "Disable_Sub", "Disable Sub"),
-    DISABLE_SUBBUS(CBCCommand.DISABLE_SUBBUS, "Disable_Sub", "Disable Sub"),
+    DISABLE_SUBSTATION(CBCCommand.DISABLE_AREA, "Disable_Sub", "Disable SubStation"),
+    DISABLE_SUBBUS(CBCCommand.DISABLE_SUBBUS, "Disable_Sub", "Disable SubBus"),
     DISABLE_FEEDER(CBCCommand.DISABLE_FEEDER, "Disable_Feeder", "Disable Feeder"),
     DISABLE_CAPBANK(CBCCommand.DISABLE_CAPBANK, "Disable_CapBank", "Disable CapBank"),
     
