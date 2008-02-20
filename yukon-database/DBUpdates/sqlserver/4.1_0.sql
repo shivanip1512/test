@@ -57,7 +57,7 @@ go
 
 /* Start YUK-5350 */
 insert into YukonRoleProperty values(-1021,-1,'importer_communications_enabled','true','Specifies whether communications will be allowed by the bulk importer.'); 
-/* End YUK-5350
+/* End YUK-5350 */
 
 /* Start YUK-5337 */
 INSERT INTO DeviceGroup
