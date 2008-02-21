@@ -44,9 +44,10 @@ if (allowCtlVal!=null) {
 	<form id="areaForm" action="substations.jsp" method="post">
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREAID%>" />
-        <table id="areaHeaderTable" width="100%" cellspacing="0" cellpadding="0">
-			<tr class="columnHeader lAlign">				
-				<td>Area Name</td>
+        <div>
+			<table id="areaTable" width="100%" cellspacing="0" cellpadding="0" >
+			<tr class="columnHeader lAlign">             
+                <td>Area Name</td>
                 <td width="2%"></td>
                 <td>State</td>
                 <td>Setup</td>
@@ -55,10 +56,7 @@ if (allowCtlVal!=null) {
                 <td>Closed <br/>kVARS</td>
                 <td>Tripped <br/>kVARS</td>
                 <td>PFactor/Est.</td>
-			</tr>
-        </table>
-        <div>
-			<table id="areaTable" width="100%" cellspacing="0" cellpadding="0" >
+            </tr>
 <%
 	String css = "tableCell";
 	List<CBCSpecialArea> areas = filterCapControlCache.getSpecialCbcAreas();
@@ -70,7 +68,7 @@ if (allowCtlVal!=null) {
             <input type="hidden" id="paoId_${thisAreaId}" value="${thisAreaId}"></input>
             
 	        <tr class="<%=css%>">
-				<td>
+				<td width="260">
 				<input type="checkbox" name="cti_chkbxAreas" value="${thisAreaId}"/>
 				<input type="image" id="showAreas${thisAreaId}"
 					src="images/nav-plus.gif"
@@ -101,7 +99,7 @@ if (allowCtlVal!=null) {
 				<td><cti:capControlValue paoId="<%=area.getPaoID()%>" type="CBCSPECIALAREA" format="PFACTOR" /></td>
 			</tr>
 			<tr>
-				<td colspan="2">
+				<td colspan="3">
 					<table id="allAreas${thisAreaId}" width="100%" cellspacing="0" cellpadding="2">
 <%
 if (areaStations.size() > 0) {		
@@ -128,7 +126,7 @@ if (areaStations.size() > 0) {
 </form>
 			
 <script type="text/javascript" language="JavaScript">
-Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','areaHeaderTable');});
+//Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','areaHeaderTable');});
 Event.observe(window, 'load', checkPageExpire);
 
 //register the event handler for the system command

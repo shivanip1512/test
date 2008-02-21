@@ -52,9 +52,10 @@ if (allowCtlVal!=null) {
 	<form id="areaForm" action="substations.jsp" method="post">
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREA%>" />
 		<input type="hidden" name="<%=CCSessionInfo.STR_CC_AREAID%>" />
-        <table id="areaHeaderTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-			<tr class="columnHeader lAlign">				
-				<td>Area Name</td>
+        <div>
+			<table id="areaTable" width="100%" border="0" cellspacing="0" cellpadding="0" >
+			<tr class="columnHeader lAlign">                
+                <td>Area Name</td>
                 <td width="2%"></td>
                 <td>State</td>
                 <td>Setup</td>
@@ -63,10 +64,7 @@ if (allowCtlVal!=null) {
                 <td>Closed <br/>kVARS</td>
                 <td>Tripped <br/>kVARS</td>
                 <td>PFactor/Est.</td>
-			</tr>
-        </table>
-        <div>
-			<table id="areaTable" width="100%" border="0" cellspacing="0" cellpadding="0" >
+            </tr>
 <%
 	String css = "tableCell";
 	List<CBCArea> cbcAreas = filterCapControlCache.getCbcAreas();
@@ -78,13 +76,13 @@ if (allowCtlVal!=null) {
             <input type="hidden" id="paoId_${thisAreaId}" value="${thisAreaId}"></input>
             
 	        <tr class="<%=css%>">
-				<td>
-				<input type="checkbox" name="cti_chkbxAreas" value="<%=area.getPaoID()%>"/>
-				<input type="image" id="showAreas<%=area.getPaoID()%>"
-					src="images/nav-plus.gif"
-					onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
-				<a href="javascript:postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '${thisAreaId}');" class="<%=css%>">
-				<%=area.getPaoName()%></a>
+				<td width="260">
+					<input type="checkbox" name="cti_chkbxAreas" value="<%=area.getPaoID()%>"/>
+					<input type="image" id="showAreas<%=area.getPaoID()%>"
+						src="images/nav-plus.gif"
+						onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
+					<a href="javascript:postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '${thisAreaId}');" class="<%=css%>">
+					<%=area.getPaoName()%></a>
 				</td>
                 
                 <td>
@@ -110,8 +108,8 @@ if (allowCtlVal!=null) {
 				<td><cti:capControlValue paoId="<%=area.getPaoID()%>" type="CBCAREA" format="PFACTOR" /></td>
 			</tr>
 			<tr>
-				<td colspan="2">
-					<table id="allAreas${thisAreaId}" width="100%" cellspacing="0" cellpadding="2">
+				<td colspan="3">
+					<table id="allAreas${thisAreaId}" width="100%" border="0" cellspacing="0" cellpadding="0">
 <%
 if (areaStations.size() > 0) {		
 	for( int j = 0; j < areaStations.size(); j++ ) {
@@ -137,7 +135,7 @@ if (areaStations.size() > 0) {
 </form>
 			
 <script type="text/javascript" language="JavaScript">
-Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','areaHeaderTable');});
+//Event.observe(window, 'load', function() { new CtiNonScrollTable('areaTable','areaHeaderTable');});
 Event.observe(window, 'load', checkPageExpire);
 
 //register the event handler for the system command
