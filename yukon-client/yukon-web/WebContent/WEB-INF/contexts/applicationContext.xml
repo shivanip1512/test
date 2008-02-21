@@ -368,8 +368,7 @@
     
     <bean id="pointFormattingServiceForRequest" factory-bean="pointFormattingService"
         factory-method="getCachedInstance" scope="request">
-        <!--  <aop:scoped-proxy proxy-target-class="false"/> after Spring 2.0.3 -->
-        <aop:scoped-proxy />
+        <aop:scoped-proxy proxy-target-class="false"/>
     </bean>
     
     <bean id="pointUpdateBackingService"
