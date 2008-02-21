@@ -217,7 +217,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
     
     public ModuleBase getModuleBase(String moduleName) {
         ModuleBase moduleBase = moduleMap.get(moduleName);
-        Validate.notNull(moduleBase, "Unknown module name \"" + moduleName + "\" (check menu_structure.xml).");
+        Validate.notNull(moduleBase, "Unknown module name \"" + moduleName + "\" (check module_config.xml).");
         return moduleBase;
     }
 
