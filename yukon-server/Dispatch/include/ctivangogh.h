@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2006/09/26 14:11:52 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2008/02/21 18:56:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -160,6 +160,21 @@ private:
 
     CtiConnection* getNotificationConnection();
     CtiMultiMsg* resetControlHours();
+
+    struct StalePointTimeData
+    {
+        CtiTime time;
+        long pointID;
+        bool operator<(const StalePointTimeData &rhs) const
+        {
+            return time < rhs.time;
+        }
+    };
+    std::multiset<StalePointTimeData> _expirationSet;//This is yucky. Oh well.
+    std::map<long, CtiTime> _pointUpdatedTime;//The whole point of this is to give me a time associated with these points.
+    void loadStalePointMaps(int pointID = 0);
+    void processStalePoint(CtiPointSPtr pPoint, CtiDynamicPointDispatch* pDyn, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap );
+    void checkForStalePoints(CtiMultiWrapper &aWrap);
 
 public:
 

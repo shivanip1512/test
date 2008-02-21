@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/12/03 22:19:41 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/02/21 18:56:08 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -124,6 +124,7 @@ void main(int argc, char **argv)
             dout << "         0x04 0xXXXXXXXX - Send DISPATCH a point DBChange" << endl;
             dout << "         0x05 0xXXXXXXXX - Send DISPATCH a config config DBChange" << endl;
             dout << "         0x06 0xXXXXXXXX - Send DISPATCH a config device DBChange" << endl;
+            dout << "         0x07 (0x01 analog 0x02 status) 0xXXXXXXXXX Send 25k messages to pointid 0xXXXXXX " << endl;
         }
     }
 
@@ -150,7 +151,7 @@ void main(int argc, char **argv)
             CtiPointRegistrationMsg    *PtRegMsg = CTIDBG_new CtiPointRegistrationMsg(REG_NOTHING);
             Connect.WriteConnQue(PtRegMsg);
 
-            if( !(command == 0x03 || command == 0x04 || command == 0x05 || command == 0x06) )
+            if( !(command == 0x03 || command == 0x04 || command == 0x05 || command == 0x06 || command == 0x07) )
             {
                 CtiCommandMsg *pCmd = new CtiCommandMsg(CtiCommandMsg::PorterConsoleInput, 15);
     
@@ -203,6 +204,36 @@ void main(int argc, char **argv)
                 {
                     CtiDBChangeMsg *chg = new CtiDBChangeMsg(dblvl, ChangeConfigDb, "device config", "device", ChangeTypeUpdate);
                     Connect.WriteConnQue(chg);
+                }
+                else if( command == 0x07 )
+                {
+                    int analogOrStat, pointID;
+                    if( argc >= 4 )
+                    {
+                        analogOrStat = strtoul(argv[3], &pch, 0);
+                        pointID = strtoul(argv[4], &pch, 0);
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << "pt id " << pointID << " analogStuff " << analogOrStat << endl;
+                        }
+                        for( int i=0; i<=25000; i++ )
+                        {
+                            CtiPointDataMsg *pData = new CtiPointDataMsg(pointID, i, NormalQuality, analogOrStat == 0x01 ? AnalogPointType : StatusPointType);
+                            Connect.WriteConnQue(pData);
+                            if( i%1000 == 0 )
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << i <<" messages sent" << endl;
+                                }
+                            }
+                        }
+                    }
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << "Entering 25 second sleep to help prevent Dispatch Purge" << endl;
+                    }
+                    Sleep(25000);
                 }
             }
 

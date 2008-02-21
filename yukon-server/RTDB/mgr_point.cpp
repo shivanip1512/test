@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.43 $
-* DATE         :  $Date: 2008/01/14 17:23:09 $
+* REVISION     :  $Revision: 1.44 $
+* DATE         :  $Date: 2008/02/21 18:56:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1038,6 +1038,34 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
         if(pPt)
         {
             pPt->DecodeAlarmingDatabaseReader(rdr);
+        }
+    }
+
+    RWDBSelector attributeSelector = conn.database().selector();
+    start = start.now();
+    CtiTablePointAttribute::getSQL( db, keyTable, attributeSelector );
+    RWDBReader attribRdr;
+
+    if(pntID) attributeSelector.where( keyTable["pointid"] == pntID && attributeSelector.where() );
+
+    attribRdr = attributeSelector.reader( conn );
+
+    if(_smartMap.setErrorCode(attribRdr.status().errorCode()) != RWDBStatus::ok)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        dout << attributeSelector.asString() << endl;
+    }
+
+    while( attribRdr() )
+    {
+        attribRdr["pointid"] >> pID;
+
+        // Find it in our list and decode it.
+        pPt = _smartMap.find(pID);
+        if(pPt)
+        {
+            pPt->DecodeAttributeDatabaseReader(attribRdr);
         }
     }
 

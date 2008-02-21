@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/11/02 19:04:47 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/02/21 18:56:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,6 +32,7 @@ using boost::weak_ptr;
 #include "pointtypes.h"
 #include "pt_dyn_base.h"
 #include "tbl_pt_base.h"
+#include "tbl_pt_attribute.h"
 // #include "tbl_pt_alarm.h"
 #include "yukon.h"
 #include "tbl_pt_trigger.h"
@@ -55,6 +56,7 @@ protected:
    DynamicFactory          _fpDynFactory;
 
    CtiDynamicPointBase     *_dynamic;
+   CtiTablePointAttribute  *_attributes; //Currently only in dispatch
    CtiTablePointAlarming   *_alarming;
 
    bool                    _triggerPoint;
@@ -76,6 +78,7 @@ public:
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
    void DecodeAlarmingDatabaseReader(RWDBReader &rdr);
+   void DecodeAttributeDatabaseReader(RWDBReader &rdr);
 
    virtual void DumpData();
 
@@ -120,9 +123,11 @@ public:
 
    CtiTablePointAlarming& getAlarming(bool refresh = false);
 
-   CtiDynamicPointBase* getDynamic();
+   CtiDynamicPointBase*    getDynamic();
+   CtiTablePointAttribute* getAttributes();
 
    CtiPointBase& setDynamic(CtiDynamicPointBase *pDyn);
+   CtiPointBase& setAttributes(CtiTablePointAttribute *pAttr);
 
    void           primeDynamicData();
    CtiDynamicPointBase* replicateDynamicData() const;
