@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.176 $
-* DATE         :  $Date: 2008/01/14 17:23:09 $
+* REVISION     :  $Revision: 1.177 $
+* DATE         :  $Date: 2008/02/21 18:56:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -305,6 +305,7 @@ void CtiVanGogh::VGMainThread()
         }
         loadRTDB(true);
         loadPendingSignals();       // Reload any signals written out at last shutdown.
+        loadStalePointMaps();
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Reloading pending control information" << endl;
@@ -1003,6 +1004,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                                 {
                                     // We are going to fake a rawstate behavior here since no one else is likely to do it for us...
                                     pPseudoValPD = CTIDBG_new CtiPointDataMsg(pPoint->getID(), (DOUBLE) rawstate, NormalQuality, pPoint->getType());
+                                    pPseudoValPD->setSource(DISPATCH_APPLICATION_NAME);
                                 }
                                 else if( is_a_control )
                                 {
@@ -1303,6 +1305,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                         if(pDat != NULL)
                         {
+                            pDat->setSource(DISPATCH_APPLICATION_NAME);
                             pDat->setTime( pDyn->getTimeStamp() );  // Make the time match the point's last received time
                             pMulti->getData().push_back(pDat);
                         }
@@ -1501,6 +1504,10 @@ int CtiVanGogh::postDBChange(const CtiDBChangeMsg &Msg)
 
             queueSignalToSystemLog(pSig);
             loadRTDB(true, Msg.replicateMessage());
+            if(Msg.getDatabase() == ChangePointDb)
+            {
+                loadStalePointMaps(Msg.getId());
+            }
         }
         else
         {
@@ -1792,6 +1799,35 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
     }
 
     return status;
+}
+
+void CtiVanGogh::processStalePoint(CtiPointSPtr pPoint, CtiDynamicPointDispatch* pDyn, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap)
+{
+    if( pPoint && pDyn != NULL &&
+        pPoint->getAttributes() != NULL && pPoint->getAttributes()->hasAttribute(CtiTablePointAttribute::STALE_UPDATE_TYPE)
+        && aPD.getSource() != DISPATCH_APPLICATION_NAME )
+    {
+        int updateType = pPoint->getAttributes()->getIntAttribute(CtiTablePointAttribute::STALE_UPDATE_TYPE);
+
+        if( updateType == CtiTablePointAttribute::UPDATE_ALWAYS ||
+           (updateType == CtiTablePointAttribute::UPDATE_ON_CHANGE && aPD.getValue() != pDyn->getValue()) )
+        {
+            _pointUpdatedTime.insert(make_pair(pPoint->getPointID(), CtiTime::now()));
+            int alarm = pPoint->isNumeric() ? CtiTablePointAlarming::staleNumeric : CtiTablePointAlarming::staleStatus;
+            if( _signalManager.isAlarmActive(pPoint->getPointID(), alarm) || pDyn->isConditionActive(alarm) )
+            {
+                activatePointAlarm(alarm, wrap, pPoint, pDyn, false);
+                //I possibly changed the point tags, update!
+                pDyn->getDispatch().resetTags(SIGNAL_MANAGER_MASK);
+                pDyn->getDispatch().setTags(_signalManager.getTagMask(pPoint->getPointID()));
+                if( gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Point is no longer stale " << pPoint->getPointID() << endl;
+                }
+            }
+        }
+    }
 }
 
 INT CtiVanGogh::archiveSignalMessage(const CtiSignalMsg& aSig)
@@ -2720,6 +2756,7 @@ int CtiVanGogh::processMessage(CtiMessage *pMsg)
     CtiServerExclusion guard(_server_exclusion);
 
     checkDataStateQuality(pMsg, MultiWrapper);
+    checkForStalePoints(MultiWrapper);
     /*
      *  Order here is important since the processMessageData routine writes into the RTDB the current values
      *  and the post routine compares messages against the current values to determine exceptions (data changes).
@@ -2851,6 +2888,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 
                                 // Make the time match the entered time
                                 pDat->setTime( pDyn->getTimeStamp() );
+                                pDat->setSource(DISPATCH_APPLICATION_NAME);
                                 pMulti->getData().push_back(pDat);
                             }
                         }
@@ -2994,6 +3032,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 
                             // Make the time match the entered time
                             pDat->setTime( pDyn->getTimeStamp() );
+                            pDat->setSource(DISPATCH_APPLICATION_NAME);
                             pMulti->getData().push_back(pDat);
                         }
                     }
@@ -3868,6 +3907,8 @@ INT CtiVanGogh::checkPointDataStateQuality(CtiPointDataMsg  *pData, CtiMultiWrap
                             }
                         }
                     }
+
+                    processStalePoint(pPoint, pDyn, *pData, aWrap);
                 }
                 catch(...)
                 {
@@ -3955,8 +3996,8 @@ INT CtiVanGogh::markPointNonUpdated(CtiPointSPtr point, CtiMultiWrapper &aWrap)
 
                 CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), pDyn->getValue(), pDyn->getQuality(), point->getType(), "Non Updated");
 
+                pDat->setSource(DISPATCH_APPLICATION_NAME);
                 pDat->setTags(pDyn->getDispatch().getTags() & ~(TAG_POINT_LOAD_PROFILE_DATA | TAG_POINT_MUST_ARCHIVE));
-
                 pDat->setTime(pDyn->getTimeStamp());
 
                 aWrap.getMulti()->insert( pDat );
@@ -4220,6 +4261,7 @@ INT CtiVanGogh::checkForStatusAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &aW
                             checkChangeOfState(alarm, pData, aWrap, point, pDyn, pSig );
                             break;
                         }
+                    case (CtiTablePointAlarming::staleStatus): //This is haneled externally, look for processStalePoint(...)
                     default:
                         {
                             break;
@@ -4344,6 +4386,7 @@ INT CtiVanGogh::checkForNumericAlarms(CtiPointDataMsg *pData, CtiMultiWrapper &a
                     }
                 case (CtiTablePointAlarming::highReasonability):    // These conditions must be evaluated prior to the for loop.  The may modify pData.
                 case (CtiTablePointAlarming::lowReasonability):     // These conditions must be evaluated prior to the for loop.  The may modify pData.
+                case (CtiTablePointAlarming::staleNumeric): //This is haneled externally, look for processStalePoint(...)
                 default:
                     {
                         break;
@@ -5707,7 +5750,9 @@ void CtiVanGogh::VGAppMonitorThread()
 
         if(!(i%60) && pointID !=0)
         {
-            MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str()));
+            CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString().c_str());
+            pData->setSource(DISPATCH_APPLICATION_NAME);
+            MainQueue_.putQueue(pData);
             LastThreadMonitorTime = LastThreadMonitorTime.now();
         }
     }
@@ -5737,7 +5782,9 @@ void CtiVanGogh::VGAppMonitorThread()
                             if((pDynPt->getTimeStamp()).seconds()<(compareTime))
                             {
                                 //its been more than 15 minutes, set the alarms!!!
-                                MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::State::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes."));
+                                CtiMessage* pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(*pointListWalker, CtiThreadMonitor::State::Dead, NormalQuality, StatusPointType, "Thread has not responded for 15 minutes.");
+                                pData->setSource(DISPATCH_APPLICATION_NAME);
+                                MainQueue_.putQueue(pData);
                             }
                         }
                     }
@@ -5761,7 +5808,9 @@ void CtiVanGogh::VGAppMonitorThread()
                             previous = next;
                             checkCount = 0;
 
-                            MainQueue_.putQueue((CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString()));
+                            CtiMessage *pData = (CtiMessage *)CTIDBG_new CtiPointDataMsg(pointID, ThreadMonitor.getState(), NormalQuality, StatusPointType, ThreadMonitor.getString());
+                            pData->setSource(DISPATCH_APPLICATION_NAME);
+                            MainQueue_.putQueue(pData);
                         }
                     }
                 }
@@ -7030,6 +7079,7 @@ void CtiVanGogh::acknowledgeAlarmCondition( CtiPointSPtr &pPt, const CtiCommandM
 
                     CtiPointDataMsg *pTagDat = CTIDBG_new CtiPointDataMsg(pPt->getID(), pDyn->getValue(), pDyn->getQuality(), pPt->getType(), "Tags Updated", pDyn->getDispatch().getTags());
 
+                    pTagDat->setSource(DISPATCH_APPLICATION_NAME);
                     pTagDat->setTime(pDyn->getTimeStamp());
                     pTagDat->setMessagePriority(15);
 
@@ -7477,6 +7527,7 @@ void CtiVanGogh::updateGroupPseduoControlPoint(CtiPointSPtr &pPt, const CtiTime 
         }
 
         CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pPt->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, string(resolveDeviceNameByPaoId(pPt->getDeviceID()) + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE | TAG_POINT_FORCE_UPDATE);
+        pData->setSource(DISPATCH_APPLICATION_NAME);
         pData->setTime( delaytime );
         pData->setMessagePriority( pData->getMessagePriority() - 1 );
 
@@ -7968,6 +8019,7 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
                     {
                         CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), 0, pDyn->getQuality(), AnalogPointType, "Yearly History Reset", pDyn->getDispatch().getTags());
                         pDat->setTime(CtiTime(today));
+                        pDat->setSource(DISPATCH_APPLICATION_NAME);
                         if(!pMulti) pMulti = CTIDBG_new CtiMultiMsg;
                         pMulti->insert(pDat);
                     }
@@ -7976,6 +8028,7 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
                     {
                         CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), 0, pDyn->getQuality(), AnalogPointType, "Monthly History Reset", pDyn->getDispatch().getTags());
                         pDat->setTime(CtiTime(today));
+                        pDat->setSource(DISPATCH_APPLICATION_NAME);
                         if(!pMulti) pMulti = CTIDBG_new CtiMultiMsg;
                         pMulti->insert(pDat);
                     }
@@ -7984,6 +8037,7 @@ CtiMultiMsg* CtiVanGogh::resetControlHours()
                     {
                         CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(point->getID(), 0, pDyn->getQuality(), AnalogPointType, "Daily History Reset", pDyn->getDispatch().getTags());
                         pDat->setTime(CtiTime(today));
+                        pDat->setSource(DISPATCH_APPLICATION_NAME);
                         if(!pMulti) pMulti = CTIDBG_new CtiMultiMsg;
                         pMulti->insert(pDat);
                     }
@@ -8149,4 +8203,195 @@ void CtiVanGogh::sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointS
     pCRP = 0;
     if(pPseudoValPD) MainQueue_.putQueue( pPseudoValPD );
     pPseudoValPD = 0;
+}
+
+void CtiVanGogh::loadStalePointMaps(int pointID)
+{
+    if( pointID == 0 )
+    {
+        if( gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Loading stale point maps - all points " << endl;
+        }
+        CtiPointManager::spiterator iter = PointMgr.begin();
+        CtiPointManager::spiterator end = PointMgr.end();
+
+        CtiPointSPtr tempPoint;
+        for( ; iter != end; iter++ )
+        {
+             tempPoint = iter->second;
+             if( tempPoint && tempPoint->getAttributes() != NULL && tempPoint->getAttributes()->hasAttribute(CtiTablePointAttribute::STALE_ALARM_TIME) )
+             {
+                 //so we have the alarm time, lets get it and be happy!
+                 int alarmTime = tempPoint->getAttributes()->getIntAttribute(CtiTablePointAttribute::STALE_ALARM_TIME);
+                 if( alarmTime > 0 && _pointUpdatedTime.find(tempPoint->getPointID()) == _pointUpdatedTime.end() )
+                 {
+                     //If the point is set up properly and the point is not already in our maps.
+                     unsigned int alarmSeconds = alarmTime * 60;
+                     StalePointTimeData tempData;
+                     CtiTime tempTime;
+                     _pointUpdatedTime.insert(make_pair(tempPoint->getPointID(), tempTime));
+
+                     tempTime += alarmSeconds;
+                     tempData.time = tempTime;
+                     tempData.pointID = tempPoint->getPointID();
+                     _expirationSet.insert(tempData);
+                 }
+             }
+        }
+    }
+    else
+    {
+        CtiPointSPtr tempPoint = PointMgr.getEqual(pointID);
+        if( tempPoint )
+        {
+            if( tempPoint->getAttributes() != NULL && tempPoint->getAttributes()->hasAttribute(CtiTablePointAttribute::STALE_ALARM_TIME) )
+            {
+                if( gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Loading stale point maps for point id " << pointID << endl;
+                }
+                //Only if the point is not in the map already!
+                if( _pointUpdatedTime.find(pointID) != _pointUpdatedTime.end() )
+                {
+                    int alarmTime = tempPoint->getAttributes()->getIntAttribute(CtiTablePointAttribute::STALE_ALARM_TIME);
+                    if( alarmTime > 0 )
+                    {
+                        unsigned int alarmSeconds = alarmTime * 60;
+                        StalePointTimeData tempData;
+                        CtiTime tempTime;
+                        _pointUpdatedTime.insert(make_pair(tempPoint->getPointID(), tempTime));
+                        
+                        tempTime += alarmSeconds;
+                        tempData.time = tempTime;
+                        tempData.pointID = tempPoint->getPointID();
+                        _expirationSet.insert(tempData);
+                    }
+                }
+            }
+            //We only erase when calling check for stale points
+        }
+    }
+}
+
+//This will modify the next stale point check time on its own.
+void CtiVanGogh::checkForStalePoints(CtiMultiWrapper &aWrap)
+{
+    static CtiTime nextStalePointCheckTime;
+    bool didCheck = false;
+    if( CtiTime::now() >= nextStalePointCheckTime )
+    {
+        if( _expirationSet.empty() )
+        {
+            nextStalePointCheckTime = (CtiTime::now() + 60);//Try again in 1 minutes
+        }
+        else
+        {
+            CtiServerExclusion server_guard(_server_exclusion, 10000);      // Get a lock on it.
+            CtiTime start;
+            if(server_guard.isAcquired())
+            {
+                start = CtiTime::now();
+                didCheck = true;
+
+                bool keepGoing = true;
+                std::multiset<StalePointTimeData>::iterator checkTimeIter;
+                std::map<long, CtiTime>::iterator updatedIter;
+                do
+                {
+                    checkTimeIter = _expirationSet.begin();
+                    if( checkTimeIter != _expirationSet.end() )
+                    {
+                        //Check if the current top item in the set is past now (possibly expired)
+                        if( checkTimeIter->time < CtiTime::now() )
+                        {
+                            //If we have one to check, get the point expiration data, and the points last updated time
+                            CtiPointSPtr point = PointMgr.getEqual(checkTimeIter->pointID);
+                            updatedIter = _pointUpdatedTime.find(checkTimeIter->pointID);
+                            if( point && point->getAttributes() != NULL && point->getAttributes()->hasAttribute(CtiTablePointAttribute::STALE_ALARM_TIME) && updatedIter != _pointUpdatedTime.end() )
+                            {
+                                unsigned int alarmTime = point->getAttributes()->getIntAttribute(CtiTablePointAttribute::STALE_ALARM_TIME);
+                                if( (updatedIter->second + (alarmTime*60)) >= CtiTime::now() )
+                                {
+                                    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)point->getDynamic();
+                                    int alarm = point->isNumeric() ? CtiTablePointAlarming::staleNumeric : CtiTablePointAlarming::staleStatus;
+                                    _expirationSet.erase(checkTimeIter);
+                                    StalePointTimeData newTimeData;
+                                    newTimeData.time = updatedIter->second + (alarmTime*60);
+                                    newTimeData.pointID = point->getPointID();
+                                    _expirationSet.insert(newTimeData); //Be sure this cant recurse..
+
+                                    if( _signalManager.isAlarmActive(point->getPointID(), alarm) || pDyn->isConditionActive(alarm) )
+                                    {
+                                        if( gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS )
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << CtiTime() << " Point is no longer stale " << point->getPointID() << endl;
+                                        }
+                                        activatePointAlarm(alarm, aWrap, point, pDyn, false);
+                                    }
+                                }
+                                else
+                                {
+                                    //Alarm!!
+                                    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)point->getDynamic();
+                                    int alarm = point->isNumeric() ? CtiTablePointAlarming::staleNumeric : CtiTablePointAlarming::staleStatus;
+                                    _expirationSet.erase(checkTimeIter);
+                                    StalePointTimeData newTimeData;
+                                    newTimeData.time = CtiTime::now() + (alarmTime*60);
+                                    newTimeData.pointID = point->getPointID();
+                                    _expirationSet.insert(newTimeData); //Be sure this cant recurse..
+
+                                    if( !_signalManager.isAlarmed(point->getPointID(), alarm) && !pDyn->isConditionActive(alarm))
+                                    {
+                                        string text = "Point is stale, it has not been updated since: ";
+                                        text += updatedIter->second.asString();
+                                        CtiSignalMsg *pSig = pSig = CTIDBG_new CtiSignalMsg(point->getPointID(), 0, text, getAlarmStateName( point->getAlarming().getAlarmCategory(alarm) ), GeneralLogType, point->getAlarming().getAlarmCategory(alarm));
+                                        pSig->setPointValue(pDyn->getDispatch().getValue());
+                                        tagSignalAsAlarm(point, pSig, alarm, 0);
+                                        updateDynTagsForSignalMsg(point,pSig,alarm,true);
+                                        aWrap.getMulti()->insert( pSig );
+
+                                        if( gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS )
+                                        {
+                                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                            dout << CtiTime() << " Point is stale " << point->getPointID() << endl;
+                                            dout << CtiTime() << " Time limit is " << alarmTime << " minutes " << endl;
+                                        }
+                                    }
+                                }
+                            }
+                            else
+                            {
+                                //Here is where they are erased.
+                                _expirationSet.erase(checkTimeIter);
+                                if( updatedIter != _pointUpdatedTime.end() )
+                                {
+                                    _pointUpdatedTime.erase(updatedIter);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            nextStalePointCheckTime = checkTimeIter->time;
+                            keepGoing = false;
+                        }
+                    }
+                    else
+                    {
+                        keepGoing = false;
+                    }
+                } while(!_expirationSet.empty() && keepGoing);
+            }
+            CtiTime stop;
+
+            if( stop.seconds() - start.seconds() >= 1 )
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << "Checking For Stale Points, took: " << stop.seconds() - start.seconds() << " seconds. Did Check = " << (didCheck ? "TRUE" : "FALSE") << endl;
+            }
+        }
+    }
 }

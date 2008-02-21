@@ -77,7 +77,6 @@ tbl_metergrp.obj \
 tbl_meterreadlog.obj \
 tbl_pao.obj \
 tbl_paoexclusion.obj \
-tbl_pt_accum.obj \
 tbl_port_base.obj \
 tbl_port_dialup.obj \
 tbl_port_serial.obj \
@@ -85,9 +84,11 @@ tbl_port_settings.obj \
 tbl_port_statistics.obj \
 tbl_port_tcpip.obj \
 tbl_port_timing.obj \
+tbl_pt_accum.obj \
 tbl_pt_accumhistory.obj \
 tbl_pt_alarm.obj \
 tbl_pt_analog.obj \
+tbl_pt_attribute.obj \
 tbl_pt_base.obj \
 tbl_pt_limit.obj \
 tbl_pt_status.obj \
