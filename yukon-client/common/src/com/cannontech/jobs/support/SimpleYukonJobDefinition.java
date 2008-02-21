@@ -1,5 +1,6 @@
 package com.cannontech.jobs.support;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
@@ -27,9 +28,11 @@ public class SimpleYukonJobDefinition implements YukonJobDefinition, BeanFactory
         this.title = title;
     }
     public Object createBean() {
+        Validate.isTrue(beanFactory.isPrototype(getTaskName()), "Bean must be defined as prototype to be a task. Could not create task: ", getTaskName());
         return beanFactory.getBean(getTaskName());
     }
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
+        Validate.isTrue(beanFactory.isPrototype(getTaskName()), "Bean must be defined as prototype to be a task. Could not create job definition: ", getTaskName());
         this.beanFactory = beanFactory;
     }
     public InputRoot getInputs() {
