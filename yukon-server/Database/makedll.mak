@@ -88,7 +88,7 @@ tbl_pt_accum.obj \
 tbl_pt_accumhistory.obj \
 tbl_pt_alarm.obj \
 tbl_pt_analog.obj \
-tbl_pt_attribute.obj \
+tbl_pt_property.obj \
 tbl_pt_base.obj \
 tbl_pt_limit.obj \
 tbl_pt_status.obj \

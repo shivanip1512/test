@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.177 $
-* DATE         :  $Date: 2008/02/21 18:56:07 $
+* REVISION     :  $Revision: 1.178 $
+* DATE         :  $Date: 2008/02/21 23:10:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1804,10 +1804,10 @@ INT CtiVanGogh::archivePointDataMessage(const CtiPointDataMsg &aPD)
 void CtiVanGogh::processStalePoint(CtiPointSPtr pPoint, CtiDynamicPointDispatch* pDyn, const CtiPointDataMsg &aPD, CtiMultiWrapper& wrap)
 {
     if( pPoint && pDyn != NULL &&
-        pPoint->getAttributes() != NULL && pPoint->getAttributes()->hasAttribute(CtiTablePointAttribute::STALE_UPDATE_TYPE)
+        pPoint->getProperties() != NULL && pPoint->getProperties()->hasAttribute(CtiTablePointAttribute::STALE_UPDATE_TYPE)
         && aPD.getSource() != DISPATCH_APPLICATION_NAME )
     {
-        int updateType = pPoint->getAttributes()->getIntAttribute(CtiTablePointAttribute::STALE_UPDATE_TYPE);
+        int updateType = pPoint->getProperties()->getIntAttribute(CtiTablePointAttribute::STALE_UPDATE_TYPE);
 
         if( updateType == CtiTablePointAttribute::UPDATE_ALWAYS ||
            (updateType == CtiTablePointAttribute::UPDATE_ON_CHANGE && aPD.getValue() != pDyn->getValue()) )
@@ -8221,10 +8221,10 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
         for( ; iter != end; iter++ )
         {
              tempPoint = iter->second;
-             if( tempPoint && tempPoint->getAttributes() != NULL && tempPoint->getAttributes()->hasAttribute(CtiTablePointAttribute::STALE_ALARM_TIME) )
+             if( tempPoint && tempPoint->getProperties() != NULL && tempPoint->getProperties()->hasAttribute(CtiTablePointAttribute::STALE_ALARM_TIME) )
              {
                  //so we have the alarm time, lets get it and be happy!
-                 int alarmTime = tempPoint->getAttributes()->getIntAttribute(CtiTablePointAttribute::STALE_ALARM_TIME);
+                 int alarmTime = tempPoint->getProperties()->getIntAttribute(CtiTablePointAttribute::STALE_ALARM_TIME);
                  if( alarmTime > 0 && _pointUpdatedTime.find(tempPoint->getPointID()) == _pointUpdatedTime.end() )
                  {
                      //If the point is set up properly and the point is not already in our maps.
@@ -8246,7 +8246,7 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
         CtiPointSPtr tempPoint = PointMgr.getEqual(pointID);
         if( tempPoint )
         {
-            if( tempPoint->getAttributes() != NULL && tempPoint->getAttributes()->hasAttribute(CtiTablePointAttribute::STALE_ALARM_TIME) )
+            if( tempPoint->getProperties() != NULL && tempPoint->getProperties()->hasAttribute(CtiTablePointAttribute::STALE_ALARM_TIME) )
             {
                 if( gDispatchDebugLevel & DISPATCH_DEBUG_ALARMS )
                 {
@@ -8256,7 +8256,7 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
                 //Only if the point is not in the map already!
                 if( _pointUpdatedTime.find(pointID) != _pointUpdatedTime.end() )
                 {
-                    int alarmTime = tempPoint->getAttributes()->getIntAttribute(CtiTablePointAttribute::STALE_ALARM_TIME);
+                    int alarmTime = tempPoint->getProperties()->getIntAttribute(CtiTablePointAttribute::STALE_ALARM_TIME);
                     if( alarmTime > 0 )
                     {
                         unsigned int alarmSeconds = alarmTime * 60;
@@ -8310,9 +8310,9 @@ void CtiVanGogh::checkForStalePoints(CtiMultiWrapper &aWrap)
                             //If we have one to check, get the point expiration data, and the points last updated time
                             CtiPointSPtr point = PointMgr.getEqual(checkTimeIter->pointID);
                             updatedIter = _pointUpdatedTime.find(checkTimeIter->pointID);
-                            if( point && point->getAttributes() != NULL && point->getAttributes()->hasAttribute(CtiTablePointAttribute::STALE_ALARM_TIME) && updatedIter != _pointUpdatedTime.end() )
+                            if( point && point->getProperties() != NULL && point->getProperties()->hasAttribute(CtiTablePointAttribute::STALE_ALARM_TIME) && updatedIter != _pointUpdatedTime.end() )
                             {
-                                unsigned int alarmTime = point->getAttributes()->getIntAttribute(CtiTablePointAttribute::STALE_ALARM_TIME);
+                                unsigned int alarmTime = point->getProperties()->getIntAttribute(CtiTablePointAttribute::STALE_ALARM_TIME);
                                 if( (updatedIter->second + (alarmTime*60)) >= CtiTime::now() )
                                 {
                                     CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)point->getDynamic();

@@ -1,19 +1,18 @@
 /*-----------------------------------------------------------------------------*
 *
-* File:   tbl_pt_attribute
+* File:   tbl_pt_property
 *
 * Date:   2/12/2008
 *
 * PVCS KEYWORDS:
-* ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_unit.h-arc  $
-* REVISION     :  $Revision: 1.1 $
-* DATE         :  $Date: 2008/02/21 18:56:08 $
+* REVISION     :  $Revision: 1.2 $
+* DATE         :  $Date: 2008/02/21 23:10:17 $
 *
 * Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
 #pragma warning( disable : 4786)
-#ifndef __TBL_PT_ATTRIBUTE_H__
-#define __TBL_PT_ATTRIBUTE_H__
+#ifndef __TBL_PT_PROPERTY_H__
+#define __TBL_PT_PROPERTY_H__
 
 #include <rw/db/db.h>
 #include <rw/db/dbase.h>
@@ -33,34 +32,34 @@
 #include "dbaccess.h"
 #include "yukon.h"
 
-class IM_EX_CTIYUKONDB CtiTablePointAttribute : public CtiMemDBObject
+class IM_EX_CTIYUKONDB CtiTablePointProperty : public CtiMemDBObject
 {
 protected:
 
     // If memory becomes an issue, this string should be modified (pointer perhaps)
-    typedef std::map<unsigned int, float> AttributeMap;
-    typedef AttributeMap::iterator AttributeMapIter;
+    typedef std::map<unsigned int, float> PropertyMap;
+    typedef PropertyMap::iterator PropertyMapIter;
 
 private:
-    AttributeMap _attributeMap;
+    PropertyMap _propertyMap;
     long _pointID;
 
 public:
 
-    CtiTablePointAttribute();
-    CtiTablePointAttribute(const CtiTablePointAttribute& aRef);
-    virtual ~CtiTablePointAttribute();
+    CtiTablePointProperty();
+    CtiTablePointProperty(const CtiTablePointProperty& aRef);
+    virtual ~CtiTablePointProperty();
     
-    CtiTablePointAttribute&   operator=(const CtiTablePointAttribute& aRef);
+    CtiTablePointProperty&   operator=(const CtiTablePointProperty& aRef);
 
-    bool   hasAttribute(unsigned int attributeID);
-    float  getFloatAttribute(unsigned int attributeID);
-    int    getIntAttribute(unsigned int attributeID);
+    bool   hasProperty(unsigned int propertyID);
+    float  getFloatProperty(unsigned int propertyID);
+    int    getIntProperty(unsigned int propertyID);
 
     static void          getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
     void                 DecodeDatabaseReader(RWDBReader &rdr);
     void                 dump() const;
-    static string     getTableName();
+    static string        getTableName();
 
     enum
     {
@@ -75,4 +74,4 @@ public:
     };
 };
 
-#endif // #ifndef __TBL_PT_ATTRIBUTE_H__
+#endif // #ifndef __TBL_PT_PROPERTY_H__

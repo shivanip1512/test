@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2008/02/21 18:56:08 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/02/21 23:10:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,7 +181,7 @@ _pointBase(pid),
 _fpDynFactory(DefDynamicFactory),
 _dynamic(NULL),
 _alarming(NULL),
-_attributes(NULL),
+_properties(NULL),
 _triggerPoint(false),
 _verificationPoint(false)
 {}
@@ -192,7 +192,7 @@ _pointBase(-1),
 _fpDynFactory(DefDynamicFactory),
 _dynamic(NULL),
 _alarming(NULL),
-_attributes(NULL),
+_properties(NULL),
 _triggerPoint(false),
 _verificationPoint(false)
 {
@@ -239,12 +239,12 @@ void CtiPointBase::DecodeAlarmingDatabaseReader(RWDBReader &rdr)
 
 void CtiPointBase::DecodeAttributeDatabaseReader(RWDBReader &rdr)
 {
-    if(_attributes == NULL)
+    if(_properties == NULL)
     {
-        _attributes = CTIDBG_new CtiTablePointAttribute( );
+        _properties = CTIDBG_new CtiTablePointProperty( );
     }
 
-    _attributes->DecodeDatabaseReader(rdr);
+    _properties->DecodeDatabaseReader(rdr);
 }
 
 void CtiPointBase::DumpData()
@@ -309,14 +309,14 @@ CtiPointBase& CtiPointBase::setDynamic(CtiDynamicPointBase *pDyn)
     return *this;
 }
 
-CtiTablePointAttribute* CtiPointBase::getAttributes()
+CtiTablePointProperty* CtiPointBase::getProperties()
 {
-    return _attributes;
+    return _properties;
 }
 
-CtiPointBase& CtiPointBase::setAttributes(CtiTablePointAttribute *pAttr)
+CtiPointBase& CtiPointBase::setAttributes(CtiTablePointProperty *pAttr)
 {
-    _attributes = pAttr;
+    _properties = pAttr;
     return *this;
 }
 
