@@ -146,5 +146,5 @@ if ($('systemCommandLink')) {
 
 <ct:commandMsgDiv/>
 
-    <ct:dataUpdateEnabler disableHighlight="true"/>
+    <ct:disableUpdaterHighlights/>
 </cti:standardPage>

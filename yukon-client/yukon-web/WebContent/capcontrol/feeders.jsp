@@ -6,13 +6,11 @@
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ page import="com.cannontech.common.constants.LoginController" %>
-<%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.core.dao.PaoDao" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.cbc.util.CBCUtils" %>
 
-<%@page import="com.cannontech.database.data.point.PointTypes"%>
+<%@page import="org.springframework.web.bind.ServletRequestUtils"%>
 <c:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
 
 <cti:standardPage title="Feeders" module="capcontrol">
@@ -26,36 +24,53 @@
 
 <%
     PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+    AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
+    PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
+    CapControlCache capControlCache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
     FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
-	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+    
+    LiteYukonUser user = ServletUtil.getYukonUser(request);
     CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
-	String currentPageURL = request.getRequestURL().toString();
-	int subid = ccSession.getLastSubID();
-	Integer areaId = ccSession.getLastAreaId();
-	String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
-    boolean hideOneLine = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.HIDE_ONELINE));
+    String currentPageURL = request.getRequestURL().toString();
 	
-    boolean showFlip = Boolean.valueOf(DaoFactory.getAuthDao().getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
-    if (popupEvent == null) popupEvent = "onmouseover";
-    SubStation substation = null;
-    if (subid > 0) {
-        substation = filterCapControlCache.getSubstation( new Integer(subid) );
+    Integer subStationId = ServletRequestUtils.getIntParameter(request, "id", ccSession.getLastSubID());
+    if (subStationId == null || subStationId.intValue() <= 0) {
+        String location = ServletUtil.createSafeUrl(request, "/capcontrol/subareas.jsp");
+        response.sendRedirect(location);
+        return;
     }
-	List<SubBus> subBuses = filterCapControlCache.getSubBusesBySubStation(substation);
+    
+    SubStation substation = filterCapControlCache.getSubstation(subStationId);
+    if (substation == null) {
+        String location = ServletUtil.createSafeUrl(request, "/capcontrol/invalidAccessErrorPage.jsp");
+        response.sendRedirect(location);
+        return;
+    }
+    
+	String popupEvent = authDao.getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
+    boolean hideOneLine = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.HIDE_ONELINE));
+	
+    boolean showFlip = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
+    if (popupEvent == null) popupEvent = "onmouseover";
+    
+    Integer areaId = substation.getParentID();
+	List<SubBus> subBuses = capControlCache.getSubBusesBySubStation(substation);
     Collections.sort(subBuses, CBCUtils.SUB_DISPLAY_COMPARATOR);
-	List<Feeder> feeders = filterCapControlCache.getFeedersBySubStation(substation);
-	List<CapBankDevice> capBanks = filterCapControlCache.getCapBanksBySubStation(substation);
+	List<Feeder> feeders = capControlCache.getFeedersBySubStation(substation);
+	List<CapBankDevice> capBanks = capControlCache.getCapBanksBySubStation(substation);
 	
 	String lastStr = (String) request.getSession(false).getAttribute("lastAccessed");
 	int lastAccessed = (lastStr == null) ? -1:Integer.parseInt(lastStr);
 	
 	boolean hasControl = CBCWebUtils.hasControlRights(session);
-	boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
+	boolean special = capControlCache.isSpecialCBCArea(areaId);
 	
 	
 %>
 
 <c:set var="hasControl" value="<%=CBCWebUtils.hasControlRights(session)%>"/>
+<c:set var="areaId" value="<%=areaId%>"/>
+<c:set var="subStationId" value="<%=subStationId%>"/>
 
 <cti:standardMenu/>
 
@@ -67,8 +82,8 @@
 	<cti:crumbLink url="subareas.jsp" title="Home" />
 	<cti:crumbLink url="subareas.jsp" title="Substation Areas" />
 <% } %>
-    <cti:crumbLink url="substations.jsp" title="Substations" />
-    <cti:crumbLink url="feeders.jsp" title="Feeders" />
+    <cti:crumbLink url="substations.jsp?id=${areaId}" title="Substations" />
+    <cti:crumbLink url="feeders.jsp?id=${subStationId}" title="Feeders" />
 </cti:breadCrumbs>
 
 <script type="text/javascript">
@@ -297,21 +312,21 @@ for( SubBus subBus: subBuses ) {
 			        <tr class="tableCellSnapShot" style="display: none;">
 			     	<%
 			   	        String vrPoint = "(none)";
-			   	        if (varPoint != 0) vrPoint = DaoFactory.getPointDao().getPointName(varPoint);
+			   	        if (varPoint != 0) vrPoint = pointDao.getPointName(varPoint);
 			     	%>
 			        <td><b><font  class="lIndent">Var Point: <%=vrPoint%></font></b></td>
 					</tr>
 				    <tr class="tableCellSnapShot" style="display: none;">
 			      	<%
 			    	        String wPoint = "(none)";
-			    	        if (wattPoint != 0) wPoint = DaoFactory.getPointDao().getPointName(wattPoint);
+			    	        if (wattPoint != 0) wPoint = pointDao.getPointName(wattPoint);
 			      	%>
 			        <td><b><font  class="lIndent">Watt Point: <%=wPoint%></font></b></td>
 					</tr>
 				    <tr class="tableCellSnapShot" style="display: none;">
 			        <%
 			 		        String vPoint = "(none)";
-			 		        if (voltPoint != 0) vPoint = DaoFactory.getPointDao().getPointName(voltPoint);
+			 		        if (voltPoint != 0) vPoint = pointDao.getPointName(voltPoint);
 			        %>
 			        <td><b><font  class="lIndent">Volt Point: <%=vPoint%>
 			        </font></b></td>
@@ -414,7 +429,7 @@ for (int i = 0; i < feeders.size(); i++ ) {
 					<td>
                         <a id="dailyMaxOps_${thisFeederId}"><cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="DAILY_MAX_OPS"/></a>
 					</td>
-					<td id="hiddenSubName" style="display: none;"><%=filterCapControlCache.getSubBusNameForFeeder(feeder)%></td>
+					<td id="hiddenSubName" style="display: none;"><%=capControlCache.getSubBusNameForFeeder(feeder)%></td>
 				</tr>
 <% } %>
 		</table>
@@ -445,7 +460,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 	CapBankDevice capBank = capBanks.get(i);
 	css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 	int deviceID = capBank.getControlDeviceID().intValue();
-    LiteYukonPAObject obj = DaoFactory.getPaoDao().getLiteYukonPAO(deviceID);
+    LiteYukonPAObject obj = paoDao.getLiteYukonPAO(deviceID);
     String rowColor = ((i % 2) == 0) ? "#eeeeee" : "white";
 %>
             <c:set var="thisCapBankId" value="<%=capBank.getCcId()%>"/>
@@ -463,7 +478,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				    String name = "---";
 				    Integer cdId = capBank.getControlDeviceID();
 				    if (cdId.intValue() != 0) {
-				        name = DaoFactory.getPaoDao().getYukonPAOName(cdId);    
+				        name = paoDao.getYukonPAOName(cdId);    
 				    }
 				    %> 
 				    <%=name%>
@@ -567,5 +582,5 @@ Event.observe(window, 'load', checkPageExpire);
     
 <ct:commandMsgDiv/>
 
-    <ct:dataUpdateEnabler disableHighlight="true"/>
+    <ct:disableUpdaterHighlights/>
 </cti:standardPage>

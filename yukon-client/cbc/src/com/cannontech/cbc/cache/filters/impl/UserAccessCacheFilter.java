@@ -2,16 +2,18 @@ package com.cannontech.cbc.cache.filters.impl;
 
 
 import com.cannontech.cbc.cache.filters.CacheFilter;
-import com.cannontech.core.authorization.service.impl.PaoAuthorizationServiceImpl;
-
+import com.cannontech.core.authorization.service.PaoAuthorizationService;
 import com.cannontech.core.authorization.support.Permission;
-import com.cannontech.database.data.lite.*;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.cbc.*;
+import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.StreamableCapObject;
 
 public class UserAccessCacheFilter implements CacheFilter<StreamableCapObject>
 {
-    PaoAuthorizationServiceImpl paoPermissionService = YukonSpringHook.getBean("paoAuthorizationService",PaoAuthorizationServiceImpl.class);   
+    PaoAuthorizationService paoAuthorizationService = YukonSpringHook.getBean("paoAuthorizationService", PaoAuthorizationService.class);   
     LiteYukonUser user;
     
     public UserAccessCacheFilter(LiteYukonUser user) {
@@ -38,7 +40,7 @@ public class UserAccessCacheFilter implements CacheFilter<StreamableCapObject>
         String paoName = capObject.getCcName();
         
         LiteYukonPAObject obj = new LiteYukonPAObject(paoId, paoName);
-        boolean ret = paoPermissionService.isAuthorized(user, Permission.PAO_VISIBLE, obj );
+        boolean ret = paoAuthorizationService.isAuthorized(user, Permission.PAO_VISIBLE, obj );
         return ret;
 	}
 	

@@ -16,10 +16,9 @@
 
 <%
     CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
-	// String type = ParamUtil.getString(request, "type", "");
+    ParentStringPrinterFactory printerFactory = YukonSpringHook.getBean("parentStringPrinterFactory", ParentStringPrinterFactory.class);
 	String srchCriteria = ParamUtil.getString(request, CCSessionInfo.STR_LAST_SEARCH, null);
-	ParentStringPrinter psp = new ParentStringPrinter (capControlCache);
-	psp.setLinkedToEditors(true);
+	ParentStringPrinter psp = printerFactory.createParentStringPrinter(request);
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
 	String returnURL = nav.getPreviousPage();
 	

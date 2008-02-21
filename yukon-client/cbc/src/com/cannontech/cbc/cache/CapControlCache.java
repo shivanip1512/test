@@ -23,7 +23,7 @@ public interface CapControlCache {
     
     public int getParentAreaID(int childID);
     
-    public StreamableCapObject getArea(final int paoId) throws NotFoundException;
+    public StreamableCapObject getArea(int paoId) throws NotFoundException;
     
     public CBCArea getCBCArea(int id);
     

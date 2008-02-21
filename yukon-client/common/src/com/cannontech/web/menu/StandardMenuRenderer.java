@@ -255,7 +255,7 @@ public class StandardMenuRenderer implements MenuRenderer {
             searchDiv.addElement("Find: ");
             searchDiv.addElement(new Input(Input.text, moduleBase.getSearchFieldName()));
             searchDiv.addElement(new Input(Input.image, "Go")
-                                  .setSrc(buildUrl("/WebConfig/yukon/GoButton.gif"))
+                                  .setSrc(buildUrl("/WebConfig/yukon/Buttons/GoButtonGray.gif"))
                                   .setAlt("Go")
                                   .setStyle("vertical-align: middle"));
             searchForm.addElement(searchDiv);

@@ -556,6 +556,17 @@
       <rtexprvalue>true</rtexprvalue>
     </attribute>
   </tag>  
+
+  <tag>
+    <name>yukonUser</name>
+    <tag-class>com.cannontech.web.taglib.YukonUserTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>var</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag> 
   
   <tag>
     <name>dataUpdaterCallback</name>

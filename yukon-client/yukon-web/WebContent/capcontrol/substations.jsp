@@ -2,12 +2,12 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
 <%@ page import="com.cannontech.core.dao.PaoDao" %>
 
+<%@page import="org.springframework.web.bind.ServletRequestUtils"%>
 <cti:standardPage title="Substations" module="capcontrol">
 
 <%@include file="cbc_inc.jspf"%>
@@ -20,24 +20,39 @@
 <%
     PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
     FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
-    LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
-    final CBCDisplay cbcDisplay = new CBCDisplay(user);
+    CapControlCache capControlCache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
+    LiteYukonUser user = ServletUtil.getYukonUser(request);
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
     String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 	if (popupEvent == null) popupEvent = "onmouseover"; 
     
-	Integer areaId = ccSession.getLastAreaId();
-	String area = paoDao.getYukonPAOName(areaId);
+	Integer areaId = ServletRequestUtils.getIntParameter(request, "id", ccSession.getLastAreaId());
+    if (areaId == null || areaId.intValue() <= 0) {
+        String location = ServletUtil.createSafeUrl(request, "/capcontrol/subareas.jsp");
+        response.sendRedirect(location);
+        return;
+    }
+    
+    StreamableCapObject area = filterCapControlCache.getArea(areaId);
+    if (area == null) {
+        String location = ServletUtil.createSafeUrl(request, "/capcontrol/invalidAccessErrorPage.jsp");
+        response.sendRedirect(location);
+        return;
+    }
+    
+	String areaName = area.getCcName();
 	List<SubStation> areaSubs;
-	boolean special = filterCapControlCache.isSpecialCBCArea(areaId);
+	boolean special = capControlCache.isSpecialCBCArea(areaId);
 	if(special){
-		areaSubs = filterCapControlCache.getSubstationsBySpecialArea(areaId);
+		areaSubs = capControlCache.getSubstationsBySpecialArea(areaId);
 	}else{
-		areaSubs = filterCapControlCache.getSubstationsByArea(areaId);
+		areaSubs = capControlCache.getSubstationsByArea(areaId);
 	}
     boolean hasControl = CBCWebUtils.hasControlRights(session);
     
 %>
+
+<c:set var="areaId" value="<%=areaId%>"/>
 
 <cti:standardMenu/>
 <cti:breadCrumbs>
@@ -54,7 +69,7 @@ if(special){
   <%
   }
   %>
-  <cti:crumbLink url="substations.jsp" title="Substations" />
+  <cti:crumbLink url="substations.jsp?id=${areaId}" title="Substations" />
 </cti:breadCrumbs>
   
 <script type="text/javascript">
@@ -65,7 +80,7 @@ if(special){
 	}
 </script>
 
-<cti:titledContainer title="<%="Substation In Area:  " + area%>" id="last_titled_container">
+<cti:titledContainer title="<%="Substation In Area:  " + areaName%>" id="last_titled_container">
           
 		<%
           		if (areaSubs.size() == 0) {
@@ -164,5 +179,5 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 
 <ct:commandMsgDiv/>
 
-    <ct:dataUpdateEnabler disableHighlight="true"/>
+    <ct:disableUpdaterHighlights/>
 </cti:standardPage>
