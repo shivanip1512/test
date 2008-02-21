@@ -105,7 +105,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private boolean editingCBCStrategy = false;
 	private boolean editingController = false;
 	private int itemID = -1;
-	private Integer fakeInt = -1;
 	// contains <Integer(stratID), CapControlStrategy>
 	private HashMap<Integer, CapControlStrategy> cbcStrategiesMap = null;
 	private HashMap<Integer, CapControlStrategy> cbcHolidayStrategiesMap = null;
@@ -1016,19 +1015,20 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	 * @param dbObj 
 	 * @throws PAODoesntHaveNameException 
 	 */
-	private void createPostItems(int paoType, int parentID, final FacesMessage facesMsg, DBPersistent dbObj) throws TransactionException {
+	private void createPostItems(int paoType, int paoId, final FacesMessage facesMsg, DBPersistent dbObj) throws TransactionException {
         SmartMultiDBPersistent smartMulti = new SmartMultiDBPersistent();
 		// store the objects we add to the DB
 		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
         if (dbObj instanceof CapBank) {
             createCapBankAdditional(dbObj, facesMsg);
         }else if(dbObj instanceof CapControlSpecialArea || dbObj instanceof CapControlArea) {
-            seasonScheduleDao.saveDefaultSeasonStrategyAssigment(parentID);
+            seasonScheduleDao.saveDefaultSeasonStrategyAssigment(paoId);
+            holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(paoId);
         }
         if  (paoType == CapControlTypes.CAP_CONTROL_FEEDER || paoType == CapControlTypes.CAP_CONTROL_SUBBUS) {
             smartMulti = CBCPointFactory.createPointsForPAO(dbObj);
         } else {
-            smartMulti = cbObjCreator.createChildItems(paoType, new Integer(parentID));
+            smartMulti = cbObjCreator.createChildItems(paoType, new Integer(paoId));
         }
 		addDBObject(smartMulti, facesMsg);
 	}

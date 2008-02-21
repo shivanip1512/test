@@ -133,19 +133,20 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
         this.substationBusID = substationBusID;
     }
 
-    public static List<Integer> getAreaIdsForSub(Integer subID) {
+    @SuppressWarnings("unchecked")
+    public static List<Integer> getAreaIdsForSubstation(Integer substationId) {
         SqlStatementBuilder allSubs = new SqlStatementBuilder();
         allSubs.append("SELECT AreaID FROM");
         allSubs.append("CCSubSpecialAreaAssignment");
         allSubs.append("WHERE SubstationBusID = ?");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        List<Integer> areaID;
+        List<Integer> areaIds;
         try {
-            areaID = yukonTemplate.queryForList(allSubs.toString(), new Integer[] { subID }, new int[]{Types.INTEGER}, Integer.class );
+            areaIds = yukonTemplate.queryForList(allSubs.toString(), new Integer[] { substationId }, new int[]{Types.INTEGER}, Integer.class );
         } catch (EmptyResultDataAccessException erda) {
-            areaID = null;
+            areaIds = null;
         }
-        return areaID;
+        return areaIds;
     }
 
     public static ArrayList<Integer> getAsIntegerList( List<CCSubSpecialAreaAssignment> allSpecialAreaSubs) {

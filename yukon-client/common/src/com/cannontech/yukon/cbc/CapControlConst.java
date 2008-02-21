@@ -42,4 +42,5 @@ public interface CapControlConst
    public static final String CMD_TYPE_FEEDER = "FEEDER_TYPE";
    public static final String CMD_TYPE_CAPBANK = "CAPBANK_TYPE";
    public static final String CMD_TYPE_AREA = "AREA_TYPE";
+   public static final String CMD_TYPE_SPECIAL_AREA = "SPECIAL_AREA_TYPE";
 }

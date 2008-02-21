@@ -1,14 +1,12 @@
 package com.cannontech.web.editor.model;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.faces.context.FacesContext;
 
 import com.cannontech.cbc.dao.CcSubstationDao;
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.capcontrol.CapControlSpecialArea;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.spring.YukonSpringHook;

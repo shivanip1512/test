@@ -9,6 +9,7 @@ package com.cannontech.servlet;
 import java.io.IOException;
 import java.io.Writer;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -17,6 +18,8 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
+
+import net.sf.json.JSONObject;
 
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -47,8 +50,10 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.CBCCommand;
 import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
+import com.cannontech.yukon.cbc.CapControlConst;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
@@ -124,7 +129,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                         processComment(commentID,req,user);
                     } else {
                         //send the command with the id, type, paoid
-                        executeCommand( req, user);
+                        executeCommand( req, resp, user );
                     }
                 } catch( Exception e ) {
                     CTILogger.warn( "Servlet request was attempted but failed for the following reason:", e );
@@ -542,24 +547,76 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * Allows the execution of commands to the cbc server for all
      * CBC object types.
      * @throws ServletRequestBindingException 
+     * @throws IOException 
      */
-    private synchronized void executeCommand( HttpServletRequest req, LiteYukonUser user) throws ServletRequestBindingException {
+    private synchronized void executeCommand( HttpServletRequest req, HttpServletResponse resp,  LiteYukonUser user) throws ServletRequestBindingException, IOException {
         int cmdID = ServletRequestUtils.getIntParameter(req, "cmdID", 0);
         int paoID = ServletRequestUtils.getIntParameter(req, "paoID", 0);
         String controlType = ServletRequestUtils.getStringParameter(req, "controlType", "");
-        float[] optParams = StringUtils.toFloatArray(ServletRequestUtils.getStringParameters(req, "opt"));
-        String operationalState = ServletRequestUtils.getStringParameter(req, "operationalState");
-        CTILogger.debug(req.getServletPath() +
-                        "	  cmdID = " + cmdID +
-                        ", controlType = " + controlType +
-                        ", paoID = " + paoID +
-                        ", opt = " + optParams +
-                        ", operationalState = " + operationalState);
-        
-        final CBCCommandExec cbcExecutor = new CBCCommandExec(cbcCache, user);
-        
-        //send the command
-        cbcExecutor.commandExecuteMethod(controlType, cmdID, paoID, optParams, operationalState);
-        
+        List<String> subsInConflict = new ArrayList<String>();
+
+        if (controlType.equalsIgnoreCase(CapControlConst.CMD_TYPE_SPECIAL_AREA) && cmdID == CBCCommand.ENABLE_AREA) {
+            // Check for other special areas with this special area's subIds that are enabled.
+            List<SubStation> subs = cbcCache.getSubstationsBySpecialArea(paoID);
+            for(SubStation sub : subs) {
+                boolean alreadyUsed = sub.getSpecialAreaEnabled();
+                if(alreadyUsed) {
+                    CBCSpecialArea otherArea = cbcCache.getCBCSpecialArea(sub.getSpecialAreaId());
+                    if(!otherArea.getCcDisableFlag()) {
+                        String areaName = otherArea.getCcName();
+                        String value = areaName + " : " + sub.getCcName();
+                        subsInConflict.add(value);
+                    }
+                }
+            }
+
+            boolean success = subsInConflict.isEmpty();
+            if(success) {
+                float[] optParams = StringUtils.toFloatArray(ServletRequestUtils.getStringParameters(req, "opt"));
+                String operationalState = ServletRequestUtils.getStringParameter(req, "operationalState");
+                CTILogger.debug(req.getServletPath() +
+                                "     cmdID = " + cmdID +
+                                ", controlType = " + controlType +
+                                ", paoID = " + paoID +
+                                ", opt = " + optParams +
+                                ", operationalState = " + operationalState);
+                
+                final CBCCommandExec cbcExecutor = new CBCCommandExec(cbcCache, user);
+                
+                //send the command
+                cbcExecutor.commandExecuteMethod(controlType, cmdID, paoID, optParams, operationalState);
+            }
+            
+            
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.put("success", success);
+            jsonObject.put("errMessage", "Error: Some substation/s in this area are already on another enabled special area:\n\n" 
+                           + org.apache.commons.lang.StringUtils.join(subsInConflict, ",\n") 
+                           + "\n\nRemove them from the other area or disable the other area first.");
+            String jsonStr = jsonObject.toString();
+            resp.addHeader("X-JSON", jsonStr);
+        }else {
+            float[] optParams = StringUtils.toFloatArray(ServletRequestUtils.getStringParameters(req, "opt"));
+            String operationalState = ServletRequestUtils.getStringParameter(req, "operationalState");
+            CTILogger.debug(req.getServletPath() +
+                            "	  cmdID = " + cmdID +
+                            ", controlType = " + controlType +
+                            ", paoID = " + paoID +
+                            ", opt = " + optParams +
+                            ", operationalState = " + operationalState);
+            
+            final CBCCommandExec cbcExecutor = new CBCCommandExec(cbcCache, user);
+            
+            if(controlType.equalsIgnoreCase(CapControlConst.CMD_TYPE_SPECIAL_AREA)) {
+                JSONObject jsonObject = new JSONObject();
+                Boolean success = true;
+                jsonObject.put("success", success);
+                String jsonStr = jsonObject.toString();
+                resp.addHeader("X-JSON", jsonStr);
+            }
+            
+            //send the command
+            cbcExecutor.commandExecuteMethod(controlType, cmdID, paoID, optParams, operationalState);
+        }
     }
 }

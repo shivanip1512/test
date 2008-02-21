@@ -91,6 +91,20 @@ function execute_SubAreaCommand (pao_id, cmd_id, cmd_name) {
     });
 }
 
+function execute_SpecialAreaCommand (pao_id, cmd_id, cmd_name) {
+    new Ajax.Request('/servlet/CBCServlet', 
+    { method:'post', 
+      parameters:'paoID='+ pao_id +'&cmdID=' + cmd_id + '&controlType=SPECIAL_AREA_TYPE',
+        onSuccess: function (transport, result) { 
+            if(result.success){
+                display_status(cmd_name, "Success", "green");
+            } else {
+                alert(result.errMessage);
+            }
+        },
+        onFailure: function () { display_status(cmd_name, "Failed", "red"); }
+    });
+}
 
 ///////////////////////////////////////////////
 

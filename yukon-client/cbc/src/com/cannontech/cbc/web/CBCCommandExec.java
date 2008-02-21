@@ -51,6 +51,8 @@ public class CBCCommandExec
     		int operationalStateValue = getOperationalState(operationalState);
     		execute_CapBankCmd( cmdId, paoId, optParams, operationalStateValue);
     	} else if (CapControlConst.CMD_TYPE_AREA.equals (controlType)) { 
+            execute_SubAreaCmd(cmdId, paoId);
+        }else if (CapControlConst.CMD_TYPE_SPECIAL_AREA.equals (controlType)) { 
     		execute_SubAreaCmd(cmdId, paoId);
     	} else {
     		throw new UnsupportedOperationException( controlType + 

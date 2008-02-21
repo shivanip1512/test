@@ -41,8 +41,9 @@ public class TierPopupMenuController extends MultiActionController {
         
         boolean isDisabled = area.getCcDisableFlag();
         boolean isDisabledOVUV = area.getOvUvDisabledFlag();
+        String methodName = "execute_SpecialAreaCommand";
         
-        ModelAndView mav = createAreaMAV(user, area, isDisabled, isDisabledOVUV);
+        ModelAndView mav = createAreaMAV(user, area, methodName, isDisabled, isDisabledOVUV);
         return mav;    
     }
     
@@ -54,8 +55,8 @@ public class TierPopupMenuController extends MultiActionController {
         
         boolean isDisabled = area.getCcDisableFlag();
         boolean isDisabledOVUV = area.getOvUvDisabledFlag();
-        
-        ModelAndView mav = createAreaMAV(user, area, isDisabled, isDisabledOVUV);
+        String methodName = "execute_SubAreaCommand";
+        ModelAndView mav = createAreaMAV(user, area, methodName, isDisabled, isDisabledOVUV );
         return mav;
     }
     
@@ -303,7 +304,7 @@ public class TierPopupMenuController extends MultiActionController {
         return mav;
     }
     
-    private ModelAndView createAreaMAV(LiteYukonUser user, StreamableCapObject capObject, 
+    private ModelAndView createAreaMAV(LiteYukonUser user, StreamableCapObject capObject, String executeMethodName,
             boolean isDisabled, boolean isDisabledOVUV) {
         
         final ModelAndView mav = new ModelAndView();
@@ -337,7 +338,7 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
         mav.addObject("list", list);
         
-        mav.addObject("executeMethodName", "execute_SubAreaCommand");
+        mav.addObject("executeMethodName", executeMethodName);
         mav.setViewName("tier/popupmenu/menu");
         return mav;
     }

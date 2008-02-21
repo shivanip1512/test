@@ -4,6 +4,7 @@ import com.cannontech.message.util.VectorExtract;
 import com.cannontech.message.util.VectorInsert;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
+import com.roguewave.vsj.VirtualInputStream;
 import com.roguewave.vsj.VirtualOutputStream;
 import com.roguewave.vsj.streamer.SimpleMappings;
 
@@ -57,10 +58,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
      */
 
     @Override
-    public void restoreGuts(Object obj,
-            com.roguewave.vsj.VirtualInputStream vstr,
-            com.roguewave.vsj.CollectableStreamer polystr)
-            throws java.io.IOException {
+    public void restoreGuts(Object obj, VirtualInputStream vstr, CollectableStreamer polystr) throws java.io.IOException {
         
         CBCSpecialArea area = (CBCSpecialArea) obj;
 
