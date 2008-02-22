@@ -39,16 +39,19 @@ YukonClientPersistance.persistState = function(scope, persistId, value){
 }
 
 // Method to get state from a cookie
-YukonClientPersistance.getState = function(scope, persistId){
+YukonClientPersistance.getState = function(scope, persistId, defaultValue){
 	    
 	var clientPersistance = readCookie('yukonClientPersistance');
 	if(clientPersistance){
 		clientPersistance = clientPersistance.evalJSON();
 	} else {
-		return null;
+		return defaultValue;
 	}
 	var value = clientPersistance[scope + persistId];
-
-	return value;
-
+  
+    if (value) {
+        return value;
+    } else {
+        return defaultValue;
+    }
 }

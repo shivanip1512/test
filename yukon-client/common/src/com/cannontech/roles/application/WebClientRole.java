@@ -28,4 +28,5 @@ public interface WebClientRole {
 	public static final int DATA_UPDATER_DELAY_MS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 15;
     public static final int STD_PAGE_STYLE_SHEET = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 16;  // Standard Page CSS
     public static final int THEME_NAME = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 17;  // Theme Name
+    public static final int VIEW_ALARMS_AS_ALERTS = ApplicationRoleDefs.WEB_CLIENT_PROPERTYID_BASE - 18; 
 }

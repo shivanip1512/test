@@ -126,3 +126,18 @@ function yukonGeneral_addOtpionToTopOfSelect(selectObj,optValue,optText) {
 
 }
 
+function stickyCheckboxes_setup(id, defaultValue) {
+    var state = YukonClientPersistance.getState("stickyCheckboxes", id, defaultValue);
+    YukonClientPersistance.persistState("stickyCheckboxes", id, state);
+    $(id).checked = state;
+    
+    $(id).observe('change', function(event) {
+        var state = Event.element(event).checked;
+        YukonClientPersistance.persistState("stickyCheckboxes", id, state);
+    });
+}
+
+function stickyCheckboxes_retrieve(id) {
+    var state = YukonClientPersistance.getState("stickyCheckboxes", id);
+    return state;
+}

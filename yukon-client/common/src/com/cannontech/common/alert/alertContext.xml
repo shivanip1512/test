@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
+       
+    <bean id="alertService" class="com.cannontech.common.alert.service.impl.AlertServiceImpl" init-method="initialize">
+        <property name="alertClearHandlers">
+            <list>
+                <ref bean="alarmAlertClearHandler"/>
+            </list>
+        </property>   
+        <property name="roleDao" ref="roleDao" />     
+    </bean>            
+       
+    <bean id="pointAlarmAlertGenerator" class="com.cannontech.common.alert.alarms.PointAlarmAlertGenerator"
+          init-method="initialize">
+        <property name="alertService" ref="alertService"/>
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource"/>
+        <property name="pointDao" ref="pointDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="userCheckerFactory" ref="rolePropertyUserCheckerFactory"/>
+    </bean>   
+       
+    <bean id="alarmAlertClearHandler" class="com.cannontech.common.alert.alarms.AlarmAlertClearHandler">
+        <property name="dispatchConnection" ref="dispatchConnection"/>
+    </bean>
+       
+</beans>       

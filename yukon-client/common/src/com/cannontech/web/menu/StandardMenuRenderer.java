@@ -13,7 +13,6 @@ import org.apache.ecs.html.A;
 import org.apache.ecs.html.Div;
 import org.apache.ecs.html.Form;
 import org.apache.ecs.html.Input;
-import org.apache.ecs.html.OptGroup;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Script;
 import org.apache.ecs.html.Select;
@@ -202,7 +201,23 @@ public class StandardMenuRenderer implements MenuRenderer {
         Div right = new Div();
         right.setPrettyPrint(true);
         right.setClass("stdhdr_rightSide");
+        
+        Span alertSpan = new Span();
+        alertSpan.setID("alertSpan");
+        
+        A alertSpanAnchor = new A("javascript:alert_handleOnClick();");
+        alertSpanAnchor.addElement(messageSource.getMessage("yukon.web.menu.alertBeforeNum"));
+
+        Span countSpan = new Span();
+        countSpan.setID("alertCountSpan");
+
+        alertSpanAnchor.addElement(countSpan);
+        alertSpanAnchor.addElement(messageSource.getMessage("yukon.web.menu.alertAfterNum"));
+        alertSpan.addElement(alertSpanAnchor);
+        right.addElement(alertSpan);
+        
         if (features.showModuleSelection) {
+            right.addElement("&nbsp;&nbsp;");
             String moduleMsg = messageSource.getMessage("yukon.web.menu.module");
             right.addElement(new Span(moduleMsg).setClass("stdhdr_menu"));
             Iterator portalLinkIterator = moduleBase.getValidPortalLinks(yukonUser);

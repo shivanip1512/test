@@ -1,14 +1,18 @@
 package com.cannontech.core.dynamic.impl;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.clientutils.tags.AlarmUtils;
+import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
@@ -50,6 +54,8 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     
     private Map<SignalListener, HashSet<Integer>> signalListenerPointIds = 
             new HashMap<SignalListener, HashSet<Integer>>();
+    
+    private List<SignalListener> alarmSignalListeners = new ArrayList<SignalListener>();
 
     private Set<DBChangeListener> dbChangeListeners = 
         new HashSet<DBChangeListener>();
@@ -135,6 +141,12 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
             listeners.add(l);
         }        
 
+    }
+    
+    @Override
+    public void registerForAllAlarms(SignalListener listener) {
+        dispatchProxy.registerForAlarms();
+        alarmSignalListeners.add(listener);
     }
 
     public void unRegisterForSignals(SignalListener l, Set<Integer> pointIds) {
@@ -224,6 +236,15 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
         Set<SignalListener> listeners = pointIdSignalListeners.get(signal.getPointID());
         if(listeners != null) {                   
             for (SignalListener listener : listeners) {
+                listener.signalReceived(signal);
+            }
+        }
+        
+        final int tags = signal.getTags(); 
+        boolean isAlarmSignal = TagUtils.isAnyAlarm(tags);
+        boolean isNewAlarm = TagUtils.isNewAlarm(tags);
+        if (isAlarmSignal && isNewAlarm) {
+            for (SignalListener listener : alarmSignalListeners) {
                 listener.signalReceived(signal);
             }
         }

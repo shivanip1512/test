@@ -246,6 +246,12 @@
 	</servlet>
 
     <servlet>
+        <servlet-name>common</servlet-name>
+        <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet>
         <servlet-name>login</servlet-name>
         <servlet-class>com.cannontech.servlet.CannonDispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -765,6 +771,11 @@
 		<servlet-name>Faces Servlet</servlet-name>
 		<url-pattern>*.jsf</url-pattern>
 	</servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>common</servlet-name>
+        <url-pattern>/spring/common/*</url-pattern>
+    </servlet-mapping>
 
     <servlet-mapping>
         <servlet-name>login</servlet-name>

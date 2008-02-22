@@ -1,18 +1,28 @@
 <%@ attribute name="id" required="true" type="java.lang.String"%>
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
-<%@ attribute name="onClose" required="false" type="java.lang.String"%>
+<%@ attribute name="onClose" required="true" type="java.lang.String"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
-<cti:includeScript link="/JavaScript/javaWebStartLauncher.js"/>
+<div id="${id}" class="popUpDiv simplePopup ${styleClass}" style="display:none;">
+<!--  fix for IE6 bug (see itemPicker.css for more info) -->
+<!--[if lte IE 6.5]><iframe></iframe><![endif]-->
+<div class="titledContainer boxContainer ${styleClass}">
 
-<div id="${id}" class="simplePopup ${styleClass}" style="font-size:.8em;display:none;">
-<div style="float:right;cursor:pointer" <c:if test="${not empty onClose}">onclick="${onClose}"</c:if>>
-<img class="cssicon" alt="close" src="/WebConfig/yukon/Icons/clearbits/close.gif">
+    <div class="titleBar boxContainer_titleBar">
+              <div class="controls" onclick="${onClose}">
+                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/collapse.gif">
+              </div>
+        <div class="title boxContainer_title">
+            ${title}
+        </div>
+    </div>
+    
+    <div class="content boxContainer_content">
+        <jsp:doBody/>
+    </div>    
+                
 </div>
-<h2>${title}</h2>
-<jsp:doBody/>
 </div>
-

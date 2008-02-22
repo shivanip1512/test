@@ -57,6 +57,8 @@ public interface AsyncDynamicDataSource {
      */
     public void registerForSignals(SignalListener l, Set<Integer> pointIds);
     
+    public void registerForAllAlarms(SignalListener listener);
+
     /**
      * Removes a list of points from the given listeners registration
      * @param l
@@ -99,4 +101,5 @@ public interface AsyncDynamicDataSource {
      */
     @Deprecated
     public void removeDBChangeLiteListener(DBChangeLiteListener l);
+
 }

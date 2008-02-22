@@ -344,6 +344,9 @@
                 <entry key="POINT">
                     <ref local="pointUpdateBackingService" />
                 </entry>
+                <entry key="ALERT">
+                    <ref local="alertUpdateBackingService" />
+                </entry>
                 <entry key="CBCAREA">
                     <ref local="cbcAreaUpdateBackingService" />
                 </entry>
@@ -395,6 +398,10 @@
         <property name="updaterService">
             <ref local="dataUpdaterService" />
         </property>
+    </bean>
+    
+    <bean id="alertUpdateBackingService" class="com.cannontech.web.updater.alert.AlertUpdateBackingService">
+        <property name="alertService" ref="alertService"/>
     </bean>
     
     <bean id="cbcAreaUpdateBackingService" class="com.cannontech.web.updater.capcontrol.CapControlUpdateBackingService">
@@ -456,6 +463,11 @@
     
     <bean id="capControlValueTagPrototype" class="com.cannontech.web.updater.capcontrol.CapControlValueTag">
         <property name="updaterService" ref="dataUpdaterService" />
+    </bean>
+    
+    <bean id="formatTemplateTagPrototype" class="com.cannontech.web.i18n.FormatTemplateTag">
+        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
     </bean>
     
     <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag">

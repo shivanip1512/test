@@ -1,6 +1,9 @@
 /* see the dataUpdateEnabler.tag to see where this is referenced */
 
-function initiateCannonDataUpdate(url, delayMs, disableHighlight) {
+var disableHighlight = false;
+var cannonDataUpdateRegistrations = $A();
+
+function initiateCannonDataUpdate(url, delayMs) {
     var lastUpdate = 0;
     var processResponseCallback = function(transport) {
         // looks like stuff is working, hide error div
@@ -94,7 +97,9 @@ function initiateCannonDataUpdate(url, delayMs, disableHighlight) {
         // trim down to removed duplicates (there probably won't be any)
         requestData.data = requestData.data.uniq();
         
-        if (updatableElements.length == 0) {
+        if (requestData.data.length == 0) {
+            // schedule next update
+            setTimeout(this, delayMs);
             return;
         }
         
@@ -115,8 +120,6 @@ function initiateCannonDataUpdate(url, delayMs, disableHighlight) {
     };
     setTimeout(doUpdate, delayMs);
 }
-
-var cannonDataUpdateRegistrations = $A();
 
 function cannonDataUpdateRegistration(callback, identifierMap) {
   // callback will include the formatted string as its one argument

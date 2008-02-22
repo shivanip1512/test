@@ -938,6 +938,22 @@
         </attribute>
     </tag>
     
+    <tag>
+        <name>formatTemplate</name>
+        <tag-class>com.cannontech.web.i18n.FormatTemplateTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Retrieves the template for the ResolvableTemplate's key and then evaluates it
+            with the included data.
+        </description>
+        <attribute>
+            <name>message</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>A ResolvableTemplate</description>
+        </attribute>
+    </tag>
+    
   
   <function>
     <name>equalsIgnoreCase</name>

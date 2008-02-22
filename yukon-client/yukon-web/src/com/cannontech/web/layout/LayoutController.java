@@ -50,6 +50,10 @@ public class LayoutController {
         layoutScriptFiles.add("/JavaScript/prototype.js");
         layoutScriptFiles.add("/JavaScript/yukonGeneral.js");
         layoutScriptFiles.add("/JavaScript/CtiMenu.js");
+        layoutScriptFiles.add("/JavaScript/dataUpdater.js");
+        layoutScriptFiles.add("/JavaScript/scriptaculous/effects.js");
+        layoutScriptFiles.add("/JavaScript/simpleCookies.js");
+        layoutScriptFiles.add("/JavaScript/alert.js");
     }
 
     @RequestMapping("/")

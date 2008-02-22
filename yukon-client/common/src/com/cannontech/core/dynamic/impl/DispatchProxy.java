@@ -260,6 +260,12 @@ class DispatchProxy {
             }
         }
     }
+    
+    public void registerForAlarms() {
+        PointRegistration pReg = new PointRegistration();
+        pReg.setRegFlags(PointRegistration.REG_ALARMS);
+        dispatchConnection.queue(pReg);
+    }
 
     public void setServerRequest(ServerRequest serverRequest) {
         this.serverRequest = serverRequest;

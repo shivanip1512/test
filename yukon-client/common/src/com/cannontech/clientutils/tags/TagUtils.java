@@ -53,6 +53,11 @@ public static String getTagString(int tags)
 		return buff.toString();
 }
 
+public static boolean isNewAlarm(int tags) {
+    boolean result = (tags & Signal.TAG_REPORT_MSG_BLOCK_EXTRA_EMAIL) == 0;
+    return result;
+}
+
 /**
  	public final static int TAG_ACTIVE_ALARM					= 0x80000000; //active
 	public final static int TAG_UNACKNOWLEDGED_ALARM		= 0x40000000; //tag_unack

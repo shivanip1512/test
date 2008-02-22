@@ -18,15 +18,41 @@ form {
 }
 
 div.simplePopup {
-  padding: 3px;
   position: absolute;
-  border: 3px solid #888;
-  width: auto;
-  height: 50%;
-  background-color: #eee;
-  left: 25%;
-  right: 25%;
-  top: 30%
+  width: 700px;
+  border: 12px solid #666;
+  background-color: white;
+  left: 20%;
+  top: 150px;
+}
+
+#alertSpan a {
+  color: #FF4B4F !important;
+}
+
+#alertView {
+  font-size: .8em;
+}
+
+#alertBody {
+  width: 685px;
+  overflow: auto; 
+  height: 230px
+}
+
+#alertView table {
+  border-collapse: collapse;
+  width: 665px;
+}
+
+#alertView table tbody tr {
+  border-bottom: 1px solid #ccc;
+}
+
+#alertView th {
+  border-bottom: 2px solid #bbb;
+  font-size: 1.2em;
+  text-align: left;
 }
 
 div.ccPFPopup {
@@ -53,11 +79,6 @@ div.ccVarLoadPopup {
   top: 30%;
 }
 
-div.simplePopup h2 {
-  margin: 0;
-  padding: 0;
-  font-size: 1.4em
-}
 
 div.internalSectionHeader {
 	padding-top: 5px; 

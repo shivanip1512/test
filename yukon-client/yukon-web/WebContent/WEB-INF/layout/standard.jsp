@@ -1,6 +1,8 @@
 <%@ page errorPage="/internalError.jsp" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
     <head>
@@ -38,6 +40,22 @@
 <div id="Content">
 <cti:outputContent writable="${bodyContent}"/>
 </div> <!-- Content -->
+
+<cti:msg key="yukon.web.alerts.heading" var="alertTitle"/>
+<ct:simplePopup title="${alertTitle}" id="alertContent" onClose="javascript:alert_closeAlertWindow();">
+    <div id="alertBody"></div>
+    <div style="padding-top: 5px">
+    <table cellspacing="0" width="100%" >
+        <tr>
+            <td align="left"><ct:stickyCheckbox id="alert_autoPopup" defaultValue="false"><cti:msg key="yukon.web.alerts.autopopup"/></ct:stickyCheckbox></td>
+            <td align="right"><input type="button" value="<cti:msg key="yukon.web.alerts.clearall"/>" onclick="javascript:alert_clearAlert();"></input></td>
+        </tr>
+    </table>
+    </div>
+
+</ct:simplePopup>
+<ct:dataUpdateEnabler/>
+<cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" value="ALERT/COUNT"/>
 
 <div id="CopyRight">
 <cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>
