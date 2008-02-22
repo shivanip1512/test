@@ -498,6 +498,11 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				    }
 				    %> 
 				    <%=name%>
+				    <% if (CBCUtils.isTwoWay(obj)) { %>                 
+                        <a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>', 500, 600)" >
+                            <img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestamp information for the cap bank controller device.');" />
+                       </a>
+                    <% } %>
 				</td>
 				
                 <td>
@@ -514,13 +519,9 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					<% } else { %>
                         <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
 					<% } %>
-					<!-- -------------------------------------->
-					<% if (CBCUtils.isTwoWay(obj)) { %>					
-                        <a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>', 500, 600)" >
-                            <img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestamp information.<br>for the cap bank controller device');" />
+					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
+					       <img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
 					   </a>
-					<% } %>
-					<a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank');">x</a>
 				</td>
 
                 <td>
