@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.180 $
-* DATE         :  $Date: 2008/02/22 16:30:59 $
+* REVISION     :  $Revision: 1.181 $
+* DATE         :  $Date: 2008/02/22 23:47:07 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -8255,7 +8255,7 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
                     dout << CtiTime() << " Loading stale point maps for point id " << pointID << endl;
                 }
                 //Only if the point is not in the map already!
-                if( _pointUpdatedTime.find(pointID) != _pointUpdatedTime.end() )
+                if( _pointUpdatedTime.find(pointID) == _pointUpdatedTime.end() )
                 {
                     int alarmTime = tempPoint->getProperties()->getIntProperty(CtiTablePointProperty::STALE_ALARM_TIME);
                     if( alarmTime > 0 )
@@ -8263,7 +8263,6 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
                         unsigned int alarmSeconds = alarmTime * 60;
                         StalePointTimeData tempData;
                         CtiTime tempTime;
-                        _pointUpdatedTime.erase(tempPoint->getPointID());
                         _pointUpdatedTime.insert(make_pair(tempPoint->getPointID(), tempTime));
                         
                         tempTime += alarmSeconds;

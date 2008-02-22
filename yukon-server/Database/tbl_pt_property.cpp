@@ -6,8 +6,8 @@
 * Date:   2/13/08
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/02/21 23:10:17 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/02/22 23:47:08 $
 *
 * Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -88,7 +88,7 @@ void CtiTablePointProperty::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
 
     selector <<
     keyTable["pointid"] <<
-    keyTable["propertyid"] <<
+    keyTable["pointpropertyid"] <<
     keyTable["floatvalue"];
 
     selector.from(keyTable);
@@ -96,7 +96,7 @@ void CtiTablePointProperty::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
 
 string CtiTablePointProperty::getTableName()
 {
-    return "PointProperty";
+    return "PointPropertyValue";
 }
 
 bool CtiTablePointProperty::hasProperty(unsigned int propertyID)
@@ -131,4 +131,9 @@ int CtiTablePointProperty::getIntProperty(unsigned int propertyID)
         retVal = floatVal;
     }
     return retVal;
+}
+
+void CtiTablePointProperty::resetTable()
+{
+    _propertyMap.clear();
 }

@@ -5,8 +5,8 @@
 * Date:   2/12/2008
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/02/21 23:10:17 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/02/22 23:47:08 $
 *
 * Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,7 @@ public:
     void                 DecodeDatabaseReader(RWDBReader &rdr);
     void                 dump() const;
     static string        getTableName();
+    void                 resetTable();
 
     enum
     {

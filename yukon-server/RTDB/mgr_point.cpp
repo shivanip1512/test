@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2008/02/21 23:17:42 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2008/02/22 23:47:08 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1046,7 +1046,15 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
     CtiTablePointProperty::getSQL( db, keyTable, attributeSelector );
     RWDBReader attribRdr;
 
-    if(pntID) attributeSelector.where( keyTable["pointid"] == pntID && attributeSelector.where() );
+    if(pntID)
+    {
+        attributeSelector.where( keyTable["pointid"] == pntID && attributeSelector.where() );
+        pPt = _smartMap.find(pID);
+        if(pPt && pPt->getProperties() != NULL)
+        {
+            pPt->getProperties()->resetTable();
+        }
+    }
 
     attribRdr = attributeSelector.reader( conn );
 
