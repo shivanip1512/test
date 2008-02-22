@@ -17,7 +17,8 @@ public interface IAlarmDefs
 		"Non-updated",
 		"Abnormal",
 		"Uncommanded State Change",
-		"Command Failure"
+		"Command Failure",
+		"Stale"
 	};
 
 	public static final String[] OTHER_ALARM_STATES =
@@ -31,7 +32,8 @@ public interface IAlarmDefs
         "Low Limit 1",
         "Low Limit 2",
         "High Limit 1",
-        "High Limit 2"
+        "High Limit 2",
+        "Stale"
 	};
-	
+
 }

@@ -159,5 +159,8 @@
   <bean id="holidayScheduleDao" class="com.cannontech.core.dao.impl.HolidayScheduleDaoImpl">
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
-    
+  
+  <bean id="pointPropertyDao" class="com.cannontech.common.point.alarm.dao.impl.PointPropertyDaoImpl">
+      <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+  </bean> 
 </beans>

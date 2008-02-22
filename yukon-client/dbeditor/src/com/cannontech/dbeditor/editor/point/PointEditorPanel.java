@@ -28,20 +28,24 @@ public class PointEditorPanel extends com.cannontech.common.editor.PropertyPanel
 		{  //3 - PointAnalogPhysicalSettingsEditoraPanel
 			PointTypes.ANALOG_POINT
 		},
-		{  //4 - PointStateEditorPanel
+		{  //4 - 
 			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.DEMAND_ACCUMULATOR_POINT
 		},
-		{  //5 - PointDataOptionsEditorPanel
+		{  //5 - 
+			PointTypes.STATUS_POINT, PointTypes.CALCULATED_STATUS_POINT
+		},
+		{  //6 - PointDataOptionsEditorPanel
 			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, 
 			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT
 		},
-		{  //6 - PointAlarmOptionsEditorPanel
+		{  //7 - PointAlarmOptionsEditorPanel
 			PointTypes.PULSE_ACCUMULATOR_POINT, PointTypes.ANALOG_POINT, PointTypes.CALCULATED_POINT, PointTypes.STATUS_POINT, 
 			PointTypes.DEMAND_ACCUMULATOR_POINT, PointTypes.CALCULATED_STATUS_POINT
 		}	,
-		{  //7 - PointCalcComponent
+		{  //8 - PointCalcComponent
 			PointTypes.CALCULATED_POINT, PointTypes.CALCULATED_STATUS_POINT
-		}	
+		}
+
 	};
 	private javax.swing.JTabbedPane ivjPointEditorTabbedPane = null;
 /**
@@ -83,18 +87,23 @@ public Object[] createNewPanel(int panelIndex)
 			objs[0] = new com.cannontech.dbeditor.editor.point.PointLimitEditorPanel();
 			objs[1] = "Limits";
 			break;
-			
+
 		case 5:
+			objs[0] = new com.cannontech.dbeditor.editor.point.StatusPointLimitEditorPanel();
+			objs[1] = "Limits";
+			break;
+		
+		case 6:
 			objs[0] = new com.cannontech.dbeditor.editor.point.PointForeignDataEditorPanel();
 			objs[1] = "Foreign Data";
 			break;
 			
-		case 6:
+		case 7:
 			objs[0] = new com.cannontech.dbeditor.editor.point.PointAlarmOptionsEditorPanel();
 			objs[1] = "Alarms";
 			break;
 			
-		case 7:
+		case 8:
 			objs[0] = new com.cannontech.dbeditor.editor.point.PointCalcComponentEditorPanel();
 			objs[1] = "Calculation";
 			break;
