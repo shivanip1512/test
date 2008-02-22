@@ -1871,20 +1871,20 @@ create table POINTPROPERTY (
 );
 go
 
-create table POINTPOINTPROPERTY (
+create table POINTPROPERTYVALUE (
    PointID              numeric              not null,
    PointpropertyID      int                  not null,
    FloatValue           float                not null,
-   constraint PK_POINTPOINTPROPERTY primary key nonclustered (PointID, PointpropertyID)
+   constraint PK_POINTPROPERTYVALUE primary key nonclustered (PointID, PointpropertyID)
 );
 go
 
-alter table POINTPOINTPROPERTY
+alter table POINTPROPERTYVALUE
    add constraint FK_POINTPOI_REFERENCE_POINT foreign key (PointID)
       references POINT (POINTID);
 go
 
-alter table POINTPOINTPROPERTY
+alter table POINTPROPERTYVALUE
    add constraint FK_POINTPOI_REFERENCE_POINTPRO foreign key (PointpropertyID)
       references POINTPROPERTY (PointpropertyID);
 go
