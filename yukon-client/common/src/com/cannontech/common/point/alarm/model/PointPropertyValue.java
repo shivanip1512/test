@@ -1,16 +1,16 @@
 package com.cannontech.common.point.alarm.model;
 
-public class PointProperty {
+public class PointPropertyValue {
 
 	int pointId;
 	int propertyId;
 	float floatValue;
 	
-	public PointProperty() {
+	public PointPropertyValue() {
 		
 	}
 	
-	public PointProperty(int pointId, int attributeId, float floatValue) {
+	public PointPropertyValue(int pointId, int attributeId, float floatValue) {
 		this.pointId = pointId;
 		this.propertyId = attributeId;
 		this.floatValue = floatValue;
@@ -58,7 +58,7 @@ public class PointProperty {
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		final PointProperty other = (PointProperty) obj;
+		final PointPropertyValue other = (PointPropertyValue) obj;
 		if (propertyId != other.propertyId)
 			return false;
 		if (Float.floatToIntBits(floatValue) != Float
