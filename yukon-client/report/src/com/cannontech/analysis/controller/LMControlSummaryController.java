@@ -52,19 +52,14 @@ public class LMControlSummaryController extends ReportControllerBase {
         if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
             String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_MODEL_VALUES).trim();
             StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
-            int[] programsArray = new int[st.countTokens()];
-            int i = 0;
-            while (st.hasMoreTokens()) {
-                Integer programId = new Integer(st.nextToken().trim());
-                if( programId != null && programId.intValue() > 0) {
-                    programsArray[i++] = programId;
+            if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
+                int idsArray[] = ServletRequestUtils.getIntParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
+                HashSet<Integer> programsSet = new HashSet<Integer>();
+                for (int id : idsArray) {
+                    programsSet.add(id);
                 }
+                lmControlSummaryModel.setProgramIds(programsSet);
             }
-            HashSet<Integer> programsSet = new HashSet<Integer>();
-            for (int id : programsArray) {
-                programsSet.add(id);
-            }
-            lmControlSummaryModel.setProgramIds(programsSet);
         }
     }
 }
