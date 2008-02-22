@@ -21,7 +21,7 @@ public class ModuleBase {
     private String searchPath;
     private String searchFieldName;
     private String searchMethod;
-    private List<SimpleMenuOption> quickLinks;
+    private List<BaseMenuOption> portalLinks;
     private List<String> cssFiles = new ArrayList<String>(2);
     private List<String> scriptFiles = new ArrayList<String>(2);
     private String skin;
@@ -48,16 +48,16 @@ public class ModuleBase {
         this.searchPath = searchPath;
     }
     
-    public List<SimpleMenuOption> getQuickLinks() {
-        return quickLinks;
+    public List<BaseMenuOption> getPortalLinks() {
+        return portalLinks;
     }
     
-    public void setQuickLinks(List<SimpleMenuOption> quickLinks) {
-        this.quickLinks = quickLinks;
+    public void setPortalLinks(List<BaseMenuOption> portalLinks) {
+        this.portalLinks = portalLinks;
     }
     
-    public Iterator<SimpleMenuOption> getValidQuickLinks(LiteYukonUser user) {
-        return new FilterIterator(quickLinks.iterator(), new CheckUserPredicate(user));
+    public Iterator<BaseMenuOption> getValidPortalLinks(LiteYukonUser user) {
+        return new FilterIterator(portalLinks.iterator(), new CheckUserPredicate(user));
     }
     
     public boolean isUserAuthorized(LiteYukonUser user) {

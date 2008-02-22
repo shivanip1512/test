@@ -22,25 +22,225 @@
      can be declared with the <css file=""/> and <script file=""/> tags
      respectively.
 -->
-  <quicklinks>
-    <option id="capcontrol">
-      <link>/capcontrol/subareas.jsp</link>
-      <requireProperty value="capcontrol.CBCSettingsRole.ACCESS"/>
-    </option>
-    <option id="commercialcurtailment">
-      <link>/cc/programSelect.jsf</link>
-      <requireRole value="CICurtailmentRole.ROLEID"/>
-    </option>
-    <option id="commander">
-      <link>/apps/SelectDevice.jsp</link>
-      <requireRole value="application.CommanderRole.ROLEID"/>
-    </option>
-     <option id="reporting">
-      <link>/analysis/Reports.jsp</link>
-      <requireRole value="application.ReportingRole.ROLEID"/>
-    </option>
-  </quicklinks>
+  <portals>
+    <!-- Javascript includes that are needed for client launcher -->
+    <script file="/JavaScript/simpleCookies.js"/>
+    <script file="/JavaScript/javaWebStartLauncher.js"/>
   
+    <!-- Consumer Account Information -->
+    <portal id="consumerAccountInformation">
+      <requireRole value="ConsumerInfoRole.ROLEID" />
+      <sublinks>  
+        <option id="newAccount">
+          <requireProperty value="ConsumerInfoRole.NEW_ACCOUNT_WIZARD"/>
+          <link>Consumer/New.jsp?Init=true&amp;Wizard=true</link>
+        </option>
+        <option id="newAccount">
+          <requireFalseProperty value="ConsumerInfoRole.NEW_ACCOUNT_WIZARD"/>
+          <link>Consumer/New.jsp?Init=true</link>
+        </option>
+      </sublinks>
+    </portal>
+
+    <!-- Metering -->
+    <portal id="metering">
+      <requireRole value="MeteringRole.ROLEID" />
+      <requireRole value="BillingRole.ROLEID" />
+      <requireRole value="TrendingRole.ROLEID" />
+
+      <sublinks>
+        <option id="allTrends">
+          <link>/operator/Metering/Metering.jsp</link>
+          <requireRole value="TrendingRole.ROLEID"/>
+        </option>
+
+        <option id="bulkImporter">
+          <link>/spring/amr/bulkimporter/home</link>
+          <requireRole value="MeteringRole.ROLEID" />
+          <requireProperty value="operator.MeteringRole.IMPORTER_ENABLED"/>
+        </option>
+
+        <option id="metering">
+          <link>/spring/csr/search</link>
+          <requireRole value="operator.MeteringRole.ROLEID" />
+          <requireRole value="BillingRole.ROLEID" />
+          <requireRole value="SchedulerRole.ROLEID" />
+          <requireRole value="CommanderRole.ROLEID" />
+        </option>
+      </sublinks>
+    </portal>
+
+    <!-- Client Launcher -->
+    <portal id="clientLauncher">
+   
+      <sublinks>
+        <option id="databaseEditor">
+          <link>javascript:jwsLaunch('/jws/dbeditor.jnlp')</link>
+        </option>
+
+        <option id="tabularDataConsole">
+          <link>javascript:jwsLaunch('/jws/tdc.jnlp')</link>
+        </option>
+
+        <option id="trending">
+          <link>javascript:jwsLaunch('/jws/trending.jnlp')</link>
+        </option>
+        
+        <option id="esubstationEditor">
+          <link>javascript:jwsLaunch('/jws/esub.jnlp')</link>
+        </option>
+        
+        <option id="commander">
+          <link>javascript:jwsLaunch('/jws/commander.jnlp')</link>
+        </option>
+        
+      </sublinks>
+      <requireProperty value="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED" />
+    </portal>
+
+    <!-- Load Response -->
+    <portal id="loadResponse">
+      <requireRole value="DirectLoadcontrolRole.ROLEID" />
+      <requireRole value="OddsForControlRole.ROLEID" />
+      <requireRole value="CICurtailmentRole.ROLEID" />
+
+      <sublinks>
+        <option id="direct">
+          <link>/operator/LoadControl/oper_direct.jsp</link>
+          <requireProperty value="DirectLoadcontrolRole.DIRECT_CONTROL"/>
+        </option>
+
+        <option id="ciCurtailment">
+          <link>/cc/programSelect.jsf</link>
+          <requireRole value="CICurtailmentRole.ROLEID" />
+        </option>
+
+        <option id="oddsForControl">
+          <link>/operator/Consumer/Odds.jsp</link>
+          <requireRole value="OddsForControlRole.ROLEID" />
+        </option>
+        
+        <option id="threeTierDirect">
+          <link>/loadmgmt/controlareas.jsp</link>
+          <requireProperty value="DirectLoadcontrolRole.THREE_TIER_DIRECT" />
+        </option>
+        
+      </sublinks>
+    </portal>
+
+    <!-- Capacitor Control -->
+    <portal id="capacitorControl">
+      <requireRole value="CBCSettingsRole.ROLEID" />
+
+      <sublinks>
+        <option id="capControl">
+          <link>/capcontrol/subareas.jsp</link>
+        </option>
+
+      </sublinks>
+    </portal>
+
+    <!-- Hardware Inventory -->
+    <portal id="hardwareInventory">
+      <sublinks>
+        <option id="inventory">
+          <link>/operator/Hardware/Filter.jsp</link>
+          <requireProperty value="InventoryRole.INVENTORY_SHOW_ALL" />
+        </option>
+
+        <option id="purchasing">
+          <link>/operator/Hardware/PurchaseTrack.jsp</link>
+          <requireProperty value="InventoryRole.PURCHASING_ACCESS" />
+        </option>
+      
+      </sublinks>
+    </portal>
+
+    <!-- Analysis -->
+    <portal id="analysis">
+      <requireRole value="ReportingRole.ROLEID" />
+      <requireRole value="CommanderRole.ROLEID" />
+
+      <sublinks>
+        <option id="reporting">
+          <link>/analysis/Reports.jsp</link>
+          <requireRole value="ReportingRole.ROLEID"/>
+        </option>
+
+        <option id="commander">
+          <link>/apps/SelectDevice.jsp</link>
+          <requireRole value="CommanderRole.ROLEID" />
+        </option>
+
+      </sublinks>
+    </portal>
+    
+    <!-- Administration -->
+    <portal id="administration">
+      <requireRole value="operator.AdministratorRole.ROLEID" />
+
+      <sublinks>
+        <option id="configEnergyCompany">
+          <link>/operator/Admin/AdminTest.jsp</link>
+          <requireProperty value="operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"/>
+        </option>
+
+        <option id="memberManagement">
+          <link>/operator/Admin/ManageMembers.jsp</link>
+          <requireProperty value="operator.AdministratorRole.ADMIN_MANAGE_MEMBERS"/>
+        </option>
+
+        <option id="newEnergyCompany">
+          <link>/operator/Admin/NewEnergyCompany.jsp</link>
+          <requireProperty value="operator.AdministratorRole.ADMIN_CREATE_ENERGY_COMPANY"/>
+        </option>
+
+<!--         
+        <option id="deleteEnergyCompany">
+          <link>/servlet/StarsAdmin</link>
+          <requireProperty value="operator.AdministratorRole.ADMIN_DELETE_ENERGY_COMPANY"/>
+        </option>
+ -->
+        <option id="viewBatchCommands">
+          <link>/operator/Admin/SwitchCommands.jsp</link>
+          <requireProperty value="operator.AdministratorRole.ADMIN_VIEW_BATCH_COMMANDS"/>
+        </option>
+
+        <option id="viewScheduledOptOutEvents">
+          <link>/operator/Admin/OptOutEvents.jsp</link>
+          <requireProperty value="operator.AdministratorRole.ADMIN_VIEW_OPT_OUT_EVENTS"/>
+        </option>
+
+        <option id="multispeakSetup">
+          <link>/msp_setup.jsp</link>
+          <requireProperty value="operator.AdministratorRole.ADMIN_MULTISPEAK_SETUP"/>
+        </option>
+
+        <option id="userGroupEditor">
+          <link>/spring/editor/userGroupSelector</link>
+          <requireProperty value="AdministratorRole.ADMIN_LM_USER_ASSIGN"/>
+        </option>
+
+        <option id="viewLogs">
+          <link>/logging/</link>
+        </option>
+
+        <option id="manageIndexes">
+          <link>/index/manage</link>
+        </option>
+        
+        <option id="deviceConfiguration">
+          <link>/spring/deviceConfiguration?home</link>
+          <requireProperty value="AdministratorRole.ADMIN_VIEW_CONFIG"/>
+        </option>
+
+      </sublinks>
+    </portal>
+    
+
+  </portals>    
+
+  <!--  Modules -->
   <module name="amr">
     <skin name="standard"/>
    	<toplinks>

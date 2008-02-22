@@ -13,6 +13,7 @@ import org.apache.ecs.html.A;
 import org.apache.ecs.html.Div;
 import org.apache.ecs.html.Form;
 import org.apache.ecs.html.Input;
+import org.apache.ecs.html.OptGroup;
 import org.apache.ecs.html.Option;
 import org.apache.ecs.html.Script;
 import org.apache.ecs.html.Select;
@@ -204,18 +205,46 @@ public class StandardMenuRenderer implements MenuRenderer {
         if (features.showModuleSelection) {
             String moduleMsg = messageSource.getMessage("yukon.web.menu.module");
             right.addElement(new Span(moduleMsg).setClass("stdhdr_menu"));
-            Iterator quickLinkIterator = moduleBase.getValidQuickLinks(yukonUser);
+            Iterator portalLinkIterator = moduleBase.getValidPortalLinks(yukonUser);
+            Iterator portalLinkIterator2 = moduleBase.getValidPortalLinks(yukonUser);
             Select select = new Select();
             select.setOnChange(e("javascript:window.location=(this[this.selectedIndex].value);"));
             String locationSelectMsg = messageSource.getMessage("yukon.web.menu.locationSelect");
             select.addElement(new Option("").addElement(e(locationSelectMsg)).setSelected(true));
-            while (quickLinkIterator.hasNext()) {
-                SimpleMenuOption element = (SimpleMenuOption) quickLinkIterator.next();
-                Option quickOption = new Option(buildUrl(element.getUrl()));
-                String menuName = messageSource.getMessage(element.getLinkKey());
-                quickOption.addElement(e(menuName));
-              
-                select.addElement(quickOption);
+            OptGroup optGroup = null;
+
+            // This part of the method is used to set up the free links that have no headers
+            while (portalLinkIterator.hasNext()) {
+                BaseMenuOption baseMenuOption = (BaseMenuOption) portalLinkIterator.next();
+                if (baseMenuOption instanceof SimpleMenuOption) {
+                    SimpleMenuOption simpleMenuOption = (SimpleMenuOption) baseMenuOption;
+                    Option portalOption = new Option(buildUrl(simpleMenuOption.getUrl()));
+                    String linkName = messageSource.getMessage(simpleMenuOption.getLinkKey());
+                    portalOption.addElement(e(linkName));
+                    select.addElement(portalOption);
+                }
+            }
+            
+            // This is used to set up the links with headers shown in the dropdown box. 
+            while (portalLinkIterator2.hasNext()) {
+                BaseMenuOption baseMenuOption = (BaseMenuOption) portalLinkIterator2.next();
+                if (baseMenuOption instanceof TopLevelOption){
+                    TopLevelOption topLevelOption = (TopLevelOption) baseMenuOption;
+                    if (topLevelOption.getValidSubLevelOptions(yukonUser).hasNext()){
+                        optGroup = new OptGroup();
+                        String menuName = messageSource.getMessage(topLevelOption.getLinkKey());
+                        optGroup.addAttribute("label", e(menuName));
+                        Iterator<SimpleMenuOption> validSubLevelOptions = topLevelOption.getValidSubLevelOptions(yukonUser);
+                        while (validSubLevelOptions.hasNext()){
+                            SimpleMenuOption simpleMenuOption = validSubLevelOptions.next();
+                            Option portalOption = new Option(buildUrl(simpleMenuOption.getUrl()));
+                            String linkName = messageSource.getMessage(simpleMenuOption.getLinkKey());
+                            portalOption.addElement(e(linkName));
+                            optGroup.addElement(portalOption);
+                        }
+                        select.addElement(optGroup);
+                    }
+                }
             }
             right.addElement(select);
         }

@@ -8,6 +8,7 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.jdom.Attribute;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -27,9 +28,11 @@ import com.cannontech.user.checker.UserChecker;
 public class CommonModuleBuilder implements ModuleBuilder {
     private RolePropertyUserCheckerFactory userCheckerFactory;
     private Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
-    private List<SimpleMenuOption> quickLinkList = new ArrayList<SimpleMenuOption>(5);
+    private List<BaseMenuOption> portalLinkList = new ArrayList<BaseMenuOption>(5);
+    private List<String> portalJavaScriptIncludes = new ArrayList<String>(3);
     private final Resource moduleConfigFile;
-    private final String menuKeyPrefix = "yukon.web.menu.config.";
+    private final String menuKeyPrefix = "yukon.web.menu.config";
+    private final String menuKeyModPrefix = menuKeyPrefix+".";
     
     public CommonModuleBuilder(Resource moduleConfigFile) throws CommonMenuException {
         this.moduleConfigFile = moduleConfigFile;
@@ -39,7 +42,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         try {
             SAXBuilder builder = new SAXBuilder();
             Document configDoc = builder.build(moduleConfigFile.getInputStream());
-            processQuickLinks(configDoc);
+            processPortalLinks(configDoc);
             processModules(configDoc);
             
         } catch (Exception e) {
@@ -47,17 +50,27 @@ public class CommonModuleBuilder implements ModuleBuilder {
         }
     }
 
-    private void processQuickLinks(Document configDoc) {
+    private void processPortalLinks(Document configDoc) throws CommonMenuException {
         Element rootElem = configDoc.getRootElement();
-        Element quickLinks = rootElem.getChild("quicklinks");
-        List linkList = quickLinks.getChildren("option");
-        for (Iterator iter = linkList.iterator(); iter.hasNext();) {
-            Element optionElem = (Element) iter.next();
-            SimpleMenuOption menuOption = createSimpleMenuOption(optionElem, menuKeyPrefix + "quicklinks");
-            UserChecker checker = getCheckerForElement(optionElem);
+        Element portalLinks = rootElem.getChild("portals");
+        List<Element> portalList = portalLinks.getChildren("portal");
+        List<Element> javaScriptList  = portalLinks.getChildren("script");
+        
+        for (Element scriptList : javaScriptList) {
+            Attribute jsFile = scriptList.getAttribute("file");
+            if (jsFile != null){
+                portalJavaScriptIncludes.add(jsFile.getValue());
+            }
+        }
+        
+        for (Element portal : portalList) {
             
-            menuOption.setPropertyChecker(checker);
-            quickLinkList.add(menuOption);
+            BaseMenuOption topLevelOption = processTopOption(portal, menuKeyPrefix);
+            UserChecker checker = getCheckerForElement(portal);
+            
+            topLevelOption.setPropertyChecker(checker);
+            portalLinkList.add(topLevelOption);
+            
         }
     }
 
@@ -73,8 +86,12 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private void buildModule(Element moduleElement) throws CommonMenuException {
         String moduleName = moduleElement.getAttributeValue("name");
         ModuleBase moduleBase = new ModuleBase(moduleName);
-        // quickLinkList should have been built by now
-        moduleBase.setQuickLinks(quickLinkList);
+        // quickPortalList should have been built by now
+        moduleBase.setPortalLinks(portalLinkList);
+        for (String jsFile : portalJavaScriptIncludes) {
+            moduleBase.addScriptFiles(jsFile);
+        }
+        
         MenuBase menuBase = new MenuBase();
         moduleBase.setMenuBase(menuBase);
         Element topLinks = moduleElement.getChild("toplinks");
@@ -82,7 +99,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
             List topOptions = topLinks.getChildren("option");
             for (Iterator iterator = topOptions.iterator(); iterator.hasNext();) {
                 Element topOptionElement = (Element) iterator.next();
-                BaseMenuOption topLevelOption = processTopOption(topOptionElement, menuKeyPrefix + moduleName);
+                BaseMenuOption topLevelOption = processTopOption(topOptionElement, menuKeyModPrefix + moduleName);
                 UserChecker checker = getCheckerForElement(topOptionElement);
                 
                 topLevelOption.setPropertyChecker(checker);
@@ -122,7 +139,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
         Element topAction = topOptionElement.getChild("script");
         Element topLink = topOptionElement.getChild("link");
         Element topSub = topOptionElement.getChild("sublinks");
-        if (topAction != null) {
+        if (topAction != null && topAction.getAttribute("file") != null) {
             SimpleMenuOptionAction topLevelOptionTemp = new SimpleMenuOptionAction(key);
             topLevelOptionTemp.setScript(topAction.getTextTrim());
             topLevelOption = topLevelOptionTemp;
