@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.179 $
-* DATE         :  $Date: 2008/02/21 23:54:56 $
+* REVISION     :  $Revision: 1.180 $
+* DATE         :  $Date: 2008/02/22 16:30:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1812,6 +1812,7 @@ void CtiVanGogh::processStalePoint(CtiPointSPtr pPoint, CtiDynamicPointDispatch*
         if( updateType == CtiTablePointProperty::UPDATE_ALWAYS ||
            (updateType == CtiTablePointProperty::UPDATE_ON_CHANGE && aPD.getValue() != pDyn->getValue()) )
         {
+            _pointUpdatedTime.erase(pPoint->getPointID());
             _pointUpdatedTime.insert(make_pair(pPoint->getPointID(), CtiTime::now()));
             int alarm = pPoint->isNumeric() ? CtiTablePointAlarming::staleNumeric : CtiTablePointAlarming::staleStatus;
             if( _signalManager.isAlarmActive(pPoint->getPointID(), alarm) || pDyn->isConditionActive(alarm) )
@@ -8262,6 +8263,7 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
                         unsigned int alarmSeconds = alarmTime * 60;
                         StalePointTimeData tempData;
                         CtiTime tempTime;
+                        _pointUpdatedTime.erase(tempPoint->getPointID());
                         _pointUpdatedTime.insert(make_pair(tempPoint->getPointID(), tempTime));
                         
                         tempTime += alarmSeconds;

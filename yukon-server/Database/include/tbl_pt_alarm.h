@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/02/21 18:56:08 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/02/22 16:30:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -60,6 +60,7 @@ public:
       abnormal,
       uncommandedStateChange,
       commandFailure,
+      staleStatus,
       state0,
       state1,
       state2,
@@ -71,8 +72,7 @@ public:
       state8,
       state9,
       changeOfState,
-      staleStatus,
-
+      
       invalidstatusstate // = 32
 
    } CtiStatusPointAlarmStates_t;
