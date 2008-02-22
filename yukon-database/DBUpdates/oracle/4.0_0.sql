@@ -1656,6 +1656,25 @@ update capcontrolspecialarea set voltReductionPointId = 0;
 alter table capcontrolspecialarea modify voltReductionPointId number not null; 
 /* End YUK-5396 */
 
+/* Start YUK-5392 */
+create table DYNAMICCCOPERATIONSTATISTICS  (
+   PAObjectID           NUMBER                          not null,
+   UserDefOpCount       NUMBER                          not null,
+   UserDefConfFail      NUMBER                          not null,
+   DailyOpCount         NUMBER                          not null,
+   DailyConfFail        NUMBER                          not null,
+   WeeklyOpCount        NUMBER                          not null,
+   WeeklyConfFail       NUMBER                          not null,
+   MonthlyOpCount       NUMBER                          not null,
+   MonthlyConfFail      NUMBER                          not null,
+   constraint PK_DYNAMICCCOPERATIONSTATISTIC primary key (PAObjectID)
+);
+
+alter table DYNAMICCCOPERATIONSTATISTICS
+   add constraint FK_DYNAMICC_REFERENCE_YUKONPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID);
+/* End YUK-5392 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

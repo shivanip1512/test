@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/22/2008 10:00:01 AM                        */
+/* Created on:     2/22/2008 10:24:35 AM                        */
 /*==============================================================*/
 
 
@@ -1594,6 +1594,13 @@ if exists (select 1
            where  id = object_id('DYNAMICCCAREA')
             and   type = 'U')
    drop table DYNAMICCCAREA
+go
+
+if exists (select 1
+            from  sysobjects
+           where  id = object_id('DYNAMICCCOPERATIONSTATISTICS')
+            and   type = 'U')
+   drop table DYNAMICCCOPERATIONSTATISTICS
 go
 
 if exists (select 1
@@ -5562,6 +5569,23 @@ create table DYNAMICCCAREA (
    additionalflags      varchar(20)          not null,
    ControlValue         numeric              not null,
    constraint PK_DYNAMICCCAREA primary key (AreaID)
+)
+go
+
+/*==============================================================*/
+/* Table: DYNAMICCCOPERATIONSTATISTICS                          */
+/*==============================================================*/
+create table DYNAMICCCOPERATIONSTATISTICS (
+   PAObjectID           numeric              not null,
+   UserDefOpCount       numeric              not null,
+   UserDefConfFail      numeric              not null,
+   DailyOpCount         numeric              not null,
+   DailyConfFail        numeric              not null,
+   WeeklyOpCount        numeric              not null,
+   WeeklyConfFail       numeric              not null,
+   MonthlyOpCount       numeric              not null,
+   MonthlyConfFail      numeric              not null,
+   constraint PK_DYNAMICCCOPERATIONSTATISTIC primary key (PAObjectID)
 )
 go
 
@@ -13363,6 +13387,11 @@ go
 alter table DYNAMICCCAREA
    add constraint FK_ccarea_Dynccarea foreign key (AreaID)
       references CAPCONTROLAREA (AreaID)
+go
+
+alter table DYNAMICCCOPERATIONSTATISTICS
+   add constraint FK_DYNAMICC_REFERENCE_YUKONPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID)
 go
 
 alter table DYNAMICCCSUBSTATION

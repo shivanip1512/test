@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/22/2008 9:57:38 AM                         */
+/* Created on:     2/22/2008 10:26:45 AM                        */
 /*==============================================================*/
 
 
@@ -421,6 +421,8 @@ drop table DYNAMICBILLINGFIELD cascade constraints;
 drop table DYNAMICBILLINGFORMAT cascade constraints;
 
 drop table DYNAMICCCAREA cascade constraints;
+
+drop table DYNAMICCCOPERATIONSTATISTICS cascade constraints;
 
 drop table DYNAMICCCSPECIALAREA cascade constraints;
 
@@ -1308,7 +1310,7 @@ create table CAPBANKADDITIONAL  (
 create table CAPCONTROLAREA  (
    AreaID               NUMBER                          not null,
    ControlPointID       NUMBER                          not null,
-   VoltReductionPointID number                          not null,
+   VoltReductionPointID NUMBER                          not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 );
 
@@ -3184,6 +3186,22 @@ create table DYNAMICCCAREA  (
    additionalflags      VARCHAR2(20)                    not null,
    ControlValue         NUMBER                          not null,
    constraint PK_DYNAMICCCAREA primary key (AreaID)
+);
+
+/*==============================================================*/
+/* Table: DYNAMICCCOPERATIONSTATISTICS                          */
+/*==============================================================*/
+create table DYNAMICCCOPERATIONSTATISTICS  (
+   PAObjectID           NUMBER                          not null,
+   UserDefOpCount       NUMBER                          not null,
+   UserDefConfFail      NUMBER                          not null,
+   DailyOpCount         NUMBER                          not null,
+   DailyConfFail        NUMBER                          not null,
+   WeeklyOpCount        NUMBER                          not null,
+   WeeklyConfFail       NUMBER                          not null,
+   MonthlyOpCount       NUMBER                          not null,
+   MonthlyConfFail      NUMBER                          not null,
+   constraint PK_DYNAMICCCOPERATIONSTATISTIC primary key (PAObjectID)
 );
 
 /*==============================================================*/
@@ -10491,6 +10509,10 @@ alter table DYNAMICBILLINGFORMAT
 alter table DYNAMICCCAREA
    add constraint FK_ccarea_Dynccarea foreign key (AreaID)
       references CAPCONTROLAREA (AreaID);
+
+alter table DYNAMICCCOPERATIONSTATISTICS
+   add constraint FK_DYNAMICC_REFERENCE_YUKONPAO foreign key (PAObjectID)
+      references YukonPAObject (PAObjectID);
 
 alter table DYNAMICCCSUBSTATION
    add constraint FK_DYNAMICC_REFERENCE_CAPCONTR foreign key (SubStationID)
