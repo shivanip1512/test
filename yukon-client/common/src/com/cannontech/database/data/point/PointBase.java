@@ -6,8 +6,7 @@ package com.cannontech.database.data.point;
 import java.util.List;
 import java.util.Vector;
 
-import com.cannontech.common.point.alarm.dao.PointPropertyDao;
-import com.cannontech.common.point.alarm.model.PointProperty;
+import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.point.DynamicAccumulator;
@@ -75,7 +74,7 @@ public void addPartial() throws java.sql.SQLException {
  */
 public void delete() throws java.sql.SQLException 
 {		
-	PointPropertyDao dao = YukonSpringHook.getBean("pointPropertyDao",PointPropertyDao.class);
+	PointPropertyValueDao dao = YukonSpringHook.getBean("pointPropertyValueDao",PointPropertyValueDao.class);
 	
 	dao.removeByPointId(getPoint().getPointID());
 	

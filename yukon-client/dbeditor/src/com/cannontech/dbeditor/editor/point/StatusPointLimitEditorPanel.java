@@ -15,8 +15,8 @@ import org.springframework.dao.DataAccessException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
-import com.cannontech.common.point.alarm.dao.PointPropertyDao;
-import com.cannontech.common.point.alarm.model.PointProperty;
+import com.cannontech.common.point.alarm.dao.PointPropertyValueDao;
+import com.cannontech.common.point.alarm.model.PointPropertyValue;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -168,17 +168,17 @@ private javax.swing.JComboBox getJComboUpdateType() {
 
 public void setValue(Object val) {
 	PointBase point = (PointBase)val;
-	PointProperty attrib1;
-	PointProperty attrib2;
+	PointPropertyValue attrib1;
+	PointPropertyValue attrib2;
 	boolean staleEnabled = false;
-	PointPropertyDao dao = YukonSpringHook.getBean( "pointPropertyDao", PointPropertyDao.class);
+	PointPropertyValueDao dao = YukonSpringHook.getBean( "pointPropertyValueDao", PointPropertyValueDao.class);
 	try{
 		attrib1 = dao.getByIdAndPropertyId(point.getPoint().getPointID(), 1);
 		attrib2 = dao.getByIdAndPropertyId(point.getPoint().getPointID(), 2);
 		staleEnabled = true;
 	}catch( DataAccessException e) {
-		attrib1 = new PointProperty(point.getPoint().getPointID(),1,5);
-		attrib2 = new PointProperty(point.getPoint().getPointID(),2,1);
+		attrib1 = new PointPropertyValue(point.getPoint().getPointID(),1,5);
+		attrib2 = new PointPropertyValue(point.getPoint().getPointID(),2,1);
 	}
 	
 	if( staleEnabled ) {
@@ -205,8 +205,8 @@ public Object getValue(Object val) {
 	// Getting the value to update the database
 	PointBase point = (PointBase)val;
 	
-	PointProperty attribTime = new PointProperty();
-	PointProperty attribUpdate = new PointProperty();
+	PointPropertyValue attribTime = new PointPropertyValue();
+	PointPropertyValue attribUpdate = new PointPropertyValue();
 	
 	attribTime.setPointId(point.getPoint().getPointID());
 	attribTime.setPropertyId(1);
@@ -215,7 +215,7 @@ public Object getValue(Object val) {
 	attribUpdate.setPointId(point.getPoint().getPointID());
 	attribUpdate.setPropertyId(2);
 	attribUpdate.setFloatValue(getJComboUpdateType().getSelectedIndex()+1);
-	PointPropertyDao dao = YukonSpringHook.getBean( "pointPropertyDao", PointPropertyDao.class);
+	PointPropertyValueDao dao = YukonSpringHook.getBean( "pointPropertyValueDao", PointPropertyValueDao.class);
 	
 	//remove from database
 	dao.remove(attribTime);
