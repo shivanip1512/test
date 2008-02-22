@@ -321,9 +321,6 @@
           <option id="delete">
             <script>deletePost()</script>
           </option>
-          <option id="copy">
-            <script>copyPost()</script>
-          </option>
         </sublinks>
       </option>
       <option id="analysis">

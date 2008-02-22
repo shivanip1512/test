@@ -36,6 +36,7 @@ import com.cannontech.database.db.point.calculation.CalcComponentTypes;
 import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.cbc.CBCArea;
 import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
@@ -643,18 +644,8 @@ public final class CBCUtils {
         return checkable.getCurrentPtQuality(type.intValue()) == PointQualityCheckable.PointQuality.NormalQuality.value();
     }
     
-    @SuppressWarnings("static-access")
-    public static boolean isController(int id) {
-        LiteYukonPAObject lite = null;
-        try{
-        
-            lite = DaoFactory.getPaoDao().getLiteYukonPAO(id);
-        }
-        catch(NotFoundException nfe)
-        {
-            return false;
-        }
-        int type = lite.getType();
+    public static boolean isController(LiteWrapper lite) {
+        int type = lite.getRawType();
         switch (type) {
             case PAOGroups.CBC_7010:
             case PAOGroups.CBC_7011:
@@ -670,6 +661,19 @@ public final class CBCUtils {
             return false;
             
         }
+    }
+    
+    public static boolean isController(int id) {
+        LiteYukonPAObject lite = null;
+        try{
+        
+            lite = DaoFactory.getPaoDao().getLiteYukonPAO(id);
+        }
+        catch(NotFoundException nfe)
+        {
+            return false;
+        }
+        return isController(new LiteWrapper(lite));
     }
 
     public static boolean isPoint(int id) {

@@ -630,46 +630,6 @@ function editorPost()
 //Posts to the correct URL with the checked item
 // for editing
 // -------------------------------------------
-function copyPost()
-{
-	var elemAreas = document.getElementsByName('cti_chkbxAreas');
-    var elemSubstations = document.getElementsByName('cti_chkbxSubStation');
-    var elemSubs = document.getElementsByName('cti_chkbxSubBuses');
-    var elemFdrs = document.getElementsByName('cti_chkbxFdrs');
-    var elemBanks = document.getElementsByName('cti_chkbxBanks');
-    var elemPoints = document.getElementsByName('cti_chkbxPoints');
-
-    if ( elemAreas.length > 0 ){
-		//Cannot Copy area's forwarding to the creation wizard.
-    	window.location = '/editor/cbcWizBase.jsf?type=4002';
-    	return;
-    }
-    
-    var validElems = new Array();
-    var isPoint = 0;
-    var isCap = 0;
-    getValidChecks( elemSubs, validElems );
-    getValidChecks( elemSubstations, validElems );
-    getValidChecks( elemFdrs, validElems );
-    isCap   += getValidChecks( elemBanks, validElems );
-	isPoint += getValidChecks( elemPoints, validElems );
-    //only allow the editing of the zeroth element for now
-
-    if ( validElems.length <= 0 ) {
-        alert('You must check the item you want to edit first');
-    } else if (validElems.length > 1) {
-        alert ("You can only copy 1 item at a time");
-    } else {
-        var type = 0;   
-        if (isPoint)  type = 2;
-        if(isCap)    type =1;
-        window.location = getUrlType(validElems, 'copy') + '&itemid=' + validElems[0].getAttribute('value') + '&type=' + type;        
-    }
-}
-// -------------------------------------------
-//Posts to the correct URL with the checked item
-// for editing
-// -------------------------------------------
 function deletePost()
 {
     var elemAreas = document.getElementsByName('cti_chkbxAreas');

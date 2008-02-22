@@ -94,6 +94,11 @@ for( int i = 0; i < items.length; i++ )
 		<% } else { %>
 				<input type="checkbox" name="cti_chkbxPoints" value="<%=item.getItemID()%>"/>
 		<% }  %>
+		<% if( CBCUtils.isController( item ) ) { %>
+			<a href="/editor/copyBase.jsf?itemid=<%=item.getItemID() %>&type=1>"><img src="/editor/images/copy_item.gif" border="0" height="15" width="15"/></a>
+		<% } else {%>
+			<img src="/editor/images/copy_item_gray.gif" border="0" height="15" width="15"/>
+		<% } %>
 				<%=item.toString()%></td>
 				<td><%=item.getItemType()%></td>
 
