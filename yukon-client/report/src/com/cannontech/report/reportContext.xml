@@ -209,6 +209,41 @@
         </property>
     </bean>
     
+   <!-- Disconnect Collar -->
+   <bean id="disconnectCollarModel" class="com.cannontech.analysis.tablemodel.DisconnectCollarModel"
+         scope="prototype">
+        <property name="jdbcOps" ref="jdbcTemplate"/>
+    </bean>
+    
+    <bean id="disconnectCollarDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+        <property name="reportModelName"><idref local="disconnectCollarModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="deviceIds"/>
+                    <property name="displayName" value="Device IDs"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerSetType"/>
+                    </property>
+                </bean>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="deviceNames"/>
+                    <property name="displayName" value="Device Names"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.IntegerSetType"/>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.DisconnectCollarReportLayoutData"/>
+        </property>
+    </bean>
+    
     <!-- Raw Point history -->
    <bean id="rawPointHistoryModel" class="com.cannontech.analysis.tablemodel.RawPointHistoryModel"
          scope="prototype">
