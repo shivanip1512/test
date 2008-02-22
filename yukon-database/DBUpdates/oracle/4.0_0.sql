@@ -1646,6 +1646,16 @@ update cceventlog set spAreaId = 0;
 alter table cceventlog modify spAreaId number not null;
 /* End YUK-5397 */
 
+/* Start YUK-5396 */
+alter table capcontrolarea add voltReductionPointId number;
+update capcontrolarea set voltReductionPointId = 0;
+alter table capcontrolarea modify voltReductionPointId number not null;
+
+alter table capcontrolspecialarea add voltReductionPointId number;
+update capcontrolspecialarea set voltReductionPointId = 0;
+alter table capcontrolspecialarea modify voltReductionPointId number not null; 
+/* End YUK-5396 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
