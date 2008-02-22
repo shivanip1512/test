@@ -160,7 +160,7 @@
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>
   
-  <bean id="pointPropertyDao" class="com.cannontech.common.point.alarm.dao.impl.PointPropertyDaoImpl">
+  <bean id="pointPropertyValueDao" class="com.cannontech.common.point.alarm.dao.impl.PointPropertyValueDaoImpl">
       <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean> 
 </beans>
