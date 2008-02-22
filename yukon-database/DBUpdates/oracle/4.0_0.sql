@@ -1632,6 +1632,20 @@ alter table CCHOLIDAYSTRATEGYASSIGNMENT
       references CapControlStrategy (StrategyID);
 /* End YUK-5363 */
 
+/* Start YUK-5397 */
+alter table cceventlog add stationId number;
+update cceventlog set stationId = 0;
+alter table cceventlog modify stationId number not null;
+
+alter table cceventlog add areaId number;
+update cceventlog set areaId = 0;
+alter table cceventlog modify areaId number not null;
+
+alter table cceventlog add spAreaId number;
+update cceventlog set spAreaId = 0;
+alter table cceventlog modify spAreaId number not null;
+/* End YUK-5397 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
