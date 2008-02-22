@@ -137,7 +137,7 @@ public class ErrorHelperFilter  implements Filter {
 		} catch (RuntimeException re) {
 		    Throwable rc = CtiUtilities.getRootCause(re);
 		    String key = setupUniqueLogKey(request);
-			handleException(request, re, key);
+			handleException(request, re, rc, key);
 			if (ServletUtil.isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -146,7 +146,7 @@ public class ErrorHelperFilter  implements Filter {
 		} catch (Throwable t) {
 		    Throwable rc = CtiUtilities.getRootCause(t);
 		    String key = setupUniqueLogKey(request);
-		    handleException(request, t, key);
+		    handleException(request, t, rc, key);
 			if (ServletUtil.isAjaxRequest(request)) {
 				handleAjaxErrorResponse(response, rc);
 			} else {
@@ -159,12 +159,13 @@ public class ErrorHelperFilter  implements Filter {
 		
 	}
 	
-    private void handleException(ServletRequest request, Throwable t, String key) {
+    private void handleException(ServletRequest request, Throwable t, Throwable rc, String key) {
         Level level = Level.ERROR;
         if (ignoreException(t)) {
             level = Level.DEBUG;
         }
         log.log(level, "Servlet error filter caught an exception processing {" + key + "}: " + getRequestInfo(request), t);
+        log.log(level, "Root cause was: ", rc);
     }
 
     private boolean ignoreException(Throwable t) {
