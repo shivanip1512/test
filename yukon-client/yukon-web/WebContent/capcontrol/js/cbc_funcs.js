@@ -52,14 +52,12 @@ function getFeederMenu(id) {
 
 function getCapBankMenu(id) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=capBankMenu&id=' + id;
-    getMenuFromURL(url); 
-    hiLiteTRow ('tr_cap_'+id , 'yellow');
+    getMenuFromURLAbove(url); 
 }
 
 function getCapBankSystemMenu(id) {
     var url = '/spring/capcontrol/tier/popupmenu?menu=capBankSystemMenu&id=' + id;
-    getMenuFromURL(url); 
-    hiLiteTRow ('tr_cap_'+id , 'yellow');
+    getMenuFromURLAbove(url); 
 }
 
 function getCapBankTempMoveBack(id, redirectURL){
@@ -67,7 +65,6 @@ function getCapBankTempMoveBack(id, redirectURL){
     if (redirectURL) url += '&redirectURL=' + redirectURL;
     
     getMenuFromURL(url);
-    hiLiteTRow ('tr_cap_'+id , 'yellow');
 }
 
 function getMenuFromURL(url) {
@@ -76,7 +73,18 @@ function getMenuFromURL(url) {
         onSuccess: function(transport) {
             var html = transport.responseText;
             //alert(html);
-            overlib(html, FULLHTML, STICKY);
+            overlib(html, FULLHTML, STICKY, OFFSETX, -5, OFFSETY, -5);
+        }
+    });
+}
+
+function getMenuFromURLAbove(url) {
+        new Ajax.Request(url, {
+        method: 'POST',
+        onSuccess: function(transport) {
+            var html = transport.responseText;
+            //alert(html);
+            overlib(html, FULLHTML, STICKY, ABOVE, OFFSETX, -5, OFFSETY, -5);
         }
     });
 }
@@ -491,6 +499,17 @@ function showDynamicPopup(elem) {
 	var spans = elem.getElementsByTagName('span');
 	var msg = spans[0].innerHTML;
     overlib( msg, WIDTH, 200, CSSCLASS, TEXTFONTCLASS, 'flyover' );
+}
+
+// -------------------------------------------
+// Shows a popup of the given message string.
+// Uses the overlib library for display purposes.
+// Leaves the closing of the popup to the caller.
+// -------------------------------------------
+function showDynamicPopupAbove(elem) {
+    var spans = elem.getElementsByTagName('span');
+    var msg = spans[0].innerHTML;
+    overlib( msg, WIDTH, 200, CSSCLASS, TEXTFONTCLASS, 'flyover', ABOVE );
 }
 
 // -------------------------------------------

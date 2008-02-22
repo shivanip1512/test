@@ -237,3 +237,7 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
     font-weight: bold;
     color: white;
 }
+
+#capBankTable tr.hover {
+    background-color:yellow;
+}

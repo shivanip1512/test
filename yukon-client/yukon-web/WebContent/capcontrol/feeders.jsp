@@ -19,6 +19,22 @@
 	
 <jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
 
+<script type="text/javascript" language="JavaScript">
+    Event.observe(window, 'load', checkPageExpire);
+
+    // These two functions are neccessary since IE does not support css :hover
+    function highLightRow(row) {
+        row = $(row);
+        row.addClassName('hover');
+    }
+    
+    function unHighLightRow(row){
+        row = $(row);
+        row.removeClassName('hover');
+    }
+
+</script> 
+
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>
 
@@ -160,7 +176,7 @@ String css = "tableCell";
                         <% if (substation.getSpecialAreaEnabled()) {
                             String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId());
                         %>
-                        <font color="red">SA <%=spcAreaName%></font>
+                        <font color="red">Special Area Enabled: <%=spcAreaName%></font>
                         <% } %>
                     </td>
                     
@@ -467,7 +483,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
             <c:set var="rowColor" value="<%=rowColor%>"/>
             <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}"></input>            
 
-			<tr class="<%=css%>" id="tr_cap_${thisCapBankId}">
+			<tr class="<%=css%>" id="tr_cap_${thisCapBankId}" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
 				
                 <td>
                     <input type="checkbox" name="cti_chkbxBanks" value="${thisCapBankId}"/>
@@ -492,7 +508,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                         <input id="is701x_${thisCapBankId}" type="hidden" value="<%=CBCUtils.is701xDevice(obj)%>"/>
                         <a href="javascript:void(0);"
                            <%=popupEvent%> ="getCapBankMenu('${thisCapBankId}');" 
-                           onmouseout = "hidePopupHiLite('tr_cap_${thisCapBankId}', '<%=rowColor%>');">
+                           >
                             <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
                         </a>
 					<% } else { %>
@@ -518,13 +534,11 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                             <c:if test="${hasControl}">
                                 href="javascript:void(0);"
                                 onclick ="getCapBankSystemMenu('${thisCapBankId}');"
-					            onmouseout = "hidePopupHiLite('tr_cap_${thisCapBankId}', '${rowColor}');"
                             </c:if> 
                         >
 					       <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS"/>
                         </a>
                     </cti:pointStatusColor>
-                    <%-- <cti:dataUpdaterCallback function="updateCBStatusColorGenerator('capbank_status_${thisCapBankId}')" initialize="true" value="CAPBANK/${thisCapBankId}/CB_STATUS"/> --%>
                     
 				    <span id="cap_opcnt_span${thisCapBankId}" style="display: none;" >
 					   <label for="opcount" id="opcnt_label"> Op Count: </label>
@@ -538,8 +552,8 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                 
 				<td>
                     <a id="dateTime_${thisCapBankId}"
-				       onmouseover = "showDynamicPopup($('capBankStatusPopup_${thisCapBankId}'))"
-				       onmouseout = "hidePopupHiLite('tr_cap_${thisCapBankId}', '<%=rowColor%>');">
+				       onmouseover = "showDynamicPopupAbove($('capBankStatusPopup_${thisCapBankId}'))"
+				       onmouseout="nd()">
                         <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DATE_TIME"/> 
                     </a>
 				</td>
@@ -553,7 +567,6 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                     <% if (capBank.isBankMoved()) { %>
 	                    class="warning" 
 	                    <%=popupEvent%>="getCapBankTempMoveBack('${thisCapBankId}');" 
-	                    onmouseout = "hidePopupHiLite('tr_cap_${thisCapBankId}', '<%=rowColor%>');" 
                     <% } else { %>
                         onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
                         onmouseout="nd();"
@@ -575,10 +588,6 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 		<input type="hidden" id="lastUpdate" value="">
         
 	</cti:titledContainer>
-    
-<script type="text/javascript" language="JavaScript">
-Event.observe(window, 'load', checkPageExpire);
-</script>    
     
 <ct:commandMsgDiv/>
 
