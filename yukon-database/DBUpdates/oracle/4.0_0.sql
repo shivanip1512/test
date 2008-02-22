@@ -1675,6 +1675,30 @@ alter table DYNAMICCCOPERATIONSTATISTICS
       references YukonPAObject (PAObjectID);
 /* End YUK-5392 */
 
+/* Start YUK-5395 */
+create table POINTPROPERTY  (
+   PointpropertyID      INT                             not null,
+   Descr                varchar2(50)                    not null,
+   DescrLong            varchar2(256),
+   constraint PK_POINTPROPERTY primary key (PointpropertyID)
+);
+
+create table POINTPOINTPROPERTY  (
+   PointID              NUMBER                          not null,
+   PointpropertyID      INTEGER                         not null,
+   FloatValue           FLOAT                           not null,
+   constraint PK_POINTPOINTPROPERTY primary key (PointID, PointpropertyID)
+);
+
+alter table POINTPOINTPROPERTY
+   add constraint FK_POINTPOI_REFERENCE_POINT foreign key (PointID)
+      references POINT (POINTID);
+
+alter table POINTPOINTPROPERTY
+   add constraint FK_POINTPOI_REFERENCE_POINTPRO foreign key (PointpropertyID)
+      references POINTPROPERTY (PointpropertyID);
+/* End YUK-5395 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

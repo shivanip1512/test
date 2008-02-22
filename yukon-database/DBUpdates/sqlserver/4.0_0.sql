@@ -1862,6 +1862,34 @@ alter table DYNAMICCCOPERATIONSTATISTICS
 go
 /* End YUK-5392 */
 
+/* Start YUK-5395 */
+create table POINTPROPERTY (
+   PointpropertyID      int                  not null,
+   Descr                varchar(50)          not null,
+   DescrLong            varchar(256)         null,
+   constraint PK_POINTPROPERTY primary key nonclustered (PointpropertyID)
+);
+go
+
+create table POINTPOINTPROPERTY (
+   PointID              numeric              not null,
+   PointpropertyID      int                  not null,
+   FloatValue           float                not null,
+   constraint PK_POINTPOINTPROPERTY primary key nonclustered (PointID, PointpropertyID)
+);
+go
+
+alter table POINTPOINTPROPERTY
+   add constraint FK_POINTPOI_REFERENCE_POINT foreign key (PointID)
+      references POINT (POINTID);
+go
+
+alter table POINTPOINTPROPERTY
+   add constraint FK_POINTPOI_REFERENCE_POINTPRO foreign key (PointpropertyID)
+      references POINTPROPERTY (PointpropertyID);
+go
+/* End YUK-5395 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
