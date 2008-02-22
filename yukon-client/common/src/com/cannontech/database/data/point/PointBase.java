@@ -6,6 +6,8 @@ package com.cannontech.database.data.point;
 import java.util.List;
 import java.util.Vector;
 
+import com.cannontech.common.point.alarm.dao.PointPropertyDao;
+import com.cannontech.common.point.alarm.model.PointProperty;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.point.DynamicAccumulator;
@@ -16,6 +18,7 @@ import com.cannontech.database.db.point.RawPointHistory;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.database.db.point.calculation.CalcComponent;
 import com.cannontech.database.db.point.fdr.FDRTranslation;
+import com.cannontech.spring.YukonSpringHook;
 
 public class PointBase extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange, com.cannontech.common.editor.EditorPanel
 {
@@ -72,6 +75,10 @@ public void addPartial() throws java.sql.SQLException {
  */
 public void delete() throws java.sql.SQLException 
 {		
+	PointPropertyDao dao = YukonSpringHook.getBean("pointPropertyDao",PointPropertyDao.class);
+	
+	dao.removeByPointId(getPoint().getPointID());
+	
 	//ADD TABLES THAT HAVE A REFERENCE TO THE POINT TABLE AND THAT
 	// NEED TO BE DELETED WHEN A POINT ROW IS DELETED (CASCADE DELETE)
 	delete(FDRTranslation.TABLE_NAME, "PointID", getPoint().getPointID());

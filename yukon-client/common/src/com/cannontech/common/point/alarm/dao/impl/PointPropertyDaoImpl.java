@@ -15,6 +15,7 @@ import com.cannontech.common.point.alarm.model.PointProperty;
 public class PointPropertyDaoImpl implements PointPropertyDao{
     private static final String insertSql;
     private static final String removeSql;
+    private static final String removeByPointIdSql;
     private static final String updateSql;
     private static final String selectAllSql;
     private static final String selectByIdSql;
@@ -27,7 +28,9 @@ public class PointPropertyDaoImpl implements PointPropertyDao{
             insertSql = "INSERT INTO PointProperty (pointid," + 
             "propertyid,floatvalue) VALUES (?,?,?)";
             
-            removeSql = "DELETE FROM PointProperty WHERE pointid = ?";
+            removeSql = "DELETE FROM PointProperty WHERE pointid = ? AND propertyid = ?";
+            
+            removeByPointIdSql = "DELETE FROM PointProperty WHERE pointid = ?";
             
             updateSql = "UPDATE PointProperty SET floatvalue = ?" + 
             " WHERE pointid = ? AND propertyid = ?";
@@ -74,7 +77,14 @@ public class PointPropertyDaoImpl implements PointPropertyDao{
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean remove(PointProperty attrib) {
-        int rowsAffected = simpleJdbcTemplate.update(removeSql,attrib.getPointId() );
+        int rowsAffected = simpleJdbcTemplate.update(removeSql,attrib.getPointId(),attrib.getPropertyId() );
+
+        return (rowsAffected > 0);
+	}
+    
+	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+	public boolean removeByPointId(int id) {
+        int rowsAffected = simpleJdbcTemplate.update(removeByPointIdSql,id );
 
         return (rowsAffected > 0);
 	}
