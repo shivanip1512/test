@@ -16,6 +16,7 @@
             </list>
         </property>   
         <property name="roleDao" ref="roleDao" />     
+        <property name="timeSource" ref="timeSource" />     
     </bean>            
        
     <bean id="pointAlarmAlertGenerator" class="com.cannontech.common.alert.alarms.PointAlarmAlertGenerator"

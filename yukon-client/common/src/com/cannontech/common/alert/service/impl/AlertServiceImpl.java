@@ -18,6 +18,7 @@ import com.cannontech.common.alert.model.IdentifiableAlert;
 import com.cannontech.common.alert.service.AlertClearHandler;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.util.ReverseList;
+import com.cannontech.common.util.TimeSource;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.yukon.ConfigurationRole;
@@ -25,6 +26,7 @@ import com.cannontech.roles.yukon.ConfigurationRole;
 public class AlertServiceImpl implements AlertService{
     private Logger log = YukonLogManager.getLogger(AlertServiceImpl.class);
     private RoleDao roleDao;
+    private TimeSource timeSource;
     private List<AlertClearHandler> alertClearHandlers = Collections.emptyList();
     private final Map<Integer,IdentifiableAlertImpl> map = 
         Collections.synchronizedMap(new LinkedHashMap<Integer,IdentifiableAlertImpl>());
@@ -55,7 +57,7 @@ public class AlertServiceImpl implements AlertService{
     }
     
     private void pruneOldEntries() {
-        long minimumTime = System.currentTimeMillis() - maxAge;
+        long minimumTime = timeSource.getCurrentMillis() - maxAge;
         Iterator<IdentifiableAlertImpl> iter = map.values().iterator();
         int count = 0;
         while (iter.hasNext() && iter.next().getAddedTimestamp() < minimumTime) {
@@ -70,7 +72,7 @@ public class AlertServiceImpl implements AlertService{
     @Override
     public synchronized void add(final Alert alert) {
         IdentifiableAlertImpl value = new IdentifiableAlertImpl(alert);
-        value.setAddedTimestamp(System.currentTimeMillis());
+        value.setAddedTimestamp(timeSource.getCurrentMillis());
         log.debug("added alert: " + alert);
         Integer key = value.getId();
         map.put(key, value);
@@ -122,6 +124,12 @@ public class AlertServiceImpl implements AlertService{
     @Required
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
+    }
+    
+    
+    @Required
+    public void setTimeSource(TimeSource timeSource) {
+        this.timeSource = timeSource;
     }
 
     public long getMaxAge() {

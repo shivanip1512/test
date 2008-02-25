@@ -11,6 +11,8 @@ import org.junit.Test;
 import com.cannontech.common.alert.alarms.AlarmAlert;
 import com.cannontech.common.alert.model.IdentifiableAlert;
 import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.common.util.TimeSourceImpl;
+import com.cannontech.common.util.TimeSourceMock;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
@@ -23,6 +25,7 @@ public class AlertServiceImplTest {
     @Before
     public void setup() {
         alertService = new AlertServiceImpl();
+        alertService.setTimeSource(new TimeSourceImpl());
     }
 
     @Test
@@ -53,7 +56,9 @@ public class AlertServiceImplTest {
 
     @Test
     public void testAutoRemove() throws InterruptedException {
-        alertService.setMaxAge(50); // shorter than our 10ms sleep a few lines down
+        TimeSourceMock timeSource = new TimeSourceMock();
+        alertService.setTimeSource(timeSource);
+        alertService.setMaxAge(50); // shorter than our 100ms fast forward
         
         AlarmAlert alert1 = new AlarmAlert(new Date(), new ResolvableTemplate("a"));
         alert1.setUserChecker(new NullUserChecker());
@@ -63,7 +68,7 @@ public class AlertServiceImplTest {
         int countForUser = alertService.getCountForUser(null);
         assertEquals(1, countForUser);
         
-        Thread.sleep(100);
+        timeSource.increment(100);
         
         alertService.add(alert2);
         // after 2 was added, 1 should have been deleted
