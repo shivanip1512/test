@@ -1676,27 +1676,16 @@ alter table DYNAMICCCOPERATIONSTATISTICS
 /* End YUK-5392 */
 
 /* Start YUK-5395 */
-create table POINTPROPERTY  (
-   PointpropertyID      INT                             not null,
-   Descr                varchar2(50)                    not null,
-   DescrLong            varchar2(256),
-   constraint PK_POINTPROPERTY primary key (PointpropertyID)
-);
-
 create table POINTPROPERTYVALUE  (
    PointID              NUMBER                          not null,
-   PointpropertyID      INTEGER                         not null,
+   PointPropertyCode    INTEGER                         not null,
    FloatValue           FLOAT                           not null,
-   constraint PK_POINTPROPERTYVALUE primary key (PointID, PointpropertyID)
+   constraint PK_POINTPROPERTYVALUE primary key (PointID, PointPropertyCode)
 );
 
 alter table POINTPROPERTYVALUE
-   add constraint FK_POINTPOI_REFERENCE_POINT foreign key (PointID)
+   add constraint FK_POINTPRO_REFERENCE_POINT foreign key (PointID)
       references POINT (POINTID);
-
-alter table POINTPROPERTYVALUE
-   add constraint FK_POINTPOI_REFERENCE_POINTPRO foreign key (PointpropertyID)
-      references POINTPROPERTY (PointpropertyID);
 /* End YUK-5395 */
 
 /******************************************************************************/

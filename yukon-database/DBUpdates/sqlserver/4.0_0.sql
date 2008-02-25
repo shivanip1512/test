@@ -1863,30 +1863,17 @@ go
 /* End YUK-5392 */
 
 /* Start YUK-5395 */
-create table POINTPROPERTY (
-   PointpropertyID      int                  not null,
-   Descr                varchar(50)          not null,
-   DescrLong            varchar(256)         null,
-   constraint PK_POINTPROPERTY primary key nonclustered (PointpropertyID)
-);
-go
-
 create table POINTPROPERTYVALUE (
    PointID              numeric              not null,
-   PointpropertyID      int                  not null,
+   PointPropertyCode    int                  not null,
    FloatValue           float                not null,
-   constraint PK_POINTPROPERTYVALUE primary key nonclustered (PointID, PointpropertyID)
+   constraint PK_POINTPROPERTYVALUE primary key nonclustered (PointID, PointPropertyCode)
 );
 go
 
 alter table POINTPROPERTYVALUE
-   add constraint FK_POINTPOI_REFERENCE_POINT foreign key (PointID)
+   add constraint FK_POINTPRO_REFERENCE_POINT foreign key (PointID)
       references POINT (POINTID);
-go
-
-alter table POINTPROPERTYVALUE
-   add constraint FK_POINTPOI_REFERENCE_POINTPRO foreign key (PointpropertyID)
-      references POINTPROPERTY (PointpropertyID);
 go
 /* End YUK-5395 */
 

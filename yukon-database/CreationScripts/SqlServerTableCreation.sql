@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/22/2008 4:04:12 PM                         */
+/* Created on:     2/25/2008 1:43:36 PM                         */
 /*==============================================================*/
 
 
@@ -2679,13 +2679,6 @@ if exists (select 1
            where  id = object_id('POINTLIMITS')
             and   type = 'U')
    drop table POINTLIMITS
-go
-
-if exists (select 1
-            from  sysobjects
-           where  id = object_id('POINTPROPERTY')
-            and   type = 'U')
-   drop table POINTPROPERTY
 go
 
 if exists (select 1
@@ -9085,24 +9078,13 @@ create table POINTLIMITS (
 go
 
 /*==============================================================*/
-/* Table: POINTPROPERTY                                         */
-/*==============================================================*/
-create table POINTPROPERTY (
-   PointpropertyID      int                  not null,
-   Descr                varchar(50)          not null,
-   DescrLong            varchar(256)         null,
-   constraint PK_POINTPROPERTY primary key nonclustered (PointpropertyID)
-)
-go
-
-/*==============================================================*/
 /* Table: POINTPROPERTYVALUE                                    */
 /*==============================================================*/
 create table POINTPROPERTYVALUE (
    PointID              numeric              not null,
-   PointpropertyID      int                  not null,
+   PointPropertyCode    int                  not null,
    FloatValue           float                not null,
-   constraint PK_POINTPROPERTYVALUE primary key nonclustered (PointID, PointpropertyID)
+   constraint PK_POINTPROPERTYVALUE primary key nonclustered (PointID, PointPropertyCode)
 )
 go
 
@@ -14603,11 +14585,6 @@ go
 alter table POINTPROPERTYVALUE
    add constraint FK_POINTPRO_REFERENCE_POINT foreign key (PointID)
       references POINT (POINTID)
-go
-
-alter table POINTPROPERTYVALUE
-   add constraint FK_POINTPRO_REFERENCE_POINTPRO foreign key (PointpropertyID)
-      references POINTPROPERTY (PointpropertyID)
 go
 
 alter table POINTSTATUS
