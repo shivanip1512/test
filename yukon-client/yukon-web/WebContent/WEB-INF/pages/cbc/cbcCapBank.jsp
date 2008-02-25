@@ -179,7 +179,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
             <f:verbatim><br/></f:verbatim>
             <x:selectBooleanCheckbox id="disabledOps"
                     value="#{capBankEditor.capBank.capBank.maxOperationDisabled}" />
-            <x:outputLabel for="disabledOps" value="Disable upon reaching max operations" title="Should we be automatically disabled after reaching our max op counts"/>
+            <x:outputLabel for="disabledOps" value="Disable upon reaching max operations" title="This will be disabled upon reaching the max number of operations."/>
             <f:verbatim><br><br></f:verbatim>
             <x:outputText styleClass="legendLikeLabel" value="CapBank Points"/>
             <f:verbatim><br><br></f:verbatim>
