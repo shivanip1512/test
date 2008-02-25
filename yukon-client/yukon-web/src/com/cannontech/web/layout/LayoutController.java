@@ -54,6 +54,7 @@ public class LayoutController {
         layoutScriptFiles.add("/JavaScript/scriptaculous/effects.js");
         layoutScriptFiles.add("/JavaScript/simpleCookies.js");
         layoutScriptFiles.add("/JavaScript/alert.js");
+        layoutScriptFiles.add("/JavaScript/javaWebStartLauncher.js");
     }
 
     @RequestMapping("/")

@@ -31,8 +31,8 @@ public class CommonModuleBuilder implements ModuleBuilder {
     private List<BaseMenuOption> portalLinkList = new ArrayList<BaseMenuOption>(5);
     private List<String> portalJavaScriptIncludes = new ArrayList<String>(3);
     private final Resource moduleConfigFile;
-    private final String menuKeyPrefix = "yukon.web.menu.config";
-    private final String menuKeyModPrefix = menuKeyPrefix+".";
+    private final String menuKeyPrefix = "yukon.web.menu.portal";
+    private final String menuKeyModPrefix = "yukon.web.menu.config.";
     
     public CommonModuleBuilder(Resource moduleConfigFile) throws CommonMenuException {
         this.moduleConfigFile = moduleConfigFile;
@@ -56,12 +56,12 @@ public class CommonModuleBuilder implements ModuleBuilder {
         List<Element> portalList = portalLinks.getChildren("portal");
         List<Element> javaScriptList  = portalLinks.getChildren("script");
         
-        for (Element scriptList : javaScriptList) {
-            Attribute jsFile = scriptList.getAttribute("file");
-            if (jsFile != null){
-                portalJavaScriptIncludes.add(jsFile.getValue());
-            }
-        }
+//        for (Element scriptList : javaScriptList) {
+//            Attribute jsFile = scriptList.getAttribute("file");
+//            if (jsFile != null){
+//                portalJavaScriptIncludes.add(jsFile.getValue());
+//            }
+//        }
         
         for (Element portal : portalList) {
             

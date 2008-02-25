@@ -11,64 +11,64 @@
 <entry key="yukon.web.menu.alertAfterNum">)</entry>
 
 <!-- Consumer Account Information -->
-<entry key="yukon.web.menu.config.consumerAccountInformation">Consumer Account Information</entry>
-<entry key="yukon.web.menu.config.consumerAccountInformation.newAccount">New Account</entry>
-<entry key="yukon.web.menu.config.consumerAccountInformation.commercialcurtailment">C&amp;I Curtailment</entry>
-<entry key="yukon.web.menu.config.consumerAccountInformation.commander">Commander</entry>
-<entry key="yukon.web.menu.config.consumerAccountInformation.reporting">Reporting</entry>
+<entry key="yukon.web.menu.portal.consumerAccountInformation">Consumer Account Information</entry>
+<entry key="yukon.web.menu.portal.consumerAccountInformation.newAccount">New Account</entry>
+<entry key="yukon.web.menu.portal.consumerAccountInformation.commercialcurtailment">C&amp;I Curtailment</entry>
+<entry key="yukon.web.menu.portal.consumerAccountInformation.commander">Commander</entry>
+<entry key="yukon.web.menu.portal.consumerAccountInformation.reporting">Reporting</entry>
 
 <!-- Metering -->
-<entry key="yukon.web.menu.config.metering">Metering</entry>
-<entry key="yukon.web.menu.config.metering.allTrends">All Trends</entry>
-<entry key="yukon.web.menu.config.metering.bulkImporter">Bulk Importer</entry>
-<entry key="yukon.web.menu.config.metering.metering">Metering</entry>
+<entry key="yukon.web.menu.portal.metering">Metering</entry>
+<entry key="yukon.web.menu.portal.metering.allTrends">All Trends</entry>
+<entry key="yukon.web.menu.portal.metering.bulkImporter">Bulk Importer</entry>
+<entry key="yukon.web.menu.portal.metering.metering">Metering</entry>
 
 <!-- Client Launcher -->
-<entry key="yukon.web.menu.config.clientLauncher">Client Launcher</entry>
-<entry key="yukon.web.menu.config.clientLauncher.databaseEditor">Database Editor</entry>
-<entry key="yukon.web.menu.config.clientLauncher.tabularDataConsole">Tabular Data Console</entry>
-<entry key="yukon.web.menu.config.clientLauncher.trending">Trending</entry>
-<entry key="yukon.web.menu.config.clientLauncher.esubstationEditor">Esubstation Editor</entry>
-<entry key="yukon.web.menu.config.clientLauncher.commander">Commander</entry>
+<entry key="yukon.web.menu.portal.clientLauncher">Client Launcher</entry>
+<entry key="yukon.web.menu.portal.clientLauncher.databaseEditor">Database Editor</entry>
+<entry key="yukon.web.menu.portal.clientLauncher.tabularDataConsole">Tabular Data Console</entry>
+<entry key="yukon.web.menu.portal.clientLauncher.trending">Trending</entry>
+<entry key="yukon.web.menu.portal.clientLauncher.esubstationEditor">Esubstation Editor</entry>
+<entry key="yukon.web.menu.portal.clientLauncher.commander">Commander</entry>
 
 <!-- Load Response -->
-<entry key="yukon.web.menu.config.loadResponse">Load Response</entry>
-<entry key="yukon.web.menu.config.loadResponse.direct">Direct</entry>
-<entry key="yukon.web.menu.config.loadResponse.ciCurtailment">CI Curtailment</entry>
-<entry key="yukon.web.menu.config.loadResponse.oddsForControl">Odds for Control</entry>
-<entry key="yukon.web.menu.config.loadResponse.threeTierDirect">3-Tier Direct</entry>
+<entry key="yukon.web.menu.portal.loadResponse">Load Response</entry>
+<entry key="yukon.web.menu.portal.loadResponse.direct">Direct</entry>
+<entry key="yukon.web.menu.portal.loadResponse.ciCurtailment">CI Curtailment</entry>
+<entry key="yukon.web.menu.portal.loadResponse.oddsForControl">Odds for Control</entry>
+<entry key="yukon.web.menu.portal.loadResponse.threeTierDirect">3-Tier Direct</entry>
 
 <!-- Capacitor Control -->
-<entry key="yukon.web.menu.config.capacitorControl">Capacitor Control</entry>
-<entry key="yukon.web.menu.config.capacitorControl.capControl">Cap Control</entry>
+<entry key="yukon.web.menu.portal.capacitorControl">Capacitor Control</entry>
+<entry key="yukon.web.menu.portal.capacitorControl.capControl">Cap Control</entry>
 
 <!-- Hardware Inventory -->
-<entry key="yukon.web.menu.config.hardwareInventory">Hardware Inventory</entry>
-<entry key="yukon.web.menu.config.hardwareInventory.inventory">Inventory</entry>
-<entry key="yukon.web.menu.config.hardwareInventory.purchasing">Purchasing</entry>
+<entry key="yukon.web.menu.portal.hardwareInventory">Hardware Inventory</entry>
+<entry key="yukon.web.menu.portal.hardwareInventory.inventory">Inventory</entry>
+<entry key="yukon.web.menu.portal.hardwareInventory.purchasing">Purchasing</entry>
 
 <!-- Work Orders -->
-<entry key="yukon.web.menu.config.workOrders">Work Orders</entry>
-<entry key="yukon.web.menu.config.workOrders.serviceOrderList">Service Order List</entry>
+<entry key="yukon.web.menu.portal.workOrders">Work Orders</entry>
+<entry key="yukon.web.menu.portal.workOrders.serviceOrderList">Service Order List</entry>
 
 <!-- Analysis -->
-<entry key="yukon.web.menu.config.analysis">Analysis</entry>
-<entry key="yukon.web.menu.config.analysis.reporting">Reporting</entry>
-<entry key="yukon.web.menu.config.analysis.commander">Commander</entry>
+<entry key="yukon.web.menu.portal.analysis">Analysis</entry>
+<entry key="yukon.web.menu.portal.analysis.reporting">Reporting</entry>
+<entry key="yukon.web.menu.portal.analysis.commander">Commander</entry>
 
 <!-- Administration -->
-<entry key="yukon.web.menu.config.administration">Administration</entry>
-<entry key="yukon.web.menu.config.administration.configEnergyCompany">Config Energy Company</entry>
-<entry key="yukon.web.menu.config.administration.memberManagement">Member Management</entry>
-<entry key="yukon.web.menu.config.administration.newEnergyCompany">New Energy Company</entry>
-<entry key="yukon.web.menu.config.administration.deleteEnergyCompany">Delete Energy Company</entry>
-<entry key="yukon.web.menu.config.administration.viewBatchCommands">View Batch Commands</entry>
-<entry key="yukon.web.menu.config.administration.viewScheduledOptOutEvents">View Scheduled Opt Out Events</entry>
-<entry key="yukon.web.menu.config.administration.multispeakSetup">Multispeak Setup</entry>
-<entry key="yukon.web.menu.config.administration.userGroupEditor">User/Group Editor</entry>
-<entry key="yukon.web.menu.config.administration.viewLogs">View Logs</entry>
-<entry key="yukon.web.menu.config.administration.manageIndexes">Manage Indexes</entry>
-<entry key="yukon.web.menu.config.administration.deviceConfiguration">Device Configuration</entry>
+<entry key="yukon.web.menu.portal.administration">Administration</entry>
+<entry key="yukon.web.menu.portal.administration.configEnergyCompany">Config Energy Company</entry>
+<entry key="yukon.web.menu.portal.administration.memberManagement">Member Management</entry>
+<entry key="yukon.web.menu.portal.administration.newEnergyCompany">New Energy Company</entry>
+<entry key="yukon.web.menu.portal.administration.deleteEnergyCompany">Delete Energy Company</entry>
+<entry key="yukon.web.menu.portal.administration.viewBatchCommands">View Batch Commands</entry>
+<entry key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents">View Scheduled Opt Out Events</entry>
+<entry key="yukon.web.menu.portal.administration.multispeakSetup">Multispeak Setup</entry>
+<entry key="yukon.web.menu.portal.administration.userGroupEditor">User/Group Editor</entry>
+<entry key="yukon.web.menu.portal.administration.viewLogs">View Logs</entry>
+<entry key="yukon.web.menu.portal.administration.manageIndexes">Manage Indexes</entry>
+<entry key="yukon.web.menu.portal.administration.deviceConfiguration">Device Configuration</entry>
 
 <!--  -->
 <entry key="yukon.web.menu.topMenuDefaultTitle">Display Sub Menu for {0}</entry>

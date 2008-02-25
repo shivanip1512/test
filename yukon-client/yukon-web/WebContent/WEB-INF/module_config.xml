@@ -23,13 +23,11 @@
      respectively.
 -->
   <portals>
-    <!-- Javascript includes that are needed for client launcher -->
-    <script file="/JavaScript/simpleCookies.js"/>
-    <script file="/JavaScript/javaWebStartLauncher.js"/>
-  
+    
     <!-- Consumer Account Information -->
     <portal id="consumerAccountInformation">
       <requireRole value="ConsumerInfoRole.ROLEID" />
+
       <sublinks>  
         <option id="newAccount">
           <requireProperty value="ConsumerInfoRole.NEW_ACCOUNT_WIZARD"/>
@@ -44,9 +42,7 @@
 
     <!-- Metering -->
     <portal id="metering">
-      <requireRole value="MeteringRole.ROLEID" />
-      <requireRole value="BillingRole.ROLEID" />
-      <requireRole value="TrendingRole.ROLEID" />
+      <requiredRole value="MeteringRole.ROLEID" />
 
       <sublinks>
         <option id="allTrends">
@@ -56,57 +52,56 @@
 
         <option id="bulkImporter">
           <link>/spring/amr/bulkimporter/home</link>
-          <requireRole value="MeteringRole.ROLEID" />
           <requireProperty value="operator.MeteringRole.IMPORTER_ENABLED"/>
         </option>
 
         <option id="metering">
           <link>/spring/csr/search</link>
-          <requireRole value="operator.MeteringRole.ROLEID" />
-          <requireRole value="BillingRole.ROLEID" />
-          <requireRole value="SchedulerRole.ROLEID" />
-          <requireRole value="CommanderRole.ROLEID" />
         </option>
       </sublinks>
     </portal>
 
     <!-- Client Launcher -->
     <portal id="clientLauncher">
+      <requireProperty value="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED" />
    
       <sublinks>
         <option id="databaseEditor">
+          <requireRole value="DBEditorRole.ROLEID" />
           <link>javascript:jwsLaunch('/jws/dbeditor.jnlp')</link>
         </option>
 
         <option id="tabularDataConsole">
+          <requireRole value="TDCRole.ROLEID" />
           <link>javascript:jwsLaunch('/jws/tdc.jnlp')</link>
         </option>
 
         <option id="trending">
+          <requireRole value="TrendingRole.ROLEID" />
           <link>javascript:jwsLaunch('/jws/trending.jnlp')</link>
         </option>
         
         <option id="esubstationEditor">
+          <requireRole value="EsubEditorRole.ROLEID" />
           <link>javascript:jwsLaunch('/jws/esub.jnlp')</link>
         </option>
         
         <option id="commander">
+          <requireRole value="CommanderRole.ROLEID" />
           <link>javascript:jwsLaunch('/jws/commander.jnlp')</link>
         </option>
         
       </sublinks>
-      <requireProperty value="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED" />
     </portal>
 
     <!-- Load Response -->
     <portal id="loadResponse">
-      <requireRole value="DirectLoadcontrolRole.ROLEID" />
-      <requireRole value="OddsForControlRole.ROLEID" />
-      <requireRole value="CICurtailmentRole.ROLEID" />
-
+      <requiredRole value="DirectLoadcontrolRole.ROLEID"/>
+      
       <sublinks>
         <option id="direct">
           <link>/operator/LoadControl/oper_direct.jsp</link>
+          <requireRole value="DirectLoadcontrolRole.ROLEID"/>
           <requireProperty value="DirectLoadcontrolRole.DIRECT_CONTROL"/>
         </option>
 
@@ -122,6 +117,7 @@
         
         <option id="threeTierDirect">
           <link>/loadmgmt/controlareas.jsp</link>
+          <requireRole value="DirectLoadcontrolRole.ROLEID"/>
           <requireProperty value="DirectLoadcontrolRole.THREE_TIER_DIRECT" />
         </option>
         
@@ -142,6 +138,8 @@
 
     <!-- Hardware Inventory -->
     <portal id="hardwareInventory">
+      <requireRole value="InventoryRole.ROLEID" />
+      
       <sublinks>
         <option id="inventory">
           <link>/operator/Hardware/Filter.jsp</link>
@@ -158,9 +156,7 @@
 
     <!-- Analysis -->
     <portal id="analysis">
-      <requireRole value="ReportingRole.ROLEID" />
-      <requireRole value="CommanderRole.ROLEID" />
-
+      
       <sublinks>
         <option id="reporting">
           <link>/analysis/Reports.jsp</link>
