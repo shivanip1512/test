@@ -209,11 +209,11 @@ public Object getValue(Object val) {
 	PointPropertyValue attribUpdate = new PointPropertyValue();
 	
 	attribTime.setPointId(point.getPoint().getPointID());
-	attribTime.setPropertyId(1);
+	attribTime.setPointPropertyCode(1);
 	attribTime.setFloatValue(Float.parseFloat(getJTextFieldTimeToStale().getText()));
 	
 	attribUpdate.setPointId(point.getPoint().getPointID());
-	attribUpdate.setPropertyId(2);
+	attribUpdate.setPointPropertyCode(2);
 	attribUpdate.setFloatValue(getJComboUpdateType().getSelectedIndex()+1);
 	PointPropertyValueDao dao = YukonSpringHook.getBean( "pointPropertyValueDao", PointPropertyValueDao.class);
 	

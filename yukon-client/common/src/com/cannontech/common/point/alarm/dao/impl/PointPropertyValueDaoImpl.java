@@ -26,26 +26,26 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
     
     static {
             insertSql = "INSERT INTO PointPropertyValue (pointid," + 
-            "pointpropertyid,floatvalue) VALUES (?,?,?)";
+            "PointPropertyCode,floatvalue) VALUES (?,?,?)";
             
-            removeSql = "DELETE FROM PointPropertyValue WHERE pointid = ? AND pointpropertyid = ?";
+            removeSql = "DELETE FROM PointPropertyValue WHERE pointid = ? AND PointPropertyCode = ?";
             
             removeByPointIdSql = "DELETE FROM PointPropertyValue WHERE pointid = ?";
             
             updateSql = "UPDATE PointProperty SET floatvalue = ?" + 
-            " WHERE pointid = ? AND pointpropertyid = ?";
+            " WHERE pointid = ? AND PointPropertyCode = ?";
             
-            selectAllSql = "SELECT pointid,pointpropertyid,floatvalue FROM PointPropertyValue";
+            selectAllSql = "SELECT pointid,PointPropertyCode,floatvalue FROM PointPropertyValue";
             
             selectByIdSql = selectAllSql + " WHERE pointid = ?";
             
-            selectByIdAndAttributeSql = selectAllSql + " WHERE pointid = ? AND pointpropertyid = ?";
+            selectByIdAndAttributeSql = selectAllSql + " WHERE pointid = ? AND PointPropertyCode = ?";
             
             rowMapper = new ParameterizedRowMapper<PointPropertyValue>() {
             public PointPropertyValue mapRow(ResultSet rs, int rowNum) throws SQLException {
             	PointPropertyValue attribute = new PointPropertyValue();
             	attribute.setPointId(rs.getInt("PointID"));
-            	attribute.setPropertyId(rs.getInt("pointpropertyid"));
+            	attribute.setPointPropertyCode(rs.getInt("PointPropertyCode"));
             	attribute.setFloatValue(rs.getFloat("FloatValue"));
                 return attribute;
             }
@@ -60,7 +60,7 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean add(PointPropertyValue attrib) {
 		int rowsAffected = simpleJdbcTemplate.update(insertSql, attrib.getPointId(),
-																attrib.getPropertyId(),
+																attrib.getPointPropertyCode(),
 																attrib.getFloatValue());
 		return (rowsAffected == 1);
 	}
@@ -77,7 +77,7 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
 
 	@Transactional(readOnly = false, propagation = Propagation.REQUIRED)
 	public boolean remove(PointPropertyValue attrib) {
-        int rowsAffected = simpleJdbcTemplate.update(removeSql,attrib.getPointId(),attrib.getPropertyId() );
+        int rowsAffected = simpleJdbcTemplate.update(removeSql,attrib.getPointId(),attrib.getPointPropertyCode() );
 
         return (rowsAffected > 0);
 	}
@@ -94,7 +94,7 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
 		int rowsAffected = simpleJdbcTemplate.update(updateSql,
 				attrib.getFloatValue(),
 				attrib.getPointId(),
-				attrib.getPropertyId());
+				attrib.getPointPropertyCode());
 		return (rowsAffected == 1);
 	}
 }
