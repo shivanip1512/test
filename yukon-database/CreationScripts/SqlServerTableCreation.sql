@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/22/2008 3:34:52 PM                         */
+/* Created on:     2/22/2008 4:04:12 PM                         */
 /*==============================================================*/
 
 
@@ -2683,16 +2683,16 @@ go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('POINTPOINTPROPERTY')
+           where  id = object_id('POINTPROPERTY')
             and   type = 'U')
-   drop table POINTPOINTPROPERTY
+   drop table POINTPROPERTY
 go
 
 if exists (select 1
             from  sysobjects
-           where  id = object_id('POINTPROPERTY')
+           where  id = object_id('POINTPROPERTYVALUE')
             and   type = 'U')
-   drop table POINTPROPERTY
+   drop table POINTPROPERTYVALUE
 go
 
 if exists (select 1
@@ -9085,17 +9085,6 @@ create table POINTLIMITS (
 go
 
 /*==============================================================*/
-/* Table: POINTPOINTPROPERTY                                    */
-/*==============================================================*/
-create table POINTPOINTPROPERTY (
-   PointID              numeric              not null,
-   PointpropertyID      int                  not null,
-   FloatValue           float                not null,
-   constraint PK_POINTPOINTPROPERTY primary key nonclustered (PointID, PointpropertyID)
-)
-go
-
-/*==============================================================*/
 /* Table: POINTPROPERTY                                         */
 /*==============================================================*/
 create table POINTPROPERTY (
@@ -9103,6 +9092,17 @@ create table POINTPROPERTY (
    Descr                varchar(50)          not null,
    DescrLong            varchar(256)         null,
    constraint PK_POINTPROPERTY primary key nonclustered (PointpropertyID)
+)
+go
+
+/*==============================================================*/
+/* Table: POINTPROPERTYVALUE                                    */
+/*==============================================================*/
+create table POINTPROPERTYVALUE (
+   PointID              numeric              not null,
+   PointpropertyID      int                  not null,
+   FloatValue           float                not null,
+   constraint PK_POINTPROPERTYVALUE primary key nonclustered (PointID, PointpropertyID)
 )
 go
 
@@ -14600,13 +14600,13 @@ alter table POINTLIMITS
       references POINT (POINTID)
 go
 
-alter table POINTPOINTPROPERTY
-   add constraint FK_POINTPOI_REFERENCE_POINT foreign key (PointID)
+alter table POINTPROPERTYVALUE
+   add constraint FK_POINTPRO_REFERENCE_POINT foreign key (PointID)
       references POINT (POINTID)
 go
 
-alter table POINTPOINTPROPERTY
-   add constraint FK_POINTPOI_REFERENCE_POINTPRO foreign key (PointpropertyID)
+alter table POINTPROPERTYVALUE
+   add constraint FK_POINTPRO_REFERENCE_POINTPRO foreign key (PointpropertyID)
       references POINTPROPERTY (PointpropertyID)
 go
 

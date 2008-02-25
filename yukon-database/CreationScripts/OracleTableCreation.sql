@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/22/2008 3:36:10 PM                         */
+/* Created on:     2/22/2008 4:02:54 PM                         */
 /*==============================================================*/
 
 
@@ -732,9 +732,9 @@ drop table POINTANALOG cascade constraints;
 
 drop table POINTLIMITS cascade constraints;
 
-drop table POINTPOINTPROPERTY cascade constraints;
-
 drop table POINTPROPERTY cascade constraints;
+
+drop table POINTPROPERTYVALUE cascade constraints;
 
 drop table POINTSTATUS cascade constraints;
 
@@ -6504,16 +6504,6 @@ create table POINTLIMITS  (
 );
 
 /*==============================================================*/
-/* Table: POINTPOINTPROPERTY                                    */
-/*==============================================================*/
-create table POINTPOINTPROPERTY  (
-   PointID              NUMBER                          not null,
-   PointpropertyID      INTEGER                         not null,
-   FloatValue           FLOAT                           not null,
-   constraint PK_POINTPOINTPROPERTY primary key (PointID, PointpropertyID)
-);
-
-/*==============================================================*/
 /* Table: POINTPROPERTY                                         */
 /*==============================================================*/
 create table POINTPROPERTY  (
@@ -6521,6 +6511,16 @@ create table POINTPROPERTY  (
    Descr                VARCHAR2(50)                    not null,
    DescrLong            VARCHAR2(256),
    constraint PK_POINTPROPERTY primary key (PointpropertyID)
+);
+
+/*==============================================================*/
+/* Table: POINTPROPERTYVALUE                                    */
+/*==============================================================*/
+create table POINTPROPERTYVALUE  (
+   PointID              NUMBER                          not null,
+   PointpropertyID      INTEGER                         not null,
+   FloatValue           FLOAT                           not null,
+   constraint PK_POINTPROPERTYVALUE primary key (PointID, PointpropertyID)
 );
 
 /*==============================================================*/
@@ -11476,12 +11476,12 @@ alter table POINTLIMITS
    add constraint SYS_C0013289 foreign key (POINTID)
       references POINT (POINTID);
 
-alter table POINTPOINTPROPERTY
-   add constraint FK_POINTPOI_REFERENCE_POINT foreign key (PointID)
+alter table POINTPROPERTYVALUE
+   add constraint FK_POINTPRO_REFERENCE_POINT foreign key (PointID)
       references POINT (POINTID);
 
-alter table POINTPOINTPROPERTY
-   add constraint FK_POINTPOI_REFERENCE_POINTPRO foreign key (PointpropertyID)
+alter table POINTPROPERTYVALUE
+   add constraint FK_POINTPRO_REFERENCE_POINTPRO foreign key (PointpropertyID)
       references POINTPROPERTY (PointpropertyID);
 
 alter table POINTSTATUS
