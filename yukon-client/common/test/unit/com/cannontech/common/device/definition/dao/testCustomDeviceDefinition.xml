@@ -26,7 +26,7 @@ This file contains a custom device definition.
         	</command>
         </commands>
 		<attributes>
-        	<attribute name="ENERGY">
+        	<attribute name="USAGE">
         		<basicLookup point="customPulse1" />
         	</attribute>
         </attributes>      

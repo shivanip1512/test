@@ -2,11 +2,11 @@ package com.cannontech.common.device.attribute.model;
 
 public enum BuiltInAttribute implements Attribute {
     LOAD_PROFILE("Load Profile"), 
-    ENERGY("Energy Reading"), 
-    TOU_RATE_A_ENERGY("Tou Rate A Energy"), 
-    TOU_RATE_B_ENERGY("Tou Rate B Energy"), 
-    TOU_RATE_C_ENERGY("Tou Rate C Energy"), 
-    TOU_RATE_D_ENERGY("Tou Rate D Energy"), 
+    USAGE("Usage Reading"), 
+    TOU_RATE_A_USAGE("Tou Rate A Usage"), 
+    TOU_RATE_B_USAGE("Tou Rate B Usage"), 
+    TOU_RATE_C_USAGE("Tou Rate C Usage"), 
+    TOU_RATE_D_USAGE("Tou Rate D Usage"), 
     DEMAND("Demand"), 
     PEAK_DEMAND("Peak Demand"),
     TOU_RATE_A_PEAK_DEMAND("Tou Rate A Peak"),

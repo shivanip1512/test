@@ -50,7 +50,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 		// which we use to calculate the point
 		logger.info("Starting meter read for " + meter.toString());
 		CommandResultHolder meterReadResults = meterReadService.readMeter(
-				meter, Collections.singleton(BuiltInAttribute.ENERGY),
+				meter, Collections.singleton(BuiltInAttribute.USAGE),
 				userContext.getYukonUser());
 
         PointValueHolder currentPVH = null;
@@ -59,7 +59,7 @@ public class CalculatedPointServiceImpl implements CalculatedPointService {
 			return results;
 		} else {
 			LitePoint lp = attributeService.getPointForAttribute(meter,
-					BuiltInAttribute.ENERGY);
+					BuiltInAttribute.USAGE);
 			for (PointValueHolder pvh : meterReadResults.getValues()) {
 				if (pvh.getId() == lp.getLiteID()) {
 					currentPVH = pvh;

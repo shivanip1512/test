@@ -60,7 +60,7 @@ public class TrendWidget extends WidgetControllerBase {
 
         // ATTRIBUTE, ATTRIBUTE GRAPH TYPE
         // - if selected attribute does not exist, choose first valid
-        String defaultAttribute = WidgetParameterHelper.getStringParameter(request, "defaultAttribute", "ENERGY");
+        String defaultAttribute = WidgetParameterHelper.getStringParameter(request, "defaultAttribute", "USAGE");
         String attributeStr = cachingWidgetParameterGrabber.getCachedStringParameter(request, "attribute", defaultAttribute);
         BuiltInAttribute attribute = BuiltInAttribute.valueOf(attributeStr);
         

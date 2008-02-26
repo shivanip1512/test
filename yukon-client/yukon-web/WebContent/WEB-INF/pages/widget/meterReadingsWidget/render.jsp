@@ -18,9 +18,9 @@
                     <ct:attributeValue device="${device}"
                         attribute="${attribute}" />
 
-                    <c:if test="${attribute == 'ENERGY'}">
+                    <c:if test="${attribute == 'USAGE'}">
 
-                        <ct:nameValue name="Previous Energy Reading">
+                        <ct:nameValue name="Previous Usage Reading">
                             <select
                                 onChange="${widgetParameters.widgetId}_usageSelection()"
                                 id="${widgetParameters.widgetId}_prevSelect">
@@ -77,7 +77,7 @@ function ${widgetParameters.widgetId}_updatePrevious(currentUsage) {
   $('${widgetParameters.widgetId}_totalConsumption').innerHTML = totalUsage.toFixed(3);
 }
 </script>
-<cti:attributeResolver device="${device}" attributeName="ENERGY"
+<cti:attributeResolver device="${device}" attributeName="USAGE"
         var="pointId" />
 <cti:dataUpdaterCallback
     function="${widgetParameters.widgetId}_usageUpdate"

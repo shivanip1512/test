@@ -145,14 +145,14 @@ public class TouWidget extends WidgetControllerBase {
         
         for (int i = 0; i < touList.size(); i++) {
             TouAttributeMapping tou = touList.get(i);
-            if (existingAttributes.contains(tou.getEnergy()) || existingAttributes.contains(tou.getPeak())) {
+            if (existingAttributes.contains(tou.getUsage()) || existingAttributes.contains(tou.getPeak())) {
                 List<AttributeValuePair> attributeList = new ArrayList<AttributeValuePair>();
                 KeyValuePair keyValuePair = new KeyValuePair(tou.getDisplayName(), attributeList);
                 
                 resultList.add(keyValuePair);
                 
-                if (existingAttributes.contains(tou.getEnergy())) {
-                    AttributeValuePair tempValuePair = new AttributeValuePair("Energy Reading", tou.getEnergy());
+                if (existingAttributes.contains(tou.getUsage())) {
+                    AttributeValuePair tempValuePair = new AttributeValuePair("Usage Reading", tou.getUsage());
                     attributeList.add(tempValuePair);
                 }
                 if (existingAttributes.contains(tou.getPeak())) {

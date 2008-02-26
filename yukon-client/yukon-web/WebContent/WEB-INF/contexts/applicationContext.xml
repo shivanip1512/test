@@ -212,7 +212,7 @@
         <property name="rphDao" ref="rphDao"/>
         <property name="attributesToShow">
           <list>
-            <value>ENERGY</value>
+            <value>USAGE</value>
             <value>PEAK_DEMAND</value>
             <value>DEMAND</value>
             <value>VOLTAGE</value>
@@ -535,7 +535,7 @@
         <property name="supportedAttributeGraphSet">
 			<set>
 				<bean class="com.cannontech.common.chart.model.AttributeGraphType">
-					<property name="attribute" value="ENERGY"/>
+					<property name="attribute" value="USAGE"/>
 					<property name="graphType" value="COLUMN"/>
 					<property name="converterType" value="NORMALIZED_DELTA"/>
 					<property name="label" value="Usage (Normalized)"/>

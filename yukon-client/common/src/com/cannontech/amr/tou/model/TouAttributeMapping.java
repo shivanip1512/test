@@ -8,7 +8,7 @@ import com.cannontech.common.device.attribute.model.Attribute;
 public class TouAttributeMapping {
     private int touId;
     private String displayName;
-    private Attribute energy;
+    private Attribute usage;
     private Attribute peak;
 
     public String getDisplayName() {
@@ -27,12 +27,12 @@ public class TouAttributeMapping {
         this.peak = peak;
     }
 
-    public Attribute getEnergy() {
-        return energy;
+    public Attribute getUsage() {
+        return usage;
     }
 
-    public void setEnergy(Attribute energy) {
-        this.energy = energy;
+    public void setUsage(Attribute usage) {
+        this.usage = usage;
     }
 
     public int getTouId() {
@@ -46,7 +46,7 @@ public class TouAttributeMapping {
     public Set<Attribute> getAllAttributes() {
         HashSet<Attribute> name = new HashSet<Attribute>();
         name.add(getPeak());
-        name.add(getEnergy());
+        name.add(getUsage());
         return name;
     }
 

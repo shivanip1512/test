@@ -109,7 +109,7 @@
         
             <%-- TABULAR DATA REPROTS --%>
             <c:choose>
-            	<c:when test="${attributeGraphType.attribute == 'ENERGY'}">
+            	<c:when test="${attributeGraphType.attribute == 'USAGE'}">
             		<c:set var="rawTabularDataLabel" value="Archived Usage Data" />
             	</c:when>
             	<c:otherwise>
@@ -129,7 +129,7 @@
                 </td>
             </tr>
             
-            <c:if test="${attributeGraphType.attribute == 'ENERGY'}">
+            <c:if test="${attributeGraphType.attribute == 'USAGE'}">
     	        <tr>
     	            <td class="label"><b>Normalized Usage Data:</b></td>
     	            

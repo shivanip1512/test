@@ -65,7 +65,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
         Map<Attribute, Boolean> existingAttributes = convertSetToMap(allExistingAttributes);
         mav.addObject("existingAttributes", existingAttributes);
-        LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.ENERGY);
+        LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
         fillInPreviousReadings(mav, lp, "VALUE");
         
         allExistingAttributes.retainAll(attributesToShow);

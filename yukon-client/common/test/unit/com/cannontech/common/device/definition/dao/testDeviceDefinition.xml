@@ -61,7 +61,7 @@ This file contains default device and point information for all of the devices i
         	</command>
         </commands>
 		<attributes>
-        	<attribute name="ENERGY">
+        	<attribute name="USAGE">
         		<basicLookup point="pulse1" />
         	</attribute>
         	<attribute name="LOAD_PROFILE">
