@@ -151,7 +151,7 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
         sql.append("and (abs(cAction.aVar - cAction.bVar) >= ? ");
         sql.append("or abs(cAction.aVar - cAction.cVar) >= ? ");
         sql.append("or abs(cAction.bVar - cAction.cVar) >= ?) ");
-        sql.append("order by cAction.datetime desc ");
+        
         
         String result = null;
         
@@ -186,6 +186,8 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
             sql.append(" and ");
             sql.append(result);
         }
+        
+        sql.append("order by cAction.datetime desc ");
         
         sql.append(";");
         return sql;
