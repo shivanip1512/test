@@ -156,12 +156,12 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
             result += wheres;
             result += " ) ";
         }else if(substationIds != null && !substationIds.isEmpty()) {
-            result = "yp.paobjectid in ( ";
+            result = "yps.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
             result += wheres;
             result += " ) ";
         }else if(areaIds != null && !areaIds.isEmpty()) {
-            result = "yp.paobjectid in ( ";
+            result = "ypa.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
