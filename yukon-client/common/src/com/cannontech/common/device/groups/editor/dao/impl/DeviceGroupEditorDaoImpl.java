@@ -39,6 +39,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     
     private StoredDeviceGroup rootGroupCache = null;
     
+    @Transactional(propagation=Propagation.REQUIRED)
     public void addDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices) {
         for (YukonDevice device : devices) {
             SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -201,6 +202,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return resolvedGroup;
     }
     
+    @Transactional(propagation=Propagation.REQUIRED)
     public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type, String groupName) {
         int nextValue = nextValueHelper.getNextValue("DeviceGroup");
         SqlStatementBuilder sql = new SqlStatementBuilder();

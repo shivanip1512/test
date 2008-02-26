@@ -75,7 +75,7 @@ public class MultispeakFuncs
 	{
 		SOAPEnvelope env = getResponseMessageSOAPEnvelope();
 		try{
-		    MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(MultispeakVendor.CANNON_MSP_COMPANYNAME, "");
+		    MultispeakVendor mspVendor = multispeakDao.getMultispeakVendorFromCache(MultispeakVendor.CANNON_MSP_COMPANYNAME, "");
 	         // Set Header
             env.addHeader(mspVendor.getHeader());
         }
@@ -163,7 +163,7 @@ public class MultispeakFuncs
         String appName = getAppNameFromSOAPHeader();
         
         try{
-            return multispeakDao.getMultispeakVendor(companyName, appName);
+            return multispeakDao.getMultispeakVendorFromCache(companyName, appName);
         }
         catch (NotFoundException e) {
             throw new RemoteException(e.getMessage());

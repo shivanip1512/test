@@ -2,7 +2,10 @@ package com.cannontech.multispeak.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -20,8 +23,8 @@ import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 
-public final class MultispeakDaoImpl implements MultispeakDao
-{
+public final class MultispeakDaoImpl implements MultispeakDao {
+    private static final Map<String, MultispeakVendor> vendorCache = Collections.synchronizedMap(new HashMap<String, MultispeakVendor>());
     private static final String MSPVENDOR_TABLENAME = "MSPVendor";
     private static final String MSPINTERFACE_TABLENAME = "MSPInterface";
 
@@ -53,6 +56,20 @@ public final class MultispeakDaoImpl implements MultispeakDao
         this.nextValueHelper = nextValueHelper;
     }
 
+    public synchronized MultispeakVendor getMultispeakVendorFromCache(String vendorName, String appName) {
+        String key = vendorName + appName;
+        MultispeakVendor vendor = vendorCache.get(key);
+        if (vendor == null) {
+            vendor = getMultispeakVendor(vendorName, appName);
+            vendorCache.put(key, vendor);
+        }
+        return vendor;
+    }
+    
+    public synchronized void clearMultispeakVendorCache() {
+        vendorCache.clear();
+    }
+    
     /**
      * Returns the MultispeakVendor object having vendorName.
      * If no match on vendorName is found, an IncorrectResultSizeDataAccessException is thrown
@@ -142,21 +159,21 @@ public final class MultispeakDaoImpl implements MultispeakDao
         }
     }
     
-    public int deleteMultispeakInterface(int vendorID)
+    public synchronized int deleteMultispeakInterface(int vendorID)
     {
         try {
             String sql = "DELETE FROM " + MSPINTERFACE_TABLENAME + 
                          " WHERE VENDORID = ? ";
             
             int numDeleted = jdbcOps.update(sql,new Object[]{new Integer(vendorID)});
-            
+            clearMultispeakVendorCache();
             return numDeleted;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("No Multispeak Interfaces were found for vendorID "+ vendorID +" for deletion.");
         }        
     }
     
-    public int addMultispeakInterfaces(MultispeakInterface mspInterface)
+    public synchronized int addMultispeakInterfaces(MultispeakInterface mspInterface)
     {
         try {
             String sql = "INSERT INTO " + MSPINTERFACE_TABLENAME + 
@@ -165,16 +182,17 @@ public final class MultispeakDaoImpl implements MultispeakDao
             int numAdded = jdbcOps.update(sql,new Object[]{mspInterface.getVendorID(), 
                                                            mspInterface.getMspInterface(),
                                                            mspInterface.getMspEndpoint()});
-            
+            clearMultispeakVendorCache();
             return numAdded;
         } catch (IncorrectResultSizeDataAccessException e) {
             throw new NotFoundException("No Multispeak Interface was inserted.");
         }        
     }
     
-    public void updateMultispeakVendor(final MultispeakVendor mspVendor)
+    public synchronized void updateMultispeakVendor(final MultispeakVendor mspVendor)
     {
         transactionTemplate.execute(new TransactionCallbackWithoutResult(){
+            @Override
             protected void doInTransactionWithoutResult(TransactionStatus status){
                 try {
                     String sql = "UPDATE " + MSPVENDOR_TABLENAME + 
@@ -214,15 +232,19 @@ public final class MultispeakDaoImpl implements MultispeakDao
                 }   
                 
                 deleteMultispeakInterface(mspVendor.getVendorID().intValue());
-                for (int i = 0; i < mspVendor.getMspInterfaces().size(); i++)
+                for (int i = 0; i < mspVendor.getMspInterfaces().size(); i++) {
                     addMultispeakInterfaces(mspVendor.getMspInterfaces().get(i));
+                }
+                
+                clearMultispeakVendorCache();
             };
         });
         
     }
-    public void addMultispeakVendor(final MultispeakVendor mspVendor)
+    public synchronized void addMultispeakVendor(final MultispeakVendor mspVendor)
     {
         transactionTemplate.execute(new TransactionCallbackWithoutResult(){
+            @Override
             protected void doInTransactionWithoutResult(TransactionStatus status){
                 try {
                     mspVendor.setVendorID(getNextVendorId());
@@ -258,13 +280,16 @@ public final class MultispeakDaoImpl implements MultispeakDao
                     mspInterface.setVendorID(mspVendor.getVendorID());
                     addMultispeakInterfaces(mspInterface);
                 }
+                
+                clearMultispeakVendorCache();
             };
         });        
     }
     
-    public void deleteMultispeakVendor(final int vendorID)
+    public synchronized void deleteMultispeakVendor(final int vendorID)
     {
         transactionTemplate.execute(new TransactionCallbackWithoutResult(){
+            @Override
             protected void doInTransactionWithoutResult(TransactionStatus status){
                 deleteMultispeakInterface(vendorID);
                 try {
@@ -272,7 +297,7 @@ public final class MultispeakDaoImpl implements MultispeakDao
                     " WHERE VENDORID = ? ";
                     
                     jdbcOps.update(sql,new Object[]{new Integer(vendorID)});
-                    
+                    clearMultispeakVendorCache();
                 } catch (IncorrectResultSizeDataAccessException e) {
                     throw new NotFoundException("Multispeak Vendor not deleted for VendorID "+ vendorID +".");
                 }                

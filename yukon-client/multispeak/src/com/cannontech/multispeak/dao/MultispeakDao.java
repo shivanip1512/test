@@ -5,8 +5,10 @@ import java.util.List;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.db.MultispeakInterface;
 
-public interface MultispeakDao
-{
+public interface MultispeakDao {
+    
+    public MultispeakVendor getMultispeakVendorFromCache(String vendorName, String appName);
+    
     public MultispeakVendor getMultispeakVendor(String vendorName, String appName);
     
     public MultispeakVendor getMultispeakVendor(int vendorID);
@@ -31,4 +33,5 @@ public interface MultispeakDao
      * @param mspVendor
      */
     public void updateMultispeakVendor(final MultispeakVendor mspVendor);
+    
 }

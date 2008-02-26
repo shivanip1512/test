@@ -25,10 +25,13 @@ public class MspObjectDaoImpl implements MspObjectDao {
         Customer mspCustomer = new Customer();
         try {    
             CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
+            long start = System.currentTimeMillis();
+            CTILogger.debug("Begin call to getCustomerByMeterNo for Meter:" + meterNumber);
             mspCustomer = port.getCustomerByMeterNo(meterNumber);
+            CTILogger.debug("End call to getCustomerByMeterNo for Meter:" + meterNumber + "  (took " + (System.currentTimeMillis() - start) + " millis)");
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
-            CTILogger.error("TargetService: " + endpointURL + " - getCustomerByMeterNo(" + mspVendor.getCompanyName() + ")");
+            CTILogger.error("TargetService: " + endpointURL + " - getCustomerByMeterNo(" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             CTILogger.info("A default(empty) is being used for Customer");
         }
@@ -43,10 +46,13 @@ public class MspObjectDaoImpl implements MspObjectDao {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         try {
             CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
+            long start = System.currentTimeMillis();
+            CTILogger.debug("Begin call to getServiceLocationByMeterNo for Meter:" + meterNumber);
             mspServiceLocation =  port.getServiceLocationByMeterNo(meterNumber);
+            CTILogger.debug("End call to getServiceLocationByMeterNo for Meter:" + meterNumber + "  (took " + (System.currentTimeMillis() - start) + " millis)");
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
-            CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ")");
+            CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());
             CTILogger.info("A default(empty) is being used for ServiceLocation");
        }

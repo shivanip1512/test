@@ -71,12 +71,12 @@
     <property name="mspMeterDao" ref="mspMeterDao"/>
     <property name="dbPersistentDao" ref="dbPersistentDao"/>
     <property name="paoDao" ref="paoDao"/>
-    <property name="deviceDao" ref="deviceDao"/>
 	<property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
     <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
     <property name="deviceGroupDao" ref="deviceGroupDao"/>
     <property name="meterDao" ref="meterDao"/>
     <property name="mspObjectDao" ref="mspObjectDao"/>
+    <property name="transactionTemplate" ref="transactionTemplate"/>
   </bean>   
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">

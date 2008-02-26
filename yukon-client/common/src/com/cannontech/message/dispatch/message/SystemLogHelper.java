@@ -1,5 +1,6 @@
 package com.cannontech.message.dispatch.message;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.yukon.IServerConnection;
 import com.cannontech.yukon.conns.ConnPool;
@@ -31,18 +32,12 @@ public class SystemLogHelper {
     }
 
     /**
-     * Send a log message to dispatch.
+     * Send a log message to dispatch.  The clientsession username will be used.
      * @param action
      * @param description
      */
     public void log(String action, String description) {
-        Signal sig = new Signal();
-        sig.setPointID(_signalPointType);
-        sig.setDescription(description);
-        sig.setAction(action);
-        sig.setCategoryID(Signal.EVENT_SIGNAL);
-
-        _dispatchConnection.write(sig);
+        log(_signalPointType, action, description, CtiUtilities.getUserName());
     }
 
     /**
@@ -69,6 +64,6 @@ public class SystemLogHelper {
             sig.setUserName(username);
         sig.setCategoryID(Signal.EVENT_SIGNAL);
 
-        _dispatchConnection.write(sig);
-    }    
+        _dispatchConnection.queue(sig);
+    }
 }
