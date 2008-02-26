@@ -2,6 +2,7 @@ package com.cannontech.core.dao.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import com.cannontech.core.dao.AlarmDao;
 import com.cannontech.core.dao.PointDao;
@@ -23,7 +24,12 @@ public final class AlarmDaoImpl implements AlarmDao {
      * @see com.cannontech.core.dao.AlarmDao#getSignalsForPoint(int)
      */
 	public List getSignalsForPoint(int pointId) {
-        return new ArrayList<Signal>(dynamicDataSource.getSignals(pointId));
+	    Set<Signal> signals = dynamicDataSource.getSignals(pointId);
+	    ArrayList<Signal> array = new ArrayList<Signal>();
+	    if( !signals.isEmpty() ) {
+	        array.addAll(signals);
+	    }
+	    return array;
 	}
 	
 	/* (non-Javadoc)

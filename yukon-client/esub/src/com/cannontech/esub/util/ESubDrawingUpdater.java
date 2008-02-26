@@ -266,8 +266,11 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             List deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds[j]);
             for (Iterator iter = deviceSignals.iterator(); iter.hasNext();) {
                 Signal signal = (Signal) iter.next();
-                if (TagUtils.isAlarmUnacked(signal.getTags())) {
-                    inAlarm = true;
+                // find out why there is a null in the list!
+                if(signal != null) {
+                    if (TagUtils.isAlarmUnacked(signal.getTags())) {
+                        inAlarm = true;
+                    }
                 }
             }
         }
@@ -277,8 +280,11 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             List pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointIds[j]);
             for (Iterator iter = pointSignals.iterator(); iter.hasNext();) {
                 Signal signal = (Signal) iter.next();
-                if (TagUtils.isAlarmUnacked(signal.getTags())) {
-                    inAlarm = true;
+                //find out why there is a null in the list!
+                if(signal != null) {
+                    if (TagUtils.isAlarmUnacked(signal.getTags())) {
+                        inAlarm = true;
+                    }
                 }
             }
         }

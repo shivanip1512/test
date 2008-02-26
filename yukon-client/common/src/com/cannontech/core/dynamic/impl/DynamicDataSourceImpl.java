@@ -68,8 +68,9 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
 
     public Set<Signal> getSignals(int pointId) {
         Set<Signal> signals = dynamicDataCache.getSignals(pointId);
-        if(signals.isEmpty()) {
+        if(signals == null) {
             signals = dispatchProxy.getSignals(pointId);
+            dynamicDataCache.handleSignals(signals, pointId);
         }
         return signals;
     }

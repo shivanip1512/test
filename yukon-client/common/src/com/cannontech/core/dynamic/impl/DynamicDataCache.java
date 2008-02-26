@@ -45,10 +45,6 @@ class DynamicDataCache implements MessageListener {
     Set<Signal> getSignals(int pointId) {
         
         Set<Signal> ret = pointSignals.get(pointId);
-        if (ret == null)
-        {
-            ret = Collections.<Signal>emptySet();
-        }
         return ret;
     }
     
@@ -101,6 +97,17 @@ class DynamicDataCache implements MessageListener {
     
     private void handlePointData(PointData pd) {
         pointData.put(pd.getId(), pd);
+    }
+    
+    public void handleSignals(Set<Signal> signals, int pointId) {
+        if(signals.isEmpty()) {
+            Set<Signal> pSignals = new HashSet<Signal>();
+            pointSignals.put(pointId, pSignals);
+        }else {
+            for(Signal signal : signals) {
+                handleSignal(signal);
+            }
+        }
     }
     
     private void handleSignal(Signal signal) {

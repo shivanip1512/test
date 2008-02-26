@@ -110,22 +110,25 @@ public class PointAlarmTableModel extends AbstractTableModel {
 	 * @param s
 	 */
 	private void addSignal(Signal s) {
-	    if(!TagUtils.isAlarmUnacked(s.getTags())) {
-	        return;
-        }
-		int pointID = s.getPointID();
-		LitePoint point = DaoFactory.getPointDao().getLitePoint(pointID);
-		
-		int devID = point.getPaobjectID();
-		LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
-		
-		ArrayList row = new ArrayList(NUM_COLUMNS);
-		row.add(s.getTimeStamp());
-		row.add(device.getPaoName());
-		row.add(point.getPointName());
-		row.add(s.getDescription());	
-		//row.add(s.getUserName());
-		_rows.add(row);		
+	    // find out why there is a null in the list!
+	    if(s != null) {
+    	    if(!TagUtils.isAlarmUnacked(s.getTags())) {
+    	        return;
+            }
+    		int pointID = s.getPointID();
+    		LitePoint point = DaoFactory.getPointDao().getLitePoint(pointID);
+    		
+    		int devID = point.getPaobjectID();
+    		LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
+    		
+    		ArrayList row = new ArrayList(NUM_COLUMNS);
+    		row.add(s.getTimeStamp());
+    		row.add(device.getPaoName());
+    		row.add(point.getPointName());
+    		row.add(s.getDescription());	
+    		//row.add(s.getUserName());
+    		_rows.add(row);
+	    }
 	}
 	
 	private void sortRows() {

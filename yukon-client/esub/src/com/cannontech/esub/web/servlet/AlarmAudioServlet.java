@@ -96,9 +96,12 @@ public class AlarmAudioServlet extends HttpServlet {
         Date d = null;
         for (Iterator iter = signals.iterator(); iter.hasNext();) {
             Signal signal = (Signal) iter.next();
-            if(TagUtils.isAlarmUnacked(signal.getTags())) {
-                if (d == null || d.before(signal.getTimeStamp())) {
-                    d = signal.getTimeStamp();
+            //find out why there is a null in the list!
+            if(signal != null) {
+                if(TagUtils.isAlarmUnacked(signal.getTags())) {
+                    if (d == null || d.before(signal.getTimeStamp())) {
+                        d = signal.getTimeStamp();
+                    }
                 }
             }
         }
