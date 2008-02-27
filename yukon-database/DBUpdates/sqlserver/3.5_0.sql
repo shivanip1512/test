@@ -261,8 +261,10 @@ go
 
 /* @error ignore-begin */
 insert into YukonRoleProperty values(-1019,-1,'batched_switch_command_timer','auto','Specifies whether the STARS application should automatically process batched switch commands');
-/* @error ignore-end */
+/* Start YUK-6364 */
 insert into YukonGroupRole values(-20,-1,-1,-1019,'(none)');
+/* End YUK-6364 */
+/* @error ignore-end */
 insert into YukonGroupRole values(-21,-1,-1,-1020,'(none)');
 go
 
