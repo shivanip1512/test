@@ -3,9 +3,6 @@
 /******************************************/
 
 /* Start YUK-5287 */
-alter table capcontrolarea add controlpointid number;
-update capcontrolarea set controlpointid = 0;
-alter table capcontrolarea modify controlpointid number not null;
 alter table dynamicccarea add controlvalue number;
 update dynamicccarea set controlvalue = 0;
 alter table dynamicccarea modify controlvalue number not null; 
@@ -138,7 +135,6 @@ alter table CapControlFeeder drop column StrategyId;
 
 create table CAPCONTROLSPECIALAREA  (
    AreaID               NUMBER                          not null,
-   ControlPointID       NUMBER                          not null,
    constraint PK_CapControlSpecialArea primary key (AreaID)
 );
 
@@ -451,7 +447,6 @@ create table CCSUBSTATIONSUBBUSLIST  (
 /* @error ignore-begin */
 create table CAPCONTROLAREA  (
    AreaID               NUMBER                          not null,
-   ControlPointID       NUMBER                          not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 );
 alter table CAPCONTROLAREA

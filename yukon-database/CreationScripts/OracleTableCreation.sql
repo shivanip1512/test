@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/26/2008 11:27:49 AM                        */
+/* Created on:     2/27/2008 2:31:17 PM                         */
 /*==============================================================*/
 
 
@@ -1311,7 +1311,6 @@ create table CAPBANKADDITIONAL  (
 /*==============================================================*/
 create table CAPCONTROLAREA  (
    AreaID               NUMBER                          not null,
-   ControlPointID       NUMBER                          not null,
    VoltReductionPointID NUMBER                          not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 );
@@ -1335,7 +1334,6 @@ create table CAPCONTROLCOMMENT  (
 /*==============================================================*/
 create table CAPCONTROLSPECIALAREA  (
    AreaID               NUMBER                          not null,
-   ControlPointID       NUMBER                          not null,
    VoltReductionPointID NUMBER                          not null,
    constraint PK_CapControlSpecialArea primary key (AreaID)
 );

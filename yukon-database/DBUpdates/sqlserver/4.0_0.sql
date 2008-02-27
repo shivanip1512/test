@@ -3,12 +3,6 @@
 /******************************************/
 
 /* Start YUK-5287 */
-alter table capcontrolarea add controlpointid numeric;
-go
-update capcontrolarea set controlpointid = 0;
-go
-alter table capcontrolarea alter column controlpointid numeric not null;
-go 
 alter table dynamicccarea add controlvalue numeric;
 go
 update dynamicccarea set controlvalue = 0;
@@ -152,7 +146,6 @@ go
 
 create table CAPCONTROLSPECIALAREA (
    AreaID               numeric              not null,
-   ControlPointID       numeric              not null,
    constraint PK_CapControlSpecialArea primary key (AreaID)
 )
 go
@@ -541,7 +534,6 @@ create table CCSUBSTATIONSUBBUSLIST  (
 /* @error ignore-begin */
 create table CAPCONTROLAREA (
    AreaID               numeric              not null,
-   ControlPointID       numeric              not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 );
 go
@@ -1824,7 +1816,7 @@ alter table capcontrolarea add voltReductionPointId numeric;
 go
 update capcontrolarea set voltReductionPointId = 0;
 go
-alter table capcontrolarea alter column voltReductionPointId numeric not null;
+alter table capcontrolarea alter column voltReductionPointId numeric not null; 
 go
 alter table capcontrolspecialarea add voltReductionPointId numeric;
 go

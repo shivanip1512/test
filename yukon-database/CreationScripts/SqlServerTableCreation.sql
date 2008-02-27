@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/26/2008 11:25:12 AM                        */
+/* Created on:     2/27/2008 10:37:26 AM                        */
 /*==============================================================*/
 
 
@@ -3577,7 +3577,6 @@ go
 /*==============================================================*/
 create table CAPCONTROLAREA (
    AreaID               numeric              not null,
-   ControlPointID       numeric              not null,
    VoltReductionPointID numeric              not null,
    constraint PK_CAPCONTROLAREA primary key (AreaID)
 )
@@ -3603,7 +3602,6 @@ go
 /*==============================================================*/
 create table CAPCONTROLSPECIALAREA (
    AreaID               numeric              not null,
-   ControlPointID       numeric              not null,
    VoltReductionPointID numeric              not null,
    constraint PK_CapControlSpecialArea primary key (AreaID)
 )
