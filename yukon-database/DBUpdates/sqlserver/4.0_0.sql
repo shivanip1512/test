@@ -1862,6 +1862,12 @@ alter table POINTPROPERTYVALUE
 go
 /* End YUK-5395 */
 
+/* Start YUK-5417 */
+ALTER TABLE CAPBANKADDITIONAL
+ALTER COLUMN PotentialTransformer varchar(100) NOT NULL;
+GO
+/* End YUK-5417 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

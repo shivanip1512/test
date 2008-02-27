@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/27/2008 2:31:17 PM                         */
+/* Created on:     2/27/2008 4:13:53 PM                         */
 /*==============================================================*/
 
 
@@ -1298,7 +1298,7 @@ create table CAPBANKADDITIONAL  (
    LastMaintVisit       DATE                            not null,
    LastInspVisit        DATE                            not null,
    OpCountResetDate     DATE                            not null,
-   PotentialTransformer VARCHAR2(10)                    not null,
+   PotentialTransformer VARCHAR2(100)                   not null,
    MaintenanceReqPend   CHAR(1)                         not null,
    OtherComments        VARCHAR2(150)                   not null,
    OpTeamComments       VARCHAR2(150)                   not null,

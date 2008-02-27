@@ -1681,6 +1681,11 @@ alter table POINTPROPERTYVALUE
       references POINT (POINTID);
 /* End YUK-5395 */
 
+/* Start YUK-5417 */
+ALTER TABLE CAPBANKADDITIONAL
+MODIFY(POTENTIALTRANSFORMER VARCHAR2(100 BYTE));
+/* End YUK-5417 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

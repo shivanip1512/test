@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/27/2008 10:37:26 AM                        */
+/* Created on:     2/27/2008 4:15:13 PM                         */
 /*==============================================================*/
 
 
@@ -3563,7 +3563,7 @@ create table CAPBANKADDITIONAL (
    LastMaintVisit       datetime             not null,
    LastInspVisit        datetime             not null,
    OpCountResetDate     datetime             not null,
-   PotentialTransformer varchar(10)          not null,
+   PotentialTransformer varchar(100)         not null,
    MaintenanceReqPend   char(1)              not null,
    OtherComments        varchar(150)         not null,
    OpTeamComments       varchar(150)         not null,
