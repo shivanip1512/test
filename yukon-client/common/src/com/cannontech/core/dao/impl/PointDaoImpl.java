@@ -94,6 +94,7 @@ public final class PointDaoImpl implements PointDao {
         }
     }
     
+    @SuppressWarnings("unchecked")
     public List<LitePoint> getLitePoints(Integer[] pointIds) {
         StringBuilder sql = new StringBuilder(litePointSql);
         SqlUtil.buildInClause("where", "p", "pointid", pointIds, sql);
@@ -124,6 +125,7 @@ public final class PointDaoImpl implements PointDao {
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#getLitePointsByUOMID(int[], int[])
      */
+    @SuppressWarnings("unchecked")
     public List<LitePoint> getLitePointsBy(Integer[] pointTypes, Integer[] uomIDs, Integer[] paoTypes, Integer[] paoCategories, Integer[] paoClasses) {
         StringBuilder sql = new StringBuilder(litePointPaoSql);
     
@@ -150,6 +152,7 @@ public final class PointDaoImpl implements PointDao {
     }
     
     
+    @SuppressWarnings("unchecked")
     public List<LitePoint> getLitePointsByNumStates(int numberOfStates) {
         String sql = litePointSql + 
             " WHERE P.STATEGROUPID IN (select stategroupid from state group by stategroupid having count(rawstate)=?) ";
@@ -159,6 +162,7 @@ public final class PointDaoImpl implements PointDao {
         return points;
     }
 
+    @SuppressWarnings("unchecked")
     public List<LitePoint> getLitePointsByPaObjectId(int paObjectId) {
         String sql = litePointSql +
         " WHERE PaObjectId = ? ";
@@ -271,8 +275,7 @@ public final class PointDaoImpl implements PointDao {
      * @see com.cannontech.core.dao.PointDao#getStateGroup(int)
      */
 	public LiteStateGroup getStateGroup( int stateGroupID ) {
-		return (LiteStateGroup)
-			databaseCache.getAllStateGroupMap().get( new Integer(stateGroupID) );
+		return databaseCache.getAllStateGroupMap().get( new Integer(stateGroupID) );
 	}
 
 	/* (non-Javadoc)
@@ -301,7 +304,8 @@ public final class PointDaoImpl implements PointDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#retrievePointData(int)
      */
-	public List<LiteRawPointHistory> getPointData(int pointID, Date startDate, Date stopDate)
+	@SuppressWarnings("unchecked")
+    public List<LiteRawPointHistory> getPointData(int pointID, Date startDate, Date stopDate)
 	{
         try {
             int numArgs = 1;

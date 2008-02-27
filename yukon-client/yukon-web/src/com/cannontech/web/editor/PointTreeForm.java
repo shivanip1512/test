@@ -1,0 +1,260 @@
+package com.cannontech.web.editor;
+
+import java.io.IOException;
+import java.util.List;
+import java.util.TreeSet;
+
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import javax.faces.event.ActionEvent;
+import javax.servlet.http.HttpSession;
+
+import org.apache.myfaces.custom.tree2.HtmlTree;
+import org.apache.myfaces.custom.tree2.TreeNode;
+import org.apache.myfaces.custom.tree2.TreeNodeBase;
+
+
+import com.cannontech.cbc.web.CCSessionInfo;
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.PAOFactory;
+import com.cannontech.database.data.pao.YukonPAObject;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.data.point.PointUtil;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.servlet.nav.CBCNavigationUtil;
+import com.cannontech.web.util.JSFParamUtil;
+import com.cannontech.web.util.JSFTreeUtils;
+
+public class PointTreeForm {
+
+    private YukonPAObject device = null;
+    private String statusMessage = null;
+    private HtmlTree pointTree = null;
+    private TreeNode pointList = null;
+    private int deviceType = 0;
+    
+    private final String pointTreeName = "devicePointTree";
+
+    /**
+     * Accepts a paoID and creates the DBPersistent from it, and then retrieves the
+     * data from the DB
+     */
+    public PointTreeForm(int paoId) {
+        super();
+
+        LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoId);
+        device = PAOFactory.createPAObject(litePAO);
+        setPao(device);
+        
+        retrieveDB();
+    }
+
+
+
+    public PointTreeForm() {}
+
+    public YukonPAObject getPao() {
+
+        return device;
+    }
+
+    public void setPao(YukonPAObject device) {
+        this.device = device;
+    }
+
+    public void retrieveDB() {
+
+        if (getPao() == null)
+            return;
+
+        try {
+            setPao((YukonPAObject) Transaction.createTransaction(Transaction.RETRIEVE,getPao()).execute());
+
+        } catch (TransactionException te) {
+            CTILogger.error("Unable to retrieve db object", te);
+            return;
+        }
+
+    }
+
+    @SuppressWarnings("unchecked")
+    public TreeNode getPointList() {
+        if (pointList == null) {
+            pointList = new TreeNodeBase("root", "Points", false);
+            TreeNode points = new TreeNodeBase("pointtype", "analog", false);
+            TreeNode status = new TreeNodeBase("pointtype", "status", false);
+            TreeNode accum = new TreeNodeBase("pointtype","accumulator", false);
+            if (device != null) {
+                int deviceId = device.getPAObjectID();
+                List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
+        
+                TreeSet<LitePoint> statusSet = new TreeSet<LitePoint>();
+                TreeSet<LitePoint> analogSet = new TreeSet<LitePoint>();
+                TreeSet<LitePoint> accumSet = new TreeSet<LitePoint>();
+
+                for (LitePoint litePoint : litePoints) {
+                    int pointType = litePoint.getPointType();
+                    if (pointType == PointTypes.ANALOG_POINT || pointType == PointTypes.CALCULATED_POINT) {
+                        analogSet.add(litePoint);
+                    } else if (pointType == PointTypes.STATUS_POINT || pointType == PointTypes.CALCULATED_STATUS_POINT) {
+                        statusSet.add(litePoint);
+                    } else if (pointType == PointTypes.PULSE_ACCUMULATOR_POINT){
+                        accumSet.add(litePoint);
+                    }
+                }
+        
+                points = JSFTreeUtils.createTreeFromPointList(analogSet, points);
+                status = JSFTreeUtils.createTreeFromPointList(statusSet, status);
+                accum = JSFTreeUtils.createTreeFromPointList(accumSet, accum);
+                
+                pointList.getChildren().add(status);
+                pointList.getChildren().add(points);
+                pointList.getChildren().add(accum);
+                
+                JSFTreeUtils.splitTree(pointList, 100, "sublevels");
+            }
+        }
+        restoreState(getPointTree());
+        return pointList;
+    }
+
+    public String getSelectedPointFormatString() {
+        return "Add Point";
+    }
+
+    public String getStatusMessage() {
+        return statusMessage;
+    }
+
+    public void setStatusMessage(String msgStr) {
+        this.statusMessage = msgStr;
+    }
+
+    public HtmlTree getPointTree() {
+        return pointTree;
+    }
+
+    public void setPointTree(HtmlTree pointTree) {
+        this.pointTree = pointTree;
+
+    }
+
+    public void pointClick (ActionEvent ae){
+        FacesMessage fm = new FacesMessage();
+        //save the state of the point tree before changing the page
+        saveState(getPointTree());
+        try {
+            //make sure the point form will have the pao id
+            //of the cbc 
+            String red = "pointBase.jsf?parentId=" + getPao().getPAObjectID().toString() + "&itemid=";
+            String val = JSFParamUtil.getJSFReqParam("ptID");
+            String location = red + val;            
+            //bookmark the current page
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            CBCNavigationUtil.bookmarkLocationAndRedirect(location, session);
+            //go to the next page
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
+            FacesContext.getCurrentInstance().responseComplete();
+        } catch (IOException e) {
+            fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:pointClick. " + e.getMessage());
+        } finally{
+            if(fm.getDetail() != null) {
+                FacesContext.getCurrentInstance().addMessage("point_click", fm);
+            }
+        }
+    }
+    
+    public void addPointClick (ActionEvent ae){
+        FacesMessage fm = new FacesMessage();
+        //save the state of the point tree before changing the page
+        saveState(getPointTree());        
+        try {
+            String val = JSFParamUtil.getJSFReqParam("parentId");
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            String location = "pointWizBase.jsf?parentId=" + val;
+            CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);            
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
+            FacesContext.getCurrentInstance().responseComplete();
+        } 
+        catch (IOException e) {
+            fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:addPointClick. " + e.getMessage());
+        } finally{
+            if(fm.getDetail() != null) {
+                FacesContext.getCurrentInstance().addMessage("add_point_click", fm);
+            }
+        }
+    }
+
+    public void deletePointClick (ActionEvent ae){
+        FacesMessage fm = new FacesMessage();
+        //save the state of the point tree before changing the page
+        saveState(getPointTree());        
+        try {
+            Integer paoID = getPao().getPAObjectID();
+            List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoID.intValue());
+            String attribVal  = "";
+            for (LitePoint point : points) {
+                attribVal += "value=" + point.getLiteID() + "&";
+            }
+            HttpSession session = (HttpSession) FacesContext.getCurrentInstance().getExternalContext().getSession(false);
+            String location = "deleteBasePoint.jsf?" + attribVal;
+            CBCNavigationUtil.bookmarkLocationAndRedirect(location,session);            
+            FacesContext.getCurrentInstance().getExternalContext().redirect(location);
+            FacesContext.getCurrentInstance().responseComplete();
+        } 
+        catch (IOException e) {
+            fm.setDetail("ERROR - Couldn't redirect. CBControllerEditor:deletePointClick. " + e.getMessage());
+        } finally{
+            if(fm.getDetail() != null) {
+                FacesContext.getCurrentInstance().addMessage("delete_point_click", fm);
+            }
+        }
+    }
+   
+    public static void insertPointsIntoDB(DBPersistent pointVector) {
+        FacesMessage fcsMessage = new FacesMessage();
+         try {
+             PointUtil.insertIntoDB(pointVector);
+         } catch (TransactionException e) {
+             fcsMessage.setDetail("ERROR creating points for CBC:CBCControlEditor" + e.getMessage());
+         } finally {
+             if (fcsMessage.getDetail() != null) {
+                 FacesContext.getCurrentInstance().addMessage("cti_db_add", fcsMessage);                
+             }
+         }
+    }
+
+    public void setPointList(TreeNode pointList) {
+        this.pointList = pointList;
+    }
+
+    private void saveState (HtmlTree tree) {
+        if (tree != null) {
+            Object treeState = tree.saveState(FacesContext.getCurrentInstance());
+            CCSessionInfo ccSession = (CCSessionInfo) JSFParamUtil.getJSFVar("ccSession");
+            ccSession.setTreeState(pointTreeName, treeState);
+        }
+    }
+
+    private void restoreState (HtmlTree tree) {
+        if (tree != null) {
+            CCSessionInfo ccSession = (CCSessionInfo) JSFParamUtil.getJSFVar("ccSession");          
+            if (ccSession.getTreeState(pointTreeName) != null ) {
+                this.pointTree.restoreState(FacesContext.getCurrentInstance(), ccSession.getTreeState(pointTreeName));
+            }
+        }
+    }
+
+    public int getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(int deviceType) {
+        this.deviceType = deviceType;
+    }
+}

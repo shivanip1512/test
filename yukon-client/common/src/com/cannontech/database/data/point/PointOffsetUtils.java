@@ -32,14 +32,16 @@ public class PointOffsetUtils {
     
     public static int getMaxPointOffsetForDevice(Integer paoId, int pointType) {        
         List<LitePoint> points = DaoFactory.getPointDao().getLitePointsByPaObjectId(paoId);
-        LitePoint maxPoint = Collections.max(points, new Comparator<LitePoint>() {
-            public int compare(LitePoint p1, LitePoint p2) {
-                return p1.getPointOffset() - p2.getPointOffset();
-            }
-        });        
-        return maxPoint.getPointOffset();
+        if(points.isEmpty()) {
+            return 0;
+        }else {
+            LitePoint maxPoint = Collections.max(points, new Comparator<LitePoint>() {
+                public int compare(LitePoint p1, LitePoint p2) {
+                    return p1.getPointOffset() - p2.getPointOffset();
+                }
+            });        
+            return maxPoint.getPointOffset();
+        }
     }
-
-
 }
 

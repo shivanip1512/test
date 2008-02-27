@@ -163,6 +163,76 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
                         <f:param name="ptID" value="0"/>
                   </x:commandLink>
                 
+                    <x:panelGroup>
+        <f:verbatim>
+            </fieldset>
+            <br />
+            <fieldset><legend> Cap Bank Points </legend>
+        </f:verbatim>
+        <x:div forceId="true" id="SubstationBusEditorScrollDiv"
+            styleClass="scrollSmall">
+            <%-- binding="#{capControlForm.pointTreeForm.pointTree}" --%>
+            <x:tree2 
+                id="SubstationBusEditPointTree"
+                value="#{capControlForm.pointTreeForm.pointList}" var="node"
+                showRootNode="false" varNodeToggler="t" preserveToggle="true"
+                clientSideToggle="false" showLines="false">
+
+                <f:facet name="root">
+                    <x:panelGroup>
+                        <x:outputText id="rootLink" value="#{node.description}" />
+                    </x:panelGroup>
+                </f:facet>
+                <f:facet name="pointtype">
+                    <x:panelGroup>
+                        <x:outputText id="paChCnt"
+                            value="#{node.description} (#{node.childCount})"
+                            rendered="#{!empty node.children}" />
+                    </x:panelGroup>
+                </f:facet>
+
+                <f:facet name="sublevels">
+                    <x:panelGroup>
+                        <x:outputText id="subLvlCnt"
+                            value="#{node.description} (#{node.childCount})"
+                            rendered="#{!empty node.children}" />
+                    </x:panelGroup>
+                </f:facet>
+
+                <f:facet name="points">
+                    <x:panelGroup>
+                        <x:commandLink id="ptLink" value="#{node.description}"
+                            actionListener="#{capControlForm.pointTreeForm.pointClick}">
+                            <f:param name="ptID" value="#{node.identifier}" />
+                        </x:commandLink>
+                    </x:panelGroup>
+                </f:facet>
+            </x:tree2>
+        </x:div>
+        <f:verbatim>
+            </fieldset>
+        </f:verbatim>
+    </x:panelGroup>
+    
+    <f:verbatim>
+        <br />
+    </f:verbatim>
+    
+    <h:outputText styleClass="tableHeader" value="Point Editor: " />
+    
+    <x:commandLink id="addPtLnk" value="Add Point"
+        actionListener="#{capControlForm.pointTreeForm.addPointClick}">
+        <f:param name="parentId"
+            value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
+    </x:commandLink>
+    
+    <f:verbatim>
+        &nbsp; <bold>|</bold>&nbsp;
+    </f:verbatim>
+    
+    <x:commandLink id="deletePtLnk" value="Delete Point"
+        actionListener="#{capControlForm.pointTreeForm.deletePointClick}">
+    </x:commandLink>
 
         </x:column>
         <x:column>
@@ -179,20 +249,8 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
             <f:verbatim><br/></f:verbatim>
             <x:selectBooleanCheckbox id="disabledOps"
                     value="#{capBankEditor.capBank.capBank.maxOperationDisabled}" />
-            <x:outputLabel for="disabledOps" value="Disable upon reaching max operations" title="This will be disabled upon reaching the max number of operations."/>
-            <f:verbatim><br><br></f:verbatim>
-            <x:outputText styleClass="legendLikeLabel" value="CapBank Points"/>
-            <f:verbatim><br><br></f:verbatim>
-            <x:div forceId="true" id = "CapBankPointsDiv" styleClass="scrollVerySmall">
-             <x:dataList id="CapBankPointsList" var="item" value="#{capControlForm.capBankPointList}" layout="unorderedList" styleClass="listWithNoBullets">                    
-               <x:panelGroup>
-                <f:verbatim>&nbsp;&nbsp;&nbsp;</f:verbatim>
-                  <x:commandLink id="ptLink" value="#{item.pointName}" actionListener="#{capControlForm.capBankPointClick}" >
-                     <f:param name="ptID" value="#{item.liteID}" />
-                  </x:commandLink>
-               </x:panelGroup>
-             </x:dataList>
-          </x:div>
+            <x:outputLabel for="disabledOps" value="Disable upon reaching max operations" title="Should we be automatically disabled after reaching our max op counts"/>
+            
             <f:verbatim><br><br></f:verbatim>
             <f:verbatim></fieldset></f:verbatim>
                     <f:verbatim><br/><fieldset><legend>Controller Configuration</legend></f:verbatim>

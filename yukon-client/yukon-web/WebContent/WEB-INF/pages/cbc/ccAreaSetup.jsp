@@ -34,6 +34,77 @@
     </fieldset>
     </f:verbatim>
     
+    <x:panelGroup>
+        <f:verbatim>
+            <br />
+            <fieldset><legend> Area Points </legend>
+        </f:verbatim>
+        <x:div forceId="true" id="SubstationBusEditorScrollDiv"
+            styleClass="scrollSmall">
+            <%-- Find out why you can't do this and why the capcontrolform is newly created! --%>
+            <%-- binding="#{capControlForm.pointTreeForm.pointTree}" --%>
+            <x:tree2 
+                id="SubstationBusEditPointTree"
+                value="#{capControlForm.pointTreeForm.pointList}" var="node"
+                showRootNode="false" varNodeToggler="t" preserveToggle="true"
+                clientSideToggle="false" showLines="false">
+
+                <f:facet name="root">
+                    <x:panelGroup>
+                        <x:outputText id="rootLink" value="#{node.description}" />
+                    </x:panelGroup>
+                </f:facet>
+                <f:facet name="pointtype">
+                    <x:panelGroup>
+                        <x:outputText id="paChCnt"
+                            value="#{node.description} (#{node.childCount})"
+                            rendered="#{!empty node.children}" />
+                    </x:panelGroup>
+                </f:facet>
+
+                <f:facet name="sublevels">
+                    <x:panelGroup>
+                        <x:outputText id="subLvlCnt"
+                            value="#{node.description} (#{node.childCount})"
+                            rendered="#{!empty node.children}" />
+                    </x:panelGroup>
+                </f:facet>
+
+                <f:facet name="points">
+                    <x:panelGroup>
+                        <x:commandLink id="ptLink" value="#{node.description}"
+                            actionListener="#{capControlForm.pointTreeForm.pointClick}">
+                            <f:param name="ptID" value="#{node.identifier}" />
+                        </x:commandLink>
+                    </x:panelGroup>
+                </f:facet>
+            </x:tree2>
+        </x:div>
+        <f:verbatim>
+            </fieldset>
+        </f:verbatim>
+    </x:panelGroup>
+    
+    <f:verbatim>
+        <br />
+    </f:verbatim>
+    
+    <h:outputText styleClass="tableHeader" value="Point Editor: " />
+    
+    <x:commandLink id="addPtLnk" value="Add Point"
+        actionListener="#{capControlForm.pointTreeForm.addPointClick}">
+        <f:param name="parentId"
+            value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
+    </x:commandLink>
+    
+    <f:verbatim>
+        &nbsp; <bold>|</bold>&nbsp;
+    </f:verbatim>
+    
+    <x:commandLink id="deletePtLnk" value="Delete Point"
+        actionListener="#{capControlForm.pointTreeForm.deletePointClick}">
+    </x:commandLink>
+    
     </h:column>
     <h:column>
     <f:verbatim>

@@ -82,41 +82,27 @@ if(special){
 
 <cti:titledContainer title="<%="Substation In Area:  " + areaName%>" id="last_titled_container">
           
-		<%
-          		if (areaSubs.size() == 0) {
-          		%>
-		<!-- 
-		<form id="subForm" action="redirect.jsp" method="post">
-		<input type="hidden" name="reason" value="No subs were found. "/>
-		<input type="hidden" name="message" value = "Subs.jsp <i>might<i> be defined in db_editor. ">
-		<input type="hidden" name="redirectUrl" value="/capcontrol/subareas.jsp"/>
-		<script type="text/javascript">
-			$('subForm').submit();
-		</script>
-		</form>
-		-->
-		<%
-		} else  {
-		%> 
-		
+<%
+if (areaSubs.size() > 0) {
+%>
 	          
-            <form id="subForm" action="feeders.jsp" method="post">
-            <input type="hidden" name="<%=CCSessionInfo.STR_SUBID%>" />
-          
-            <table id="subHeaderTable" width="100%" cellspacing="0" cellpadding="0" >
-              <tr class="columnHeader lAlign">              
-                <td>
-                <input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubStation');"/>
-                Sub Name</td>
-                <td width="2%"></td>
-                <td>State</td>
-                <td>Available<br/> kVARS</td>
-                <td>Unavailable <br/>kVARS</td>
-                <td>Closed <br/>kVARS</td>
-                <td>Tripped <br/>kVARS</td>
-                <td>PFactor / Est.</td>
-              </tr>
-			</table>
+<form id="subForm" action="feeders.jsp" method="post">
+<input type="hidden" name="<%=CCSessionInfo.STR_SUBID%>" />
+       
+	<table id="subHeaderTable" width="100%" cellspacing="0" cellpadding="0" >
+	  <tr class="columnHeader lAlign">              
+	    <td>
+	    <input type="checkbox" id="chkAllBx" onclick="checkAll(this, 'cti_chkbxSubStation');"/>
+	    Sub Name</td>
+	    <td width="2%"></td>
+	    <td>State</td>
+	    <td>Available<br/> kVARS</td>
+	    <td>Unavailable <br/>kVARS</td>
+	    <td>Closed <br/>kVARS</td>
+	    <td>Tripped <br/>kVARS</td>
+	    <td>PFactor / Est.</td>
+	  </tr>
+	</table>
 <div>
 <table id="subTable" width="100%" cellspacing="0" cellpadding="0" >
 <%
@@ -166,7 +152,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
             </tr>
 <% } %>
 
-            </table>
+        </table>
 	</div>
 </form>
 <%}%>

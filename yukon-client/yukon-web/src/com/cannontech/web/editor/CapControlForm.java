@@ -117,6 +117,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	private CBCCreationModel wizData = null;
 	// possible editor for the CBC a CapBank belongs to
 	private ICBControllerModel cbControllerEditor = null;
+	private PointTreeForm pointTreeForm = null;
 	private LiteYukonPAObject[] unusedCCPAOs = null;
 	// selectable items that appear in lists on the GUI
 	private SelectItem[] kwkvarPaos = null;
@@ -685,6 +686,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public void resetForm() {
 		resetStrategies();
 		resetCBCEditor();
+		resetPointTreeForm();
 		resetCurrentDivOffset();
 		resetCurrentAltSubDivOffset();
 		resetUOFMTreeData();
@@ -738,6 +740,13 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         getCBControllerEditor().retrieveDB();        
         getCBControllerEditor().resetSerialNumber();
 	}
+	
+	/**
+     * Reset the the point tree form
+     */
+    private void resetPointTreeForm() {
+        getPointTreeForm().retrieveDB();        
+    }
 
 	/**
 	 * All possible panels for this editor go here. Set visible panels and
@@ -1196,6 +1205,18 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			}
 		}
 	}
+	
+	public PointTreeForm getPointTreeForm() {
+        if (pointTreeForm == null) {
+            int paoId = itemID;         
+            pointTreeForm = new PointTreeForm(paoId);
+        }
+        return pointTreeForm;
+    }
+	
+	public void setPointTreeForm(PointTreeForm pointTreeForm) {
+	    this.pointTreeForm = pointTreeForm;
+    }
 
 	public ICBControllerModel getCBControllerEditor() {
 		if (cbControllerEditor == null) {
