@@ -77,6 +77,7 @@ public class CapBank extends CapControlDeviceBase {
                                                                                             getDbConnection());
         // Delete from all dynamic CabBank tables here
         deleteMonitorPoints();
+        delete("DynamicCCOperationStatistics", "PaobjectId", getPAObjectID());
         delete("DynamicCCMonitorPointResponse", "BankID", getPAObjectID());
         delete("DynamicCCMonitorBankHistory", "BankID", getPAObjectID());
         delete("DynamicCCCapBank", "CapBankID", getPAObjectID());
