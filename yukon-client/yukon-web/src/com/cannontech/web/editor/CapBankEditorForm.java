@@ -125,7 +125,7 @@ public class CapBankEditorForm extends DBEditorForm {
         try {
             getAdditionalInfo().update();
         } catch (SQLException e) {
-            CTILogger.error(e);
+            CTILogger.error(e.getMessage(), e);
         }
         CBCDBUtil.closeConnection(connection);
     }

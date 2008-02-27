@@ -517,7 +517,7 @@ public class CBCSelectionLists {
     
     public SelectItem[] getCapBankConfigs (){
         return new SelectItem[]{
-                new SelectItem ("none"),
+                new SelectItem ("None"),
                 new SelectItem ("Wye"),
                 new SelectItem("Delta"),
                 new SelectItem("Serial")
@@ -526,7 +526,7 @@ public class CBCSelectionLists {
     
     public SelectItem[] getCapBankCommMedium() {
         return new SelectItem[] {
-                new SelectItem ("none"),
+                new SelectItem ("None"),
                 new SelectItem ("Paging"),
                 new SelectItem("DLC"),
                 new SelectItem("VHF"),
@@ -538,7 +538,7 @@ public class CBCSelectionLists {
     
     public SelectItem[] getCapBankAntennaType () {
        return new SelectItem[] {
-               new SelectItem ("none"),
+               new SelectItem ("None"),
                new SelectItem ("Yagi"),
                new SelectItem("Omni")
        }; 
@@ -546,8 +546,11 @@ public class CBCSelectionLists {
     
     public SelectItem[] getPotentialTransformer () {
         return new SelectItem[] {
-                new SelectItem ("none"),
-                new SelectItem ("Dedicated"),
+                new SelectItem("None"),
+                new SelectItem("Dedicated"),
+                new SelectItem("Dedicated-A"),
+                new SelectItem("Dedicated-B"),
+                new SelectItem("Dedicated-C"),
                 new SelectItem("Shared")
         }; 
     }
