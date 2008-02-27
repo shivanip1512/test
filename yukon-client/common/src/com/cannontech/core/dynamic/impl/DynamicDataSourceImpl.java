@@ -72,7 +72,7 @@ public class DynamicDataSourceImpl implements DynamicDataSource {
             signals = dispatchProxy.getSignals(pointId);
             dynamicDataCache.handleSignals(signals, pointId);
         }
-        return signals;
+        return new HashSet<Signal>(signals);
     }
 
     public Map<Integer, Set<Signal>> getSignals(Set<Integer> pointIds) {

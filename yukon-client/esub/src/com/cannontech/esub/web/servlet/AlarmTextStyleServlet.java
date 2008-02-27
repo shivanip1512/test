@@ -64,9 +64,9 @@ public class AlarmTextStyleServlet extends HttpServlet {
 		
 		breakDevice:
 		for(int j = 0; j < deviceIds.length; j++) {
-			List deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds[j]);
-			for (Iterator iter = deviceSignals.iterator(); iter.hasNext();) {
-				Signal signal  = (Signal) iter.next();
+			List<Signal> deviceSignals = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds[j]);
+			for (Iterator<Signal> iter = deviceSignals.iterator(); iter.hasNext();) {
+				Signal signal  = iter.next();
 				// find out why there is a null in the list!
 				if(signal != null) {
     				if(TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -78,9 +78,9 @@ public class AlarmTextStyleServlet extends HttpServlet {
 		}
 		breakPoint:
 		for(int j = 0; !inAlarm && j < pointIds.length; j++) {
-			List pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointIds[j]);
-			for (Iterator iter = pointSignals.iterator(); iter.hasNext();) {
-				Signal signal = (Signal) iter.next();
+			List<Signal> pointSignals = DaoFactory.getAlarmDao().getSignalsForPoint(pointIds[j]);
+			for (Iterator<Signal> iter = pointSignals.iterator(); iter.hasNext();) {
+				Signal signal = iter.next();
 				// find out why there is a null in the list!
 				if(signal != null) {
     				if(TagUtils.isAlarmUnacked(signal.getTags())) {
@@ -92,13 +92,16 @@ public class AlarmTextStyleServlet extends HttpServlet {
 		}
 		breakAlarmCategory:
 		for(int j = 0; !inAlarm && j < alarmCategoryIds.length; j++) {
-			List alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryIds[j]);
-			for (Iterator iter = alarmCategorySignals.iterator(); iter.hasNext();) {
-				Signal signal = (Signal) iter.next();
-				if(TagUtils.isAlarmUnacked(signal.getTags())) {
-					inAlarm = true;
-					break breakAlarmCategory;
-				}									
+			List<Signal> alarmCategorySignals = DaoFactory.getAlarmDao().getSignalsForAlarmCategory(alarmCategoryIds[j]);
+			for (Iterator<Signal> iter = alarmCategorySignals.iterator(); iter.hasNext();) {
+				Signal signal = iter.next();
+				// find out why there is a null in the list!
+				if(signal != null) {
+    				if(TagUtils.isAlarmUnacked(signal.getTags())) {
+    					inAlarm = true;
+    					break breakAlarmCategory;
+    				}
+				}
 			}
 		}
 		

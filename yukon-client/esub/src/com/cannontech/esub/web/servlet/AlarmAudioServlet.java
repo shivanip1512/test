@@ -68,12 +68,11 @@ public class AlarmAudioServlet extends HttpServlet {
         int[] pointIds = StringUtils.parseIntString(pointIdStr);
         int[] alarmCategoryIds = StringUtils.parseIntString(alarmCategoryIdStr);
 
-        List deviceSigs = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds);
-        List pointSigs = DaoFactory.getAlarmDao().getSignalsForPoints(pointIds);
-        List alarmCategorySigs = DaoFactory.getAlarmDao()
-                .getSignalsForAlarmCategories(alarmCategoryIds);
+        List<Signal> deviceSigs = DaoFactory.getAlarmDao().getSignalsForPao(deviceIds);
+        List<Signal> pointSigs = DaoFactory.getAlarmDao().getSignalsForPoints(pointIds);
+        List<Signal> alarmCategorySigs = DaoFactory.getAlarmDao().getSignalsForAlarmCategories(alarmCategoryIds);
 
-        List allSigs = new LinkedList();
+        List<Signal> allSigs = new LinkedList<Signal>();
         allSigs.addAll(deviceSigs);
         allSigs.addAll(pointSigs);
         allSigs.addAll(alarmCategorySigs);
@@ -92,10 +91,10 @@ public class AlarmAudioServlet extends HttpServlet {
         writer.write(Boolean.toString(audioSounding));
     }
 
-    private Date findLatestTimestamp(List signals) {
+    private Date findLatestTimestamp(List<Signal> signals) {
         Date d = null;
-        for (Iterator iter = signals.iterator(); iter.hasNext();) {
-            Signal signal = (Signal) iter.next();
+        for (Iterator<Signal> iter = signals.iterator(); iter.hasNext();) {
+            Signal signal = iter.next();
             //find out why there is a null in the list!
             if(signal != null) {
                 if(TagUtils.isAlarmUnacked(signal.getTags())) {
