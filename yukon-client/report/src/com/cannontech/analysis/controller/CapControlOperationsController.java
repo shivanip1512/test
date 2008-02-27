@@ -9,14 +9,10 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.analysis.report.CapControlOperationsReport;
 import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.analysis.tablemodel.CapBankOperationsPerformanceModel;
 import com.cannontech.analysis.tablemodel.CapControlFilterable;
 import com.cannontech.analysis.tablemodel.CapControlOperationsModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.lite.LiteState;
-import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.util.ServletUtil;
 
 public class CapControlOperationsController extends CapControlReportControllerBase {
@@ -70,6 +66,10 @@ public class CapControlOperationsController extends CapControlReportControllerBa
         html += "</tr>" + LINE_SEPARATOR;
         html += "<tr>" + LINE_SEPARATOR;
         html += "<td><input type='checkbox' name='"+ATT_STATUS_QUALITIES+"' value='No Control' checked>No Control"+ LINE_SEPARATOR;
+        html += "</td>" + LINE_SEPARATOR;
+        html += "</tr>" + LINE_SEPARATOR;
+        html += "<tr>" + LINE_SEPARATOR;
+        html += "<td><input type='checkbox' name='"+ATT_STATUS_QUALITIES+"' value='UnSolicited' checked>UnSolicited"+ LINE_SEPARATOR;
         html += "</td>" + LINE_SEPARATOR;
         html += "</tr>" + LINE_SEPARATOR;
         html += "</table>" + LINE_SEPARATOR;
