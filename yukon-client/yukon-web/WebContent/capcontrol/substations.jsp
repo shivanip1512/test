@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
@@ -129,7 +130,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 				</td>
                 
                 <td>
-                    <ct:warningImg paoId="${thisSubStationId}" type="SUBSTATION"/>
+                    <capTags:warningImg paoId="${thisSubStationId}" type="SUBSTATION"/>
                 </td>
                 
 				<td>
@@ -163,7 +164,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 
 </cti:titledContainer>
 
-<ct:commandMsgDiv/>
+<capTags:commandMsgDiv/>
 
     <ct:disableUpdaterHighlights/>
 </cti:standardPage>

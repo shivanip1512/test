@@ -122,6 +122,11 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break;     
             }
             
+            case VERIFICATION_FLAG : {
+                value = getVerificationFlag(latestValue, cbcDisplay);
+                break;
+            }
+            
             default : throw new RuntimeException("Unsupported Format: " + format);
         }
         
@@ -213,6 +218,10 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
     }
     
     protected String getWarningFlagMessage(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getVerificationFlag(E latestValue, CBCDisplay cbcDisplay) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
     

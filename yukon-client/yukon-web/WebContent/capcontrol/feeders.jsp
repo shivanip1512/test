@@ -1,11 +1,11 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ page import="com.cannontech.core.dao.PaoDao" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.cbc.util.CBCUtils" %>
@@ -181,7 +181,7 @@ String css = "tableCell";
                     </td>
                     
                     <td>
-                        <ct:warningImg paoId="${thisSubStationId}" type="SUBSTATION"/>
+                        <capTags:warningImg paoId="${thisSubStationId}" type="SUBSTATION"/>
                     </td>
                     
                     <td>
@@ -243,13 +243,11 @@ for( SubBus subBus: subBuses ) {
                         <% if (!hideOneLine) { %>
 				            href="${onelineCBCServlet}?id=${thisSubBusId}&redirectURL=<%=currentPageURL %>" title="Click to view One-Line"
                         <% } %> ><%=subBus.getCcName()%></a>
-				    <% if( subBus.getVerificationFlag().booleanValue() ) {%>
-					   <span class="popupImg" onmouseover="statusMsg(this, 'This SubBus is currently being<br>used in a Verification schedule');" >(v)</span>
-				    <% } %>
+                    <capTags:verificationImg paoId="${thisSubBusId}" type="SUBBUS"/>
 				</td>
                 
 				<td>
-                    <ct:warningImg paoId="${thisSubBusId}" type="SUBBUS"/>      
+                    <capTags:warningImg paoId="${thisSubBusId}" type="SUBBUS"/>      
                 </td>
 				
 				<td>
@@ -396,7 +394,7 @@ for (int i = 0; i < feeders.size(); i++ ) {
 					</td>
 					
 					<td>        
-                        <ct:warningImg paoId="${thisFeederId}" type="FEEDER"/>
+                        <capTags:warningImg paoId="${thisFeederId}" type="FEEDER"/>
                     </td>
 					
 					<td>
@@ -525,7 +523,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				</td>
 
                 <td>
-                    <ct:warningImg paoId="${thisCapBankId}" type="CAPBANK"/>
+                    <capTags:warningImg paoId="${thisCapBankId}" type="CAPBANK"/>
                 </td>
 
 				<td>
@@ -589,7 +587,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
         
 	</cti:titledContainer>
     
-<ct:commandMsgDiv/>
+<capTags:commandMsgDiv/>
 
     <ct:disableUpdaterHighlights/>
 </cti:standardPage>

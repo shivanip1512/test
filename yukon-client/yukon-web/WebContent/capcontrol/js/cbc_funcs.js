@@ -121,6 +121,17 @@ function updateWarningImage(id) {
     }
 }
 
+function updateVerificationImage(spanId) {
+    return function(data) {
+        var isVerification = eval(data.value);
+        if (isVerification) {
+            $(spanId).show();
+        } else {
+            $(spanId).hide();
+        }
+    }
+}
+
 function hiLiteTRow (id, color) {
     $(id).style.backgroundColor = color;
 }

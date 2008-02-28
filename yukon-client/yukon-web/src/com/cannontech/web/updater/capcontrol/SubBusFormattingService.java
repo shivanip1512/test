@@ -76,5 +76,11 @@ public class SubBusFormattingService extends AbstractFormattingService<SubBus> {
         String value = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_WATTS_COLUMN);
         return value;
     }
+    
+    @Override
+    protected String getVerificationFlag(SubBus latestValue, CBCDisplay cbcDisplay) {
+        String value = latestValue.getVerificationFlag().toString();
+        return value;
+    }
 
 }

@@ -26,7 +26,8 @@ public interface CapControlFormattingService<E> {
         KVAR_LOAD,
         KVAR_LOAD_MESSAGE,
         KW_VOLTS,
-        DAILY_MAX_OPS
+        DAILY_MAX_OPS,
+        VERIFICATION_FLAG
     }
     
     public String getValueString(E latestValue, Format format, LiteYukonUser user);

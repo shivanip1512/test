@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+<%@ taglib tagdir="/WEB-INF/tags/capcontrol" prefix="capTags"%>
 
 <%@ page import="com.cannontech.common.constants.LoginController" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
@@ -86,7 +87,7 @@ if (allowCtlVal!=null) {
 				</td>
                 
                 <td>
-                    <ct:warningImg paoId="${thisAreaId}" type="CBCAREA"/>
+                    <capTags:warningImg paoId="${thisAreaId}" type="CBCAREA"/>
                 </td>
                 
                 <td>
@@ -154,7 +155,7 @@ if ($('systemCommandLink')) {
 
 </cti:titledContainer>
 
-<ct:commandMsgDiv/>
+<capTags:commandMsgDiv/>
 
     <ct:disableUpdaterHighlights/>
 </cti:standardPage>
