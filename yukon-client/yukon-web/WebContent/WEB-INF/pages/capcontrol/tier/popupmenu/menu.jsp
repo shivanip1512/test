@@ -1,5 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
+<c:url var="commentsUrl" value="/capcontrol/capcontrolcomments.jsp?paoID="/>
+
 <div style="background: white; border: 1px solid black;">
     <table>
         <tr>
@@ -8,11 +10,12 @@
         </tr>
         <c:forEach var="cmdHolder" items="${list}">
             <tr>
+                <c:set var="isReasonRequired" value="${(cmdHolder.reasonRequired && allowAddComments)}"/>
                 <td colspan="2">
                     <a href="javascript:void(0);" 
                        class="optDeselect"
                        onmouseover="changeOptionStyle(this);"
-                       onclick="cClick(); ${executeMethodName}('${paoId}','${cmdHolder.cmdId}', '${cmdHolder.commandName}');">${cmdHolder.displayName}</a>
+                       onclick="cClick(); executeCommand('${paoId}','${cmdHolder.cmdId}', '${cmdHolder.commandName}', '${controlType}', '${isReasonRequired}');">${cmdHolder.commandName}</a>
                 </td>
             </tr>    
         </c:forEach>
@@ -22,7 +25,7 @@
                     <a href="javascript:void(0);" 
                        class="optDeselect"
                        onmouseover="changeOptionStyle(this);"
-                       onclick="cClick(); enableResetOpCountSpan('${paoId}');">${resetOpsCmdHolder.displayName}</a>
+                       onclick="cClick(); showResetOpCountSpan('${paoId}');">${resetOpsCmdHolder.commandName}</a>
                 </td>
             </tr> 
             <c:forEach var="state" items="${states}">
@@ -31,11 +34,18 @@
                         <a href="javascript:void(0);" 
                            class="optDeselect"
                            onmouseover="changeOptionStyle(this);"
-                           onclick="cClick(); ${executeMethodName}('${paoId}','${state.stateRawState}', '${state.stateText}', 'true');">${state.stateText}</a>
-                         
+                           onclick="cClick(); executeCBCommand('${paoId}', '${state.stateText}', '${state.stateRawState}');">${state.stateText}</a>
                     </td>    
                 </tr>
             </c:forEach>
         </c:if>
+        <tr>
+            <td colspan="2">
+                <a href="javascript:void(0);"
+                   class="optDeselect"
+                   onmouseover="changeOptionStyle(this);"
+                   onclick="cClick(); GB_show('CapControl Comments (${paoName})','${commentsUrl}${paoId}', 500, 800);">View Comments</a>
+            </td>
+        </tr>
      </table>
 </div>     

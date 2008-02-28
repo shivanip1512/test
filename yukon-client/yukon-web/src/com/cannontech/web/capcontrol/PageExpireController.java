@@ -1,4 +1,4 @@
-package com.cannontech.web.cbc;
+package com.cannontech.web.capcontrol;
 
 import java.io.Writer;
 

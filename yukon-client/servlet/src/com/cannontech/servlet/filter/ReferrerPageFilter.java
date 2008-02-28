@@ -36,7 +36,9 @@ public class ReferrerPageFilter implements Filter {
         // setup ant-style paths
         // all paths should start with a slash because that's just the way it works
         excludedPages = new String[] {
-            "/capcontrol/cbcPointTimestamps.jsp", // aka /login.jsp
+            "/capcontrol/cbcPointTimestamps.jsp",
+            "/capcontrol/standardPageWrapper.jsp",
+            "/capcontrol/capcontrolcomments.jsp",
             "/capcontrol/tempmove.jsp",
             "/spring/capcontrol/capAddInfo",
             "/capcontrol/charts.jsp"};

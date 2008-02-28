@@ -39,6 +39,9 @@
                 <entry key="/tier/popupmenu">
                     <ref bean="tierPopupMenuController"/>
                 </entry>
+                <entry key="/comments">
+                    <ref bean="capControlCommentController"/>
+                </entry>
 			</map>
 		</property>
 	</bean>
@@ -47,7 +50,7 @@
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/WEB-INF/pages/cbc/" />
+		<property name="prefix" value="/WEB-INF/pages/capcontrol/" />
 		<property name="suffix" value=".jsp" />
 		<property name="order">
 			<value>1</value>
@@ -68,7 +71,7 @@
 		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
 		<property name="viewClass"
 			value="org.springframework.web.servlet.view.JstlView" />
-		<property name="prefix" value="/WEB-INF/pages/cbc/include/" />
+		<property name="prefix" value="/WEB-INF/pages/capcontrol/include/" />
 		<property name="suffix" value=".jsp" />
 		<property name="order">
 			<value>3</value>
@@ -76,7 +79,7 @@
 	</bean>
 
 	<!-- Controllers -->
-    <bean id="pageExpireController" class="com.cannontech.web.cbc.PageExpireController">
+    <bean id="pageExpireController" class="com.cannontech.web.capcontrol.PageExpireController">
         <property name="capControlCache" ref="capControlCache"/>
     </bean>
 
@@ -89,7 +92,7 @@
 			<ref bean="methodNameResolver" />
 		</property>
 		<property name="requireSession" value="true"/>  
-		<property name="cbcCache" ref="cbcCache"/>
+		<property name="capControlCache" ref="capControlCache"/>
 	</bean>
 
 	<bean id="onelineBookmarkController"
@@ -100,7 +103,7 @@
 			<property name="jdbcTemplate" ref="jdbcTemplate"/>
 	</bean>
     
-    <bean id="onelineLegendController" class="com.cannontech.web.cbc.OnelineLegendController">
+    <bean id="onelineLegendController" class="com.cannontech.web.capcontrol.OnelineLegendController">
         <property name="stateDao" ref="stateDao"/>
         <property name="yukonImageDao" ref="yukonImageDao"/>
         <property name="excludeStateList">
@@ -111,20 +114,20 @@
         </property>
     </bean>
 	
-    <bean id="onelineCommentController" class="com.cannontech.web.cbc.OnelineCommentController">
+    <bean id="capControlCommentController" class="com.cannontech.web.capcontrol.CapControlCommentController">
+        <property name="methodNameResolver" ref="methodNameResolver"/>
         <property name="commentDao" ref="capCommentDao"/>
+        <property name="authDao" ref="authDao"/>
     </bean>
 
     <bean id="capControlCommandController"
-        class="com.cannontech.web.cbc.CapControlCommandController">
-        <property name="methodNameResolver">
-            <ref bean="methodNameResolver" />
-        </property>
+        class="com.cannontech.web.capcontrol.CapControlCommandController">
+        <property name="methodNameResolver" ref="methodNameResolver"/>
         <property name="commentDao" ref="capCommentDao" />
         <property name="capControlCache" ref="capControlCache" />
     </bean>
 
-    <bean id="onelinePopupMenuController" class="com.cannontech.web.cbc.OnelinePopupMenuController">
+    <bean id="onelinePopupMenuController" class="com.cannontech.web.capcontrol.OnelinePopupMenuController">
         <property name="methodNameResolver" ref="menuMethodNameResolver"/>
         <property name="capControlCache" ref="capControlCache"/>
         <property name="capControlCommentService" ref="capControlCommentService"/>
@@ -133,11 +136,12 @@
         <property name="dataSource" ref="yukonDataSource"/>
     </bean>
     
-    <bean id="tierPopupMenuController" class="com.cannontech.web.cbc.TierPopupMenuController">
+    <bean id="tierPopupMenuController" class="com.cannontech.web.capcontrol.TierPopupMenuController">
         <property name="methodNameResolver" ref="menuMethodNameResolver"/>
         <property name="capControlCache" ref="capControlCache"/>
         <property name="paoDao" ref="paoDao"/>
         <property name="authDao" ref="authDao"/>
+        <property name="capControlCommentService" ref="capControlCommentService"/>
     </bean>
     
 	<!-- Method name resolvers -->

@@ -1,4 +1,4 @@
-package com.cannontech.web.cbc;
+package com.cannontech.web.capcontrol;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -19,17 +19,16 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.CBCDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.data.point.CBCPointTimestampParams;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
 import com.cannontech.yukon.cbc.CBCCommand;
 import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.CapControlConst;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 
@@ -65,21 +64,23 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         boolean isDisabledOVUV = subBus.getOvUvDisabledFlag();
         mav.addObject("isDisabledOVUV", isDisabledOVUV);
+        
+        CapControlType type = CapControlType.SUBBUS;
 
-        String disableReason = capControlCommentService.getReason(id, CommentAction.DISABLED, CapControlTypes.CAP_CONTROL_SUBBUS);
+        String disableReason = capControlCommentService.getReason(id, CommentAction.DISABLED, type);
         mav.addObject("disableReason", disableReason);
         
-        String disableOVUVReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, CapControlTypes.CAP_CONTROL_SUBBUS);
+        String disableOVUVReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, type);
         mav.addObject("disableOVUVReason", disableOVUVReason);
         
-        String operationalStateReason = capControlCommentService.getReason(id, CommentAction.STANDALONE_REASON, CapControlTypes.CAP_CONTROL_SUBBUS);
+        String operationalStateReason = capControlCommentService.getReason(id, CommentAction.STANDALONE_REASON, type);
         mav.addObject("operationalStateReason", operationalStateReason);
         
         List<String> comments = capControlCommentService.getComments(id, 5); 
         mav.addObject("comments", comments);
         
         mav.addObject("isCapBank", false);
-        mav.addObject("controlType", "SUB_TYPE");
+        mav.addObject("controlType", type);
         mav.setViewName("oneline/popupmenu/tagMenu");
         return mav;
     }
@@ -150,18 +151,20 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         boolean isDisabledOVUV = feeder.getOvUvDisabledFlag();
         mav.addObject("isDisabledOVUV", isDisabledOVUV);
+        
+        CapControlType type = CapControlType.FEEDER;
 
-        String disableReason = capControlCommentService.getReason(id, CommentAction.DISABLED, CapControlTypes.CAP_CONTROL_FEEDER);
+        String disableReason = capControlCommentService.getReason(id, CommentAction.DISABLED, type);
         mav.addObject("disableReason", disableReason);
         
-        String disableOVUVReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, CapControlTypes.CAP_CONTROL_FEEDER);
+        String disableOVUVReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, type);
         mav.addObject("disableOVUVReason", disableOVUVReason);
         
         List<String> comments = capControlCommentService.getComments(id, 5);
         mav.addObject("comments", comments);
         
         mav.addObject("isCapBank", false);
-        mav.addObject("controlType", "FEEDER_TYPE");
+        mav.addObject("controlType", type);
         mav.setViewName("oneline/popupmenu/tagMenu");
         return mav;
     }
@@ -188,20 +191,22 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.addObject("operationalState", operationalState);
         mav.addObject("allowedOperationStates", allowedOperationStates);
 
-        String disableReason = capControlCommentService.getReason(id, CommentAction.DISABLED, CapControlTypes.CAP_CONTROL_CAPBANK);
+        CapControlType type = CapControlType.CAPBANK;
+        
+        String disableReason = capControlCommentService.getReason(id, CommentAction.DISABLED, type);
         mav.addObject("disableReason", disableReason);
         
-        String disableOVUVReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, CapControlTypes.CAP_CONTROL_CAPBANK);
+        String disableOVUVReason = capControlCommentService.getReason(id, CommentAction.DISABLED_OVUV, type);
         mav.addObject("disableOVUVReason", disableOVUVReason);
         
-        String operationalStateReason = capControlCommentService.getReason(id, CommentAction.STANDALONE_REASON, CapControlTypes.CAP_CONTROL_CAPBANK);
+        String operationalStateReason = capControlCommentService.getReason(id, CommentAction.STANDALONE_REASON, type);
         mav.addObject("operationalStateReason", operationalStateReason);
         
         List<String> comments = capControlCommentService.getComments(id, 5);
         mav.addObject("comments", comments);
         
         mav.addObject("isCapBank", true);
-        mav.addObject("controlType", CapControlConst.CMD_TYPE_CAPBANK);
+        mav.addObject("controlType", type);
         mav.setViewName("oneline/popupmenu/tagMenu");
         return mav;
     }
@@ -236,7 +241,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         String childCapDBChangePaoId = "CapDBChange_" + id;
         mav.addObject("childCapDBChangePaoId", childCapDBChangePaoId);
         
-        mav.addObject("controlType", CapControlConst.CMD_TYPE_CAPBANK);
+        mav.addObject("controlType", CapControlType.CAPBANK);
         mav.setViewName("oneline/popupmenu/capBankMenu");
         return mav;
     }
@@ -272,7 +277,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         int sendTimeSyncFdr = CBCCommand.SEND_TIMESYNC;
         mav.addObject("sendTimeSyncFdr", sendTimeSyncFdr);
         
-        mav.addObject("controlType", CapControlConst.CMD_TYPE_FEEDER);
+        mav.addObject("controlType", CapControlType.FEEDER);
         mav.setViewName("oneline/popupmenu/feederMenu");
         return mav;
     }
@@ -332,7 +337,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         int verifyStop = CBCCommand.CMD_DISABLE_VERIFY;
         mav.addObject("verifyStop", verifyStop);
         
-        mav.addObject("controlType", CapControlConst.CMD_TYPE_SUB);
+        mav.addObject("controlType", CapControlType.SUBBUS);
         mav.setViewName("oneline/popupmenu/subMenu");
         return mav;
     }
@@ -360,7 +365,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         int sendTimeSyncCmdId = CBCCommand.SEND_TIMESYNC;
         mav.addObject("sendTimeSyncCmdId", sendTimeSyncCmdId);
         
-        mav.addObject("controlType", CapControlConst.CMD_TYPE_CAPBANK);
+        mav.addObject("controlType", CapControlType.CAPBANK);
         mav.setViewName("oneline/popupmenu/capBankMaint");
         return mav;
     }
@@ -381,7 +386,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         LiteState[] states = CBCUtils.getCBCStateNames();
         mav.addObject("states", states);
         
-        mav.addObject("controlType", CapControlConst.CMD_TYPE_CAPBANK);
+        mav.addObject("controlType", CapControlType.CAPBANK);
         mav.setViewName("oneline/popupmenu/capBankDBChange");
         return mav;
     }

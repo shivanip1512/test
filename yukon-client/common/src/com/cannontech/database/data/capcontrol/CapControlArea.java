@@ -12,7 +12,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -23,6 +22,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
     private com.cannontech.database.db.capcontrol.CapControlArea capControlArea;
     private ArrayList<CCSubAreaAssignment> areaSubs;
 
+    @SuppressWarnings("static-access")
     public CapControlArea() {
         super();
         setPAOCategory(PAOGroups.STRING_CAT_CAPCONTROL);
@@ -30,6 +30,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         getYukonPAObject().setType(PAOGroups.STRING_CAPCONTROL_AREA);
     }
 
+    @Override
     public void retrieve() throws SQLException {
         super.retrieve();
 
@@ -40,21 +41,13 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         }
     }
 
+    @Override
     public void delete() throws SQLException {
-
         // remove all the associations of Subs to this Area
-        com.cannontech.database.db.capcontrol.CCSubAreaAssignment.deleteSubs(getAreaID(),
-                                                                             null,
-                                                                             getDbConnection());
+        CCSubAreaAssignment.deleteSubs(getAreaID(), null, getDbConnection());
 
         // Delete from all dynamic objects
         delete("DynamicCCArea", "AreaID", getAreaID());
-
-        // delete(Point.TABLE_NAME, Point.SETTER_COLUMNS[2],
-        // getCapControlPAOID());
-        
-        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
-        ssDao.deleteStrategyAssigment(getCapControlPAOID());
 
         getCapControlArea().delete();
         super.delete();
@@ -64,6 +57,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         return getPAObjectID();
     }
 
+    @Override
     public void add() throws SQLException {
 
         if (getPAObjectID() == null) {
@@ -78,9 +72,6 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         for (int i = 0; i < getChildList().size(); i++) {
             getChildList().get(i).add();
         }
-        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
-        ssDao.saveDefaultSeasonStrategyAssigment(getCapControlPAOID());
-
     }
 
     public com.cannontech.database.db.capcontrol.CapControlArea getCapControlArea() {
@@ -90,6 +81,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         return capControlArea;
     }
 
+    @Override
     public ArrayList<CCSubAreaAssignment> getChildList() {
         if (areaSubs == null) {
             areaSubs = new ArrayList<CCSubAreaAssignment>();
@@ -97,6 +89,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         return areaSubs;
     }
 
+    @Override
     public void setCapControlPAOID(Integer paoID) {
         super.setPAObjectID(paoID);
         getCapControlArea().setAreaID(paoID);
@@ -106,6 +99,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
 
     }
 
+    @Override
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
         getCapControlArea().setDbConnection(conn);
@@ -124,7 +118,8 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         this.capControlArea = capControlArea;
     }
 
-    public void update() throws java.sql.SQLException {
+    @Override
+    public void update() throws SQLException {
         super.update();
 
         getCapControlArea().update();
@@ -148,7 +143,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         return yukonTemplate.queryForList(builder.toString(), Integer.class);
     }
-    
+
     public static Integer  getAreaIdByName (String name) {
         SqlStatementBuilder builder = new SqlStatementBuilder();
         builder.append("select areaid from capcontrolarea, yukonpaobject");

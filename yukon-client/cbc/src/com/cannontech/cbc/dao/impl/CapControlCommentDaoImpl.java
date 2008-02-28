@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.cannontech.cbc.dao.CapControlCommentDao;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
+import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 
@@ -130,31 +130,31 @@ public class CapControlCommentDaoImpl implements CapControlCommentDao {
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public CapControlComment getDisabledOVUVByPaoId(final int paoId, final int type) throws DataRetrievalFailureException {
+    public CapControlComment getDisabledOVUVByPaoId(final int paoId, final CapControlType type) throws DataRetrievalFailureException {
         String paoIdSql;
         
         switch (type) {
-            case CapControlTypes.CAP_CONTROL_AREA : {
+            case AREA : {
                 paoIdSql = null;
                 break;
             }
-            case CapControlTypes.CAP_CONTROL_FEEDER : {
+            case FEEDER : {
                 paoIdSql = selectPaoIdsByFeederId;
                 break;
             }
-            case CapControlTypes.CAP_CONTROL_SPECIAL_AREA : {
+            case SPECIAL_AREA : {
                 paoIdSql = null;
                 break;
             }
-            case CapControlTypes.CAP_CONTROL_SUBBUS : {
+            case SUBBUS : {
                 paoIdSql = selectPaoIdsBySubBusId;
                 break;
             }
-            case CapControlTypes.CAP_CONTROL_SUBSTATION : {
+            case SUBSTATION : {
                 paoIdSql = selectPaoIdBySubstationId;
                 break;
             }
-            case CapControlTypes.CAP_CONTROL_CAPBANK : {
+            case CAPBANK : {
                 paoIdSql = selectPaoIdsByCapBankId;
                 break;
             }

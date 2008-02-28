@@ -9,7 +9,6 @@ import com.cannontech.common.editor.EditorPanel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
@@ -17,10 +16,10 @@ import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 
 public class CapControlSubstation extends CapControlYukonPAOBase implements EditorPanel {
-
     private com.cannontech.database.db.capcontrol.CapControlSubstation CapControlSubstation;
-    private ArrayList<CCSubstationSubBusList> substationSubBuses;
+    private List<CCSubstationSubBusList> substationSubBuses;
 
+    @SuppressWarnings("static-access")
     public CapControlSubstation() {
         super();
         setPAOCategory(PAOGroups.STRING_CAT_CAPCONTROL);
@@ -28,6 +27,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         getYukonPAObject().setType(PAOGroups.STRING_CAPCONTROL_SUBSTATION);
     }
 
+    @Override
     public void retrieve() throws SQLException {
         super.retrieve();
         getCapControlSubstation().retrieve();
@@ -37,12 +37,11 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         }
     }
 
+    @Override
     public void delete() throws SQLException {
         CCSubAreaAssignment.deleteSubstation(getSubstationID());
         CCSubSpecialAreaAssignment.deleteSubstation(getSubstationID());
         CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getSubstationID(), null, getDbConnection());
-        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
-        ssDao.deleteStrategyAssigment(getSubstationID());
         // Delete from all dynamic objects
         delete("DynamicCCSubstation", "substationID", getSubstationID());
         
@@ -54,6 +53,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         return getPAObjectID();
     }
 
+    @Override
     public void add() throws SQLException {
         if (getPAObjectID() == null) {
             PaoDao paoDao = DaoFactory.getPaoDao();
@@ -61,10 +61,10 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         }
         super.add();
         getCapControlSubstation().add();
+        
         for (int i = 0; i < getChildList().size(); i++) {
             getChildList().get(i).add();
         }
-        
     }
 
     public com.cannontech.database.db.capcontrol.CapControlSubstation getCapControlSubstation() {
@@ -74,13 +74,15 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         return CapControlSubstation;
     }
 
-    public ArrayList<CCSubstationSubBusList> getChildList() {
+    @Override
+    public List<CCSubstationSubBusList> getChildList() {
         if (substationSubBuses == null) {
         	substationSubBuses = new ArrayList<CCSubstationSubBusList>();
         }
         return substationSubBuses;
     }
 
+    @Override
     public void setCapControlPAOID(Integer paoID) {
         super.setPAObjectID(paoID);
         getCapControlSubstation().setSubstationID(paoID);
@@ -89,6 +91,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         }
     }
 
+    @Override
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
         getCapControlSubstation().setDbConnection(conn);
@@ -105,6 +108,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         this.CapControlSubstation = CapControlSubstation;
     }
 
+    @Override
     public void update() throws java.sql.SQLException {
         super.update();
         getCapControlSubstation().update();

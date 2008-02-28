@@ -541,10 +541,9 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                         </a>
                     </cti:pointStatusColor>
                     
-				    <span id="cap_opcnt_span${thisCapBankId}" style="display: none;" >
-					   <label for="opcount" id="opcnt_label"> Op Count: </label>
-					   <input type="text" name="opcount" id="opcnt_input${thisCapBankId}" maxlength="5" size="5"/>
-					   <a href="javascript:void(0);" onclick="return executeCapBankCommand ('${thisCapBankId}', 12, 'Reset_OpCount', false, 'cap_opcnt_span${thisCapBankId}');" >Reset</a>
+				    <span id="opcount_span${thisCapBankId}" style="display: none;" >Op Count:
+					   <input type="text" id="opcount_${thisCapBankId}" maxlength="5" size="5"/>
+					   <a href="javascript:void(0);" onclick="executeCapBankResetOpCount(${thisCapBankId});" >Reset</a>
 				    </span>
 					<div id="capBankStatusPopup_${thisCapBankId}" style="display: none;">
                         <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS_MESSAGE"/>     

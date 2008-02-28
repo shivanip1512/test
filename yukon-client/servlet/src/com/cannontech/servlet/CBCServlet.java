@@ -32,8 +32,9 @@ import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CBCWebUtils;
+import com.cannontech.cbc.web.CapControlCommandExecutor;
+import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.WebUpdatedDAO;
 import com.cannontech.common.constants.LoginController;
@@ -53,7 +54,6 @@ import com.cannontech.yukon.cbc.CBCArea;
 import com.cannontech.yukon.cbc.CBCCommand;
 import com.cannontech.yukon.cbc.CBCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.CapControlConst;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 import com.cannontech.yukon.cbc.SubStation;
@@ -549,13 +549,15 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * @throws ServletRequestBindingException 
      * @throws IOException 
      */
-    private synchronized void executeCommand( HttpServletRequest req, HttpServletResponse resp,  LiteYukonUser user) throws ServletRequestBindingException, IOException {
+    private synchronized void executeCommand( HttpServletRequest req, HttpServletResponse resp,  LiteYukonUser user) throws ServletRequestBindingException {
         int cmdID = ServletRequestUtils.getIntParameter(req, "cmdID", 0);
         int paoID = ServletRequestUtils.getIntParameter(req, "paoID", 0);
-        String controlType = ServletRequestUtils.getStringParameter(req, "controlType", "");
+        String controlTypeParam = ServletRequestUtils.getStringParameter(req, "controlType");
+        CapControlType controlType = CapControlType.valueOf(controlTypeParam);
+        
         List<String> subsInConflict = new ArrayList<String>();
 
-        if (controlType.equalsIgnoreCase(CapControlConst.CMD_TYPE_SPECIAL_AREA) && cmdID == CBCCommand.ENABLE_AREA) {
+        if (controlType.equals(CapControlType.SPECIAL_AREA) && cmdID == CBCCommand.ENABLE_AREA) {
             // Check for other special areas with this special area's subIds that are enabled.
             List<SubStation> subs = cbcCache.getSubstationsBySpecialArea(paoID);
             for(SubStation sub : subs) {
@@ -581,10 +583,10 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                                 ", opt = " + optParams +
                                 ", operationalState = " + operationalState);
                 
-                final CBCCommandExec cbcExecutor = new CBCCommandExec(cbcCache, user);
+                final CapControlCommandExecutor cbcExecutor = new CapControlCommandExecutor(cbcCache, user);
                 
                 //send the command
-                cbcExecutor.commandExecuteMethod(controlType, cmdID, paoID, optParams, operationalState);
+                cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState);
             }
             
             
@@ -605,9 +607,9 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
                             ", opt = " + optParams +
                             ", operationalState = " + operationalState);
             
-            final CBCCommandExec cbcExecutor = new CBCCommandExec(cbcCache, user);
+            final CapControlCommandExecutor cbcExecutor = new CapControlCommandExecutor(cbcCache, user);
             
-            if(controlType.equalsIgnoreCase(CapControlConst.CMD_TYPE_SPECIAL_AREA)) {
+            if(controlType.equals(CapControlType.SPECIAL_AREA)) {
                 JSONObject jsonObject = new JSONObject();
                 Boolean success = true;
                 jsonObject.put("success", success);
@@ -616,7 +618,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
             }
             
             //send the command
-            cbcExecutor.commandExecuteMethod(controlType, cmdID, paoID, optParams, operationalState);
+            cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState);
         }
     }
 }

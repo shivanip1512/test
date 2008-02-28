@@ -36,11 +36,6 @@ public interface CapControlConst
    public final static int CC_FAIL_QUAL = 4;
    public final static int CC_COMMFAIL_QUAL = 5;
    public final static int CC_NO_CONTROL_QUAL = 6;
+   public final static int CC_UNSOLICITED_QUAL = 7;
    
-   public static final String CMD_TYPE_SUB = "SUB_TYPE";
-   public static final String CMD_TYPE_SUBSTATION = "SUBSTATION_TYPE";
-   public static final String CMD_TYPE_FEEDER = "FEEDER_TYPE";
-   public static final String CMD_TYPE_CAPBANK = "CAPBANK_TYPE";
-   public static final String CMD_TYPE_AREA = "AREA_TYPE";
-   public static final String CMD_TYPE_SPECIAL_AREA = "SPECIAL_AREA_TYPE";
 }

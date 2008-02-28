@@ -1,6 +1,7 @@
 package com.cannontech.database.db.capcontrol;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.database.SqlUtils;
 
@@ -110,9 +111,9 @@ public static boolean deleteCCFeedersFromSubList(Integer subId, Integer feederID
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public static ArrayList getCCFeedersOnSub(Integer subId, java.sql.Connection conn ) 
+public static List<CCFeederSubAssignment> getCCFeedersOnSub(Integer subId, java.sql.Connection conn ) 
 {
-	ArrayList returnList = null;
+    List<CCFeederSubAssignment> returnList = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 	
@@ -131,7 +132,7 @@ public static ArrayList getCCFeedersOnSub(Integer subId, java.sql.Connection con
 			pstmt.setInt( 1, subId.intValue() );
 			
 			rset = pstmt.executeQuery();
-			returnList = new ArrayList(16); //rset.getFetchSize()
+			returnList = new ArrayList<CCFeederSubAssignment>(16); //rset.getFetchSize()
 	
 			while( rset.next() )
 			{				

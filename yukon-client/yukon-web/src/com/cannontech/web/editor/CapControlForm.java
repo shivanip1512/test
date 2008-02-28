@@ -983,7 +983,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 					CapControlStrategy.deleteTod(((CapControlStrategy)getDbPersistent()).getStrategyID());
 					strategyTimeOfDay = new CCStrategyTimeOfDaySet();
 				}
-            } else if(getDbPersistent() instanceof YukonPAObject && !(getDbPersistent() instanceof CapControlSubstation)) {
+            } else if(getDbPersistent() instanceof CapControlSubBus 
+            	|| getDbPersistent() instanceof CapControlArea
+            	|| getDbPersistent() instanceof CapControlSpecialArea
+            	|| getDbPersistent() instanceof CapControlFeeder){
             	int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
             	seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
             	holidayScheduleDao.saveHolidayScheduleStrategyAssigment(paoId, getHolidayScheduleId(), getHolidayStrategyId());
@@ -1030,7 +1033,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		CBCDBObjCreator cbObjCreator = new CBCDBObjCreator(getWizData());
         if (dbObj instanceof CapBank) {
             createCapBankAdditional(dbObj, facesMsg);
-        }else if(dbObj instanceof CapControlSpecialArea || dbObj instanceof CapControlArea) {
+        }else if(dbObj instanceof CapControlSubBus 
+            	|| dbObj instanceof CapControlArea
+            	|| dbObj instanceof CapControlSpecialArea
+            	|| dbObj instanceof CapControlFeeder) {
             seasonScheduleDao.saveDefaultSeasonStrategyAssigment(paoId);
             holidayScheduleDao.saveDefaultHolidayScheduleStrategyAssigment(paoId);
         }
@@ -1385,7 +1391,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	 */
     @SuppressWarnings("unchecked")
     private void updateTripOrder(CapControlFeeder currFdr) {
-        ArrayList<CCFeederBankList> childList = currFdr.getChildList();
+        List<CCFeederBankList> childList = currFdr.getChildList();
         for (Iterator iter = childList.iterator(); iter.hasNext();) {
             CCFeederBankList assign = (CCFeederBankList) iter.next();
             assign.setTripOrder(childList.size() + 1 - assign.getControlOrder());
@@ -1393,7 +1399,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     }
 
     @SuppressWarnings("unchecked")
-    private void reorderList(ArrayList childList) {
+    private void reorderList(List<? extends DBPersistent> childList) {
 		for (int i = 0; i < childList.size(); i++) {
 			Object element = childList.get(i);
 			if (element instanceof CCFeederSubAssignment) {
@@ -1412,7 +1418,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 
     //Warning: instanceof CCFeederSubAssignment is putting an int into a float.
 	@SuppressWarnings("unchecked")
-    private float maxDispOrderOnList(ArrayList childList) {
+    private float maxDispOrderOnList(List<? extends DBPersistent> childList) {
 		float max = 0;
 		for (Iterator iter = childList.iterator(); iter.hasNext();) {
 			Object element = iter.next();
@@ -1447,7 +1453,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		if ("CapBank".equalsIgnoreCase(swapType)) {
 			CapControlFeeder currFdr = (CapControlFeeder) getDbPersistent();
 			for (int i = 0; i < currFdr.getChildList().size(); i++) {
-				CCFeederBankList listItem = (CCFeederBankList) currFdr.getChildList().get(i);
+				CCFeederBankList listItem = currFdr.getChildList().get(i);
 				if (elemID == listItem.getDeviceID().intValue()) {
 					// remove the mapping for the given CapBank id to this Feeder
 					currFdr.getChildList().remove(i);

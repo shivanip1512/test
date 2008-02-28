@@ -1,5 +1,7 @@
 package com.cannontech.database.db.capcontrol;
 
+import java.util.List;
+
 import com.cannontech.database.SqlUtils;
 
 /**
@@ -109,9 +111,9 @@ public static boolean deleteCapBanksFromFeederList(Integer feederId, Integer cap
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public static java.util.ArrayList getCapBanksOnFeederList(Integer feederId, java.sql.Connection conn ) 
+public static List<CCFeederBankList> getCapBanksOnFeederList(Integer feederId, java.sql.Connection conn ) 
 {
-	java.util.ArrayList returnList = null;
+    List<CCFeederBankList> returnList = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;
 	
@@ -130,7 +132,7 @@ public static java.util.ArrayList getCapBanksOnFeederList(Integer feederId, java
 			pstmt.setInt( 1, feederId.intValue() );
 			
 			rset = pstmt.executeQuery();
-			returnList = new java.util.ArrayList(8); //rset.getFetchSize()
+			returnList = new java.util.ArrayList<CCFeederBankList>(8); //rset.getFetchSize()
 	
 			while( rset.next() )
 			{				

@@ -14,7 +14,6 @@ import com.cannontech.yukon.cbc.CBCTempMoveCapBank;
 import com.cannontech.yukon.cbc.CBCVerifySubBus;
 import com.cannontech.yukon.cbc.CBCVerifySubStation;
 import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.CapControlConst;
 
 /**
  * @author rneuharth
@@ -22,43 +21,55 @@ import com.cannontech.yukon.cbc.CapControlConst;
  * Creates and executes a given CBC command
  * 
  */
-public class CBCCommandExec
+public class CapControlCommandExecutor
 {
     public static final int defaultOperationalState = -1;
 	private final CapControlCache capControlCache;
 	private final LiteYukonUser user;
 	
-	public CBCCommandExec(final CapControlCache capControlCache, LiteYukonUser user) {	
+	public CapControlCommandExecutor(final CapControlCache capControlCache, LiteYukonUser user) {	
 	    this.capControlCache = capControlCache;
 	    this.user = user;
 	}
 	
-	public void commandExecuteMethod(String controlType, int cmdId, int paoId) throws UnsupportedOperationException {
-	    commandExecuteMethod(controlType, cmdId, paoId, null, null);
+	public void execute(CapControlType controlType, int cmdId, int paoId) throws UnsupportedOperationException {
+	    execute(controlType, cmdId, paoId, null, null);
 	}
 	
-	/* Makes the execute Method determine which finction to call rather than the controllers */
-    public void commandExecuteMethod(String controlType, int cmdId, int paoId, 
+    public void execute(CapControlType controlType, int cmdId, int paoId, 
     		float[] optParams, String operationalState) throws UnsupportedOperationException {
     
-    	if(CapControlConst.CMD_TYPE_SUBSTATION.equals(controlType)) {
-    		execute_SubstationCmd( cmdId, paoId );
-    	} else if(CapControlConst.CMD_TYPE_SUB.equals(controlType)) {
-    		execute_SubCmd( cmdId, paoId );
-    	} else if(CapControlConst.CMD_TYPE_FEEDER.equals(controlType)) {
-    		execute_FeederCmd( cmdId, paoId );
-    	} else if(CapControlConst.CMD_TYPE_CAPBANK.equals(controlType)) {
-    		int operationalStateValue = getOperationalState(operationalState);
-    		execute_CapBankCmd( cmdId, paoId, optParams, operationalStateValue);
-    	} else if (CapControlConst.CMD_TYPE_AREA.equals (controlType)) { 
-            execute_SubAreaCmd(cmdId, paoId);
-        }else if (CapControlConst.CMD_TYPE_SPECIAL_AREA.equals (controlType)) { 
-    		execute_SubAreaCmd(cmdId, paoId);
-    	} else {
-    		throw new UnsupportedOperationException( controlType + 
-    				" is an unknown Control Type, cannot execute command: " + cmdId 
-    				+ " for pao: " + paoId );
-    	}
+        switch (controlType) {
+            case AREA :
+            case SPECIAL_AREA : {
+                executeSubAreaCommand(cmdId, paoId);
+                break;
+            }
+            case SUBSTATION : {
+                executeSubStationCommand(cmdId, paoId);
+                break;
+            }
+            case SUBBUS : {
+                executeSubBusCommand(cmdId, paoId);
+                break;
+            }
+            case FEEDER : {
+                executeFeederCommand(cmdId, paoId);
+                break;
+            }
+            case CAPBANK : {
+                int operationalStateValue = getOperationalState(operationalState);
+                executeCapBankCommand(cmdId, paoId, optParams, operationalStateValue);
+                break;
+            }
+            case CBC : {
+                executeCBCCommand(paoId, optParams);
+                break;
+            }
+            default : throw new UnsupportedOperationException("Unsupported ControlType: " + controlType +
+                                                              "cannot execute command: " + cmdId +
+                                                              " for pao: " + paoId );
+        }
     }
     
 
@@ -72,81 +83,102 @@ public class CBCCommandExec
         }
     }
     
-    public void execute_SubAreaCmd (int _cmdID, int _paoID) {
-        CBCCommand cmd = new CBCCommand (_cmdID, _paoID);    
+    public void executeSubAreaCommand(int cmdId, int paoId) {
+        CBCCommand cmd = new CBCCommand (cmdId, paoId);    
         capControlCache.getConnection().write(cmd);
     }
     
-    public void execute_SubstationCmd( int _cmdID, int _paoID ) {
-        if( _cmdID == CBCCommand.CONFIRM_CLOSE || _cmdID == CBCCommand.CONFIRM_OPEN ) {
-            _executeConfirmSubstation( _paoID );
+    public void executeSubStationCommand(int cmdId, int paoId) {
+        if( cmdId == CBCCommand.CONFIRM_CLOSE || cmdId == CBCCommand.CONFIRM_OPEN ) {
+            executeConfirmSubstation( paoId );
         }
-        if ((_cmdID == CBCCommand.CMD_ALL_BANKS) ||
-            (_cmdID == CBCCommand.CMD_FQ_BANKS) ||
-            (_cmdID == CBCCommand.CMD_FAILED_BANKS) ||
-            (_cmdID == CBCCommand.CMD_QUESTIONABLE_BANKS) ||
-            (_cmdID == CBCCommand.CMD_DISABLE_VERIFY)   ||
-            (_cmdID == CBCCommand.CMD_STANDALONE_VERIFY)) {
-            _executeVerifySubstation (_paoID, _cmdID);
+        if ((cmdId == CBCCommand.CMD_ALL_BANKS) ||
+            (cmdId == CBCCommand.CMD_FQ_BANKS) ||
+            (cmdId == CBCCommand.CMD_FAILED_BANKS) ||
+            (cmdId == CBCCommand.CMD_QUESTIONABLE_BANKS) ||
+            (cmdId == CBCCommand.CMD_DISABLE_VERIFY)   ||
+            (cmdId == CBCCommand.CMD_STANDALONE_VERIFY)) {
+            executeVerifySubstation (paoId, cmdId);
         } else {
-            executeCommand( _paoID, _cmdID );           
+            executeCommand( paoId, cmdId );           
         }
     }
 
-    public void execute_SubCmd( int _cmdID, int _paoID )
-	{
-		if( _cmdID == CBCCommand.CONFIRM_CLOSE 
-			 || _cmdID == CBCCommand.CONFIRM_OPEN )
-		{
-			_executeConfirmSub( _paoID );
+    public void executeSubBusCommand(int cmdId, int paoId) {
+		if (cmdId == CBCCommand.CONFIRM_CLOSE || cmdId == CBCCommand.CONFIRM_OPEN ) {
+			executeConfirmSub( paoId );
 		}
-		if ((_cmdID == CBCCommand.CMD_ALL_BANKS) ||
-			(_cmdID == CBCCommand.CMD_FQ_BANKS) ||
-			(_cmdID == CBCCommand.CMD_FAILED_BANKS) ||
-			(_cmdID == CBCCommand.CMD_QUESTIONABLE_BANKS) ||
-			(_cmdID == CBCCommand.CMD_DISABLE_VERIFY)	||
-            (_cmdID == CBCCommand.CMD_STANDALONE_VERIFY))
+		if ((cmdId == CBCCommand.CMD_ALL_BANKS) ||
+			(cmdId == CBCCommand.CMD_FQ_BANKS) ||
+			(cmdId == CBCCommand.CMD_FAILED_BANKS) ||
+			(cmdId == CBCCommand.CMD_QUESTIONABLE_BANKS) ||
+			(cmdId == CBCCommand.CMD_DISABLE_VERIFY)	||
+            (cmdId == CBCCommand.CMD_STANDALONE_VERIFY))
 		{
-			_executeVerifySub (_paoID, _cmdID);
+			executeVerifySub (paoId, cmdId);
 		}
 		else 
 		{
 			executeCommand( 
-				_paoID,
-				_cmdID );			
+				paoId,
+				cmdId );			
 		}
 	}
     
-    private void _executeVerifySubstation(int _paoid, int _cmdid) {
+    private void executeVerifySubstation(int paoId, int cmdId) {
         int action = 0;
-        if (_cmdid == CBCCommand.CMD_DISABLE_VERIFY)
+        if (cmdId == CBCCommand.CMD_DISABLE_VERIFY)
             action = 1;
-        int strat = _cmdid - CBCCommand.VERIFY_OFFSET;  
-        CBCVerifySubStation msg = new CBCVerifySubStation (action, _paoid, strat, CBCVerifySubStation.DEFAULT_CB_INACT_TIME);
+        int strat = cmdId - CBCCommand.VERIFY_OFFSET;  
+        CBCVerifySubStation msg = new CBCVerifySubStation (action, paoId, strat, CBCVerifySubStation.DEFAULT_CB_INACT_TIME);
         capControlCache.getConnection().write(msg);
     }
 
-	private void _executeVerifySub(int _paoid, int _cmdid) {
+	private void executeVerifySub(int paoId, int cmdId) {
 		int action = 0;
-		if (_cmdid == CBCCommand.CMD_DISABLE_VERIFY)
+		if (cmdId == CBCCommand.CMD_DISABLE_VERIFY)
 			action = 1;
-		int strat = _cmdid - CBCCommand.VERIFY_OFFSET;	
-		CBCVerifySubBus msg = new CBCVerifySubBus (action, _paoid, strat, CBCVerifySubBus.DEFAULT_CB_INACT_TIME);
+		int strat = cmdId - CBCCommand.VERIFY_OFFSET;	
+		CBCVerifySubBus msg = new CBCVerifySubBus (action, paoId, strat, CBCVerifySubBus.DEFAULT_CB_INACT_TIME);
 		capControlCache.getConnection().write(msg);
 	}
 
-	public void execute_FeederCmd( int _cmdID, int _paoID )
-	{
+	public void executeFeederCommand( int cmdId, int paoId) {
 		executeCommand( 
-			_paoID,
-			_cmdID );			
+			paoId,
+			cmdId );			
 	}
 
-	public void execute_CapBankCmd(int _cmdID, int _paoID, float[] _optionalParams) {
-	    execute_CapBankCmd(_cmdID, _paoID, _optionalParams, defaultOperationalState);
+	public void executeCBCCommand(int paoId, float[] optParams) {
+       //TODO validate optionalParams is not null
+        
+        // Build up the manaual change message here, params[0] = new state ID
+        CapBankDevice bank = capControlCache.getCapBankDevice(paoId);
+        
+        final Date now = new Date();
+        
+        // Send new point Here
+        PointData pt = new PointData();
+        pt.setId( bank.getStatusPointID().intValue() );
+        pt.setQuality( PointQualities.MANUAL_QUALITY );
+        pt.setStr("Manual change occurred using CBC Web Client");
+        pt.setTime(now);
+        pt.setTimeStamp(now);
+        pt.setType( PointTypes.STATUS_POINT );
+        pt.setUserName( getUserName() );
+
+        // the actual new value for the selected state 
+        pt.setValue( optParams[0] );
+
+        capControlCache.getConnection().write( pt );
+	    
 	}
 	
-	public void execute_CapBankCmd(int cmdId, int paoId, float[] optionalParams, int operationalState) {
+	public void executeCapBankCommand(int _cmdID, int _paoID, float[] _optionalParams) {
+	    executeCapBankCommand(_cmdID, _paoID, _optionalParams, defaultOperationalState);
+	}
+	
+	public void executeCapBankCommand(int cmdId, int paoId, float[] optionalParams, int operationalState) {
 	    switch (cmdId) {
 	        case CBCCommand.CONFIRM_CLOSE : {
 	            executeCapBankCmdConfirm(paoId, defaultOperationalState);
@@ -181,7 +213,7 @@ public class CBCCommandExec
 	                executeCapBankDefault(paoId, cmdId, defaultOperationalState);
 	                break;
 	            }
-	            executeCapBankCmdManualEntry(paoId, optionalParams);
+	            executeCBCCommand(paoId, optionalParams);
 	            break;
 	        }
 	        case CBCCommand.RESET_OPCOUNT : {
@@ -223,7 +255,7 @@ public class CBCCommandExec
 	}
 	
 	private void executeCapBankDefault(final int paoId, final int cmdId, final int operationalState) {
-	    boolean isValidCommand = _isValidBankCmd(paoId, cmdId);
+	    boolean isValidCommand = isValidBankCmd(paoId, cmdId);
 	    if (isValidCommand) executeCommand(paoId, cmdId, operationalState);
 	}
 	
@@ -266,31 +298,6 @@ public class CBCCommandExec
         capControlCache.getConnection().write( pt );    
 	}
 	
-	private void executeCapBankCmdManualEntry(final int paoId, final float[] optionalParams) {
-
-		//TODO validate optionalParams is not null
-		
-		// Build up the manaual change message here, params[0] = new state ID
-        CapBankDevice bank = capControlCache.getCapBankDevice(paoId);
-        
-        final Date now = new Date();
-        
-        // Send new point Here
-        PointData pt = new PointData();
-        pt.setId( bank.getStatusPointID().intValue() );
-        pt.setQuality( PointQualities.MANUAL_QUALITY );
-        pt.setStr("Manual change occurred using CBC Web Client");
-        pt.setTime(now);
-        pt.setTimeStamp(now);
-        pt.setType( PointTypes.STATUS_POINT );
-        pt.setUserName( getUserName() );
-
-        // the actual new value for the selected state 
-        pt.setValue( optionalParams[0] );
-
-        capControlCache.getConnection().write( pt );
-	}
-	
 	private void executeCapBankCmdByCmdId(final int paoId, final int cmdId, final int operationalState) {
 	    CapBankDevice bank = capControlCache.getCapBankDevice(paoId);
 	    if (bank == null) return;
@@ -313,12 +320,11 @@ public class CBCCommandExec
 	    }
 	}
 	
-	private boolean _isValidBankCmd( int _paoID, int _cmdID )
-	{
+	private boolean isValidBankCmd(int paoId, int cmdId) {
 		CapBankDevice bank =
-			capControlCache.getCapBankDevice( new Integer(_paoID) );
+			capControlCache.getCapBankDevice( new Integer(paoId) );
 
-		switch( _cmdID )
+		switch( cmdId )
 		{
 			case CBCCommand.RETURN_BANK_TO_FEEDER:
 				return bank.isBankMoved();			
@@ -338,7 +344,7 @@ public class CBCCommandExec
 		return username;
 	}
 
-	private void _executeConfirmSub(int paoId) {
+	private void executeConfirmSub(int paoId) {
 		Multi<CBCCommand> multi = new Multi<CBCCommand>();
 		CBCCommand command = new CBCCommand (CBCCommand.CONFIRM_SUB, paoId);
 		command.setUserName(getUserName());
@@ -348,7 +354,7 @@ public class CBCCommandExec
 		}	
 	}
 	
-    private void _executeConfirmSubstation(int paoId) {
+    private void executeConfirmSubstation(int paoId) {
         Multi<CBCCommand> multi = new Multi<CBCCommand>();
         CBCCommand command = new CBCCommand (CBCCommand.CONFIRM_SUBSTATION, paoId);
         command.setUserName(getUserName());
@@ -359,13 +365,13 @@ public class CBCCommandExec
     }
 
     public void executeCommand(int paoId, int cmdOperation) {
-        executeCommand(paoId, cmdOperation, CBCCommandExec.defaultOperationalState);
+        executeCommand(paoId, cmdOperation, CapControlCommandExecutor.defaultOperationalState);
     }
     
-	public void executeCommand(int _paoID, int _cmdOperation, int operationalState) {
+	public void executeCommand(int paoId, int cmdOperation, int operationalState) {
 		CBCCommand cmd = new CBCCommand();
-		cmd.setDeviceID( _paoID );
-		cmd.setCommand( _cmdOperation );
+		cmd.setDeviceID( paoId );
+		cmd.setCommand( cmdOperation );
 		cmd.setUserName( getUserName() );
 		cmd.setToken(operationalState);
 		

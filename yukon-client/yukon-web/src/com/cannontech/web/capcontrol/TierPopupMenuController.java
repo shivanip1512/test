@@ -1,4 +1,4 @@
-package com.cannontech.web.cbc;
+package com.cannontech.web.capcontrol;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +11,9 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteState;
@@ -32,7 +34,13 @@ public class TierPopupMenuController extends MultiActionController {
     private CapControlCache capControlCache;
     private PaoDao paoDao;
     private AuthDao authDao;
+    private CapControlCommentService capControlCommentService;
     
+    public void setCapControlCommentService(
+            CapControlCommentService capControlCommentService) {
+        this.capControlCommentService = capControlCommentService;
+    }
+
     public ModelAndView specialAreaMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
@@ -41,9 +49,8 @@ public class TierPopupMenuController extends MultiActionController {
         
         boolean isDisabled = area.getCcDisableFlag();
         boolean isDisabledOVUV = area.getOvUvDisabledFlag();
-        String methodName = "execute_SpecialAreaCommand";
         
-        ModelAndView mav = createAreaMAV(user, area, methodName, isDisabled, isDisabledOVUV);
+        ModelAndView mav = createAreaMAV(user, area, CapControlType.SPECIAL_AREA, isDisabled, isDisabledOVUV);
         return mav;    
     }
     
@@ -55,8 +62,8 @@ public class TierPopupMenuController extends MultiActionController {
         
         boolean isDisabled = area.getCcDisableFlag();
         boolean isDisabledOVUV = area.getOvUvDisabledFlag();
-        String methodName = "execute_SubAreaCommand";
-        ModelAndView mav = createAreaMAV(user, area, methodName, isDisabled, isDisabledOVUV );
+
+        ModelAndView mav = createAreaMAV(user, area, CapControlType.AREA, isDisabled, isDisabledOVUV );
         return mav;
     }
     
@@ -74,6 +81,8 @@ public class TierPopupMenuController extends MultiActionController {
         
         boolean isDisabled = subStation.getCcDisableFlag();
         boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        mav.addObject("allowAddComments", allowAddComments);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         list.add(CommandHolder.CONFIRM_SUBSTATION);
@@ -97,7 +106,7 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
         mav.addObject("list", list);
         
-        mav.addObject("executeMethodName", "executeSubstationCommand");
+        mav.addObject("controlType", CapControlType.SUBSTATION);
         mav.setViewName("tier/popupmenu/menu");
         return mav;
     }
@@ -117,6 +126,8 @@ public class TierPopupMenuController extends MultiActionController {
         boolean isDisabled = subBus.getCcDisableFlag();
         boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
         boolean isVerify = subBus.getVerificationFlag();
+        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        mav.addObject("allowAddComments", allowAddComments);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         list.add(CommandHolder.CONFIRM_SUBBUS);
@@ -150,7 +161,7 @@ public class TierPopupMenuController extends MultiActionController {
         }
         mav.addObject("list", list);
         
-        mav.addObject("executeMethodName", "executeSubCommand");
+        mav.addObject("controlType", CapControlType.SUBBUS);
         mav.setViewName("tier/popupmenu/menu");
         return mav;
     }
@@ -169,6 +180,8 @@ public class TierPopupMenuController extends MultiActionController {
         
         boolean isDisabled = feeder.getCcDisableFlag();
         boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        mav.addObject("allowAddComments", allowAddComments);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         
@@ -191,7 +204,7 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
         mav.addObject("list", list);
         
-        mav.addObject("executeMethodName", "executeFeederCommand");
+        mav.addObject("controlType", CapControlType.FEEDER);
         mav.setViewName("tier/popupmenu/menu");
         return mav;
     }
@@ -215,34 +228,36 @@ public class TierPopupMenuController extends MultiActionController {
         boolean is701xDevice = CBCUtils.is701xDevice(cbcPaoObject);
         boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
         boolean allowFlip = authDao.checkRoleProperty(user, CBCSettingsRole.SHOW_FLIP_COMMAND);
+        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        mav.addObject("allowAddComments", allowAddComments);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         
         if (isClosed) {
-            list.add(CommandHolder.CAPBANK_CONFIRM_CLOSE);
+            list.add(CommandHolder.CBC_CONFIRM_CLOSE);
         } else {
-            list.add(CommandHolder.CAPBANK_CONFIRM_OPEN);
+            list.add(CommandHolder.CBC_CONFIRM_OPEN);
         }
-        list.add(CommandHolder.CAPBANK_OPEN);
-        list.add(CommandHolder.CAPBANK_CLOSE);
+        list.add(CommandHolder.CBC_OPEN);
+        list.add(CommandHolder.CBC_CLOSE);
 
         if (isTwoWay) {
-            list.add(CommandHolder.CAPBANK_SCAN_2WAY);
+            list.add(CommandHolder.CBC_SCAN_2WAY);
         }
         
-        list.add(CommandHolder.CAPBANK_TIMESYNC);
+        list.add(CommandHolder.CBC_TIMESYNC);
         
         if (allowOVUV) {
-            list.add(CommandHolder.CAPBANK_ENABLE_OVUV);
-            list.add(CommandHolder.CAPBANK_DISABLE_OVUV);
+            list.add(CommandHolder.CBC_ENABLE_OVUV);
+            list.add(CommandHolder.CBC_DISABLE_OVUV);
         }
         
         if (allowFlip && is701xDevice) {
-            list.add(CommandHolder.CAPBANK_FLIP);
+            list.add(CommandHolder.CBC_FLIP);
         }
         mav.addObject("list", list);
         
-        mav.addObject("executeMethodName", "executeCapBankCommand");
+        mav.addObject("controlType", CapControlType.CAPBANK);
         mav.setViewName("tier/popupmenu/menu");
         return mav;
     }
@@ -250,6 +265,7 @@ public class TierPopupMenuController extends MultiActionController {
     public ModelAndView capBankSystemMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        final LiteYukonUser user = ServletUtil.getYukonUser(request);
         
         final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
         
@@ -259,6 +275,8 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("paoName", paoName);
         
         boolean isDisabled = capBank.getCcDisableFlag();
+        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        mav.addObject("allowAddComments", allowAddComments);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         
@@ -276,7 +294,7 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("states", states);
 
         mav.addObject("isCapBankSystemMenu", true);
-        mav.addObject("executeMethodName", "executeCapBankCommand");
+        mav.addObject("controlType", CapControlType.CAPBANK);
         mav.setViewName("tier/popupmenu/menu");
         return mav;    
     }
@@ -304,7 +322,30 @@ public class TierPopupMenuController extends MultiActionController {
         return mav;
     }
     
-    private ModelAndView createAreaMAV(LiteYukonUser user, StreamableCapObject capObject, String executeMethodName,
+    public ModelAndView reasonMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final ModelAndView mav = new ModelAndView();
+        final Integer paoId = ServletRequestUtils.getRequiredIntParameter(request, "paoId");
+        final Integer cmdId = ServletRequestUtils.getRequiredIntParameter(request, "cmdId");
+        final String commandName = ServletRequestUtils.getRequiredStringParameter(request, "commandName");
+        final String controlType = ServletRequestUtils.getRequiredStringParameter(request, "controlType");
+        
+        final StreamableCapObject capObject = capControlCache.getCapControlPAO(paoId);
+        String paoName = capObject.getCcName();
+        mav.addObject("paoName", paoName);
+
+        mav.addObject("paoId", paoId);
+        mav.addObject("cmdId", cmdId);
+        mav.addObject("commandName", commandName);
+        mav.addObject("controlType", controlType);
+        
+        List<String> comments = capControlCommentService.getComments(paoId, 15);
+        mav.addObject("comments", comments);
+        
+        mav.setViewName("tier/popupmenu/reasonMenu");
+        return mav;
+    }
+    
+    private ModelAndView createAreaMAV(LiteYukonUser user, StreamableCapObject capObject, CapControlType controlType,
             boolean isDisabled, boolean isDisabledOVUV) {
         
         final ModelAndView mav = new ModelAndView();
@@ -316,6 +357,8 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("paoName", paoName);
         
         boolean allowOVUV = authDao.checkRoleProperty(user, CBCSettingsRole.CBC_ALLOW_OVUV);
+        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        mav.addObject("allowAddComments", allowAddComments);
         
         final List<CommandHolder> list = new ArrayList<CommandHolder>();
         list.add(CommandHolder.CONFIRM_AREA);
@@ -338,7 +381,7 @@ public class TierPopupMenuController extends MultiActionController {
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
         mav.addObject("list", list);
         
-        mav.addObject("executeMethodName", executeMethodName);
+        mav.addObject("controlType", controlType);
         mav.setViewName("tier/popupmenu/menu");
         return mav;
     }

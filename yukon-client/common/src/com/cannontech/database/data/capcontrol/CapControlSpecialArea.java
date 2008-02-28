@@ -12,17 +12,16 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.SeasonScheduleDao;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 
 public class CapControlSpecialArea extends CapControlYukonPAOBase implements EditorPanel {
-
     private com.cannontech.database.db.capcontrol.CapControlSpecialArea capControlSpecialArea;
-    private ArrayList<CCSubSpecialAreaAssignment> specialAreaSubs;
+    private List<CCSubSpecialAreaAssignment> specialAreaSubs;
 
+    @SuppressWarnings("static-access")
     public CapControlSpecialArea() {
         super();
         setPAOCategory(PAOGroups.STRING_CAT_CAPCONTROL);
@@ -31,6 +30,7 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         setDisabled(true);
     }
 
+    @Override
     public void retrieve() throws SQLException {
         super.retrieve();
 
@@ -41,14 +41,13 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         }
     }
 
+    @Override
     public void delete() throws SQLException {
-
         // remove all the associations of Subs to this Area
-        com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment.deleteSubs(getAreaID(), null, getDbConnection());
+        CCSubSpecialAreaAssignment.deleteSubs(getAreaID(), null, getDbConnection());
         // Delete from all dynamic objects
         delete("DynamicCCSpecialArea", "AreaID", getAreaID());
-        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
-        ssDao.deleteStrategyAssigment(getCapControlPAOID());
+
         getCapControlSpecialArea().delete();
         super.delete();
     }
@@ -57,8 +56,8 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         return getPAObjectID();
     }
 
+    @Override
     public void add() throws SQLException {
-
         if (getPAObjectID() == null) {
             PaoDao paoDao = DaoFactory.getPaoDao();
             setCapControlPAOID(paoDao.getNextPaoId());
@@ -71,9 +70,6 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         for (int i = 0; i < getChildList().size(); i++) {
             getChildList().get(i).add();
         }
-        SeasonScheduleDao ssDao = DaoFactory.getSeasonSchedule();
-        ssDao.saveDefaultSeasonStrategyAssigment(getCapControlPAOID());
-
     }
 
     public com.cannontech.database.db.capcontrol.CapControlSpecialArea getCapControlSpecialArea() {
@@ -83,13 +79,15 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         return capControlSpecialArea;
     }
 
-    public ArrayList<CCSubSpecialAreaAssignment> getChildList() {
+    @Override
+    public List<CCSubSpecialAreaAssignment> getChildList() {
         if (specialAreaSubs == null) {
             specialAreaSubs = new ArrayList<CCSubSpecialAreaAssignment>();
         }
         return specialAreaSubs;
     }
 
+    @Override
     public void setCapControlPAOID(Integer paoID) {
         super.setPAObjectID(paoID);
         getCapControlSpecialArea().setAreaID(paoID);
@@ -99,6 +97,7 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
 
     }
 
+    @Override
     public void setDbConnection(Connection conn) {
         super.setDbConnection(conn);
         getCapControlSpecialArea().setDbConnection(conn);
@@ -117,7 +116,8 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         this.capControlSpecialArea = capControlSpecialArea;
     }
 
-    public void update() throws java.sql.SQLException {
+    @Override
+    public void update() throws SQLException {
         super.update();
 
         getCapControlSpecialArea().update();

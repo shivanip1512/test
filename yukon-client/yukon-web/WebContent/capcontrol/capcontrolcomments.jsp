@@ -1,205 +1,203 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@page import="java.util.List"%>
+<%@page import="java.text.SimpleDateFormat"%>
+
+<%@page import="org.springframework.web.bind.ServletRequestUtils"%>
+
 <%@ page import="com.cannontech.cbc.dao.*"%>
 <%@ page import="com.cannontech.cbc.model.*"%>
-<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 
-<cti:standardPage title="Cap Control Comments" module="capcontrol">
-<cti:standardMenu/>
+<%@page import="com.cannontech.core.dao.YukonUserDao"%>
+<%@page import="com.cannontech.core.dao.AuthDao"%>
 
-<c:url var="commentUpdatePage" value="/capcontrol/commentUpdate.jsp"/>
+<%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
+<%@page import="com.cannontech.util.ServletUtil"%>
+<%@page import="com.cannontech.yukon.cbc.StreamableCapObject"%>
+<%@page import="com.cannontech.database.data.lite.LiteYukonRoleProperty"%>
+<%@page import="com.cannontech.roles.capcontrol.CBCSettingsRole"%>
 
-<%@include file="cbc_inc.jspf"%>
+<!-- Layout CSS files -->
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/CannonStyle.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/StandardStyles.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/YukonGeneralStyles.css" >
+<link rel="stylesheet" type="text/css" href="/WebConfig/yukon/styles/InnerStyles.css" >
+<link rel="stylesheet" type="text/css" href="/capcontrol/css/base.css" >
+
+<!-- Consolidated Script Files -->
+<script type="text/javascript" src="/JavaScript/prototype.js" ></script>
+
+<c:url var="commentsURL" value="/spring/capcontrol/comments?action="/>
 
 <%
-    LiteYukonUser user = (LiteYukonUser) request.getSession(false).getAttribute(LoginController.YUKON_USER);
     FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
-	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
+    CapControlCommentDao commentDao = YukonSpringHook.getBean("capCommentDao", CapControlCommentDao.class);
+    YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
+    AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
+    
+    LiteYukonUser user = ServletUtil.getYukonUser(request);
+    CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 
-	//Coming into this page, we get the paoId of the capbank.
-	int paoId = ParamUtil.getInteger(request,"paoID",-1);
-	
-	StreamableCapObject obj = filterCapControlCache.getCapControlPAO(paoId);
-	
-	String name = obj.getCcName();
-	
-	CapControlCommentDao dao = YukonSpringHook.getBean("capCommentDao", CapControlCommentDao.class);
-	YukonUserDao yukonUserDao = (YukonUserDao) YukonSpringHook.getBean("yukonUserDao");
-	
-	List<CapControlComment> comments = dao.getAllCommentsByPao(paoId);
-	
-	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
-	
-	//Setup return URL (Need to set the returnURL when loading this page)
-	String returnURL = ParamUtil.getString(request,"returnURL");
-	
-	//if param not set lets default to something plausible
-	if( returnURL == null ){
-		returnURL = nav.getPreviousPage();
-		request.getParameterMap().put("returnURL",returnURL);
-	}
-	
-	String currentURL = nav.getCurrentPage();
-	java.text.SimpleDateFormat formatter = new java.text.SimpleDateFormat ("dd/MM/yyyy HH:mm:ss");
-	
-	boolean modifyPermission = false;
-	boolean addPermission = false;
-	//role property   'database editing' determines this.
-	AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
-	LiteYukonRoleProperty modifyProp = authDao.getRoleProperty(CBCSettingsRole.MODIFY_COMMENTS);
-	LiteYukonRoleProperty addProp = authDao.getRoleProperty(CBCSettingsRole.ADD_COMMENTS);
-	String modValue = authDao.getRolePropertyValue(user,modifyProp.getRolePropertyID() );
-	String addValue2 = authDao.getRolePropertyValue(user,addProp.getRolePropertyID() );
-	
-	if( modValue.compareToIgnoreCase("true") == 0 ){		
-		modifyPermission = true;
-	}
-	if( addValue2.compareToIgnoreCase("true") == 0 ){		
-		addPermission = true;
-	}
+    //Coming into this page, we get the paoId of the capbank.
+    int paoId = ServletRequestUtils.getIntParameter(request, "paoID", -1);
+    
+    StreamableCapObject capObject = filterCapControlCache.getCapControlPAO(paoId);
+    if (capObject == null) {
+        String location = ServletUtil.createSafeUrl(request, "/capcontrol/invalidAccessErrorPage.jsp");
+        response.sendRedirect(location);
+        return;
+    }
+    
+    String name = capObject.getCcName();
+    List<CapControlComment> comments = commentDao.getAllCommentsByPao(paoId);
+    
+    SimpleDateFormat formatter = new SimpleDateFormat ("dd/MM/yyyy HH:mm:ss");
+    
+    //role property   'database editing' determines this.
+    LiteYukonRoleProperty modifyProp = authDao.getRoleProperty(CBCSettingsRole.MODIFY_COMMENTS);
+    LiteYukonRoleProperty addProp = authDao.getRoleProperty(CBCSettingsRole.ADD_COMMENTS);
+
+    String modValue = authDao.getRolePropertyValue(user, modifyProp.getRolePropertyID() );
+    boolean modifyPermission = Boolean.parseBoolean(modValue);
+    
+    String addValue2 = authDao.getRolePropertyValue(user, addProp.getRolePropertyID() );
+    boolean addPermission = Boolean.parseBoolean(addValue2);
 %>
+
+<c:set var="paoId" value="<%=paoId%>"/>
+<c:set var="modifyPermission" value="<%=modifyPermission%>"/>
+<c:set var="addPermission" value="<%=addPermission%>"/>
 
 <script type="text/javascript"> 
 
-function showDiv( v ){
-	$(v).toggle();
+function addComment(commentText) {
+    var url = '${commentsURL}' + 'add';
+    var parameters = { 'paoId': ${paoId}, 'comment': commentText };
+    executeUrl(url, parameters);  
 }
 
-function updateUpdateField()
-{
-	var params = {'commentID': getSelectedComment(),'paoID': getPaoId()};
-    new Ajax.Updater('ChangeDiv', '${commentUpdatePage}', {method: 'post', parameters: params});
+function updateComment(commentId, commentText) {
+    var url = '${commentsURL}' + 'update';
+    var parameters = { 'commentId': commentId, 'comment': commentText };
+    executeUrl(url, parameters); 
 }
 
-function selectComment( id ){
-	setCommentValue(id);
-	updateUpdateField();
+function removeComment(commentId) {
+    var url = '${commentsURL}' + 'remove';
+    var parameters = { 'commentId': commentId };
+    executeUrl(url, parameters);
 }
 
-function getSelectedComment()
-{
-	var elem = $("selectedComment");
-	return elem.value;
+function executeUrl(url, parameters) {
+    new Ajax.Request(url, {
+        'method': 'POST',
+        'parameters': parameters,
+        'onSuccess': function() {
+            window.location.reload();    
+        }
+    });
 }
 
-function getPaoId()
-{
-	var elem = $("paoID");
-	return elem.value;
-}
-
-function setComment( c ){
-	$("comment").value = $("commentTextBox").value;
-}
-
-function setDelete( i ){
-	$("delete").value = i;
-}
-
-function setCommentValue( i )
-{
-	$("selectedComment").value = i;
+function selectComment(commentId, inputElement) {
+    $('updateCommentId').value = commentId;
+    $('updateCommentInput').value = inputElement.value;
+    $('updateCommentDiv').show();
 }
 
 function highlightRow( id ){
-	unHighlightAllRows();
-	$(id).style.backgroundColor = 'yellow';
+    unHighlightAllRows();
+    $(id).style.backgroundColor = 'yellow';
 }
 
 function unHighlightAllRows(){
-	var rows = $$('#innerTable tr');
-	for( var i = 2; i < rows.length; i++){
-		rows[i].style.backgroundColor = 'white';
-	}
+    var rows = $$('#innerTable tr');
+    for( var i = 2; i < rows.length; i++){
+        rows[i].style.backgroundColor = 'white';
+    }
 }
 
 </script>
 
-<cti:breadCrumbs>
-    <cti:crumbLink url="subareas.jsp" title="SubBus Areas" />
-    <cti:crumbLink url="<%=returnURL%>" title="Return" />
-</cti:breadCrumbs>
-
-<form id="" action="/servlet/CBCServlet" method="post">
-	<input type="hidden" name="redirectURL" value="<%=currentURL%>" id="redirectURL"/>
-	<input type="hidden" name="selectedComment" value="-1" id="selectedComment"/>
-	<input type="hidden" name="comment" id="comment" value=""/>
-	<input type="hidden" name="paoID" value="<%=paoId%>" id="paoID"/>
-	<input type="hidden" name="delete" value="-1" id="delete"/>
-	
-	<div style="margin-left: 10%; margin-right: 10%;" >
-		
-		<div id="DisplayDiv"></div>
-			<cti:titledContainer title="<%=name%>" >
-		
-				<table id="innerTable" width="100%" border="0" cellspacing="0" cellpadding="0">
-					<tr class="columnHeader lAlign">
-						<td>Edit</td>
-						<td>Comment</td>
-						<td>By User</td>
-						<td>Time</td>
-						<td>Altered</td>
-					</tr>
-					
-					<tr class="altTableCell" id="addCommentRow" >
-						<td>
-						<% if ( addPermission ) { %>
-							<img src="/editor/images/edit_item.gif" border="0" height="15" width="15" onclick="selectComment(-1);unHighlightAllRows();"/>
-						<% } else { %>
-							<img src="/editor/images/edit_item_gray.gif" border="0" height="15" width="15" onclick=""/>
-						<% } %>
-						</td>
-						<td>Click the edit button to add or edit a comment.</td>
-						<td/>
-						<td/>
-						<td/>
-					</tr>
-						
-					<!-- Loops for each comment here. -->
-					<%
-					    for( CapControlComment c : comments ){
-					    	boolean b = c.getAction().equals(CommentAction.USER_COMMENT.toString());
-					    	String style = new String();
-				    		if( b ) 
-				    			style = "";
-				    		else 
-				    			style = "onelineTableCell";
-					%>
-					<tr id="commentRow_<%= c.getId() %>" class=<%=style %>>
-						<td>
-						<% if (modifyPermission) { %>
-								<img src="/editor/images/edit_item.gif" border="0" height="15" width="15"  onclick="selectComment(<%=c.getId() %>);highlightRow('commentRow_<%= c.getId() %>');"/>
-								<img src="/editor/images/delete_item.gif" border="0" height="15" width="15" onclick="setCommentValue(<%=c.getId() %>);setDelete(1);submit();" />
-							<% } else { %>
-								<img src="/editor/images/edit_item_gray.gif" border="0" height="15" width="15"  onclick=""/>
-								<img src="/editor/images/delete_item_gray.gif" border="0" height="15" width="15" onclick="" />							
-							<% } %>
-						</td>
-						<% if(b){ %>
-							<td><%= c.getComment() %></td>
-						<% }else{ %>
-							<td><%= "System: " + c.getComment() %></td>
-						<% } %>
-						<td><%= yukonUserDao.getLiteYukonUser(c.getUserId()).getUsername() %></td>
-						<td><%= formatter.format(c.getTime()) %></td>
-						<% if( c.isAltered() ){ %>
-							<td> Yes </td>
-						<% }else{ %>
-							<td> No </td>
-						<% } %>
-					</tr>
-					<% } %>
-				</table>
-		    </cti:titledContainer>
-	    <br>
-	    
-	    <div id="ChangeDiv" style="margin-left: 0%; margin-right: 55%;" ></div>
-	
-	</div>
-</form>
-</cti:standardPage>
+<div>
+    <cti:titledContainer title="<%=name%>" >
+        <table id="innerTable" width="98%" border="0" cellspacing="0" cellpadding="0">
+            <tr class="columnHeader lAlign">
+                <td width="7%">Edit</td>
+                <td>Comment</td>
+                <td>By User</td>
+                <td>Time</td>
+                <td>Altered</td>
+            </tr>
+            <tr id="addCommentRow" >
+                <td>
+                    <c:choose>
+                        <c:when test="${addPermission}">
+                            <img src="/editor/images/edit_item.gif" border="0" height="15" width="15" onclick="$('addCommentDiv').show();unHighlightAllRows();"/>
+                        </c:when>
+                        <c:otherwise>
+                            <img src="/editor/images/edit_item_gray.gif" border="0" height="15" width="15" onclick=""/>
+                        </c:otherwise>
+                    </c:choose>
+                </td>
+                <td>Click the edit button to add or edit a comment.</td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <!-- Loops for each comment here. -->
+            <%
+                for (CapControlComment comment : comments ){
+            %>
+                    <c:set var="comment" value="<%=comment%>"/>
+                    <c:set var="commentId" value="${comment.id}"/>
+                    
+                    <tr id="commentRow_${commentId}" class="<tags:alternateRow odd="altRow" even=""/>">
+                        <td>
+                            <c:choose>
+                                <c:when test="${modifyPermission}">
+                                    <input type="hidden" id="commentInput_${commentId}" value="${comment.comment}"></input>
+                                    <img src="/editor/images/edit_item.gif" border="0" height="15" width="15"  onclick="selectComment(${commentId}, $('commentInput_${commentId}'));highlightRow('commentRow_${commentId}');"/>
+                                    <img src="/editor/images/delete_item.gif" border="0" height="15" width="15" onclick="removeComment(${commentId});" />
+                                </c:when>
+                                <c:otherwise>
+                                    <img src="/editor/images/edit_item_gray.gif" border="0" height="15" width="15"  onclick=""/>
+                                    <img src="/editor/images/delete_item_gray.gif" border="0" height="15" width="15" onclick="" />                          
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
+                        <td>${comment.comment}</td>   
+                        <td><%=yukonUserDao.getLiteYukonUser(comment.getUserId()).getUsername() %></td>
+                        <td><%= formatter.format(comment.getTime()) %></td>
+                        <td>
+                            <c:choose>
+                                <c:when test="${comment.altered}">Yes</c:when>
+                                <c:otherwise>No</c:otherwise>
+                            </c:choose>
+                        </td>
+                    </tr>
+                    <% } %>    
+        </table>
+    </cti:titledContainer>
+            
+    <br>
+            
+    <div id="addCommentDiv" style="width: auto; display: none;">
+        <cti:titledContainer title="Add Comment">
+            <input id="addCommentInput" type="text" value=""></input>
+            <input type="button" value="Add Comment" onclick="addComment($('addCommentInput').value);"></input>
+        </cti:titledContainer>    
+    </div>
+            
+    <div id="updateCommentDiv" style="width: auto; display: none;">
+        <cti:titledContainer title="Update Comment">
+            <input id="updateCommentInput" type="text" value=""></input>
+            <input id="updateCommentId" type="hidden" value=""></input>
+            <input type="button" value="Update Comment" onclick="updateComment($('updateCommentId').value, $('updateCommentInput').value);"></input>
+        </cti:titledContainer>         
+    </div>
+</div>

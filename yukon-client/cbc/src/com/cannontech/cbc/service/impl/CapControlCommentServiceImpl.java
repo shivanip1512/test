@@ -9,14 +9,14 @@ import com.cannontech.cbc.dao.CapControlCommentDao;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.service.CapControlCommentService;
+import com.cannontech.cbc.web.CapControlType;
 
 public class CapControlCommentServiceImpl implements CapControlCommentService {
-    private static final int defaultTypeId = -1;
     private static final String defaultReason = "";
     private CapControlCommentDao capControlCommentDao;
 
     @Override
-    public String getReason(final int paoId, final CommentAction action, final int type) {
+    public String getReason(final int paoId, final CommentAction action, final CapControlType type) {
         CapControlComment comment = null;
         
         try {
@@ -26,7 +26,6 @@ public class CapControlCommentServiceImpl implements CapControlCommentService {
                     break;
                 }
                 case DISABLED_OVUV : {
-                    if (type == defaultTypeId) break;
                     comment = capControlCommentDao.getDisabledOVUVByPaoId(paoId, type);
                     break;
                 }

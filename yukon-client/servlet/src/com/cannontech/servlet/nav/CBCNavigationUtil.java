@@ -8,8 +8,9 @@ public class CBCNavigationUtil {
     
 	private static final String [] PAGES_TO_SKIP = {
 													"charts.jsp",
-													"capBankMove.jsp",
+													"standardPageWrapper.jsp",
 													"tempmove.jsp",
+													"capcontrolcomments.jsp",
 													"cbcPointTimestamps.jsp"
 													};
     public CBCNavigationUtil() {

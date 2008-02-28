@@ -6,6 +6,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 
 import com.cannontech.cbc.model.CapControlComment;
+import com.cannontech.cbc.web.CapControlType;
 
 public interface CapControlCommentDao {
     
@@ -19,7 +20,7 @@ public interface CapControlCommentDao {
     
     public CapControlComment getDisabledByPaoId(int paoId) throws IncorrectResultSizeDataAccessException;
     
-    public CapControlComment getDisabledOVUVByPaoId(int paoId, int type) throws DataRetrievalFailureException;
+    public CapControlComment getDisabledOVUVByPaoId(int paoId, CapControlType type) throws DataRetrievalFailureException;
     
     public CapControlComment getStandaloneReasonByPaoId(int paoId) throws IncorrectResultSizeDataAccessException;
     

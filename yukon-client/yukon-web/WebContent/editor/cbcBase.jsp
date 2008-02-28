@@ -75,75 +75,75 @@
                 	<x:tabChangeListener type="com.cannontech.web.editor.model.CCTabChangeListener"/>
                 	
                     <x:panelTab id="tabGen" label="General" rendered="#{capControlForm.visibleTabs['General']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcGeneralEditor.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcGeneralEditor.jsp"/>
                     </x:panelTab>
 
                     <x:panelTab id="tabSubBusSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcSubSetup.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcSubSetup.jsp"/>
                     </x:panelTab>
                     
                     <x:panelTab id="tabSubstationSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSubstation']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/ccSubstationSetup.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/ccSubstationSetup.jsp"/>
                     </x:panelTab>
                     
                     <x:panelTab id="tabAreaSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCArea']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/ccAreaSetup.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/ccAreaSetup.jsp"/>
                     </x:panelTab>
                     
                     <x:panelTab id="tabSpecialAreaSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCSpecialArea']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/ccSpecialAreaSetup.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/ccSpecialAreaSetup.jsp"/>
                     </x:panelTab>
 
                     <x:panelTab id="tabSubSchedSetup" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcSubSchedule.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcSubSchedule.jsp"/>
                     </x:panelTab>
 
                     <x:panelTab id="tabFeederSetup" label="Setup" rendered="#{capControlForm.visibleTabs['CBCFeeder']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcFeederSetup.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcFeederSetup.jsp"/>
                     </x:panelTab>
 
                     <x:panelTab id="tabStrategySetup" label="Control Strategy Setup" rendered="#{capControlForm.visibleTabs['CBCArea'] || capControlForm.visibleTabs['CBCSpecialArea'] || capControlForm.visibleTabs['CBCSubstationBus'] || capControlForm.visibleTabs['CBCFeeder']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcStrategySetup.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcStrategySetup.jsp"/>
                     </x:panelTab>
                     
                     <x:panelTab id="tabChild" label="#{capControlForm.childLabel}" rendered="#{capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCSubstationBus'] || capControlForm.visibleTabs['CBCFeeder']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcChildList.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcChildList.jsp"/>
                     </x:panelTab>
 
                     <x:panelTab id="tabCapBank" label="Setup" rendered="#{capControlForm.visibleTabs['CBCCapBank']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcCapBank.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcCapBank.jsp"/>
                     </x:panelTab>
 
                     <x:panelTab id="tabController" label="Setup" rendered="#{capControlForm.visibleTabs['CBCController']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcCBController.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcCBController.jsp"/>
                     </x:panelTab>
 
                     <x:panelTab id="tabSchedule" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSchedule']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcSchedule.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcSchedule.jsp"/>
                     </x:panelTab>
                     
                     <x:panelTab id="tabDualBus" label="Advanced" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
-                    	<jsp:include page="/WEB-INF/pages/cbc/cbcDualBus.jsp"/>
+                    	<jsp:include page="/WEB-INF/pages/capcontrol/cbcDualBus.jsp"/>
                     </x:panelTab>		
 		
 		    		<x:panelTab id="tabAdvCapBank" label="Advanced" rendered="#{capControlForm.visibleTabs['CBCCapBank']}">
-                    	<jsp:include page="/WEB-INF/pages/cbc/cbcCapBankAdvanced.jsp"/>                   
+                    	<jsp:include page="/WEB-INF/pages/capcontrol/cbcCapBankAdvanced.jsp"/>                   
                     </x:panelTab>
 
 		    		<x:panelTab id="tabCBAddInfo" label="Additional Info" rendered="#{capControlForm.visibleTabs['CBAddInfo']}">
-                    	<jsp:include page="/WEB-INF/pages/cbc/capBankAddInfo.jsp"/>                   
+                    	<jsp:include page="/WEB-INF/pages/capcontrol/capBankAddInfo.jsp"/>                   
                     </x:panelTab>
                     
 					<x:panelTab id="tabAreaSubs" label="#{capControlForm.childLabel}" rendered="#{capControlForm.visibleTabs['CBCArea']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcAreaSubs.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcAreaSubs.jsp"/>
                     </x:panelTab>
                     
                     <x:panelTab id="tabSpecialAreaSubs" label="#{capControlForm.childLabel}" rendered="#{capControlForm.visibleTabs['CBCSpecialArea']}">
-                        <jsp:include page="/WEB-INF/pages/cbc/cbcSpecialAreaSubs.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/cbcSpecialAreaSubs.jsp"/>
                     </x:panelTab>
 	
 	                <x:panelTab id="tabStrategyEditor" label="Control Strategy Editor" rendered="#{capControlForm.visibleTabs['CBCStrategy']}">
-						<jsp:include page="/WEB-INF/pages/cbc/cbcStrategyEditor.jsp"/>
+						<jsp:include page="/WEB-INF/pages/capcontrol/cbcStrategyEditor.jsp"/>
                     </x:panelTab>
                 </x:panelTabbedPane>
 

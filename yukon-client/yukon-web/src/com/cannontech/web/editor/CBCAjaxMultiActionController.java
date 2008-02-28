@@ -10,7 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.web.CBCCommandExec;
+import com.cannontech.cbc.web.CapControlCommandExecutor;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.core.dao.DaoFactory;
@@ -21,7 +21,7 @@ import com.cannontech.util.ParamUtil;
 import com.cannontech.yukon.cbc.CBCCommand;
 
 public class CBCAjaxMultiActionController extends MultiActionController {
-    private CapControlCache cbcCache;
+    private CapControlCache capControlCache;
 
     public CBCAjaxMultiActionController() {
     }
@@ -32,7 +32,7 @@ public class CBCAjaxMultiActionController extends MultiActionController {
      */
 
     public ModelAndView updateSystemCommandMenu(HttpServletRequest req, HttpServletResponse resp) {
-        StringBuffer buf = generateHtmlLink(cbcCache);
+        StringBuffer buf = generateHtmlLink(capControlCache);
         String commandLink = buf.toString();
         try {
             PrintWriter writer = resp.getWriter();
@@ -62,7 +62,7 @@ public class CBCAjaxMultiActionController extends MultiActionController {
 
         LiteYukonUser user = (LiteYukonUser) req.getSession(false)
                                                 .getAttribute(LoginController.YUKON_USER);
-        CBCCommandExec executor = new CBCCommandExec(cbcCache, user);
+        CapControlCommandExecutor executor = new CapControlCommandExecutor(cbcCache, user);
         boolean turnSystemOff = ParamUtil.getBoolean(req, "turnSystemOff");
         int commandID = (turnSystemOff) ? CBCCommand.DISABLE_SYSTEM
                 : CBCCommand.ENABLE_SYSTEM;
@@ -83,7 +83,7 @@ public class CBCAjaxMultiActionController extends MultiActionController {
         return allowControl;
     }
     
-    public void setCbcCache(CapControlCache cbcCache) {
-        this.cbcCache = cbcCache;
+    public void setCapControlCache(CapControlCache capControlCache) {
+        this.capControlCache = capControlCache;
     }
 }

@@ -18,7 +18,6 @@ import com.cannontech.cbc.oneline.CapControlSVGGenerator;
 import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.CapControlOnelineCanvas;
-import com.cannontech.cbc.web.CBCCommandExec;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
@@ -29,7 +28,6 @@ import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yukon.cbc.CapControlConst;
 import com.cannontech.yukon.cbc.SubBus;
 
 @SuppressWarnings("serial")
@@ -44,17 +42,8 @@ public class OnelineCBCServlet extends HttpServlet {
     throws ServletException, IOException {
         ServletContext config = req.getSession().getServletContext();
         LiteYukonUser user = (LiteYukonUser) req.getSession(false).getAttribute(LoginController.YUKON_USER);
-        String redirectURL;
         Integer currentSubId = ParamUtil.getInteger(req, "id");
-        if( currentSubId == 0)
-        {
-            //This will be coming from a move back request in oneline.
-            int paoID = ParamUtil.getInteger( req, "paoID" );
-            executeCommand( req, user);
-            redirectURL= "/capcontrol/feeders.jsp";
-            currentSubId = cache.getParentSubBusID(paoID);
-        }else
-            redirectURL = ParamUtil.getString(req, "redirectURL", null);
+        String redirectURL = ParamUtil.getString(req, "redirectURL", null);
         SubBus subBusMsg = cache.getSubBus(currentSubId);
         String absPath = config.getRealPath(CBCWebUtils.ONE_LINE_DIR);
 
@@ -165,30 +154,6 @@ public class OnelineCBCServlet extends HttpServlet {
         svgOptions.setControlEnabled(false);
         svgOptions.setAudioEnabled(false);
         return svgOptions;
-    }
-
-    /**
-     * Allows the execution of commands to the cbc server for all
-     * CBC object types.
-     */
-    private void executeCommand( HttpServletRequest req, LiteYukonUser user) {
-
-        int cmdID = ParamUtil.getInteger( req, "cmdID" );
-        int paoID = ParamUtil.getInteger( req, "paoID" );
-        String controlType = ParamUtil.getString( req, "controlType" );
-        float[] optParams = com.cannontech.common.util.StringUtils.toFloatArray( ParamUtil.getStrings(req, "opt") );
-
-        CTILogger.debug(req.getServletPath() +
-                        "     cmdID = " + cmdID +
-                        ", controlType = " + controlType +
-                        ", paoID = " + paoID +
-                        ", opt = " + optParams  );
-
-        CBCCommandExec cbcExecutor = new CBCCommandExec(cache, user);
-
-        if( controlType.equals(CapControlConst.CMD_TYPE_CAPBANK) )
-            cbcExecutor.execute_CapBankCmd( cmdID, paoID, optParams );
-
     }
 
 }

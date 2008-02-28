@@ -3,7 +3,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
 <c:url var="url" value="/spring/capcontrol/commandexecutor?action=executeCommandOneLineTag" />
-<c:url var="commentsUrl" value="/capcontrol/capcontrolcomments.jsp"/>
+<c:url var="commentsUrl" value="/capcontrol/standardPageWrapper.jsp?title=CapControl Comments&page=/capcontrol/capcontrolcomments.jsp"/>
 <c:set var="maxCommentLength" value="35"/>
 
 <script language="JavaScript" type="text/javascript" src="/JavaScript/cconelinepopup.js"></script>
