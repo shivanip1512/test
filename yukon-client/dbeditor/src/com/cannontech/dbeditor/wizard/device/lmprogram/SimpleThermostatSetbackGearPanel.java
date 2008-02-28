@@ -10,16 +10,22 @@ import java.awt.Insets;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Set;
 
 import javax.swing.BorderFactory;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
+import javax.swing.JFormattedTextField;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSpinner;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.SpinnerDateModel;
 import javax.swing.SpinnerNumberModel;
 import javax.swing.SwingConstants;
@@ -29,6 +35,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import com.cannontech.common.editor.PropertyPanelEvent;
+import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.gui.util.LineLabel;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
 import com.cannontech.database.db.device.lm.LMThermostatGear;
@@ -37,6 +44,10 @@ import com.cannontech.dbeditor.wizard.device.lmgroup.ExpressComCellRenderer;
 public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implements com.cannontech.common.gui.util.DataInputPanelListener {
     private static final Calendar zeroCal = Calendar.getInstance();
     private JPanel statEditorPanel;
+    private JPanel changePanel;
+    private JPanel afterADurationPanel;
+    private JPanel priorityChangePanel;
+    private JPanel aboveTriggerPanel;
     private JSpinner randomStartTimeSpinner;
     private JSpinner preCoolTempSpinner;
     private JSpinner preCoolTimeSpinner;
@@ -46,10 +57,15 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
     private JSpinner restoreTimeSpinner;
     private JSpinner maxRuntimeSpinner;
     private JSpinner resendRateSpinner;
+    private JSpinner changeDurationSpinner;
+    private JSpinner changePrioritySpinner;
+    private JSpinner changeTriggerNumberSpinner;
+    private JTextField changeTriggerOffsetTextField;
     private JCheckBox heatModeCheckBox;
     private JCheckBox coolModeCheckBox;
     private JComboBox changeGearBox;
     private ChangeListener customChangeListener;
+    private Map<String, JPanel> changeValuePanelMap;
 
     static {
         zeroCal.set(Calendar.HOUR_OF_DAY, 0);
@@ -59,6 +75,17 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
     public SimpleThermostatSetbackGearPanel() {
         initialize();
+    }
+    
+    private Map<String,JPanel> getChangeValuePanelMap() {
+        if (changeValuePanelMap == null) {
+            changeValuePanelMap = Collections.synchronizedMap(new LinkedHashMap<String,JPanel>(4));
+            changeValuePanelMap.put("Manually Only", new JPanel());    
+            changeValuePanelMap.put("After a Duration", getAfterADurationPanel());
+            changeValuePanelMap.put("Priority Change", getPriorityChangePanel());
+            changeValuePanelMap.put("Above Trigger", getAboveTriggerPanel());
+        }
+        return changeValuePanelMap;
     }
 
     public static void main(String[] args)  {
@@ -167,16 +194,108 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
     private JComboBox getChangeGearBox() {
         if (changeGearBox == null) {
-            String[] values = new String[]{"Manually Only", "After a Duration", "Priority Change", "Above Trigger"};
-            changeGearBox = new JComboBox(values);
+            final GridBagConstraints pConstraints = new GridBagConstraints();
+            pConstraints.gridx = 0;
+            pConstraints.gridy = 1;
+            pConstraints.gridwidth = 2;
+            pConstraints.anchor = GridBagConstraints.WEST;
+            
+            Set<String> changeValues = getChangeValuePanelMap().keySet();
+            changeGearBox = new JComboBox(changeValues.toArray());
             changeGearBox.addItemListener(new ItemListener() {
                 @Override
                 public void itemStateChanged(ItemEvent e) {
+                    Object item = e.getItem();
+                    
+                    for (final Component component : getChangePanel().getComponents()) {
+                        if (component instanceof JPanel) getChangePanel().remove(component);
+                    }
+
+                    JPanel panel = getChangeValuePanelMap().get(item);
+                    
+
+
+                    getChangePanel().add(panel, pConstraints);
+                    getChangePanel().revalidate();
+                    getChangePanel().repaint();
+                    
                     fireInputUpdate();
                 }
             });
         }
         return changeGearBox;
+    }
+    
+    private JPanel getAfterADurationPanel() {
+        if (afterADurationPanel == null) {
+            afterADurationPanel = new JPanel();
+            afterADurationPanel.add(new JLabel("Change Duration:"));
+            afterADurationPanel.add(getChangeDurationSpinner());
+            afterADurationPanel.add(new JLabel("(min.)"));
+        }
+        return afterADurationPanel;
+    }
+    
+    private JPanel getPriorityChangePanel() {
+        if (priorityChangePanel == null) {
+            priorityChangePanel = new JPanel();
+            priorityChangePanel.add(new JLabel("Change Priority:"));
+            priorityChangePanel.add(getChangePrioritySpinner());
+        }
+        return priorityChangePanel;
+    }
+    
+    private JPanel getAboveTriggerPanel() {
+        if (aboveTriggerPanel == null) {
+            aboveTriggerPanel = new JPanel();
+            aboveTriggerPanel.add(new JLabel("Trigger Number:"));
+            aboveTriggerPanel.add(getChangeTriggerNumberSpinner());
+            aboveTriggerPanel.add(new JLabel("Trigger Offset:"));
+            aboveTriggerPanel.add(getChangeTriggerOffsetTextField());
+        }
+        return aboveTriggerPanel;
+    }
+    
+    private JSpinner getChangeDurationSpinner() {
+        if (changeDurationSpinner == null) {
+            SpinnerNumberModel model = new SpinnerNumberModel();
+            model.setMinimum(0);
+            model.setStepSize(1);
+            changeDurationSpinner = new JSpinner(model);
+            Dimension size = changeDurationSpinner.getPreferredSize();
+            size.width = 40;
+            changeDurationSpinner.setPreferredSize(size);
+            changeDurationSpinner.addChangeListener(customChangeListener);
+        }
+        return changeDurationSpinner;
+    }
+    
+    private JSpinner getChangePrioritySpinner() {
+        if (changePrioritySpinner == null) {
+            SpinnerNumberModel model = new SpinnerNumberModel(0, 0, 99, 1);
+            changePrioritySpinner = new JSpinner(model);
+            changePrioritySpinner.addChangeListener(customChangeListener);
+        }
+         return changePrioritySpinner;
+    }
+    
+    private JSpinner getChangeTriggerNumberSpinner() {
+        if (changeTriggerNumberSpinner == null) {
+            SpinnerNumberModel model = new SpinnerNumberModel(1, 1, 999, 1);
+            changeTriggerNumberSpinner = new JSpinner(model);
+            changeTriggerNumberSpinner.addChangeListener(customChangeListener);
+        }
+        return changeTriggerNumberSpinner;
+    }
+    
+    private JTextField getChangeTriggerOffsetTextField() {
+        if (changeTriggerOffsetTextField == null) {
+            changeTriggerOffsetTextField = new JFormattedTextField();
+            changeTriggerOffsetTextField.setDocument(new DoubleRangeDocument(-99999.9999, 99999.9999, 4)); 
+            changeTriggerOffsetTextField.setColumns(3);
+            changeTriggerOffsetTextField.setText("0.0");
+        }
+        return changeTriggerOffsetTextField;
     }
     
     private JPanel getMainPanel() {
@@ -444,10 +563,20 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
     }
 
     private JPanel getChangePanel() {
-        JPanel panel = new JPanel();
-        panel.add(new JLabel("When to Change:"));
-        panel.add(getChangeGearBox());
-        return panel;
+        if (changePanel == null) {
+            changePanel = new JPanel();
+            changePanel.setLayout(new GridBagLayout());
+
+            GridBagConstraints c = new GridBagConstraints();
+            c.gridx = 0;
+            c.gridy = 0;
+            c.anchor = GridBagConstraints.WEST;
+            c.insets = new Insets(5,5,5,5);
+            changePanel.add(new JLabel("When to Change:"), c);
+            c.gridx = 1;
+            changePanel.add(getChangeGearBox(), c);
+        }    
+        return changePanel;
     }
     
     private void initialize() {
@@ -455,7 +584,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         setPreferredSize(new Dimension(402, 430));
         setAlignmentX(Component.LEFT_ALIGNMENT);
         setAlignmentY(Component.TOP_ALIGNMENT);
-        setSize(402, 430);
+        //setSize(402, 430);
         setLayout(new BorderLayout());
         
         customChangeListener = new CustomChangeListener();
@@ -535,6 +664,18 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         if (isNotEmpty(resendRate)) getResendRateSpinner().setValue(toDateFromMinutes(resendRate));
         
         setChangeCondition(getChangeGearBox(), gear.getChangeCondition());
+        
+        Integer changeDuration = Integer.valueOf(gear.getChangeDuration().intValue() / 60);
+        getChangeDurationSpinner().setValue(changeDuration);
+        
+        Integer changePriority = gear.getChangePriority();
+        getChangePrioritySpinner().setValue(changePriority);
+        
+        Integer changeTriggerNumber = gear.getChangeTriggerNumber();
+        getChangeTriggerNumberSpinner().setValue(changeTriggerNumber);
+        
+        String changeTriggerOffset = gear.getChangeTriggerOffset().toString();
+        getChangeTriggerOffsetTextField().setText(changeTriggerOffset);
     }
     
     @Override
@@ -579,6 +720,18 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         gear.setMethodRate(resendRate);
         
         gear.setChangeCondition(getChangeCondition(getChangeGearBox().getSelectedItem().toString()));
+        
+        Integer changeDuration = ((Integer) getChangeDurationSpinner().getValue()) * 60;
+        gear.setChangeDuration(changeDuration);
+        
+        Integer changePriority = (Integer) getChangePrioritySpinner().getValue();
+        gear.setChangePriority(changePriority);
+        
+        Integer changeTriggerNumber = (Integer) getChangeTriggerNumberSpinner().getValue();
+        gear.setChangeTriggerNumber(changeTriggerNumber);
+        
+        Double changeTriggerOffset = Double.valueOf(getChangeTriggerOffsetTextField().getText());
+        gear.setChangeTriggerOffset(changeTriggerOffset);
         
         return gear;
     }
