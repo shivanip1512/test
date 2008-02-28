@@ -124,13 +124,13 @@ public class UpdateLine
 	/**
 	 * @return
 	 */
-	public boolean isSuccess()
+	public Boolean isSuccess()
 	{
 		Object o = getMetaProps().get( DBMSDefines.META_SUCCESS );
 		if( o != null )
 			return Boolean.valueOf(o.toString()).booleanValue();
 		else
-			return false;
+			return null;
 	}
 
 	/**

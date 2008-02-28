@@ -281,7 +281,10 @@ public class DBUpdater extends MessageFrameAdaptor
 
 		String cmd = null;
 
-		if( !line_.isSuccess() )
+        //set any error ignore flags
+        setIgnoreState( line_ );
+
+        if( line_.isSuccess() == null )
 		{
 			Statement stat = conn.createStatement();
 			
@@ -295,8 +298,6 @@ public class DBUpdater extends MessageFrameAdaptor
             }
 
             getIMessageFrame().addOutput( "EXECUTING: " + cmd ); 
-            //set any error ignore flags
-            setIgnoreState( line_ );
 
 			if( line_.isIgnoreError() 
                 || isIgnoreAllErrors

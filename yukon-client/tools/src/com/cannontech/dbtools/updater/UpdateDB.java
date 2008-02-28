@@ -384,6 +384,7 @@ public class UpdateDB
 
 					if( isValidString(token) )
 					{
+					    // Checks to see if its an end block
 						if ( blockState ) {
                             blockState = !token.endsWith(DBMSDefines.END_BLOCK);
                             if(blockState) {
@@ -398,6 +399,8 @@ public class UpdateDB
                                 continue;
                             }
                         }
+						
+						// Checks to see if its a start block
                         else if( token.startsWith(DBMSDefines.START_BLOCK) ) {
                             //if we have a END_BLOCK, this comment is terminated
                             blockState = !token.endsWith(DBMSDefines.END_BLOCK);
@@ -431,27 +434,24 @@ public class UpdateDB
 
 								//if we have lines from the include, add them to our VALIDs list
 								if( extraLines != null )
-									for( int i = 0; i < extraLines.length; i++ )
+									for( int i = 0; i < extraLines.length; i++ ) {
 										validLines.add( extraLines[i] );
-							}							
-							else
+									}
+							} else {
 								handleComment( token, updLine );
-						}
-						else
-						{
+							}
+						} else {
 							updLine.getValue().append( token );
 
-							if( updLine.getValue().toString().indexOf(DBMSDefines.LINE_TERM) >= 0)	//white space follows the LINE_TERM
+							if( updLine.getValue().toString().indexOf(DBMSDefines.LINE_TERM) >= 0) { //white space follows the LINE_TERM
 								updLine.setValue(new StringBuffer(updLine.getValue().toString().trim()));
-								
-							if( updLine.getValue().toString().endsWith(DBMSDefines.LINE_TERM) )
-							{
-								validLines.add( updLine );
-	
-								updLine = new UpdateLine();
 							}
-							else
+							if( updLine.getValue().toString().endsWith(DBMSDefines.LINE_TERM) ) {
+								validLines.add( updLine );
+								updLine = new UpdateLine();
+							} else {
 								updLine.getValue().append(" "); //add a blank to separate the lines (just in case)
+							}
 						}
 					}
 				}	
@@ -461,16 +461,12 @@ public class UpdateDB
 				//file open/closed and read successfully
 				UpdateLine[] cmds = new UpdateLine[ validLines.size() ];
 				return (UpdateLine[])validLines.toArray( cmds );				
-			}
-			catch( Exception e)
-			{
+			} catch( Exception e) {
 				getIMessageFrame().addOutput( e.getMessage() );
 				CTILogger.error( e.getMessage(), e );
 				throw new DBUpdateException( e );
 			}
-		}
-		else
-		{
+		} else {
 			getIMessageFrame().addOutput( "Unable to find file '" + file +"'" );
 			throw new DBUpdateException( "Unable to find file '" + file +"'" );
 		}
