@@ -1868,6 +1868,12 @@ ALTER COLUMN PotentialTransformer varchar(100) NOT NULL;
 GO
 /* End YUK-5417 */
 
+/* Start YUK-5422 */
+DELETE FROM YukonRoleProperty
+      WHERE RolePropertyID = -70009;
+go
+/* End YUK-5422 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

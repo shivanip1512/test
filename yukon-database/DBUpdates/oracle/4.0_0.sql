@@ -1686,6 +1686,11 @@ ALTER TABLE CAPBANKADDITIONAL
 MODIFY(POTENTIALTRANSFORMER VARCHAR2(100 BYTE));
 /* End YUK-5417 */
 
+/* Start YUK-5422 */
+DELETE FROM YukonRoleProperty
+      WHERE RolePropertyID = -70009;
+/* End YUK-5422 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
