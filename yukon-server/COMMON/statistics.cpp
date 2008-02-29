@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2007/12/18 21:21:55 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2008/02/29 21:13:50 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -145,7 +145,7 @@ void CtiStatistics::incrementCompletion(const CtiTime &stattime, int CompletionS
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
 
-    if( getCounter(Completions, Daily) >= getCounter(Requests, Daily) 
+    if( getCounter(Completions, Daily) >= getCounter(Requests, Daily)
         && CompletionStatus == NORMAL
         && !(gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) & STATISTICS_COMPENSATED_RESULTS) )
     {
@@ -161,12 +161,12 @@ void CtiStatistics::incrementCompletion(const CtiTime &stattime, int CompletionS
     else
     {
         incrementAttempts(stattime, CompletionStatus);      // This may also increment the fail counter if CompletionStatus != NORMAL
-    
+
         if(CompletionStatus == NORMAL)
         {
             incrementSuccess(stattime);
         }
-    
+
         verifyThresholds();
     }
 }
@@ -240,7 +240,8 @@ int CtiStatistics::newHour(const CtiTime &newtime, CtiStatisticsCounters_t count
     CtiDate lastdate( _previoustime );
     CtiDate newdate( newtime );
 
-    if( HourNo != _previoustime.hour() )
+    if( HourNo != _previoustime.hour()
+        || _startStopTimePairs[HourNo].second < newtime )
     {
         // Reset the new counter to zero in case we've run for an entire 24 hours... hm.
         resetCounter( HourNo );
@@ -640,7 +641,7 @@ RWDBStatus::ErrorCode  CtiStatistics::Update(RWDBConnection &conn)
             table["attempts"].assign(getCounter( Attempts, i )) <<
             table["commerrors"].assign(getCounter( CommErrors, i )) <<
             table["protocolerrors"].assign(getCounter( ProtocolErrors, i )) <<
-            table["systemerrors"].assign(getCounter( SystemErrors, i )) <<                      
+            table["systemerrors"].assign(getCounter( SystemErrors, i )) <<
             table["startdatetime"].assign( toRWDBDT(_startStopTimePairs[i].first) ) <<
             table["stopdatetime"].assign( toRWDBDT(_startStopTimePairs[i].second) );
 
@@ -730,7 +731,7 @@ int CtiStatistics::resolveStatisticsType(const string& _rwsTemp) const
     int stattype;
     string rwsTemp = _rwsTemp;
     std::transform(rwsTemp.begin(), rwsTemp.end(), rwsTemp.begin(), tolower);
-    
+
     rwsTemp = trim(rwsTemp);
 
     if(rwsTemp == "monthly")
@@ -862,7 +863,7 @@ int CtiStatistics::resolveStatisticsType(const string& _rwsTemp) const
 void CtiStatistics::computeHourInterval(int hournumber, pair<CtiTime, CtiTime> &myinterval)
 {
     // CtiLockGuard<CtiMutex> guard(_statMux);
-    CtiTime startdt = CtiTime();
+    CtiTime startdt(CtiDate());
     startdt = startdt + (hournumber * 3600);
     CtiTime stopdt(startdt + 3600);
 
