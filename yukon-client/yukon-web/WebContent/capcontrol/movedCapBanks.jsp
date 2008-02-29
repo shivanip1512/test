@@ -10,6 +10,7 @@
 <%@ page import="com.cannontech.yukon.cbc.CapBankDevice" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.common.constants.LoginController" %>
+<%@ page import="com.cannontech.web.navigation.CtiNavObject" %>
 
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.List" %>
@@ -32,6 +33,10 @@
 String nd = "\"return nd();\"";
 CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
 LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
+
+CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
+String returnURL = nav.getPreviousPage();
+
 final CBCDisplay cbcDisplay = new CBCDisplay(user);
 String popupEvent = DaoFactory.getAuthDao().getRolePropertyValue(user, WebClientRole.POPUP_APPEAR_STYLE);
 if (popupEvent == null) popupEvent = "onmouseover";
@@ -99,4 +104,7 @@ Event.observe(window, 'load', function() {
 
 </script>		
 </cti:titledContainer>
+
+<input type="button" value="Back" onclick="javascript:location.href='<%=returnURL %>'">
+
 </cti:standardPage>
