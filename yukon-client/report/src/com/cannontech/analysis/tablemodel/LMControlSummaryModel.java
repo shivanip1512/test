@@ -135,10 +135,11 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                         for(LMHardwareControlGroup enrollment : enrollments) {
                             if(enrollment.getGroupEnrollStart() != null && (enrollment.getGroupEnrollStop() == null ||
                                     enrollment.getGroupEnrollStop().getTime() > getStartDate().getTime())) {
-                                totals[ENROLLED_CUSTOMERS] = totals[ENROLLED_CUSTOMERS]++;
+                                totals[ENROLLED_CUSTOMERS] = totals[ENROLLED_CUSTOMERS] + 1;
                                 break;
                             }
                         }
+                        
                         /*These are sorted by date.  For reporting purposes, we'll take the first enrollment start date we can find for
                          * this group, and the last enrollment stop we can find for this group.
                          */
@@ -174,7 +175,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                 else {
                     row.controlHours = totals[TOTAL_CONTROL_HOURS];
                     row.enrolledCustomers = (int)totals[ENROLLED_CUSTOMERS].doubleValue();
-                    row.optOutEvents = (int)totals[ENROLLED_CUSTOMERS].doubleValue();
+                    row.optOutEvents = (int)totals[TOTAL_OPT_OUT_EVENTS].doubleValue();
                     row.totalOptOutHours = totals[TOTAL_OPT_OUT_HOURS];
                     row.totalOptOutHoursDuringControl = totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL];
                 }
