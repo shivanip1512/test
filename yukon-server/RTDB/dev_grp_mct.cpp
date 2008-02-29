@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/10/18 19:20:58 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/02/29 17:05:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -337,6 +337,7 @@ INT CtiDeviceGroupMCT::executeControl( CtiRequestMsg *pReq, CtiCommandParser &pa
                     OutMessage->Buffer.BSt.Function = shed_function | (_lmGroupMCT.getRelays() & 0x0f);
                     OutMessage->Buffer.BSt.Length   = 0;
                     OutMessage->Buffer.BSt.IO       = Emetcon::IO_Write;
+                    OutMessage->ExpirationTime = CtiTime().seconds() + gConfigParms.getValueAsInt(GROUP_CONTROL_EXPIRATION, 1200);
 
                     found = true;
                 }
