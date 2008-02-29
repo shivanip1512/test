@@ -1691,6 +1691,11 @@ DELETE FROM YukonRoleProperty
       WHERE RolePropertyID = -70009;
 /* End YUK-5422 */
 
+/* Start YUK-5387 */
+insert into YukonRoleProperty values(-10818, -108, 'View Alarms Alerts','false','Ability to receive point alarms as alerts');
+insert into YukonRoleProperty values(-1701,-8, 'Alert Timeout Hours', '168', 'The number of hours that an alert should be held (zero = forever, decimal numbers are okay)'); 
+/* End YUK-5387 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     2/29/2008 1:12:27 PM                         */
+/* Created on:     2/29/2008 3:33:44 PM                         */
 /*==============================================================*/
 
 
@@ -11407,6 +11407,7 @@ insert into YukonRoleProperty values(-1601,-7,'Primary CIS Vendor','0','Defines 
 
 /* Configuration */
 insert into YukonRoleProperty values(-1700,-8,'Device Display Template','{name}','Defines the format for displaying devices. Available placeholders: {name},{description},{meterNumber},{id},{address}');
+insert into YukonRoleProperty values(-1701,-8, 'Alert Timeout Hours', '168', 'The number of hours that an alert should be held (zero = forever, decimal numbers are okay)'); 
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');
@@ -11494,6 +11495,7 @@ insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details',
 insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
 insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 insert into YukonRoleProperty values(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
+insert into YukonRoleProperty values(-10818, -108, 'View Alarms Alerts','false','Ability to receive point alarms as alerts'); 
 
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');
