@@ -1,62 +1,64 @@
-var alert_ajaxUpdaterObject = null;
 var alertUrl = '/spring/common/alert';
 var viewAlertUrl = alertUrl + '/view';
 var clearAlertUrl = alertUrl + '/clear';
 
-function alert_showPopup(alertContent) {
-    if (alert_ajaxUpdaterObject == null) {
-        alert_ajaxUpdaterObject = new Ajax.PeriodicalUpdater('alertBody', viewAlertUrl, {
-                'method': 'POST', 'frequency': 5, 'decay': 1
-        });
-    }
+function alert_showPopup() {
+    // this method is also called just to cause an update
+    new Ajax.Updater('alertBody', viewAlertUrl);
         
-    alertContent.show();
+    $('alertContent').show();
 }
 
 function alert_handleOnClick() {
-    var alertContent = $('alertContent');
-
-    if (alertContent.visible()) {
+    if ($('alertContent').visible()) {
         alert_closeAlertWindow();
         return;    
     }
     
-    alert_showPopup(alertContent);
+    alert_showPopup();
 }
 
 function alert_handleCountUpdate(data) {
-    var alertCount = data.value;
+    var alertCount = data.count;
+    var lastId = data.lastId;
     alert_updateCount(alertCount);
+    var previousLastId = YukonClientPersistance.getState("alertMemory", "lastId", lastId);
+    var remainingAlerts = $$('table#alertTable tbody tr').size();
+    var alertCountChanged = remainingAlerts != alertCount;
+    if (lastId > previousLastId) {
+        var doAutoPopup = stickyCheckboxes_retrieve("alert_autoPopup");
+        if (doAutoPopup) {
+            alert_showPopup();
+        }
+    } else if (alertCountChanged) {
+        if ($('alertContent').visible()) {
+            // call showPopup to cause refresh
+            alert_showPopup();
+            return;    
+        }
+    }
+    YukonClientPersistance.persistState("alertMemory", "lastId", lastId);
 }
 
 function alert_updateCount(alertCount) {
+    if ($('alertCountSpan')) {
+        $('alertCountSpan').innerHTML = alertCount;
+    }
     if (alertCount > 0) {
-        var oldCount = $('alertCountSpan').innerHTML;
-        var oldCount = YukonClientPersistance.getState("alertMemory", "lastCount", $('alertCountSpan').innerHTML);
-        if (alertCount > oldCount) {
-            // we only care if the number is going up
-            var endColor = $('alertSpan').getStyle("background-color");
-            // Highlight would be nice, but it looks stupid unless I hardcode the menu background as the endcolor
-            //new Effect.Highlight($('alertSpan'), {'duration': 3.5, 'startcolor': '#FFE900', 'endcolor': '#0066CC'}); 
-            var doAutoPopup = stickyCheckboxes_retrieve("alert_autoPopup");
-            if (doAutoPopup) {
-                alert_showPopup($('alertContent'));
-            }
+        if ($('alertSpan')) {
+            $('alertSpan').show();
         }
-        $('alertSpan').show();
     } else {
-        $('alertSpan').hide();
+        if ($('alertSpan')) {
+            $('alertSpan').hide();
+        }
         if ($('alertContent').visible()) {
             alert_closeAlertWindow();
         }
     }
-    $('alertCountSpan').innerHTML = alertCount;
-    YukonClientPersistance.persistState("alertMemory", "lastCount", alertCount);
 }
 
 function alert_closeAlertWindow() {
-    alert_ajaxUpdaterObject.stop();    
-    alert_ajaxUpdaterObject = null;
     $('alertContent').hide();    
     $('alertBody').childElements().invoke("remove");
 }

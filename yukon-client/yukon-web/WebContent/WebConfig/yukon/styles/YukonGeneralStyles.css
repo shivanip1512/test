@@ -45,7 +45,7 @@ div.simplePopup {
   width: 665px;
 }
 
-#alertView table tbody tr {
+#alertView table tbody tr td {
   border-bottom: 1px solid #ccc;
 }
 

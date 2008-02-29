@@ -55,7 +55,7 @@
 
 </ct:simplePopup>
 <ct:dataUpdateEnabler/>
-<cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" value="ALERT/COUNT"/>
+<cti:dataUpdaterCallback function="alert_handleCountUpdate" initialize="true" count="ALERT/COUNT" lastId="ALERT/LASTID"/>
 
 <div id="CopyRight">
 <cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>

@@ -15,6 +15,8 @@ public interface AlertService {
     
     public Collection<IdentifiableAlert> getAll(LiteYukonUser user);
     
+    public long getLatestAlertTime(LiteYukonUser user);
+    
     public int getCountForUser(LiteYukonUser user);
     
     public void setAlertClearHandlers(List<AlertClearHandler> alertClearHandlers);

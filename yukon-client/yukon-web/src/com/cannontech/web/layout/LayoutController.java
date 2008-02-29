@@ -111,7 +111,10 @@ public class LayoutController {
                     menuRenderer.renderMenu(out);
                 }
             });
-        }
+        }   
+        
+        // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
+        response.addHeader("Cache-Control", "no-store");                                                                                                
 
         return moduleBase.getSkin();
     }

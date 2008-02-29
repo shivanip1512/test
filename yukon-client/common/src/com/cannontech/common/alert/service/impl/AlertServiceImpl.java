@@ -81,15 +81,15 @@ public class AlertServiceImpl implements AlertService{
 
     @Override
     public synchronized Collection<IdentifiableAlert> getAll(final LiteYukonUser user) {
-        List<IdentifiableAlert> resultList = getFilterAlerts(user);
-        resultList = new ReverseList<IdentifiableAlert>(resultList);
-        return resultList;
+        List<IdentifiableAlertImpl> resultList = getFilterAlerts(user);
+        ReverseList<IdentifiableAlert> reversedList = new ReverseList<IdentifiableAlert>(resultList);
+        return reversedList;
     }
 
-    private List<IdentifiableAlert> getFilterAlerts(final LiteYukonUser user) {
-        List<IdentifiableAlert> resultList = new ArrayList<IdentifiableAlert>();
+    private List<IdentifiableAlertImpl> getFilterAlerts(final LiteYukonUser user) {
+        List<IdentifiableAlertImpl> resultList = new ArrayList<IdentifiableAlertImpl>();
         
-        for (final IdentifiableAlert alert : map.values()) {
+        for (final IdentifiableAlertImpl alert : map.values()) {
             boolean checkPassed = alert.getUserCheck().check(user);
             if (checkPassed) resultList.add(alert);
         }
@@ -98,8 +98,19 @@ public class AlertServiceImpl implements AlertService{
 
     @Override
     public synchronized int getCountForUser(final LiteYukonUser user) {
-        int count = getAll(user).size();
+        int count = getFilterAlerts(user).size();
         return count;
+    }
+    
+    @Override
+    public synchronized long getLatestAlertTime(LiteYukonUser user) {
+        List<IdentifiableAlertImpl> filterAlerts = getFilterAlerts(user);
+        if (filterAlerts.isEmpty()) {
+            return 0;
+        } else {
+            IdentifiableAlertImpl lastAlert = filterAlerts.get(filterAlerts.size() - 1);
+            return lastAlert.getAddedTimestamp();
+        }
     }
 
     @Override

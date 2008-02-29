@@ -4,9 +4,9 @@ import java.util.AbstractList;
 import java.util.List;
 
 public class ReverseList<E> extends AbstractList<E> {
-    List<E> delegate;
+    List<? extends E> delegate;
 
-    public ReverseList(List<E> delegate) {
+    public ReverseList(List<? extends E> delegate) {
         super();
         this.delegate = delegate;
     }
