@@ -54,14 +54,6 @@ public class CommonModuleBuilder implements ModuleBuilder {
         Element rootElem = configDoc.getRootElement();
         Element portalLinks = rootElem.getChild("portals");
         List<Element> portalList = portalLinks.getChildren("portal");
-        List<Element> javaScriptList  = portalLinks.getChildren("script");
-        
-//        for (Element scriptList : javaScriptList) {
-//            Attribute jsFile = scriptList.getAttribute("file");
-//            if (jsFile != null){
-//                portalJavaScriptIncludes.add(jsFile.getValue());
-//            }
-//        }
         
         for (Element portal : portalList) {
             
