@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/01/16 16:14:06 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2008/02/29 21:09:59 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,6 +43,7 @@ extern CtiConnection VanGoghConnection;
 
 extern INT ReturnResultMessage(INT CommResult, INMESS *InMessage, OUTMESS *&OutMessage);
 extern void commFail(CtiDeviceSPtr &Device);
+extern bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
 
 
 namespace Cti
@@ -1554,6 +1555,15 @@ void UDPInterface::processInbounds( void )
                             if( status || dr->work.xfer.getInCountActual() )
                             {
                                 traceInbound(dr->ip, dr->port, dr->work.status, dr->work.xfer.getInBuffer(), dr->work.xfer.getInCountActual(), _traceList, dr->device);
+
+                                processCommResult(status, dr->id, dr->id, dr->work.outbound.front()->Retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+
+                                if( status && !dr->device->isTransactionComplete() )
+                                {
+                                    //  error, but we're going to keep going
+                                    //    this is the equivalent of a "retry" in the old school code
+                                    statisticsNewAttempt(dr->device->getPortID(), dr->id, dr->id, status, MessageFlag_StatisticsRequested);
+                                }
                             }
 
                             if( p && (p->used >= p->len) )
@@ -2197,18 +2207,29 @@ void UDPInterface::sendResults( void )
 
                         OUTMESS *om = dr->work.outbound.front();
 
+                        //  dr->work.outbound.front()->Retry will never be nonzero for DNP devices - they handle retries internally
+                        processCommResult(dr->work.status, dr->id, dr->id, dr->work.outbound.front()->Retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+
+                        /*
                         bool commFailed = (dr->work.status == NORMAL);
 
+                        //  om->Retry will never be nonzero for DNP devices - they handle retries internally
                         if( dr->device->adjustCommCounts(commFailed, om->Retry > 0) )
                         {
                             commFail(boost::static_pointer_cast<CtiDeviceBase>(dr->device));
                         }
-
-                        statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->work.status, om->MessageFlags );
+                        */
 
                         OutEchoToIN(om, &im);
 
                         dr->device->sendCommResult(&im);
+
+                        //  if dr->work.status is nonzero, ReturnResultMessage() calls SendError(),
+                        //    which calls statisticsNewCompletion()...  so we don't need to call it if we're not in error
+                        if( !dr->work.status )
+                        {
+                            statisticsNewCompletion( om->Port, om->DeviceID, om->TargetID, dr->work.status, om->MessageFlags );
+                        }
 
                         //  This method may delete the OM!
                         ReturnResultMessage(dr->work.status, &im, om);
