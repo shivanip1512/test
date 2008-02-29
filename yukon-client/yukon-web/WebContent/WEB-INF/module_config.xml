@@ -308,17 +308,6 @@
           </option>
         </sublinks>
       </option>
-      <option id="modify">
-        <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
-        <sublinks>
-          <option id="edit">
-            <script>editorPost()</script>
-          </option>
-          <option id="delete">
-            <script>deletePost()</script>
-          </option>
-        </sublinks>
-      </option>
       <option id="analysis">
         <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
         <sublinks>

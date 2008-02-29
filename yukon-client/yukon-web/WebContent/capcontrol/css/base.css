@@ -207,6 +207,10 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 	cursor: help;
 }
 
+.editImg {
+    border: 0;
+}
+
 .alert {
 	color: #FF0000;
 }

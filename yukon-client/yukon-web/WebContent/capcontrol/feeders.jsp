@@ -171,7 +171,15 @@ String css = "tableCell";
                 
                 <tr class="altTableCell" id="tr_substation_${thisSubStationId}">
                     <td id="anc_${thisSubStationId}">
-                        <input type="checkbox" name="cti_chkbxSubStation" value="${thisSubStationId}"></input>
+		                <input type="checkbox" name="cti_chkbxSubStation" value="${thisSubStationId}"></input>
+		                <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+	                        <a href="/editor/cbcBase.jsf?type=2&itemid=<%=substation.getCcId()%>&ignoreBookmark=true">
+	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+		                    </a>
+		                    <a href="/editor/deleteBasePAO.jsf?value=<%=substation.getCcId()%>">
+		                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+		                    </a>
+	                    </cti:checkProperty>
                         <%=substation.getCcName()%>
                         <% if (substation.getSpecialAreaEnabled()) {
                             String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId());
@@ -239,6 +247,15 @@ for( SubBus subBus: subBuses ) {
 				</td>
                 
 				<td id="subName">
+				    <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+					    <a href="/editor/cbcBase.jsf?type=2&itemid=<%=subBus.getCcId()%>&ignoreBookmark=true">
+	                        <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+	                    </a>
+	                    
+	                    <a href="/editor/deleteBasePAO.jsf?value=<%=subBus.getCcId()%>">
+	                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+	                    </a>
+                    </cti:checkProperty>
                     <a
                         <% if (!hideOneLine) { %>
 				            href="${onelineCBCServlet}?id=${thisSubBusId}&redirectURL=<%=currentPageURL %>" title="Click to view One-Line"
@@ -390,6 +407,15 @@ for (int i = 0; i < feeders.size(); i++ ) {
 				<tr class="<%=css%>">
 					<td>
 						<input type="checkbox" name="cti_chkbxFdrs" value="${thisFeederId}"/>
+						<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+							<a href="/editor/cbcBase.jsf?type=2&itemid=<%=feeder.getCcId()%>&ignoreBookmark=true">
+	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+	                        </a>
+	                        
+	                        <a href="/editor/deleteBasePAO.jsf?value=<%=feeder.getCcId()%>">
+	                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+	                        </a>
+                        </cti:checkProperty>
 						<span><%=feeder.getCcName()%></span>
 					</td>
 					
@@ -492,7 +518,13 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				    String name = "---";
 				    Integer cdId = capBank.getControlDeviceID();
 				    if (cdId.intValue() != 0) {
-				        name = paoDao.getYukonPAOName(cdId);    
+				        name = paoDao.getYukonPAOName(cdId);%>
+				        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+					        <a href="/editor/cbcBase.jsf?type=2&itemid=<%=capBank.getControlDeviceID()%>">
+	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+	                        </a>
+                        </cti:checkProperty>
+                    <%
 				    }
 				    %> 
 				    <%=name%>
@@ -509,12 +541,30 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                         <input id="2_way_${thisCapBankId}" type="hidden" value="<%=CBCUtils.isTwoWay(obj)%>"/>
                         <input id="showFlip_${thisCapBankId}" type="hidden" value="<%=showFlip%>"/>
                         <input id="is701x_${thisCapBankId}" type="hidden" value="<%=CBCUtils.is701xDevice(obj)%>"/>
+                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+	                        <a href="/editor/cbcBase.jsf?type=2&itemid=<%=capBank.getCcId()%>&ignoreBookmark=true">
+	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+	                        </a>
+	                        
+	                        <a href="/editor/deleteBasePAO.jsf?value=<%=capBank.getCcId()%>">
+	                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+	                        </a>
+                        </cti:checkProperty>
                         <a href="javascript:void(0);"
                            <%=popupEvent%> ="getCapBankMenu('${thisCapBankId}');" 
                            >
                             <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
                         </a>
 					<% } else { %>
+                        <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+	                        <a href="/editor/cbcBase.jsf?type=2&itemid=<%=capBank.getCcId()%>&ignoreBookmark=true">
+	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+	                        </a>
+	                        
+	                        <a href="/editor/deleteBasePAO.jsf?value=<%=capBank.getCcId()%>">
+	                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+	                        </a>
+                        </cti:checkProperty>
                         <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
 					<% } %>
 					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >

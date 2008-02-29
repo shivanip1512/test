@@ -118,6 +118,14 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 	        <tr class="<%=css%>">
 				<td>
 				    <input type="checkbox" name="cti_chkbxSubStation" value="${thisSubStationId}" />
+				    <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                        <a href="/editor/cbcBase.jsf?type=2&itemid=<%=substation.getCcId()%>&ignoreBookmark=true">
+                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+                        </a>
+                        <a href="/editor/deleteBasePAO.jsf?value=<%=substation.getCcId()%>">
+                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+                        </a>
+                    </cti:checkProperty>
 				    <a href="javascript:postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', ${thisSubStationId});" 
                        class="<%=css%>" 
                        id="anc_${thisSubStationId}">

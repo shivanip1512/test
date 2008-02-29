@@ -240,6 +240,7 @@ public class CapBankEditorForm extends DBEditorForm {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void treeSwapRemoveAction() {
         FacesContext context = FacesContext.getCurrentInstance();
         Map paramMap = context.getExternalContext().getRequestParameterMap();
@@ -262,6 +263,7 @@ public class CapBankEditorForm extends DBEditorForm {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public void treeSwapAddAction() {
         FacesContext context = FacesContext.getCurrentInstance();
         Map paramMap = context.getExternalContext().getRequestParameterMap();
