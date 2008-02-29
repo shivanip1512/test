@@ -29,7 +29,6 @@ public interface CBCSettingsRole
 	public static final int CBC_CREATION_NAME = CapControlRoleDefs.CBC_PROPERTYID_BASE - 6;
 	public static final int PFACTOR_DECIMAL_PLACES = CapControlRoleDefs.CBC_PROPERTYID_BASE - 7;
 	public static final int CBC_ALLOW_OVUV = CapControlRoleDefs.CBC_PROPERTYID_BASE - 8;
-	public static final int CBC_REFRESH_RATE = CapControlRoleDefs.CBC_PROPERTYID_BASE - 9;
 	public static final int CBC_DATABASE_EDIT = CapControlRoleDefs.CBC_PROPERTYID_BASE - 10;
     public static final int SHOW_FLIP_COMMAND = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 11;
     public static final int SHOW_CB_ADDINFO = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 12;

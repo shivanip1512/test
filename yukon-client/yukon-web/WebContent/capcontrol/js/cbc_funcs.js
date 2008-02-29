@@ -309,37 +309,6 @@ function showSubMenu( elemName, visible )
 }
 
 // -------------------------------------------
-//CallBack method for the XMLhttp request/refresh.
-// Uses a proxy JSP to get around security concerns
-// in XMLhttp
-// -------------------------------------------
-function callBack( response)
-{
-    if( response != null )
-    { 
-        // Response mode
-        updateHTML(response);
-    }
-    else
-    {   
-        // Input mode
-        var elems = $$('*[name="cti_dyn"]');
-        var url = createURLreq( elems, '/servlet/CBCServlet?method=callBack', 'id' );
-        var lastUpdate = document.getElementById ('lastUpdate');
-        if (lastUpdate != null)
-        {
-            url += '&lastUpdate=' + lastUpdate.value;
-        }
-        else if (elems.length > 0)
-        {
-            alert('Web page is not timestamped. Values will not be updated dynamically!');
-            return;
-        }
-        loadXMLDoc(url);
-    }
-}
-
-// -------------------------------------------
 //Creates a URL string from the elements given.
 // The attrib name/value pari is appended to the
 // URL. Ensures that each element is only requested onces
@@ -358,68 +327,6 @@ function createURLreq( elems, initialURL, attrib ) {
     }
 
     return initialURL;
-}
-
-// -------------------------------------------
-//Update the HTML on the screen with the results
-// returned from the XMLhttp call
-// -------------------------------------------
-function updateHTML( result) {
-    if( result != null ) {
-    
-        var map = createResultMap(result);
-        var elems = $$('*[name="cti_dyn"]');
-
-        for (var j = 0; j < elems.length; j++) {
-            var element = elems[j];
-            var xmlId = element.getAttribute('id');
-            var value = map[xmlId];
-            if (value == null) continue;
-            
-            var elemType = element.getAttribute('type');
-            switch (elemType) {
-                case 'warning':
-                    var image = getElementTextNS(value,0,'warning');
-                    var warningID = "warning_alert_" + xmlId;
-                    var okId = "warning_ok_" + xmlId;
-                    if (image == "true") {
-                        if (!$(warningID).visible()) {
-                            $(warningID).toggle();
-                        }    
-                        if ($(okId).visible()) {
-                            $(okId).toggle();
-                        }    
-                    } else {
-                        if ($(warningID).visible()) {
-                            $(warningID).toggle();
-                        } 
-                        if (!$(okId).visible()) {
-                            $(okId).toggle();      
-                        } 
-                    }
-                    break;
-                        
-                //special case since 2 elements are involved with 1 TAG
-                case 'state':
-                    var xmlColor = getElementTextNS(value, 0, 'param0');                            
-                    element.style.color = xmlColor;
-                    element.innerHTML = getElementTextNS(value, 0, elemType);
-                    break;
-                        
-                //most of this time this will suffice
-                default:
-                    element.innerHTML = getElementTextNS(value, 0, elemType);
-                    break;
-            }
-        }
-
-        updateCommandMenu(result);
-        var lastUpdate = document.getElementById('lastUpdate');
-        if (lastUpdate){
-            lastUpdate.value = new Date().getTime();
-        }
-        setTimeout('callBack()', clientRefresh );
-    }
 }
 
 function createResultMap(result) {
