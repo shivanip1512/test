@@ -17,8 +17,11 @@ import org.apache.axis.message.PrefixedQName;
 import org.apache.axis.message.SOAPEnvelope;
 import org.apache.axis.message.SOAPHeader;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.multispeak.dao.MultispeakDao;
@@ -37,16 +40,19 @@ public class MultispeakFuncs
 {
     public MultispeakDao multispeakDao;
     public RoleDao roleDao;
+    public DeviceGroupService deviceGroupService;
 
-    /**
-     * @param multispeakDao The multispeakDao to set.
-     */
+    @Required
     public void setMultispeakDao(MultispeakDao multispeakDao) {
         this.multispeakDao = multispeakDao;
     }
-
+    @Required
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
+    }
+    @Required
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
     }
 
     public void logStrings(String intfaceName, String methodName, String[] strings)
@@ -257,6 +263,16 @@ public class MultispeakFuncs
     {
         String value = roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID);
         return Integer.valueOf(value).intValue();
+    }
+
+    /**
+     * @return Returns the billingCycle parent Device Group
+     */
+    public StoredDeviceGroup getBillingCycleDeviceGroup() throws NotFoundException{
+        //WE MAY HAVE SOME PROBLEMS HERE WITH THE EXPLICIT CAST TO STOREDDEVICEGROUP....
+        String value = roleDao.getGlobalPropertyValue(MultispeakRole.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP);
+        StoredDeviceGroup deviceGroup = (StoredDeviceGroup)deviceGroupService.resolveGroupName(value);
+        return deviceGroup;
     }
 
 }

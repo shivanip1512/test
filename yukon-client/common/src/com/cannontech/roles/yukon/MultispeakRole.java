@@ -21,4 +21,5 @@ public interface MultispeakRole {
 	
     public static final int MSP_PAONAME_ALIAS = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE;
     public static final int MSP_PRIMARY_CB_VENDORID = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 1;
+    public static final int MSP_BILLING_CYCLE_PARENT_DEVICEGROUP = YukonRoleDefs.MULTISPEAK_PROPERTYID_BASE - 2;
 }

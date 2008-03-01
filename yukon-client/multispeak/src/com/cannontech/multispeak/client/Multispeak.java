@@ -35,6 +35,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -72,6 +73,7 @@ import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
+import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yukon.BasicServerConnection;
 
@@ -899,8 +901,8 @@ public class Multispeak implements MessageListener {
         String meterNumber = mspMeter.getMeterNo().trim();
         
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
-        String billingGroup = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? "":mspServiceLocation.getBillingCycle();
-        
+        String mspBillingCycle = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? "":mspServiceLocation.getBillingCycle();
+
         // get the Collection Group value...returns a set...just pick one I guess.
         DeviceGroup collDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.COLLECTION);
         String collectionGroup = (collDeviceGroup != null ? collDeviceGroup.getName() : "Default");
@@ -909,6 +911,21 @@ public class Multispeak implements MessageListener {
         DeviceGroup altDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.ALTERNATE);
         String alternateGroup = (altDeviceGroup != null ? altDeviceGroup.getName() : "Default");
 
+        // get the Billing Group value...returns a set...just pick one I guess.
+        DeviceGroup billingDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.BILLING);
+        String billingGroup = (billingDeviceGroup != null ? billingDeviceGroup.getName() : "Default");
+
+        //Update one of the possible ImportData group values with the mspBillingCyle based on the RoleProperty
+        DeviceGroup billingCyleFromRole = multispeakFuncs.getBillingCycleDeviceGroup();
+        if (collDeviceGroup.getParent().getFullName().equals(billingCyleFromRole.getFullName()))
+            collectionGroup = mspBillingCycle;
+        else if ( altDeviceGroup.getParent().getFullName().equals(billingCyleFromRole.getFullName()))
+            alternateGroup = mspBillingCycle;
+        else if ( billingDeviceGroup.getParent().getFullName().equals(billingCyleFromRole.getFullName()))
+            billingGroup = mspBillingCycle;
+        else
+            CTILogger.info("BilingCycle DeviceGroup roleProperty is not a valid parent group for BulkImporter, using template default values for groups.");
+
         
         final int paoAlias = multispeakFuncs.getPaoNameAlias();
         String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, meterNumber);
@@ -916,7 +933,9 @@ public class Multispeak implements MessageListener {
         ImportData importData = new ImportData(address, paoName, "", meterNumber, 
                                                (collectionGroup == null ? "" : collectionGroup),
                                                (alternateGroup == null ? "" : alternateGroup), 
-                                               templatePaoName, billingGroup, substationName);
+                                               templatePaoName, 
+                                               (billingGroup == null ? "" : billingGroup),
+                                               substationName);
         try {
             Transaction.createTransaction(Transaction.INSERT, importData).execute();
             logMSPActivity("MeterAddNotification",
@@ -1001,7 +1020,8 @@ public class Multispeak implements MessageListener {
         if (!StringUtils.isBlank(newBilling)) {
 
             //Remove from all billing membership groups
-            StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
+//            StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
+            StoredDeviceGroup deviceGroupParent = multispeakFuncs.getBillingCycleDeviceGroup();
             Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, meter);
             for (StoredDeviceGroup deviceGroup : deviceGroups) {
                 if( deviceGroup.getName().equalsIgnoreCase(newBilling) ) {

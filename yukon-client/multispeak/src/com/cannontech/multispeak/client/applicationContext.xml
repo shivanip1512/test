@@ -63,6 +63,7 @@
   <bean id="multispeakFuncs" class="com.cannontech.multispeak.client.MultispeakFuncs">
     <property name="multispeakDao" ref="multispeakDao"/>
     <property name="roleDao" ref="roleDao"/>
+    <property name="deviceGroupService" ref="deviceGroupService"/>
   </bean>
   
   <bean id="multispeak" class="com.cannontech.multispeak.client.Multispeak" init-method="initialize">
