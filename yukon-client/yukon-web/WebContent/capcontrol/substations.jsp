@@ -119,10 +119,10 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 				<td>
 				    <input type="checkbox" name="cti_chkbxSubStation" value="${thisSubStationId}" />
 				    <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-                        <a href="/editor/cbcBase.jsf?type=2&itemid=<%=substation.getCcId()%>&ignoreBookmark=true">
+                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=substation.getCcId()%>&ignoreBookmark=true">
                             <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
                         </a>
-                        <a href="/editor/deleteBasePAO.jsf?value=<%=substation.getCcId()%>">
+                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=substation.getCcId()%>">
                             <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
                         </a>
                     </cti:checkProperty>

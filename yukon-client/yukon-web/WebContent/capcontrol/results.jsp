@@ -91,6 +91,14 @@ for( int i = 0; i < items.length; i++ )
 				<td>
 		<% if( item.getLiteType() == LiteTypes.YUKON_PAOBJECT ) { %>
 				<input type="checkbox" name="cti_chkbxSubBuses" value="<%=item.getItemID()%>"/>
+				<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                    <a href="/editor/cbcBase.jsf?type=2&itemid=<%=item.getItemID()%>&ignoreBookmark=true" class="editImg">
+                        <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+                    </a>
+                    <a href="/editor/deleteBasePAO.jsf?value=<%=item.getItemID()%>" class="editImg">
+                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+                    </a>
+                </cti:checkProperty>
 		<% } else { %>
 				<input type="checkbox" name="cti_chkbxPoints" value="<%=item.getItemID()%>"/>
 		<% }  %>

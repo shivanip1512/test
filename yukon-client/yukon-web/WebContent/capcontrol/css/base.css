@@ -209,7 +209,10 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 
 .editImg {
     border: 0;
+    text-decoration: none;
 }
+
+.editImg A:link {text-decoration: none;}
 
 .alert {
 	color: #FF0000;

@@ -83,10 +83,10 @@ if (allowCtlVal!=null) {
 						src="images/nav-plus.gif"
 						onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
 					<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-                        <a href="/editor/cbcBase.jsf?type=2&itemid=<%=area.getPaoID()%>&ignoreBookmark=true">
+                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=area.getPaoID()%>&ignoreBookmark=true">
                             <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
                         </a>
-                        <a href="/editor/deleteBasePAO.jsf?value=<%=area.getPaoID()%>">
+                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=area.getPaoID()%>">
                             <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
                         </a>
                     </cti:checkProperty>
