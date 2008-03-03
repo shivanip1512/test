@@ -450,7 +450,12 @@ public void postSave(DBPersistent o) {
     if (newPasswordValue != null) {
         // change password
         LiteYukonUser liteYukonuser = (LiteYukonUser) LiteFactory.createLite(o);
-        authenticationService.setPassword(liteYukonuser, newPasswordValue);
+        AuthType authType = liteYukonuser.getAuthType();
+        boolean supportsSetPassword = authenticationService.supportsPasswordSet(authType);
+        if (supportsSetPassword) {
+            authenticationService.setPassword(liteYukonuser, newPasswordValue);
+        }
+        
         newPasswordValue = null;
         passwordRequiresChanging = false;
     }
