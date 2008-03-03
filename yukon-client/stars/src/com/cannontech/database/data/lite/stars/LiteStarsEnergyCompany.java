@@ -2370,6 +2370,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 liteAcctInfo = new LiteStarsCustAccountInformation(accountID);                
                 liteAcctInfo.retrieveLiteStarsCustAccountInfo();
                 
+                if (liteAcctInfo.getCustomerAccount() == null) return null; //retrieveLiteStarsCustAccountInfo failed
+                
                 addBriefCustAccountInfo( liteAcctInfo);
                 return liteAcctInfo;
             }
