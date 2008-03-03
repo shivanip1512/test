@@ -99,13 +99,14 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
 
 
         ReportBean reportBean = (ReportBean)session.getAttribute(ServletUtil.ATT_REPORT_BEAN);
+        if (reportBean == null)
+        {
+            session.setAttribute(ServletUtil.ATT_REPORT_BEAN, new ReportBean());
+            reportBean = (ReportBean)session.getAttribute(ServletUtil.ATT_REPORT_BEAN);
+        }	
+        
         synchronized (reportBean) {
-            if(reportBean == null)
-            {
-                session.setAttribute(ServletUtil.ATT_REPORT_BEAN, new ReportBean());
-                reportBean = (ReportBean)session.getAttribute(ServletUtil.ATT_REPORT_BEAN);
-            }	
-
+            
             String param;	//holder for the requested parameter
             String ext = "pdf", action="";
 
