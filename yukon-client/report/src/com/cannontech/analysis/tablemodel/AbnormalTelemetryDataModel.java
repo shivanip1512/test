@@ -20,6 +20,7 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
     
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    @SuppressWarnings("unused")
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
@@ -116,13 +117,43 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                 }
                 
                 row.substationBus = rs.getString("substationBus");
-                row.subVarPoint = rs.getString("subVarPoint");
-                row.subVoltPoint = rs.getString("subVoltPoint");
-                row.subWattPoint = rs.getString("subWattPoint");
+                String subVarPoint = rs.getString("subVarPoint");
+                Integer subVarInt = Integer.parseInt(subVarPoint);
+                if (subVarInt <=0) {
+                    subVarPoint = "---";
+                }
+                row.subVarPoint = subVarPoint;
+                String subVoltPoint = rs.getString("subVoltPoint");
+                Integer subVoltInt = Integer.parseInt(subVoltPoint);
+                if (subVoltInt <=0) {
+                    subVoltPoint = "---";
+                }
+                row.subVoltPoint = subVoltPoint;
+                String subWattPoint = rs.getString("subWattPoint");
+                Integer subWattInt = Integer.parseInt(subWattPoint);
+                if (subWattInt <=0) {
+                    subWattPoint = "---";
+                }
+                row.subWattPoint = subWattPoint;
                 row.feederName = rs.getString("feederName");
-                row.varPoint = rs.getString("varPoint");
-                row.voltPoint = rs.getString("voltPoint");
-                row.wattPoint = rs.getString("wattPoint");
+                String varPoint = rs.getString("varPoint");
+                Integer varInt = Integer.parseInt(varPoint);
+                if (varInt <=0) {
+                    varPoint = "---";
+                }
+                row.varPoint = varPoint;
+                String voltPoint = rs.getString("voltPoint");
+                Integer voltInt = Integer.parseInt(voltPoint);
+                if (voltInt <=0) {
+                    voltPoint = "---";
+                }
+                row.voltPoint = voltPoint;
+                String wattPoint = rs.getString("wattPoint");
+                Integer wattInt = Integer.parseInt(wattPoint);
+                if (wattInt <=0) {
+                    wattPoint = "---";
+                }
+                row.wattPoint = wattPoint;
                 
                 data.add(row);
             }
