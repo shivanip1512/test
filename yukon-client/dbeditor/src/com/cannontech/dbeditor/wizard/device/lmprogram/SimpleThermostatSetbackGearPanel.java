@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.util.Calendar;
@@ -34,10 +35,13 @@ import javax.swing.event.ChangeListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.unchanging.DoubleRangeDocument;
 import com.cannontech.common.gui.util.LineLabel;
+import com.cannontech.common.util.StringUtils;
 import com.cannontech.database.data.device.lm.SimpleThermostatRampingGear;
+import com.cannontech.database.db.device.lm.LMProgramDirectGear;
 import com.cannontech.database.db.device.lm.LMThermostatGear;
 import com.cannontech.dbeditor.wizard.device.lmgroup.ExpressComCellRenderer;
 
@@ -64,6 +68,8 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
     private JCheckBox heatModeCheckBox;
     private JCheckBox coolModeCheckBox;
     private JComboBox changeGearBox;
+    private JComboBox howToStopControlBox;
+    private JLabel howToStopLabel;
     private ChangeListener customChangeListener;
     private Map<String, JPanel> changeValuePanelMap;
 
@@ -75,6 +81,17 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
     public SimpleThermostatSetbackGearPanel() {
         initialize();
+    }
+    
+    public void actionPerformed(ActionEvent e) {
+        Object source = e.getSource();
+        if (source == getHowToStopBox()) { 
+            fireInputUpdate();
+        }
+    }
+    
+    private void initConnections() throws java.lang.Exception {
+        getHowToStopBox().addActionListener(this);
     }
     
     private Map<String,JPanel> getChangeValuePanelMap() {
@@ -224,6 +241,18 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
             });
         }
         return changeGearBox;
+    }
+    
+    private javax.swing.JComboBox getHowToStopBox() {
+        if (howToStopControlBox == null) {
+            howToStopControlBox = new javax.swing.JComboBox();
+            howToStopControlBox.setName("JComboBoxHowToStop");
+            howToStopControlBox.setPreferredSize(new java.awt.Dimension(150, 23));
+            howToStopControlBox.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+            howToStopControlBox.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_TIME_IN ) );
+            howToStopControlBox.addItem( StringUtils.addCharBetweenWords( ' ', LMProgramDirectGear.STOP_RESTORE ) );
+        }
+        return howToStopControlBox;
     }
     
     private JPanel getAfterADurationPanel() {
@@ -420,8 +449,29 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         c.gridx = 2;
         c.gridy = 8;
         statEditorPanel.add(new JLabel("(0:00 - 3:00)"), c);
+        
+        c.gridx = 0;
+        c.gridy = 9;
+        c.gridwidth = 2;
+        statEditorPanel.add(getHowToStopLabel(), c);
+        
+        c.gridx = 2;
+        c.gridy = 9;
+        c.gridwidth = 2;
+        statEditorPanel.add(getHowToStopBox(), c);
 
         return statEditorPanel;
+    }
+    
+    private JLabel getHowToStopLabel() {
+        if (howToStopLabel == null) {
+                howToStopLabel = new javax.swing.JLabel();
+                howToStopLabel.setName("JLabelHowToStop");
+                howToStopLabel.setFont(new java.awt.Font("dialog", 0, 12));
+                howToStopLabel.setAlignmentY(java.awt.Component.TOP_ALIGNMENT);
+                howToStopLabel.setText("How to Stop Control:");
+        }
+        return howToStopLabel;
     }
 
     private JCheckBox getHeatModeCheckBox() {
@@ -592,6 +642,12 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         add(getImagePanel(), BorderLayout.NORTH);
         add(getMainPanel(), BorderLayout.CENTER);
         add(getChangePanel(), BorderLayout.SOUTH);
+        
+        try {
+            initConnections();
+        } catch (Exception e) {
+            CTILogger.error(e.getMessage(),e);
+        }
     }
     
     private Date toDateFromMinutes(final int minutes) {
@@ -629,6 +685,8 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         if (obj == null || !(obj instanceof SimpleThermostatRampingGear)) return;
         
         SimpleThermostatRampingGear gear = (SimpleThermostatRampingGear) obj;
+        
+        getHowToStopBox().setSelectedItem( StringUtils.addCharBetweenWords( ' ', gear.getMethodStopType() ) );
         
         boolean isHeatMode = gear.getSettings().charAt(2) == 'H';
         getHeatModeCheckBox().setSelected(isHeatMode);
@@ -683,6 +741,10 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         if (obj == null || !(obj instanceof LMThermostatGear)) return null;
         
         LMThermostatGear gear = (LMThermostatGear) obj;
+        
+        if( getHowToStopBox().getSelectedItem() != null ) {
+            gear.setMethodStopType(StringUtils.removeChars( ' ', getHowToStopBox().getSelectedItem().toString() ) );
+        }
         
         boolean isHeatMode = getHeatModeCheckBox().isSelected();
         char heatChar = (isHeatMode) ? 'H' : '-';
