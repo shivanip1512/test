@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/01/14 17:23:09 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/03/03 21:57:13 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -50,7 +50,9 @@ private:
 
     coll_type     _smartMap;
     void refreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg);
-    void addPoint(CtiPointBase *point);
+
+    void addPoint(CtiPointBase *point);  //  also used by the unit test
+    void updatePointMaps(const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset );
 
     // These are properties of already collected points.
     void refreshPointProperties(LONG pntID = 0, LONG paoID = 0);

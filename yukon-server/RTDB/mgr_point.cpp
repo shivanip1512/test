@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2008/02/22 23:47:08 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2008/03/03 21:57:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -695,10 +695,18 @@ void CtiPointManager::refreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*test
         {
             /*
              *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the CTIDBG_new settings!
+             *  update my list entry to the new settings!
              */
-            Point->DecodeDatabaseReader(rdr);        // Fills himself in from the reader
-            Point->setUpdatedFlag();       // Mark it updated
+
+            long           old_pao            = Point->getDeviceID();
+            CtiPointType_t old_type           = Point->getType();
+            int            old_offset         = Point->getPointOffset();
+            int            old_control_offset = Point->getControlOffset();
+
+            Point->DecodeDatabaseReader(rdr);  // Fills himself in from the reader
+            Point->setUpdatedFlag();           // Mark it updated
+
+            updatePointMaps(*Point, old_pao, old_type, old_offset, old_control_offset);  // update the type and offset maps
         }
         else
         {
@@ -709,12 +717,32 @@ void CtiPointManager::refreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*test
             {
                 // Add it to my list....
                 pTempCtiPoint->setUpdatedFlag();            // Mark it updated
-                addPoint(pTempCtiPoint);
+
+                addPoint(pTempCtiPoint);                    // add the point to the maps
             }
             else
             {
                 delete pTempCtiPoint;                       // I don't want it!
             }
+        }
+    }
+}
+
+void CtiPointManager::addPoint( CtiPointBase *point )
+{
+    if( point )
+    {
+        _smartMap.insert(point->getID(), point); // Stuff it in the list
+
+        //  add it into the offset lookup map
+        _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getPointOffset()), point->getPointID()));
+        _pao_pointids.insert(std::make_pair(point->getDeviceID(), point->getPointID()));
+
+        //  if it's a control point, add it into the control offset lookup map
+        if( point->getType() == StatusPointType &&
+            point->getControlOffset() )
+        {
+            _control_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getControlOffset()), point->getPointID()));
         }
     }
 }
@@ -875,25 +903,6 @@ CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT O
     return pRet;
 }
 
-void CtiPointManager::addPoint( CtiPointBase *point )
-{
-    if( point )
-    {
-        _smartMap.insert(point->getID(), point); // Stuff it in the list
-
-        //  add it into the offset lookup map
-        _type_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getPointOffset()), point->getPointID()));
-        _pao_pointids.insert(std::make_pair(point->getDeviceID(), point->getPointID()));
-
-        //  if it's a control point, add it into the control offset lookup map
-        if( point->getType() == StatusPointType &&
-            point->getControlOffset() )
-        {
-            _control_offsets.insert(std::make_pair(pao_offset_t(point->getDeviceID(), point->getControlOffset()), point->getPointID()));
-        }
-    }
-}
-
 
 CtiPointManager::spiterator CtiPointManager::begin()
 {
@@ -965,6 +974,49 @@ void erase_from_multimap(multimap<K, _Ty> &coll, const K key, const _Ty value)
 
              break;
          }
+    }
+}
+
+
+void CtiPointManager::updatePointMaps( const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset )
+{
+    long point_id = point.getPointID();
+
+    long           new_pao            = point.getDeviceID();
+    CtiPointType_t new_type           = point.getType();
+    int            new_offset         = point.getPointOffset();
+    int            new_control_offset = point.getControlOffset();
+
+    bool pao_change            = new_pao            != old_pao,
+         type_change           = new_type           != old_type,
+         offset_change         = new_offset         != old_offset,
+         control_offset_change = new_control_offset != old_control_offset;
+
+    if( pao_change || type_change || offset_change || control_offset_change )
+    {
+        //  refresh the control offset if necessary
+        if( old_type == StatusPointType && old_control_offset && (pao_change || type_change || control_offset_change) )
+        {
+            _control_offsets.erase(pao_offset_t(old_pao, old_control_offset));
+
+            if( new_type == StatusPointType &&
+                new_control_offset )
+            {
+                _control_offsets.insert(std::make_pair(pao_offset_t(new_pao, new_control_offset), point_id));
+            }
+        }
+
+        if( pao_change || type_change || offset_change )
+        {
+            erase_from_multimap(_type_offsets, pao_offset_t(old_pao, old_offset), point_id);
+            _type_offsets.insert(std::make_pair(pao_offset_t(new_pao, new_offset), point_id));
+        }
+
+        if( pao_change )
+        {
+            erase_from_multimap(_pao_pointids, old_pao, point_id);
+            _pao_pointids.insert(std::make_pair(new_pao, point_id));
+        }
     }
 }
 
