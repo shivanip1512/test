@@ -37,6 +37,7 @@ public class ContactPanel extends com.cannontech.common.gui.util.DataInputPanel 
 	private javax.swing.JCheckBox ivjJCheckBoxDisable = null;
 	private javax.swing.JComboBox ivjJComboBoxLoginUser = null;
 	private javax.swing.JLabel ivjJLabelFirstName = null;
+	private javax.swing.JLabel doubleClickLabel = null;
 	private javax.swing.JLabel ivjJLabelLastName = null;
 	private javax.swing.JLabel ivjJLabelLoginUser = null;
 	private javax.swing.JPanel ivjJPanelNotification = null;
@@ -488,6 +489,16 @@ private javax.swing.JLabel getJLabelFirstName() {
 	return ivjJLabelFirstName;
 }
 
+private JLabel getDoubleClickLabel() {
+    if (doubleClickLabel == null) {
+        doubleClickLabel = new javax.swing.JLabel();
+        doubleClickLabel.setName("DoublClickLabel");
+        doubleClickLabel.setFont(new java.awt.Font("dialog", 0, 14));
+        doubleClickLabel.setText("* Double click Notification column to edit.");
+    }
+    return doubleClickLabel;
+}
+
 /**
  * Return the JLabelLastName property value.
  * @return javax.swing.JLabel
@@ -593,7 +604,7 @@ private javax.swing.JPanel getJPanelNotification() {
 			getJPanelNotification().add(getJTextFieldAddress(), constraintsJTextFieldAddress);
 
 			java.awt.GridBagConstraints constraintsJScrollPaneJTableEmail = new java.awt.GridBagConstraints();
-			constraintsJScrollPaneJTableEmail.gridx = 1; constraintsJScrollPaneJTableEmail.gridy = 4;
+			constraintsJScrollPaneJTableEmail.gridx = 1; constraintsJScrollPaneJTableEmail.gridy = 5;
 			constraintsJScrollPaneJTableEmail.gridwidth = 4;
 			constraintsJScrollPaneJTableEmail.fill = java.awt.GridBagConstraints.BOTH;
 			constraintsJScrollPaneJTableEmail.anchor = java.awt.GridBagConstraints.WEST;
@@ -613,7 +624,7 @@ private javax.swing.JPanel getJPanelNotification() {
 
 			java.awt.GridBagConstraints constraintsJButtonRemove = new java.awt.GridBagConstraints();
 			constraintsJButtonRemove.gridx = 4; constraintsJButtonRemove.gridy = 2;
-constraintsJButtonRemove.gridheight = 2;
+			constraintsJButtonRemove.gridheight = 2;
 			constraintsJButtonRemove.anchor = java.awt.GridBagConstraints.WEST;
 			constraintsJButtonRemove.ipadx = 4;
 			constraintsJButtonRemove.insets = new java.awt.Insets(8, 3, 18, 12);
@@ -627,6 +638,13 @@ constraintsJButtonRemove.gridheight = 2;
 			constraintsJCheckBoxDisable.ipady = -5;
 			constraintsJCheckBoxDisable.insets = new java.awt.Insets(2, 11, 3, 132);
 			getJPanelNotification().add(getJCheckBoxDisable(), constraintsJCheckBoxDisable);
+			
+			java.awt.GridBagConstraints constraintsDoubleCLickLabel = new java.awt.GridBagConstraints();
+			constraintsDoubleCLickLabel.gridx = 1; constraintsDoubleCLickLabel.gridy = 4;
+			constraintsDoubleCLickLabel.gridwidth = 4;
+			constraintsDoubleCLickLabel.insets = new java.awt.Insets(2, 11, 3, 3);
+			constraintsDoubleCLickLabel.anchor = java.awt.GridBagConstraints.WEST;
+            getJPanelNotification().add(getDoubleClickLabel(), constraintsDoubleCLickLabel);
 
 			java.awt.GridBagConstraints constraintsJLabelNotifyType = new java.awt.GridBagConstraints();
 			constraintsJLabelNotifyType.gridx = 1; constraintsJLabelNotifyType.gridy = 2;
@@ -716,7 +734,7 @@ private javax.swing.JTable getJTableEmail() {
 			});
 			txtFieldEditor.setHorizontalAlignment( JTextField.LEFT );
 			DefaultCellEditor notifEd = new DefaultCellEditor(txtFieldEditor);
-			notifEd.setClickCountToStart(1);
+			notifEd.setClickCountToStart(2);
 			
 			JComboBox typeCombo = new JComboBox();
 			ComboBoxTableRenderer typeRenderer = new ComboBoxTableRenderer();
