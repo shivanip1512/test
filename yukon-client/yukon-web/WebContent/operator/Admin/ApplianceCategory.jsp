@@ -62,401 +62,460 @@
 <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1">
 <link rel="stylesheet" href="../../WebConfig/yukon/CannonStyle.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
+
+<script type="text/javascript" src="/JavaScript/stars/program.js"></script>
 <script language="JavaScript">
+
+Event.observe(window, 'load', updateSelectElements);
+
+var programArray = $A();
+var availableProgramArray = $A();
+
+var removeWarned = true;
+var virtualDeviceId = 0;
+var virtualProgramId = -1;
+var virtualProgramName = '<New virtual program>';
+
+function updateSelectElements() {
+    updateSelectElement('ProgramsAvailable', 1, availableProgramArray);
+    updateSelectElement('ProgramsAssigned', 0, programArray);
+    updateSelectElement('Program', 1, programArray, true);
+}
+
+function updateSelectElement(elementId, startIndex, array, reset) {
+    var optionsArray = $(elementId).options;
+    
+    //special case for IE
+    while (optionsArray.length > startIndex) {
+        optionsArray[startIndex] = null;              
+    }
+    
+    array.each(function(program) {
+        var index = optionsArray.length;
+        optionsArray[index] = new Option(program.getProgramName(), index);
+    });
+    
+    if (reset) resetConfig();        
+}
+
+function selectProgramInSelectElement(program, selectElementId) {
+    if (!program) return;
+    var selectElement = $(selectElementId);    
+    var deviceId = program.getDeviceId();
+    var programName = (deviceId != virtualDeviceId) ? program.getProgramName() : '*' + program.getDisplayName(); 
+    
+    var options = selectElement.options;
+    for (var x = 0; x < options.length; x++) {
+        var option = options[x];
+        var name = option.text;
+        if (programName != name) continue;
+        selectElement.selectedIndex = x;        
+    }
+}
+
 function changeIcon(form) {
 	form.CategoryIcon.style.display = (form.IconName.value == "") ? "none" : "";
 	form.CategoryIcon.src = "../../WebConfig/" + form.IconName.value;
 }
 
-function changeProgramIcons(form) {
-	form.IconSavings.style.visibility = (form.IconNameSavings.value == "") ? "hidden" : "visible";
-	form.IconSavings.src = "../../WebConfig/yukon/Icons/" + form.IconNameSavings.value;
-	form.IconControl.style.visibility = (form.IconNameControl.value == "") ? "hidden" : "visible";
-	form.IconControl.src = "../../WebConfig/yukon/Icons/" + form.IconNameControl.value;
-	form.IconEnvrn.style.visibility = (form.IconNameEnvrn.value == "") ? "hidden" : "visible";
-	form.IconEnvrn.src = "../../WebConfig/yukon/Icons/" + form.IconNameEnvrn.value;
+function changeProgramIcons() {
+    updateProgramIcon('iconNameSavings', 'IconSavings');
+    updateProgramIcon('iconNameControl', 'IconControl');
+    updateProgramIcon('iconNameEnvrn', 'IconEnvrn');
 }
 
-function sameAsName(form, checked) {
-	form.SameAsName.checked = checked;
-<% if (!category.getInherited()) { %>
-	form.DispName.disabled = checked;
-<% } %>
+function updateProgramIcon(valueElementId, imageElementId) {
+    var value = $(valueElementId).value
+    var image = $(imageElementId);
+    image.src = '../../WebConfig/yukon/Icons/' + value;
+    if (value == '') {
+        image.hide();
+    } else {
+        image.show();
+    }     
 }
 
-function sameAsProgName(form, checked) {
-	form.SameAsProgName.checked = checked;
-<% if (!category.getInherited()) { %>
-	form.ProgDispName.disabled = checked;
-<% } %>
+function sameAsProgramName(isChecked) {
+    <% if (category.getInherited()) { %>
+        return;
+    <% } %>
+
+    var selectElement = $('Program');
+    var program = getProgramBySelectElement(selectElement);
+    if (!program) return;
+    
+    var value = (isChecked) ? '' : program.getDisplayName();       
+    $('displayName').value = value;
+    $('displayName').disabled = isChecked;
+    setProgramChanged(program);
 }
 
-function sameAsDispName(form, checked) {
-	form.SameAsDispName.checked = checked;
-<% if (!category.getInherited()) { %>
-	form.ProgShortName.disabled = checked;
-<% } %>
+function sameAsDisplayName(isChecked) {
+    <% if (category.getInherited()) { %>
+        return;
+    <% } %>
+
+    var selectElement = $('Program');
+    var program = getProgramBySelectElement(selectElement);
+    if (!program) return;
+    
+    var value = (isChecked) ? '' : program.getShortName();    
+    $('shortName').value = displayName;
+    $('shortName').disabled = isChecked;
+    setProgramChanged(program);    
 }
 
-var progChanged = false;
+function setProgramChanged(program) {
+    if (!program) program = getProgramBySelectElement($('Program'));
+    if (!program) return;
 
-function setProgramChanged() {
-	progChanged = true;
+    program.setHasUnsavedChanges(true);
 	setContentChanged(true);
 }
 
-var progID = new Array();
-var deviceID = new Array();
-var progName = new Array();
-var dispName = new Array();
-var shortName = new Array();
-var description = new Array();
-var descFile = new Array();
-var ctrlOdds = new Array();
-var iconNameSavings = new Array();
-var iconNameControl = new Array();
-var iconNameEnvrn = new Array();
-<%
-	for (int i = 0; i < programList.size(); i++) {
+<% 
+    for (int i = 0; i < programList.size(); i++) {
 		StarsEnrLMProgram program = programList.get(i);
-		String progName = "(none)";
-		if (program.getDeviceID() > 0)
-        {
-            try
-            {
-                progName = DaoFactory.getPaoDao().getYukonPAOName(program.getDeviceID());    
-            }
-            catch(NotFoundException e) {}
-        }
-         
+        
 		StarsWebConfig cfg = program.getStarsWebConfig();
 		String[] dispNames = StarsUtils.splitString(cfg.getAlternateDisplayName(), ",");
 		String[] imgNames = ServletUtils.getImageNames( cfg.getLogoLocation() );
+        
+		String progName = "(none)";
+		if (program.getDeviceID() > 0) {
+            try {
+                progName = DaoFactory.getPaoDao().getYukonPAOName(program.getDeviceID());    
+            } catch(NotFoundException e) {}
+        } else {
+            progName = ServletUtils.getProgramDisplayNames(program)[0];    
+        }
 %>
-	progID[<%= i %>] = <%= program.getProgramID() %>;
-	deviceID[<%= i %>] = <%= program.getDeviceID() %>;
-	progName[<%= i %>] = "<%= progName %>";
-	dispName[<%= i %>] = "<%= (dispNames.length > 0)? dispNames[0].replaceAll("\"", "&quot;") : "" %>".replace(/&quot;/g, '"').replace(/&/g, '&amp;');
-	shortName[<%= i %>] = "<%= (dispNames.length > 1)? dispNames[1].replaceAll("\"", "&quot;") : "" %>".replace(/&quot;/g, '"').replace(/&/g, '&amp;');
-	description[<%= i %>] = "<%= cfg.getDescription().replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"').replace(/&/g, '&amp;').replace(/<br>/g, '\r\n');
-	descFile[<%= i %>] = "<%= cfg.getURL() %>";
-	ctrlOdds[<%= i %>] = <%= (program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID() %>;
-	iconNameSavings[<%= i %>] = "<%= imgNames[0] %>";
-	iconNameControl[<%= i %>] = "<%= imgNames[1] %>";
-	iconNameEnvrn[<%= i %>] = "<%= imgNames[2] %>";
+    var jsProgram = new Program();
+    
+    var programId = <%=program.getProgramID()%>;
+    jsProgram.setProgramId(programId);
+    
+    var deviceId = <%=program.getDeviceID()%>;
+    jsProgram.setDeviceId(deviceId);
+    
+    var programName = (deviceId == 0) ? '*' + '<%=progName%>' : '<%=progName%>';
+    jsProgram.setProgramName(programName);
+    
+    var displayName = '<%=(dispNames.length > 0)? dispNames[0].replaceAll("\"", "&quot;") : ""%>'.replace(/&quot;/g, '"').replace(/&/g, '&amp;'); 
+    jsProgram.setDisplayName(displayName);
+    
+    var shortName = '<%=(dispNames.length > 1)? dispNames[1].replaceAll("\"", "&quot;") : ""%>'.replace(/&quot;/g, '"').replace(/&/g, '&amp;');
+    jsProgram.setShortName(shortName);
+    
+    var description = '<%=cfg.getDescription().replaceAll("\"", "&quot;")%>'.replace(/&quot;/g, '"').replace(/&/g, '&amp;').replace(/<br>/g, '\r\n');
+    jsProgram.setDescription(description);
+    
+    var descFile = '<%=cfg.getURL()%>';
+    jsProgram.setDescFile(descFile);
+    
+    var ctrlOdds = <%=(program.getChanceOfControl() == null) ? 0 : program.getChanceOfControl().getEntryID()%>;
+    jsProgram.setCtrlOdds(ctrlOdds);
+    
+    var iconNameSavings = '<%=imgNames[0]%>';
+    jsProgram.setIconNameSavings(iconNameSavings);
+    
+    var iconNameControl = '<%=imgNames[1]%>';
+    jsProgram.setIconNameControl(iconNameControl);
+    
+    var iconNameEnvrn = '<%=imgNames[2]%>';
+    jsProgram.setIconNameEnvrn(iconNameEnvrn);
+    
+    programArray.push(jsProgram);
 <%
 	}
-%>
 
-var yukonProgID = new Array();
-var yukonDeviceID = new Array();
-var yukonProgName = new Array();
-var yukonDescription = new Array();
-	yukonProgID[0] = -1;
-	yukonDeviceID[0] = 0;
-	yukonProgName[0] = "(none)";
-	yukonDescription[0] = "";
-<%
-	for (int i = 0; i < availPrograms.size(); i++) {
+    for (int i = 0; i < availPrograms.size(); i++) {
 		LMProgramDirect program = availPrograms.get(i);
 %>
-	yukonProgID[<%= i+1 %>] = -1;
-	yukonDeviceID[<%= i+1 %>] = <%= program.getYukonID() %>;
-	yukonProgName[<%= i+1 %>] = "<%= program.getYukonName() %>";
-	yukonDescription[<%= i+1 %>] = "<%= StarsUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>".replace(/&quot;/g, '"');
+
+    var jsAvailProgram = new Program();
+    
+    var programId = -1;
+    jsAvailProgram.setProgramId(programId);
+    
+    var deviceId = <%= program.getYukonID() %>;
+    jsAvailProgram.setDeviceId(deviceId);
+    
+    var programName = '<%=program.getYukonName()%>';
+    jsAvailProgram.setProgramName(programName);
+    
+    var description = '<%= StarsUtils.forceNotNone(program.getYukonDescription()).replaceAll("\"", "&quot;") %>'.replace(/&quot;/g, '"');
+    jsAvailProgram.setDescription(description);
+    
+    var ctrlOdds = 0;
+    jsAvailProgram.setCtrlOdds(ctrlOdds);
+    
+    availableProgramArray.push(jsAvailProgram);
+    
 <%	} %>
 
-var nextProgIdx = <%= category.getStarsEnrLMProgramCount() %>;
-var nextYukonIdx = <%= availPrograms.size() + 1 %>;
-var curProgIdx = -1;
+function addProgram() {
+    var availableOptions = $('ProgramsAvailable').options;
+    var selectedIndex = availableOptions.selectedIndex;
+    if (selectedIndex == -1) return;
+    var option = availableOptions[selectedIndex];
+    var programName = option.text;
+    
+    var program = availableProgramArray.find(function(program) {
+        if (program.getProgramName() == programName) {
+            var index = availableProgramArray.indexOf(program);
+            availableProgramArray.splice(index, 1);
+            return program;
+        }    
+    });
+    
+    //create virtual program
+    if ((!program) && (programName == virtualProgramName)) {
+        program = new Program();
+        program.setDeviceId(virtualDeviceId);
+        program.setProgramId(virtualProgramId);
+        program.setProgramName('*' + virtualProgramName);
+        program.setDisplayName(virtualProgramName);
+    }
+    
+    if (program) programArray.push(program);
+    updateSelectElements();
 
-function newProgramEntry(yukonIdx) {
-	progID[nextProgIdx] = yukonProgID[yukonIdx];
-	deviceID[nextProgIdx] = yukonDeviceID[yukonIdx];
-	progName[nextProgIdx] = yukonProgName[yukonIdx];
-	if (yukonDeviceID[yukonIdx] > 0)
-		dispName[nextProgIdx] = "";
-	else
-		dispName[nextProgIdx] = "<New virtual program>";
-	shortName[nextProgIdx] = "";
-	description[nextProgIdx] = yukonDescription[yukonIdx];
-	descFile[nextProgIdx] = "";
-	ctrlOdds[nextProgIdx] = 0;
-	iconNameSavings[nextProgIdx] = "";
-	iconNameControl[nextProgIdx] = "";
-	iconNameEnvrn[nextProgIdx] = "";
-	return nextProgIdx++;
+    setContentChanged(true);
 }
 
-function newYukonEntry(progIdx) {
-	yukonProgID[nextYukonIdx] = progID[progIdx];
-	yukonDeviceID[nextYukonIdx] = deviceID[progIdx];
-	yukonProgName[nextYukonIdx] = progName[progIdx];
-	yukonDescription[nextYukonIdx] = description[progIdx];
-	return nextYukonIdx++;
+function removeProgram() {
+    var assignedOptions = $('ProgramsAssigned').options;
+    var selectedIndex = assignedOptions.selectedIndex;
+    if (selectedIndex == -1) return;
+    var option = assignedOptions[selectedIndex];
+    var programName = option.text;
+
+   if (!removeWarned) {
+        removeWarned = true;
+        alert('WARNING: Removing a program will cause all customers currently enrolled in this program being taken out of it!');
+    }
+
+    var program = programArray.find(function(program) {
+        if (program.getProgramName() == programName) {
+            var index = programArray.indexOf(program);
+            programArray.splice(index, 1);
+            return program;
+        }
+    });
+
+    if (program) availableProgramArray.push(program);
+    updateSelectElements();
+    
+    setContentChanged(true);
 }
 
-function addProgram(form) {
-	var assgnProgList = document.getElementById("ProgramsAssigned");
-	var availProgList = document.getElementById("ProgramsAvailable");
-	var progList = document.getElementById("Program");
-	
-	if (availProgList.selectedIndex >= 0) {
-		var idx = newProgramEntry(availProgList.value);
-		
-		if (availProgList.value > 0)
-			availProgList.remove(availProgList.selectedIndex);
-		
-		var oOption = document.createElement("OPTION");
-		assgnProgList.add(oOption);
-		if (deviceID[idx] > 0)
-			oOption.innerText = progName[idx];
-		else
-			oOption.innerText = "*" + dispName[idx];
-		oOption.value = idx;
-		
-		oOption = document.createElement("OPTION");
-		progList.add(oOption);
-		if (deviceID[idx] > 0)
-			oOption.innerText = progName[idx];
-		else
-			oOption.innerText = "*" + dispName[idx];
-		oOption.value = idx;
-		
-		progList.selectedIndex = progList.length - 1;
-		showProgramConfig(form);
-		setContentChanged(true);
-	}
+function saveProgramConfig(program) {
+    if (!program) program = getProgramBySelectElement($('Program'));
+    if (!program) return;
+
+    var deviceId = program.getDeviceId();
+
+    var isSameAsProgramName = $('displayNameCheckBox').checked;
+    var displayName = (isSameAsProgramName) ? '' : $('displayName').value;
+    program.setDisplayName(displayName);
+    if (deviceId == virtualDeviceId) {
+        program.setProgramName('*' + displayName);
+        updateSelectElement('ProgramsAssigned', 0, programArray);
+        updateSelectElement('Program', 1, programArray, false);
+        selectProgramInSelectElement(program, 'Program');
+    }
+
+    var isSameAsDisplayName = $('shortNameCheckBox').checked;
+    var shortName = (isSameAsDisplayName) ? '' : $('shortName').value;
+    program.setShortName(shortName);
+    
+    var description = $('descriptionTextArea').value;
+    program.setDescription(description);
+    
+    var descFile = $('descFile').value;
+    program.setDescFile(descFile);
+    
+    var ctrlOdds = $('ctrlOdds').selectedIndex;
+    program.setCtrlOdds(ctrlOdds);
+    
+    var iconNameSavings = $('iconNameSavings').value;
+    program.setIconNameSavings(iconNameSavings);
+    
+    var iconNameControl = $('iconNameControl').value;
+    program.setIconNameControl(iconNameControl);
+    
+    var iconNameEnvrn = $('iconNameEnvrn').value;
+    program.setIconNameEnvrn(iconNameEnvrn);
+    
+    program.setHasUnsavedChanges(false);
+    //resetConfig();
+    $('saveButton').disabled = true;
 }
 
-var removeWarned = true;
+function resetConfig() {
+    checkForUnsavedChanges()
 
-function removeProgram(form) {
-	var assgnProgList = document.getElementById("ProgramsAssigned");
-	var availProgList = document.getElementById("ProgramsAvailable");
-	var progList = document.getElementById("Program");
-	
-	if (assgnProgList.selectedIndex >= 0) {
-		if (!removeWarned) {
-			removeWarned = true;
-			alert('WARNING: Removing a program will cause all customers currently enrolled in this program being taken out of it!');
-		}
-		
-		for (i = 1; i < progList.length; i++) {
-			if (progList.options[i].value == assgnProgList.value) {
-				if (i == progList.selectedIndex) {
-					progList.selectedIndex = 0;
-					showProgramConfig(form);
-				}
-				progList.remove(i);
-				break;
-			}
-		}
-		
-		if (deviceID[assgnProgList.value] > 0) {
-			var idx = newYukonEntry(assgnProgList.value);
-			var oOption = document.createElement("OPTION");
-			availProgList.add(oOption);
-			oOption.innerText = yukonProgName[idx];
-			oOption.value = idx;
-		}
-		
-		assgnProgList.remove(assgnProgList.selectedIndex);
-		setContentChanged(true);
-	}
+    $('displayName').value = '';
+    $('displayNameCheckBox').checked = false;
+    $('shortName').value = '';
+    $('shortNameCheckBox').checked = false;
+    $('descriptionTextArea').value = '';
+    $('descFile').value = '';
+    $('ctrlOdds').selectedIndex = 0;
+    $('iconNameSavings').value = '';
+    $('iconNameControl').value = '';
+    $('iconNameEnvrn').value = '';
+    
+    $('saveButton').disabled = true;
+    
+    <% if (!category.getInherited()) { %>
+        $('displayName').disabled = false; 
+        $('shortName').disabled = false;        
+    <% } %>
 }
 
-function saveProgramConfig(form) {
-	var assgnProgList = document.getElementById("ProgramsAssigned");
-	var progList = document.getElementById("Program");
-	
-	if (curProgIdx >= 0) {
-		if (form.SameAsProgName.checked)
-			dispName[curProgIdx] = "";
-		else
-			dispName[curProgIdx] = form.ProgDispName.value;
-		
-		if (form.SameAsDispName.checked)
-			shortName[curProgIdx] = "";
-		else
-			shortName[curProgIdx] = form.ProgShortName.value;
-		
-		description[curProgIdx] = form.ProgDescription.value;
-		descFile[curProgIdx] = form.ProgDescFile.value;
-		ctrlOdds[curProgIdx] = form.ProgCtrlOdds.value;
-		iconNameSavings[curProgIdx] = form.IconNameSavings.value;
-		iconNameControl[curProgIdx] = form.IconNameControl.value;
-		iconNameEnvrn[curProgIdx] = form.IconNameEnvrn.value;
-		
-		if (deviceID[curProgIdx] == 0) {
-			if (dispName[curProgIdx] == "") {
-				alert("The display name of a virtual program cannot be empty");
-				return false;
-			}
-			else {
-				// Set the option text to be the display name, add a "*" in front to indicate it is a virtual program
-				for (i = 0; i < assgnProgList.length; i++) {
-					if (assgnProgList.options[i].value == curProgIdx) {
-						assgnProgList.options[i].innerText = "*" + dispName[curProgIdx];
-						break;
-					}
-				}
-				for (i = 1; i < progList.length; i++) {
-					if (progList.options[i].value == curProgIdx) {
-						progList.options[i].innerText = "*" + dispName[curProgIdx];
-						break;
-					}
-				}
-			}
-		}
-	}
-	
-	progChanged = false;
-	return true;
+function checkForUnsavedChanges() {
+    var unsavedProgram = programArray.find(function(program) {
+        var hasUnsavedChanges = program.getHasUnsavedChanges();
+        if (hasUnsavedChanges) return program;
+    });
+    
+    if (!unsavedProgram) return;
+    
+    var result = confirm(unsavedProgram.getProgramName() + ' has configuration changes, do you want to save the changes?');
+    if (result) {
+        saveProgramConfig(unsavedProgram);
+    } else {
+        unsavedProgram.setHasUnsavedChanges(false);
+    }    
 }
 
-function clearProgramConfig(form) {
-	sameAsProgName(form, false);
-<% if (!category.getInherited()) { %>
-	form.SameAsProgName.disabled = false;
-<% } %>
-	sameAsDispName(form, false);
-	
-	form.ProgDispName.value = "";
-	form.ProgShortName.value = "";
-	form.ProgDescription.value = "";
-	form.ProgDescFile.value = "";
-	form.ProgCtrlOdds.selectedIndex = 0;
-	form.IconNameSavings.value = "";
-	form.IconNameControl.value = "";
-	form.IconNameEnvrn.value = "";
-	form.IconSavings.style.visibility = "hidden";
-	form.IconControl.style.visibility = "hidden";
-	form.IconEnvrn.style.visibility = "hidden";
-	form.SaveProgConfig.disabled = true;
+function getProgramBySelectElement(element) {
+    var options = element.options;
+    var option = options[element.selectedIndex];
+    var programName = option.text;
+    var program = getProgramByName(programName, programArray);
+    return program;
 }
 
-function showProgramConfig(form) {
-	var progList = document.getElementById("Program");
-	
-	if (curProgIdx >= 0 && progChanged) {
-<% if (!category.getInherited()) { %>
-		if (confirm("Program configuration has been changed, do you want to save the changes?")) {
-			if (!saveProgramConfig(form)) {	// Failed to save the program configuration
-				for (i = 0; i < progList.length; i++) {
-					if (progList.options[i].value == curProgIdx) {
-						progList.selectedIndex = i;
-						return;
-					}
-				}
-			}
-		}
-		else
-<% } %>
-			progChanged = false;
-	}
-	
-	if (progList.selectedIndex >= 0) {
-		curProgIdx = progList.value;
-		if (curProgIdx == -1) {
-			clearProgramConfig(form);
-			return;
-		}
-		
-		form.ProgDispName.value = dispName[curProgIdx];
-		if (deviceID[curProgIdx] > 0) {
-			sameAsProgName(form, dispName[curProgIdx] == "");
-<% if (!category.getInherited()) { %>
-			form.SameAsProgName.disabled = false;
-<% } %>
-		}
-		else {
-			sameAsProgName(form, false);
-<% if (!category.getInherited()) { %>
-			form.SameAsProgName.disabled = true;
-<% } %>
-		}
-		form.ProgShortName.value = shortName[curProgIdx];
-		sameAsDispName(form, shortName[curProgIdx] == "");
-		form.ProgDescription.value = description[curProgIdx];
-		form.ProgDescFile.value = descFile[curProgIdx];
-		form.ProgCtrlOdds.value = ctrlOdds[curProgIdx];
-		form.IconNameSavings.value = iconNameSavings[curProgIdx];
-		form.IconNameControl.value = iconNameControl[curProgIdx];
-		form.IconNameEnvrn.value = iconNameEnvrn[curProgIdx];
-		changeProgramIcons(form);
-<% if (!category.getInherited()) { %>
-		form.SaveProgConfig.disabled = false;
-<% } %>
-	}
+function showProgramConfig(element) {
+    resetConfig();
+    
+    var program = getProgramBySelectElement(element);
+    if (!program) return;
+    
+    var deviceId = program.getDeviceId();
+    
+    var displayName = program.getDisplayName();
+    var isSameAsProgramName = (!(displayName) || displayName == '');
+    
+    $('displayName').value = displayName;
+    if (deviceId != virtualDeviceId) {    
+        $('displayNameCheckBox').checked = isSameAsProgramName;
+    } else {
+        $('displayNameCheckBox').disabled = true;    
+    }
+    
+    var shortName = program.getShortName();
+    var isSameAsDisplayName = (!(shortName) || shortName == '');
+
+    $('shortName').value = shortName;
+    $('shortNameCheckBox').checked = isSameAsDisplayName;
+
+    var description = program.getDescription();
+    $('descriptionTextArea').value = description;
+
+    var descFile = program.getDescFile();
+    $('descFile').value = descFile;
+
+    var ctrlOdds = program.getCtrlOdds();
+    $('ctrlOdds').selectedIndex = ctrlOdds;
+
+    var iconNameSavings = program.getIconNameSavings();
+    $('iconNameSavings').value = iconNameSavings;
+
+    var iconNameControl = program.getIconNameControl();
+    $('iconNameControl').value = iconNameControl;
+
+    var iconNameEnvrn = program.getIconNameEnvrn();
+    $('iconNameEnvrn').value = iconNameEnvrn;
+
+    <% if (!category.getInherited()) { %>
+        if (deviceId != virtualDeviceId) $('displayNameCheckBox').disabled = false;
+        $('displayName').disabled = isSameAsProgramName;
+        $('shortName').disabled = isSameAsDisplayName;
+        $('saveButton').disabled = false;
+    <% } %>
 }
 
 function move(selectElement, direction) {
+    var optionsArray = $A(selectElement.options).clone();
     var selectedIndex = selectElement.selectedIndex;
+    
     var isSuccess = yukonGeneral_moveOptionPositionInSelect(selectElement, direction);
     if (isSuccess) {
-        updateProgramSelect(selectElement);
+        var option = optionsArray[selectedIndex];
+        var option2 = optionsArray[selectedIndex + direction];
+        switchArrayElementsByProgramName(option.text, option2.text);
+        updateSelectElement('Program', 1, programArray, true);
         setContentChanged(true);
     }
 }
 
-function updateProgramSelect(selectElement) {
-    var programSelectElement = $('Program');
-    var programOptions = $A(programSelectElement.options).clone();
-    var selectOptions = $A(selectElement.options).clone();
+function switchArrayElementsByProgramName(programName1, programName2) {
+    var program1 = getProgramByName(programName1, programArray);
+    var program2 = getProgramByName(programName2, programArray);
+    if (!(program1 && program2)) return;
     
-    var selectAProgramOption = programOptions[0];
+    var index1 = programArray.indexOf(program1);
+    var index2 = programArray.indexOf(program2);
     
-    while (programSelectElement.options.length > 0) {
-        programSelectElement.options[0] = null;            
-    }
-    
-    programSelectElement.options[0] = selectAProgramOption;
-    for (var x = 0; x < selectOptions.length; x++) {
-        var option = new Option(selectOptions[x].text, selectOptions[x].value);
-        programSelectElement.options[x + 1] = option;
-    }
-    
-    var selectedIndex = selectElement.selectedIndex + 1;
-    programSelectElement.selectedIndex = selectedIndex;
-    showProgramConfig($('form1'));
+    programArray[index1] = program2;
+    programArray[index2] = program1;
+}
+
+function getProgramByName(programName, array) {
+    return array.find(function(program) {
+        if (program.getProgramName() == programName) return program;
+    });
+}
+
+function createHiddenInput(name, value) {
+    var input = document.createElement('input');
+    input.setAttribute('type', 'hidden');
+    input.setAttribute('name', name);
+    input.setAttribute('value', value);
+    return input;   
 }
 
 function prepareSubmit(form) {
-<% if (!category.getInherited()) { %>
-	if (curProgIdx >= 0 && progChanged) {
-		if (confirm("Program configuration has been changed, do you want to save the changes?"))
-			if (!saveProgramConfig(form)) return false;
-	}
-	
-	var assgnProgList = document.getElementById("ProgramsAssigned");
-    var fullHtml = "";
-    
-	for (i = 0; i < assgnProgList.options.length; i++) {
-		var idx = assgnProgList.options[i].value;
-		var iconNames = iconNameSavings[idx] + "," + iconNameControl[idx] + "," + iconNameEnvrn[idx];
+<% if (category.getInherited()) { %>
+    return false;
+<% } %>
 
-        var html = "";
-		html += '<input type="hidden" name="ProgIDs" value="' + progID[idx] + '">\n';
-		html += '<input type="hidden" name="DeviceIDs" value="' + deviceID[idx] + '">\n';
-		html += '<input type="hidden" name="ProgDispNames" value="' + dispName[idx].replace(/"/g, '&amp;quot;') + '">\n';
-		html += '<input type="hidden" name="ProgShortNames" value="' + shortName[idx].replace(/"/g, '&amp;quot;') + '">\n';
-		html += '<input type="hidden" name="ProgDescriptions" value="' + description[idx].replace(/"/g, '&amp;quot;') + '">\n';
-		html += '<input type="hidden" name="ProgDescFiles" value="' + descFile[idx] + '">\n';
-		html += '<input type="hidden" name="ProgChanceOfCtrls" value="' + ctrlOdds[idx] + '">\n';
-		html += '<input type="hidden" name="ProgIconNames" value="' + iconNames + '">\n';
-        fullHtml += html + '\n';
-	}
-    form.insertAdjacentHTML("beforeEnd", fullHtml);
+    checkForUnsavedChanges();
+    
+    programArray.each(function(program) {
+        var iconNames = program.getIconNameSavings() + ',' +
+                        program.getIconNameControl() + ',' +
+                        program.getIconNameEnvrn();
+    
+        form.appendChild(createHiddenInput('ProgIDs', program.getProgramId()));
+        form.appendChild(createHiddenInput('DeviceIDs', program.getDeviceId()));
+        form.appendChild(createHiddenInput('ProgDispNames', program.getDisplayName()));
+        form.appendChild(createHiddenInput('ProgShortNames', program.getShortName()));
+        form.appendChild(createHiddenInput('ProgDescriptions', program.getDescription()));
+        form.appendChild(createHiddenInput('ProgDescFiles', program.getDescFile()));
+        form.appendChild(createHiddenInput('ProgChanceOfCtrls', program.getCtrlOdds()));
+        form.appendChild(createHiddenInput('ProgIconNames', iconNames));                            
+    });
 	
 	return true;
-<% } else { %>
-	return false;
-<% } %>
 }
 
 function init() {
-	sameAsName(document.form1, <%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>);
+	//sameAsName(document.form1, <%= category.getStarsWebConfig().getAlternateDisplayName().equals(category.getDescription()) %>);
 	changeIcon(document.form1);
 	removeWarned = false;
 }
@@ -560,34 +619,15 @@ function init() {
                                     <td width="175" valign="top"> Available Programs:<br>
                                       <select id="ProgramsAvailable" name="ProgramsAvailable" size="5" style="width:165">
                                         <option value="0">&lt;New virtual program&gt;</option>
-<%
-	for (int i = 0; i < availPrograms.size(); i++) {
-		LMProgramDirect program = availPrograms.get(i);
-%>
-                                        <option value="<%= i+1 %>"><%= program.getYukonName() %></option>
-<%
-	}
-%>
                                       </select>
                                     </td>
                                     <td width="50" align="center"> 
-                                      <input type="button" id="AddButton" name="Remove" value=">>" onClick="addProgram(this.form)" <%= viewOnly %>>
+                                      <input type="button" id="AddButton" name="Remove" value=">>" onClick="addProgram()" <%= viewOnly %>>
                                       <br>
-                                      <input type="button" id="RemoveButton" name="Add" value="<<" onclick="removeProgram(this.form)" <%= viewOnly %>>
+                                      <input type="button" id="RemoveButton" name="Add" value="<<" onclick="removeProgram()" <%= viewOnly %>>
                                     </td>
                                     <td width="175" valign="top"> Assigned Programs:<br>
-                                      <select id="ProgramsAssigned" name="ProgramsAssigned" size="5" style="width:165">
-<%
-    for (int i = 0; i < programList.size(); i++) {
-        StarsEnrLMProgram program = programList.get(i);
-		String progName = program.getYukonName();
-		if (program.getDeviceID() == 0) progName = "*" + ServletUtils.getProgramDisplayNames(program)[0];
-%>
-                                        <option value="<%= i %>"><%= progName %></option>
-<%
-	}
-%>
-                                      </select>
+                                      <select id="ProgramsAssigned" name="ProgramsAssigned" size="5" style="width:165"></select>
                                       <br>
                                       * means virtual program<br>
                                     </td>
@@ -618,51 +658,41 @@ function init() {
                       <tr> 
                         <td width="15%" align="right">Program:</td>
                         <td width="85%">
-                          <select id="Program" onchange="showProgramConfig(this.form)">
-                            <option value="-1">(Select a program)</option>
-<%
-	for (int i = 0; i < category.getStarsEnrLMProgramCount(); i++) {
-		StarsEnrLMProgram program = category.getStarsEnrLMProgram(i);
-		String progName = program.getYukonName();
-		if (program.getDeviceID() == 0) progName = "*" + ServletUtils.getProgramDisplayNames(program)[0];
-%>
-                            <option value="<%= i %>"><%= progName %></option>
-<%
-	}
-%>
+                          <select id="Program" onchange="showProgramConfig(this)">
+                            <option value="-1">&lt;Select a program&gt;</option>
                           </select>
                         </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right">Display Name:</td>
                         <td width="85%"> 
-                          <input type="text" name="ProgDispName" size="20" onchange="setProgramChanged()">
-                          <input type="checkbox" name="SameAsProgName" value="true" onclick="sameAsProgName(this.form, this.checked);setProgramChanged()" <%= viewOnly %>>
+                          <input id="displayName" type="text" size="20" onchange="setProgramChanged()" <%=viewOnly%>>
+                          <input id="displayNameCheckBox" type="checkbox" value="true" onclick="sameAsProgramName(this.checked);" <%= viewOnly %>>
                           Same as program name</td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right">Short Name:</td>
                         <td width="85%"> 
-                          <input type="text" name="ProgShortName" size="20" onchange="setProgramChanged()">
-                          <input type="checkbox" name="SameAsDispName" value="true" onclick="sameAsDispName(this.form, this.checked);setProgramChanged()" <%= viewOnly %>>
+                          <input id="shortName" type="text" size="20" onchange="setProgramChanged()" <%=viewOnly%>>
+                          <input id="shortNameCheckBox" type="checkbox" value="true" onclick="sameAsDisplayName(this.checked);" <%= viewOnly %>>
                           Same as display name </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right">Description:</td>
                         <td width="85%"> 
-                          <textarea name="ProgDescription" rows="4" wrap="soft" cols="40" onchange="setProgramChanged()"></textarea>
+                          <textarea id="descriptionTextArea" rows="4" wrap="soft" cols="40" onchange="setProgramChanged()" <%=viewOnly%>></textarea>
                         </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right">Description File:</td>
                         <td width="85%"> 
-                          <input type="text" name="ProgDescFile" size="40" onchange="setProgramChanged()">
+                          <input id="descFile" type="text" size="40" onchange="setProgramChanged()" <%=viewOnly%>>
                         </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right">Chance of Control:</td>
                         <td width="85%"> 
-                          <select name="ProgCtrlOdds" onchange="setProgramChanged()">
+                          <select id="ctrlOdds" onchange="setProgramChanged()" <%=viewOnly%>>
 <%
 	StarsCustSelectionList ctrlOddsList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL );
 	if (ctrlOddsList == null || ctrlOddsList.getStarsSelectionListEntry(0).getEntryID() > 0) {
@@ -692,19 +722,19 @@ function init() {
                                   <tr> 
                                     <td width="30%" height="25">Savings: </td>
                                     <td width="70%" height="25"> 
-                                      <input type="text" name="IconNameSavings" size="20" onchange="setProgramChanged()">
+                                      <input id="iconNameSavings" type="text" size="20" onchange="setProgramChanged()" <%=viewOnly%>>
                                     </td>
                                   </tr>
                                   <tr> 
                                     <td width="30%" height="25">Control%:</td>
                                     <td width="70%" height="25"> 
-                                      <input type="text" name="IconNameControl" size="20" onchange="setProgramChanged()">
+                                      <input id="iconNameControl" type="text" size="20" onchange="setProgramChanged()" <%=viewOnly%>>
                                     </td>
                                   </tr>
                                   <tr> 
                                     <td width="30%" height="25">Environment:</td>
                                     <td width="70%" height="25"> 
-                                      <input type="text" name="IconNameEnvrn" size="20" onchange="setProgramChanged()">
+                                      <input id="iconNameEnvrn" type="text" size="20" onchange="setProgramChanged()" <%=viewOnly%>>
                                     </td>
                                   </tr>
                                 </table>
@@ -713,7 +743,7 @@ function init() {
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                   <tr> 
                                     <td> 
-                                      <input type="button" name="Preview2" value="Preview" onClick="changeProgramIcons(this.form)" <%= viewOnly %>>
+                                      <input type="button" name="Preview2" value="Preview" onClick="changeProgramIcons()" <%= viewOnly %>>
                                     </td>
                                   </tr>
                                 </table>
@@ -721,13 +751,13 @@ function init() {
                               <td width="20%"> 
                                 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                                   <tr> 
-                                    <td height="25"><img id="IconSavings" src="../../../WebConfig/yukon/Icons/$$Sm.gif" style="visibility:hidden"></td>
+                                    <td height="25"><img id="IconSavings" src="../../../WebConfig/yukon/Icons/$$Sm.gif" style="display: none;"></td>
                                   </tr>
                                   <tr> 
-                                    <td height="25"><img id="IconControl" src="../../../WebConfig/yukon/Icons/HalfSm.gif" style="visibility:hidden"></td>
+                                    <td height="25"><img id="IconControl" src="../../../WebConfig/yukon/Icons/HalfSm.gif" style="display: none;"></td>
                                   </tr>
                                   <tr> 
-                                    <td height="25"><img id="IconEnvrn" src="../../../WebConfig/yukon/Icons/Tree2Sm.gif" style="visibility:hidden"></td>
+                                    <td height="25"><img id="IconEnvrn" src="../../../WebConfig/yukon/Icons/Tree2Sm.gif" style="display: none;"></td>
                                   </tr>
                                 </table>
                               </td>
@@ -737,7 +767,7 @@ function init() {
                       </tr>
                       <tr align="center"> 
                         <td colspan="2"> 
-                          <input type="button" name="SaveProgConfig" value="Save" disabled onclick="saveProgramConfig(this.form)">
+                          <input id="saveButton" type="button" value="Save" onclick="saveProgramConfig()" disabled>
                         </td>
                       </tr>
                     </table>
