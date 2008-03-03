@@ -2290,12 +2290,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         getScriptTemplate().setParameterValue(EMAIL_SUBJECT_PARAM, getMessageSubjectTextField().getText());
         //Multiple reads script (one with retries)
         getScriptTemplate().setParameterValue(READ_WITH_RETRY_FLAG_PARAM, String.valueOf(!ScriptTemplateTypes.isRetryTemplate(getTemplateType())).toString());
-        
-        if (getResetDemandEnabledCheckBox().isSelected()){
-            getScriptTemplate().setParameterValue(RETRY_COUNT_PARAM, getRetryCountTextField().getText());
-        } else {
-            getScriptTemplate().setParameterValue(RETRY_COUNT_PARAM, "0");
-        }
+        getScriptTemplate().setParameterValue(RETRY_COUNT_PARAM, getRetryCountTextField().getText());
         getScriptTemplate().setParameterValue(QUEUE_OFF_COUNT_PARAM, getQueueOffCountTextField().getText());
         getScriptTemplate().setParameterValue(MAX_RETRY_HOURS_PARAM, getMaxRetryHoursTextField().getText());
         //IED read script
