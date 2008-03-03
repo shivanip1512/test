@@ -169,6 +169,10 @@ function setProgramChanged(program) {
     if (!program) program = getProgramBySelectElement($('Program'));
     if (!program) return;
 
+    <% if (!category.getInherited()) { %>
+        $('saveButton').disabled = false;
+    <% } %>
+
     program.setHasUnsavedChanges(true);
 	setContentChanged(true);
 }
