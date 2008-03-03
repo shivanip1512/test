@@ -100,10 +100,6 @@
 <entry key="yukon.web.menu.config.capcontrol.create.cbc">CBC</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.schedule">Schedule</entry>
 <entry key="yukon.web.menu.config.capcontrol.create.strategy">Strategy</entry>
-<entry key="yukon.web.menu.config.capcontrol.modify">Modify</entry>
-<entry key="yukon.web.menu.config.capcontrol.modify.edit">Edit</entry>
-<entry key="yukon.web.menu.config.capcontrol.modify.delete">Delete</entry>
-<entry key="yukon.web.menu.config.capcontrol.modify.copy">Copy</entry>
 <entry key="yukon.web.menu.config.capcontrol.analysis">Analysis</entry>
 <entry key="yukon.web.menu.config.capcontrol.analysis.todaykvarperwatt">Today kVAR/Watt</entry>
 <entry key="yukon.web.menu.config.capcontrol.analysis.todaypf">Today PF</entry>
