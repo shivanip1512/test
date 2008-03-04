@@ -271,6 +271,15 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         return assignedStratMap;
     }
     
+    public HashMap<Integer, String> getStrategyNameMap(){
+        HashMap<Integer, String> map = new HashMap<Integer, String>();
+        List<CapControlStrategy> strats = CapControlStrategy.getAllCBCStrategies();
+        for(CapControlStrategy strat : strats) {
+            map.put(strat.getStrategyID(), strat.getStrategyName());
+        }
+        return map;
+    }
+    
 	public HashMap<Integer, CapControlStrategy> getCbcStrategiesMap() {
 		if (cbcStrategiesMap == null) {
 			cbcStrategiesMap = new HashMap<Integer, CapControlStrategy>(32);

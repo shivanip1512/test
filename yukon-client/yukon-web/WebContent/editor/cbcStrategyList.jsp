@@ -14,9 +14,12 @@
             return true;
         }
     }
+    
+    var stratNameLookup = ${cti:jsonString(capControlForm.strategyNameMap)};
 
-    function confirmDelete( schedName ) {
-        if( confirm("Are you sure you want to delete '" + schedName + "'") ) {
+    function confirmDelete( stratId ) {
+        var stratName = stratNameLookup[stratId];
+        if( confirm("Are you sure you want to delete '" + stratName+ "'")) {
             submitAllowed = true;
         } else {
             submitAllowed = false;
@@ -71,13 +74,15 @@
                                 <x:graphicImage value="/editor/images/edit_item.gif" 
                                 height="15" width="15" border="0" />
                             <f:param name="stratID" value="#{cbcStrat.strategyID}" />
-                        </h:commandLink>                        
-                         <h:commandLink id="delAction" value="Delete" styleClass="submenuLink"
-                            title="Remove the schedule from the system"
-                            onclick="confirmDelete( '#{cbcStrat.strategyName}' );" 
-                            actionListener="#{capControlForm.deleteStrat}"
-                            title=" Delete #{cbcStrat.strategyName}" >
-                                <f:param name="stratID" value="#{cbcStrat.strategyID}" />
+                        </h:commandLink>
+                        <h:commandLink id="delAction" styleClass="submenuLink"
+	                            title="Remove the schedule from the system"
+	                            onclick="confirmDelete( '#{cbcStrat.strategyID}' );" 
+	                            actionListener="#{capControlForm.deleteStrat}"
+	                            title=" Delete #{cbcStrat.strategyName}" >
+                            <x:graphicImage value="/editor/images/delete_item.gif" 
+                                height="15" width="15" border="0" />
+                            <f:param name="stratID" value="#{cbcStrat.strategyID}" />
                         </h:commandLink>
                    </h:column>
 
