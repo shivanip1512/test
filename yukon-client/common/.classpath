@@ -47,5 +47,6 @@
 	<classpathentry kind="lib" path="/third-party/commons-fileupload-1.2.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-io-1.3.2.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/quartz-all-1.6.0.jar"/>
+	<classpathentry kind="lib" path="/third-party/dom4j.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
