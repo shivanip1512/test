@@ -229,7 +229,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
 
     public void updateGroup(StoredDeviceGroup group) {
-        Validate.isTrue(!group.isEditable(), "Non-editable groups cannot be updated.");
+        Validate.isTrue(group.isEditable(), "Non-editable groups cannot be updated.");
         Validate.isTrue(group.getParent() != null, "The root group cannot be updated.");
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -249,7 +249,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
 
     @Transactional
     public void removeGroup(StoredDeviceGroup group) {
-        Validate.isTrue(!group.isEditable(), "Non-editable groups cannot be deleted.");
+        Validate.isTrue(group.isEditable(), "Non-editable groups cannot be deleted.");
         Validate.isTrue(group.getParent() != null, "The root group cannot be deleted.");
         
         List<StoredDeviceGroup> childGroups = getChildGroups(group);
@@ -266,7 +266,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     }
 
     public void moveGroup(StoredDeviceGroup group, StoredDeviceGroup parentGroup) {
-        Validate.isTrue(!group.isEditable(), "Non-editable groups cannot be moved.");
+        Validate.isTrue(group.isEditable(), "Non-editable groups cannot be moved.");
         Validate.isTrue(group.getParent() != null, "The root group cannot be moved.");
         
         String sql = "UPDATE DeviceGroup SET ParentDeviceGroupId = ? WHERE DeviceGroupId = ?";
