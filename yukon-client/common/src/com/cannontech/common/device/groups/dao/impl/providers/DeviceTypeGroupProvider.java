@@ -13,6 +13,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -104,7 +105,7 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
         return Collections.singleton(result);
     }
 
-    private class DeviceTypeDeviceGroup extends DeviceGroup {
+    private class DeviceTypeDeviceGroup extends MutableDeviceGroup {
         public String type;
 
         @Override

@@ -13,6 +13,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -91,7 +92,7 @@ public class RolodexGroupProvider extends DeviceGroupProviderBase {
         return Collections.singleton(result);
     }
 
-    private class RolodexLetterDeviceGroup extends DeviceGroup {
+    private class RolodexLetterDeviceGroup extends MutableDeviceGroup {
         public char firstLetter;
 
         @Override

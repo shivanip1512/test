@@ -7,9 +7,6 @@ import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.util.NaturalOrderComparator;
 
 public abstract class DeviceGroup implements Comparable<DeviceGroup> {
-    private DeviceGroupType type;
-    private String name;
-    private DeviceGroup parent;
     private String cachedFullNameInternal = null;
 
     /**
@@ -26,34 +23,18 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
      */
     public abstract boolean isModifiable();
 
-    public void setName(String name) {
-        this.name = name;
+    public abstract String getName();
+
+    public abstract DeviceGroup getParent();
+
+    public abstract DeviceGroupType getType();
+    
+    protected void clearNameCache() {
         cachedFullNameInternal = null;
-    }
-
-    public void setParent(DeviceGroup parent) {
-        this.parent = parent;
-        cachedFullNameInternal = null;
-    }
-
-    public void setType(DeviceGroupType type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public DeviceGroup getParent() {
-        return parent;
-    }
-
-    public DeviceGroupType getType() {
-        return type;
     }
 
     public String getFullName() {
-        if (parent == null) {
+        if (getParent() == null) {
             return "/";
         } else {
             return getFullNameInternal();
@@ -61,7 +42,7 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     }
 
     private String getFullNameInternal() {
-        if (parent == null) {
+        if (getParent() == null) {
             return "";
         }
 
@@ -74,16 +55,16 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     public boolean isDescendantOf(DeviceGroup possibleParent) {
         if (isChildOf(possibleParent)) {
             return true;
-        } else if (parent == null) {
+        } else if (getParent() == null) {
             return false;
         } else {
-            return parent.isDescendantOf(possibleParent);
+            return getParent().isDescendantOf(possibleParent);
         }
     }
 
     public boolean isChildOf(DeviceGroup possibleParent) {
         Validate.notNull(possibleParent);
-        boolean equals = possibleParent.equals(parent);
+        boolean equals = possibleParent.equals(getParent());
         return equals;
     }
 
@@ -99,8 +80,8 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
     public int hashCode() {
         final int PRIME = 31;
         int result = 1;
-        result = PRIME * result + ((name == null) ? 0 : name.hashCode());
-        result = PRIME * result + ((parent == null) ? 0 : parent.hashCode());
+        result = PRIME * result + ((getName() == null) ? 0 : getName().hashCode());
+        result = PRIME * result + ((getParent() == null) ? 0 : getParent().hashCode());
         return result;
     }
 
@@ -113,15 +94,15 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
         if (!getClass().isAssignableFrom(obj.getClass()))
             return false;
         final DeviceGroup other = (DeviceGroup) obj;
-        if (name == null) {
-            if (other.name != null)
+        if (getName() == null) {
+            if (other.getName() != null)
                 return false;
-        } else if (!name.equals(other.name))
+        } else if (!getName().equals(other.getName()))
             return false;
-        if (parent == null) {
-            if (other.parent != null)
+        if (getParent() == null) {
+            if (other.getParent() != null)
                 return false;
-        } else if (!parent.equals(other.parent))
+        } else if (!getParent().equals(other.getParent()))
             return false;
         return true;
     }

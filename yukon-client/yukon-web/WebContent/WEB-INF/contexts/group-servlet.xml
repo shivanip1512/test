@@ -41,6 +41,7 @@
         <property name="deviceGroupService" ref="deviceGroupService"/>
         <property name="deviceGroupDao" ref="deviceGroupDao" />
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
         <property name="commandDao" ref="commandDao" />
         <property name="groupCommandExecutor" ref="groupCommandExecutor" />
         

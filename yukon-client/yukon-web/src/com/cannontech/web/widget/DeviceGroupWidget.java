@@ -126,10 +126,9 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         Meter meter = meterDao.getForId(deviceId);
 
         String groupName = WidgetParameterHelper.getRequiredStringParameter(request, "groupName");
-        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        StoredDeviceGroup storedDeviceGroup = deviceGroupEditorDao.getStoredGroup(groupName, false);
 
-        deviceGroupMemberEditorDao.addDevices((StoredDeviceGroup) group,
-                                              Collections.singletonList(meter));
+        deviceGroupMemberEditorDao.addDevices(storedDeviceGroup, meter);
 
         return this.render(request, response);
     }

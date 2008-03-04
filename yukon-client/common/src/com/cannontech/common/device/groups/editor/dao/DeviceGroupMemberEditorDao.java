@@ -1,5 +1,6 @@
 package com.cannontech.common.device.groups.editor.dao;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -35,11 +36,48 @@ public interface DeviceGroupMemberEditorDao {
      * @param devices - Devices to add
      */
     public void addDevices(StoredDeviceGroup group, YukonDevice... device);
-    public void addDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices);
+    
+    /**
+     * Extracts the deviceId for each device and delegates to addDevicesById.
+     * @param group
+     * @param devices
+     */
+    public void addDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices);
+    
+    /**
+     * Add devices to the group by device id (yukon pao id). This is currently
+     * the fundamental add method (all other delegate to it).
+     * 
+     * Duplicates are silently ignored.
+     * @param group
+     * @param deviceIds
+     */
+    public void addDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds);
 
+    /**
+     * Remove devices under group that are contained in the devices collection.
+     * Devices that exist in the collection put are not a member of the group are
+     * silently ignored.
+     * @param group
+     * @param device
+     */
     public void removeDevices(StoredDeviceGroup group, YukonDevice... device);
-    public void removeDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices);
+    
+    /**
+     * Remove devices from the given group by device id (yukon pao id). Devices that 
+     * exist in the collection put are not a member of the group are silently ignored.
+     * @param group
+     * @param deviceIds
+     */
+    public void removeDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds);
+    
+    /**
+     * Remove devices under group that are contained in the devices collection.
+     * Devices that exist in the collection put are not a member of the group are
+     * silently ignored.
+     * @param group
+     * @param devices
+     */
+    public void removeDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices);
 
-    public void updateDevices(StoredDeviceGroup group, YukonDevice... device);
-    public void updateDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices);
 }

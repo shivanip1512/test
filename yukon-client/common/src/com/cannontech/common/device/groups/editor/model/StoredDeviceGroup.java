@@ -2,8 +2,9 @@ package com.cannontech.common.device.groups.editor.model;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupPermission;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 
-public class StoredDeviceGroup extends DeviceGroup {
+public class StoredDeviceGroup extends MutableDeviceGroup {
     private int id;
     private DeviceGroupPermission permission;
 

@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.core.dao.NotFoundException;
 
 public interface DeviceGroupEditorDao {
@@ -41,21 +42,39 @@ public interface DeviceGroupEditorDao {
 
     /**
      * Method to remove a stored device group and all of its children and
-     * dependancies.
+     * dependencies.
      * @param group - Group to remove
      */
     public void removeGroup(StoredDeviceGroup group);
 
-    /**
-     * Method to change a group's parent group
-     * @param group - Group to move
-     * @param parentGroup - New parent for the given group
-     */
-    public void moveGroup(StoredDeviceGroup group, StoredDeviceGroup parentGroup);
-
     public StoredDeviceGroup getGroupById(int groupId);
     
+    /**
+     * Update the group's parent and name as set on the passed in object.
+     * @param group
+     */
     public void updateGroup(StoredDeviceGroup group);
+    
+    /**
+     * This is the preferred method for converting a DeviceGroup into a StoredDeviceGroup.
+     * It will first try a simple cast, but if that fails it will do a full lookup on
+     * group.getFullName(). This adds a bit of future-proofing.
+     * @param group
+     * @return
+     * @throws NotFoundException If group cannot be converted to a StoredDeviceGroup
+     */
+    public StoredDeviceGroup getStoredGroup(DeviceGroup group) throws NotFoundException;
+    
+    /**
+     * This returns a StoredDeviceGroup for a group name. It is quite different than 
+     * calling the DeviceGroupService and should only be used if group manipulation
+     * will be performed on the result.
+     * @param fullName
+     * @param create
+     * @return
+     * @throws NotFoundException If fullName doesn't represent a StoredDeviceGroup and create=false
+     */
+    public StoredDeviceGroup getStoredGroup(String fullName, boolean create) throws NotFoundException;
     
     /**
      * This method will return the StoredDeviceGroup for a SystemGroupEnum.
@@ -65,5 +84,5 @@ public interface DeviceGroupEditorDao {
      * @param systemGroupEnum
      * @return
      */
-    public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum);
+    public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum) throws NotFoundException;
 }

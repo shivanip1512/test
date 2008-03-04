@@ -56,6 +56,7 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.util.Validator;
 
 @SuppressWarnings("unchecked")
 public class GroupController extends MultiActionController {
@@ -65,6 +66,7 @@ public class GroupController extends MultiActionController {
     private DeviceGroupService deviceGroupService = null;
     private DeviceGroupProviderDao deviceGroupDao = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
 
     private CommandDao commandDao = null;
     private GroupCommandExecutor groupCommandExecutor = null;
@@ -88,6 +90,10 @@ public class GroupController extends MultiActionController {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
     }
 
+    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
+        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+    }
+    
     public void setCommandDao(CommandDao commandDao) {
         this.commandDao = commandDao;
     }
@@ -221,11 +227,11 @@ public class GroupController extends MultiActionController {
             return mav;
         }
 
-        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
         group.setName(newGroupName.trim());
         
         try {
-            deviceGroupEditorDao.updateGroup((StoredDeviceGroup) group);
+            deviceGroupEditorDao.updateGroup(group);
         } catch (DuplicateException e){
             mav.addObject("errorMessage", e.getMessage());
             return mav;
@@ -284,27 +290,14 @@ public class GroupController extends MultiActionController {
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         mav.addObject("groupName", groupName);
 
-        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
         if (group.isModifiable()) {
 
             String deviceId = ServletRequestUtils.getStringParameter(request, "deviceId");
 
-            String[] ids = StringUtils.split(deviceId, ",");
+            List<Integer> deviceList = convertStringToIdList(deviceId);
 
-            List<YukonDevice> deviceList = new ArrayList<YukonDevice>();
-            for (String id : ids) {
-                id = id.trim();
-                
-                if (!StringUtils.isEmpty(id)) {
-                    Integer idInt = Integer.parseInt(id);
-                    YukonDevice device = new YukonDevice();
-                    device.setDeviceId(idInt);
-                    deviceList.add(device);
-                }
-            }
-
-            ((DeviceGroupMemberEditorDao) deviceGroupEditorDao).addDevices((StoredDeviceGroup) group,
-                                                                           deviceList);
+            deviceGroupMemberEditorDao.addDevicesById(group, deviceList);
         } else {
             mav.addObject("errorMessage", "Cannot add devices to " + group.getFullName());
             return mav;
@@ -314,6 +307,21 @@ public class GroupController extends MultiActionController {
         mav.addObject("showDevices", showDevices);
 
         return mav;
+    }
+
+    private List<Integer> convertStringToIdList(String deviceId) {
+        String[] ids = StringUtils.split(deviceId, ",");
+
+        List<Integer> deviceList = new ArrayList<Integer>();
+        for (String id : ids) {
+            id = id.trim();
+            
+            if (!StringUtils.isEmpty(id)) {
+                Integer idInt = Integer.parseInt(id);
+                deviceList.add(idInt);
+            }
+        }
+        return deviceList;
     }
 
     public ModelAndView showAddDevicesByFile(HttpServletRequest request,
@@ -347,7 +355,7 @@ public class GroupController extends MultiActionController {
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         mav.addObject("groupName", groupName);
 
-        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
 
         if (group.isModifiable()) {
 
@@ -397,7 +405,7 @@ public class GroupController extends MultiActionController {
                     }
 
                     // Get the processor that adds devices to groups
-                    Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor((StoredDeviceGroup) group);
+                    Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor(group);
 
                     bulkProcessor.backgroundBulkProcess(iterator,
                                                         yukonDeviceMapper,
@@ -428,7 +436,7 @@ public class GroupController extends MultiActionController {
         String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
         mav.addObject("groupName", groupName);
 
-        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
 
         if (group.isModifiable()) {
 
@@ -459,7 +467,7 @@ public class GroupController extends MultiActionController {
                                                                                           endRange);
 
             ObjectMapper<LiteYukonPAObject, YukonDevice> yukonDeviceMapper = objectMapperFactory.createLiteYukonPAObjectToYukonDeviceMapper();
-            Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor((StoredDeviceGroup) group);
+            Processor<YukonDevice> addToGroupProcessor = processorFactory.createAddYukonDeviceToGroupProcessor(group);
 
             // Create a collecting callback and stick it into the session
             // for later use (progress updating, etc...)
@@ -491,17 +499,13 @@ public class GroupController extends MultiActionController {
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices");
         mav.addObject("showDevices", showDevices);
 
-        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
+        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
 
         if (group.isModifiable()) {
 
             Integer deviceId = ServletRequestUtils.getIntParameter(request, "deviceId");
 
-            YukonDevice device = new YukonDevice();
-            device.setDeviceId(deviceId);
-            ((DeviceGroupMemberEditorDao) deviceGroupEditorDao).removeDevices((StoredDeviceGroup) group,
-                                                                              Collections.singletonList(device));
-
+            deviceGroupMemberEditorDao.removeDevicesById(group, Collections.singleton(deviceId));
         } else {
             mav.addObject("errorMessage", "Cannot remove devices from " + group.getFullName());
             return mav;
@@ -519,17 +523,15 @@ public class GroupController extends MultiActionController {
 
         String parentGroupName = ServletRequestUtils.getStringParameter(request, "parentGroupName");
 
-        DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
-        DeviceGroup parentGroup = deviceGroupService.resolveGroupName(parentGroupName);
+        StoredDeviceGroup group = deviceGroupEditorDao.getStoredGroup(groupName, false);
+        StoredDeviceGroup parentGroup = deviceGroupEditorDao.getStoredGroup(parentGroupName, false);
 
         // Make sure we can move the group
         if (group.isEditable()) {
-            deviceGroupEditorDao.moveGroup((StoredDeviceGroup) group,
-                                           (StoredDeviceGroup) parentGroup);
+            group.setParent(parentGroup);
+            deviceGroupEditorDao.updateGroup(group);
 
-            // Reload the group to get the new name
-            StoredDeviceGroup newGroup = deviceGroupEditorDao.getGroupById(((StoredDeviceGroup) group).getId());
-            mav.addObject("groupName", newGroup.getFullName());
+            mav.addObject("groupName", group.getFullName());
 
         } else {
             mav.addObject("errorMessage", "Cannot move Group: " + group.getFullName());
@@ -548,11 +550,11 @@ public class GroupController extends MultiActionController {
         mav.addObject("groupName", groupName);
 
         String removeGroupName = ServletRequestUtils.getStringParameter(request, "removeGroupName");
-        DeviceGroup removeGroup = deviceGroupService.resolveGroupName(removeGroupName);
+        StoredDeviceGroup removeGroup = deviceGroupEditorDao.getStoredGroup(removeGroupName, false);
 
         // Make sure we can remove the group
         if (removeGroup.isEditable()) {
-            deviceGroupEditorDao.removeGroup((StoredDeviceGroup) removeGroup);
+            deviceGroupEditorDao.removeGroup(removeGroup);
         } else {
             mav.addObject("errorMessage", "Cannot remove Group: " + removeGroup.getFullName());
         }
@@ -711,10 +713,9 @@ public class GroupController extends MultiActionController {
 
         for (String address : addresses) {
 
-            if (!address.matches(".+@.+\\.[a-z]+")) {
+            if (!Validator.isEmailAddress(address)) {
                 return false;
             }
-
         }
 
         return true;

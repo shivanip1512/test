@@ -1,7 +1,7 @@
 package com.cannontech.common.device.groups.editor.dao.impl;
 
 import java.util.Arrays;
-import java.util.Collections;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -23,8 +23,10 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
-import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.MappingCollection;
+import com.cannontech.common.util.ReverseList;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
@@ -40,16 +42,21 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     private StoredDeviceGroup rootGroupCache = null;
     
     @Transactional(propagation=Propagation.REQUIRED)
-    public void addDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices) {
-        for (YukonDevice device : devices) {
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("insert into DeviceGroupMember");
-            sql.append("(DeviceGroupId, YukonPaoId)");
-            sql.append("values");
-            sql.append("(?, ?)");
-            
+    public void addDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices) {
+        Collection<Integer> deviceIds = new MappingCollection<YukonDevice, Integer>(devices, new YukonDeviceToIdMapper());
+        addDevicesById(group, deviceIds);
+    }
+    
+    @Override
+    public void addDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("insert into DeviceGroupMember");
+        sql.append("(DeviceGroupId, YukonPaoId)");
+        sql.append("values");
+        sql.append("(?, ?)");
+        for (Integer deviceId : deviceIds) {
             try {
-                jdbcTemplate.update(sql.toString(), group.getId(), device.getDeviceId());
+                jdbcTemplate.update(sql.toString(), group.getId(), deviceId);
             } catch (DataIntegrityViolationException e) {
                 // ignore - tried to insert duplicate
             }
@@ -231,17 +238,19 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     public void updateGroup(StoredDeviceGroup group) {
         Validate.isTrue(group.isEditable(), "Non-editable groups cannot be updated.");
         Validate.isTrue(group.getParent() != null, "The root group cannot be updated.");
+        
+        StoredDeviceGroup parentGroup = getStoredGroup(group.getParent());
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("UPDATE DeviceGroup");
-        sql.append("SET GroupName = ?");
+        sql.append("SET GroupName = ?, ParentDeviceGroupId = ?");
         sql.append("WHERE");
         sql.append("DeviceGroupId = ?");
         
         String rawName = SqlUtils.convertStringToDbValue(group.getName());
         
         try {
-            jdbcTemplate.update(sql.toString(), rawName, group.getId());
+            jdbcTemplate.update(sql.toString(), rawName, parentGroup.getId(), group.getId());
         } catch (DataIntegrityViolationException e) {
             throw new DuplicateException("Cannot change group name to the same name as an existing group with the same parent.", e);
         }
@@ -265,21 +274,19 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         
     }
 
-    public void moveGroup(StoredDeviceGroup group, StoredDeviceGroup parentGroup) {
-        Validate.isTrue(group.isEditable(), "Non-editable groups cannot be moved.");
-        Validate.isTrue(group.getParent() != null, "The root group cannot be moved.");
-        
-        String sql = "UPDATE DeviceGroup SET ParentDeviceGroupId = ? WHERE DeviceGroupId = ?";
-        jdbcTemplate.update(sql, parentGroup.getId(), group.getId());
-    }
-    
     public void removeDevices(StoredDeviceGroup group, YukonDevice... device) {
         List<YukonDevice> devices = Arrays.asList(device);
         removeDevices(group, devices);
     }
     
-    public void removeDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices) {
-        List<Integer> deviceIds = new MappingList<YukonDevice, Integer>(devices, new YukonDeviceToIdMapper());
+    public void removeDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices) {
+        Collection<Integer> deviceIds = new MappingCollection<YukonDevice, Integer>(devices, new YukonDeviceToIdMapper());
+        removeDevicesById(group, deviceIds);
+    }
+    
+    @Override
+    public void removeDevicesById(StoredDeviceGroup group,
+            Collection<Integer> deviceIds) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("delete from DeviceGroupMember");
         sql.append("where DeviceGroupId = ?");
@@ -288,21 +295,6 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         jdbcTemplate.update(sql.toString(), group.getId());
     }
 
-    public void updateDevices(StoredDeviceGroup group, YukonDevice... device) {
-        List<YukonDevice> devices = Arrays.asList(device);
-        updateDevices(group, devices);
-    }
-    
-    public void updateDevices(StoredDeviceGroup group, List<? extends YukonDevice> devices) {
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("delete from DeviceGroupMember");
-        sql.append("where DeviceGroupId = ?");
-        
-        jdbcTemplate.update(sql.toString(), group.getId());
-        
-        addDevices(group, devices);
-    }
-    
     /**
      * Deprecated via interface.
      */
@@ -388,24 +380,57 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return result;
     }
     
-    public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum) {
-        String groupName = systemGroupEnum.getFullPath();
+    @Override
+    public StoredDeviceGroup getStoredGroup(DeviceGroup group) throws NotFoundException {
+        if (group instanceof StoredDeviceGroup) {
+            return (StoredDeviceGroup) group;
+        } else {
+            StoredDeviceGroup storedGroup = getStoredGroup(group.getFullName(), false);
+            return storedGroup;
+        }
+    }
+    
+    @Override
+    public StoredDeviceGroup getStoredGroup(String fullName, boolean create) throws NotFoundException {
+        Validate.isTrue(fullName.startsWith("/"), "Group name isn't valid, must start with '/': ", fullName);
+        fullName = fullName.substring(1);
         
-        Validate.isTrue(groupName.startsWith("/"), "Group name isn't valid, must start with '/': ", groupName);
-        groupName = groupName.substring(1);
-        
-        if (StringUtils.isEmpty(groupName)) {
+        if (StringUtils.isEmpty(fullName)) {
             return getRootGroup();
         }
         
-        String[] strings = groupName.split("/");
+        String[] strings = fullName.split("/");
         List<String> names = Arrays.asList(strings);
-        Collections.reverse(names);
-        Object[] reversedNames = names.toArray();
+        return getOrCreateGroup(names, create);
+    }
+
+    private StoredDeviceGroup getOrCreateGroup(List<String> names, boolean create) throws NotFoundException {
+        if (names.isEmpty()) {
+            return getRootGroup();
+        }
+        List<String> arguments = new ReverseList<String>(names);
+        Object[] reversedNames = arguments.toArray();
         String sql = getRelativeGroupSql(names.size(), false);
         
-        StoredDeviceGroup result = queryForDeviceGroup(sql, reversedNames);
-        return result;
+        try {
+            StoredDeviceGroup result = queryForDeviceGroup(sql, reversedNames);
+            return result;
+        } catch (EmptyResultDataAccessException e) {
+            if (create) {
+                StoredDeviceGroup thisParentGroup = getOrCreateGroup(names.subList(0, names.size() - 1), create);
+                String thisName = names.get(names.size());
+                addGroup(thisParentGroup, DeviceGroupType.STATIC, thisName);
+                return null;
+            } else {
+                throw new NotFoundException("Group \"/" + StringUtils.join(names, "/") + "\" could not be found", e);
+            }
+        }
+    }
+    
+    public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum) throws NotFoundException {
+        String groupName = systemGroupEnum.getFullPath();
+        StoredDeviceGroup storedGroup = getStoredGroup(groupName, false);
+        return storedGroup;
     }
 
     private StoredDeviceGroup queryForDeviceGroup(String sql, Object... arguments) {

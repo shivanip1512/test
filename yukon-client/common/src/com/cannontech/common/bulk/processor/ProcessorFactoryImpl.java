@@ -1,5 +1,6 @@
 package com.cannontech.common.bulk.processor;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -35,7 +36,7 @@ public class ProcessorFactoryImpl implements ProcessorFactory {
             }
 
             public void process(Collection<YukonDevice> devices) throws ProcessingException {
-                deviceGroupMemberEditorDao.addDevices(group, (List<? extends YukonDevice>) devices);
+                deviceGroupMemberEditorDao.addDevices(group, devices);
             }
         };
     }

@@ -13,6 +13,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -97,7 +98,7 @@ public class RouteGroupProvider extends DeviceGroupProviderBase {
         return Collections.singleton(result);
     }
 
-    private class RouteDeviceGroup extends DeviceGroup {
+    private class RouteDeviceGroup extends MutableDeviceGroup {
         public int routeId;
 
         @Override
