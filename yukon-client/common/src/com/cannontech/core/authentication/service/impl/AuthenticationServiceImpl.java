@@ -61,7 +61,7 @@ public class AuthenticationServiceImpl implements AuthenticationService  {
 
     public void changePassword(LiteYukonUser yukonUser, String oldPassword, String newPassword) throws BadAuthenticationException {
         AuthType authType = yukonUser.getAuthType();
-        boolean supportsChangePassword = supportsPasswordRecovery(authType);
+        boolean supportsChangePassword = supportsPasswordChange(authType);
         if (!supportsChangePassword) throw new UnsupportedOperationException("changePassword not supported for type: " + authType);
         
         AuthenticationProvider provider = getProvder(yukonUser);
