@@ -51,6 +51,7 @@
   
   <bean id="alarmMessageHandler" class="com.cannontech.notif.handler.AlarmMessageHandler">
     <constructor-arg ref="notificationOutputHandlerHelper"/>
+    <property name="pointFormattingService" ref="pointFormattingService"/>
   </bean>
   
   <bean id="completedMessageHandler" class="com.cannontech.notif.handler.CompletedMessageHandler">

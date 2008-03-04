@@ -33,6 +33,7 @@
          <value>com/cannontech/cc/applicationContext.xml</value>
          <value>com/cannontech/notif/applicationContext.xml</value>
          <value>com/cannontech/loadcontrol/applicationContext.xml</value>
+         <value>com/cannontech/core/service/applicationContext.xml</value>
        </list>
      </constructor-arg>
      <constructor-arg>

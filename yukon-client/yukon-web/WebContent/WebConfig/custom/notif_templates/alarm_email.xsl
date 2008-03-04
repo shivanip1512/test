@@ -3,7 +3,7 @@
   
   <xsl:template match="notificationmessage">
     <emailmsg>
-	  <xsl:apply-templates/>
+      <xsl:apply-templates/>
     </emailmsg>
   </xsl:template>
   
@@ -14,6 +14,7 @@
             value - for status points = state text, for all others = raw value
             unitofmeasure - the unit of measure text, or nothing if undefined
             paoname - the name of the PAO the point is attached to
+            paodescription - the description of the PAO (often this is the CapBank Address)
             pointtype - the name of the point type (e.g. "Analog")
             notificationgroup - the name of the notification group to which this is being sent
             abnormal - the abnormal flag {true,false}
@@ -22,6 +23,14 @@
             category - the name of the category that caused the alarm
             alarmdate - the date of the alarm (e.g. "Tuesday, May 31")
             alarmtime - the time of the alarm (e.g. "3:45 PM")
+            
+        Values from PointFormattingService 
+          These formats are used throughout Yukon to provide a uniform display of a point's value. 
+          Numeric values are adjusted the point's decimal places. 
+          As of 4.1, the following are customizable as well as being adjusted for timezone and locale.
+            shortvalue - The SHORT formatting of the point value (usually <value> <unit>)
+            fullvalue - The FULL formatting of the point value (usually <value> <unit> <date> <time>)
+            datevalue - The DATE formatting of teh point value (usually <date> <time>)
     -->
 
   <xsl:template match="alarm">
@@ -35,6 +44,9 @@ Abnormal: <xsl:value-of select="abnormal"/>
 Acknowledged: <xsl:value-of select="acknowledged"/>
 Point Type: <xsl:value-of select="pointtype"/>
 Notification Group: <xsl:value-of select="notificationgroup"/>
+SHORT Format: <xsl:value-of select="shortvalue"/>
+FULL Format: <xsl:value-of select="fullvalue"/>
+DATE Format: <xsl:value-of select="datevalue"/>
       </body>
   </xsl:template>
   

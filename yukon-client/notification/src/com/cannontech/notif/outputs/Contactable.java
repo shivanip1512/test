@@ -1,13 +1,13 @@
 package com.cannontech.notif.outputs;
 
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 
 import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.lite.LiteCICustomer;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
+import com.cannontech.user.SimpleYukonUserContext;
+import com.cannontech.user.YukonUserContext;
 
 public class Contactable {
 
@@ -49,6 +49,32 @@ public class Contactable {
         }
     }
 
+    /**
+     * Returns an appropriate YukonUserContext object of the parent customer of this object. 
+     * The yukon user component will be looked up from the getContactableCustomer().
+     * The locale will be set to the system default.
+     * The time zone will be set to the result getTimeZone().
+     * 
+     */
+    public YukonUserContext getYukonUserContext() {
+        LiteYukonUser yukonUser = null;
+        try {
+            LiteCICustomer customer = _contactableBase.getContactableCustomer();
+            int primaryContactID = customer.getPrimaryContactID();
+            yukonUser = DaoFactory.getContactDao().getYukonUser(primaryContactID);
+        } catch (UnknownCustomerException e) {
+            LiteEnergyCompany energyCompany = getEnergyCompany();
+            int userID;
+            userID = energyCompany.getUserID();
+            yukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
+        }
+        
+        TimeZone timeZone = getTimeZone();
+        SimpleYukonUserContext userContext = new SimpleYukonUserContext(yukonUser, Locale.getDefault(), timeZone);
+
+        return userContext;
+    }
+    
     /**
      * Determines the appropriate LiteEnergyCompany by first finding the parent
      * customer. When the parent customer cannot be found, the default energy
