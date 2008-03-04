@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/03/03 21:57:13 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/03/04 18:47:30 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -122,6 +122,7 @@ class Test_CtiPointManager : public CtiPointManager
 {
 public:
     void addPoint(CtiPointBase *point)  {  ((CtiPointManager *)this)->addPoint(point);  }
+    void updatePointMaps(const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset )  {  ((CtiPointManager *)this)->updatePointMaps(point, old_pao, old_type, old_offset, old_control_offset);  }
 };
 
 #endif                  // #ifndef __MGR_POINT_H__
