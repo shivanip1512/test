@@ -502,12 +502,13 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 	int deviceID = capBank.getControlDeviceID().intValue();
     LiteYukonPAObject obj = paoDao.getLiteYukonPAO(deviceID);
     String rowColor = ((i % 2) == 0) ? "#eeeeee" : "white";
+    
 %>
             <c:set var="thisCapBankId" value="<%=capBank.getCcId()%>"/>
             <c:set var="rowColor" value="<%=rowColor%>"/>
             <input type="hidden" id="paoId_${thisCapBankId}" value="${thisCapBankId}"></input>            
 
-			<tr class="<%=css%>" id="tr_cap_${thisCapBankId}" onmouseover="highLightRow(this)" onmouseout="unHighLightRow(this)">
+			<tr class="<%=css%>" id="tr_cap_${thisCapBankId}" onmouseover="highLightRow(this)"  onmouseout="unHighLightRow(this)">
 				
                 <td>
                     <input type="checkbox" name="cti_chkbxBanks" value="${thisCapBankId}"/>
@@ -530,7 +531,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				    <%=name%>
 				    <% if (CBCUtils.isTwoWay(obj)) { %>                 
                         <a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>', 500, 600)" >
-                            <img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestamp information for the cap bank controller device.');" />
+                            <img class="rAlign magnifierImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestamp information for the cap bank controller device.');" />
                        </a>
                     <% } %>
 				</td>
@@ -568,7 +569,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                         <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
 					<% } %>
 					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
-					       <img class="rAlign popupImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
+					       <img class="rAlign magnifierImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
 					   </a>
 				</td>
 

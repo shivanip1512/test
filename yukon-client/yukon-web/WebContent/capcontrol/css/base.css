@@ -63,10 +63,12 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 
 .altTableCell {
 	background-color: #eeeeee;
+	padding-top: 2px;
 }
 
 .tableCell, .pageBlank {
 	background-color: white;
+	padding-top: 2px;
 }
 
 .tempMoveBackground {
@@ -205,6 +207,11 @@ a.altTableCell:active, a.altTableCell:visited, a.altTableCell:link, a.altTableCe
 	height: 12px;
 	border: 0;
 	cursor: help;
+}
+
+.magnifierImg {
+    border: 0;
+    cursor: help;
 }
 
 .editImg {
