@@ -118,38 +118,44 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
                 
                 row.substationBus = rs.getString("substationBus");
                 String subVarPoint = rs.getString("subVarPoint");
-                Integer subVarInt = Integer.parseInt(subVarPoint);
+                String subVarPointId = rs.getString("subvarpointid");
+                Integer subVarInt = Integer.parseInt(subVarPointId);
                 if (subVarInt <=0) {
                     subVarPoint = "---";
                 }
                 row.subVarPoint = subVarPoint;
                 String subVoltPoint = rs.getString("subVoltPoint");
-                Integer subVoltInt = Integer.parseInt(subVoltPoint);
+                String subVoltPointId = rs.getString("subVoltPointId");
+                Integer subVoltInt = Integer.parseInt(subVoltPointId);
                 if (subVoltInt <=0) {
                     subVoltPoint = "---";
                 }
                 row.subVoltPoint = subVoltPoint;
                 String subWattPoint = rs.getString("subWattPoint");
-                Integer subWattInt = Integer.parseInt(subWattPoint);
+                String subWattPointId = rs.getString("subWattPointId");
+                Integer subWattInt = Integer.parseInt(subWattPointId);
                 if (subWattInt <=0) {
                     subWattPoint = "---";
                 }
                 row.subWattPoint = subWattPoint;
                 row.feederName = rs.getString("feederName");
                 String varPoint = rs.getString("varPoint");
-                Integer varInt = Integer.parseInt(varPoint);
+                String varPointId = rs.getString("varPointId");
+                Integer varInt = Integer.parseInt(varPointId);
                 if (varInt <=0) {
                     varPoint = "---";
                 }
                 row.varPoint = varPoint;
                 String voltPoint = rs.getString("voltPoint");
-                Integer voltInt = Integer.parseInt(voltPoint);
+                String voltPointId = rs.getString("voltPointId");
+                Integer voltInt = Integer.parseInt(voltPointId);
                 if (voltInt <=0) {
                     voltPoint = "---";
                 }
                 row.voltPoint = voltPoint;
                 String wattPoint = rs.getString("wattPoint");
-                Integer wattInt = Integer.parseInt(wattPoint);
+                String wattPointId = rs.getString("wattPointId");
+                Integer wattInt = Integer.parseInt(wattPointId);
                 if (wattInt <=0) {
                     wattPoint = "---";
                 }
@@ -164,18 +170,18 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
     
     public StringBuffer buildSQLStatement() {
         StringBuffer sql = new StringBuffer ("select yp.paoname substationbus, ");
-        sql.append("sp.Pointname SubVarPoint, ");
+        sql.append("sp.Pointname SubVarPoint, sp.pointid subvarpointid, ");
         sql.append("ds.currentvarpointquality sVarQuality, ");
-        sql.append("spv.Pointname SubVoltPoint, ");
+        sql.append("spv.Pointname SubVoltPoint, spv.pointid subvoltpointid, ");
         sql.append("ds.currentvoltpointquality sVoltQuality, ");
-        sql.append("spw.Pointname SubWattPoint, ");
+        sql.append("spw.Pointname SubWattPoint, spw.pointid subwattpointid, ");
         sql.append("ds.currentwattpointquality sWattQuality, ");
         sql.append("yp1.paoname feederName, ");
-        sql.append("p.Pointname VarPoint, ");
+        sql.append("p.Pointname VarPoint, p.pointid varpointid, ");
         sql.append("df.currentvarpointquality fVarQuality, ");
-        sql.append("pv.Pointname VoltPoint, ");
+        sql.append("pv.Pointname VoltPoint, pv.pointid voltpointid, ");
         sql.append("df.currentvoltpointquality fVoltQuality, ");
-        sql.append("pw.Pointname WattPoint, ");
+        sql.append("pw.Pointname WattPoint, pw.pointid wattpointid, ");
         sql.append("df.currentwattpointquality fWattQuality ");
         sql.append("from yukonpaobject yp, yukonpaobject yp1, capcontrolfeeder f, capcontrolsubstationbus s, ");
         sql.append("ccsubstationsubbuslist sbl, ccsubareaassignment sa, ");
