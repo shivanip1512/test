@@ -1021,7 +1021,8 @@ public class Multispeak implements MessageListener {
 
             //Remove from all billing membership groups
 //            StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
-            StoredDeviceGroup deviceGroupParent = multispeakFuncs.getBillingCycleDeviceGroup();
+            DeviceGroup billingCycledeviceGroup = multispeakFuncs.getBillingCycleDeviceGroup();
+            StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(billingCycledeviceGroup);
             Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, meter);
             for (StoredDeviceGroup deviceGroup : deviceGroups) {
                 if( deviceGroup.getName().equalsIgnoreCase(newBilling) ) {

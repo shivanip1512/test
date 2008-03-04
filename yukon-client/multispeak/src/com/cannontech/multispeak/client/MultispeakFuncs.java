@@ -20,7 +20,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
@@ -268,10 +268,10 @@ public class MultispeakFuncs
     /**
      * @return Returns the billingCycle parent Device Group
      */
-    public StoredDeviceGroup getBillingCycleDeviceGroup() throws NotFoundException{
+    public DeviceGroup getBillingCycleDeviceGroup() throws NotFoundException{
         //WE MAY HAVE SOME PROBLEMS HERE WITH THE EXPLICIT CAST TO STOREDDEVICEGROUP....
         String value = roleDao.getGlobalPropertyValue(MultispeakRole.MSP_BILLING_CYCLE_PARENT_DEVICEGROUP);
-        StoredDeviceGroup deviceGroup = (StoredDeviceGroup)deviceGroupService.resolveGroupName(value);
+        DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(value);
         return deviceGroup;
     }
 
