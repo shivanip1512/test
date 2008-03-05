@@ -1700,6 +1700,39 @@ insert into YukonRoleProperty values(-1701,-8, 'Alert Timeout Hours', '168', 'Th
 insert into YukonRoleProperty values(-1602,-7,'Msp BillingCyle DeviceGroup','/Meters/Billing/','Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are ''/Meters/Billing/'', ''/Meters/Collection'', ''/Meters/Alternate''');
 /* End YUK-5271 */
 
+/* Start YUK-5400 */
+update
+      dynamicpointalarming
+set
+      alarmcondition = alarmcondition + 1
+where exists
+(select 
+      dynamicpointalarming.alarmcondition
+from
+      dynamicpointalarming inner join point b on dynamicpointalarming.pointid = b.pointid
+where
+      dynamicpointalarming.alarmcondition > 3
+      and b.pointtype in ('Status','CalcStatus','System','StatusOutput'));
+      
+update
+	pointalarming
+set excludeNotifyStates = 
+		(substr(excludeNotifyStates,1,4) 
+		|| 'N' 
+		|| substr(excludeNotifyStates,5,length(excludeNotifyStates)-5))
+    , ALARMSTATES = 
+		(substr(ALARMSTATES,1,4) 
+		|| ''
+		|| substr(ALARMSTATES,5,length(ALARMSTATES)-5))
+where exists
+(select 
+      pointalarming.pointid
+from
+      pointalarming inner join point b on pointalarming.pointid = b.pointid
+where
+      b.pointtype in ('Status','CalcStatus','System','StatusOutput'));
+/* End YUK-5400 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
