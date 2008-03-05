@@ -103,7 +103,9 @@ for( int i = 0; i < items.length; i++ )
 				<input type="checkbox" name="cti_chkbxPoints" value="<%=item.getItemID()%>"/>
 		<% }  %>
 		<% if( CBCUtils.isController( item ) ) { %>
-			<a href="/editor/copyBase.jsf?itemid=<%=item.getItemID() %>&type=1>"><img src="/editor/images/page_copy.png" border="0" height="15" width="15"/></a>
+            <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                <a href="/editor/copyBase.jsf?itemid=<%=item.getItemID() %>&type=1>"><img src="/editor/images/page_copy.png" border="0" height="15" width="15"/></a>
+			</cti:checkProperty>
 		<% }%>
 				<%=item.toString()%></td>
 				<td><%=item.getItemType()%></td>
