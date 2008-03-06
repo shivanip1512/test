@@ -101,7 +101,7 @@
 	        title="Do not use a point for control." 
 	        styleClass="medStaticLabel"
 	        value="No Volt Reduction Point" 
-	        actionListener="#{capControlForm.substationBusNoControlPointClicked}">
+	        actionListener="#{capControlForm.substationBusNoVoltPointClicked}">
 	        <f:param name="ptId" value="0"/>
 	    </x:commandLink>
     </x:div>
