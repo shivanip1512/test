@@ -492,7 +492,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         if (val == null) {
             return;
         }
-        ((CapControlSubstationBus) getDbPersistent()).setVoltReductionPointId(new Integer(val));
+        CapControlSubstationBus sub = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
+        sub.setVoltReductionPointId(new Integer(val));
     }
 	
 	public void substationNoVoltReductionPointClicked(ActionEvent ae) {
@@ -1476,7 +1477,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		} else if ("Feeder".equalsIgnoreCase(swapType)) {
 			CapControlSubBus currSub = (CapControlSubBus) getDbPersistent();
 			for (int i = 0; i < currSub.getChildList().size(); i++) {
-				CCFeederSubAssignment listItem = (CCFeederSubAssignment) currSub.getChildList().get(i);
+				CCFeederSubAssignment listItem = currSub.getChildList().get(i);
 				if (elemID == listItem.getFeederID().intValue()) {
 					// remove the mapping for the given Feeder id to this SubBus
 					currSub.getChildList().remove(i);
