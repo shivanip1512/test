@@ -506,12 +506,21 @@ public class CBCDisplay {
         }
 
         case SUB_WARNING_POPUP: {
-            return "Operating in like-day history control.";
+            String warningMessage = "";
+            if( subBus.getLikeDayControlFlag()) {
+                warningMessage += "Operating in like-day history control.";
+            } 
+            
+            if ( subBus.getVoltReductionFlag() ) {
+                if(subBus.getLikeDayControlFlag()) warningMessage +="<br>";
+                warningMessage += "Volt Reduction is active.";
+            }
+            return warningMessage;
         }
 
         case SUB_WARNING_IMAGE:{
 
-            if( subBus.getLikeDayControlFlag() ) {
+            if( subBus.getLikeDayControlFlag() || subBus.getVoltReductionFlag() ) {
                 return "true";
             } else {
                 return "false";
