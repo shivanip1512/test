@@ -1,5 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -31,7 +32,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         public Integer Success;
         public Integer Questionable;
         public Integer Failure;
-        public Double SuccessPcnt;
+        public String SuccessPcnt;
         public String Protocol;
     }
     
@@ -71,7 +72,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
                 pstmt.setTimestamp(7, new java.sql.Timestamp(getStartDate().getTime()));
                 pstmt.setTimestamp(8, new java.sql.Timestamp(getStopDate().getTime()));
                 rs = pstmt.executeQuery();
-
+                DecimalFormat twoPlaces = new DecimalFormat("00.00");
                 while (rs.next()) {
                     try {
                         CapControlConfirmationPercentageModel.ModelRow row = new CapControlConfirmationPercentageModel.ModelRow();
@@ -87,8 +88,11 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
                         row.Questionable = rs.getInt("Questionable");
                         row.Failure = rs.getInt("Failure");
                         
-                        double successRate = (row.Success + row.Questionable) / row.Attempts;
-                        row.SuccessPcnt = successRate;
+                        double successRate = ((row.Success.doubleValue() + row.Questionable.doubleValue()) / row.Attempts.doubleValue()* 100.0);
+                        
+                        String successString = twoPlaces.format(successRate);
+                        successString += "%";
+                        row.SuccessPcnt = successString;
                         row.Protocol = rs.getString("Protocol");
                         data.add(row);
                     } catch (java.sql.SQLException e) {
@@ -116,7 +120,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         sql.append("left outer join (select CBCName, count(*) Questionable from ccoperations_view where Optime  between ? and ? ");
         sql.append("and (ConfStatus like '%OpenQuestionable' or  ConfStatus like '%CloseQuestionable') group by CBCName ) Q on T.CBCName = Q.CBCName ");
         sql.append("left outer join (select CBCName, count(*) Success from ccoperations_view where Optime  between ? and ? ");
-        sql.append("and (ConfStatus like '%Closed' or  ConfStatus like '%Open') group by CBCName ) SS on T.CBCName = SS.CBCName )S ");
+        sql.append("and (ConfStatus like '%Close' or  ConfStatus like '%Open') group by CBCName ) SS on T.CBCName = SS.CBCName )S ");
         sql.append("inner join (Select Region , OpCenter, TA, SubName , subID, FeederName, FdrId, CBCName, cbcId, capbankname, bankID, Protocol from ccinventory_view ) rs on S.CBCName = RS.CBCName  ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = rs.subID ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
