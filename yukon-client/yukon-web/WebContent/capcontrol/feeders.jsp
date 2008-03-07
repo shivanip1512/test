@@ -200,7 +200,8 @@ String css = "tableCell";
                             <% } %>
                             <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="STATE" />
                         </a>
-                        <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${thisSubStationId}')" initialize="true" value="SUBSTATION/${thisSubStationId}/STATE"/>
+                        <cti:dataUpdaterCallback function="updateStateColorGenerator('substation_state_${thisSubStationId}')" 
+                            initialize="true" value="SUBSTATION/${thisSubStationId}/STATE"/>
                     </td>
                 </tr>
 			<% } %>
@@ -214,6 +215,7 @@ String css = "tableCell";
 		<table id="subTable" width="100%" cellspacing="0" cellpadding="0">
 			<tr class="columnHeader lAlign">
 				<td><input type="checkbox" name="chkAllSubBusesBx" onclick="checkAll(this, 'cti_chkbxSubBuses');" /></td>
+				<td/>
 				<td id="subSelect">
 				    <select id='subBusFilter' onchange='applySubBusFilter(this);'>
 				    <option>All SubBuses</option>
@@ -243,7 +245,8 @@ for( SubBus subBus: subBuses ) {
 			<tr class="<%=css%>" id="tr_sub_${thisSubBusId}">
 				
                 <td id="anc_${thisSubBusId}"><input type="checkbox" name="cti_chkbxSubBuses" value="${thisSubBusId}"/>
-					<input type="image" id="showSnap${thisSubBusId}" src="images/nav-plus.gif" onclick="showRowElems( 'subSnapShot${thisSubBusId}', 'showSnap${thisSubBusId}'); return false;"/>
+					<input type="image" id="showSnap${thisSubBusId}" src="images/nav-plus.gif" 
+					   onclick="showRowElems( 'subSnapShot${thisSubBusId}', 'showSnap${thisSubBusId}'); return false;"/>
 				</td>
                 
 				<td id="subName">
@@ -256,6 +259,8 @@ for( SubBus subBus: subBuses ) {
 	                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
 	                    </a>
                     </cti:checkProperty>
+                </td>
+                <td>
                     <a
                         <% if (!hideOneLine) { %>
 				            href="${onelineCBCServlet}?id=${thisSubBusId}&redirectURL=<%=currentPageURL %>" title="Click to view One-Line"
@@ -275,7 +280,8 @@ for( SubBus subBus: subBuses ) {
 				        <% } %> >
                         <cti:capControlValue paoId="${thisSubBusId}" type="SUBBUS" format="STATE" />
 					</a>
-                    <cti:dataUpdaterCallback function="updateStateColorGenerator('subbus_state_${thisSubBusId}')" initialize="true" value="SUBBUS/${thisSubBusId}/STATE"/>
+                    <cti:dataUpdaterCallback function="updateStateColorGenerator('subbus_state_${thisSubBusId}')" 
+                        initialize="true" value="SUBBUS/${thisSubBusId}/STATE"/>
 				</td>
                 
 				<td>
@@ -431,7 +437,8 @@ for (int i = 0; i < feeders.size(); i++ ) {
                             <% } %> >
                             <cti:capControlValue paoId="${thisFeederId}" type="FEEDER" format="STATE"/>    
 						</a>
-                        <cti:dataUpdaterCallback function="updateStateColorGenerator('feeder_state_${thisFeederId}')" initialize="true" value="FEEDER/${thisFeederId}/STATE"/>
+                        <cti:dataUpdaterCallback function="updateStateColorGenerator('feeder_state_${thisFeederId}')" 
+                        initialize="true" value="FEEDER/${thisFeederId}/STATE"/>
 					</td>
                     
 					<td>
@@ -485,9 +492,21 @@ for (int i = 0; i < feeders.size(); i++ ) {
             <tr class="columnHeader lAlign">
                 <td><input type="checkbox" name="chkAllBanksBx" onclick="checkAll(this, 'cti_chkbxBanks');" /> </td>
                 <td>CBC Name</td>
-                <td>CB Name (Order) <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.<br>Commands that can be sent to a field device are initiated from this column');" /></td>                    
+                <td>CB Name (Order) 
+                    <img class="rAlign popupImg" 
+                        src="images\question.gif" 
+                        onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.
+                        <br>Commands that can be sent to a field device are initiated from this column');" />
+                </td>                    
                 <td width="2%"></td>    
-                <td>State <img class="rAlign popupImg" src="images\question.gif" onmouseover="statusMsg(this, 'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/> <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span> </td>
+                <td>State 
+                    <img class="rAlign popupImg" 
+                        src="images\question.gif" 
+                        onmouseover="statusMsg(this, 
+                            'System Commands, those commands that do NOT send out a message to a field device, 
+                            can be initiated from this column');"/> 
+                        <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span> 
+                </td>
                 
                 <td>Date/Time</td>
                 <td>Bank Size</td>
@@ -530,8 +549,13 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				    %> 
 				    <%=name%>
 				    <% if (CBCUtils.isTwoWay(obj)) { %>                 
-                        <a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>', 500, 600)" >
-                            <img class="rAlign magnifierImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click here to see the timestamp information for the cap bank controller device.');" />
+                        <a href="#" onclick="return GB_show('Device <%=obj.getPaoName()%>', 
+                            '/spring/capcontrol/oneline/popupmenu?menu=pointTimestamp&cbcID=<%=obj.getLiteID()%>',
+                             500, 600)" >
+                            <img class="rAlign magnifierImg" 
+                                src="images\magnifier.gif" 
+                                onmouseover="statusMsg(this, 
+                                    'Click here to see the timestamp information for the cap bank controller device.');" />
                        </a>
                     <% } %>
 				</td>
@@ -568,8 +592,10 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                         </cti:checkProperty>
                         <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_NAME"/>
 					<% } %>
-					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
-					       <img class="rAlign magnifierImg" src="images\magnifier.gif" onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
+					   <a href="#" onclick="return GB_show('<center> Cap Bank Additional Information </center>', 
+					       '/spring/capcontrol/capAddInfo?paoID=${thisCapBankId}', 500, 600)" >
+					       <img class="rAlign magnifierImg" src="images\magnifier.gif" 
+					           onmouseover="statusMsg(this, 'Click to see additional information for the cap bank.');" />
 					   </a>
 				</td>
 
@@ -619,7 +645,8 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                     <% } else { %>
                         onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
                         onmouseout="nd();"
-                        onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)','tempmove.jsp?bankid=<%=capBank.getCcId()%>', 500, 710, onGreyBoxClose);"
+                        onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)',
+                            'tempmove.jsp?bankid=<%=capBank.getCcId()%>', 500, 710, onGreyBoxClose);"
                     <% } %>
                     	>
                             <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT"/>

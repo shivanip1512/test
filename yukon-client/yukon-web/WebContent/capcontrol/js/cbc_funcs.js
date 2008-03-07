@@ -769,7 +769,7 @@ function pause(numberMillis) {
 	            var row = rows[i];
             	row.setStyle({'display' : ''});
             	var cells = row.getElementsByTagName('td');
-	            var sub = cells[1];
+	            var sub = cells[2];
                 var anchor = sub.getElementsByTagName('a')[0];
                 var subName = anchor.innerHTML;
 	            subBusNames.push(trim(subName));
@@ -780,7 +780,7 @@ function pause(numberMillis) {
 	        for (var i=0; i < rows.length; i++) {
 	            var row = rows[i];
 	            var cells = row.getElementsByTagName('td');
-	            var sub = cells[1];
+	            var sub = cells[2];
 	            var anchor = sub.getElementsByTagName('a')[0];
 	            var subName = anchor.innerHTML;
 	            var selectedSubBus = new String (select.options[select.selectedIndex].text);
