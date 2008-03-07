@@ -1869,6 +1869,12 @@ GO
 /* End YUK-5417 */
 
 /* Start YUK-5422 */
+DELETE FROM YukonGroupRole
+      WHERE RolePropertyID = -70009;
+go
+DELETE FROM YukonUserRole
+      WHERE RolePropertyID = -70009;
+go
 DELETE FROM YukonRoleProperty
       WHERE RolePropertyID = -70009;
 go
