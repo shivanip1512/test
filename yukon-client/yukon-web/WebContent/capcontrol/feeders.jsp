@@ -495,16 +495,13 @@ for (int i = 0; i < feeders.size(); i++ ) {
                 <td>CB Name (Order) 
                     <img class="rAlign popupImg" 
                         src="images\question.gif" 
-                        onmouseover="statusMsg(this, 'Order is the order the CapBank will control in.
-                        <br>Commands that can be sent to a field device are initiated from this column');" />
+                        onmouseover="statusMsg(this, 'Order is the order the CapBank will control in. Commands that can be sent to a field device are initiated from this column');" />
                 </td>                    
                 <td width="2%"></td>    
                 <td>State 
                     <img class="rAlign popupImg" 
                         src="images\question.gif" 
-                        onmouseover="statusMsg(this, 
-                            'System Commands, those commands that do NOT send out a message to a field device, 
-                            can be initiated from this column');"/> 
+                        onmouseover="statusMsg(this,'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column');"/> 
                         <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span> 
                 </td>
                 
@@ -554,8 +551,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                              500, 600)" >
                             <img class="rAlign magnifierImg" 
                                 src="images\magnifier.gif" 
-                                onmouseover="statusMsg(this, 
-                                    'Click here to see the timestamp information for the cap bank controller device.');" />
+                                onmouseover="statusMsg(this,'Click here to see the timestamp information for the cap bank controller device.');" />
                        </a>
                     <% } %>
 				</td>
