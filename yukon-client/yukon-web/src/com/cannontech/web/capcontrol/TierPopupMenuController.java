@@ -102,7 +102,7 @@ public class TierPopupMenuController extends MultiActionController {
             list.add(CommandHolder.SEND_DISABLE_OVUV);
         }
 
-        list.add(CommandHolder.SCAN_2WAY);
+        list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
         mav.addObject("list", list);
         
@@ -147,7 +147,7 @@ public class TierPopupMenuController extends MultiActionController {
             list.add(CommandHolder.SEND_DISABLE_OVUV);
         }
 
-        list.add(CommandHolder.SCAN_2WAY);
+        list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
         
         if (!isVerify) {
@@ -200,7 +200,7 @@ public class TierPopupMenuController extends MultiActionController {
             list.add(CommandHolder.SEND_DISABLE_OVUV);
         }
         
-        list.add(CommandHolder.SCAN_2WAY);
+        list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
         mav.addObject("list", list);
         
@@ -377,7 +377,7 @@ public class TierPopupMenuController extends MultiActionController {
             list.add(CommandHolder.SEND_DISABLE_OVUV);
         }
         
-        list.add(CommandHolder.SCAN_2WAY);
+        list.add(CommandHolder.SEND_ALL_SCAN_2WAY);
         list.add(CommandHolder.SEND_ALL_TIMESYNC);
         mav.addObject("list", list);
         

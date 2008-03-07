@@ -26,7 +26,7 @@ public enum CommandHolder {
     SEND_DISABLE_OVUV(CBCCommand.SEND_ALL_DISABLE_OVUV, "Disable OV/UV", true),
     SEND_ALL_TIMESYNC(CBCCommand.SEND_TIMESYNC, "Send All TimeSync", false),
     
-    SCAN_2WAY(CBCCommand.SCAN_2WAY_DEV, "Scan All 2way CBCs", false),
+    SEND_ALL_SCAN_2WAY(CBCCommand.SEND_ALL_SCANN_2WAY, "Scan All 2way CBCs", false),
     RESET_OP_COUNTS(CBCCommand.RESET_OPCOUNT, "Reset Op Counts", false),
     
     VERIFY_STOP(CBCCommand.CMD_DISABLE_VERIFY, "Verify Stop", false),
