@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.215 $
-* DATE         :  $Date: 2008/02/15 21:04:41 $
+* REVISION     :  $Revision: 1.216 $
+* DATE         :  $Date: 2008/03/07 17:40:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1397,7 +1397,11 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                         status = ds->decode(trx, comm_status);
                                     }
 
-                                    processCommResult(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
+                                    //  don't record boring outbounds - they don't indicate failure
+                                    if( status || trx.getInCountExpected() )
+                                    {
+                                        processCommResult(status,OutMessage->DeviceID,OutMessage->TargetID,OutMessage->Retry > 0, Device);
+                                    }
 
                                     // Prepare for tracing
                                     if(trx.doTrace(comm_status))
