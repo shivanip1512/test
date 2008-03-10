@@ -104,7 +104,9 @@ public class ParentStringPrinter {
         if (capObject instanceof SubStation) {
             return capObject.getCcId();
         }
-        
+        if(capObject == null) {
+            return 0;
+        }
         return getSubstationId(capObject.getParentID());
     }
     
