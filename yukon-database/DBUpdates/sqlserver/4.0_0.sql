@@ -1379,8 +1379,6 @@ update yukonroleproperty SET DefaultValue = 'false' where RolePropertyID = -1002
 
 /* Start YUK-5113 */
 Update point set pointoffset = 100 where pointid = -100;
-alter table POINT
-   add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET);
 /* End YUK-5113 */
 
 /* Start YUK-5213 */

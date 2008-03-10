@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     2/29/2008 4:04:08 PM                         */
+/* Created on:     3/10/2008 10:42:08 AM                        */
 /*==============================================================*/
 
 
@@ -6421,9 +6421,6 @@ INSERT into point values( -110, 'System', 'Multispeak' , 0, 'Default', 0, 'N', '
 
 alter table POINT
    add constraint AK_KEY_PTNM_YUKPAOID unique (POINTNAME, PAObjectID);
-
-alter table POINT
-   add constraint AK_KEY_3_POINT unique (POINTTYPE, PAObjectID, POINTOFFSET);
 
 /*==============================================================*/
 /* Index: Indx_PointStGrpID                                     */
