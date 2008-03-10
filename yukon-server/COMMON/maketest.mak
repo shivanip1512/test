@@ -84,7 +84,7 @@ copy:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS)
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)

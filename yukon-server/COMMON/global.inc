@@ -2,8 +2,8 @@
 #                                                         #
 #       Makefile Template for CTI Apps                    #
 #                                                         #
-#       $Revision: 1.15 $                               #
-#       $Date: 2007/07/11 20:11:42 $                  #
+#       $Revision: 1.16 $                               #
+#       $Date: 2008/03/10 17:04:50 $                  #
 #                                                         #
 # Definitions                                             #
 ###########################################################
@@ -130,6 +130,7 @@ BOOSTTESTLIBS = $(BOOST)\stage\lib\libboost_unit_test_framework-vc6-mt-gd-1_31.l
 !IFDEF DEBUG
 CFLAGS  = /nologo /EHsc- /Zi /Yd /Od /MDd /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS)
 DLLFLAGS= /nologo /EHsc- /Zi /Yd /Od /GD /LD /MDd /Zm200 /FD $(D_VERSION) $(D_VERSION_DETAILS)
+LINKFLAGS = /link /FORCE
 TCL_LIB = tcl81d
 XERCES_LIB = xerces-c_1D
 XERCES_DLL = xerces-c_1_7_0D

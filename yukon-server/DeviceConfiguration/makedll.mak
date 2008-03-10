@@ -56,7 +56,7 @@ cticonfig.dll:   $(DLLOBJS) Makedll.mak
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(BOOSTLIBS)
+                $(CC) $(RWCPPFLAGS) $(DLLFLAGS) $(DLLOBJS) id_dcdll.obj $(INCLPATHS) /Fe..\$@ -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -114,7 +114,11 @@ config_strings.obj:	yukon.h precompiled.h ctidbgmem.h \
 		config_data_cbc.h dllbase.h os2_2w32.h dlldefs.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
 		cticonnect.h netports.h config_data_mct.h
-config_test_a.obj:	yukon.h precompiled.h ctidbgmem.h config_test_a.h
+config_test_a.obj:	yukon.h precompiled.h ctidbgmem.h config_test_a.h \
+		config_base.h logger.h dlldefs.h thread.h mutex.h guard.h \
+		numstr.h clrdump.h ctitime.h CtiPCPtrQueue.h utility.h \
+		queues.h types.h sorted_vector.h dllbase.h os2_2w32.h \
+		cticalls.h dsm2.h cticonnect.h netports.h
 id_dcdll.obj:	yukon.h precompiled.h ctidbgmem.h id_dcdll.h utility.h \
 		ctitime.h dlldefs.h queues.h types.h numstr.h sorted_vector.h \
 		id_vinfo.h

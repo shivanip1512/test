@@ -82,7 +82,7 @@ macs.exe:     $(BASEOBJS) Makefile
               @echo Compiling $@
               @%cd $(OBJ)
               $(RWCPPINVOKE) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS) /Fe..\$@ \
-$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) 
+$(BASEOBJS) -link $(LIBS) $(RWLIBS) $(BOOSTLIBS) $(LINKFLAGS)
               @echo:
               -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
               -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
@@ -137,10 +137,10 @@ clistener.obj:	yukon.h precompiled.h ctidbgmem.h clistener.h mc.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h numstr.h \
 		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		types.h sorted_vector.h clientconn.h observe.h msg_multi.h \
-		collectable.h msg_pdata.h pointdefs.h message.h rwutil.h \
-		boost_time.h queue.h cparms.h configkey.h configval.h \
-		dllbase.h os2_2w32.h cticalls.h dsm2.h cticonnect.h \
-		netports.h
+		collectable.h msg_pdata.h pointdefs.h pointtypes.h message.h \
+		rwutil.h boost_time.h queue.h cparms.h configkey.h \
+		configval.h dllbase.h os2_2w32.h cticalls.h dsm2.h \
+		cticonnect.h netports.h
 mc_dbthr.obj:	yukon.h precompiled.h ctidbgmem.h mc_dbthr.h mc.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h numstr.h \
 		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
@@ -168,10 +168,10 @@ mc_main.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h dlldefs.h \
 		dsm2.h cticonnect.h netports.h mc_sched.h dbmemobject.h \
 		tbl_pao.h tbl_mcsched.h tbl_mcsimpsched.h mc_dbthr.h mccmd.h \
 		msg_pcrequest.h msg_pcreturn.h msg_multi.h msg_pdata.h \
-		pointdefs.h ctdpcptrq.h tbl_meterreadlog.h clistener.h \
-		clientconn.h observe.h mc_msg.h mc_script.h mc_scheduler.h \
-		mgr_holiday.h ctidate.h mc_fileint.h fileint.h ctibase.h \
-		ctinexus.h
+		pointdefs.h pointtypes.h ctdpcptrq.h tbl_meterreadlog.h \
+		clistener.h clientconn.h observe.h mc_msg.h mc_script.h \
+		mc_scheduler.h mgr_holiday.h ctidate.h mc_fileint.h fileint.h \
+		ctibase.h ctinexus.h
 mc_msg.obj:	yukon.h precompiled.h ctidbgmem.h mc_msg.h message.h \
 		collectable.h dlldefs.h rwutil.h ctitime.h boost_time.h \
 		mc_sched.h mc.h logger.h thread.h mutex.h guard.h numstr.h \
@@ -207,9 +207,10 @@ mc_server.obj:	yukon.h precompiled.h ctidbgmem.h mc_server.h mc.h \
 		mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h mc_dbthr.h mccmd.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
-		ctdpcptrq.h tbl_meterreadlog.h clistener.h clientconn.h \
-		observe.h mc_msg.h mc_script.h mc_scheduler.h mgr_holiday.h \
-		ctidate.h mc_fileint.h fileint.h tbl_devicereadjoblog.h
+		pointtypes.h ctdpcptrq.h tbl_meterreadlog.h clistener.h \
+		clientconn.h observe.h mc_msg.h mc_script.h mc_scheduler.h \
+		mgr_holiday.h ctidate.h mc_fileint.h fileint.h \
+		tbl_devicereadjoblog.h
 mc_svc.obj:	yukon.h precompiled.h ctidbgmem.h mc_svc.h cservice.h \
 		dlldefs.h mc_server.h mc.h logger.h thread.h mutex.h guard.h \
 		numstr.h clrdump.h ctitime.h CtiPCPtrQueue.h utility.h \
@@ -220,9 +221,9 @@ mc_svc.obj:	yukon.h precompiled.h ctidbgmem.h mc_svc.h cservice.h \
 		netports.h mc_sched.h dbmemobject.h tbl_pao.h tbl_mcsched.h \
 		tbl_mcsimpsched.h mc_dbthr.h mccmd.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h pointdefs.h \
-		ctdpcptrq.h tbl_meterreadlog.h clistener.h clientconn.h \
-		observe.h mc_msg.h mc_script.h mc_scheduler.h mgr_holiday.h \
-		ctidate.h mc_fileint.h fileint.h
+		pointtypes.h ctdpcptrq.h tbl_meterreadlog.h clistener.h \
+		clientconn.h observe.h mc_msg.h mc_script.h mc_scheduler.h \
+		mgr_holiday.h ctidate.h mc_fileint.h fileint.h
 mgr_mcsched.obj:	yukon.h precompiled.h ctidbgmem.h mgr_mcsched.h mc.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h numstr.h \
 		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \

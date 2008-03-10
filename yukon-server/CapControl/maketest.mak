@@ -99,7 +99,7 @@ deps:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CAPCTRLBASEOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(LIBS)
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CAPCTRLBASEOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(LIBS) $(LINKFLAGS)
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)
@@ -117,10 +117,10 @@ test_ccsubstationbus.obj:	yukon.h precompiled.h ctidbgmem.h ctitime.h \
 		cticonnect.h netports.h sema.h connection.h exchange.h \
 		logger.h thread.h CtiPCPtrQueue.h utility.h queues.h \
 		sorted_vector.h message.h collectable.h rwutil.h boost_time.h \
-		msg_multi.h msg_pdata.h pointdefs.h msg_ptreg.h msg_reg.h \
-		queue.h cparms.h configkey.h configval.h observe.h ccfeeder.h \
-		ccmonitorpoint.h msg_cmd.h ctidate.h cccapbank.h \
-		ccpointresponse.h cctwowaycbcpoints.h msg_pcrequest.h \
-		ccstrategy.h
+		msg_multi.h msg_pdata.h pointdefs.h pointtypes.h msg_ptreg.h \
+		msg_reg.h queue.h cparms.h configkey.h configval.h observe.h \
+		ccfeeder.h ccmonitorpoint.h msg_cmd.h ctidate.h cccapbank.h \
+		ccpointresponse.h cctwowaycbcpoints.h ccoperationstats.h \
+		msg_pcrequest.h ccstrategy.h regression.h
 #ENDUPDATE#
 

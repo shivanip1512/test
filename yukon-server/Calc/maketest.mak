@@ -101,7 +101,7 @@ clean:
 	@echo Creating Executable $(OBJ)\$(@B).exe
         @echo:
 	$(CC) $(CFLAGS) $(INCLPATHS) $(PCHFLAGS) $(RWCPPFLAGS) $(RWLINKFLAGS)  /Fe$(BIN)\$(@B).exe \
-	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CALCOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(CALCLIBS)
+	.\obj\$(@B).obj -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(BOOSTLIBS) $(CALCOBJS) $(BOOSTTESTLIBS) $(RWLIBS) $(CALCLIBS) $(LINKFLAGS) 
 
 	-@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
 	-copy $(BIN)\$(@B).exe $(YUKONOUTPUT)

@@ -520,6 +520,12 @@ tbl_pt_limit.obj:	yukon.h precompiled.h ctidbgmem.h tbl_pt_limit.h \
 		dbmemobject.h dbaccess.h sema.h resolvers.h pointtypes.h \
 		db_entry_defines.h desolvers.h logger.h thread.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h
+tbl_pt_property.obj:	yukon.h precompiled.h ctidbgmem.h \
+		tbl_pt_property.h dlldefs.h dllbase.h os2_2w32.h types.h \
+		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		cticonnect.h netports.h dbmemobject.h dbaccess.h sema.h \
+		logger.h thread.h ctitime.h CtiPCPtrQueue.h utility.h \
+		queues.h sorted_vector.h rwutil.h boost_time.h
 tbl_pt_status.obj:	yukon.h precompiled.h ctidbgmem.h pointdefs.h \
 		tbl_pt_status.h dlldefs.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \

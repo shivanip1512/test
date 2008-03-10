@@ -71,7 +71,7 @@ ctimsg.dll:    $(OBJS) Makefile
                 @echo:
                 @echo Compiling $@
                 @%cd $(OBJ)
-                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\clrdump.lib
+                $(RWCPPINVOKE) $(INCLPATHS) $(RWLINKFLAGS) $(DLLFLAGS) -Fe..\$@ $(OBJS) id_ctimsg.obj -link $(RWLIBS) $(BOOSTLIBS) $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\cticparms.lib $(COMPILEBASE)\lib\clrdump.lib $(LINKFLAGS)
                -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
                -if exist ..\$@ copy ..\$@ $(YUKONOUTPUT)
                -@if not exist $(COMPILEBASE)\lib md $(COMPILEBASE)\lib
@@ -133,16 +133,16 @@ connection.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		cticonnect.h netports.h logger.h thread.h ctitime.h \
 		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h message.h \
 		rwutil.h boost_time.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h
 dll_msg.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
 		os2_2w32.h types.h cticalls.h connection.h exchange.h \
 		dllbase.h logger.h thread.h ctitime.h CtiPCPtrQueue.h \
 		utility.h queues.h sorted_vector.h message.h collectable.h \
 		rwutil.h boost_time.h msg_multi.h msg_pdata.h pointdefs.h \
-		msg_ptreg.h msg_reg.h queue.h cparms.h configkey.h \
-		configval.h
+		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
+		configkey.h configval.h
 id_ctimsg.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
 		dlldefs.h queues.h types.h numstr.h sorted_vector.h \
 		id_ctimsg.h id_vinfo.h
@@ -173,16 +173,18 @@ msg_lmcontrolhistory.obj:	yukon.h precompiled.h ctidbgmem.h \
 		queues.h types.h sorted_vector.h msg_lmcontrolhistory.h \
 		pointdefs.h message.h rwutil.h boost_time.h
 msg_multi.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
-		msg_multi.h dlldefs.h msg_pdata.h pointdefs.h message.h \
-		rwutil.h ctitime.h boost_time.h ctibase.h ctinexus.h \
-		netports.h cticonnect.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h logger.h \
-		thread.h CtiPCPtrQueue.h utility.h queues.h sorted_vector.h
+		msg_multi.h dlldefs.h msg_pdata.h pointdefs.h pointtypes.h \
+		message.h rwutil.h ctitime.h boost_time.h ctibase.h \
+		ctinexus.h netports.h cticonnect.h dllbase.h os2_2w32.h \
+		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
+		logger.h thread.h CtiPCPtrQueue.h utility.h queues.h \
+		sorted_vector.h
 msg_multiwrap.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h types.h \
 		sorted_vector.h msg_multiwrap.h msg_multi.h collectable.h \
-		msg_pdata.h pointdefs.h message.h rwutil.h boost_time.h
+		msg_pdata.h pointdefs.h pointtypes.h message.h rwutil.h \
+		boost_time.h
 msg_notif_alarm.obj:	yukon.h precompiled.h ctidbgmem.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h types.h \
@@ -211,9 +213,9 @@ msg_pcrequest.obj:	yukon.h precompiled.h ctidbgmem.h msg_pcrequest.h \
 		cticonnect.h netports.h
 msg_pcreturn.obj:	yukon.h precompiled.h ctidbgmem.h msg_pcreturn.h \
 		dlldefs.h msg_multi.h collectable.h msg_pdata.h pointdefs.h \
-		message.h rwutil.h ctitime.h boost_time.h logger.h thread.h \
-		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
-		queues.h types.h sorted_vector.h
+		pointtypes.h message.h rwutil.h ctitime.h boost_time.h \
+		logger.h thread.h mutex.h guard.h numstr.h clrdump.h \
+		CtiPCPtrQueue.h utility.h queues.h types.h sorted_vector.h
 msg_pdata.obj:	yukon.h precompiled.h ctidbgmem.h message.h \
 		collectable.h dlldefs.h rwutil.h ctitime.h boost_time.h \
 		logger.h thread.h mutex.h guard.h numstr.h clrdump.h \
@@ -255,7 +257,7 @@ msg_signal.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h \
 		logger.h dlldefs.h thread.h mutex.h guard.h numstr.h \
 		clrdump.h ctitime.h CtiPCPtrQueue.h utility.h queues.h \
 		types.h sorted_vector.h msg_signal.h message.h rwutil.h \
-		boost_time.h msg_pdata.h pointdefs.h
+		boost_time.h msg_pdata.h pointdefs.h pointtypes.h
 msg_tag.obj:	yukon.h precompiled.h ctidbgmem.h collectable.h logger.h \
 		dlldefs.h thread.h mutex.h guard.h numstr.h clrdump.h \
 		ctitime.h CtiPCPtrQueue.h utility.h queues.h types.h \

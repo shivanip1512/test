@@ -145,8 +145,8 @@ scanner.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		pointtypes.h db_entry_defines.h desolvers.h msg_signal.h \
 		tbl_base.h tbl_2way.h tbl_stats.h tbl_scanrate.h \
 		tbl_dyn_paoinfo.h pointdefs.h pt_base.h pt_dyn_base.h \
-		tbl_pt_base.h tbl_pt_trigger.h slctdev.h smartmap.h \
-		mgr_point.h slctpnt.h dev_single.h msg_pcrequest.h \
+		tbl_pt_base.h tbl_pt_property.h tbl_pt_trigger.h slctdev.h \
+		smartmap.h mgr_point.h slctpnt.h dev_single.h msg_pcrequest.h \
 		msg_pcreturn.h msg_multi.h msg_pdata.h tbl_dv_scandata.h \
 		tbl_dv_wnd.h connection.h exchange.h msg_ptreg.h msg_reg.h \
 		queue.h cparms.h configkey.h configval.h prot_base.h xfer.h \

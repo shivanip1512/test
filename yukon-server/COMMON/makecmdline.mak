@@ -269,9 +269,18 @@ test_ctidate.obj:	ctidate.h dlldefs.h logger.h thread.h mutex.h \
 		utility.h queues.h types.h sorted_vector.h
 test_ctipcptrqueue.obj:	ctipcptrqueue.h mutex.h dlldefs.h guard.h \
 		numstr.h clrdump.h
+test_ctistring.obj:	yukon.h precompiled.h ctidbgmem.h ctistring.h \
+		rwutil.h ctitime.h dlldefs.h boost_time.h
 test_ctitime.obj:	ctitime.h dlldefs.h ctidate.h logger.h thread.h \
 		mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h utility.h \
 		queues.h types.h sorted_vector.h
+test_hash.obj:	hashkey.h hash_functions.h dlldefs.h
+test_numstr.obj:	yukon.h precompiled.h ctidbgmem.h numstr.h dlldefs.h
+test_queue.obj:	queue.h cparms.h rwutil.h yukon.h precompiled.h \
+		ctidbgmem.h ctitime.h dlldefs.h boost_time.h configkey.h \
+		configval.h logger.h thread.h mutex.h guard.h numstr.h \
+		clrdump.h CtiPCPtrQueue.h utility.h queues.h types.h \
+		sorted_vector.h
 test_resolvers.obj:	yukon.h precompiled.h ctidbgmem.h dsm2.h mutex.h \
 		dlldefs.h guard.h numstr.h clrdump.h cticonnect.h netports.h \
 		resolvers.h types.h pointtypes.h db_entry_defines.h \
