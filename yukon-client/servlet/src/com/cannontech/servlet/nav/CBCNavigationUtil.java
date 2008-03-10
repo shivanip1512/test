@@ -10,6 +10,7 @@ public class CBCNavigationUtil {
 													"charts.jsp",
 													"standardPageWrapper.jsp",
 													"tempmove.jsp",
+													"moved.jsp",
 													"capcontrolcomments.jsp",
 													"cbcPointTimestamps.jsp"
 													};
