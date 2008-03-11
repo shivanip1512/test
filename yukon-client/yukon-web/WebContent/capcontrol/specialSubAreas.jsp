@@ -74,15 +74,16 @@ if (allowCtlVal!=null) {
 				<input type="image" id="showAreas${thisAreaId}"
 					src="images/nav-plus.gif"
 					onclick="showRowElems( 'allAreas${thisAreaId}', 'showAreas${thisAreaId}'); return false;"/>
-				<a href="javascript:postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '${thisAreaId}');" class="<%=css%>">
+				
 				<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=area.getPaoID()%>&ignoreBookmark=true">
-                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
-                        </a>
-                        <a class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=area.getPaoID()%>">
-                            <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
-                        </a>
-                    </cti:checkProperty>
+                    <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=area.getPaoID()%>&ignoreBookmark=true">
+                        <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+                    </a>
+                    <a class="editImg" href="/editor/deleteBasePAO.jsf?value=<%=area.getPaoID()%>">
+                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+                    </a>
+                </cti:checkProperty>
+                <a href="javascript:postMany('areaForm', '<%=CCSessionInfo.STR_CC_AREAID%>', '${thisAreaId}');" class="<%=css%>">
 				<%=area.getPaoName()%></a>
 				</td>
                 
