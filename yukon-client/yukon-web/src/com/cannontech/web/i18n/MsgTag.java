@@ -6,9 +6,11 @@ import org.springframework.web.servlet.tags.ThemeTag;
 public class MsgTag extends ThemeTag {
     public void setKey(Object key) {
         if (key instanceof MessageSourceResolvable) {
+            setCode(null);
             setMessage(key);
         } else if (key instanceof String) {
             setCode((String) key);
+            setMessage(null);
         } else {
             throw new IllegalArgumentException("Expected a String or MessageSourceResolvable, got a " + key.getClass().getName());
         }
