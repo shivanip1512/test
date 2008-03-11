@@ -216,14 +216,24 @@
                 </c:choose>
             </td>
             <td>
-                <cti:formatDate value="${scheduleInfo.schedule.nextRunTime}"
-                    type="BOTH" var="formattedStartTime" />
-                ${formattedStartTime}
+            	<c:choose>
+            		<c:when test="${scheduleInfo.schedule.nextRunTime.time > cti:constantValue('com.cannontech.message.macs.message.Schedule.INVALID_DATE')}">
+	                	<cti:formatDate value="${scheduleInfo.schedule.nextRunTime}"
+		                    type="BOTH" var="formattedStartTime" />
+	    	            ${formattedStartTime}
+        	        </c:when>
+                	<c:otherwise>----</c:otherwise>
+                </c:choose>
             </td>
             <td>
-                <cti:formatDate value="${scheduleInfo.schedule.nextStopTime}"
-                    type="BOTH" var="formattedStopTime" />
-                ${formattedStopTime}
+            	<c:choose>
+            		<c:when test="${scheduleInfo.schedule.nextStopTime.time > cti:constantValue('com.cannontech.message.macs.message.Schedule.INVALID_DATE')}">
+		                <cti:formatDate value="${scheduleInfo.schedule.nextStopTime}"
+		                    type="BOTH" var="formattedStopTime" />
+		                ${formattedStopTime}
+        	        </c:when>
+                	<c:otherwise>----</c:otherwise>
+                </c:choose>
             </td>
             <td style="background-color: white">
                 <c:if test="${scheduleInfo.showToggleButton}">
