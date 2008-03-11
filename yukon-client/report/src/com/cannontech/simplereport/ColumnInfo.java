@@ -19,6 +19,22 @@ public class ColumnInfo {
     public void setColumnName(String columnName) {
         this.columnName = columnName;
     }
+    public String getColumnId() {
+        
+        String columnId = this.columnName.replaceAll("/", "");
+        // Strip out '\'
+        columnId = columnId.replaceAll("\\\\", "");
+        columnId = columnId.replaceAll("&", "");
+        columnId = columnId.replaceAll("<", "");
+        columnId = columnId.replaceAll(">", "");
+        columnId = columnId.replaceAll("\\s*", "");
+        
+        // Change the first letter to lower case
+        String firstLetter  = columnId.substring(0, 1).toLowerCase();
+        String returnString = firstLetter + columnId.substring(1);
+
+        return returnString;
+    }
     public int getColumnWidth() {
         return columnWidth;
     }

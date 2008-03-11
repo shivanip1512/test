@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+       
+
+
+    <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+        <property name="mappings">
+            <props>
+                <prop key="/action">BulkActionController</prop>
+                <prop key="/*">BulkController</prop>
+            </props>
+        </property>
+    </bean>
+    
+    <bean id="viewResolver"
+      class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/pages/bulk/"/>
+    </bean>
+    
+	<bean id="BulkController" class="com.cannontech.web.bulk.BulkController" >
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="validators">
+            <null />
+        </property>
+        <property name="methodNameResolver">
+            <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        
+        <property name="deviceGroupDao" ref="deviceGroupDao" />
+        <property name="paoDao" ref="paoDao" />
+        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+
+    </bean>
+    
+	<bean id="BulkActionController" class="com.cannontech.web.bulk.BulkActionController" >
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="validators">
+            <null />
+        </property>
+        <property name="methodNameResolver" >
+            <bean class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver" />
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        
+        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
+        <property name="processorFactory" ref="processorFactory" />
+        <property name="objectMapperFactory" ref="objectMapperFactory" />
+        
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
+        <property name="paoDao" ref="paoDao" />
+        
+    </bean>
+    
+    <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl">
+        <property name="collectionProducerList">
+            <list>
+                <bean class="com.cannontech.web.bulk.model.collection.DeviceAddressRangeCollectionProducer">
+                    <property name="paoDao" ref="paoDao" />
+                </bean>
+                <bean class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer">
+                    <property name="deviceGroupService" ref="deviceGroupService" />
+                </bean>
+                <bean class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer">
+                    <property name="deviceDao" ref="deviceDao" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+        
+</beans>

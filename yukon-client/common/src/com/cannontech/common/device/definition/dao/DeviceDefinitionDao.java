@@ -91,6 +91,13 @@ public interface DeviceDefinitionDao {
      * @return The device's device definition
      */
     public abstract DeviceDefinition getDeviceDefinition(YukonDevice device);
+    
+    /**
+     * Method used to get a device definition for a type
+     * @param deviceType - Type to get definition for
+     * @return The type's device definition
+     */
+    public abstract DeviceDefinition getDeviceDefinition(int deviceType);
 
     /**
      * Method to get a set of device types that the given device can change into

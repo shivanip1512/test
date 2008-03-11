@@ -9,6 +9,7 @@ import junit.framework.TestCase;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -28,11 +29,24 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         mapper.setPaoDao(new PaoDaoAdapter() {
 
-            private LiteYukonPAObject lite1 = new LiteYukonPAObject(1, null, 0, 1, 0, null, null);
-            private LiteYukonPAObject lite2 = new LiteYukonPAObject(2, null, 0, 2, 0, null, null);
+            private LiteYukonPAObject lite1 = new LiteYukonPAObject(1,
+                                                                    null,
+                                                                    0,
+                                                                    1,
+                                                                    0,
+                                                                    null,
+                                                                    null);
+            private LiteYukonPAObject lite2 = new LiteYukonPAObject(2,
+                                                                    null,
+                                                                    0,
+                                                                    2,
+                                                                    0,
+                                                                    null,
+                                                                    null);
 
             @Override
-            public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch) {
+            public List<LiteYukonPAObject> getLiteYukonPaoByName(String name,
+                    boolean partialMatch) {
 
                 if ("none".equalsIgnoreCase(name)) {
                     return new ArrayList<LiteYukonPAObject>();
@@ -54,7 +68,8 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             }
 
             @Override
-            public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(String meterNumber) {
+            public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(
+                    String meterNumber) {
 
                 if ("none".equalsIgnoreCase(meterNumber)) {
                     return new ArrayList<LiteYukonPAObject>();
@@ -75,7 +90,8 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             }
 
             @Override
-            public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address) {
+            public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(
+                    int address) {
 
                 if (address == 0) {
                     return new ArrayList<LiteYukonPAObject>();
@@ -100,7 +116,19 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         mapper.setDeviceDao(new DeviceDaoAdapter() {
             @Override
             public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
-                return new YukonDevice(yukonPAObject.getLiteID(), yukonPAObject.getType());
+                return new YukonDevice(yukonPAObject.getLiteID(),
+                                       yukonPAObject.getType());
+            }
+
+            @Override
+            public YukonDevice getYukonDevice(int paoId) {
+
+                switch (paoId) {
+                case 1:
+                    return new YukonDevice(1, 1);
+                default:
+                    throw new NotFoundException(paoId + " is not supported");
+                }
             }
 
         });
@@ -248,6 +276,52 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
     }
 
+    public void testCreateLiteYukonPaoToYukonDeviceMapper() throws Exception {
+
+        ObjectMapper<LiteYukonPAObject, YukonDevice> testMapper = mapper.createLiteYukonPAObjectToYukonDeviceMapper();
+
+        LiteYukonPAObject litePao = new LiteYukonPAObject(1);
+        litePao.setType(1);
+
+        YukonDevice device = testMapper.map(litePao);
+        assertEquals("Mapped device is not as expected", testDevice, device);
+
+    }
+
+    public void testCreatePaoIdToYukonDeviceMapper() throws Exception {
+
+        ObjectMapper<Integer, YukonDevice> testMapper = mapper.createPaoIdToYukonDeviceMapper();
+
+        try {
+            testMapper.map(0);
+            fail("Should throw exception when there are no results");
+        } catch (ObjectMappingException e) {
+            // expected exception
+        }
+
+        YukonDevice device = testMapper.map(1);
+        assertEquals("Mapped device is not as expected", testDevice, device);
+
+    }
+    
+    public void testCreatePassThroughMapper() throws Exception {
+        
+        // Test integer pass through
+        ObjectMapper<Integer, Integer> testIntMapper = mapper.createPassThroughMapper();
+        
+        Integer testInt = 1;
+        
+        Integer resultInt = testIntMapper.map(testInt);
+        assertEquals("Mapped integer is not as expected", testInt, resultInt);
+
+        // Test yukon device pass through
+        ObjectMapper<YukonDevice, YukonDevice> testDeviceMapper = mapper.createPassThroughMapper();
+        
+        YukonDevice device = testDeviceMapper.map(testDevice);
+        assertEquals("Mapped yukon device is not as expected", testDevice, device);
+        
+    }
+
     /**
      * Adapter class which implements PaoDao - allows for easily overriding only
      * the mehtods you need
@@ -258,6 +332,7 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @SuppressWarnings("unchecked")
         public List getAllCapControlSubBuses() {
             throw new UnsupportedOperationException("Method not implemented");
         }
@@ -274,13 +349,14 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category,
-                int paoClass, int type) {
+        public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
+                int category, int paoClass, int type) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public List<LiteYukonPAObject> getLiteYukonPAObjectBy(Integer[] paoType,
-                Integer[] paoCategory, Integer[] paoClass, Integer[] pointTypes, Integer[] uOfMId) {
+        public List<LiteYukonPAObject> getLiteYukonPAObjectBy(
+                Integer[] paoType, Integer[] paoCategory, Integer[] paoClass,
+                Integer[] pointTypes, Integer[] uOfMId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
@@ -288,11 +364,13 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch) {
+        public List<LiteYukonPAObject> getLiteYukonPaoByName(String name,
+                boolean partialMatch) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address) {
+        public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(
+                int address) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
@@ -320,12 +398,13 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(String meterNumber) {
+        public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(
+                String meterNumber) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddressRange(int startAddress,
-                int endAddress) {
+        public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddressRange(
+                int startAddress, int endAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
     }
@@ -336,10 +415,13 @@ public class ObjectMapperFactoryImplTest extends TestCase {
      */
     private class DeviceDaoAdapter implements DeviceDao {
 
-        public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddress) {
+        @SuppressWarnings("unchecked")
+        public List getDevicesByDeviceAddress(Integer masterAddress,
+                Integer slaveAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
+        @SuppressWarnings("unchecked")
         public List getDevicesByPort(int portId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
@@ -352,25 +434,28 @@ public class ObjectMapperFactoryImplTest extends TestCase {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public LiteYukonPAObject getLiteYukonPAObject(String deviceName, int category,
-                int paoClass, int type) {
+        public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
+                int category, int paoClass, int type) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public LiteYukonPAObject getLiteYukonPAObject(String deviceName, String category,
-                String paoClass, String type) {
+        public LiteYukonPAObject getLiteYukonPAObject(String deviceName,
+                String category, String paoClass, String type) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public LiteYukonPAObject getLiteYukonPaobjectByDeviceName(String deviceName) {
+        public LiteYukonPAObject getLiteYukonPaobjectByDeviceName(
+                String deviceName) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(String meterNumber) {
+        public LiteYukonPAObject getLiteYukonPaobjectByMeterNumber(
+                String meterNumber) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
-        public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(String meterNumber) {
+        public List<LiteYukonPAObject> getLiteYukonPaobjectListByMeterNumber(
+                String meterNumber) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
@@ -379,6 +464,19 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        public void disableDevice(YukonDevice device) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        public void enableDevice(YukonDevice device) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void removeDevice(YukonDevice device) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 

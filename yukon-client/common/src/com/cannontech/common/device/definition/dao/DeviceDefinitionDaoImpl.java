@@ -218,15 +218,20 @@ public class DeviceDefinitionDaoImpl implements DeviceDefinitionDao {
         }
     }
 
-    public DeviceDefinition getDeviceDefinition(YukonDevice device) {
-
-        int deviceType = device.getType();
+    public DeviceDefinition getDeviceDefinition(int deviceType) {
+        
         if (this.deviceTypeMap.containsKey(deviceType)) {
             return this.deviceTypeMap.get(deviceType);
         } else {
-            throw new IllegalArgumentException("Device type '" + device.getType()
+            throw new IllegalArgumentException("Device type '" + deviceType
                     + "' is not supported.");
         }
+    }
+    
+    public DeviceDefinition getDeviceDefinition(YukonDevice device) {
+
+        int deviceType = device.getType();
+        return this.getDeviceDefinition(deviceType);
 
     }
     

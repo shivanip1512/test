@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataRetrievalFailureException;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.YukonDevice;
@@ -14,10 +16,14 @@ import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
-import com.cannontech.database.data.capcontrol.*;
+import com.cannontech.database.data.capcontrol.CapBankController;
+import com.cannontech.database.data.capcontrol.CapBankController702x;
+import com.cannontech.database.data.capcontrol.CapBankControllerDNP;
 import com.cannontech.database.data.device.CarrierBase;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceFactory;
@@ -30,17 +36,20 @@ import com.cannontech.database.data.device.TwoWayDevice;
 import com.cannontech.database.data.device.lm.IGroupRoute;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.pao.PAOFactory;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.AccumulatorPoint;
 import com.cannontech.database.data.point.AnalogPoint;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 
 public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     private AttributeService attributeService;
     private PointService pointService;
     private PaoGroupsWrapper paoGroupsWrapper;
     private SimpleDeviceDefinitionService simpleDeviceDefinitionService;
+    private DBPersistentDao dbPersistentDao;
     
     @Required
     public void setAttributeService(AttributeService attributeService) {
@@ -62,7 +71,12 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
             SimpleDeviceDefinitionService simpleDeviceDefinitionService) {
         this.simpleDeviceDefinitionService = simpleDeviceDefinitionService;
     }
-
+    
+    @Required
+    public void setDbPersistentDao(DBPersistentDao dbPersistentDao) {
+        this.dbPersistentDao = dbPersistentDao;
+    }
+    
     public List<PointBase> createAllPointsForDevice(DeviceBase device) {
         return simpleDeviceDefinitionService.createAllPointsForDevice(getYukonDeviceForDevice(device));
     }
@@ -98,6 +112,41 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
 
     public boolean isDeviceTypeChangeable(DeviceBase device) {
         return simpleDeviceDefinitionService.isDeviceTypeChangeable(getYukonDeviceForDevice(device));
+    }
+    
+    @Transactional
+    public void changeDeviceType(YukonDevice currentDevice,
+            DeviceDefinition newDefinition) {
+        
+        DeviceBase yukonPAObject = (DeviceBase) PAOFactory.createPAObject(currentDevice.getDeviceId());
+        
+        // Load the device to change
+        try {
+            Transaction t = Transaction.createTransaction(Transaction.RETRIEVE,
+                                                          yukonPAObject);
+
+            yukonPAObject = (DeviceBase) t.execute();
+        } catch (TransactionException e) {
+            throw new DataRetrievalFailureException("Could not load device from db", e);
+        }
+
+        // Change the device's type
+        DeviceBase changedDevice = this.changeDeviceType(yukonPAObject, newDefinition);
+        
+        // Save the changes
+        try {
+            Transaction t = Transaction.createTransaction(Transaction.UPDATE, changedDevice);
+            t.execute();
+        } catch(TransactionException e) {
+            throw new PersistenceException("Could not save device type change", e);
+        }
+        
+        DBChangeMsg[] changeMsgs = changedDevice.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_UPDATE);
+        // Send DBChangeMsgs
+        for (DBChangeMsg msg : changeMsgs) {
+            dbPersistentDao.processDBChange(msg);
+        }
+        
     }
 
     @SuppressWarnings("unchecked")
@@ -349,4 +398,5 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
         device.setType(deviceType);
         return device;
     }
+
 }

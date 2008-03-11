@@ -317,6 +317,18 @@
       <rtexprvalue>false</rtexprvalue>
    </attribute>
   </tag>
+  
+  <tag>
+    <name>deviceCollection</name>
+    <tag-class>com.cannontech.web.taglib.DeviceCollectionTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>deviceCollection</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
   <tag>
     <name>pointPicker</name>
     <tag-class>com.cannontech.web.taglib.PointPickerTag</tag-class>

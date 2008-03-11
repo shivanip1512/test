@@ -41,6 +41,7 @@
         <property name="pointService" ref="devicePointService" />
         <property name="attributeService" ref="attributeService" />
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
+        <property name="dbPersistentDao" ref="dbPersistentDao" />
     </bean>
     
 	<bean id="deviceDefinitionDao" class="com.cannontech.common.device.definition.dao.DeviceDefinitionDaoImpl" scope="singleton" init-method="initialize">

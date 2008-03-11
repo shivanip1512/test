@@ -3,15 +3,21 @@ package com.cannontech.core.dao.impl;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -33,6 +39,7 @@ public final class DeviceDaoImpl implements DeviceDao {
     private JdbcOperations jdbcOps;
     private PaoDao paoDao;
     private IDatabaseCache databaseCache;
+    private DBPersistentDao dbPersistantDao;
         
 /**
  * PointFuncs constructor comment.
@@ -40,6 +47,36 @@ public final class DeviceDaoImpl implements DeviceDao {
 public DeviceDaoImpl() {
 	super();
 }
+
+    public void disableDevice(YukonDevice device) {
+        this.enableDisableDevice(device, "Y");
+        
+    }
+    public void enableDevice(YukonDevice device) {
+        this.enableDisableDevice(device, "N");
+    }
+    
+    private void enableDisableDevice(YukonDevice device, String disableFlag) {
+        
+        String sql = "UPDATE yukonpaobject SET disableflag = ? WHERE paobjectid = ?";
+        jdbcOps.update(sql, new Object[] { disableFlag, device.getDeviceId() });
+        DBChangeMsg msg = new DBChangeMsg(device.getDeviceId(),
+                        DBChangeMsg.CHANGE_PAO_DB,
+                        "",
+                        "",
+                        DBChangeMsg.CHANGE_TYPE_UPDATE );
+        
+        dbPersistantDao.processDBChange(msg);
+    }
+    
+    public void removeDevice(YukonDevice device) {
+        
+        LiteYukonPAObject liteDevice = this.getLiteDevice(device.getDeviceId());
+        DBPersistent persistent = dbPersistantDao.retrieveDBPersistent(liteDevice);
+        dbPersistantDao.performDBChange(persistent, Transaction.DELETE);
+        
+    }
+
 /* (non-Javadoc)
  * @see com.cannontech.core.dao.DeviceDao#getLiteDevice(int)
  */
@@ -183,4 +220,10 @@ public void setPaoDao(PaoDao paoDao) {
 public void setJdbcOps(JdbcOperations jdbcOps) {
     this.jdbcOps = jdbcOps;
 }
+
+@Required
+public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
+    this.dbPersistantDao = dbPersistantDao;
+}
+
 }

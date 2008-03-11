@@ -48,4 +48,10 @@ public interface ObjectMapperFactory {
      */
     public ObjectMapper<Integer, YukonDevice> createPaoIdToYukonDeviceMapper();
 
+    /**
+     * Method to get an object mapper that just returns the object
+     * @return Pass through mapper
+     */
+    public <I> ObjectMapper<I, I> createPassThroughMapper();
+
 }

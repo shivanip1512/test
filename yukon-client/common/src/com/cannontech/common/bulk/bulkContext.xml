@@ -10,6 +10,7 @@
         
     <bean id="oneAtATimeProcessor" class="com.cannontech.common.bulk.impl.OneAtATimeProcessor">
     	<property name="scheduledExecutor" ref="globalScheduledExecutor" />
+    	<property name="mapperFactory" ref="objectMapperFactory" />
     </bean>
     
     <bean id="objectMapperFactory" class="com.cannontech.common.bulk.mapper.ObjectMapperFactoryImpl">
@@ -20,6 +21,9 @@
     <bean id="processorFactory" class="com.cannontech.common.bulk.processor.ProcessorFactoryImpl">
     	<property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
     	<property name="deviceConfigurationDao" ref="deviceConfigurationDao" />
+    	<property name="deviceDefinitionService" ref="deviceService" />
+    	<property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
+    	<property name="deviceDao" ref="deviceDao" />
     </bean>
     
     <bean id="bulkImportDataDao" class="com.cannontech.common.bulk.importdata.dao.impl.BulkImportDataDaoImpl">

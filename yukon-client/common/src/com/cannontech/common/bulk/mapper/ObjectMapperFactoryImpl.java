@@ -5,6 +5,7 @@ import java.util.List;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -30,7 +31,8 @@ public class ObjectMapperFactoryImpl implements ObjectMapperFactory {
 
             public YukonDevice map(String from) throws ObjectMappingException {
 
-                List<LiteYukonPAObject> deviceList = paoDao.getLiteYukonPaoByName(from, false);
+                List<LiteYukonPAObject> deviceList = paoDao.getLiteYukonPaoByName(from,
+                                                                                  false);
 
                 if (deviceList.size() == 0) {
                     throw new ObjectMappingException("Pao name '" + from + "' not found.");
@@ -145,7 +147,8 @@ public class ObjectMapperFactoryImpl implements ObjectMapperFactory {
 
         return new ObjectMapper<LiteYukonPAObject, YukonDevice>() {
 
-            public YukonDevice map(LiteYukonPAObject from) throws ObjectMappingException {
+            public YukonDevice map(LiteYukonPAObject from)
+                    throws ObjectMappingException {
 
                 YukonDevice device = deviceDao.getYukonDevice(from);
                 return device;
@@ -160,10 +163,28 @@ public class ObjectMapperFactoryImpl implements ObjectMapperFactory {
 
             public YukonDevice map(Integer from) throws ObjectMappingException {
 
-                YukonDevice device = deviceDao.getYukonDevice(from);
-                return device;
+                try {
+                    YukonDevice device = deviceDao.getYukonDevice(from);
+                    return device;
+                } catch (NotFoundException e) {
+                    throw new ObjectMappingException("Pao with id: " + from + "' not found.",
+                                                     e);
+                }
 
             }
         };
     }
+
+    public <I> ObjectMapper<I, I> createPassThroughMapper() {
+
+        return new ObjectMapper<I, I>() {
+
+            public I map(I from) throws ObjectMappingException {
+
+                return from;
+
+            }
+        };
+    }
+
 }

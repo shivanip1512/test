@@ -124,6 +124,7 @@
                <value>classpath:com/cannontech/yukon/web/menuLabels</value>
                <value>classpath:com/cannontech/yukon/web/standardLayout</value>
                <value>classpath:com/cannontech/yukon/web/input</value>
+               <value>classpath:com/cannontech/yukon/common/device/bulk/bulk</value>
             </list>
         </property>
         <property name="defaultEncoding" value="UTF-8"/>

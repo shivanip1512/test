@@ -9,6 +9,7 @@ import com.cannontech.common.bulk.BulkProcessingResultHolder;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.BulkProcessorCallback;
 import com.cannontech.common.bulk.CollectingBulkProcessorCallback;
+import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
@@ -23,9 +24,33 @@ public class OneAtATimeProcessor implements BulkProcessor {
     private Logger log = YukonLogManager.getLogger(OneAtATimeProcessor.class);
 
     private ScheduledExecutor scheduledExecutor = null;
+    private ObjectMapperFactory mapperFactory = null;
 
     public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
         this.scheduledExecutor = scheduledExecutor;
+    }
+
+    public void setMapperFactory(ObjectMapperFactory mapperFactory) {
+        this.mapperFactory = mapperFactory;
+    }
+
+    public <I> BulkProcessingResultHolder bulkProcess(Iterator<I> iterator,
+            Processor<I> processor) {
+
+        CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
+
+        // Use a pass through mapper
+        ObjectMapper<I, I> passThroughMapper = mapperFactory.createPassThroughMapper();
+
+        // Get the bulk processor runnable and run it in this thread (will
+        // block)
+        Runnable runnable = getBulkProcessorRunnable(iterator,
+                                                     passThroughMapper,
+                                                     processor,
+                                                     callback);
+        runnable.run();
+
+        return callback;
     }
 
     public <I, O> BulkProcessingResultHolder bulkProcess(Iterator<I> iterator,
@@ -35,18 +60,41 @@ public class OneAtATimeProcessor implements BulkProcessor {
 
         // Get the bulk processor runnable and run it in this thread (will
         // block)
-        Runnable runnable = getBulkProcessorRunnable(iterator, mapper, processor, callback);
+        Runnable runnable = getBulkProcessorRunnable(iterator,
+                                                     mapper,
+                                                     processor,
+                                                     callback);
         runnable.run();
 
         return callback;
     }
 
-    public <I, O> void backgroundBulkProcess(Iterator<I> iterator, ObjectMapper<I, O> mapper,
-            Processor<O> processor, BulkProcessorCallback callback) {
+    public <I> void backgroundBulkProcess(Iterator<I> iterator,
+            Processor<I> processor, BulkProcessorCallback callback) {
+
+        // Use a pass through mapper
+        ObjectMapper<I, I> passThroughMapper = mapperFactory.createPassThroughMapper();
+
+        // Get the bulk processor runnable and ask the ScheduledExecutor to
+        // run it in the background
+        Runnable runnable = getBulkProcessorRunnable(iterator,
+                                                     passThroughMapper,
+                                                     processor,
+                                                     callback);
+        scheduledExecutor.execute(runnable);
+
+    }
+
+    public <I, O> void backgroundBulkProcess(Iterator<I> iterator,
+            ObjectMapper<I, O> mapper, Processor<O> processor,
+            BulkProcessorCallback callback) {
 
         // Get the bulk processor runnable and ask the ScheduledExecutor to run
         // it in the background
-        Runnable runnable = getBulkProcessorRunnable(iterator, mapper, processor, callback);
+        Runnable runnable = getBulkProcessorRunnable(iterator,
+                                                     mapper,
+                                                     processor,
+                                                     callback);
         scheduledExecutor.execute(runnable);
 
     }
@@ -62,9 +110,9 @@ public class OneAtATimeProcessor implements BulkProcessor {
      *            runs
      * @return The runnable
      */
-    private <I, O> Runnable getBulkProcessorRunnable(final Iterator<I> iterator,
-            final ObjectMapper<I, O> mapper, final Processor<O> processor,
-            final BulkProcessorCallback callback) {
+    private <I, O> Runnable getBulkProcessorRunnable(
+            final Iterator<I> iterator, final ObjectMapper<I, O> mapper,
+            final Processor<O> processor, final BulkProcessorCallback callback) {
 
         return new Runnable() {
 

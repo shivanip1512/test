@@ -79,5 +79,22 @@ public interface DeviceDao {
     public List getDevicesByDeviceAddress(Integer masterAddress,
             Integer slaveAddress);
 
+    /**
+     * Method used to enable a device
+     * @param device - Device to enable
+     */
+    public void enableDevice(YukonDevice device);
+
+    /**
+     * Method used to disable a device
+     * @param device - Device to disable
+     */
+    public void disableDevice(YukonDevice device);
+    
+    /**
+     * Method to remove a device
+     * @param device - Device to remove
+     */
+    public void removeDevice(YukonDevice device);
 
 }

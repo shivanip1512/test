@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- Bulk actions -->
+    <entry key="yukon.common.device.bulk.bulkAction.DELETE_DEVICES">Delete Devices</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.DELETE_DEVICES.description">Delete Devices</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.CHANGE_TYPE">Change Device type</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.CHANGE_TYPE.description">Change type to {0}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.UPDATE_ROUTE">Update Route</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.UPDATE_ROUTE.description">Update Route to {0}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.ENABLE_DISABLE_DEVICES">Enable/Disable Devices</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.ENABLE_DISABLE_DEVICES.description">{0} Devices</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.EDIT_DEVICES">Edit Devices</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.EDIT_DEVICES.description">Manual Device Edit</entry>
+
+    <!-- Device Collections -->
+    <entry key="yukon.common.device.bulk.bulkAction.collection.addressRange">All devices in address range: {0} - {1}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.group">All devices in device group: {0}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.idList">Devices selected from picker</entry>
+
+    <!-- deviceSelection.jsp -->
+    <entry key="yukon.common.device.bulk.deviceSelection.title">Bulk Operations Device Selection</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevices">Select Devices</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesTitle">Click to select devices individually</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroup">Select Devices by Group</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTitle">Click to select devices by Group</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByAddress">Select Devices by Address range</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByAddressTitle">Click to select devices by Address range</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByFile">Select Devices by File upload</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDevicesByFileTitle">Click to select devices by File upload</entry>
+
+    <entry key="yukon.common.device.bulk.deviceSelection.header">Select a set of devices to perform a bulk operation on:</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.cancel">cancel</entry>
+
+    <entry key="yukon.common.device.bulk.deviceSelection.selectGroup">Select Group of Devices:</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectAddress">Physical address range:</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDataFileType">Type of data:</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.selectDataFile">Data file:</entry>
+
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileAddress">Physical Address (one per line)</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileName">Device Name (one per line)</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileMeterNumber">Meter Number (one per line)</entry>
+    <entry key="yukon.common.device.bulk.deviceSelection.dataFileBulk">Bulk Importer file</entry>
+
+    <!--  bulkActions.jsp -->
+    <entry key="yukon.common.device.bulk.bulkAction.title">Bulk Actions</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.selectType">Select the new type for the devices:</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.selectRoute">Select the new route for the devices:</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.enableDisable">Choose whether to enable or disable the devices:</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.enable">Enable</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.disable">Disable</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.doAction">Do Action</entry>
+
+    <!--  currentBulkProcesses.jsp -->
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.title">Current Bulk Processes</entry>
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.action">Process description</entry>
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.collection">Objects being processed</entry>
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.user">User</entry>
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.start">Started</entry>
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.total">Total</entry>
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.success">Successful</entry>
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.fail">Unsuccessful</entry>
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.complete">Complete</entry>
+    <entry key="yukon.common.device.bulk.currentBulkProcesses.remove">Remove Result</entry>
+    
+</properties>
