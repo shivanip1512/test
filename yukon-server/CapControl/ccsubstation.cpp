@@ -37,20 +37,19 @@ RWDEFINE_COLLECTABLE( CtiCCSubstation, CTICCSUBSTATION_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSubstation::CtiCCSubstation() : _operationStats()
+CtiCCSubstation::CtiCCSubstation() 
 {
 }
 
-CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr) : _operationStats()
+CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr) 
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
 }
 
-CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation) : _operationStats()
+CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation) 
 {
     operator=(substation);
-    _operationStats.setPAOId(_paoid);
 }
 
 /*---------------------------------------------------------------------------
@@ -58,6 +57,7 @@ CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation) : _operation
 ---------------------------------------------------------------------------*/
 CtiCCSubstation::~CtiCCSubstation()
 {  
+    _pointIds.clear();
     try
     {  
         _subBusIds.clear();   
@@ -68,6 +68,12 @@ CtiCCSubstation::~CtiCCSubstation()
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
+
+CtiCCOperationStats& CtiCCSubstation::getOperationStats()
+{
+    return _operationStats;
+}
+
 
 
 /*-------------------------------------------------------------------------
@@ -226,7 +232,12 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
 
-    _voltReductionControlId = 0;  //TEMPORARY.  need to add to substation table.
+    rdr["voltreductionpointid"] >> _voltReductionControlId;
+    if (_voltReductionControlId <= 0)
+    {
+        setVoltReductionFlag(FALSE);
+    }
+
 
     setOvUvDisabledFlag(FALSE);
     setVoltReductionFlag(FALSE);
@@ -345,6 +356,9 @@ void CtiCCSubstation::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDate
                 }
             }
         }
+
+        if (getOperationStats().isDirty())
+            getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
 }
 void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
@@ -354,6 +368,11 @@ void CtiCCSubstation::setDynamicData(RWDBReader& rdr)
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
     _saEnabledFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
     _voltReductionFlag = (_additionalFlags[2]=='y'?TRUE:FALSE);
+    if (_voltReductionControlId <= 0)
+    {
+        setVoltReductionFlag(FALSE);
+    }
+
     rdr["saenabledid"] >> _saEnabledId;
     _insertDynamicDataFlag = FALSE;
     _dirty = false;

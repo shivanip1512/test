@@ -113,6 +113,7 @@ public:
         PaobjectFeederMap,
         PaobjectCapBankMap,
         PointIdSubBusMap,
+        PointIdSubstationMap,
         PointIdFeederMap,
         PointIdCapBankMap,
         StrategyIdStrategyMap,
@@ -164,11 +165,13 @@ public:
     std::multimap< long, CtiCCSpecialPtr >::iterator findSpecialAreaByPointID(long point_id, int &saCount);
     std::multimap< long, CtiCCAreaPtr >::iterator findAreaByPointID(long point_id, int &areaCount);
     std::multimap< long, CtiCCSubstationBusPtr >::iterator findSubBusByPointID(long point_id, int &subCount);
+    std::multimap< long, CtiCCSubstationPtr >::iterator findSubstationByPointID(long point_id, int &subCount);
     std::multimap< long, CtiCCFeederPtr >::iterator findFeederByPointID(long point_id, int &feedCount);
     std::multimap< long, CtiCCCapBankPtr >::iterator findCapBankByPointID(long point_id, int &capCount);
     int getNbrOfAreasWithPointID(long point_id);
     int getNbrOfSpecialAreasWithPointID(long point_id) ;
     int getNbrOfSubBusesWithPointID(long point_id);
+    int getNbrOfSubstationsWithPointID(long point_id);
     int getNbrOfSubsWithAltSubID(long altSubId);
     int getNbrOfFeedersWithPointID(long point_id);
     int getNbrOfCapBanksWithPointID(long point_id);
@@ -229,6 +232,7 @@ public:
     void reloadSubstationFromDatabase(long substationId, map< long, CtiCCSubstationPtr > *paobject_substation_map,
                                       map <long, CtiCCAreaPtr> *paobject_area_map,
                                       map <long, CtiCCSpecialPtr> *paobject_specialarea_map,
+                                      multimap< long, CtiCCSubstationPtr > *pointid_station_map, 
                                       map< long, long> *substation_area_map,
                                       map< long, long> *substation_specialarea_map,
                                       CtiCCSubstation_vec *ccSubstations);
@@ -240,21 +244,31 @@ public:
                                   map< long, CtiCCSpecialPtr > *paobject_specialarea_map,
                                   multimap< long, CtiCCSpecialPtr > *pointid_specialarea_map,
                                   CtiCCSpArea_vec *ccSpecialAreas);
-    void reloadTimeOfDayStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
-    void reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
+    void reloadTimeOfDayStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
+    void reloadStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();
     void reloadClientLinkStatusPointFromDatabase();
     void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,  
                                       map< long, long> *controlid_action_map,
                                       CtiTime &lastSendTime, int fallBackConstant);
-    void reloadOperationStatsFromDatabase(long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
+    void reloadOperationStatsFromDatabase(RWDBConnection& conn, long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
                                                         map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                                         map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                                         map< long, CtiCCSubstationPtr > *paobject_substation_map,
                                                         map< long, CtiCCAreaPtr > *paobject_area_map,
                                                         map< long, CtiCCSpecialPtr > *paobject_specialarea_map );
+    void reloadAndAssignHolidayStrategysFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
+    void reCalculateOperationStatsFromDatabase( );
+    void reCalculateCapBankOperationStatsFromDatabase( );
+    void reCalculateFeederOperationStatsFromDatabase( );
+    void reCalculateSubBusOperationStatsFromDatabase( );
+    void reCalculateSubstationOperationStatsFromDatabase( );
+    void reCalculateAreaOperationStatsFromDatabase( );
+    void reCalculateSpecialOperationStatsFromDatabase( );
+    void resetAllOperationStats();
 
+    
     void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
                        map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map);
     BOOL isCapBankOrphan(long capBankId);
@@ -287,6 +301,7 @@ public:
     void  setLinkDropOutTime(const CtiTime& dropOutTime);
 
     map <long, CtiCCSubstationBusPtr>* getPAOSubMap();
+    string getPAOTypeString(const string paoTypeString);
 
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE;
     static const string CAP_CONTROL_DBCHANGE_MSG_SOURCE2;
@@ -298,6 +313,23 @@ public:
     /* Relating to Max Kvar Cparm */
     bool addKVAROperation( long capbankId, long kvar );
     bool removeKVAROperation( long capbankId );
+
+    void resetAllOpStats();
+    void printAllOperationStats();
+    void incrementOperationCounts(CtiCCCapBank* cap, CtiCCFeeder* feed, 
+                                  CtiCCSubstationBus* bus, CtiCCSubstation* station, 
+                                  CtiCCArea* area, CtiCCSpecial* spArea);
+    void incrementOperationFailCounts(CtiCCCapBank* cap, CtiCCFeeder* feed, 
+                                  CtiCCSubstationBus* bus, CtiCCSubstation* station, 
+                                  CtiCCArea* area, CtiCCSpecial* spArea);
+    void createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
+                                  CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea);
+
+    void setControlStatusAndIncrementFailCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap);
+    void setControlStatusAndIncrementOpCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap);
+    void getSubBusParentInfo(CtiCCSubstationBus* bus, LONG &spAreaId, LONG &areaId, LONG &stationId);
+    void getFeederParentInfo(CtiCCFeeder* feeder, LONG &spAreaId, LONG &areaId, LONG &stationId);
+
 
 private:
 
@@ -390,6 +422,7 @@ private:
     multimap< long, CtiCCAreaPtr > _pointid_area_map;
     multimap< long, CtiCCSpecialPtr > _pointid_specialarea_map;
     multimap< long, CtiCCSubstationBusPtr > _pointid_subbus_map;
+    multimap< long, CtiCCSubstationPtr > _pointid_station_map;
     multimap< long, CtiCCFeederPtr > _pointid_feeder_map;
     multimap< long, CtiCCCapBankPtr > _pointid_capbank_map;
 

@@ -156,6 +156,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL getLikeDayControlFlag() const;
     BOOL getVoltReductionFlag() const;
     LONG getVoltReductionControlId() const;
+    BOOL getSendMoreTimeControlledCommandsFlag() const;
+
     
     const string& getSolution() const;
     DOUBLE getTargetVarValue() const;
@@ -278,6 +280,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setLikeDayControlFlag(BOOL flag);
     CtiCCSubstationBus& setVoltReductionFlag(BOOL flag);
     CtiCCSubstationBus& setVoltReductionControlId(LONG pointid);
+    CtiCCSubstationBus& setSendMoreTimeControlledCommandsFlag(BOOL flag);
+
     CtiCCSubstationBus& setAllAltSubValues(DOUBLE volt, DOUBLE var, DOUBLE watt);
     CtiCCSubstationBus& setSolution(const string& text);
     CtiCCSubstationBus& setTargetVarValue(DOUBLE value);
@@ -401,7 +405,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     vector <CtiCCMonitorPointPtr>& getMultipleMonitorPoints() {return _multipleMonitorPoints;};
 
 
-    CtiCCOperationStats getOperationStats();
+    CtiCCOperationStats& getOperationStats();
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -516,6 +520,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     std::vector <CtiCCFeeder*> _ccfeeders;
     CtiTODC_SVector _todControls;
     int _percentToClose;
+    
 
     BOOL _verificationFlag;
     BOOL _performingVerificationFlag;
@@ -532,6 +537,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL _correctionNeededNoBankAvailFlag;
     BOOL _likeDayControlFlag;
     BOOL _voltReductionFlag;
+    BOOL _sendMoreTimeControlledCommandsFlag;
 
     LONG _voltReductionControlId;
     LONG _currentCapBankToVerifyAssumedOrigState;

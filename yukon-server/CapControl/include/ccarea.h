@@ -97,8 +97,8 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     DOUBLE getPFactor() const;
     DOUBLE getEstPFactor() const;
     std::list<long>* getSubStationList(){return &_subStationIds;};
-    CtiCCOperationStats getOperationStats();
-
+    CtiCCOperationStats& getOperationStats();
+    list <LONG>* getPointIds() {return &_pointIds;};
 
     void deleteCCSubs(long subId);
 
@@ -212,6 +212,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     BOOL _reEnableAreaFlag;
 
     std::list<long> _subStationIds;
+    std::list <long> _pointIds;
 
     CtiCCOperationStats _operationStats;
 

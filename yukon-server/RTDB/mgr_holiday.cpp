@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_holiday.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2005/12/20 17:20:27 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/03/11 16:43:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -39,6 +39,26 @@ bool CtiHolidayManager::isHoliday(const CtiDate& date, long holiday_sched_id)
     {
         if( iter->first == holiday_sched_id &&
             iter->second.month == date.month()  &&
+            iter->second.day == date.dayOfMonth() &&
+            (iter->second.year == -1 || iter->second.year == date.year()) )
+        {
+            is_holiday = true;
+            break;
+        }
+    }
+    return is_holiday;
+}
+
+
+bool CtiHolidayManager::isHolidayForAnySchedule(const CtiDate& date)
+{
+    bool is_holiday = false;
+
+    for( hSchedMap::iterator iter = _hsched_map.begin() ;
+       iter != _hsched_map.end();
+       iter++ )
+    {
+        if( iter->second.month == date.month()  &&
             iter->second.day == date.dayOfMonth() &&
             (iter->second.year == -1 || iter->second.year == date.year()) )
         {

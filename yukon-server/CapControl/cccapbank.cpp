@@ -32,14 +32,14 @@ RWDEFINE_COLLECTABLE( CtiCCCapBank, CTICCCAPBANK_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCCapBank::CtiCCCapBank() : _operationStats()
+CtiCCCapBank::CtiCCCapBank() 
 {
     _twoWayPoints = NULL;
     _ovuvSituationFlag = false;
     
 }
 
-CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr) : _operationStats()
+CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr) 
 {
     restore(rdr);
      _monitorPoint.clear();
@@ -49,14 +49,10 @@ CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr) : _operationStats()
      _operationStats.setPAOId(_paoid);
 }
 
-CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)  : _operationStats()
+CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)  
 {
     operator=(cap);
     _twoWayPoints = NULL;
-
-    _operationStats.setPAOId(_paoid);
-
-
 }
 
 /*---------------------------------------------------------------------------
@@ -101,7 +97,7 @@ CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
 
 }
 
-CtiCCOperationStats CtiCCCapBank::getOperationStats()
+CtiCCOperationStats& CtiCCCapBank::getOperationStats()
 {
     return _operationStats;
 
@@ -2489,6 +2485,9 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
                 }
             }
         }
+
+        if (getOperationStats().isDirty())
+            getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
 }
 const string& CtiCCCapBank::convertOperationalState( int num )

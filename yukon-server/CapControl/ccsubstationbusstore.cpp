@@ -36,7 +36,8 @@
 #include "configparms.h"
 #include "msg_dbchg.h"
 #include "msg_signal.h"
-#include "capcontroller.h"
+#include "capcontroller.h"    
+#include "mgr_holiday.h"
 #include "utility.h"
 #include "thread_monitor.h"
 
@@ -49,6 +50,9 @@ extern ULONG _CC_DEBUG;
 extern ULONG _DB_RELOAD_WAIT;
 extern ULONG _MAX_KVAR;
 extern ULONG _MAX_KVAR_TIMEOUT;
+extern ULONG _OP_STATS_USER_DEF_PERIOD;
+extern ULONG _OP_STATS_REFRESH_RATE;
+
 
 using namespace std;
 
@@ -77,6 +81,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
     _pointid_area_map.clear();
     _pointid_specialarea_map.clear();
     _pointid_subbus_map.clear();
+    _pointid_station_map.clear();
     _pointid_feeder_map.clear();
     _pointid_capbank_map.clear();
 
@@ -280,6 +285,22 @@ multimap< long, CtiCCAreaPtr >::iterator CtiCCSubstationBusStore::findAreaByPoin
         return NULL;
 }
 
+multimap< long, CtiCCSubstationPtr >::iterator CtiCCSubstationBusStore::findSubstationByPointID(long point_id, int &subCount)
+{
+    multimap< long, CtiCCSubstationPtr >::iterator iter = _pointid_station_map.lower_bound(point_id);
+    subCount = _pointid_station_map.count(point_id);
+
+    if (subCount > 0) 
+    {
+        if (iter != _pointid_station_map.end()) 
+            return iter;
+        else
+            return NULL;
+    }
+    else 
+        return NULL;
+}
+
 multimap< long, CtiCCSubstationBusPtr >::iterator CtiCCSubstationBusStore::findSubBusByPointID(long point_id, int &subCount)
 {
     multimap< long, CtiCCSubstationBusPtr >::iterator iter = _pointid_subbus_map.lower_bound(point_id);
@@ -295,6 +316,7 @@ multimap< long, CtiCCSubstationBusPtr >::iterator CtiCCSubstationBusStore::findS
     else 
         return NULL;
 }
+
 
 multimap< long, CtiCCFeederPtr >::iterator CtiCCSubstationBusStore::findFeederByPointID(long point_id, int &feedCount)
 {
@@ -336,10 +358,15 @@ int CtiCCSubstationBusStore::getNbrOfSpecialAreasWithPointID(long point_id)
 {
     return _pointid_specialarea_map.count(point_id);
 }
+int CtiCCSubstationBusStore::getNbrOfSubstationsWithPointID(long point_id)
+{
+    return _pointid_station_map.count(point_id);
+}
 int CtiCCSubstationBusStore::getNbrOfSubBusesWithPointID(long point_id)
 {
     return _pointid_subbus_map.count(point_id);
 }
+
 int CtiCCSubstationBusStore::getNbrOfSubsWithAltSubID(long altSubId)
 {
     return _altsub_sub_idmap.count(altSubId);
@@ -448,6 +475,46 @@ long CtiCCSubstationBusStore::findSubIDbyAltSubID(long altSubId, int index)
 
 }
 
+
+string CtiCCSubstationBusStore::getPAOTypeString(const string paoTypeString)
+{
+    string retVal = "Undefined";
+    INT paoType = resolveCapControlType(paoTypeString);
+    
+    switch (paoType)
+    {
+        case TYPE_CC_SPECIALAREA:
+        {
+            retVal = "Special Area";
+            break;
+        }
+        case TYPE_CC_AREA:
+        {
+            retVal = "Area";
+            break;
+        }
+        case TYPE_CC_SUBSTATION:
+        {
+            retVal = "Substation";
+            break;
+        }
+        case TYPE_CC_SUBSTATION_BUS:
+        {
+            retVal = "Substation Bus";
+            break;
+        }
+        case TYPE_CC_FEEDER:
+        {
+            retVal = "Feeder";
+            break;
+        }
+        default:
+            break;
+
+    }
+    return retVal;
+}
+
 /*---------------------------------------------------------------------------
     dumpAllDynamicData
 
@@ -492,6 +559,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
+                        if (currentCCArea->getOperationStats().isDirty())
+                        {
+                            currentCCArea->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                        }
                     }
                 }
                 if(_ccSpecialAreas->size() > 0 )
@@ -511,6 +582,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
+                       if (currentSpecial->getOperationStats().isDirty())
+                        {
+                            currentSpecial->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                        } 
                     }
                 }
                 if( _ccSubstations->size() > 0 )
@@ -530,6 +605,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                             }
                         }
+                        if (currentCCSubstation->getOperationStats().isDirty())
+                        {
+                            currentCCSubstation->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                        } 
                     }
                 }
 
@@ -554,7 +633,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                         }
                     }
-
+                    if (currentCCSubstationBus->getOperationStats().isDirty())
+                    {
+                        currentCCSubstationBus->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                    } 
                     CtiFeeder_vec& ccFeeders = currentCCSubstationBus->getCCFeeders();
                     if( ccFeeders.size() > 0 )
                     {
@@ -577,6 +659,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                 }
                             }
+                            if (currentFeeder->getOperationStats().isDirty())
+                            {
+                                currentFeeder->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                            }  
 
                             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
                             if( ccCapBanks.size() > 0 )
@@ -616,6 +702,10 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
                                             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                                         }
                                     }
+                                    if (currentCapBank->getOperationStats().isDirty())
+                                    {
+                                        currentCapBank->getOperationStats().dumpDynamicData(conn,currentDateTime);
+                                    } 
                                     vector <CtiCCMonitorPointPtr>& monPoints = currentCapBank->getMonitorPoint();
                                     for (LONG l = 0; l < monPoints.size(); l++)
                                     {
@@ -679,6 +769,7 @@ void CtiCCSubstationBusStore::reset()
 
         multimap< long, CtiCCAreaPtr > temp_point_area_map;
         multimap< long, CtiCCSpecialPtr > temp_point_specialarea_map;
+        multimap< long, CtiCCSubstationPtr > temp_point_substation_map;
         multimap< long, CtiCCSubstationBusPtr > temp_point_subbus_map;
         multimap< long, CtiCCFeederPtr > temp_point_feeder_map;
         multimap< long, CtiCCCapBankPtr > temp_point_capbank_map;
@@ -771,6 +862,7 @@ void CtiCCSubstationBusStore::reset()
                 _pointid_area_map.clear();
                 _pointid_specialarea_map.clear();
                 _pointid_subbus_map.clear();
+                _pointid_station_map.clear();
                 _pointid_feeder_map.clear();
                 _pointid_capbank_map.clear();
                 _substation_area_map.clear();
@@ -805,6 +897,9 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - Exception clearing old data for reload. Location: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
+            //reCalculateCapBankOperationStatsFromDatabase( );
+
+            
             CtiTime currentDateTime;
             /************************************************************* 
             ******  Loading Strategies                              ****** 
@@ -815,7 +910,7 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - DataBase Reload Begin - " << endl;
             }
             
-            reloadStrategyFromDataBase(-1, &temp_strategyid_strategy_map);
+            reloadStrategyFromDatabase(-1, &temp_strategyid_strategy_map);
 
             /***********************************************************
             *******  Loading Areas                               *******
@@ -828,7 +923,8 @@ void CtiCCSubstationBusStore::reset()
             *******  Loading Substations                         *******
             ************************************************************/
 
-            reloadSubstationFromDatabase(0, &temp_paobject_substation_map, &temp_paobject_area_map, &temp_paobject_specialarea_map, 
+            reloadSubstationFromDatabase(0, &temp_paobject_substation_map, &temp_paobject_area_map, &temp_paobject_specialarea_map,
+                                         &temp_point_substation_map, 
                                          &temp_substation_area_map, &temp_substation_specialarea_map, &tempCCSubstations);
 
             try
@@ -902,12 +998,13 @@ void CtiCCSubstationBusStore::reset()
              ********    Loading Operation Statistics            ********
              ************************************************************/
             {
-/*                 reloadOperationStatsFromDatabase(0,&temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
+                 reloadOperationStatsFromDatabase(conn,0,&temp_paobject_capbank_map, &temp_paobject_feeder_map, &temp_paobject_subbus_map,
                                                        &_paobject_substation_map,
                                                        &_paobject_area_map,
-                                                       &_paobject_specialarea_map);
-*/                                                       
+                                                      &_paobject_specialarea_map);
+
             }
+            
 
             /************************************************************
              ********    Loading Orphans                         ********
@@ -927,7 +1024,7 @@ void CtiCCSubstationBusStore::reset()
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - DataBase Reload End - " << endl;
-                dout << CtiTime() << " - Loading values into capctonrol - " << endl;
+                dout << CtiTime() << " - Loading values into capcontrol - " << endl;
             }                   
 
             try
@@ -949,6 +1046,7 @@ void CtiCCSubstationBusStore::reset()
                 _pointid_area_map = temp_point_area_map;
                 _pointid_specialarea_map = temp_point_specialarea_map;
                 _pointid_subbus_map = temp_point_subbus_map;
+                _pointid_station_map = temp_point_substation_map;
                 _pointid_feeder_map = temp_point_feeder_map;
                 _pointid_capbank_map = temp_point_capbank_map;
             }
@@ -1028,10 +1126,14 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
 
+            resetAllOperationStats();
+            reCalculateOperationStatsFromDatabase( );
+            printAllOperationStats();
+
             if ( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Done Loading values into capctonrol - " << endl;
+                dout << CtiTime() << " - Done Loading values into capcontrol - " << endl;
             }       
         }
 
@@ -2488,7 +2590,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 currentCapBank->setAfterVarsString("abnormal data");
                                 currentCapBank->setPercentChangeString(" --- ");
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
-                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending, CloseQuestionable", "cap control");
+                                LONG stationId, areaId, spAreaId;
+                                getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Multiple banks pending, CloseQuestionable", "cap control");
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                                 eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -2506,7 +2610,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 currentCapBank->setAfterVarsString("abnormal data");
                                 currentCapBank->setPercentChangeString(" --- ");
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
-                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending, OpenQuestionable", "cap control");
+                                LONG stationId, areaId, spAreaId;
+                                getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+                                CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Multiple banks pending, OpenQuestionable", "cap control");
                                 eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                                 eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                                 CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -2545,7 +2651,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
-                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled, CloseQuestionable", "cap control");
+                            LONG stationId, areaId, spAreaId;
+                            getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Feeder not recently controlled, CloseQuestionable", "cap control");
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -2562,8 +2670,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
-
-                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled, OpenQuestionable", "cap control");
+                            LONG stationId, areaId, spAreaId;
+                            getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Feeder not recently controlled, OpenQuestionable", "cap control");
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -2627,8 +2736,10 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::CloseQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
+                            LONG stationId, areaId, spAreaId;
+                            getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
 
-                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Sub not recently controlled, CloseQuestionable", "cap control");
+                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::CloseQuestionable, "Var: Sub not recently controlled, CloseQuestionable", "cap control");
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -2646,8 +2757,10 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                             currentCapBank->setAfterVarsString("abnormal data");
                             currentCapBank->setPercentChangeString(" --- ");
                             CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),CtiCCCapBank::OpenQuestionable,NormalQuality,StatusPointType, "cap control",  TAG_POINT_FORCE_UPDATE));
-                            
-                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Sub not recently controlled, OpenQuestionable", "cap control");
+                            LONG stationId, areaId, spAreaId;
+                            getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+
+                            CtiCCEventLogMsg* eventMsg = new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), CtiCCCapBank::OpenQuestionable, "Var: Sub not recently controlled, OpenQuestionable", "cap control");
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMsg);
@@ -2684,8 +2797,9 @@ void CtiCCSubstationBusStore::resetDailyOperations()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - " << text << ", " << additional << endl;
             }
-
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
+            LONG stationId, areaId, spAreaId;
+            getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
               
         }
         currentSubstationBus->setCurrentDailyOperations(0);
@@ -3165,16 +3279,19 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
                          << msg->getSeqId()
                          << msg->getValue()
                          << msg->getText()
-                     << msg->getUserName()
-                     << msg->getKvarBefore()  
-                     << msg->getKvarAfter()   
-                     << msg->getKvarChange()  
-                     << msg->getIpAddress()
-                     << msg->getActionId()
-                     << msg->getStateInfo()
-                     << msg->getAVar()
-                     << msg->getBVar()
-                     << msg->getCVar();
+                         << msg->getUserName()
+                         << msg->getKvarBefore()  
+                         << msg->getKvarAfter()   
+                         << msg->getKvarChange()  
+                         << msg->getIpAddress()
+                         << msg->getActionId()
+                         << msg->getStateInfo()
+                         << msg->getAVar()
+                         << msg->getBVar()
+                         << msg->getCVar()
+                         << msg->getStationId()
+                         << msg->getAreaId()
+                         << msg->getSpecialAreaId();
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {
@@ -3207,7 +3324,7 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
     SubStationBus/Feeder Strategy values if a single strategyId is specified.  
     StrategyId = 0 indicates reloaded all strategies from db.
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map)
+void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map)
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
@@ -3250,6 +3367,8 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                 RWDBTable capControlFeederTable = db.table("capcontrolfeeder");
                 RWDBTable capControlAreaTable = db.table("capcontrolarea");
                 RWDBTable capControlSpecialAreaTable = db.table("capcontrolspecialarea");
+                RWDBTable dateOfHoliday = db.table("dateofholiday");
+                RWDBTable ccHolidayStratTable = db.table("ccholidaystrategyassignment");
 
                 /************************************************************** 
                 ******  Loading Strategies                               ****** 
@@ -3305,7 +3424,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                     currentCCStrategy = CtiCCStrategyPtr(new CtiCCStrategy(rdr));
                     strategy_map->insert(make_pair(currentCCStrategy->getStrategyId(),currentCCStrategy));
                 }
-                reloadTimeOfDayStrategyFromDataBase(strategyId, strategy_map);
+                reloadTimeOfDayStrategyFromDatabase(strategyId, strategy_map);
 
                 if (strategyId > 0)
                 {    
@@ -3606,6 +3725,21 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
                          }
                     }
 
+                    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - HOLIDAY!  CELEBRATE..." << endl;
+
+                        reloadAndAssignHolidayStrategysFromDatabase(strategyId, strategy_map);
+    
+                    }
+                    else
+                    {
+
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - No HOLIDAY!  No CELEBRATE..." << endl;
+                    }
+
 
                 }
             }
@@ -3617,7 +3751,355 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
 }
+/*---------------------------------------------------------------------------
+    reloadStrategyFromDataBase
 
+    Reloads all or single strategy from strategy table in the database.  Updates
+    SubStationBus/Feeder Strategy values if a single strategyId is specified.  
+    StrategyId = 0 indicates reloaded all strategies from db.
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map)
+{
+
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+
+
+    try
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+        {
+
+            if ( conn.isValid() )
+            {   
+                
+                CtiTime currentDateTime;
+                RWDBDatabase db = getDatabase();
+                RWDBTable capControlStrategy = db.table("capcontrolstrategy");
+                RWDBTable capControlSubstationBusTable = db.table("capcontrolsubstationbus");
+                RWDBTable capControlFeederTable = db.table("capcontrolfeeder");
+                RWDBTable capControlAreaTable = db.table("capcontrolarea");
+                RWDBTable capControlSpecialAreaTable = db.table("capcontrolspecialarea");
+                RWDBTable dateOfHoliday = db.table("dateofholiday");
+                RWDBTable ccHolidayStratTable = db.table("ccholidaystrategyassignment");
+
+                if (strategyId > 0)
+                {    
+                    //Update Area Strategy Values with dbChanged/editted strategy values
+                    {
+                        RWDBSelector selector = db.selector();
+                                     selector <<  ccHolidayStratTable["paobjectid"]
+                                              <<  ccHolidayStratTable["holidayscheduleid"]
+                                              <<  ccHolidayStratTable["strategyid"]
+                                              <<  dateOfHoliday["holidayname"]
+                                              <<  dateOfHoliday["holidaymonth"]
+                                              <<  dateOfHoliday["holidayday"]
+                                              <<  dateOfHoliday["holidayyear"];
+
+                         selector.from(capControlSpecialAreaTable);
+                         selector.from(ccHolidayStratTable);
+                         selector.from(dateOfHoliday);
+
+                         selector.where( ccHolidayStratTable["paobjectid"]==capControlSpecialAreaTable["areaid"] &&
+                                        ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"] &&
+                                        ccHolidayStratTable["strategyid"] == strategyId );
+
+                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                         {
+                             CtiLockGuard<CtiLogger> logger_guard(dout);    
+                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                         }
+                         RWDBReader rdr = selector.reader(conn);
+                         while ( rdr() )
+                         {
+                             int holMon, holDay, holYear, tempYear;
+                             rdr["holidaymonth"] >> holMon;
+                             rdr["holidayday"] >> holDay; 
+                             rdr["holidayyear"] >> holYear;
+
+                             CtiDate today = CtiDate();
+                             if (holYear == -1)
+                             {
+                                 tempYear = today.year();
+                             }
+                             else
+                                 tempYear = holYear;
+
+                             if (today == CtiDate(holDay, holMon, tempYear) )
+                             { 
+                                 long areaId, stratId;
+                                 rdr["paobjectid"] >> areaId;
+                                 rdr["strategyid"] >> stratId;
+
+                                 CtiCCSpecialPtr currentSpArea = NULL; 
+
+                                 currentSpArea = findSpecialAreaByPAObjectID(areaId);
+                                 if (currentSpArea != NULL) 
+                                 {
+                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+
+                                     currentCCStrategy = findStrategyByStrategyID(stratId);
+                                     if (currentCCStrategy == NULL)
+                                     {
+                                         currentSpArea->setStrategyId(0);
+                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                     }
+                                     currentSpArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                     currentSpArea->setStrategyValues(currentCCStrategy);
+                                 }
+                             }
+                         }
+                    }
+
+                    //Update Area Strategy Values with dbChanged/editted strategy values
+                    {
+                        RWDBSelector selector = db.selector();
+                                      selector <<  ccHolidayStratTable["paobjectid"]
+                                               <<  ccHolidayStratTable["holidayscheduleid"]
+                                               <<  ccHolidayStratTable["strategyid"]
+                                               <<  dateOfHoliday["holidayname"]
+                                               <<  dateOfHoliday["holidaymonth"]
+                                               <<  dateOfHoliday["holidayday"]
+                                               <<  dateOfHoliday["holidayyear"];
+
+                         selector.from(capControlAreaTable);
+                         selector.from(ccHolidayStratTable);
+                         selector.from(dateOfHoliday);
+
+                         selector.where( ccHolidayStratTable["paobjectid"]==capControlAreaTable["areaid"] &&
+                                        ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"] &&
+                                        ccHolidayStratTable["strategyid"] == strategyId );
+
+                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                         {
+                             CtiLockGuard<CtiLogger> logger_guard(dout);    
+                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                         }
+                         RWDBReader rdr = selector.reader(conn);
+                         while ( rdr() )
+                         {
+                             int holMon, holDay, holYear, tempYear;
+                             rdr["holidaymonth"] >> holMon;
+                             rdr["holidayday"] >> holDay; 
+                             rdr["holidayyear"] >> holYear;
+
+                             CtiDate today = CtiDate();
+                             if (holYear == -1)
+                             {
+                                 tempYear = today.year();
+                             }
+                             else
+                                 tempYear = holYear;
+
+                             if (today == CtiDate(holDay, holMon, tempYear) )
+                             { 
+                                 long areaId, stratId;
+                                 rdr["paobjectid"] >> areaId;
+                                 rdr["strategyid"] >> stratId;
+
+                                 CtiCCAreaPtr currentArea = NULL; 
+
+                                 currentArea = findAreaByPAObjectID(areaId);
+                                 if (currentArea != NULL) 
+                                 {
+                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+
+                                     currentCCStrategy = findStrategyByStrategyID(stratId);
+                                     if (currentCCStrategy == NULL)
+                                     {
+                                         currentArea->setStrategyId(0);
+                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                     }
+                                     currentArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                     currentArea->setStrategyValues(currentCCStrategy);
+                                 }
+                             }
+                         }
+                    }
+
+
+                    //Update SubstationBus Strategy Values with dbChanged/editted strategy values
+                    {
+                        RWDBSelector selector = db.selector();
+                                       selector <<  ccHolidayStratTable["paobjectid"]
+                                                <<  ccHolidayStratTable["holidayscheduleid"]
+                                                <<  ccHolidayStratTable["strategyid"]
+                                                <<  dateOfHoliday["holidayname"]
+                                                <<  dateOfHoliday["holidaymonth"]
+                                                <<  dateOfHoliday["holidayday"]
+                                                <<  dateOfHoliday["holidayyear"];
+
+                          selector.from(capControlSubstationBusTable);
+                          selector.from(ccHolidayStratTable);
+                          selector.from(dateOfHoliday);
+
+                          selector.where( ccHolidayStratTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
+                                         ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"] &&
+                                         ccHolidayStratTable["strategyid"] == strategyId );
+
+                                                  if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                         {
+                             CtiLockGuard<CtiLogger> logger_guard(dout);    
+                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                         }
+                         RWDBReader rdr = selector.reader(conn);
+                         while ( rdr() )
+                         {
+                             int holMon, holDay, holYear, tempYear;
+                             rdr["holidaymonth"] >> holMon;
+                             rdr["holidayday"] >> holDay; 
+                             rdr["holidayyear"] >> holYear;
+
+                             CtiDate today = CtiDate();
+                             if (holYear == -1)
+                             {
+                                 tempYear = today.year();
+                             }
+                             else
+                                 tempYear = holYear;
+
+                             if (today == CtiDate(holDay, holMon, tempYear) )
+                             { 
+                                 long busId, stratId;
+                                 rdr["paobjectid"] >> busId;
+                                 rdr["strategyid"] >> stratId;
+
+                                 CtiCCSubstationBusPtr currentCCSubstationBus = NULL; 
+
+                                 currentCCSubstationBus = findSubBusByPAObjectID(busId);
+                                 if (currentCCSubstationBus != NULL) 
+                                 {
+                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+
+                                     CtiCCSubstationPtr currentStation = NULL;
+                                     currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
+                                     if (currentStation != NULL)
+                                     {
+                                         if (currentStation->getSaEnabledFlag())
+                                         {
+                                             CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                             if (spArea != NULL)
+                                                 currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                         }
+                                         else
+                                         {
+                                             currentCCStrategy = findStrategyByStrategyID(stratId);
+                                         }
+                                         if (currentCCStrategy == NULL)
+                                         {
+                                             currentCCSubstationBus->setStrategyId(0);
+                                             currentCCStrategy = findStrategyByStrategyID(0);
+                                         }
+                                         currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
+                                         currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                         for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
+                                         {
+                                             ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
+                                             ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyId(0);
+                                             ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyName("(none)");
+                                         }
+                                     }
+                                 }
+                             }
+                         }
+                    }
+
+                    {
+                        RWDBSelector selector = db.selector();
+                                       selector <<  ccHolidayStratTable["paobjectid"]
+                                                <<  ccHolidayStratTable["holidayscheduleid"]
+                                                <<  ccHolidayStratTable["strategyid"]
+                                                <<  dateOfHoliday["holidayname"]
+                                                <<  dateOfHoliday["holidaymonth"]
+                                                <<  dateOfHoliday["holidayday"]
+                                                <<  dateOfHoliday["holidayyear"];
+
+                          selector.from(capControlFeederTable);
+                          selector.from(ccHolidayStratTable);
+                          selector.from(dateOfHoliday);
+
+                          selector.where( ccHolidayStratTable["paobjectid"]==capControlFeederTable["feederid"] &&
+                                         ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"] &&
+                                         ccHolidayStratTable["strategyid"] == strategyId );
+
+                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                         {
+                             CtiLockGuard<CtiLogger> logger_guard(dout);    
+                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                         }
+                         RWDBReader rdr = selector.reader(conn);
+
+                         while ( rdr() )
+                         {
+                             int holMon, holDay, holYear, tempYear;
+                             rdr["holidaymonth"] >> holMon;
+                             rdr["holidayday"] >> holDay; 
+                             rdr["holidayyear"] >> holYear;
+
+                             CtiDate today = CtiDate();
+                             if (holYear == -1)
+                             {
+                                 tempYear = today.year();
+                             }
+                             else
+                                 tempYear = holYear;
+
+                             if (today == CtiDate(holDay, holMon, tempYear) )
+                             { 
+                                 long feedId, stratId;
+                                 rdr["paobjectid"] >> feedId;
+                                 rdr["strategyid"] >> stratId;
+                                 
+                                 CtiCCFeederPtr currentCCFeeder = NULL;
+                                 CtiCCSubstationBusPtr currentSubBus = NULL;
+                                 CtiCCSubstationPtr currentStation = NULL;
+
+                                 currentCCFeeder = findFeederByPAObjectID(feedId);
+                                 
+                                 if (currentCCFeeder != NULL) 
+                                 {
+                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+
+                                     currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
+                                     if (currentSubBus != NULL)
+                                     {
+                                         currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
+                                         if (currentStation != NULL)
+                                         {
+                                             if (currentStation->getSaEnabledFlag())
+                                             {
+                                                 CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                                  if (spArea != NULL)
+                                                      currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                            }
+                                             else
+                                             {
+                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
+                                             }
+                                         }
+
+                                     }
+                                     if (currentCCStrategy == NULL)
+                                     {
+                                         currentCCFeeder->setStrategyId(0);
+                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                     }
+                                     currentCCFeeder->setStrategyValues(currentCCStrategy);
+
+                                 }
+                             }
+                         }
+                    }
+                }
+            }
+        }
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
 
 /*---------------------------------------------------------------------------
     reloadStrategyFromDataBase
@@ -3626,7 +4108,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDataBase(long strategyId, map< l
     SubStationBus/Feeder Strategy values if a single strategyId is specified.  
     StrategyId = 0 indicates reloaded all strategies from db.
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDataBase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map)
+void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map)
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
@@ -4034,6 +4516,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                   map< long, CtiCCSubstationPtr > *paobject_substation_map,
                                   map <long, CtiCCAreaPtr> *paobject_area_map,
                                   map <long, CtiCCSpecialPtr> *paobject_specialarea_map,
+                                  multimap< long, CtiCCSubstationPtr > *pointid_station_map, 
                                   map< long, long> *substation_area_map,
                                   map< long, long> *substation_specialarea_map,
                                   CtiCCSubstation_vec *ccSubstations)
@@ -4064,6 +4547,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                     RWDBDatabase db = getDatabase();
                     RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
                     RWDBTable capControlSubstationTable = db.table("capcontrolsubstation");
+                    RWDBTable pointTable = db.table("point");
                     RWDBTable ccSubAreaAssignmentTable = db.table("ccsubareaassignment");
                     RWDBTable ccSubstationSubBusListTable = db.table("ccsubstationsubbuslist");
                     RWDBTable ccScheduleStrat = db.table("ccseasonstrategyassignment");
@@ -4080,7 +4564,8 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                         << yukonPAObjectTable["paoname"]
                         << yukonPAObjectTable["type"]
                         << yukonPAObjectTable["description"]
-                        << yukonPAObjectTable["disableflag"];
+                        << yukonPAObjectTable["disableflag"]
+                        << capControlSubstationTable["voltreductionpointid"];
  
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationTable);
@@ -4106,6 +4591,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                             CtiCCSubstationPtr currentCCSubstation = CtiCCSubstationPtr(new CtiCCSubstation(rdr));
                             paobject_substation_map->insert(make_pair(currentCCSubstation->getPAOId(),currentCCSubstation));
 
+                            if (currentCCSubstation->getVoltReductionControlId() > 0 )
+                            {
+                                pointid_station_map->insert(make_pair(currentCCSubstation->getVoltReductionControlId(), currentCCSubstation));
+                                //currentCCSubstation->getPointIds()->push_back(currentCCSubstation->getVoltReductionControlId());
+                            }
                             
                             ccSubstations->push_back( currentCCSubstation );
                         }
@@ -4250,21 +4740,86 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                     currentStation = paobject_substation_map->find(currentSubId)->second;
                                 if (currentStation != NULL)
                                 {
-                                    if (!currentCCSpArea->getDisableFlag())
+                                    if (currentStation->getSaEnabledId() == 0) 
                                     {
-                                        currentStation->setSaEnabledFlag(TRUE);
+                                        currentStation->setSaEnabledId(currentSpAreaId);
                                     }
-                                    else
-                                    {
-                                        currentStation->setSaEnabledFlag(FALSE);
-                                    }
-                                    currentStation->setSaEnabledId(currentSpAreaId);
+                                    
                                 }
                                 substation_specialarea_map->insert(make_pair(currentSubId, currentSpAreaId));
                                 currentCCSpArea->getSubstationIds()->push_back(currentSubId);
                             }
                         }
                     }
+                     {
+                        RWDBSelector selector = db.selector();
+                        selector << pointTable["paobjectid"]
+                        << pointTable["pointid"]
+                        << pointTable["pointoffset"]
+                        << pointTable["pointtype"];
+
+                        selector.from(capControlSubstationTable);
+                        selector.from(pointTable);
+
+                        if (substationId > 0)
+                        {               
+                            selector.where(capControlSubstationTable["substationid"]==pointTable["paobjectid"] &&
+                                           capControlSubstationTable["substationid"] == substationId);
+                        }
+                        else
+                            selector.where(capControlSubstationTable["substationid"]==pointTable["paobjectid"]);
+
+
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+
+                        RWDBReader rdr = selector.reader(conn);
+
+                        RWDBNullIndicator isNull;
+                        while ( rdr() )
+                        {
+                            long currentStationId;
+
+                            rdr["paobjectid"] >> currentStationId;
+                            CtiCCSubstationPtr currentStation = paobject_substation_map->find(currentStationId)->second;
+
+
+                            rdr["pointid"] >> isNull;
+                            if ( !isNull )
+                            {
+                                long tempPointId = -1000;
+                                long tempPointOffset = -1000;
+                                string tempPointType = "(none)";
+                                rdr["pointid"] >> tempPointId;
+                                rdr["pointoffset"] >> tempPointOffset;
+                                rdr["pointtype"] >> tempPointType;
+                                if ( resolvePointType(tempPointType) == AnalogPointType )
+                                {
+                                    if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
+                                    {//op stats point ids.
+                                        if (currentStation->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_station_map->insert(make_pair(tempPointId,currentStation));
+                                            currentStation->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
+                                    else
+                                    {//undefined area point
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - Undefined Substation point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    }
+                                }
+                                else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Undefined Substation point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                }
+                            }
+                        }
+                     }
                     if (substationId > 0) // else, when reloading all, then the reload of feeders will be called after subBusReload and take care of it.
                     {
                         RWDBSelector selector = db.selector();
@@ -4296,6 +4851,11 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
 
 
                         }
+                        reloadOperationStatsFromDatabase(conn,substationId,&_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
+                                                     &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
+                    
+
+                
                     }
                     
                 }
@@ -4346,12 +4906,14 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                     CtiTime currentDateTime;
                     RWDBDatabase db = getDatabase();
                     RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
-                    RWDBTable capControlAreaTable = db.table("capcontrolarea");
+                    RWDBTable capControlAreaTable = db.table("capcontrolarea"); 
+                    RWDBTable pointTable = db.table("point");
                     RWDBTable ccSubAreaAssignmentTable = db.table("ccsubareaassignment");
                     RWDBTable ccScheduleStrat = db.table("ccseasonstrategyassignment");
                     RWDBTable dateOfSeason = db.table("dateofseason");
                     RWDBTable dynamicCCAreaTable = db.table("dynamicccarea");
-
+                    RWDBTable dateOfHoliday = db.table("dateofholiday");
+                    RWDBTable ccHolidayStratTable = db.table("ccholidaystrategyassignment");
 
                     {
                         RWDBSelector selector = db.selector();
@@ -4362,7 +4924,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                         << yukonPAObjectTable["type"]
                         << yukonPAObjectTable["description"]
                         << yukonPAObjectTable["disableflag"]
-                        << capControlAreaTable["controlpointid"];
+                        << capControlAreaTable["voltreductionpointid"];
  
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlAreaTable);
@@ -4394,6 +4956,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                             if (currentCCArea->getVoltReductionControlPointId() > 0 )
                             {   
                                 pointid_area_map->insert(make_pair(currentCCArea->getVoltReductionControlPointId(), currentCCArea));
+                                currentCCArea->getPointIds()->push_back(currentCCArea->getVoltReductionControlPointId());
                             }
                         }
 
@@ -4472,6 +5035,84 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                              }
                          }
                     }
+
+                    //CHECK HOLIDAY SETTINGS
+                    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
+                    {
+                        RWDBSelector selector = db.selector();
+                                      selector <<  ccHolidayStratTable["paobjectid"]
+                                               <<  ccHolidayStratTable["holidayscheduleid"]
+                                               <<  ccHolidayStratTable["strategyid"]
+                                               <<  dateOfHoliday["holidayname"]
+                                               <<  dateOfHoliday["holidaymonth"]
+                                               <<  dateOfHoliday["holidayday"]
+                                               <<  dateOfHoliday["holidayyear"];
+
+                         selector.from(capControlAreaTable);
+                         selector.from(ccHolidayStratTable);
+                         selector.from(dateOfHoliday);
+
+                         if (areaId > 0)
+                         {
+                             selector.where( ccHolidayStratTable["paobjectid"]==capControlAreaTable["areaid"] &&
+                                         ccHolidayStratTable["paobjectid"] == areaId &&
+                                        ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
+                         }
+                         else
+                         {
+                             selector.where( ccHolidayStratTable["paobjectid"]==capControlAreaTable["areaid"] &&
+                                        ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
+                         }
+
+                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                         {
+                             CtiLockGuard<CtiLogger> logger_guard(dout);    
+                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                         }
+                         RWDBReader rdr = selector.reader(conn);
+                         while ( rdr() )
+                         {
+                             int holMon, holDay, holYear, tempYear;
+                             rdr["holidaymonth"] >> holMon;
+                             rdr["holidayday"] >> holDay; 
+                             rdr["holidayyear"] >> holYear;
+
+                             CtiDate today = CtiDate();
+                             if (holYear == -1)
+                             {
+                                 tempYear = today.year();
+                             }
+                             else
+                                 tempYear = holYear;
+
+                             if (today == CtiDate(holDay, holMon, tempYear) )
+                             { 
+                                 long areaId, stratId;
+                                 rdr["paobjectid"] >> areaId;
+                                 rdr["strategyid"] >> stratId;
+
+                                 CtiCCAreaPtr currentArea = NULL; 
+
+                                 currentArea = findAreaByPAObjectID(areaId);
+                                 if (currentArea != NULL) 
+                                 {
+                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+
+                                     currentCCStrategy = findStrategyByStrategyID(stratId);
+                                     if (currentCCStrategy == NULL)
+                                     {
+                                         currentArea->setStrategyId(0);
+                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                     }
+                                     currentArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                     currentArea->setStrategyValues(currentCCStrategy);
+                                 }
+                             }
+                         }
+                    }
+
+
+
                     {
                         RWDBSelector selector = db.selector();
                         selector << dynamicCCAreaTable["areaid"]
@@ -4510,6 +5151,76 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 
                         }
                     }
+
+                    {
+                        RWDBSelector selector = db.selector();
+                        selector << pointTable["paobjectid"]
+                        << pointTable["pointid"]
+                        << pointTable["pointoffset"]
+                        << pointTable["pointtype"];
+
+                        selector.from(capControlAreaTable);
+                        selector.from(pointTable);
+
+                        if (areaId > 0)
+                        {               
+                            selector.where(capControlAreaTable["areaid"]==pointTable["paobjectid"] &&
+                                           capControlAreaTable["areaid"] == areaId);
+                        }
+                        else
+                            selector.where(capControlAreaTable["areaid"]==pointTable["paobjectid"]);
+
+
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+
+                        RWDBReader rdr = selector.reader(conn);
+
+                        RWDBNullIndicator isNull;
+                        while ( rdr() )
+                        {
+                            long currentAreaId;
+
+                            rdr["paobjectid"] >> currentAreaId;
+                            CtiCCAreaPtr currentArea = paobject_area_map->find(currentAreaId)->second;
+
+
+                            rdr["pointid"] >> isNull;
+                            if ( !isNull )
+                            {
+                                long tempPointId = -1000;
+                                long tempPointOffset = -1000;
+                                string tempPointType = "(none)";
+                                rdr["pointid"] >> tempPointId;
+                                rdr["pointoffset"] >> tempPointOffset;
+                                rdr["pointtype"] >> tempPointType;
+                                if ( resolvePointType(tempPointType) == AnalogPointType )
+                                {
+                                    if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
+                                    {//op stats point ids.
+                                        if (currentArea->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_area_map->insert(make_pair(tempPointId,currentArea));
+                                            currentArea->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
+                                    else
+                                    {//undefined area point
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - Undefined Area point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    }
+                                }
+                                else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Undefined Area point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                }
+                            }
+                        }
+                    }
                     if (areaId > 0) // else, when reloading all, then the reload of subs will be called after areaReload and take care of it.
                     {
                         RWDBSelector selector = db.selector();
@@ -4535,11 +5246,17 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
 
                             rdr["substationbusid"] >> currentSubstationId;
                             reloadSubstationFromDatabase(currentSubstationId,&_paobject_substation_map,
-                                                   &_paobject_area_map, &_paobject_specialarea_map, &_substation_area_map,
+                                                   &_paobject_area_map, &_paobject_specialarea_map, 
+                                                         &_pointid_station_map, &_substation_area_map,
                                                    &_substation_specialarea_map, _ccSubstations );
 
 
                         }
+
+
+                        reloadOperationStatsFromDatabase(conn,areaId,&_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
+                                                         &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
+
                     }
                     
                 }
@@ -4593,10 +5310,13 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                     RWDBDatabase db = getDatabase();
                     RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
                     RWDBTable capControlSpecialAreaTable = db.table("capcontrolspecialarea");
+                    RWDBTable pointTable = db.table("point");
                     RWDBTable ccSubSpecialAreaAssignmentTable = db.table("ccsubspecialareaassignment");
                     RWDBTable ccScheduleStrat = db.table("ccseasonstrategyassignment");
                     RWDBTable dateOfSeason = db.table("dateofseason");
                     RWDBTable dynamicCCSpecialAreaTable = db.table("dynamicccspecialarea");
+                    RWDBTable dateOfHoliday = db.table("dateofholiday");
+                    RWDBTable ccHolidayStratTable = db.table("ccholidaystrategyassignment");
 
 
                     {
@@ -4608,7 +5328,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                         << yukonPAObjectTable["type"]
                         << yukonPAObjectTable["description"]
                         << yukonPAObjectTable["disableflag"]
-                        << capControlSpecialAreaTable["controlpointid"];
+                        << capControlSpecialAreaTable["voltreductionpointid"];
  
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSpecialAreaTable);
@@ -4639,6 +5359,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                             if (currentCCSpArea->getVoltReductionControlPointId() > 0 )
                             {   
                                 pointid_specialarea_map->insert(make_pair(currentCCSpArea->getVoltReductionControlPointId(), currentCCSpArea));
+                                currentCCSpArea->getPointIds()->push_back(currentCCSpArea->getVoltReductionControlPointId());
                             }
                         }
 
@@ -4722,6 +5443,82 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                              }
                          }
                     }
+
+                    //CHECK FOR HOLIDAY SETTTINGS
+                    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
+                    {
+                        RWDBSelector selector = db.selector();
+                                     selector <<  ccHolidayStratTable["paobjectid"]
+                                              <<  ccHolidayStratTable["holidayscheduleid"]
+                                              <<  ccHolidayStratTable["strategyid"]
+                                              <<  dateOfHoliday["holidayname"]
+                                              <<  dateOfHoliday["holidaymonth"]
+                                              <<  dateOfHoliday["holidayday"]
+                                              <<  dateOfHoliday["holidayyear"];
+
+                         selector.from(capControlSpecialAreaTable);
+                         selector.from(ccHolidayStratTable);
+                         selector.from(dateOfHoliday);
+
+
+                         if (areaId > 0)
+                         {
+                             selector.where( ccHolidayStratTable["paobjectid"]==capControlSpecialAreaTable["areaid"] &&
+                                         ccHolidayStratTable["paobjectid"] == areaId &&
+                                        ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
+                         }
+                         else
+                         {
+                             selector.where( ccHolidayStratTable["paobjectid"]==capControlSpecialAreaTable["areaid"] &&
+                                        ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
+                         }
+
+                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                         {
+                             CtiLockGuard<CtiLogger> logger_guard(dout);    
+                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                         }
+                         RWDBReader rdr = selector.reader(conn);
+                         while ( rdr() )
+                         {
+                             int holMon, holDay, holYear, tempYear;
+                             rdr["holidaymonth"] >> holMon;
+                             rdr["holidayday"] >> holDay; 
+                             rdr["holidayyear"] >> holYear;
+
+                             CtiDate today = CtiDate();
+                             if (holYear == -1)
+                             {
+                                 tempYear = today.year();
+                             }
+                             else
+                                 tempYear = holYear;
+
+                             if (today == CtiDate(holDay, holMon, tempYear) )
+                             { 
+                                 long areaId, stratId;
+                                 rdr["paobjectid"] >> areaId;
+                                 rdr["strategyid"] >> stratId;
+
+                                 CtiCCSpecialPtr currentSpArea = NULL; 
+
+                                 currentSpArea = findSpecialAreaByPAObjectID(areaId);
+                                 if (currentSpArea != NULL) 
+                                 {
+                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+
+                                     currentCCStrategy = findStrategyByStrategyID(stratId);
+                                     if (currentCCStrategy == NULL)
+                                     {
+                                         currentSpArea->setStrategyId(0);
+                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                     }
+                                     currentSpArea->setStrategyId(currentCCStrategy->getStrategyId());
+                                     currentSpArea->setStrategyValues(currentCCStrategy);
+                                 }
+                             }
+                         }
+                    }
                     {
                         RWDBSelector selector = db.selector();
                         selector << dynamicCCSpecialAreaTable["areaid"]
@@ -4760,6 +5557,75 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
 
                         }
                     }
+                     {
+                        RWDBSelector selector = db.selector();
+                        selector << pointTable["paobjectid"]
+                        << pointTable["pointid"]
+                        << pointTable["pointoffset"]
+                        << pointTable["pointtype"];
+
+                        selector.from(capControlSpecialAreaTable);
+                        selector.from(pointTable);
+
+                        if (areaId > 0)
+                        {               
+                            selector.where(capControlSpecialAreaTable["areaid"]==pointTable["paobjectid"] &&
+                                           capControlSpecialAreaTable["areaid"] == areaId);
+                        }
+                        else
+                            selector.where(capControlSpecialAreaTable["areaid"]==pointTable["paobjectid"]);
+
+
+                        if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - " << selector.asString().data() << endl;
+                        }
+
+                        RWDBReader rdr = selector.reader(conn);
+
+                        RWDBNullIndicator isNull;
+                        while ( rdr() )
+                        {
+                            long currentAreaId;
+
+                            rdr["paobjectid"] >> currentAreaId;
+                            CtiCCSpecialPtr currentSpArea = paobject_specialarea_map->find(currentAreaId)->second;
+
+
+                            rdr["pointid"] >> isNull;
+                            if ( !isNull )
+                            {
+                                long tempPointId = -1000;
+                                long tempPointOffset = -1000;
+                                string tempPointType = "(none)";
+                                rdr["pointid"] >> tempPointId;
+                                rdr["pointoffset"] >> tempPointOffset;
+                                rdr["pointtype"] >> tempPointType;
+                                if ( resolvePointType(tempPointType) == AnalogPointType )
+                                {
+                                    if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
+                                    {//op stats point ids.
+                                        if (currentSpArea->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
+                                            currentSpArea->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
+                                    else
+                                    {//undefined area point
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - Undefined Special Area point offset: " << tempPointOffset << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    }
+                                }
+                                else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
+                                {
+                                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                                    dout << CtiTime() << " - Undefined Special Area point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                }
+                            }
+                        }
+                     }
                     if (areaId > 0) // else, when reloading all, then the reload of subs will be called after areaReload and take care of it.
                     {
                         RWDBSelector selector = db.selector();
@@ -4786,10 +5652,15 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                             rdr["substationbusid"] >> currentSubId;
                             //add substationbusids to special area list...;
                             reloadSubstationFromDatabase(currentSubId,&_paobject_substation_map,
-                                                   &_paobject_area_map, &_paobject_specialarea_map, &_substation_area_map,
+                                                   &_paobject_area_map, &_paobject_specialarea_map, 
+                                                         &_pointid_station_map, &_substation_area_map,
                                                    &_substation_specialarea_map, _ccSubstations );
 
                         }
+
+                        reloadOperationStatsFromDatabase(conn,areaId,&_paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
+                                                         &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
+
                     }
                     
                 }
@@ -4853,6 +5724,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                     RWDBTable ccSubstationSubBusListTable = db.table("ccsubstationsubbuslist");
                     RWDBTable ccScheduleStrat = db.table("ccseasonstrategyassignment");
                     RWDBTable dateOfSeason = db.table("dateofseason");
+                    RWDBTable dateOfHoliday = db.table("dateofholiday");
+                    RWDBTable ccHolidayStratTable = db.table("ccholidaystrategyassignment");
 
                     {
                         RWDBSelector selector = db.selector();
@@ -4874,7 +5747,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         << capControlSubstationBusTable["usephasedata"]
                         << capControlSubstationBusTable["phaseb"]
                         << capControlSubstationBusTable["phasec"]
-                        << capControlSubstationBusTable["controlflag"];
+                        << capControlSubstationBusTable["controlflag"]
+                        << capControlSubstationBusTable["voltreductionpointid"];
                         
                         selector.from(yukonPAObjectTable);
                         selector.from(capControlSubstationBusTable);
@@ -4934,6 +5808,13 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                     pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getPhaseCId(), currentCCSubstationBus));
 
                             }
+
+                            if (currentCCSubstationBus->getVoltReductionControlId() > 0 )
+                            {
+                                pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getVoltReductionControlId(), currentCCSubstationBus));
+                                currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getVoltReductionControlId());
+                            }
+
 
                             
                                 cCSubstationBuses->push_back(currentCCSubstationBus);
@@ -5103,6 +5984,102 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                  }
 
                              }
+                        }
+
+                        //CHECK HOLIDAY SETTINGS
+                        if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
+                        {
+                            RWDBSelector selector = db.selector();
+                                           selector <<  ccHolidayStratTable["paobjectid"]
+                                                    <<  ccHolidayStratTable["holidayscheduleid"]
+                                                    <<  ccHolidayStratTable["strategyid"]
+                                                    <<  dateOfHoliday["holidayname"]
+                                                    <<  dateOfHoliday["holidaymonth"]
+                                                    <<  dateOfHoliday["holidayday"]
+                                                    <<  dateOfHoliday["holidayyear"];
+                            
+                              selector.from(capControlSubstationBusTable);
+                              selector.from(ccHolidayStratTable);
+                              selector.from(dateOfHoliday);
+
+                              if (subBusId > 0)
+                              {
+                                  selector.where( ccHolidayStratTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
+                                              ccHolidayStratTable["paobjectid"] == subBusId &&
+                                             ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
+                              }
+                              else
+                              {
+                                  selector.where( ccHolidayStratTable["paobjectid"]==capControlSubstationBusTable["substationbusid"] &&
+                                                  ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
+                              }
+
+                             if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                             {
+                                 CtiLockGuard<CtiLogger> logger_guard(dout);    
+                                 dout << CtiTime() << " - " << selector.asString().data() << endl;
+                             }
+                             RWDBReader rdr = selector.reader(conn);
+                             while ( rdr() )
+                             {
+                                 int holMon, holDay, holYear, tempYear;
+                                 rdr["holidaymonth"] >> holMon;
+                                 rdr["holidayday"] >> holDay; 
+                                 rdr["holidayyear"] >> holYear;
+                            
+                                 CtiDate today = CtiDate();
+                                 if (holYear == -1)
+                                 {
+                                     tempYear = today.year();
+                                 }
+                                 else
+                                     tempYear = holYear;
+                            
+                                 if (today == CtiDate(holDay, holMon, tempYear) )
+                                 { 
+                                     long busId, stratId;
+                                     rdr["paobjectid"] >> busId;
+                                     rdr["strategyid"] >> stratId;
+                            
+                                     CtiCCSubstationBusPtr currentCCSubstationBus = NULL; 
+                            
+                                     currentCCSubstationBus = findSubBusByPAObjectID(busId);
+                                     if (currentCCSubstationBus != NULL) 
+                                     {
+                                         CtiCCStrategyPtr currentCCStrategy = NULL;
+                            
+                                         CtiCCSubstationPtr currentStation = NULL;
+                                         currentStation = findSubstationByPAObjectID(currentCCSubstationBus->getParentId());
+                                         if (currentStation != NULL)
+                                         {
+                                             if (currentStation->getSaEnabledFlag())
+                                             {
+                                                 CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                                 if (spArea != NULL)
+                                                     currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                             }
+                                             else
+                                             {
+                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
+                                             }
+                                             if (currentCCStrategy == NULL)
+                                             {
+                                                 currentCCSubstationBus->setStrategyId(0);
+                                                 currentCCStrategy = findStrategyByStrategyID(0);
+                                             }
+                                             currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
+                                             currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                             for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
+                                             {
+                                                 ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
+                                                 ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyId(0);
+                                                 ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyName("(none)");
+                                             }
+                                         }
+                                     }
+                                 }
+                             }
+
                         }
 
                         
@@ -5374,6 +6351,14 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                         pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
                                         currentCCSubstationBus->getPointIds()->push_back(tempPointId);
                                     }
+                                    else if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
+                                    {//op stats point ids.
+                                        if (currentCCSubstationBus->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
+                                            currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
                                     else
                                     {//undefined bus point
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5392,27 +6377,8 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
                 if (subBusId > 0) //incase feeders/capbanks were moved?????  need to check this $#*! out.
                 {
-                    //feederAssignment here???
-                    // capfeederassignment here???
-                    /*CtiCCSubstationBusPtr oldCCSubstationBus = findSubBusByPAObjectID(subBusId);
-                    if (oldCCSubstationBus != NULL)
-                    {
-                        _ccSubstationBuses->remove(oldCCSubstationBus);
-                        _paobject_subbus_map.erase(subBusId);
-                    }
-                    CtiCCSubstationBusPtr currentCCSubstationBus = tempSubBusMap->find(subBusId)->second;
-                    _paobject_subbus_map.insert(make_pair(subBusId, currentCCSubstationBus));
-                    _ccSubstationBuses->insert(oldCCSubstationBus);
-
-                    map <long, CtiCCSubstationBusPtr> :: const_iterator iter = tempSubBusPointIdMap->begin();
-                    while (iter != tempSubBusPointIdMap->end())
-                    {
-                        if (findSubBusByPointID(iter->first))
-                            _pointid_subbus_map.erase(iter->first);
-                        _pointid_subbus_map.insert(make_pair(iter->first, currentCCSubstationBus));
-                    }
-                      */
-
+                    reloadOperationStatsFromDatabase(conn,subBusId,&_paobject_capbank_map, &_paobject_feeder_map, paobject_subbus_map,
+                                                     &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
                     
 
                 }
@@ -5467,6 +6433,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     RWDBTable dynamicCCFeederTable = db.table("dynamicccfeeder");
                     RWDBTable ccScheduleStrat = db.table("ccseasonstrategyassignment");
                     RWDBTable dateOfSeason = db.table("dateofseason");
+                    RWDBTable dateOfHoliday = db.table("dateofholiday");
+                    RWDBTable ccHolidayStratTable = db.table("ccholidaystrategyassignment");
 
                     {
 
@@ -5729,7 +6697,101 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                          }
                     }
 
+                    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
+                    {
+                        RWDBSelector selector = db.selector();
+                                       selector <<  ccHolidayStratTable["paobjectid"]
+                                                <<  ccHolidayStratTable["holidayscheduleid"]
+                                                <<  ccHolidayStratTable["strategyid"]
+                                                <<  dateOfHoliday["holidayname"]
+                                                <<  dateOfHoliday["holidaymonth"]
+                                                <<  dateOfHoliday["holidayday"]
+                                                <<  dateOfHoliday["holidayyear"];
 
+                          selector.from(capControlFeederTable);
+                          selector.from(ccHolidayStratTable);
+                          selector.from(dateOfHoliday);
+
+                         if (feederId > 0)
+                         {
+                             selector.where( ccHolidayStratTable["paobjectid"]==capControlFeederTable["feederid"] &&
+                                         ccHolidayStratTable["paobjectid"] == feederId &&
+                                        ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
+                         }
+                         else
+                         {
+                             selector.where( ccHolidayStratTable["paobjectid"]==capControlFeederTable["feederid"] &&
+                                        ccHolidayStratTable["holidayscheduleid"] == dateOfHoliday["holidayscheduleid"]);
+                         }
+
+                         if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                         {
+                             CtiLockGuard<CtiLogger> logger_guard(dout);    
+                             dout << CtiTime() << " - " << selector.asString().data() << endl;
+                         }
+                         RWDBReader rdr = selector.reader(conn);
+
+                         while ( rdr() )
+                         {
+                             int holMon, holDay, holYear, tempYear;
+                             rdr["holidaymonth"] >> holMon;
+                             rdr["holidayday"] >> holDay; 
+                             rdr["holidayyear"] >> holYear;
+
+                             CtiDate today = CtiDate();
+                             if (holYear == -1)
+                             {
+                                 tempYear = today.year();
+                             }
+                             else
+                                 tempYear = holYear;
+
+                             if (today == CtiDate(holDay, holMon, tempYear) )
+                             { 
+                                 long feedId, stratId;
+                                 rdr["paobjectid"] >> feedId;
+                                 rdr["strategyid"] >> stratId;
+                                 
+                                 CtiCCFeederPtr currentCCFeeder = NULL;
+                                 CtiCCSubstationBusPtr currentSubBus = NULL;
+                                 CtiCCSubstationPtr currentStation = NULL;
+
+                                 currentCCFeeder = findFeederByPAObjectID(feedId);
+                                 
+                                 if (currentCCFeeder != NULL) 
+                                 {
+                                     CtiCCStrategyPtr currentCCStrategy = NULL;
+
+                                     currentSubBus = findSubBusByPAObjectID(currentCCFeeder->getParentId());
+                                     if (currentSubBus != NULL)
+                                     {
+                                         currentStation = findSubstationByPAObjectID(currentSubBus->getParentId());
+                                         if (currentStation != NULL)
+                                         {
+                                             if (currentStation->getSaEnabledFlag())
+                                             {
+                                                 CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(currentStation->getSaEnabledId());
+                                                  if (spArea != NULL)
+                                                      currentCCStrategy =  strategy_map->find(spArea->getStrategyId())->second;
+                                            }
+                                             else
+                                             {
+                                                 currentCCStrategy = findStrategyByStrategyID(stratId);
+                                             }
+                                         }
+
+                                     }
+                                     if (currentCCStrategy == NULL)
+                                     {
+                                         currentCCFeeder->setStrategyId(0);
+                                         currentCCStrategy = findStrategyByStrategyID(0);
+                                     }
+                                     currentCCFeeder->setStrategyValues(currentCCStrategy);
+
+                                 }
+                             }
+                         }
+                    }
                 
 
                 if (feederId > 0)
@@ -5960,6 +7022,14 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                         pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
                                         currentCCFeeder->getPointIds()->push_back(tempPointId);
                                     }
+                                    else if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
+                                    {//op stats point ids.
+                                        if (currentCCFeeder->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
+                                            currentCCFeeder->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
                                     else
                                     {//undefined feeder point
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5975,7 +7045,12 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                         }
                     }
                 }
+                if (feederId > 0)
+                {
+                    reloadOperationStatsFromDatabase(conn,feederId,&_paobject_capbank_map, paobject_feeder_map, &_paobject_subbus_map,
+                                                     &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
 
+                }
             }
             
         }
@@ -6344,14 +7419,27 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                     }
                                     else if ( resolvePointType(tempPointType) == AnalogPointType )
                                     {//daily operations point
-                                        currentCCCapBank->setOperationAnalogPointId(tempPointId);
-                                        pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
-                                        currentCCCapBank->getPointIds()->push_back(tempPointId);
+
+                                        if (tempPointOffset == 1)
+                                        {                       
+                                            currentCCCapBank->setOperationAnalogPointId(tempPointId);
+                                            pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
+                                            currentCCCapBank->getPointIds()->push_back(tempPointId);
+                                        }
                                     }
                                     else
                                     {//undefined cap bank point
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
                                         dout << CtiTime() << " - Undefined Cap Bank point type: " << tempPointType << " in: " << __FILE__ << " at: " << __LINE__ << endl;
+                                    }
+                                }
+                                else if ( resolvePointType(tempPointType) == AnalogPointType &&
+                                          tempPointOffset >= 10000  && tempPointOffset <=10003)
+                                {//op stats point ids.
+                                    if (currentCCCapBank->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                    {
+                                        currentCCCapBank->getPointIds()->push_back(tempPointId);
+                                        pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                                     }
                                 }
                                 else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
@@ -6538,6 +7626,12 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                         }
                     }
                 }
+                if (capBankId > 0)
+                {
+                    reloadOperationStatsFromDatabase(conn, capBankId, paobject_capbank_map, &_paobject_feeder_map, &_paobject_subbus_map,
+                                                     &_paobject_substation_map, &_paobject_area_map, &_paobject_specialarea_map);
+
+                }
 
 
             }
@@ -6554,7 +7648,7 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
 }
 
 
-void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
+void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(RWDBConnection& conn, long paoId, map< long, CtiCCCapBankPtr > *paobject_capbank_map,
                                                         map< long, CtiCCFeederPtr > *paobject_feeder_map,
                                                         map< long, CtiCCSubstationBusPtr > *paobject_subbus_map,
                                                         map< long, CtiCCSubstationPtr > *paobject_substation_map,
@@ -6563,8 +7657,8 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, map< 
 {   
     try
     {
-        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-        RWDBConnection conn = getConnection();
+        //CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        //RWDBConnection conn = getConnection();
         {
             if ( conn.isValid() )
             {   
@@ -6584,7 +7678,7 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, map< 
                     << dynamicCCOpStatsTable["weeklyopcount"] 
                     << dynamicCCOpStatsTable["weeklyconffail"] 
                     << dynamicCCOpStatsTable["monthlyopcount"] 
-                    << dynamicCCOpStatsTable["montlyconffail"]; 
+                    << dynamicCCOpStatsTable["monthlyconffail"]; 
 
                     selector.from(dynamicCCOpStatsTable);
 
@@ -6592,6 +7686,8 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, map< 
                     {                
                         selector.where(dynamicCCOpStatsTable["paobjectid"]== paoId);
                     }
+                   
+
 
                     if ( _CC_DEBUG & CC_DEBUG_DATABASE )
                     {
@@ -6605,41 +7701,54 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, map< 
                     CtiCCSubstationBusPtr currentSubBus = NULL;
                     CtiCCSubstationPtr currentStation = NULL;
                     CtiCCAreaPtr currentArea = NULL;
+                    CtiCCSpecialPtr currentSpArea = NULL;
                     RWDBNullIndicator isNull;
                     while ( rdr() )
                     {
                         LONG paoId;
                         rdr["paobjectid"] >> paoId;
-                        currentCCCapBank = findCapBankByPAObjectID(paoId);
-                        currentFeeder = findFeederByPAObjectID(paoId);
-                        currentSubBus = findSubBusByPAObjectID(paoId);
+                        if (paobject_capbank_map->find(paoId) != paobject_capbank_map->end())
+                            currentCCCapBank = paobject_capbank_map->find(paoId)->second;
+                        else
+                            currentCCCapBank = NULL;
+
+                        if (paobject_feeder_map->find(paoId) != paobject_feeder_map->end())
+                            currentFeeder = paobject_feeder_map->find(paoId)->second;
+                        else
+                            currentFeeder = NULL;
+
+                        if (paobject_subbus_map->find(paoId) != paobject_subbus_map->end())
+                            currentSubBus = paobject_subbus_map->find(paoId)->second;
+                        else
+                            currentSubBus = NULL;
+
                         currentStation = findSubstationByPAObjectID(paoId);
                         currentArea = findAreaByPAObjectID(paoId);
+                        currentSpArea = findSpecialAreaByPAObjectID(paoId);
                         if (currentCCCapBank != NULL)
                         {
                             currentCCCapBank->getOperationStats().setDynamicData(rdr);
                         }
                         if (currentFeeder != NULL)
                         {
-                           // currentFeeder->getOpsStatistics().setDynamicData(rdr);
+                            currentFeeder->getOperationStats().setDynamicData(rdr);
                         }
-                        if (currentSubBus != NULL)
+                        if (currentSubBus != NULL )
                         {
-                           // currentSubBus->getOpsStatistics().setDynamicData(rdr);
+                            currentSubBus->getOperationStats().setDynamicData(rdr);
                         }
-
                         if (currentStation != NULL)
                         {
-                           // currentStation->getOpsStatistics().setDynamicData(rdr);
+                            currentStation->getOperationStats().setDynamicData(rdr);
                         }
-
-                        if (currentFeeder != NULL)
+                        if (currentArea != NULL)
                         {
-                           // currentArea->getOpsStatistics().setDynamicData(rdr);
+                            currentArea->getOperationStats().setDynamicData(rdr);
                         }
-
-
-                        
+                        if (currentSpArea != NULL)
+                        {
+                            currentSpArea->getOperationStats().setDynamicData(rdr);
+                        }
                     }
                 }
             }
@@ -6650,7 +7759,7 @@ void CtiCCSubstationBusStore::reloadOperationStatsFromDatabase(long paoId, map< 
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-    }
+    } 
 
 }
 
@@ -7046,6 +8155,7 @@ void CtiCCSubstationBusStore::reloadClientLinkStatusPointFromDatabase()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
+   
 }
 
 
@@ -7120,7 +8230,7 @@ void CtiCCSubstationBusStore::reloadMapOfBanksToControlByLikeDay(long subbusId, 
                         if (controlValue == CtiCCCapBank::ClosePending ||
                             controlValue == CtiCCCapBank::CloseFail ||
                             controlValue == CtiCCCapBank::CloseQuestionable ||
-                            controlValue == CtiCCCapBank::CloseFail )
+                            controlValue == CtiCCCapBank::Close )
                         {
                             controlValue = CtiCCCapBank::Close;
                         }
@@ -7288,6 +8398,39 @@ void CtiCCSubstationBusStore::deleteSubstation(long substationId)
 
         try
         {
+            //Delete pointids on this sub
+            list <LONG> *pointIds  = substationToDelete->getPointIds();
+            while (!pointIds->empty())
+            {
+                LONG pointid = pointIds->front();
+                pointIds->pop_front();
+                int ptCount = getNbrOfSubstationsWithPointID(pointid);
+                if (ptCount > 1)
+                {
+                    multimap< long, CtiCCSubstationPtr >::iterator iter1 = _pointid_station_map.lower_bound(pointid);
+                    while (iter1 != _pointid_station_map.end() || iter1 != _pointid_station_map.upper_bound(pointid))
+                    {
+                       if (((CtiCCSubstationPtr)iter1->second)->getPAOId() == substationToDelete->getPAOId())
+                       {
+                           _pointid_station_map.erase(iter1);
+                           break;
+                       }
+                       iter1++;
+                    }   
+                } 
+                else
+                    _pointid_station_map.erase(pointid);
+           }
+           substationToDelete->getPointIds()->clear();
+        }
+        catch(...)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+        }
+
+        try
+        {
             LONG areaId = substationToDelete->getParentId();
             if (areaId != NULL)
             {                   
@@ -7350,13 +8493,40 @@ void CtiCCSubstationBusStore::deleteArea(long areaId)
         {
             try
             {
-                _pointid_area_map.clear();
+                //Delete pointids on this sub
+                list <LONG> *pointIds  = areaToDelete->getPointIds();
+                while (!pointIds->empty())
+                {
+                    LONG pointid = pointIds->front();
+                    pointIds->pop_front();
+                    int ptCount = getNbrOfAreasWithPointID(pointid);
+                    if (ptCount > 1)
+                    {
+                        multimap< long, CtiCCAreaPtr >::iterator iter1 = _pointid_area_map.lower_bound(pointid);
+                        while (iter1 != _pointid_area_map.end() || iter1 != _pointid_area_map.upper_bound(pointid))
+                        {
+                           if (((CtiCCAreaPtr)iter1->second)->getPAOId() == areaToDelete->getPAOId())
+                           {
+                               _pointid_area_map.erase(iter1);
+                               break;
+                           }
+                           iter1++;
+                        }   
+                    } 
+                    else
+                        _pointid_area_map.erase(pointid);
+               }
+               areaToDelete->getPointIds()->clear();
             }
+            /*try
+            {
+                _pointid_area_map.clear();
+            }*/
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+            } 
 
             LONG stationId;
             LONG subBusId;
@@ -7433,13 +8603,40 @@ void CtiCCSubstationBusStore::deleteSpecialArea(long areaId)
 
             try
             {
+                //Delete pointids on this sub
+                list <LONG> *pointIds  = spAreaToDelete->getPointIds();
+                while (!pointIds->empty())
+                {
+                    LONG pointid = pointIds->front();
+                    pointIds->pop_front();
+                    int ptCount = getNbrOfSpecialAreasWithPointID(pointid);
+                    if (ptCount > 1)
+                    {
+                        multimap< long, CtiCCSpecialPtr >::iterator iter1 = _pointid_specialarea_map.lower_bound(pointid);
+                        while (iter1 != _pointid_specialarea_map.end() || iter1 != _pointid_specialarea_map.upper_bound(pointid))
+                        {
+                           if (((CtiCCSpecialPtr)iter1->second)->getPAOId() == spAreaToDelete->getPAOId())
+                           {
+                               _pointid_specialarea_map.erase(iter1);
+                               break;
+                           }
+                           iter1++;
+                        }   
+                    } 
+                    else
+                        _pointid_specialarea_map.erase(pointid);
+               }
+               spAreaToDelete->getPointIds()->clear();
+            } 
+            /*try
+            {
                 _pointid_specialarea_map.clear();
-            }
+            } */
             catch(...)
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+            } 
 
             LONG stationId;
             LONG subBusId;
@@ -8062,10 +9259,12 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             CtiCCFeederPtr tempFeed = findFeederByPAObjectID(reloadTemp.objectId);
                             if (tempFeed != NULL) 
                             {  
-
-                                reloadSubBusFromDatabase(tempFeed->getParentId(), &_strategyid_strategy_map, &_paobject_subbus_map, 
+                                if (tempFeed->getParentId() > 0)
+                                {
+                                    reloadSubBusFromDatabase(tempFeed->getParentId(), &_strategyid_strategy_map, &_paobject_subbus_map, 
                                                         &_paobject_substation_map, &_pointid_subbus_map, 
                                                         &_altsub_sub_idmap, &_subbus_substation_map, _ccSubstationBuses);
+                                }
                                 if(isFeederOrphan(reloadTemp.objectId))
                                   removeFromOrphanList(reloadTemp.objectId);
                                 CtiCCFeederPtr feed = findFeederByPAObjectID(reloadTemp.objectId);
@@ -8248,7 +9447,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             if (tempStation != NULL) 
                             {  
                                 reloadSubstationFromDatabase(reloadTemp.objectId, &_paobject_substation_map,
-                                                   &_paobject_area_map, &_paobject_specialarea_map, &_substation_area_map,
+                                                   &_paobject_area_map, &_paobject_specialarea_map, 
+                                                             &_pointid_station_map, &_substation_area_map,
                                                    &_substation_specialarea_map, _ccSubstations);
                     
                                 CtiCCSubstation *station = findSubstationByPAObjectID(reloadTemp.objectId);
@@ -8263,7 +9463,8 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                             else
                             {
                                 reloadSubstationFromDatabase(reloadTemp.objectId, &_paobject_substation_map,
-                                                   &_paobject_area_map, &_paobject_specialarea_map, &_substation_area_map, 
+                                                   &_paobject_area_map, &_paobject_specialarea_map, 
+                                                             &_pointid_station_map, &_substation_area_map, 
                                                    &_substation_specialarea_map, _ccSubstations);
                     
                                 CtiCCSubstation *station = findSubstationByPAObjectID(reloadTemp.objectId);
@@ -8450,7 +9651,7 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                     {
                         if (reloadTemp.action != ChangeTypeDelete)
                         {
-                            reloadStrategyFromDataBase(reloadTemp.objectId, &_strategyid_strategy_map);
+                            reloadStrategyFromDatabase(reloadTemp.objectId, &_strategyid_strategy_map);
                             LONG i=0;
                             for(i=0;i<_ccSpecialAreas->size();i++)
                             {
@@ -8855,6 +10056,13 @@ void CtiCCSubstationBusStore::insertItemsIntoMap(int mapType, long* first, long*
             _pointid_subbus_map.insert(make_pair(pointId, subToInsert));
             break;
         }
+        case PointIdSubstationMap:
+        {
+            long pointId = *first;
+            CtiCCSubstation* subToInsert = (CtiCCSubstation*) second;
+            _pointid_station_map.insert(make_pair(pointId, subToInsert));
+            break;
+        }
         case PointIdFeederMap:
         {
             long pointId = *first;
@@ -8939,6 +10147,12 @@ void CtiCCSubstationBusStore::removeItemsFromMap(int mapType, long first)
         {
             long pointId = first;
             _pointid_subbus_map.erase(pointId);
+            break;
+        }
+        case PointIdSubstationMap:
+        {
+            long pointId = first;
+            _pointid_station_map.erase(pointId);
             break;
         }
         case PointIdFeederMap:
@@ -9187,6 +10401,612 @@ long CtiCCSubstationBusStore::isKVARAvailable( long kvarNeeded )
     return false;
 }
 
+
+
+/*---------------------------------------------------------------------------
+    setControlStatus
+
+    Sets the control status of the capbank
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap)
+{
+
+    if (cap == NULL)
+        return;
+
+    cap->setControlStatus(status);
+
+    CtiCCFeederPtr feeder = findFeederByPAObjectID(cap->getParentId());
+    if (feeder == NULL)
+        return;
+
+    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(feeder->getParentId());
+    if (subBus == NULL)
+        return;
+
+    CtiCCSubstationPtr station = findSubstationByPAObjectID(subBus->getParentId());
+    if (station == NULL)
+        return;
+
+    CtiCCSpecialPtr spArea = NULL;
+    CtiCCAreaPtr area = NULL;
+    if (station->getSaEnabledFlag())
+    {
+        spArea = findSpecialAreaByPAObjectID(station->getSaEnabledId());
+    }
+    else
+    {
+        area = findAreaByPAObjectID(station->getParentId());
+    }
+    
+    incrementOperationCounts(cap, feeder, subBus, station, area, spArea);
+    createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
+
+    return;
+}
+
+
+/*---------------------------------------------------------------------------
+    setControlStatus
+
+    Sets the control status of the capbank
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::resetAllOperationStats()
+{
+
+    LONG i=0;
+    for(i=0;i<_ccGeoAreas->size();i++)
+    {
+        CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
+        currentArea->getOperationStats().init();
+    }
+
+    for(i=0;i<_ccSpecialAreas->size();i++)
+    {
+        CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
+        currentSpArea->getOperationStats().init();
+
+    }
+
+    for(i=0;i<_ccSubstations->size();i++)
+    {
+        CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
+        currentStation->getOperationStats().init();
+
+    }
+    
+    for(i=0;i<_ccSubstationBuses->size();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
+        currentSubstationBus->getOperationStats().init();
+        
+        CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
+    
+        for(LONG j=0; j < ccFeeders.size(); j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+            currentFeeder->getOperationStats().init();
+    
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+    
+            for(LONG k=0;k<ccCapBanks.size();k++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
+                currentCapBank->getOperationStats().init();
+            }
+        }
+    }
+
+    return;
+}
+
+void CtiCCSubstationBusStore::printAllOperationStats()
+{
+
+    LONG i=0;
+    for(i=0;i<_ccGeoAreas->size();i++)
+    {
+        CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
+        currentArea->getOperationStats().printOpStats();
+    }
+
+   /* for(i=0;i<_ccSpecialAreas->size();i++)
+    {
+        CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
+        currentSpArea->getOperationStats().init();
+
+    }
+
+    for(i=0;i<_ccSubstations->size();i++)
+    {
+        CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
+        currentStation->getOperationStats().init();
+
+    }
+    
+    for(i=0;i<_ccSubstationBuses->size();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
+        currentSubstationBus->getOperationStats().init();
+        
+        CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
+    
+        for(LONG j=0; j < ccFeeders.size(); j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+            currentFeeder->getOperationStats().init();
+    
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+    
+            for(LONG k=0;k<ccCapBanks.size();k++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
+                currentCapBank->getOperationStats().printOpStats();
+            }
+        }
+    }   */
+
+    return;
+}
+
+
+
+
+void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
+{   
+    try
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+        {
+            if ( conn.isValid() )
+            {   
+
+                CtiTime currentDateTime;
+                CtiTime userDefWindow = currentDateTime.seconds() - (_OP_STATS_USER_DEF_PERIOD * 60);
+                CtiDate oneMonthAgo = CtiDate() -  30; //today - 30 days
+                CtiDate lastWeek = CtiDate() -  7;
+                CtiDate yesterday = CtiDate() -  1;
+                INT capCount = 0;
+
+
+                RWDBDatabase db = getDatabase();
+                RWDBTable ccEventLog = db.table("cceventlog");
+                RWDBTable capBankTable = db.table("capbank");
+                
+                {
+                    RWDBSelector selector = db.selector();
+                    //MONTHLY OP TOTALS
+                    selector << ccEventLog["pointid"]
+                             << ccEventLog["datetime"]
+                             << ccEventLog["spareaid"]
+                             << ccEventLog["areaid"]
+                             << ccEventLog["stationid"]
+                             << ccEventLog["subid"]
+                             << ccEventLog["feederid"];
+
+                    selector.from(ccEventLog);
+                    selector.where((ccEventLog["text"].like("Close Sent,%") ||
+                                   ccEventLog["text"].like("Open Sent,%") ||
+                                   ccEventLog["text"].like("Flip Sent,%")) &&
+                                   ccEventLog["datetime"] > toRWDBDT(CtiTime(oneMonthAgo))  );
+                    
+                     
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    RWDBNullIndicator isNull;
+                    while ( rdr() )
+                    {
+                        CtiTime logDateTime;
+
+                        LONG pointId, spareaid, areaid, stationid, subid, feederid;
+                        rdr["pointid"] >> pointId;
+                        rdr["datetime"] >> logDateTime;
+                        rdr["spareaid"] >> spareaid;
+                        rdr["areaid"] >> areaid;
+                        rdr["stationid"] >> stationid;
+                        rdr["subid"] >> subid;
+                        rdr["feederid"] >> feederid;
+
+                        CtiCCCapBankPtr cap = NULL;
+                        if (findCapBankByPointID(pointId, capCount) != NULL)
+                            cap = findCapBankByPointID(pointId, capCount)->second;
+                        CtiCCFeederPtr feeder = findFeederByPAObjectID(feederid);
+                        CtiCCSubstationBusPtr bus = findSubBusByPAObjectID(subid);
+                        CtiCCSubstationPtr station = findSubstationByPAObjectID(stationid);
+                        CtiCCAreaPtr area = findAreaByPAObjectID(areaid);
+                        CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(spareaid);
+
+                        if (logDateTime >= userDefWindow )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " logDateTime >= userDefWindow " << CtiTime(logDateTime) <<">="<<CtiTime(userDefWindow) << endl;
+                            }
+
+                            if (cap != NULL)
+                                cap->getOperationStats().incrementUserDefOpCounts();
+                            if (feeder != NULL)
+                                feeder->getOperationStats().incrementUserDefOpCounts();
+                            if (bus != NULL)
+                                bus->getOperationStats().incrementUserDefOpCounts();
+                            if (station != NULL)
+                                station->getOperationStats().incrementUserDefOpCounts();
+                            if (area != NULL)
+                                area->getOperationStats().incrementUserDefOpCounts();
+                            if (spArea != NULL)
+                                spArea->getOperationStats().incrementUserDefOpCounts();
+                        }
+                        if (logDateTime >= yesterday )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " logDateTime >= yesterday " << CtiTime(logDateTime) <<">="<<CtiTime(yesterday) << endl;
+                            }
+                            if (cap != NULL)
+                                cap->getOperationStats().incrementDailyOpCounts();
+                            if (feeder != NULL)
+                                feeder->getOperationStats().incrementDailyOpCounts();
+                            if (bus != NULL)
+                                bus->getOperationStats().incrementDailyOpCounts();
+                            if (station != NULL)
+                                station->getOperationStats().incrementDailyOpCounts();
+                            if (area != NULL)
+                                area->getOperationStats().incrementDailyOpCounts();
+                            if (spArea != NULL)
+                                spArea->getOperationStats().incrementDailyOpCounts();
+                        }
+                        else if (logDateTime >= lastWeek )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " logDateTime >= lastWeek " << CtiTime(logDateTime) <<">="<<CtiTime(lastWeek) << endl;
+                            }
+                            if (cap != NULL)
+                                cap->getOperationStats().incrementWeeklyOpCounts();
+                            if (feeder != NULL)
+                                feeder->getOperationStats().incrementWeeklyOpCounts();
+                            if (bus != NULL)
+                                bus->getOperationStats().incrementWeeklyOpCounts();
+                            if (station != NULL)
+                                station->getOperationStats().incrementWeeklyOpCounts();
+                            if (area != NULL)
+                                area->getOperationStats().incrementWeeklyOpCounts();
+                            if (spArea != NULL)
+                                spArea->getOperationStats().incrementWeeklyOpCounts();
+                        }
+                        else if (logDateTime >= oneMonthAgo )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " logDateTime >= oneMonthAgo " << CtiTime(logDateTime) <<">="<<CtiTime(oneMonthAgo) << endl;
+                            }
+                            if (cap != NULL)
+                                cap->getOperationStats().incrementAllOpCounts();
+                            if (feeder != NULL)
+                                feeder->getOperationStats().incrementAllOpCounts();
+                            if (bus != NULL)
+                                bus->getOperationStats().incrementAllOpCounts();
+                            if (station != NULL)
+                                station->getOperationStats().incrementAllOpCounts();
+                            if (area != NULL)
+                                area->getOperationStats().incrementAllOpCounts();
+                            if (spArea != NULL)
+                                spArea->getOperationStats().incrementAllOpCounts();
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << endl;
+                        }
+                    }
+                    //MONTHLY FAILS
+                    selector = db.selector();
+                    selector << ccEventLog["pointid"]
+                             << ccEventLog["datetime"]
+                             << ccEventLog["spareaid"]
+                             << ccEventLog["areaid"]
+                             << ccEventLog["stationid"]
+                             << ccEventLog["subid"]
+                             << ccEventLog["feederid"];
+
+                    selector.from(ccEventLog);
+                    selector.where(ccEventLog["text"].like("Var:%Fail") &&
+                                   ccEventLog["datetime"] > toRWDBDT(CtiTime(oneMonthAgo))  );
+                    
+                     
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    rdr = selector.reader(conn);
+                    while ( rdr() )
+                    {
+                        CtiTime logDateTime;
+
+                        LONG pointId, spareaid, areaid, stationid, subid, feederid;
+                        rdr["pointid"] >> pointId;
+                        rdr["datetime"] >> logDateTime;
+                        rdr["spareaid"] >> spareaid;
+                        rdr["areaid"] >> areaid;
+                        rdr["stationid"] >> stationid;
+                        rdr["subid"] >> subid;
+                        rdr["feederid"] >> feederid;
+
+                        CtiCCCapBankPtr cap = NULL;
+                        if (findCapBankByPointID(pointId, capCount) != NULL)
+                            cap = findCapBankByPointID(pointId, capCount)->second;
+                        CtiCCFeederPtr feeder = findFeederByPAObjectID(feederid);
+                        CtiCCSubstationBusPtr bus = findSubBusByPAObjectID(subid);
+                        CtiCCSubstationPtr station = findSubstationByPAObjectID(stationid);
+                        CtiCCAreaPtr area = findAreaByPAObjectID(areaid);
+                        CtiCCSpecialPtr spArea = findSpecialAreaByPAObjectID(spareaid);
+
+                        if (logDateTime >= userDefWindow )
+                        {
+                            if (cap != NULL)
+                                cap->getOperationStats().incrementUserDefOpFails();
+                            if (feeder != NULL)
+                                feeder->getOperationStats().incrementUserDefOpFails();
+                            if (bus != NULL)
+                                bus->getOperationStats().incrementUserDefOpFails();
+                            if (station != NULL)
+                                station->getOperationStats().incrementUserDefOpFails();
+                            if (area != NULL)
+                                area->getOperationStats().incrementUserDefOpFails();
+                            if (spArea != NULL)
+                                spArea->getOperationStats().incrementUserDefOpFails();
+                        }
+                        else if (logDateTime >= yesterday )
+                        {
+                            if (cap != NULL)
+                                cap->getOperationStats().incrementDailyOpFails();
+                            if (feeder != NULL)
+                                feeder->getOperationStats().incrementDailyOpFails();
+                            if (bus != NULL)
+                                bus->getOperationStats().incrementDailyOpFails();
+                            if (station != NULL)
+                                station->getOperationStats().incrementDailyOpFails();
+                            if (area != NULL)
+                                area->getOperationStats().incrementDailyOpFails();
+                            if (spArea != NULL)
+                                spArea->getOperationStats().incrementDailyOpFails();
+                        }
+                        else if (logDateTime >= lastWeek )
+                        {
+                            if (cap != NULL)
+                                cap->getOperationStats().incrementWeeklyOpFails();
+                            if (feeder != NULL)
+                                feeder->getOperationStats().incrementWeeklyOpFails();
+                            if (bus != NULL)
+                                bus->getOperationStats().incrementWeeklyOpFails();
+                            if (station != NULL)
+                                station->getOperationStats().incrementWeeklyOpFails();
+                            if (area != NULL)
+                                area->getOperationStats().incrementWeeklyOpFails();
+                            if (spArea != NULL)
+                                spArea->getOperationStats().incrementWeeklyOpFails();
+                        }
+                        else if (logDateTime >= oneMonthAgo )
+                        {
+                            if (cap != NULL)
+                                cap->getOperationStats().incrementAllOpFails();
+                            if (feeder != NULL)
+                                feeder->getOperationStats().incrementAllOpFails();
+                            if (bus != NULL)
+                                bus->getOperationStats().incrementAllOpFails();
+                            if (station != NULL)
+                                station->getOperationStats().incrementAllOpFails();
+                            if (area != NULL)
+                                area->getOperationStats().incrementAllOpFails();
+                            if (spArea != NULL)
+                                spArea->getOperationStats().incrementAllOpFails();
+                        }
+                        else
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " irregular LOG datetime: " << CtiTime(logDateTime) << endl;
+                        }
+                    }
+
+                } 
+            }
+                             
+        }
+
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+}
+         
+
+/*---------------------------------------------------------------------------
+    setControlStatus
+
+    Sets the control status of the capbank
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap)
+{
+
+    if (cap == NULL)
+        return;
+
+    cap->setControlStatus(status);
+
+    CtiCCFeederPtr feeder = findFeederByPAObjectID(cap->getParentId());
+    if (feeder == NULL)
+        return;
+
+    CtiCCSubstationBusPtr subBus = findSubBusByPAObjectID(feeder->getParentId());
+    if (subBus == NULL)
+        return;
+
+    CtiCCSubstationPtr station = findSubstationByPAObjectID(subBus->getParentId());
+    if (station == NULL)
+        return;
+
+    CtiCCSpecialPtr spArea = NULL;
+    CtiCCAreaPtr area = NULL;
+    if (station->getSaEnabledFlag())
+    {
+        spArea = findSpecialAreaByPAObjectID(station->getSaEnabledId());
+    }
+    else
+    {
+        area = findAreaByPAObjectID(station->getParentId());
+    }
+    
+    incrementOperationFailCounts(cap, feeder, subBus, station, area, spArea);
+
+    return;
+}
+
+
+
+
+
+/* Relating to Operation Statistics */
+void CtiCCSubstationBusStore::incrementOperationCounts(CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
+                                                       CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea)
+{
+    if (cap != NULL)
+        cap->getOperationStats().incrementAllOpCounts();
+
+    if (feed != NULL)
+        feed->getOperationStats().incrementAllOpCounts();
+
+    if (bus != NULL)
+        bus->getOperationStats().incrementAllOpCounts();
+
+    if (station != NULL)
+        station->getOperationStats().incrementAllOpCounts();
+
+    if (area != NULL)
+        area->getOperationStats().incrementAllOpCounts();
+
+    if (spArea != NULL)
+        spArea->getOperationStats().incrementAllOpCounts();
+
+    return;
+
+}
+
+
+void CtiCCSubstationBusStore::incrementOperationFailCounts(CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
+                                                       CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea)
+{
+    if (cap != NULL)
+        cap->getOperationStats().incrementAllOpFails();
+
+    if (feed != NULL)
+        feed->getOperationStats().incrementAllOpFails();
+
+    if (bus != NULL)
+        bus->getOperationStats().incrementAllOpFails();
+
+    if (station != NULL)
+        station->getOperationStats().incrementAllOpFails();
+
+    if (area != NULL)
+        area->getOperationStats().incrementAllOpFails();
+
+    if (spArea != NULL)
+        spArea->getOperationStats().incrementAllOpFails();
+
+    return;
+
+}
+
+void CtiCCSubstationBusStore::createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
+                                                       CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea)
+{
+    if (cap != NULL)
+        cap->getOperationStats().createPointDataMsgs(pointChanges);
+
+    if (feed != NULL)
+        feed->getOperationStats().createPointDataMsgs(pointChanges);
+
+    if (bus != NULL)
+        bus->getOperationStats().createPointDataMsgs(pointChanges);
+
+    if (station != NULL)
+        station->getOperationStats().createPointDataMsgs(pointChanges);
+
+    if (area != NULL)
+        area->getOperationStats().createPointDataMsgs(pointChanges);
+
+    if (spArea != NULL)
+        spArea->getOperationStats().createPointDataMsgs(pointChanges);
+    return;
+}
+
+void CtiCCSubstationBusStore::getSubBusParentInfo(CtiCCSubstationBus* bus, LONG &spAreaId, LONG &areaId, LONG &stationId)
+{
+    stationId = 0;
+    areaId = 0;
+    spAreaId = 0;
+    if (bus != NULL)
+    {
+        stationId = bus->getParentId();
+        CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
+        if (station != NULL)
+        {
+            if (station->getSaEnabledFlag())
+            {
+                spAreaId = station->getSaEnabledId();
+            }
+            else
+            {
+                areaId = station->getParentId();
+            }
+        }
+    }
+    return;
+}
+
+
+void CtiCCSubstationBusStore::getFeederParentInfo(CtiCCFeeder* feeder, LONG &spAreaId, LONG &areaId, LONG &stationId)
+{
+    stationId = 0;
+    areaId = 0;
+    spAreaId = 0;
+    if (feeder != NULL)
+    {
+        CtiCCSubstationBusPtr bus = findSubBusByPAObjectID(feeder->getParentId());
+        if (bus != NULL)
+        {
+            stationId = bus->getParentId();
+            CtiCCSubstationPtr station = findSubstationByPAObjectID(stationId);
+            if (station != NULL)
+            {
+                if (station->getSaEnabledFlag())
+                {
+                    spAreaId = station->getSaEnabledId();
+                }
+                else
+                {
+                    areaId = station->getParentId();
+                }
+            }
+        }
+    }
+    return;
+}
+
+
+
+
 /* Private Static members */
 const string CtiCCSubstationBusStore::m3iAMFMInterfaceString = "M3I";
 
@@ -9206,4 +11026,7 @@ const string CtiCCSubstationBusStore::m3iAMFMNullString = "(NULL)";
 
 const string CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE = "CAP_CONTROL_SERVER";
 const string CtiCCSubstationBusStore::CAP_CONTROL_DBCHANGE_MSG_SOURCE2 = "CAP_CONTROL_SERVER_FORCED_RELOAD";
+
+
+
 

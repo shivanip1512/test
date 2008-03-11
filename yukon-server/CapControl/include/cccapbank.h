@@ -223,7 +223,7 @@ public:
 
     CtiCCPointResponse* getPointResponse(CtiCCMonitorPoint* point);
 
-    CtiCCOperationStats getOperationStats();
+    CtiCCOperationStats& getOperationStats();
 
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
@@ -357,14 +357,13 @@ private:
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    void restore(RWDBReader& rdr);
-    CtiCCCapBank();
-
     std::list <LONG> _pointIds;
-
     std::vector <CtiCCMonitorPoint*>  _monitorPoint; //normally this is just one, but if display order is > 1 then we have more
-                                                // than one monitor point attached to a capbank!!!
+                                                    // than one monitor point attached to a capbank!!!
     std::vector <CtiCCPointResponse*> _pointResponses;
+
+    CtiCCCapBank();
+    void restore(RWDBReader& rdr);
 };
 
 //typedef shared_ptr<CtiCCCapBank> CtiCCCapBankPtr;

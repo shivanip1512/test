@@ -46,7 +46,8 @@ enum CtiCCEventType_t
     capControlVerificationCommandSent = 9,
     capControlSwitchOverUpdate = 10,
     capControlEnableOvUv = 11,
-    capControlDisableOvUv = 12
+    capControlDisableOvUv = 12,
+    capBankStateUpdateFail = 13
 };
 
 
@@ -222,11 +223,11 @@ public:
 
     virtual ~CtiCCEventLogMsg();
 
-    CtiCCEventLogMsg(LONG logId, LONG pointId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value, 
+    CtiCCEventLogMsg(LONG logId, LONG pointId, LONG spAreaId, LONG areaId, LONG stationId, LONG subId, LONG feederId, LONG eventType, LONG seqId, LONG value, 
                      string text, string userName, DOUBLE kvarBefore= 0, DOUBLE kvarAfter = 0, DOUBLE kvarChange = 0, 
                      string ipAddress = string("(N/A)"), LONG actionId = -1, string stateInfo = string("(N/A)"),
                      DOUBLE aVar = 0, DOUBLE bVar = 0, DOUBLE cVar = 0) : 
-        _logId(logId), _timeStamp(CtiTime()), _pointId(pointId), _subId(subId),
+        _logId(logId), _timeStamp(CtiTime()), _pointId(pointId), _spAreaId(spAreaId),_areaId(areaId),_stationId(stationId),_subId(subId),
         _feederId(feederId), _eventType(eventType), _seqId(seqId), _value(value), _text(text), _userName(userName),
         _kvarBefore(kvarBefore), _kvarAfter(kvarAfter), _kvarChange(kvarChange), _ipAddress(ipAddress), 
         _actionId(actionId), _stateInfo(stateInfo), _aVar(aVar), _bVar(bVar), _cVar(cVar) { }; //provided for polymorphic persitence only
@@ -235,6 +236,9 @@ public:
     CtiTime getTimeStamp() const { return _timeStamp; };
     LONG getPointId() const {return _pointId; };
     LONG getSubId() const { return _subId; };
+    LONG getStationId() const { return _stationId; };
+    LONG getAreaId() const { return _areaId; };
+    LONG getSpecialAreaId() const { return _spAreaId; };
     LONG getFeederId() const { return _feederId; };
     LONG getEventType() const { return _eventType; };
     LONG getSeqId() const { return _seqId; };
@@ -274,6 +278,9 @@ private:
     LONG _logId; 
     CtiTime _timeStamp; 
     LONG _pointId;
+    LONG _spAreaId;
+    LONG _areaId;
+    LONG _stationId;
     LONG _subId;
     LONG _feederId;
     LONG _eventType;

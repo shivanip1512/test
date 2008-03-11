@@ -75,7 +75,9 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
 
     
     list <LONG>* getCCSubIds(){return &_subBusIds;};
-    CtiCCOperationStats getOperationStats();
+    CtiCCOperationStats& getOperationStats();
+
+    list <LONG>* getPointIds() {return &_pointIds;};
 
     CtiCCSubstation& setPAOId(LONG id);
     CtiCCSubstation& setPAOCategory(const string& category);
@@ -142,9 +144,11 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;
 
-    void restore(RWDBReader& rdr);
-
     std::list <long> _subBusIds;
+    std::list <long> _pointIds;
+    
+    void restore(RWDBReader& rdr);
+  
     
 };
 

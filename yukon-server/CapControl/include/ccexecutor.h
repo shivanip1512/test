@@ -94,6 +94,10 @@ private:
     void changeBankOperationalState();
     void AutoEnableOvUv();
     void AutoDisableOvUv();
+    void AutoEnableOvUvByArea();
+    void AutoDisableOvUvByArea();
+    void AutoControlOvUvBySubstation(BOOL disableFlag);
+    void AutoControlOvUvBySubBus(BOOL disableFlag);
     CtiCCCommand* _command;
 };
 

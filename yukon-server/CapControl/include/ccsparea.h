@@ -133,7 +133,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     void setStrategyValues(CtiCCStrategyPtr strategy);
 
     list <LONG>* getSubstationIds() {return &_substationIds;};
-    CtiCCOperationStats getOperationStats();
+    list <LONG>* getPointIds() {return &_pointIds;};
+    CtiCCOperationStats& getOperationStats();
 
 
     BOOL isDirty() const;
@@ -200,6 +201,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
     std::list <LONG> _substationIds;
     BOOL _isSpecial;
+
+    std::list <long> _pointIds;
 
     CtiCCOperationStats _operationStats;
 

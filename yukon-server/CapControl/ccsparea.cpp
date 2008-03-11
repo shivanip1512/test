@@ -37,17 +37,17 @@ RWDEFINE_COLLECTABLE( CtiCCSpecial, CTICCSPECIALAREA_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCSpecial::CtiCCSpecial() : _operationStats()
+CtiCCSpecial::CtiCCSpecial() 
 {
 }
 
-CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr) : _operationStats()
+CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr)
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
 }
 
-CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)  : _operationStats()
+CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)  
 {
     operator=(special);
 }
@@ -58,10 +58,16 @@ CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)  : _operationStats()
 CtiCCSpecial::~CtiCCSpecial()
 {  
 
+    _pointIds.clear();
     if (!_substationIds.empty())
     {
         _substationIds.clear();
     }
+}
+
+CtiCCOperationStats& CtiCCSpecial::getOperationStats()
+{
+    return _operationStats;
 }
 
 
@@ -234,7 +240,12 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
     setOvUvDisabledFlag(FALSE);
-    rdr["controlpointid"] >> _voltReductionControlPointId;
+    rdr["voltreductionpointid"] >> _voltReductionControlPointId;
+
+    if (_voltReductionControlPointId <= 0)
+    {
+        setVoltReductionControlValue(FALSE);
+    }
 
     setStrategyId(0);
     setStrategyName("(none)");
@@ -377,6 +388,9 @@ void CtiCCSpecial::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
                 }
             }
         }
+
+        if (getOperationStats().isDirty())
+            getOperationStats().dumpDynamicData(conn, currentDateTime);    
     }
 }
 void CtiCCSpecial::setDynamicData(RWDBReader& rdr)
@@ -387,6 +401,10 @@ void CtiCCSpecial::setDynamicData(RWDBReader& rdr)
     _ovUvDisabledFlag = (_additionalFlags[0]=='y'?TRUE:FALSE);
 
     rdr["controlvalue"] >> _voltReductionControlValue;
+    if (_voltReductionControlPointId <= 0)
+    {
+        setVoltReductionControlValue(FALSE);
+    }
 
     _insertDynamicDataFlag = FALSE;
     _dirty = false;

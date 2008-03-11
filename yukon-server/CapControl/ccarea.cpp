@@ -36,17 +36,17 @@ RWDEFINE_COLLECTABLE( CtiCCArea, CTICCAREA_ID )
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCArea::CtiCCArea() : _operationStats()
+CtiCCArea::CtiCCArea() 
 {
 }
 
-CtiCCArea::CtiCCArea(RWDBReader& rdr) : _operationStats()
+CtiCCArea::CtiCCArea(RWDBReader& rdr)
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
 }
 
-CtiCCArea::CtiCCArea(const CtiCCArea& area) : _operationStats()
+CtiCCArea::CtiCCArea(const CtiCCArea& area) 
 {
     operator=(area);
 }
@@ -56,11 +56,18 @@ CtiCCArea::CtiCCArea(const CtiCCArea& area) : _operationStats()
 ---------------------------------------------------------------------------*/
 CtiCCArea::~CtiCCArea()
 {  
+    _pointIds.clear();
+    
     if (!_subStationIds.empty())
     {
         _subStationIds.clear();
     }
 
+}
+
+CtiCCOperationStats& CtiCCArea::getOperationStats()
+{
+    return _operationStats;
 }
 
 /*-------------------------------------------------------------------------
@@ -180,6 +187,7 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _reEnableAreaFlag = right._reEnableAreaFlag;
 
         _operationStats = right._operationStats;
+        
     }
     return *this;
 }
@@ -229,7 +237,11 @@ void CtiCCArea::restore(RWDBReader& rdr)
     std::transform(tempBoolString.begin(), tempBoolString.end(), tempBoolString.begin(), tolower);
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
 
-    rdr["controlpointid"] >>_voltReductionControlPointId;
+    rdr["voltreductionpointid"] >> _voltReductionControlPointId;
+    if (_voltReductionControlPointId <= 0)
+    {
+        setVoltReductionControlValue(FALSE);
+    }
     setOvUvDisabledFlag(FALSE);
     setReEnableAreaFlag(FALSE);
 
@@ -379,6 +391,9 @@ void CtiCCArea::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
                 }
             }
         }
+
+        if (getOperationStats().isDirty())
+            getOperationStats().dumpDynamicData(conn, currentDateTime);
     }
 }
 void CtiCCArea::setDynamicData(RWDBReader& rdr)
@@ -392,7 +407,10 @@ void CtiCCArea::setDynamicData(RWDBReader& rdr)
     _reEnableAreaFlag = (_additionalFlags[1]=='y'?TRUE:FALSE);
 
     rdr["controlvalue"] >> _voltReductionControlValue;
-
+    if (_voltReductionControlPointId <= 0)
+    {
+        setVoltReductionControlValue(FALSE);
+    }
     
     _insertDynamicDataFlag = FALSE;
     _dirty = false;

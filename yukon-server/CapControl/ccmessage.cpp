@@ -395,7 +395,10 @@ void CtiCCEventLogMsg::restoreGuts(RWvistream& strm)
          >> _actionId
          >> _aVar 
          >> _bVar 
-         >> _cVar;
+         >> _cVar
+         >> _stationId
+         >> _areaId
+         >> _spAreaId;
 
       return;
 }
@@ -426,7 +429,10 @@ void CtiCCEventLogMsg::saveGuts(RWvostream& strm) const
          << _actionId
          << _aVar
          << _bVar
-         << _cVar;
+         << _cVar
+         << _stationId
+         << _areaId
+         << _spAreaId;
 
     return;
 }
@@ -441,6 +447,9 @@ CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
         _logId      = right._logId;    
         _timeStamp  = right._timeStamp;
         _pointId    = right._pointId;  
+        _spAreaId      = right._spAreaId;    
+        _areaId      = right._areaId;    
+        _stationId      = right._stationId;    
         _subId      = right._subId;    
         _feederId   = right._feederId; 
         _eventType  = right._eventType;
@@ -1078,7 +1087,7 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULO
             CtiCCSubstation* station = (CtiCCSubstation*)ccSubstations[h];
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Substation: "<<station->getPAOName()<< endl;
+                dout << CtiTime() << " - Substation: "<<station->getPAOName()<< " Parent: "<< station->getParentId()<< endl;
             }
             std::list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
             while (iterBus  != station->getCCSubIds()->end())

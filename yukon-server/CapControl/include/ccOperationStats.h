@@ -56,6 +56,14 @@ public:
     LONG getWeeklyConfFail() const;
     LONG getMonthlyOpCount() const;
     LONG getMonthlyConfFail() const;
+    LONG    getUserDefOpSuccessPercentId() const;
+    DOUBLE  getUserDefOpSuccessPercent() const;
+    LONG    getDailyOpSuccessPercentId() const;
+    DOUBLE  getDailyOpSuccessPercent() const;
+    LONG    getWeeklyOpSuccessPercentId() const;
+    DOUBLE  getWeeklyOpSuccessPercent() const;
+    LONG    getMonthlyOpSuccessPercentId() const;
+    DOUBLE  getMonthlyOpSuccessPercent() const;
 
     
     CtiCCOperationStats& setPAOId(LONG paoId);
@@ -67,11 +75,34 @@ public:
     CtiCCOperationStats& setWeeklyConfFail(LONG value);
     CtiCCOperationStats& setMonthlyOpCount(LONG value);
     CtiCCOperationStats& setMonthlyConfFail(LONG value);
+    CtiCCOperationStats& incrementAllOpCounts();
+    CtiCCOperationStats& incrementAllOpFails();
+    CtiCCOperationStats& incrementWeeklyOpCounts();
+    CtiCCOperationStats& incrementWeeklyOpFails();
+    CtiCCOperationStats& incrementDailyOpCounts();
+    CtiCCOperationStats& incrementDailyOpFails();
+    CtiCCOperationStats& incrementUserDefOpCounts();
+    CtiCCOperationStats& incrementUserDefOpFails();
+    CtiCCOperationStats& setUserDefOpSuccessPercentId(LONG pointId);
+    CtiCCOperationStats& setUserDefOpSuccessPercent(DOUBLE value);
+    CtiCCOperationStats& setDailyOpSuccessPercentId(LONG pointId);
+    CtiCCOperationStats& setDailyOpSuccessPercent(DOUBLE  value);
+    CtiCCOperationStats& setWeeklyOpSuccessPercentId(LONG pointId);
+    CtiCCOperationStats& setWeeklyOpSuccessPercent(DOUBLE value);
+    CtiCCOperationStats& setMonthlyOpSuccessPercentId(LONG pointId);
+    CtiCCOperationStats& setMonthlyOpSuccessPercent(DOUBLE value); 
+    
 
 
+    DOUBLE calculateSuccessPercent(LONG opCount, LONG failCount);
+    BOOL setSuccessPercentPointId(LONG tempPointId, LONG tempPointOffset);
+    CtiCCOperationStats& createPointDataMsgs(CtiMultiMsg_vec& pointChanges);
+
+    void printOpStats();
     BOOL isDirty();
     void dumpDynamicData();
     void dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime);
+
 
     void restore(RWDBReader& rdr);
     void setDynamicData(RWDBReader& rdr);
@@ -98,6 +129,14 @@ private:
 	LONG _monthlyOpCount;
 	LONG _monthlyConfFail;
 
+    LONG    _userDefOpSuccessPercentId;
+    DOUBLE  _userDefOpSuccessPercent;
+    LONG    _dailyOpSuccessPercentId;
+    DOUBLE  _dailyOpSuccessPercent;
+    LONG    _weeklyOpSuccessPercentId;
+    DOUBLE  _weeklyOpSuccessPercent;
+    LONG    _monthlyOpSuccessPercentId;
+    DOUBLE  _monthlyOpSuccessPercent;
     //don't stream
     BOOL _insertDynamicDataFlag;
     BOOL _dirty;

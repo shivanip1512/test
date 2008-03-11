@@ -38,11 +38,16 @@ BOOL  _END_DAY_ON_TRIP;
 ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 ULONG _MAX_KVAR;
 ULONG _MAX_KVAR_TIMEOUT;
-LONG _VOLT_REDUCTION_SYSTEM_OVERRIDE;
+BOOL _AUTO_VOLT_REDUCTION;
+LONG _VOLT_REDUCTION_SYSTEM_POINTID;
 ULONG _VOLT_REDUCTION_COMMANDS;
 ULONG _VOLT_REDUCTION_COMMAND_DELAY;
 bool _RATE_OF_CHANGE;
 unsigned long _RATE_OF_CHANGE_DEPTH;
+BOOL _TIME_OF_DAY_VAR_CONF;
+
+ULONG _OP_STATS_USER_DEF_PERIOD;
+ULONG _OP_STATS_REFRESH_RATE;
 
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
@@ -430,13 +435,48 @@ void CtiCCService::Init()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
+    _TIME_OF_DAY_VAR_CONF = false; //number of command/retries for disable ovuv
+    strcpy(var, "CAP_CONTROL_TIME_OF_DAY_VAR_CONF");
+    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        _TIME_OF_DAY_VAR_CONF = (str=="true"?TRUE:FALSE);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
 
-    _VOLT_REDUCTION_SYSTEM_OVERRIDE = 0; //pointid
-    strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_SYSTEM_OVERRIDE");
+    _VOLT_REDUCTION_SYSTEM_POINTID = 0; //pointid
+    strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_SYSTEM_POINTID");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        _VOLT_REDUCTION_SYSTEM_OVERRIDE = atol(str.data())+1;
+        _VOLT_REDUCTION_SYSTEM_POINTID = atol(str.data());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _AUTO_VOLT_REDUCTION = false;
+    strcpy(var, "CAP_CONTROL_AUTO_VOLT_REDUCTION");
+    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        _AUTO_VOLT_REDUCTION = (str=="true"?TRUE:FALSE);
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - " << var << ":  " << str << endl;
@@ -465,7 +505,7 @@ void CtiCCService::Init()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-    _VOLT_REDUCTION_COMMAND_DELAY = 0; //pointid
+    _VOLT_REDUCTION_COMMAND_DELAY = 0; //delay between commands sent.
     strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_COMMAND_DELAY");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
@@ -481,6 +521,44 @@ void CtiCCService::Init()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
+
+    _OP_STATS_USER_DEF_PERIOD = 0; //in minutes.
+    strcpy(var, "CAP_CONTROL_OP_STATS_USER_DEF_PERIOD");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _OP_STATS_USER_DEF_PERIOD = atoi(str.data())+1;
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _OP_STATS_REFRESH_RATE = 3600; //seconds
+                                
+    strcpy(var, "CAP_CONTROL_OP_STATS_REFRESH_RATE");
+    if( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        _OP_STATS_REFRESH_RATE = atoi(str.data())+1;
+        if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+
+
     _quit = false;
 }
 

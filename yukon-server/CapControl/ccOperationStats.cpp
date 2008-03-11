@@ -13,6 +13,9 @@
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #include "yukon.h"
+#include "msg_signal.h"
+#include "pointtypes.h"
+#include "msg_pdata.h"
 
 #include "dbaccess.h"
 #include "ccid.h"
@@ -30,17 +33,19 @@ extern ULONG _CC_DEBUG;
 ---------------------------------------------------------------------------*/
 CtiCCOperationStats::CtiCCOperationStats()
 {
+    _paoid = 0;
+
     init();
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;
 
-    return;
+    return;  
 }
 
 
 CtiCCOperationStats::CtiCCOperationStats(const CtiCCOperationStats& twoWayPt)
 {
-    operator=(twoWayPt);
+    operator=(twoWayPt);  
 }
 
 /*---------------------------------------------------------------------------
@@ -56,7 +61,6 @@ CtiCCOperationStats::~CtiCCOperationStats()
 ---------------------------------------------------------------------------*/
 void CtiCCOperationStats::init()
 {
-    _paoid = 0;
     _userDefOpCount = 0;
     _userDefConfFail = 0;
     _dailyOpCount = 0;
@@ -65,6 +69,15 @@ void CtiCCOperationStats::init()
     _weeklyConfFail = 0;
     _monthlyOpCount = 0;
     _monthlyConfFail = 0;
+
+    _userDefOpSuccessPercentId  = 0;
+    _userDefOpSuccessPercent    = 0;
+    _dailyOpSuccessPercentId    = 0;
+    _dailyOpSuccessPercent      = 0;
+    _weeklyOpSuccessPercentId   = 0;
+    _weeklyOpSuccessPercent     = 0;
+    _monthlyOpSuccessPercentId  = 0;
+    _monthlyOpSuccessPercent    = 0;
 
     return;
 }
@@ -104,6 +117,40 @@ LONG CtiCCOperationStats::getMonthlyOpCount() const
 LONG CtiCCOperationStats::getMonthlyConfFail() const
 {
     return _monthlyConfFail;
+}
+
+LONG CtiCCOperationStats::getUserDefOpSuccessPercentId() const
+{
+    return _userDefOpSuccessPercentId;
+}
+DOUBLE CtiCCOperationStats::getUserDefOpSuccessPercent() const
+{
+    return _userDefOpSuccessPercent;
+}
+LONG CtiCCOperationStats::getDailyOpSuccessPercentId() const
+{
+    return _dailyOpSuccessPercentId;
+}
+DOUBLE CtiCCOperationStats::getDailyOpSuccessPercent() const
+{
+    return _dailyOpSuccessPercent;
+}
+LONG CtiCCOperationStats::getWeeklyOpSuccessPercentId() const
+{
+    return _weeklyOpSuccessPercentId;
+}
+DOUBLE CtiCCOperationStats::getWeeklyOpSuccessPercent() const
+{
+    return _weeklyOpSuccessPercent;
+}
+LONG CtiCCOperationStats::getMonthlyOpSuccessPercentId() const
+{
+    return _monthlyOpSuccessPercentId;
+}
+
+DOUBLE CtiCCOperationStats::getMonthlyOpSuccessPercent() const
+{
+    return _monthlyOpSuccessPercent;
 }
 
     
@@ -194,6 +241,196 @@ CtiCCOperationStats& CtiCCOperationStats::setMonthlyConfFail(LONG value)
     _monthlyConfFail = value;
     return *this;
 }
+
+CtiCCOperationStats& CtiCCOperationStats::setUserDefOpSuccessPercentId(LONG pointId)
+{
+    if (_userDefOpSuccessPercentId != pointId)
+    {
+        _dirty = TRUE;
+    }
+    _userDefOpSuccessPercentId = pointId;
+    return *this;
+}
+CtiCCOperationStats& CtiCCOperationStats::setUserDefOpSuccessPercent(DOUBLE value)
+{
+    if (_userDefOpSuccessPercent != value)
+    {
+        _dirty = TRUE;
+    }
+    _userDefOpSuccessPercent= value;
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::setDailyOpSuccessPercentId(LONG pointId)
+{
+    if (_dailyOpSuccessPercentId != pointId)
+    {
+        _dirty = TRUE;
+    }
+    _dailyOpSuccessPercentId = pointId;
+    return *this;
+}
+CtiCCOperationStats& CtiCCOperationStats::setDailyOpSuccessPercent(DOUBLE  value)
+{
+    if (_dailyOpSuccessPercent != value)
+    {
+        _dirty = TRUE;
+    }
+    _dailyOpSuccessPercent = value;
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::setWeeklyOpSuccessPercentId(LONG pointId)
+{
+    if (_weeklyOpSuccessPercentId != pointId)
+    {
+        _dirty = TRUE;
+    }
+    _weeklyOpSuccessPercentId = pointId;
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::setWeeklyOpSuccessPercent(DOUBLE value)
+{
+    if (_weeklyOpSuccessPercent != value)
+    {
+        _dirty = TRUE;
+    }
+    _weeklyOpSuccessPercent = value;
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::setMonthlyOpSuccessPercentId(LONG pointId)
+{
+    if (_monthlyOpSuccessPercentId != pointId)
+    {
+        _dirty = TRUE;
+    }
+    _monthlyOpSuccessPercentId = pointId;
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::setMonthlyOpSuccessPercent(DOUBLE value)
+{
+    if (_monthlyOpSuccessPercent != value)
+    {
+        _dirty = TRUE;
+    }
+    _monthlyOpSuccessPercent = value;
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::createPointDataMsgs(CtiMultiMsg_vec& pointChanges)
+{
+    if (getUserDefOpSuccessPercentId() > 0)
+    {
+        pointChanges.push_back(new CtiPointDataMsg(getUserDefOpSuccessPercentId(),getUserDefOpSuccessPercent(),NormalQuality,AnalogPointType));
+    }
+    if (getDailyOpSuccessPercentId() > 0)
+    {
+        pointChanges.push_back(new CtiPointDataMsg(getDailyOpSuccessPercentId(),getDailyOpSuccessPercent(),NormalQuality,AnalogPointType));
+    }
+    if (getWeeklyOpSuccessPercentId() > 0)
+    {
+        pointChanges.push_back(new CtiPointDataMsg(getWeeklyOpSuccessPercentId(),getWeeklyOpSuccessPercent(),NormalQuality,AnalogPointType));
+    }
+    if (getMonthlyOpSuccessPercentId() > 0)
+    {
+        pointChanges.push_back(new CtiPointDataMsg(getMonthlyOpSuccessPercentId(),getMonthlyOpSuccessPercent(),NormalQuality,AnalogPointType));
+    }
+    return *this;
+}
+CtiCCOperationStats& CtiCCOperationStats::incrementAllOpCounts()
+{  
+    setMonthlyOpCount(_monthlyOpCount+1);
+    setWeeklyOpCount(_weeklyOpCount+1);
+    setDailyOpCount(_dailyOpCount+1);
+    setUserDefOpCount(_userDefOpCount+1);
+    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::incrementAllOpFails()
+{
+    setMonthlyConfFail(_monthlyConfFail+1);
+    setWeeklyConfFail(_weeklyConfFail+1);
+    setDailyConfFail(_dailyConfFail+1);
+    setUserDefConfFail(_userDefConfFail+1);
+    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpCounts()
+{  
+    setWeeklyOpCount(_weeklyOpCount+1);
+    setDailyOpCount(_dailyOpCount+1);
+    setUserDefOpCount(_userDefOpCount+1);
+    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
+
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpFails()
+{
+    setWeeklyConfFail(_weeklyConfFail+1);
+    setDailyConfFail(_dailyConfFail+1);
+    setUserDefConfFail(_userDefConfFail+1);
+    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
+
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpCounts()
+{  
+    setDailyOpCount(_dailyOpCount+1);
+    setUserDefOpCount(_userDefOpCount+1);
+    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
+
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpFails()
+{
+    setDailyConfFail(_dailyConfFail+1);
+    setUserDefConfFail(_userDefConfFail+1);
+    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
+
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::incrementUserDefOpCounts()
+{  
+    setUserDefOpCount(_userDefOpCount+1);
+    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::incrementUserDefOpFails()
+{
+    setUserDefConfFail(_userDefConfFail+1);
+    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+
+    return *this;
+}
+
+
+
+
 
 
 
@@ -293,10 +530,58 @@ void CtiCCOperationStats::dumpDynamicData(RWDBConnection& conn, CtiTime& current
     }
 
 }
+DOUBLE CtiCCOperationStats::calculateSuccessPercent(LONG opCount, LONG failCount)
+{
+    DOUBLE retVal = 0;
+    if (opCount > 0 && opCount >= failCount)
+    {
+        retVal = (DOUBLE) (opCount - failCount) /(DOUBLE) opCount;
+    }
+    else 
+        retVal = 0;
 
+    return retVal;
+}
 
+BOOL CtiCCOperationStats::setSuccessPercentPointId(LONG tempPointId, LONG tempPointOffset)
+{
+    BOOL retVal = FALSE;
+    switch (tempPointOffset)
+    {
+        case 10000:
+        {
+            setUserDefOpSuccessPercentId(tempPointId);
+            retVal = TRUE;
+            break;
+        }
+        case 10001:
+        {
+            setDailyOpSuccessPercentId(tempPointId);
+            retVal = TRUE;
+            break;
+        }
+        case 10002:
+        {
+            setWeeklyOpSuccessPercentId(tempPointId);
+            retVal = TRUE;
+            break;
+        }
+        case 10003:
+        {
+            setMonthlyOpSuccessPercentId(tempPointId);
+            retVal = TRUE;
+            break;
+        }
+        default:
+            break;
+    }
+    return retVal;
+
+}
 void CtiCCOperationStats::setDynamicData(RWDBReader& rdr)
 {
+    rdr["paobjectid"] >> _paoid;
+
     rdr["userdefopcount"] >> _userDefOpCount;
     rdr["userdefconffail"] >> _userDefConfFail;
     rdr["dailyopcount"] >> _dailyOpCount;
@@ -304,10 +589,17 @@ void CtiCCOperationStats::setDynamicData(RWDBReader& rdr)
     rdr["weeklyopcount"] >> _weeklyOpCount;
     rdr["weeklyconffail"] >> _weeklyConfFail;
     rdr["monthlyopcount"] >> _monthlyOpCount;
-    rdr["montlyconffail"] >> _monthlyConfFail;
+    rdr["monthlyconffail"] >> _monthlyConfFail;
+    
+    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
 
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
+
+    //return *this;
 
 
 }
@@ -336,6 +628,16 @@ CtiCCOperationStats& CtiCCOperationStats::operator=(const CtiCCOperationStats& r
         _monthlyOpCount   = right._monthlyOpCount; 
         _monthlyConfFail  = right._monthlyConfFail;
 
+        _userDefOpSuccessPercentId  =  right._userDefOpSuccessPercentId; 
+        _userDefOpSuccessPercent    =  right._userDefOpSuccessPercent; 
+        _dailyOpSuccessPercentId    =  right._dailyOpSuccessPercentId; 
+        _dailyOpSuccessPercent      =  right._dailyOpSuccessPercent; 
+        _weeklyOpSuccessPercentId   =  right._weeklyOpSuccessPercentId; 
+        _weeklyOpSuccessPercent     =  right._weeklyOpSuccessPercent; 
+        _monthlyOpSuccessPercentId  =  right._monthlyOpSuccessPercentId;
+        _monthlyOpSuccessPercent    =  right._monthlyOpSuccessPercent; 
+
+
         _insertDynamicDataFlag = right._insertDynamicDataFlag;
         _dirty = right._dirty;
     }
@@ -351,3 +653,25 @@ int CtiCCOperationStats::operator!=(const CtiCCOperationStats& right) const
     return getPAOId() != right.getPAOId();
 }
 
+
+
+void CtiCCOperationStats::printOpStats()
+{
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - DUMPING OpStats. " <<  endl;
+    
+        dout << "\t\t -  _paoid: " << _paoid
+            << " _userDefOpCount " << _userDefOpCount
+             << " _userDefConfFail " << _userDefConfFail  
+             << "  _dailyOpCount "   << _dailyOpCount        
+             << "  _dailyConfFail "  << _dailyConfFail      
+             << "  _weeklyOpCount "  << _weeklyOpCount      
+             << "  _weeklyConfFail " << _weeklyConfFail     
+             << "  _monthlyOpCount " << _monthlyOpCount    
+             << "  _monthlyConfFail "<< _monthlyConfFail  
+            << endl;
+    }
+    
+}
+       

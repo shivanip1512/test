@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_holiday.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:20:30 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/03/11 16:43:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -36,6 +36,7 @@ class IM_EX_HOLIDAYDB CtiHolidayManager
 public:
     bool isHoliday(const CtiDate& date = CtiDate(), long holiday_sched_id=0);
     bool isHoliday(long holiday_sched_id, const CtiDate& date = CtiDate());
+    bool isHolidayForAnySchedule(const CtiDate& date);
     void refresh();
 
     static CtiHolidayManager& getInstance();
