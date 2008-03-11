@@ -10,9 +10,9 @@ public enum SystemGroupEnum {
     DISCONNECTSTATUS("/Meters/Flags/DisconnectedStatus/"), 
     USAGEMONITORING("/Meters/Flags/UsageMonitoring/"),
     SYSTEM("/System/"),
-    DEVICETYPES("/Device Types/"),
-    ROUTES("/Routes/"),
-    SCANNINGMETERS("/Scanning Meters/"),
+    DEVICETYPES("/System/Device Types/"),
+    ROUTES("/System/Routes/"),
+    SCANNINGMETERS("/System/Scanning Meters/"),
     ;
 
     private String fullPath;

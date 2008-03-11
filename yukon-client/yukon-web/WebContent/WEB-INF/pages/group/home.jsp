@@ -7,14 +7,6 @@
 <cti:standardPage title="Groups Home" module="amr">
 <cti:standardMenu menuSelection="devicegroups|home"/>
 
-<cti:includeCss link="/JavaScript/extjs/resources/css/ext-all.css"/>
-<cti:includeCss link="/JavaScript/extjs/resources/css/xtheme-gray.css"/>
-<cti:includeCss link="/JavaScript/extjs_cannon/resources/css/deviceGroup-tree.css"/>
-
-<cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
-<cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
-<cti:includeScript link="/JavaScript/extjs_cannon/TreePanelState.js"/>
-
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
 	    &gt; Groups Home
@@ -105,65 +97,7 @@
 			
 		}
         
-function TreePanelState(mytree) {
-    this.mytree = mytree;
-}
-TreePanelState.prototype.init = function() {
-    this.cp = new Ext.state.CookieProvider();
-    this.state = this.cp.get('TreePanelState_' + this.mytree.id, new Array() );
-}
-TreePanelState.prototype.saveState = function(newState) {
-    this.state = newState;
-    this.cp.set('TreePanelState_' + this.mytree.id, this.state);
-}
-TreePanelState.prototype.onExpand = function(node) {
-    var currentPath = node.getPath();
-    var newState = new Array();
-    for (var i = 0; i < this.state.length; ++i) {
-        var path = this.state[i];
-        if (currentPath.indexOf(path) == -1) {
-            // this path does not already exist
-            newState.push(path);            
-        }
-    }
-    // now ad the new path
-    newState.push(currentPath);
-    this.saveState(newState);
-}
-TreePanelState.prototype.onCollapse = function(node){
-    var closedPath = closedPath = node.getPath();
-    var newState = new Array();
-    for (var i = 0; i < this.state.length; ++i) {
-        var path = this.state[i];
-        if (path.indexOf(closedPath) == -1) {
-            // this path is not a subpath of the closed path
-            newState.push(path);            
-        }
-    }
-    if (newState.length == 0) {
-        var parentNode = node.parentNode;
-        newState.push((parentNode == null ? this.mytree.pathSeparator : parentNode.getPath()));
-    }
-    this.saveState(newState);
-}
-TreePanelState.prototype.restoreState = function(defaultPath) { 
-    if (this.state.length == 0) {
-        var newState = new Array(defaultPath);
-        this.saveState(newState);       
-        this.mytree.expandPath(defaultPath);
-        return;
-    }
-    for (var i = 0; i < this.state.length; ++i) {
-        // activate all path strings from the state
-        try {
-            var path = this.state[i];
-            this.mytree.expandPath(path);       
-        } catch(e) {
-            // ignore invalid path, seems to be remove in the datamodel
-            // TODO fix state at this point
-        }
-    }   
-}
+
 		
 	</script>
 
@@ -182,46 +116,20 @@ TreePanelState.prototype.restoreState = function(defaultPath) {
 		<tags:boxContainer title="Groups" hideEnabled="false">
 			<c:choose>
 				<c:when test="${fn:length(groupHierarchy.childGroupList) > 0}">
-                    <script type="text/javascript">
-                        Ext.onReady(function(){ Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
-                        
-                            // tree loader
-                            var treeLoader = new Ext.tree.TreeLoader({
-                                    dataUrl:'/spring/group/deviceGroupHierarchyJson',
-                                    baseParams:{selectedGroup:"${fn:escapeXml(group.fullName)}"}
-                                })
-                            
-                            // tree panel
-                            var tree = new Ext.tree.TreePanel({
-                                el:'tree-div',
-                                useArrows:false,
-                                autoScroll:true,
-                                animate:false,
-                                enableDD:false,
-                                border:false,
-                                rootVisible:true,
-                                pathSeperator:'>',
-                                loader: treeLoader
-                            });
-                        
-                            // root node
-                            var root = new Ext.tree.AsyncTreeNode({
-                                text: 'Groups',
-                                draggable:false,
-                                id:'source'
-                            });
-                            tree.setRootNode(root);
-                            tree.render();
-                            
-                            // manage tree state
-                            var treeState = new TreePanelState(tree);
-                            treeState.init();
-                            tree.on('expandnode', treeState.onExpand, treeState);
-                            tree.on('collapsenode', treeState.onCollapse, treeState);
-                            treeState.restoreState(tree.root.getPath());
-                        });
-                    </script>
-                    <div id="tree-div" style="height:600px;width:432px;"></div>
+                
+                    <c:set var="selectedGroupParam">
+                        <jsp:attribute name="value">
+                            "${fn:escapeXml(group.fullName)}"
+                        </jsp:attribute>
+                    </c:set>
+                    
+                    <tags:extTree   name="Groups" 
+                                    dataUrl="/spring/group/deviceGroupHierarchyJson"
+                                    baseParams="{selectedGroup:${selectedGroupParam}}"
+                                    width="432"
+                                    height="600" 
+                                    rootVisible="true"
+                                    treeCss="deviceGroup-tree.css" />
 				</c:when>
 				<c:otherwise>
 					No groups found?

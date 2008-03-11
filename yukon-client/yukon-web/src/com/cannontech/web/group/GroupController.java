@@ -148,6 +148,8 @@ public class GroupController extends MultiActionController {
             group = rootGroup;
         }
         mav.addObject("group", group);
+        mav.addObject("selectedGroup", StringEscapeUtils.escapeHtml(group.getFullName()));
+        
 
         // Create a list of groups the current group could move to excluding the
         // current group itself, any descendant groups of the current group and
@@ -257,6 +259,7 @@ public class GroupController extends MultiActionController {
         String groupFullName = deviceGroup.getFullName();
         
         ExtTreeNode node = new ExtTreeNode();
+        node.setAttribute("id", deviceGroup.hashCode());
         
         // display name
         node.setAttribute("text", StringEscapeUtils.escapeHtml(deviceGroup.getName()));
