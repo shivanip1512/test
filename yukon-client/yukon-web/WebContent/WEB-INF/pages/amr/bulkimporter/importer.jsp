@@ -52,25 +52,18 @@
         
         </tags:nameValue>
         
-        <%-- FORCE IMPORT EVENT --%>
-        <tags:nameValue name="Force Manual Import Event">
-            <input type="submit" name="forceManualImportEvent" value="Import">
+        <%-- TOGGLE BULK IMPORTER COMMUNICATION --%>
+        <tags:nameValue name="Bulk Importer Communications">
+        <c:choose>
+            <c:when test="${importerCommunicationsEnabled}">On</c:when>
+            <c:otherwise>Off</c:otherwise>
+        </c:choose>
         </tags:nameValue>
         
-        <%-- TOGGLE BULK IMPORTER COMMUNICATION --%>
-        <c:choose>
-            <c:when test="${importerCommunicationsEnabled}">
-                <tags:nameValue name="Bulk Importer Communications">Currently On</tags:nameValue>
-            </c:when>
-            <c:otherwise>
-                <tags:nameValue name="Bulk Importer Communications">Currently Off</tags:nameValue>
-            </c:otherwise>
-        </c:choose>
-        
         <%-- CLEAR IMPORTS --%>
-        <tags:nameValue name="Clear Imports">
+        <tags:nameValue name="Clear Import Results">
             <select name="clearImportsSelect">
-                <option value="all">All Imports</option>
+                <option value="all">All Results</option>
                 <option value="failed">Failed Entries</option>
                 <option value="pendingComm">Pending Communications</option>
                 <option value="failedComm">Failed Communications</option>
@@ -81,7 +74,6 @@
     </tags:nameValueContainer>
     
 </tags:boxContainer>
-</form>
 
 <br>
 
@@ -126,7 +118,7 @@
             </tags:nameValue>
             
             <tags:nameValue name="Next Import">
-                <div id="nextImportAttempt"></div>
+                <span id="nextImportAttempt"></span>&nbsp;&nbsp;<input type="submit" name="forceManualImportEvent" value="Import Now">
             </tags:nameValue>
             
             <tags:nameValue name="Tabular Data">
@@ -138,14 +130,14 @@
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="pdfView" reportType="FAILURES">PDF</cti:simpleReportLinkFromNameTag>
                     </div>
                     <div id="pendingComm_reports" style="display:none;">
-                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=PENDING_COMMS" />">">HTML</a>
+                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=PENDING_COMMS" />">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="PENDING_COMMS">CSV</cti:simpleReportLinkFromNameTag>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="pdfView" reportType="PENDING_COMMS">PDF</cti:simpleReportLinkFromNameTag>
                     </div>
                     <div id="failedComm_reports" style="display:none;">
-                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILED_COMMS" />">">HTML</a>
+                        <a href="<c:url value="/spring/amr/reports/bulkImportResultsReport?def=bulkImportResultsDefinition&reportType=FAILED_COMMS" />">HTML</a>
                         |
                         <cti:simpleReportLinkFromNameTag definitionName="bulkImportResultsDefinition" viewType="csvView" reportType="FAILED_COMMS">CSV</cti:simpleReportLinkFromNameTag>
                         |
@@ -204,5 +196,6 @@
     </table>
     
 </tags:boxContainer>
+</form>
 
 </cti:standardPage>
