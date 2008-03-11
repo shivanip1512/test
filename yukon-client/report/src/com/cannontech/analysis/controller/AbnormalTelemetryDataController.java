@@ -28,6 +28,7 @@ public class AbnormalTelemetryDataController extends CapControlReportControllerB
         return report;
     }
 
+    @SuppressWarnings("unchecked")
     public ReportModelBase getModel() {
         return report.getModel();
     }

@@ -20,36 +20,22 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
     
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
-    @SuppressWarnings("unused")
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
-    public final static String SUB_NAME_STRING = "Substation Bus";
-    public final static String FEEDER_NAME_STRING = "Feeder";
-    public final static int SUB_NAME_COLUMN = 0;
-    public final static int FEEDER_NAME_COLUMN = 7;
-    public final static int SUB_VAR_COLUMN = 1;
     
     public AbnormalTelemetryDataModel() {
     }
     
     static public class ModelRow {
-        public String subVarQuality = "";
-        public String subVoltQuality = "";
-        public String subWattQuality = "";
-        public String fdrVarQuality = "";
-        public String fdrVoltQuality = "";
-        public String fdrWattQuality = "";
-        public String substationBus;
-        public String subVarPoint;
-        public String subVoltPoint;
-        public String subWattPoint;
-        public String feederName;
-        public String varPoint;
-        public String voltPoint;
-        public String wattPoint;
+        
+        public String device;
+        public String type;
+        public String point;
+        public String units;
+        public String quality = "";
     }
     
     @Override
@@ -79,87 +65,16 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
             public void processRow(ResultSet rs) throws SQLException {
                 
                 AbnormalTelemetryDataModel.ModelRow row = new AbnormalTelemetryDataModel.ModelRow();
-                Integer sVarQuality = rs.getInt("sVarQuality");
-                Integer sVoltQuality = rs.getInt("sVoltQuality");
-                Integer sWattQuality = rs.getInt("sWattQuality");
-                Integer fVarQuality = rs.getInt("fVarQuality");
-                Integer fVoltQuality = rs.getInt("fVoltQuality");
-                Integer fWattQuality = rs.getInt("fWattQuality");
+                row.device = rs.getString("paoName");
+                row.type = rs.getString("type");
+                row.point = rs.getString("pointName");
+                row.units = rs.getString("longName");
+                Integer quality = rs.getInt("quality");
                 try {
-                    row.subVarQuality = PointQualities.getQuality(sVarQuality);
+                    row.quality = PointQualities.getQuality(quality);
                 } catch (CTIPointQuailtyException e) {
                     CTILogger.error("Invalid Point Quality",e);
                 }
-                try {
-                    row.subVoltQuality = PointQualities.getQuality(sVoltQuality);
-                } catch (CTIPointQuailtyException e) {
-                    CTILogger.error("Invalid Point Quality",e);
-                }
-                try {
-                    row.subWattQuality = PointQualities.getQuality(sWattQuality);
-                } catch (CTIPointQuailtyException e) {
-                    CTILogger.error("Invalid Point Quality",e);
-                }
-                try {
-                    row.fdrVarQuality = PointQualities.getQuality(fVarQuality);
-                } catch (CTIPointQuailtyException e) {
-                    CTILogger.error("Invalid Point Quality",e);
-                }
-                try {
-                    row.fdrVoltQuality = PointQualities.getQuality(fVoltQuality);
-                } catch (CTIPointQuailtyException e) {
-                    CTILogger.error("Invalid Point Quality",e);
-                }
-                try {
-                    row.fdrWattQuality = PointQualities.getQuality(fWattQuality);
-                } catch (CTIPointQuailtyException e) {
-                    CTILogger.error("Invalid Point Quality",e);
-                }
-                
-                row.substationBus = rs.getString("substationBus");
-                String subVarPoint = rs.getString("subVarPoint");
-                String subVarPointId = rs.getString("subvarpointid");
-                Integer subVarInt = Integer.parseInt(subVarPointId);
-                if (subVarInt <=0) {
-                    subVarPoint = "---";
-                }
-                row.subVarPoint = subVarPoint;
-                String subVoltPoint = rs.getString("subVoltPoint");
-                String subVoltPointId = rs.getString("subVoltPointId");
-                Integer subVoltInt = Integer.parseInt(subVoltPointId);
-                if (subVoltInt <=0) {
-                    subVoltPoint = "---";
-                }
-                row.subVoltPoint = subVoltPoint;
-                String subWattPoint = rs.getString("subWattPoint");
-                String subWattPointId = rs.getString("subWattPointId");
-                Integer subWattInt = Integer.parseInt(subWattPointId);
-                if (subWattInt <=0) {
-                    subWattPoint = "---";
-                }
-                row.subWattPoint = subWattPoint;
-                row.feederName = rs.getString("feederName");
-                String varPoint = rs.getString("varPoint");
-                String varPointId = rs.getString("varPointId");
-                Integer varInt = Integer.parseInt(varPointId);
-                if (varInt <=0) {
-                    varPoint = "---";
-                }
-                row.varPoint = varPoint;
-                String voltPoint = rs.getString("voltPoint");
-                String voltPointId = rs.getString("voltPointId");
-                Integer voltInt = Integer.parseInt(voltPointId);
-                if (voltInt <=0) {
-                    voltPoint = "---";
-                }
-                row.voltPoint = voltPoint;
-                String wattPoint = rs.getString("wattPoint");
-                String wattPointId = rs.getString("wattPointId");
-                Integer wattInt = Integer.parseInt(wattPointId);
-                if (wattInt <=0) {
-                    wattPoint = "---";
-                }
-                row.wattPoint = wattPoint;
                 
                 data.add(row);
             }
@@ -169,54 +84,258 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
     }
     
     public StringBuffer buildSQLStatement() {
-        StringBuffer sql = new StringBuffer ("select yp.paoname substationbus, ");
-        sql.append("sp.Pointname SubVarPoint, sp.pointid subvarpointid, ");
-        sql.append("ds.currentvarpointquality sVarQuality, ");
-        sql.append("spv.Pointname SubVoltPoint, spv.pointid subvoltpointid, ");
-        sql.append("ds.currentvoltpointquality sVoltQuality, ");
-        sql.append("spw.Pointname SubWattPoint, spw.pointid subwattpointid, ");
-        sql.append("ds.currentwattpointquality sWattQuality, ");
-        sql.append("yp1.paoname feederName, ");
-        sql.append("p.Pointname VarPoint, p.pointid varpointid, ");
-        sql.append("df.currentvarpointquality fVarQuality, ");
-        sql.append("pv.Pointname VoltPoint, pv.pointid voltpointid, ");
-        sql.append("df.currentvoltpointquality fVoltQuality, ");
-        sql.append("pw.Pointname WattPoint, pw.pointid wattpointid, ");
-        sql.append("df.currentwattpointquality fWattQuality ");
-        sql.append("from yukonpaobject yp, yukonpaobject yp1, capcontrolfeeder f, capcontrolsubstationbus s, ");
-        sql.append("ccsubstationsubbuslist sbl, ccsubareaassignment sa, ");
-        sql.append("ccfeedersubassignment fs, point p, point pv, point pw, point sp, point spv, point spw, ");
-        sql.append("dynamicccsubstationbus ds, dynamicccfeeder df ");
-        sql.append("where yp.paobjectid = s.substationbusid and yp1.paobjectid = f.feederid ");
-        sql.append("and p.pointid = f.currentvarloadpointid and pw.pointid = f.currentwattloadpointid and pv.pointid = f.currentvoltloadpointid and ");
-        sql.append("fs.substationbusid = s.substationbusid and fs.feederid = f.feederid ");
-        sql.append("and sbl.substationbusid = fs.substationbusid ");
-        sql.append("and sa.substationbusid = sbl.substationid ");
-        sql.append("and ds.substationbusid = s.substationbusid and df.feederid = f.feederid ");
-        sql.append("and sp.pointid = s.currentvarloadpointid and spw.pointid = s.currentwattloadpointid and spv.pointid = s.currentvoltloadpointid ");
-        sql.append("and (p.pointid <> 0 or pv.pointid <> 0 or pw.pointid <> 0 or sp.pointid <> 0 or spv.pointid <> 0 or spw.pointid <> 0) ");
-        sql.append("and (df.currentvarpointquality <> 5 or df.currentvoltpointquality <> 5 or df.currentwattpointquality <> 5 or ");
-        sql.append("ds.currentvarpointquality <> 5 or ds.currentvoltpointquality <> 5 or ds.currentwattpointquality <> 5)  ");
+        StringBuffer sql = new StringBuffer ("select ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId ");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", ds.CurrentVarPointQuality as quality ");
+          sql.append("from ");
+          sql.append("capcontrolsubstationbus s        ");
+          sql.append("join YukonPAObject yp on s.substationbusid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = s.CurrentVarLoadPointID ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCSubstationBus ds on s.substationbusid = ds.SubstationBusID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and ds.currentvarpointquality <> 5 ");
+          sql.append("union  ");
+          sql.append("select  ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId ");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", ds.CurrentVarPointQuality ");
+          sql.append("from ");
+          sql.append("capcontrolsubstationbus s        ");
+          sql.append("join YukonPAObject yp on s.substationbusid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = s.phaseb ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCSubstationBus ds on s.substationbusid = ds.SubstationBusID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and ds.currentvarpointquality <> 5 ");
+          sql.append("union  ");
+          sql.append("select  ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId ");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", ds.CurrentVarPointQuality ");
+          sql.append("from ");
+          sql.append("capcontrolsubstationbus s ");    
+          sql.append("join YukonPAObject yp on s.substationbusid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = s.phasec ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCSubstationBus ds on s.substationbusid = ds.SubstationBusID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and ds.currentvarpointquality <> 5 ");
+          sql.append("union ");
+          sql.append("select  ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId ");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", ds.CurrentVoltPointQuality as quality ");
+          sql.append("from ");
+          sql.append("capcontrolsubstationbus s ");
+          sql.append("join YukonPAObject yp on s.substationbusid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = s.currentVoltLoadPointID   ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCSubstationBus ds on s.substationbusid = ds.SubstationBusID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and ds.currentvoltpointquality <> 5 ");
+          sql.append("union ");
+          sql.append("select ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId ");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", ds.CurrentwattPointQuality as quality ");
+          sql.append("from ");
+          sql.append("capcontrolsubstationbus s ");
+          sql.append("join YukonPAObject yp on s.substationbusid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = s.currentwattLoadPointID ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCSubstationBus ds on s.substationbusid = ds.SubstationBusID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and ds.currentwattpointquality <> 5 ");
+          sql.append("union ");
+          sql.append("select ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId ");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", df.CurrentVarPointQuality ");
+          sql.append("from ");
+          sql.append("capcontrolfeeder f ");
+          sql.append("join YukonPAObject yp on f.feederid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = f.CurrentVarLoadPointID ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCfeeder df on f.feederid = df.feederID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and df.currentvarpointquality <> 5 ");
+          sql.append("union ");
+          sql.append("select ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", df.CurrentVarPointQuality as quality ");
+          sql.append("from ");
+          sql.append("capcontrolfeeder f ");
+          sql.append("join YukonPAObject yp on f.feederid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = f.phaseb ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCfeeder df on f.feederid = df.feederID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and df.currentvarpointquality <> 5 ");
+          sql.append("union ");
+          sql.append("select ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId ");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", df.CurrentVarPointQuality as quality ");
+          sql.append("from ");
+          sql.append("capcontrolfeeder f ");
+          sql.append("join YukonPAObject yp on f.feederid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = f.phasec ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCfeeder df on f.feederid = df.feederID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and df.currentvarpointquality <> 5 ");
+          sql.append("union ");
+          sql.append("select ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId ");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", df.CurrentVarPointQuality as quality ");
+          sql.append("from ");
+          sql.append("capcontrolfeeder f ");
+          sql.append("join YukonPAObject yp on f.feederid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = f.currentVoltLoadPointID ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCfeeder df on f.feederid = df.feederID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and df.currentvarpointquality <> 5 ");
+          sql.append("union ");
+          sql.append("select ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId ");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", df.CurrentVarPointQuality as quality ");
+          sql.append("from ");
+          sql.append("capcontrolfeeder f ");
+          sql.append("join YukonPAObject yp on f.feederid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = f.currentWattLoadPointID ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCfeeder df on f.feederid = df.feederID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and df.currentvarpointquality <> 5 ");
+          sql.append("union ");
+          sql.append("select ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", df.CurrentVoltPointQuality as quality ");
+          sql.append("from ");
+          sql.append("capcontrolfeeder f ");
+          sql.append("join YukonPAObject yp on f.feederid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = f.currentVoltLoadPointID ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCfeeder df on f.feederid = df.feederID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and df.currentvoltpointquality <> 5 ");
+          sql.append("union ");
+          sql.append("select ");
+          sql.append("yp.paoname ");
+          sql.append(", yp.type ");
+          sql.append(", yp.PAOName ");
+          sql.append(", yp.PAObjectId");
+          sql.append(", p.PointName ");
+          sql.append(", um.LongName ");
+          sql.append(", df.CurrentWattPointQuality as quality ");
+          sql.append("from ");
+          sql.append("capcontrolfeeder f ");
+          sql.append("join YukonPAObject yp on f.feederid = yp.PAObjectID ");
+          sql.append("join point p on p.pointid = f.currentWattLoadPointID ");
+          sql.append("join PointUnit pu on p.PointID = pu.PointID ");
+          sql.append("join UnitMeasure um on pu.UOMID = um.UOMID ");
+          sql.append("join DynamicCCfeeder df on f.feederid = df.feederID ");
+          sql.append("where ");
+          sql.append("p.pointid > 0 ");
+          sql.append("and df.currentwattpointquality <> 5 ");
         
         String result = null;
         
         if(feederIds != null && !feederIds.isEmpty()) {
-            result = "f.feederid in ( ";
+            result = "PAObjectId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(feederIds);
             result += wheres;
             result += " ) ";
         }else if(subbusIds != null && !subbusIds.isEmpty()) {
-            result = "s.substationbusid in ( ";
+            result = "PAObjectId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
             result += wheres;
             result += " ) ";
         }else if(substationIds != null && !substationIds.isEmpty()) {
-            result = "sbl.substationid in ( ";
+            result = "PAObjectId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
             result += wheres;
             result += " ) ";
         }else if(areaIds != null && !areaIds.isEmpty()) {
-            result = "sa.areaid in ( ";
+            result = "PAObjectId in ( ";
+            String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
+            result += wheres;
+            result += " ) ";
+        }else if(capBankIds != null && !capBankIds.isEmpty()) {
+            result = "PAObjectId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
