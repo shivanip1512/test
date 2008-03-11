@@ -1,0 +1,10 @@
+
+/* all standard ext tree styles */
+@import url('/JavaScript/extjs/resources/css/tree.css');
+
+/* override tree node text font */
+.x-tree-node{
+	color: black;
+	font-family: Verdana,Arial,Helvetica,sans-serif;
+	white-space: nowrap;
+}

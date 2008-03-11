@@ -9,10 +9,11 @@
 
 <cti:includeCss link="/JavaScript/extjs/resources/css/ext-all.css"/>
 <cti:includeCss link="/JavaScript/extjs/resources/css/xtheme-gray.css"/>
-<cti:includeCss link="/JavaScript/extjs/resources/css/deviceGroup-tree.css"/>
+<cti:includeCss link="/JavaScript/extjs_cannon/resources/css/deviceGroup-tree.css"/>
 
 <cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
 <cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
+<cti:includeScript link="/JavaScript/extjs_cannon/TreePanelState.js"/>
 
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
@@ -198,7 +199,7 @@ TreePanelState.prototype.restoreState = function(defaultPath) {
                                 animate:false,
                                 enableDD:false,
                                 border:false,
-                                rootVisible:false,
+                                rootVisible:true,
                                 pathSeperator:'>',
                                 loader: treeLoader
                             });

@@ -29,6 +29,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -53,7 +54,6 @@ import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.TreeNode;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.DuplicateException;
@@ -64,6 +64,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.util.Validator;
+import com.cannontech.web.util.ExtTreeNode;
 
 @SuppressWarnings("unchecked")
 public class GroupController extends MultiActionController {
@@ -223,11 +224,11 @@ public class GroupController extends MultiActionController {
         DeviceGroupHierarchy groupHierarchy = createHierarchy(rootGroup, childList);
         
         // recursively create a tree when this node is the root
-        TreeNode root = makeGroupTreeNode(groupHierarchy, selectedDeviceGroup);
+        ExtTreeNode root = makeGroupTreeNode(groupHierarchy, selectedDeviceGroup);
         
         // make a list containing maps which represents each group node
         List<Map<String, Object>> groupList = new ArrayList<Map<String, Object>>();
-        for (TreeNode n : root.getChildren()) {
+        for (ExtTreeNode n : root.getChildren()) {
             groupList.add(n.toMap());
         }
         
@@ -250,12 +251,12 @@ public class GroupController extends MultiActionController {
      * @return
      * @throws Exception
      */
-    private TreeNode makeGroupTreeNode(DeviceGroupHierarchy dgh, DeviceGroup selectedDeviceGroup) throws Exception{
+    private ExtTreeNode makeGroupTreeNode(DeviceGroupHierarchy dgh, DeviceGroup selectedDeviceGroup) throws Exception{
         
         DeviceGroup deviceGroup = dgh.getGroup();
         String groupFullName = deviceGroup.getFullName();
         
-        TreeNode node = new TreeNode();
+        ExtTreeNode node = new ExtTreeNode();
         
         // display name
         node.setAttribute("text", StringEscapeUtils.escapeHtml(deviceGroup.getName()));
@@ -284,7 +285,38 @@ public class GroupController extends MultiActionController {
             node.setAttribute("leaf", true);
         }
         
+        // set the icon class depending on group
+        setIconCls(node, deviceGroup);
+        
         return node;
+    }
+    
+    private void setIconCls(ExtTreeNode node, DeviceGroup deviceGroup) {
+        
+        String iconCls = "";
+        
+        Map<DeviceGroup, String> iconableGroups = new HashMap<DeviceGroup, String>();
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.METERS.getFullPath()), "meters");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.BILLING.getFullPath()), "metersBilling");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.COLLECTION.getFullPath()), "metersCollection");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.ALTERNATE.getFullPath()), "metersAlternate");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.FLAGS.getFullPath()), "metersFlags");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.INVENTORY.getFullPath()), "metersFlagsInventory");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.DISCONNECTSTATUS.getFullPath()), "metersFlagsDisconnectStatus");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.USAGEMONITORING.getFullPath()), "metersFlagsUsageMonitoring");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.SYSTEM.getFullPath()), "system");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.DEVICETYPES.getFullPath()), "deviceTypes");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.ROUTES.getFullPath()), "routes");
+        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.SCANNINGMETERS.getFullPath()), "scanningMeters");
+        
+        for (DeviceGroup dg : iconableGroups.keySet()) {
+            if (deviceGroup.equals(dg)) {
+                iconCls = iconableGroups.get(dg);
+                break;
+            }
+        }
+        
+        node.setAttribute("iconCls", iconCls);
     }
     
     private DeviceGroupHierarchy createHierarchy(DeviceGroup root, MapQueue<DeviceGroup, DeviceGroup> childList) {

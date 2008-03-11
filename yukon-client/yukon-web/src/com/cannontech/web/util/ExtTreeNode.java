@@ -1,20 +1,20 @@
-package com.cannontech.common.util;
+package com.cannontech.web.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class TreeNode {
+public class ExtTreeNode {
 
     private Map<String, Object> attributes;
-    private List<TreeNode> children;
+    private List<ExtTreeNode> children;
 
     // constructor
-    public TreeNode() {
+    public ExtTreeNode() {
         super();
         this.attributes = new HashMap<String, Object>();
-        this.children = new ArrayList<TreeNode>();
+        this.children = new ArrayList<ExtTreeNode>();
     }
     
     /**
@@ -30,7 +30,7 @@ public class TreeNode {
      * A a node to this node list of child nodes.
      * @param node
      */
-    public void addChild(TreeNode node) {
+    public void addChild(ExtTreeNode node) {
         this.children.add(node);
     }
     
@@ -55,7 +55,7 @@ public class TreeNode {
         map.putAll(getAttributes());
         
         List<Map<String, Object>> children = new ArrayList<Map<String, Object>>();
-        for (TreeNode c : getChildren()) {
+        for (ExtTreeNode c : getChildren()) {
             children.add(c.toMap());
             
         }
@@ -65,11 +65,11 @@ public class TreeNode {
     }
 
     // setter and getters
-    public List<TreeNode> getChildren() {
+    public List<ExtTreeNode> getChildren() {
         return children;
     }
 
-    public void setChildren(List<TreeNode> children) {
+    public void setChildren(List<ExtTreeNode> children) {
         this.children = children;
     }
 
