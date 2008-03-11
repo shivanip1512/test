@@ -377,6 +377,8 @@ public final static String getPAOTypeString(int type)
 			return STRING_CAPCONTROL_FEEDER;
 		case CAP_CONTROL_AREA:
 			return STRING_CAPCONTROL_AREA;
+		case CAP_CONTROL_SPECIAL_AREA:
+            return STRING_CAPCONTROL_SPECIAL_AREA;
 
 		//ports
 		case LOCAL_DIRECT:
