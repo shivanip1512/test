@@ -29,7 +29,6 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
@@ -46,6 +45,7 @@ import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
@@ -130,7 +130,7 @@ public class GroupController extends MultiActionController {
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
     }
-
+    
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
@@ -294,27 +294,20 @@ public class GroupController extends MultiActionController {
         return node;
     }
     
+    /**
+     * Check if the device group is one of the system groups. If it is, set the iconCls
+     * attribute on the node to the enum value of the system group. The enum name should match
+     * a css class name that will set the icon image of the node.
+     * @param node
+     * @param deviceGroup
+     */
     private void setIconCls(ExtTreeNode node, DeviceGroup deviceGroup) {
         
         String iconCls = "";
         
-        Map<DeviceGroup, String> iconableGroups = new HashMap<DeviceGroup, String>();
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.METERS.getFullPath()), "meters");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.BILLING.getFullPath()), "metersBilling");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.COLLECTION.getFullPath()), "metersCollection");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.ALTERNATE.getFullPath()), "metersAlternate");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.FLAGS.getFullPath()), "metersFlags");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.INVENTORY.getFullPath()), "metersFlagsInventory");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.DISCONNECTSTATUS.getFullPath()), "metersFlagsDisconnectStatus");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.USAGEMONITORING.getFullPath()), "metersFlagsUsageMonitoring");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.SYSTEM.getFullPath()), "system");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.DEVICETYPES.getFullPath()), "deviceTypes");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.ROUTES.getFullPath()), "routes");
-        iconableGroups.put(deviceGroupService.resolveGroupName(SystemGroupEnum.SCANNINGMETERS.getFullPath()), "scanningMeters");
-        
-        for (DeviceGroup dg : iconableGroups.keySet()) {
-            if (deviceGroup.equals(dg)) {
-                iconCls = iconableGroups.get(dg);
+        for (SystemGroupEnum systemGroup : SystemGroupEnum.values()) {
+            if ((deviceGroup.getFullName() + "/").equals(systemGroup.getFullPath())) {
+                iconCls = systemGroup.toString();
                 break;
             }
         }

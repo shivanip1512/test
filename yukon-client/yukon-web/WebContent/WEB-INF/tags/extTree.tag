@@ -17,7 +17,7 @@
         <cti:includeCss link="/JavaScript/extjs_cannon/resources/css/${treeCss}"/>
     </c:when>
     <c:otherwise>
-        <cti:includeCss link="/JavaScript/extjs/resources/css/tree.css"/>
+        <cti:includeCss link="/JavaScript/extjs_cannon/resources/css/tree.css"/>
     </c:otherwise>
 </c:choose>
 
