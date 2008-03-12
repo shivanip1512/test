@@ -115,13 +115,30 @@ UPDATE DeviceGroup
 SET Permission = 'EDIT_MOD'
 WHERE Permission = 'N';
 go
-
-INSERT INTO DeviceGroup
-(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Scanning Meters',12,'Y','STATIC' FROM DeviceGroup WHERE DeviceGroupId<100; 
-go
 /* End YUK-5337 */
 
+/* Start YUK-5454 */
+ALTER TABLE DYNAMICBILLINGFIELD ADD PadText varchar(50);
+go
+UPDATE DYNAMICBILLINGFIELD SET PadText = ' ';
+go
+ALTER TABLE DYNAMICBILLINGFIELD alter column PadText varchar(50) not null;
+go
+
+ALTER TABLE DYNAMICBILLINGFIELD ADD PadSide varchar(50);
+go
+UPDATE DYNAMICBILLINGFIELD SET PadSide = 'none';
+go
+ALTER TABLE DYNAMICBILLINGFIELD alter columnPadSide varchar(50) not null;
+go
+
+ALTER TABLE DYNAMICBILLINGFIELD ADD ReadingType varchar(50);
+go
+UPDATE DYNAMICBILLINGFIELD SET ReadingType = 'ELECTRIC';
+go
+ALTER TABLE DYNAMICBILLINGFIELD alter column ReadingType varchar(50) not null;
+go
+/* End YUK-5454 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/
