@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/12/03 17:21:58 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/03/12 14:54:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,6 +135,7 @@ public:
 
         Key_UDP_IP,
         Key_UDP_Port,
+        Key_UDP_Sequence,
 
         Key_FMU_SoftSpecLSB,
         Key_FMU_SoftSpecMSB,
@@ -277,6 +278,7 @@ protected:
 
     static const string _key_udp_ip;
     static const string _key_udp_port;
+    static const string _key_udp_sequence;
 
     static const string _key_fmu_softspec_lsb;
     static const string _key_fmu_softspec_msb;

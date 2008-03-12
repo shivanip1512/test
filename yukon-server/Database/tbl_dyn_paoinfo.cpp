@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2007/12/03 17:21:58 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/03/12 14:54:52 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -140,8 +140,9 @@ const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_channel          = "m
 const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_request_begin    = "mct llp interest request begin";
 const string CtiTableDynamicPaoInfo::_key_mct_llp_interest_request_end      = "mct llp interest request end";
 
-const string CtiTableDynamicPaoInfo::_key_udp_ip   = "udp ip";
-const string CtiTableDynamicPaoInfo::_key_udp_port = "udp port";
+const string CtiTableDynamicPaoInfo::_key_udp_ip       = "udp ip";
+const string CtiTableDynamicPaoInfo::_key_udp_port     = "udp port";
+const string CtiTableDynamicPaoInfo::_key_udp_sequence = "udp sequence";
 
 const CtiTableDynamicPaoInfo::owner_map_t CtiTableDynamicPaoInfo::_owner_map = CtiTableDynamicPaoInfo::init_owner_map();
 const CtiTableDynamicPaoInfo::key_map_t   CtiTableDynamicPaoInfo::_key_map   = CtiTableDynamicPaoInfo::init_key_map();
@@ -262,8 +263,9 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_DemandFreezeTimestamp,          &_key_demand_freeze_timestamp));
     retval.insert(make_pair(Key_VoltageFreezeTimestamp,         &_key_voltage_freeze_timestamp));
 
-    retval.insert(make_pair(Key_UDP_IP,   &_key_udp_ip));
-    retval.insert(make_pair(Key_UDP_Port, &_key_udp_port));
+    retval.insert(make_pair(Key_UDP_IP,       &_key_udp_ip));
+    retval.insert(make_pair(Key_UDP_Port,     &_key_udp_port));
+    retval.insert(make_pair(Key_UDP_Sequence, &_key_udp_sequence));
 
     return retval;
 }
