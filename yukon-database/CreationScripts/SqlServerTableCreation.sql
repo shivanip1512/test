@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/10/2008 10:43:38 AM                        */
+/* Created on:     3/12/2008 10:46:47 AM                        */
 /*==============================================================*/
 
 
@@ -5032,7 +5032,7 @@ insert into DeviceGroup values (11,'UsageMonitoring',8,'NOEDIT_MOD','STATIC');
 INSERT INTO DeviceGroup values (12,'System',0,'NOEDIT_MOD','STATIC');
 INSERT INTO DeviceGroup values (13,'Routes',12,'NOEDIT_NOMOD','ROUTE');
 INSERT INTO DeviceGroup values (14,'Device Types',12,'NOEDIT_NOMOD','DEVICETYPE'); 
-INSERT INTO DeviceGroup values (15,'Scanning Meters',0,'NOEDIT_NOMOD','STATIC');
+INSERT INTO DeviceGroup values (15,'Scanning Meters',12,'NOEDIT_NOMOD','STATIC'); 
 INSERT INTO DeviceGroup values (16,'Load Profile',15,'NOEDIT_NOMOD','SCANNING_LOAD_PROFILE');
 INSERT INTO DeviceGroup values (17,'Voltage Profile',15,'NOEDIT_NOMOD','SCANNING_VOLTAGE_PROFILE');
 INSERT INTO DeviceGroup values (18,'Integrity',15,'NOEDIT_NOMOD','SCANNING_INTEGRITY');
@@ -11492,7 +11492,7 @@ insert into YukonRoleProperty values(-10814, -108,'Suppress Error Page Details',
 insert into YukonRoleProperty values(-10815, -108,'Data Updater Delay (milliseconds)', '4000', 'The number of milliseconds between requests for the latest point values on pages that support the data updater.');
 insert into YukonRoleProperty values(-10816, -108,'Standard Page Style Sheet',' ','A comma separated list of URLs for CSS files that will be included on every Standard Page');
 insert into YukonRoleProperty values(-10817, -108,'Theme Name',' ','The name of the theme to be applied to this group');
-insert into YukonRoleProperty values(-10818, -108, 'View Alarms Alerts','false','Ability to receive point alarms as alerts'); 
+insert into YukonRoleProperty values(-10818, -108, 'View Alarms Alerts','false','Ability to receive point alarms as alerts');
 
 /* Reporting Analysis role properties */
 insert into YukonRoleProperty values(-10900,-109,'Header Label','Reporting','The header label for reporting.');

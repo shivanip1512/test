@@ -48,7 +48,7 @@ insert into YukonRoleProperty values(-1021,-1,'importer_communications_enabled',
 /* Start YUK-5337 */
 INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Scanning Meters',0,'Y','STATIC' FROM DeviceGroup WHERE DeviceGroupId<100;
+SELECT MAX(DeviceGroupID)+1,'Scanning Meters',12,'Y','STATIC' FROM DeviceGroup WHERE DeviceGroupId<100; 
 
 INSERT INTO DeviceGroup
 (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
