@@ -31,9 +31,10 @@ public class ParentStringPrinter {
 
     public String printPAO(final Integer paoId) {
         StreamableCapObject obj = getStreamable(paoId);
-        if (obj instanceof CBCArea) return ORPH_STRING;
-
+        if (obj instanceof CBCArea || obj instanceof CBCSpecialArea) return ORPH_STRING;
+        
         Integer parentId = (obj != null) ? obj.getParentID() : getCapBankForController(paoId);
+        if (parentId < 1) return ORPH_STRING;
         
         String result = printHierarchy(parentId); 
         return result;
@@ -45,7 +46,12 @@ public class ParentStringPrinter {
     }
 
     private String printHierarchy(int id) {
-
+        /*
+         * If a cc object does not live under an area it can't be
+         * displayed in feeders.jsp.  If this is the case the parent link
+         * will be set to the editor for it's parent instead of feeders.jsp.
+         */
+        
         boolean isCBCId = isController(id);
         if (isCBCId) {
             Integer capBankId = getCapBankForController(id);
@@ -71,25 +77,95 @@ public class ParentStringPrinter {
         }
 
         if (capObject instanceof SubStation) {
-            String feederLink = buildLink(request, paoName, paoId, FEEDER_URL);
-            result = appendHierarchy(feederLink, parentId);
+            if (((SubStation)capObject).getParentID() < 1) {
+                String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                result = appendHierarchy(editorLink, parentId);
+            }else {
+                String feederLink = buildLink(request, paoName, paoId, FEEDER_URL);
+                result = appendHierarchy(feederLink, parentId);
+            }
         }
 
         if (capObject instanceof SubBus) {
-            String feederLink = buildLink(request, paoName, parentId, FEEDER_URL);
-            result = appendHierarchy(feederLink, parentId);
+            SubBus bus = (SubBus)capObject;
+            Integer stationId = bus.getParentID();
+            if(stationId < 1) {
+                String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                result = appendHierarchy(editorLink, parentId);
+            }else {
+                SubStation station = capControlCache.getSubstation(stationId);
+                Integer areaId = station.getParentID();
+                if(areaId < 1) {
+                    String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                    result = appendHierarchy(editorLink, parentId);
+                }else {
+                    String feederLink = buildLink(request, paoName, parentId, FEEDER_URL);
+                    result = appendHierarchy(feederLink, parentId);
+                }
+            }
         }
 
         if (capObject instanceof Feeder) {
-            Integer substationId = getSubstationId(parentId);
-            String feederLink = buildLink(request, paoName, substationId, FEEDER_URL);
-            result = appendHierarchy(feederLink, parentId);
+            Feeder fdr = (Feeder)capObject;
+            Integer busId = fdr.getParentID();
+            if(busId < 1) {
+                String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                result = appendHierarchy(editorLink, parentId);
+            }else {
+                SubBus bus = capControlCache.getSubBus(busId);
+                Integer stationId = bus.getParentID();
+                if(stationId < 1) {
+                    String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                    result = appendHierarchy(editorLink, parentId);
+                }else {
+                    SubStation station = capControlCache.getSubstation(stationId);
+                    Integer areaId = station.getParentID();
+                    if(areaId < 1) {
+                        String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                        result = appendHierarchy(editorLink, parentId);
+                    }else {
+                        Integer substationId = getSubstationId(parentId);
+                        String feederLink = buildLink(request, paoName, substationId, FEEDER_URL);
+                        result = appendHierarchy(feederLink, parentId);
+                    }
+                }
+            }
         }    
 
         if (capObject instanceof CapBankDevice) {
-            Integer substationId = getSubstationId(parentId);
-            String feederLink = buildLink(request, paoName, substationId, FEEDER_URL);
-            result = appendHierarchy(feederLink, parentId);
+            
+            CapBankDevice cb = (CapBankDevice) capObject;
+            Integer fdrId = cb.getParentID();
+            if(fdrId < 1) {
+                String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                result = appendHierarchy(editorLink, parentId);
+            }else {
+                
+                Feeder fdr = (Feeder)capObject;
+                Integer busId = fdr.getParentID();
+                if(busId < 1) {
+                    String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                    result = appendHierarchy(editorLink, parentId);
+                }else {
+                    SubBus bus = capControlCache.getSubBus(busId);
+                    Integer stationId = bus.getParentID();
+                    if(stationId < 1) {
+                        String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                        result = appendHierarchy(editorLink, parentId);
+                    }else {
+                        SubStation station = capControlCache.getSubstation(stationId);
+                        Integer areaId = station.getParentID();
+                        if(areaId < 1) {
+                            String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
+                            result = appendHierarchy(editorLink, parentId);
+                        }else {
+                            Integer substationId = getSubstationId(parentId);
+                            String feederLink = buildLink(request, paoName, substationId, FEEDER_URL);
+                            result = appendHierarchy(feederLink, parentId);
+                        }
+                    }
+                }
+            }
         }
 
         return result;
@@ -129,6 +205,19 @@ public class ParentStringPrinter {
         sb.append("<a href=\"");
         sb.append(safeUrl);
         if (paoId != null) sb.append("?id=" + paoId);
+        sb.append("\">");
+        sb.append(paoName);
+        sb.append("</a>");
+        String result = sb.toString();
+        return result;
+    }
+    
+    private String buildEditorLink(final HttpServletRequest request, final String paoName, final String url) {
+        String safeUrl = ServletUtil.createSafeUrl(request, url);
+        
+        final StringBuilder sb = new StringBuilder();
+        sb.append("<a href=\"");
+        sb.append(safeUrl);
         sb.append("\">");
         sb.append(paoName);
         sb.append("</a>");
