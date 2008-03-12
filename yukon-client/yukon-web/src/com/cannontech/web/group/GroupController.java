@@ -303,16 +303,12 @@ public class GroupController extends MultiActionController {
      */
     private void setIconCls(ExtTreeNode node, DeviceGroup deviceGroup) {
         
-        String iconCls = "";
-        
         for (SystemGroupEnum systemGroup : SystemGroupEnum.values()) {
             if ((deviceGroup.getFullName() + "/").equals(systemGroup.getFullPath())) {
-                iconCls = systemGroup.toString();
+                node.setAttribute("iconCls", systemGroup.toString());
                 break;
             }
         }
-        
-        node.setAttribute("iconCls", iconCls);
     }
     
     private DeviceGroupHierarchy createHierarchy(DeviceGroup root, MapQueue<DeviceGroup, DeviceGroup> childList) {
