@@ -69,7 +69,7 @@ public FDRTranslation( Integer pointID, String directionType, String interfaceTy
 public void add() throws java.sql.SQLException {
 	Object addValues[]= { getPointID(), getDirectionType(), getInterfaceType(), getDestination(), getTranslation() };
 
-	add( this.TABLE_NAME, addValues );
+	add( TABLE_NAME, addValues );
 }
 /**
  * delete method comment.
@@ -137,7 +137,7 @@ public static String setTranslationValue( String translation, String newVal, Str
 /**
  * This method was created in VisualAge.
  */
-public static java.util.Vector getFDRTranslations(Integer pointID) {
+public static java.util.Vector<FDRTranslation> getFDRTranslations(Integer pointID) {
 	
 	return getFDRTranslations(pointID, com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
 }
@@ -145,9 +145,9 @@ public static java.util.Vector getFDRTranslations(Integer pointID) {
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer
  */
-public static java.util.Vector getFDRTranslations(Integer pointID, String databaseAlias) 
+public static java.util.Vector<FDRTranslation> getFDRTranslations(Integer pointID, String databaseAlias) 
 {
-	java.util.Vector returnVector = new java.util.Vector(10);
+	java.util.Vector<FDRTranslation> returnVector = new java.util.Vector<FDRTranslation>(10);
 	java.sql.Connection conn = null;
 	java.sql.PreparedStatement pstmt = null;
 	java.sql.ResultSet rset = null;

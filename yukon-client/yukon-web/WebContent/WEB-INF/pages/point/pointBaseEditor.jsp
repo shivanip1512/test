@@ -71,15 +71,7 @@
 	    <f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Decimal_Digits" value="Decimal Digits: "/>
 		<x:selectOneMenu id="Decimal_Digits" value="#{ptEditorForm.pointBase.pointUnit.decimalPlaces}" >
-			<f:selectItem itemValue="0" value="0"/>
-			<f:selectItem itemValue="1" value="1"/>
-			<f:selectItem itemValue="2" value="2"/>
-			<f:selectItem itemValue="3" value="3"/>
-			<f:selectItem itemValue="4" value="4"/>
-			<f:selectItem itemValue="5" value="5"/>
-			<f:selectItem itemValue="6" value="6"/>
-			<f:selectItem itemValue="7" value="7"/>
-			<f:selectItem itemValue="8" value="8"/>
+			<f:selectItems value="#{ptEditorForm.decimalDigits}"/>
 		</x:selectOneMenu>
 		<f:verbatim></fieldset></f:verbatim>
     </f:subview>

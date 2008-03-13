@@ -76,8 +76,5 @@
 	    </x:dataTable>
 		<f:verbatim></fieldset></f:verbatim>
 	</h:column>
-
 	</h:panelGrid>
-
-
 </f:subview>

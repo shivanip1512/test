@@ -32,7 +32,7 @@ public abstract class DBEditorForm
     private DBPersistent dbPersistent = null;
 
 	//contains: Key:"TabName", Value:Boolean
-	private Map visibleTabs = new HashMap(16);
+	private Map<String, Boolean> visibleTabs = new HashMap<String, Boolean>(16);
 
 	//title of our editor panel
 	private String editorTitle = "Database";
@@ -289,7 +289,7 @@ public abstract class DBEditorForm
 		dbPersistent = persistent;
 	}
 
-	public Map getVisibleTabs() {
+	public Map<String, Boolean> getVisibleTabs() {
 		return visibleTabs;
 	}
 

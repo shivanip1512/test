@@ -11,22 +11,16 @@ import com.cannontech.database.db.point.PointUnit;
  * A point editor for PointLimits. The Point must be of a Scalar point type.
  * @author ryan
  */
-public class PointLimitEntry
-{
+public class PointLimitEntry {
 	private ScalarPoint scalarPoint = null;
-	
 
-
-	public PointLimitEntry( ScalarPoint pBase )
-	{
+	public PointLimitEntry( ScalarPoint pBase ) {
 		super();
-		
-		if( pBase == null )
-			throw new IllegalArgumentException("PointLimitEntry can not be created with a NULL PointBase reference");
-		
+		if( pBase == null ) { 
+		    throw new IllegalArgumentException("PointLimitEntry can not be created with a NULL PointBase reference");
+		}
 		scalarPoint = pBase;
 	}
-
 
 	/**
 	 * The instance of the underlying base object
@@ -43,43 +37,30 @@ public class PointLimitEntry
 		if(ev == null || ev.getNewValue() == null) return;
 
 		Boolean isChecked = (Boolean)ev.getNewValue();
-		
-		Integer limitNum =
-			ev.getComponent().getId().equalsIgnoreCase("Limit_One") 
-			? new Integer(1) :
-				(ev.getComponent().getId().equalsIgnoreCase("Limit_Two") 
-				? new Integer(2) : null );
+		Integer limitNum = ev.getComponent().getId().equalsIgnoreCase("Limit_One") 
+			? new Integer(1) : (ev.getComponent().getId().equalsIgnoreCase("Limit_Two") 
+            ? new Integer(2) : null );
 
 		//not a recognized PointNumber key, lets scat
-		if( limitNum == null )
+		if( limitNum == null ) {
 			return;
-
+		}
 
 		if( isChecked.booleanValue() ) {
 			PointLimit pointLimit = new PointLimit();
 			pointLimit.setLimitNumber(limitNum);
-			getScalarPoint().getPointLimitsMap().put(
-				limitNum,
-				pointLimit ); //use the default constructor since no values are set
+			//use the default constructor since no values are set
+			getScalarPoint().getPointLimitsMap().put( limitNum, pointLimit ); 
+		} else {
+		    getScalarPoint().getPointLimitsMap().remove( limitNum );
 		}
-		else {
-			getScalarPoint().getPointLimitsMap().remove( limitNum );
-		}
-
 	}
 
-	/**
-	 * @return
-	 */
 	public boolean isEditingLimitOne() {		
 		return getScalarPoint().getPointLimitsMap().containsKey( new Integer(1) );
 	}
 
-	/**
-	 * @return
-	 */
 	public boolean isEditingLimitTwo() {
-		
 		return getScalarPoint().getPointLimitsMap().containsKey( new Integer(2) );
 	}
 
@@ -88,42 +69,33 @@ public class PointLimitEntry
 		if(ev == null || ev.getNewValue() == null) return;
 
 		Boolean isChecked = (Boolean)ev.getNewValue();
-		
 		PointUnit pUnit = getScalarPoint().getPointUnit();
 
 		if( ev.getComponent().getId().equalsIgnoreCase("Reasonability_High") ) {
-			if( isChecked.booleanValue() )
+			if( isChecked.booleanValue() ) {
 				pUnit.setHighReasonabilityLimit( new Double(0.0) );
-			else
+			}else {
 				pUnit.setHighReasonabilityLimit( new Double(CtiUtilities.INVALID_MAX_DOUBLE) );
-		} 
-		else if( ev.getComponent().getId().equalsIgnoreCase("Reasonability_Low") ) {
-			if( isChecked.booleanValue() )
+			}
+		} else if( ev.getComponent().getId().equalsIgnoreCase("Reasonability_Low") ) {
+			if( isChecked.booleanValue() ) {
 				pUnit.setLowReasonabilityLimit( new Double(0.0) );
-			else
+			}else {
 				pUnit.setLowReasonabilityLimit( new Double(CtiUtilities.INVALID_MIN_DOUBLE) );
+			}
 		} 
-
-
 	}
 
 	public boolean isHighReasonabilityValid() {
-		return getScalarPoint().getPointUnit().getHighReasonabilityLimit().doubleValue()
-			 < CtiUtilities.INVALID_MAX_DOUBLE;
+		return getScalarPoint().getPointUnit().getHighReasonabilityLimit().doubleValue() < CtiUtilities.INVALID_MAX_DOUBLE;
 	}
 
 	public boolean isLowReasonabilityValid() {
-		return getScalarPoint().getPointUnit().getLowReasonabilityLimit().doubleValue()
-			 > CtiUtilities.INVALID_MIN_DOUBLE;
+		return getScalarPoint().getPointUnit().getLowReasonabilityLimit().doubleValue() > CtiUtilities.INVALID_MIN_DOUBLE;
 	}
-
-
 
 	public void setEditingLimitOne( boolean val ) {}
 	public void setEditingLimitTwo( boolean val ) {}
-
 	public void setHighReasonabilityValid( boolean val ) {}
 	public void setLowReasonabilityValid( boolean val ) {}
-
-
 }

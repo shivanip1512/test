@@ -59,9 +59,9 @@
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Limit_One_High" value="High: " title="The upper value for this limit (used for an alarming condition)"
-			rendered="#{not empty ptEditorForm.pointBase.limitOne}" />
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
 		<x:inputText id="Limit_One_High"
-			rendered="#{not empty ptEditorForm.pointBase.limitOne}"
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
 			value="#{ptEditorForm.pointBase.limitOne.highLimit}" 
 			required="true" maxlength="16" styleClass="char16Label" >
 				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
@@ -69,9 +69,9 @@
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Limit_One_Low" value="Low: " title="The lower value for this limit (used for an alarming condition)"
-			rendered="#{not empty ptEditorForm.pointBase.limitOne}" />
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
 		<x:inputText id="Limit_One_Low"
-			rendered="#{not empty ptEditorForm.pointBase.limitOne}"
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
 			value="#{ptEditorForm.pointBase.limitOne.lowLimit}" 
 			required="true" maxlength="16" styleClass="char16Label" >
 				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
@@ -79,15 +79,15 @@
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Limit_One_Duration" value="Duration: " title="The number of seconds the limit must be violated before an alarm is generated"
-			rendered="#{not empty ptEditorForm.pointBase.limitOne}" />
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
 		<x:inputText id="Limit_One_Duration"
-			rendered="#{not empty ptEditorForm.pointBase.limitOne}"
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
 			value="#{ptEditorForm.pointBase.limitOne.limitDuration}" 
 			required="true" maxlength="8" styleClass="char8Label" >
 				<f:validateLongRange minimum="0" maximum="99999999" />
 		</x:inputText>
 		<x:outputText id="Limit_One_Secs" value="secs."
-			rendered="#{not empty ptEditorForm.pointBase.limitOne}" />
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
 
 		</h:column>
 
@@ -102,9 +102,9 @@
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Limit_Two_High" value="High: " title="The upper value for this limit (used for an alarming condition)"
-			rendered="#{not empty ptEditorForm.pointBase.limitTwo}" />
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
 		<x:inputText id="Limit_Two_High"
-			rendered="#{not empty ptEditorForm.pointBase.limitTwo}"
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
 			value="#{ptEditorForm.pointBase.limitTwo.highLimit}" 
 			required="true" maxlength="16" styleClass="char16Label" >
 				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
@@ -112,9 +112,9 @@
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Limit_Two_Low" value="Low: " title="The lower value for this limit (used for an alarming condition)"
-			rendered="#{not empty ptEditorForm.pointBase.limitTwo}" />
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
 		<x:inputText id="Limit_Two_Low"
-			rendered="#{not empty ptEditorForm.pointBase.limitTwo}"
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
 			value="#{ptEditorForm.pointBase.limitTwo.lowLimit}" 
 			required="true" maxlength="16" styleClass="char16Label" >
 				<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
@@ -122,15 +122,15 @@
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Limit_Two_Duration" value="Duration: " title="The number of seconds the limit must be violated before an alarm is generated"
-			rendered="#{not empty ptEditorForm.pointBase.limitTwo}" />
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
 		<x:inputText id="Limit_Two_Duration"
-			rendered="#{not empty ptEditorForm.pointBase.limitTwo}"
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
 			value="#{ptEditorForm.pointBase.limitTwo.limitDuration}" 
 			required="true" maxlength="8" styleClass="char8Label" >
 				<f:validateLongRange minimum="0" maximum="99999999" />
 		</x:inputText>
 		<x:outputText id="Limit_Two_Secs" value="secs."
-			rendered="#{not empty ptEditorForm.pointBase.limitTwo}" />
+			rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
 
 		</h:column>
 

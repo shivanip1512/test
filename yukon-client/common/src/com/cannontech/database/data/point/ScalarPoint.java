@@ -13,7 +13,7 @@ import com.cannontech.database.db.point.PointUnit;
 public class ScalarPoint extends PointBase {
 
 	//contains <Integer:limitNumber, PointLimit>
-	private HashMap pointLimitsMap = null;
+	private HashMap<Integer, PointLimit> pointLimitsMap = null;
 
 	private PointUnit pointUnit = null;
 
@@ -31,9 +31,10 @@ public void add() throws java.sql.SQLException {
 
 	getPointUnit().add();
 
-	Iterator it = getPointLimitsMap().values().iterator();
-	while( it.hasNext() )
-		((PointLimit)it.next()).add();
+	Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
+	while( it.hasNext() ) {
+		it.next().add();
+	}
 }
 
 /**
@@ -43,9 +44,9 @@ public void add() throws java.sql.SQLException {
  */
 public void addPartial() throws java.sql.SQLException {
 	
-	Iterator it = getPointLimitsMap().values().iterator();
+	Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
 	while( it.hasNext() )
-		((PointLimit)it.next()).add();
+		it.next().add();
 
 	getPointUnit().add();
 	super.addPartial();
@@ -75,10 +76,10 @@ public void deletePartial() throws java.sql.SQLException {
 /**
  * A map of PointLimits
  */
-public HashMap getPointLimitsMap() {
+public HashMap<Integer, PointLimit> getPointLimitsMap() {
 
 	if( pointLimitsMap == null )
-		pointLimitsMap = new HashMap();
+		pointLimitsMap = new HashMap<Integer, PointLimit>();
 	
 	return pointLimitsMap;
 }
@@ -88,7 +89,7 @@ public HashMap getPointLimitsMap() {
  * if no limit is set.
  */
 public PointLimit getLimitOne() {
-	return (PointLimit)getPointLimitsMap().get( new Integer(1) );
+	return getPointLimitsMap().get( new Integer(1) );
 }
 
 /**
@@ -96,7 +97,7 @@ public PointLimit getLimitOne() {
  * if no limit is set.
  */
 public PointLimit getLimitTwo() {
-	return (PointLimit)getPointLimitsMap().get( new Integer(2) );
+	return getPointLimitsMap().get( new Integer(2) );
 }
 
 /**
@@ -130,9 +131,9 @@ public void retrieve() throws java.sql.SQLException {
 	{		//not necessarily an error 	
 	}
 
-	Iterator it = getPointLimitsMap().values().iterator();
+	Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
 	while( it.hasNext() ) {
-		PointLimit o = (PointLimit)it.next();
+		PointLimit o = it.next();
 		o.setDbConnection( getDbConnection() );
 		o.retrieve();
 		o.setDbConnection(null);
@@ -151,9 +152,9 @@ public void setDbConnection(java.sql.Connection conn)
 	getPointUnit().setDbConnection(conn);
 
 
-	Iterator it = getPointLimitsMap().values().iterator();
+	Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
 	while( it.hasNext() )
-		((PointLimit)it.next()).setDbConnection(conn);		
+		it.next().setDbConnection(conn);		
 }
 
 /**
@@ -165,16 +166,16 @@ public void setPointID(Integer pointID) {
 	
 	getPointUnit().setPointID(pointID);
 
-	Iterator it = getPointLimitsMap().values().iterator();
+	Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
 	while( it.hasNext() )
-		((PointLimit)it.next()).setPointID(pointID);
+		it.next().setPointID(pointID);
 }
 
 /**
  * This method was created in VisualAge.
  * @param newValue java.util.Vector
  */
-public void setPointLimitsMap(HashMap newValue) {
+public void setPointLimitsMap(HashMap<Integer, PointLimit> newValue) {
 	this.pointLimitsMap = newValue;
 }
 /**
@@ -196,9 +197,9 @@ public void update() throws java.sql.SQLException {
 
 	PointLimit.deletePointLimits( getPoint().getPointID(), getDbConnection() );
 	
-	Iterator it = getPointLimitsMap().values().iterator();
+	Iterator<PointLimit> it = getPointLimitsMap().values().iterator();
 	while( it.hasNext() ) {
-		PointLimit pointLimit = ((PointLimit)it.next());
+		PointLimit pointLimit = it.next();
 		pointLimit.setPointID(getPoint().getPointID());
 		pointLimit.add();
 	}

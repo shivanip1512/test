@@ -58,12 +58,13 @@ public class PointForm extends DBEditorForm
     private SelectItem[] emailNotifcations = null;
     private SelectItem[] stateGroups = null;
     private SelectItem[] initialStates = null;
+    private SelectItem[] decimalDigits = null;
     private SelectItem[] notifGroups = null;
     private SelectItem[] alarmCategories = null;
     
     private boolean isArchiveInterEnabled = false;
     private boolean isCalcRateEnabled = false;
-    private List alarmTableEntries = null;
+    private List<AlarmTableEntry> alarmTableEntries = null;
         
     private static SelectItem[] logicalGroups = null;
     private static SelectItem[] uofms = null;
@@ -86,12 +87,9 @@ public class PointForm extends DBEditorForm
     //init our static data with real values
     static {
         logicalGroups = new SelectItem[PointLogicalGroups.LGRP_STRS.length];
-        for( int i = 0; i < PointLogicalGroups.LGRP_STRS.length; i++ )
-            logicalGroups[i] =  //value, label
-                new SelectItem( PointLogicalGroups.LGRP_STRS[i], PointLogicalGroups.LGRP_STRS[i] );         
-
-
-        //getArchiveIntervalComboBox().setSelectedItem("5 minute");
+        for( int i = 0; i < PointLogicalGroups.LGRP_STRS.length; i++ ) {
+            logicalGroups[i] = new SelectItem( PointLogicalGroups.LGRP_STRS[i], PointLogicalGroups.LGRP_STRS[i] );         
+        }
     }
 
     public PointForm()
@@ -105,18 +103,34 @@ public class PointForm extends DBEditorForm
     public SelectItem[] getInitialStates() {
         
         if( initialStates == null ) {
-            initialStates = new SelectItem[]
-                { new SelectItem(new Integer(0), CtiUtilities.STRING_NONE) };
+            initialStates = new SelectItem[] { new SelectItem(new Integer(0), CtiUtilities.STRING_NONE) };
         }
 
         return initialStates;
+    }
+    
+    public SelectItem[] getDecimalDigits() {
+        if( decimalDigits == null ) {
+            decimalDigits = new SelectItem[] { 
+                    new SelectItem(new Integer(0), "0"),
+                    new SelectItem(new Integer(1), "1"),
+                    new SelectItem(new Integer(2), "2"),
+                    new SelectItem(new Integer(3), "3"),
+                    new SelectItem(new Integer(4), "4"),
+                    new SelectItem(new Integer(5), "5"),
+                    new SelectItem(new Integer(6), "6"),
+                    new SelectItem(new Integer(7), "7"),
+                    new SelectItem(new Integer(8), "8")};
+        }
+
+        return decimalDigits;
     }
 
     public SelectItem[] getLogicalGroups() {        
         return logicalGroups;
     }
 
-    public SelectItem[] getTimeInterval() {     
+    public SelectItem[] getTimeInterval() {
         return CBCSelectionLists.TIME_INTERVAL;
     }
 
@@ -127,7 +141,7 @@ public class PointForm extends DBEditorForm
         return CBCSelectionLists.getTimeSubList(60);
     }
 
-    public List getAlarmTableEntries() {        
+    public List<AlarmTableEntry> getAlarmTableEntries() {      
         return alarmTableEntries;
     }
 
@@ -135,23 +149,15 @@ public class PointForm extends DBEditorForm
      * Returns all the UofM as strings in the system
      *
      */
-    public SelectItem[] getUofMs() {        
-
-        if( uofms == null ) {
-
-                List allUnitMeasures = DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
-                
-                uofms = new SelectItem[ allUnitMeasures.size() ];
-                for( int i=0; i<allUnitMeasures.size(); i++ ) {
-                    
-                    LiteUnitMeasure lu = (LiteUnitMeasure)allUnitMeasures.get(i);
-                    uofms[i] = new SelectItem(  //value, label
-                            new Integer(lu.getUomID()),
-                            lu.getUnitMeasureName() );
-                
+    public SelectItem[] getUofMs() {
+        if (uofms == null) {
+            List<LiteUnitMeasure> allUnitMeasures = DaoFactory.getUnitMeasureDao().getLiteUnitMeasures();
+            uofms = new SelectItem[allUnitMeasures.size()];
+            for (int i = 0; i < allUnitMeasures.size(); i++) {
+                LiteUnitMeasure lu = allUnitMeasures.get(i);
+                uofms[i] = new SelectItem(new Integer(lu.getUomID()),lu.getUnitMeasureName());
             }
         }
-        
         return uofms;
     }
 
@@ -163,16 +169,16 @@ public class PointForm extends DBEditorForm
 
         if( alarmCategories == null ) {
 
-                List allAlarmStates = DaoFactory.getAlarmCatDao().getAlarmCategories();                
-                alarmCategories = new SelectItem[ allAlarmStates.size() ];
-                for( int i=0; i < allAlarmStates.size(); i++ ) {
+            List<LiteAlarmCategory> allAlarmStates = DaoFactory.getAlarmCatDao().getAlarmCategories();                
+            alarmCategories = new SelectItem[ allAlarmStates.size() ];
+            for( int i=0; i < allAlarmStates.size(); i++ ) {
 
-                    LiteAlarmCategory lac = (LiteAlarmCategory)allAlarmStates.get(i);
-                    alarmCategories[i] = new SelectItem(  //value, label
-                            lac.getCategoryName(),
-                            lac.getCategoryName() );
-                }
+                LiteAlarmCategory lac = allAlarmStates.get(i);
+                alarmCategories[i] = new SelectItem(  //value, label
+                        lac.getCategoryName(),
+                        lac.getCategoryName() );
             }
+        }
         
         return alarmCategories;
     }
@@ -181,7 +187,7 @@ public class PointForm extends DBEditorForm
      * Return all the contacts the have at least 1 email.
      * @return
      */ 
-public SelectItem[] getEmailNotifcations() {
+    public SelectItem[] getEmailNotifcations() {
         
         if( emailNotifcations == null ) {           
             
@@ -189,9 +195,9 @@ public SelectItem[] getEmailNotifcations() {
             
             synchronized( cache ) {
                 
-                List contacts = cache.getAllContacts();
+                List<LiteContact> contacts = cache.getAllContacts();
 
-                ArrayList emailList = new ArrayList();
+                ArrayList<SelectItem> emailList = new ArrayList<SelectItem>();
                 emailList.add( 
                     new SelectItem(
                         new Integer(LiteContact.NONE_LITE_CONTACT.getContactID()),
@@ -199,7 +205,7 @@ public SelectItem[] getEmailNotifcations() {
                 
                 for( int i = 0; i < contacts.size(); i++ ) {
 
-                    LiteContact contact = (LiteContact)contacts.get(i);
+                    LiteContact contact = contacts.get(i);
                     int cntNotifID = findEmailContact(contact);
 
                     if( cntNotifID != CtiUtilities.NONE_ZERO_ID )
@@ -210,8 +216,7 @@ public SelectItem[] getEmailNotifcations() {
                 }
 
                 emailNotifcations = new SelectItem[ emailList.size() ];
-                emailNotifcations =
-                    (SelectItem[])emailList.toArray( emailNotifcations );
+                emailNotifcations = emailList.toArray( emailNotifcations );
             }           
         }
 
@@ -230,11 +235,11 @@ public SelectItem[] getEmailNotifcations() {
             
             synchronized( cache ) {
                 
-                List liteNotifGrps = cache.getAllContactNotificationGroupsWithNone();
+                List<LiteNotificationGroup> liteNotifGrps = cache.getAllContactNotificationGroupsWithNone();
 
                 notifGroups = new SelectItem[ liteNotifGrps.size() ];
                 for( int i = 0; i < liteNotifGrps.size(); i++ ) {
-                    LiteNotificationGroup liteGroup = (LiteNotificationGroup)liteNotifGrps.get(i);
+                    LiteNotificationGroup liteGroup = liteNotifGrps.get(i);
                     notifGroups[i] = 
                         new SelectItem(
                             new Integer(liteGroup.getNotificationGroupID()),
@@ -258,7 +263,7 @@ public SelectItem[] getEmailNotifcations() {
             
             stateGroups = new SelectItem[ allStateGroups.length ];
             for( int i = 0; i < allStateGroups.length; i++) {
-                LiteStateGroup grp = (LiteStateGroup)allStateGroups[i];
+                LiteStateGroup grp = allStateGroups[i];
 
                 stateGroups[i] = new SelectItem(
                         new Integer(grp.getStateGroupID()),
@@ -278,7 +283,7 @@ public SelectItem[] getEmailNotifcations() {
             for( int j = 0; j < contact.getLiteContactNotifications().size(); j++  )
             {   
                 LiteContactNotification ltCntNotif = 
-                        (LiteContactNotification)contact.getLiteContactNotifications().get(j);
+                        contact.getLiteContactNotifications().get(j);
                         
                 if( ltCntNotif.getNotificationCategoryID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL )
                 {
@@ -514,8 +519,7 @@ public SelectItem[] getEmailNotifcations() {
         if( ev == null || ev.getNewValue() == null ) return;
         
         String newVal = ev.getNewValue().toString();
-        isCalcRateEnabled =
-            newVal.equalsIgnoreCase("On Timer") || newVal.equalsIgnoreCase("On Timer+Change");
+        isCalcRateEnabled = newVal.equalsIgnoreCase("On Timer") || newVal.equalsIgnoreCase("On Timer+Change");
     }
 
 
@@ -527,54 +531,46 @@ public SelectItem[] getEmailNotifcations() {
 
         int ptType = PointTypes.getType( getPointBase().getPoint().getPointType() );
         
-        ArrayList notifEntries = new ArrayList(32);
-        java.util.List allAlarmStates = DefaultDatabaseCache.getInstance().getAllAlarmCategories();
+        ArrayList<AlarmTableEntry> notifEntries = new ArrayList<AlarmTableEntry>(32);
+        List<LiteAlarmCategory> allAlarmStates = DefaultDatabaseCache.getInstance().getAllAlarmCategories();
         //be sure we have a 32 character string
         String alarmStates =
            ( getPointBase().getPointAlarming().getAlarmStates().length() != PointAlarming.ALARM_STATE_COUNT
              ? PointAlarming.DEFAULT_ALARM_STATES
              : getPointBase().getPointAlarming().getAlarmStates() );
 
-        String excludeNotifyStates =
-            getPointBase().getPointAlarming().getExcludeNotifyStates();
+        String excludeNotifyStates = getPointBase().getPointAlarming().getExcludeNotifyStates();
 
         //this drives what list of strings we will put into our table
         String[] alarm_cats = IAlarmDefs.OTHER_ALARM_STATES;
-        if( ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT )
+        if( ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT ) {
             alarm_cats = IAlarmDefs.STATUS_ALARM_STATES;
-                
-        LiteStateGroup stateGroup = (LiteStateGroup)
-            DaoFactory.getStateDao().getLiteStateGroup( getPointBase().getPoint().getStateGroupID().intValue() );
+        }
+        LiteStateGroup stateGroup = DaoFactory.getStateDao().getLiteStateGroup( getPointBase().getPoint().getStateGroupID().intValue() );
 
         String[] stateNames = new String[stateGroup.getStatesList().size()];
-        for( int j = 0; j < stateGroup.getStatesList().size(); j++ )
+        for( int j = 0; j < stateGroup.getStatesList().size(); j++ ) {
             stateNames[j] = stateGroup.getStatesList().get(j).toString();
-        
+        }
         // insert all the predefined states into the table
         int i = 0;
-        for( i = 0; i < alarm_cats.length; i++ )
-        {
+        for( i = 0; i < alarm_cats.length; i++ ) {
             AlarmTableEntry entry = new AlarmTableEntry();
-            setAlarmGenNotif( entry, 
-                    (int)alarmStates.charAt(i), allAlarmStates,
-                    excludeNotifyStates.toUpperCase().charAt(i) );
+            setAlarmGenNotif( entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i) );
                 
             entry.setCondition( alarm_cats[i] );
             notifEntries.add( entry );
         }
             
-        if( ptType == PointTypes.STATUS_POINT
-            || ptType == PointTypes.CALCULATED_STATUS_POINT ) {
+        if( ptType == PointTypes.STATUS_POINT || ptType == PointTypes.CALCULATED_STATUS_POINT ) {
 
             for( int j = 0; j < stateNames.length; j++, i++ ) {
-                if( i >= alarmStates.length() )
+                if( i >= alarmStates.length() ) {
                     throw new ArrayIndexOutOfBoundsException("Trying to get alarmStates["+i+"] while alarmStates.length()==" + alarmStates.length() +
                     ", to many states for Status point " + getPointBase().getPoint().getPointName() + " defined.");
-                            
+                }
                 AlarmTableEntry entry = new AlarmTableEntry();
-                setAlarmGenNotif( entry,
-                        (int)alarmStates.charAt(i), allAlarmStates,
-                        excludeNotifyStates.toUpperCase().charAt(i) );
+                setAlarmGenNotif( entry, alarmStates.charAt(i), allAlarmStates, excludeNotifyStates.toUpperCase().charAt(i) );
                     
                 entry.setCondition( stateNames[j] );
                 notifEntries.add( entry );
@@ -584,13 +580,13 @@ public SelectItem[] getEmailNotifcations() {
         alarmTableEntries = notifEntries;
     }
     
-    private void setAlarmGenNotif( AlarmTableEntry entry, int alarmStateId, List allAlarmStates, char gen ) {
+    private void setAlarmGenNotif( AlarmTableEntry entry, int alarmStateId, List<LiteAlarmCategory> allAlarmStates, char gen ) {
 
-        if( (alarmStateId-1) < allAlarmStates.size() )
-            entry.setGenerate( ((LiteAlarmCategory)allAlarmStates.get( (int)(alarmStateId-1) )).getCategoryName() );
-        else
-            entry.setGenerate( ((LiteAlarmCategory)allAlarmStates.get(0)).getCategoryName() );
-        
+        if( (alarmStateId-1) < allAlarmStates.size() ) {
+            entry.setGenerate( allAlarmStates.get( (alarmStateId-1) ).getCategoryName() );
+        }else {
+            entry.setGenerate( allAlarmStates.get(0).getCategoryName() );
+        }
         entry.setExcludeNotify( PointAlarming.getExcludeNotifyString(gen) );
     }
 
@@ -625,8 +621,7 @@ public SelectItem[] getEmailNotifcations() {
         int i = 0;
         for( i = 0; i < getAlarmTableEntries().size(); i++ ) {
             
-            AlarmTableEntry entry =
-                (AlarmTableEntry)getAlarmTableEntries().get(i);
+            AlarmTableEntry entry = getAlarmTableEntries().get(i);
             
             alarmStates += (char)DaoFactory.getAlarmCatDao().getAlarmCategoryId( entry.getGenerate() );           
             exclNotify += PointAlarming.getExcludeNotifyChar( entry.getExcludeNotify() );

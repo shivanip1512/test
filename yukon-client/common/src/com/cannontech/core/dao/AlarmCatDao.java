@@ -18,6 +18,6 @@ public interface AlarmCatDao {
     public abstract int getAlarmCategoryId(String categoryName);
 
     // method to return a List of LiteAlarmCategories
-    public abstract List getAlarmCategories();
+    public abstract List<LiteAlarmCategory> getAlarmCategories();
 
 }
