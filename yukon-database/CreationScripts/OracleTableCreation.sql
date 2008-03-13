@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/12/2008 10:44:56 AM                        */
+/* Created on:     3/13/2008 4:03:31 PM                         */
 /*==============================================================*/
 
 
@@ -2660,7 +2660,7 @@ insert into DeviceGroup values (8,'Flags',1,'NOEDIT_MOD','STATIC');
 insert into DeviceGroup values (9,'Inventory',8,'NOEDIT_MOD','STATIC');
 insert into DeviceGroup values (10,'DisconnectedStatus',8,'NOEDIT_MOD','STATIC');
 insert into DeviceGroup values (11,'UsageMonitoring',8,'NOEDIT_MOD','STATIC');
-INSERT INTO DeviceGroup values (12,'System',0,'NOEDIT_MOD','STATIC');
+INSERT INTO DeviceGroup values (12,'System',0,'NOEDIT_NOMOD','STATIC');
 INSERT INTO DeviceGroup values (13,'Routes',12,'NOEDIT_NOMOD','ROUTE');
 INSERT INTO DeviceGroup values (14,'Device Types',12,'NOEDIT_NOMOD','DEVICETYPE'); 
 INSERT INTO DeviceGroup values (15,'Scanning Meters',12,'NOEDIT_NOMOD','STATIC'); 
@@ -3134,35 +3134,38 @@ create table DYNAMICBILLINGFIELD  (
    FieldOrder           NUMBER                          not null,
    FieldFormat          VARCHAR2(50),
    MaxLength            NUMBER                          not null,
+   PadText              VARCHAR2(50)                    not null,
+   PadSide              VARCHAR2(50)                    not null,
+   ReadingType          VARCHAR2(50)                    not null,
    constraint PK_DYNAMICBILLINGFIELD primary key (id)
 );
 
 /* STANDARD */
-insert into DynamicBillingField values(1, 31,'Plain Text', 0, 'M', 0);
-insert into DynamicBillingField values(2, 31, 'meterNumber', 1, '', 0);
-insert into DynamicBillingField values(3, 31, 'totalConsumption - reading',2,'#####', 0);
-insert into DynamicBillingField values(4, 31, 'totalConsumption - timestamp', 3, 'HH:mm', 0);
-insert into DynamicBillingField values(5, 31, 'totalConsumption - timestamp', 4, 'MM/dd/yyyy', 0);
-insert into DynamicBillingField values(6, 31, 'totalPeakDemand - reading', 5, '##0.000', 0);
-insert into DynamicBillingField values(7, 31, 'totalPeakDemand - timestamp', 6, 'HH:mm', 0);
-insert into DynamicBillingField values(8, 31, 'totalPeakDemand - timestamp', 7, 'MM/dd/yyyy', 0);
+insert into DynamicBillingField values(1, 31,'Plain Text', 0, 'M', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(2, 31, 'meterNumber', 1, '', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(3, 31, 'totalConsumption - reading',2,'#####', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(4, 31, 'totalConsumption - timestamp', 3, 'HH:mm', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(5, 31, 'totalConsumption - timestamp', 4, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(6, 31, 'totalPeakDemand - reading', 5, '##0.000', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(7, 31, 'totalPeakDemand - timestamp', 6, 'HH:mm', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(8, 31, 'totalPeakDemand - timestamp', 7, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
 
 /* SimpleTOU */
-insert into DynamicBillingField values(10, 21, 'meterNumber', 0, '', 0);
-insert into DynamicBillingField values(11, 21, 'totalConsumption - reading' ,1, '#####', 0);
-insert into DynamicBillingField values(12, 21, 'totalConsumption - timestamp', 2, 'HH:mm', 0);
-insert into DynamicBillingField values(13, 21, 'totalConsumption - timestamp', 3, 'MM/dd/yyyy', 0);
-insert into DynamicBillingField values(14, 21, 'totalPeakDemand - reading', 4, '##0.000', 0);
-insert into DynamicBillingField values(15, 21, 'totalPeakDemand - timestamp', 5, 'HH:mm', 0);
-insert into DynamicBillingField values(16, 21, 'totalPeakDemand - timestamp', 6, 'MM/dd/yyyy', 0);
-insert into DynamicBillingField values(17, 21, 'rateAConsumption - reading', 7, '#####', 0);
-insert into DynamicBillingField values(18, 21, 'rateADemand - reading', 8, '##0.000', 0);
-insert into DynamicBillingField values(19, 21, 'rateADemand - timestamp', 9, 'HH:mm', 0);
-insert into DynamicBillingField values(20, 21, 'rateADemand - timestamp', 10, 'MM/dd/yyyy', 0);
-insert into DynamicBillingField values(21, 21, 'rateBConsumption - reading', 11, '#####', 0);
-insert into DynamicBillingField values(22, 21, 'rateBDemand - reading', 12, '##0.000', 0);
-insert into DynamicBillingField values(23, 21, 'rateBDemand - timestamp', 13, 'HH:mm', 0);
-insert into DynamicBillingField values(24, 21, 'rateBDemand - timestamp', 14, 'MM/dd/yyyy', 0); 
+insert into DynamicBillingField values(10, 21, 'meterNumber', 0, '', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(11, 21, 'totalConsumption - reading' ,1, '#####', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(12, 21, 'totalConsumption - timestamp', 2, 'HH:mm', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(13, 21, 'totalConsumption - timestamp', 3, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(14, 21, 'totalPeakDemand - reading', 4, '##0.000', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(15, 21, 'totalPeakDemand - timestamp', 5, 'HH:mm', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(16, 21, 'totalPeakDemand - timestamp', 6, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(17, 21, 'rateAConsumption - reading', 7, '#####', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(18, 21, 'rateADemand - reading', 8, '##0.000', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(19, 21, 'rateADemand - timestamp', 9, 'HH:mm', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(20, 21, 'rateADemand - timestamp', 10, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(21, 21, 'rateBConsumption - reading', 11, '#####', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(22, 21, 'rateBDemand - reading', 12, '##0.000', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(23, 21, 'rateBDemand - timestamp', 13, 'HH:mm', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(24, 21, 'rateBDemand - timestamp', 14, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC'); 
 
 /*==============================================================*/
 /* Table: DYNAMICBILLINGFORMAT                                  */

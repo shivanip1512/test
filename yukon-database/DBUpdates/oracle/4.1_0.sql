@@ -97,6 +97,20 @@ SET Permission = 'EDIT_MOD'
 WHERE Permission = 'N';
 /* End YUK-5337 */
 
+/* Start YUK-5454 */
+ALTER TABLE DYNAMICBILLINGFIELD ADD PadText varchar(50);
+UPDATE DYNAMICBILLINGFIELD SET PadText = ' ';
+ALTER TABLE DYNAMICBILLINGFIELD modify PadText varchar(50) not null;
+
+ALTER TABLE DYNAMICBILLINGFIELD ADD PadSide varchar(50);
+UPDATE DYNAMICBILLINGFIELD SET PadSide = 'none';
+ALTER TABLE DYNAMICBILLINGFIELD modify PadSide varchar(50) not null;
+
+ALTER TABLE DYNAMICBILLINGFIELD ADD ReadingType varchar(50);
+UPDATE DYNAMICBILLINGFIELD SET ReadingType = 'ELECTRIC';
+ALTER TABLE DYNAMICBILLINGFIELD modify ReadingType varchar(50) not null;
+/* End YUK-5454 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
