@@ -830,12 +830,41 @@ CtiRequestMsg* CtiLMGroupBase::createLatchingRequestMsg(bool do_shed, int priori
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime()
-        << " - Sending latch command, LM Group: "
+        << " - Sending latch request, LM Group: "
         << getPAOName() << ", control string: "
         << control_str << ", priority: "
         << priority << endl;
     }
     return req_msg;
+}
+
+/*-------------------------------------------------------------------------
+    createLatchingCommandMsg
+
+    .
+--------------------------------------------------------------------------*/
+CtiCommandMsg* CtiLMGroupBase::createLatchingCommandMsg(LONG rawState, int priority) const
+{
+    CtiCommandMsg* returnCommandMsg = new CtiCommandMsg();
+    returnCommandMsg->setOperation(CtiCommandMsg::ControlRequest);
+
+    std::vector<int> opArgList;
+    opArgList.push_back(-1);
+    opArgList.push_back(getPAOId());
+    opArgList.push_back(1);//this is control offset 1
+    opArgList.push_back(rawState);
+    opArgList.push_back(1);//this simulates a boolean to use the third integer as a control offset rather than a point id
+
+    returnCommandMsg->setOpArgList(opArgList);
+
+    returnCommandMsg->setMessagePriority(priority);
+
+    if( _LM_DEBUG & LM_DEBUG_STANDARD)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Sending base latch command, LM Group: " << getPAOName() << ", raw state: " << rawState << ", priority: " << priority << endl;
+    }
+    return returnCommandMsg;
 }
 
 /*-------------------------------------------------------------------------

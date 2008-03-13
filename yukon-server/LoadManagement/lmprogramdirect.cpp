@@ -994,7 +994,15 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             !hasGroupExceededMaxDailyOps(currentLMGroup) )
                         {
                             // TODO:  Why isn't startGroupControl called here?
-                            multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( true, defaultLMStartPriority ) );
+                            if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
+                            {
+                                multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( true, defaultLMStartPriority ) );
+                            }
+                            else
+                            {
+                                multiDispatchMsg->insert( currentLMGroup->createLatchingCommandMsg(gearStartRawState, defaultLMStartPriority) );
+                            }
+                            
 
                             setLastControlSent(CtiTime());
                             setLastGroupControlled(currentLMGroup->getPAOId());
@@ -1475,7 +1483,14 @@ DOUBLE CtiLMProgramDirect::manualReduceProgramLoad(ULONG secondsFrom1901, CtiMul
                         !currentLMGroup->getControlInhibit() )
                     {
                         // TODO: Why isn't startGroupControl called here?
-                        multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( true, defaultLMStartPriority ) );
+                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
+                        {
+                            multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( true, defaultLMStartPriority ) );
+                        }
+                        else
+                        {
+                            multiDispatchMsg->insert( currentLMGroup->createLatchingCommandMsg(gearStartRawState, defaultLMStartPriority) );
+                        }
 
                         setLastControlSent(CtiTime());
                         setLastGroupControlled(currentLMGroup->getPAOId());
@@ -3254,7 +3269,15 @@ DOUBLE CtiLMProgramDirect::updateProgramControlForGearChange(ULONG secondsFrom19
                     }
                     else if( !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::LatchingMethod ) )
                     {
-                        multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( true, defaultLMRefreshPriority ) );
+                        LONG gearStartRawState = currentGearObject->getMethodRateCount();
+                        if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
+                        {
+                            multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( false, defaultLMStartPriority ) );
+                        }
+                        else
+                        {
+                            multiDispatchMsg->insert( currentLMGroup->createLatchingCommandMsg(previousGearObject->getMethodRateCount()?0:1, defaultLMStartPriority) );
+                        }
 
                         setLastControlSent(CtiTime());
                         currentLMGroup->setLastControlSent(CtiTime());
@@ -4324,8 +4347,15 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                 }
                 else if( !stringCompareIgnoreCase(tempControlMethod,CtiLMProgramDirectGear::LatchingMethod ) )
                 {
-                    multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( false, defaultLMRefreshPriority ) );
-
+                    if( currentLMGroup->getPAOType() == TYPE_LMGROUP_POINT )
+                    {
+                        multiPilMsg->insert( currentLMGroup->createLatchingRequestMsg( false, defaultLMStartPriority ) );
+                    }
+                    else
+                    {
+                        multiDispatchMsg->insert( currentLMGroup->createLatchingCommandMsg(currentGearObject->getMethodRateCount()?0:1, defaultLMStartPriority) );
+                    }
+                    
                     setLastControlSent(CtiTime());
                     currentLMGroup->setLastControlSent(CtiTime());
                 }
