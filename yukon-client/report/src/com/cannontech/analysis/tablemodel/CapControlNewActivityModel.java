@@ -20,8 +20,7 @@ import com.cannontech.database.data.pao.PAOGroups;
  * Created on Dec 15, 2003
  * @author snebben
  */
-public class CapControlNewActivityModel extends ReportModelBase
-{
+public class CapControlNewActivityModel extends ReportModelBase {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 8;
 	
@@ -110,24 +109,28 @@ public class CapControlNewActivityModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT SUB.SUBSTATIONBUSID, FEED.FEEDERID, CB.DEVICEID, CB.CONTROLDEVICEID, BANKSIZE, ACTION, SL.DESCRIPTION, SL.DATETIME " +
-		    " FROM ccsubareaassignment saa, capcontrolarea ca, ccsubstationsubbuslist ssb, YUKONPAOBJECT CBPAO, CAPBANK CB, CAPCONTROLFEEDER FEED, CCFEEDERBANKLIST BANK, CCFEEDERSUBASSIGNMENT SUB, SYSTEMLOG SL " +
-		    " WHERE SL.POINTID IN (" + 
-			    " SELECT DISTINCT POINTID FROM POINT P " +
-			    " WHERE P.PAOBJECTID = CB.DEVICEID " + 
-			    " OR P.PAOBJECTID = FEED.FEEDERID " + 
-			    " OR P.PAOBJECTID = SUB.SUBSTATIONBUSID " + 
-			    " OR P.PAOBJECTID = CB.CONTROLDEVICEID) " +
-            " and  saa.substationbusid = ssb.substationid and ssb.substationbusid = SUB.substationbusid and saa.areaid = ca.areaid" +
-		    " AND CBPAO.PAOCLASS = '" + PAOGroups.STRING_CAT_CAPCONTROL + "' " +
-		    " AND CB.DEVICEID = CBPAO.PAOBJECTID " +
-		    " AND FEED.FEEDERID = BANK.FEEDERID " +
-		    " AND BANK.DEVICEID = CB.DEVICEID "+
-		    " AND SUB.FEEDERID = FEED.FEEDERID "+
-		    " AND DATETIME > ? AND DATETIME <= ? ");
+		StringBuffer sql = new StringBuffer	("select  " +
+            "el.subid as SUBSTATIONBUSID " +
+            ", el.FEEDERID " +
+            ", CB.DEVICEID " +
+            ", CB.CONTROLDEVICEID " +
+            ", cb.BANKSIZE " +
+            ", el.capbankstateinfo as ACTION " +
+            ", eL.text as DESCRIPTION " +
+            ", el.DATETIME  " +
+            ", sbl.substationid as substationId" +
+            ", saa.areaid as areaId "+
+            "from cceventlog el, capbank cb, point p, CCSUBSTATIONSUBBUSLIST sbl,CCSUBAREAASSIGNMENT saa " +
+            "where  " +
+            "el.DATETIME > ? " +
+            "AND el.DATETIME <= ? " +
+            "and p.pointid = el.pointid " +
+            "and p.paobjectid = cb.deviceid " +
+		    "and sbl.substationbusid = el.subid " +
+		    "and saa.substationbusid = sbl.substationid ");
         if (getPaoIDs() != null && getPaoIDs().length > 0){
             if(getFilterModelType().equals(ReportFilter.AREA)) {
-                sql.append(" AND ca.areaid IN ( " + getPaoIDs()[0] +" ");
+                sql.append(" AND saa.areaId IN ( " + getPaoIDs()[0] +" ");
                 for (int i = 1; i < getPaoIDs().length; i++)
                     sql.append(" , " + getPaoIDs()[i]);
                         
@@ -139,20 +142,20 @@ public class CapControlNewActivityModel extends ReportModelBase
                         
                 sql.append(")");
             }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) {
-                sql.append(" AND FEED.FEEDERID IN ( " + getPaoIDs()[0] +" ");
+                sql.append(" AND el.FEEDERID IN ( " + getPaoIDs()[0] +" ");
                 for (int i = 1; i < getPaoIDs().length; i++)
                     sql.append(" , " + getPaoIDs()[i]);
                         
                 sql.append(")");
             }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) {
-                sql.append(" AND SUB.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
+                sql.append(" AND el.subid IN ( " + getPaoIDs()[0] +" ");
                 for (int i = 1; i < getPaoIDs().length; i++)
                     sql.append(" , " + getPaoIDs()[i]);
                         
                 sql.append(")");
             }
         }
-            sql.append(" ORDER BY SUB.SUBSTATIONBUSID, FEED.FEEDERID ");
+            sql.append(" ORDER BY SUBSTATIONBUSID, el.FEEDERID ");
 		
 		if (getOrderBy() == ORDER_BY_CAP_BANK_NAME)
 			sql.append(", CB.DEVICEID, CB.CONTROLDEVICEID, DATETIME " );
@@ -307,8 +310,8 @@ public class CapControlNewActivityModel extends ReportModelBase
 				new ColumnProperties(100, 1, 80, null),
 				new ColumnProperties(180, 1, 80, null),
 				new ColumnProperties(260, 1, 100, null),
-				new ColumnProperties(360, 1, 160, null),
-				new ColumnProperties(520, 1, 180, null)
+				new ColumnProperties(360, 1, 100, null),
+				new ColumnProperties(460, 1, 240, null)
 			};
 		}
 		return columnProperties;
