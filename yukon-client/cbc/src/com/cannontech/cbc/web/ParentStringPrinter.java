@@ -141,7 +141,7 @@ public class ParentStringPrinter {
                 result = appendHierarchy(editorLink, parentId);
             }else {
                 
-                Feeder fdr = (Feeder)capObject;
+                Feeder fdr = capControlCache.getFeeder(fdrId);
                 Integer busId = fdr.getParentID();
                 if(busId < 1) {
                     String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
