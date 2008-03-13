@@ -8,7 +8,7 @@
 <h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
 
 	<h:column>
-	<f:verbatim><fieldset><legend>Physical Setup</legend></f:verbatim>
+	<f:verbatim><fieldset class="fieldSet"><legend>Physical Setup</legend></f:verbatim>
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Point_Offset" value="Point Offset: " title="The physical offset value within the current device or parent this point belongs to" />
@@ -46,7 +46,7 @@
 
 
 	<h:column>
-	<f:verbatim><fieldset><legend>Limits</legend></f:verbatim>
+	<f:verbatim><fieldset class="fieldSet"><legend>Limits</legend></f:verbatim>
 	<h:panelGrid id="limitGrid" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
 
 		<h:column>

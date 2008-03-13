@@ -21,7 +21,7 @@
 	</f:verbatim>
     <h:panelGrid id="fdrBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
 	<h:column>
-	<f:verbatim><br/><br/><fieldset><legend>Feeder Info</legend></f:verbatim>    
+	<f:verbatim><br/><br/><fieldset class="fieldSet"><legend>Feeder Info</legend></f:verbatim>    
 	<x:outputLabel for="fdrMapLocID" value="Map Location ID: " 
         title="Mapping code/string used for third-party systems" />
 	<x:inputText id="fdrMapLocID" value="#{capControlForm.PAOBase.capControlFeeder.mapLocationID}" 
@@ -30,7 +30,7 @@
     <x:panelGroup>
         <f:verbatim>
             <br />
-            <fieldset><legend> Feeder Points </legend>
+            <fieldset class="fieldSet"><legend> Feeder Points </legend>
         </f:verbatim>
         <x:div forceId="true" id="SubstationBusEditorScrollDiv"
             styleClass="scrollSmall">
@@ -104,7 +104,7 @@
     <f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     VAR Point Setup
     </legend>
@@ -212,7 +212,7 @@
 	<f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     WATT Point Setup
     </legend>
@@ -244,7 +244,7 @@
 	<f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     VOLT Point Setup
     </legend>

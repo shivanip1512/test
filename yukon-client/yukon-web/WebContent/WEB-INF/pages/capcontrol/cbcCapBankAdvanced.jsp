@@ -26,7 +26,7 @@ if (el.value <= 0) {
 </f:verbatim>
  <f:subview id="paoCapBank" rendered="#{capControlForm.visibleTabs['CBCCapBank']}" >
 
-	    <f:verbatim><br/><br/><fieldset><legend>Point Assignment</legend></f:verbatim>
+	    <f:verbatim><br/><br/><fieldset class="fieldSet"><legend>Point Assignment</legend></f:verbatim>
 	    <f:verbatim><br/></f:verbatim>
 	    <h:panelGrid id="cbBody" columns="2" styleClass="gridLayout"
 	    		rowClasses="gridCell" columnClasses="gridCell" >
@@ -152,7 +152,7 @@ if (el.value <= 0) {
 	
 		<f:verbatim></fieldset></f:verbatim>		
   	    
-  	    <f:verbatim><br/><br/><fieldset><legend>Point Configuration</legend></f:verbatim>
+  	    <f:verbatim><br/><br/><fieldset class="fieldSet"><legend>Point Configuration</legend></f:verbatim>
 	    	<f:verbatim><br/></f:verbatim>
 	    		<h:panelGrid id="assignedPointsConfig" columns="1"  styleClass="gridLayout"
 	    			rowClasses="gridCell" columnClasses="gridCell" rendered="#{not empty capBankEditor.assignedPoints}">

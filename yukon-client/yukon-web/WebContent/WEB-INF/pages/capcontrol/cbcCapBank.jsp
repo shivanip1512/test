@@ -42,7 +42,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
           <f:verbatim>
              <br />
              <br />
-              <fieldset>
+              <fieldset class="fieldSet">
                  <legend>
                     Cap Bank Info
                  </legend>
@@ -91,7 +91,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
              <br />
               </fieldset>
           </f:verbatim>
-            <f:verbatim><br/><fieldset><legend>Configuration</legend></f:verbatim>
+            <f:verbatim><br/><fieldset class="fieldSet"><legend>Configuration</legend></f:verbatim>
 
             <f:verbatim><br/></f:verbatim>
             
@@ -167,7 +167,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
         <f:verbatim>
             </fieldset>
             <br />
-            <fieldset><legend> Cap Bank Points </legend>
+            <fieldset class="fieldSet"><legend> Cap Bank Points </legend>
         </f:verbatim>
         <x:div forceId="true" id="SubstationBusEditorScrollDiv"
             styleClass="scrollSmall">
@@ -237,7 +237,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
         </x:column>
         <x:column>
         
-        <f:verbatim><br/><fieldset><legend>CapBank Operations</legend></f:verbatim>
+        <f:verbatim><br/><fieldset class="fieldSet"><legend>CapBank Operations</legend></f:verbatim>
             <f:verbatim><br/></f:verbatim>
             <x:outputLabel for="maxDailyOps" value="Max Daily Operations: " title="The total number of controls allowed per day"/>
             <x:inputText id="maxDailyOps" styleClass="char16Label" required="true"
@@ -253,7 +253,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
             
             <f:verbatim><br><br></f:verbatim>
             <f:verbatim></fieldset></f:verbatim>
-                    <f:verbatim><br/><fieldset><legend>Controller Configuration</legend></f:verbatim>
+                    <f:verbatim><br/><fieldset class="fieldSet"><legend>Controller Configuration</legend></f:verbatim>
                         <f:verbatim><br/></f:verbatim> 
                          
                          <x:outputText value="CBC Controller: " title="Click on the link to edit the CBC"/>

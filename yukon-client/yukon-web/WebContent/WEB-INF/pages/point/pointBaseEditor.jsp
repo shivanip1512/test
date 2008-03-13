@@ -8,7 +8,7 @@
 <h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
 
 	<h:column>
-	<f:verbatim><fieldset><legend>General</legend></f:verbatim>
+	<f:verbatim><fieldset class="fieldSet"><legend>General</legend></f:verbatim>
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Point_Type" value="Point Type: "/>
         <x:outputText id="Point_Type" value="#{ptEditorForm.pointBase.point.pointType} (id: #{ptEditorForm.pointBase.point.pointID})" styleClass="staticLabel"/>
@@ -35,7 +35,7 @@
 	
 	<h:column >
 	<f:subview id="archive_point_analog" rendered="#{ptEditorForm.visibleTabs['PointAnalog'] || ptEditorForm.visibleTabs['PointAccum'] || ptEditorForm.visibleTabs['PointCalc']}" >
-	<f:verbatim ><fieldset><legend>Archive</legend></f:verbatim>
+	<f:verbatim ><fieldset class="fieldSet"><legend>Archive</legend></f:verbatim>
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Archive_Type" value="Archive Data: "/>
 		<x:selectOneMenu id="Archive_Type" value="#{ptEditorForm.pointBase.point.archiveType}"
@@ -52,7 +52,7 @@
 	</f:subview>
 	
 	<f:subview id="archive_point_status" rendered="#{ptEditorForm.visibleTabs['PointStatus']}" >
-	<f:verbatim ><fieldset><legend>Archive</legend></f:verbatim>	
+	<f:verbatim ><fieldset class="fieldSet"><legend>Archive</legend></f:verbatim>	
 		<x:outputLabel for="archive_checkbox" value="Archive: "/>
 		<x:selectBooleanCheckbox id="archive_checkbox" value="#{ptEditorForm.pointBase.point.archiveStatusData}"/>
 		<f:verbatim></fieldset></f:verbatim>
@@ -60,7 +60,7 @@
 	
 
     <f:subview id="pointAnalog" rendered="#{ptEditorForm.visibleTabs['PointAnalog'] || ptEditorForm.visibleTabs['PointAccum'] || ptEditorForm.visibleTabs['PointCalc']}" >
-	    <f:verbatim><br/><fieldset><legend>Analog Summary</legend></f:verbatim>
+	    <f:verbatim><br/><fieldset class="fieldSet"><legend>Analog Summary</legend></f:verbatim>
     
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Unit_Of_Measure" value="Unit of Measure: "/>
@@ -78,7 +78,7 @@
     
 
     <f:subview id="pointStatus" rendered="#{ptEditorForm.visibleTabs['PointStatus'] || ptEditorForm.visibleTabs['PointCalcStatus']}" >
-		<f:verbatim><br/><br/><fieldset><legend>Status Summary</legend></f:verbatim>
+		<f:verbatim><br/><br/><fieldset class="fieldSet"><legend>Status Summary</legend></f:verbatim>
 		<x:outputLabel for="stateGroups" value="State Group: "/>
 		<x:selectOneMenu id="stateGroups" value="#{ptEditorForm.pointBase.point.stateGroupID}"
 				onchange="submit();" valueChangeListener="#{ptEditorForm.stateGroupChanged}">
@@ -95,7 +95,7 @@
 
     
     <f:subview id="pointCalc" rendered="#{ptEditorForm.visibleTabs['PointCalcStatus'] || ptEditorForm.visibleTabs['PointCalc']}" >
-		<f:verbatim><br/><br/><fieldset><legend>Calculation Summary</legend></f:verbatim>
+		<f:verbatim><br/><br/><fieldset class="fieldSet"><legend>Calculation Summary</legend></f:verbatim>
 		<x:outputLabel for="updateType" value="Update Type: "/>
 		<x:selectOneMenu id="updateType" value="#{ptEditorForm.pointBase.calcBase.updateType}"
 				onchange="submit();" valueChangeListener="#{ptEditorForm.updateTypeChanged}" >

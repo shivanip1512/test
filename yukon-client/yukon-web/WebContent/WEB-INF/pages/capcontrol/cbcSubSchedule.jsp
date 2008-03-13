@@ -26,7 +26,7 @@ function updateSubScheduleTextField( selectElem, input ) {
 
 		<h:column>
 
-	    <f:verbatim><br/><br/><fieldset><legend>Scheduled Tasks</legend></f:verbatim>
+	    <f:verbatim><br/><br/><fieldset class="fieldSet"><legend>Scheduled Tasks</legend></f:verbatim>
 
 			<f:verbatim><br/></f:verbatim>
 	       	<h:commandButton id="addAction" value="Add" styleClass="submenuLink"

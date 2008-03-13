@@ -6,7 +6,7 @@
 <f:subview id="childList" rendered="#{capControlForm.visibleTabs['CBCArea'] || capControlForm.visibleTabs['CBCSubstation'] || capControlForm.visibleTabs['CBCSubstationBus'] || capControlForm.visibleTabs['CBCFeeder']}" >
 
        <f:subview id="paoSubstation" rendered="#{capControlForm.visibleTabs['CBCSubstation']}" >
-	    <f:verbatim><br/><br/><fieldset><legend>Substation Bus Assignment</legend></f:verbatim>
+	    <f:verbatim><br/><br/><fieldset class="fieldSet"><legend>Substation Bus Assignment</legend></f:verbatim>
 	    <f:verbatim><br/></f:verbatim>
 
 	    <h:panelGrid id="subBody" columns="2" styleClass="gridLayout"
@@ -122,7 +122,7 @@
 	
 	            </h:dataTable>
 							<f:verbatim><br/><br/>
-	    			<fieldset>
+	    			<fieldset class="fieldSet">
 	    				<legend>Links</legend>
 	    			</f:verbatim>
 	    				<f:verbatim><br/></f:verbatim>
@@ -142,7 +142,7 @@
 		<f:verbatim></fieldset></f:verbatim>
     </f:subview>
     <f:subview id="paoSubBus" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}" >
-	    <f:verbatim><br/><br/><fieldset><legend>Feeder Assignment</legend></f:verbatim>
+	    <f:verbatim><br/><br/><fieldset class="fieldSet"><legend>Feeder Assignment</legend></f:verbatim>
 	    <f:verbatim><br/></f:verbatim>
 
 	    <h:panelGrid id="subBody" columns="2" styleClass="gridLayout"
@@ -258,7 +258,7 @@
 	
 	            </h:dataTable>
 							<f:verbatim><br/><br/>
-	    			<fieldset>
+	    			<fieldset class="fieldSet">
 	    				<legend>Links</legend>
 	    			</f:verbatim>
 	    				<f:verbatim><br/></f:verbatim>
@@ -282,7 +282,7 @@
 
 
     <f:subview id="paoFeeder" rendered="#{capControlForm.visibleTabs['CBCFeeder']}" >
-	    <f:verbatim><br/><br/><fieldset><legend>CapBank Assignment</legend></f:verbatim>
+	    <f:verbatim><br/><br/><fieldset class="fieldSet"><legend>CapBank Assignment</legend></f:verbatim>
 	    <f:verbatim><br/></f:verbatim>
 	    <h:panelGrid id="fdrBody" columns="2" styleClass="gridLayout"
 	    		rowClasses="gridCell" columnClasses="gridCell">
@@ -417,7 +417,7 @@
 	            </h:dataTable>
 	            	<f:verbatim>
 	            	<br/><br/>
-	            	<fieldset>
+	            	<fieldset class="fieldSet">
 	    				<legend>Links</legend>
 	    			</f:verbatim>
 	    				<f:verbatim><br/></f:verbatim>

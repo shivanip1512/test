@@ -125,20 +125,23 @@ legend, .legendLikeLabel{
 }
 
 .scrollerTable, .fullTable {
-    padding: 2;
-    border-style: solid;
-    border-width: 1px;
+    padding: 2px;
+    border: 1px solid gray;
     width: 300px;
 }
 
+.fieldSet {
+    padding: 2px;
+    border: 1px solid gray;
+}
+
 .nonBorderedScrollerTable {
-    padding: 2;
+    padding: 2px;
     width: 300px;
 }
 
 .scrollerDivWithBorder {
-    border-style: solid;
-    border-width: 1px;
+	border: 1px solid gray;
     max-height: 400px;
     max-width: 320px;
     overflow: auto;
@@ -148,7 +151,7 @@ legend, .legendLikeLabel{
 	width: 100%;
 }
 .bigScrollerTable {
-	padding: 2;
+	padding: 2px;
     border-style: solid;
     border-width: 1px;
 	width: 100%;	

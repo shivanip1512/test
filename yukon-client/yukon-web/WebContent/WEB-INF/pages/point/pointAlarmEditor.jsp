@@ -8,7 +8,7 @@
 	<h:panelGrid id="alarming_body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
 
 	<h:column>
-		<f:verbatim><fieldset><legend>Notifcation</legend></f:verbatim>
+		<f:verbatim><fieldset class="fieldSet"><legend>Notifcation</legend></f:verbatim>
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Notifcation_Group_List" value="Notifcation Group: "/>
 		<x:selectOneMenu id="Notifcation_Group_List" value="#{ptEditorForm.pointBase.pointAlarming.notificationGroupID}" >
@@ -34,7 +34,7 @@
 
 
 	<h:column>
-		<f:verbatim><fieldset><legend>Alarming</legend></f:verbatim>
+		<f:verbatim><fieldset class="fieldSet"><legend>Alarming</legend></f:verbatim>
 		<f:verbatim><br/></f:verbatim>
 		<h:selectBooleanCheckbox id="disableAlarmsCheckBox" onclick="submit();"
 				immediate="true"

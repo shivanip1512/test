@@ -17,7 +17,7 @@
     <f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Area Info
     </legend>
@@ -37,7 +37,7 @@
     <x:panelGroup>
         <f:verbatim>
             <br />
-            <fieldset><legend> Area Points </legend>
+            <fieldset class="fieldSet"><legend> Area Points </legend>
         </f:verbatim>
         <x:div forceId="true" id="SubstationBusEditorScrollDiv"
             styleClass="scrollSmall">
@@ -110,7 +110,7 @@
     <f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Volt Reduction Control Point Setup
     </legend>

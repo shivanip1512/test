@@ -25,7 +25,7 @@
 	
 	<f:verbatim>
 	<br />
-	<fieldset>
+	<fieldset class="fieldSet">
 	<legend>
 	Subtation Bus Info
 	</legend>
@@ -70,7 +70,7 @@
 	</table>
 	</fieldset>
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Volt Reduction Control Point Setup
     </legend>
@@ -115,7 +115,7 @@
 	<x:panelGroup>
 		<f:verbatim>
 			<br />
-			<fieldset><legend> Substation Bus Points </legend>
+			<fieldset class="fieldSet"><legend> Substation Bus Points </legend>
 		</f:verbatim>
 		<x:div forceId="true" id="SubstationBusEditorScrollDiv"
 			styleClass="scrollSmall">
@@ -189,7 +189,7 @@
 	
 	<f:verbatim>
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     VAR Point Setup
     </legend>
@@ -299,7 +299,7 @@
     <f:verbatim>
     </fieldset>
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Watt Point Setup
     </legend>
@@ -342,7 +342,7 @@
 
     <f:verbatim>
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Volt Point Setup
     </legend>

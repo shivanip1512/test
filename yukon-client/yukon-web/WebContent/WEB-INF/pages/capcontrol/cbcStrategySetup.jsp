@@ -13,6 +13,12 @@
 	<x:panelGrid id="subStrategyBody" columns="2" styleClass="gridLayout"
 		columnClasses="gridColumn">
 		<h:column>
+            <f:verbatim>
+		    <fieldset class="fieldSet">
+		    <legend>
+		    Season Strategy
+		    </legend>
+		    </f:verbatim>
 			<h:outputText value="Season Schedule:"></h:outputText>
 			<x:selectOneMenu id="Season_Schedule_Selection" onchange="submit();"
 				disabled="#{capControlForm.editingCBCStrategy}"
@@ -59,9 +65,17 @@
 					</x:commandLink>
 				</h:column>
 			</h:dataTable>
+			<f:verbatim>
+            </fieldset>
+            </f:verbatim>
 		</h:column>
 		<h:column>
-			<f:verbatim><table><tr><td></f:verbatim>
+			<f:verbatim>
+            <fieldset class="fieldSet">
+            <legend>
+            Holiday Strategy
+            </legend>
+			<table><tr><td></f:verbatim>
 			<h:outputText value="Holiday Schedule:"></h:outputText>
             <f:verbatim></td><td></f:verbatim> 
             <x:selectOneMenu id="Holiday_Schedule_Selection"
@@ -91,6 +105,9 @@
 					value="#{capControlForm.holidayStrategyId}" />
 			</x:commandLink>
 			<f:verbatim></td></tr></table></f:verbatim>
+			<f:verbatim>
+            </fieldset>
+            </f:verbatim>
 		</h:column>
 	</x:panelGrid>
 </f:subview>

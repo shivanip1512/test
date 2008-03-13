@@ -6,7 +6,7 @@
 <f:subview id="areaSubs" rendered="#{capControlForm.visibleTabs['CBCArea']}" >
     <f:verbatim>
         <br/>
-        <fieldset>
+        <fieldset class="fieldSet">
         <legend>Substation Assignment</legend>
         <br/>
     </f:verbatim>
@@ -77,7 +77,7 @@
 	        <f:verbatim>
 	            <br/>
 	            <br/>
-	            <fieldset>
+	            <fieldset class="fieldSet">
 	            <legend>Links</legend>
 	            <br/>
 	        </f:verbatim>

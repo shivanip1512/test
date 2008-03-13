@@ -15,7 +15,7 @@ var switchPointPicker = new PointPicker('switch_point','com.cannontech.common.se
 	<f:subview id="altDualBus" rendered="#{capControlForm.visibleTabs['CBCSubstationBus']}">
 		<f:verbatim>
 			<br />
-			<fieldset>
+			<fieldset class="fieldSet">
 				<legend>
 					Dual Bus
 				</legend>
@@ -36,7 +36,7 @@ var switchPointPicker = new PointPicker('switch_point','com.cannontech.common.se
 			
 				<f:verbatim>
 					<br />
-					<fieldset>
+					<fieldset class="fieldSet">
 						<legend>
 							Alternate Substation Bus
 						</legend>
@@ -62,7 +62,7 @@ var switchPointPicker = new PointPicker('switch_point','com.cannontech.common.se
 
            <f:verbatim>
                     <br />
-                    <fieldset>
+                    <fieldset class="fieldSet">
                         <legend>
                         Switch Point
                         </legend>

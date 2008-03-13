@@ -25,7 +25,7 @@
     
 
         <h:column rendered="#{capControlForm.CBControllerEditor.oneWay}">
-           <f:verbatim><br/><fieldset><legend>Configuration</legend></f:verbatim>
+           <f:verbatim><br/><fieldset class="fieldSet"><legend>Configuration</legend></f:verbatim>
             <f:verbatim><br/></f:verbatim>
 			<x:panelGroup id="oneWayCBC" >
 				<f:verbatim><br/></f:verbatim>
@@ -49,7 +49,7 @@
             </h:column>
 
             <h:column rendered="#{capControlForm.CBControllerEditor.twoWay}">
-            <f:verbatim><br/><fieldset><legend>Configuration</legend></f:verbatim>
+            <f:verbatim><br/><fieldset class="fieldSet"><legend>Configuration</legend></f:verbatim>
             <f:verbatim><br/></f:verbatim>
 			
             <x:panelGroup id="editCBCCheck" >
@@ -185,7 +185,7 @@
             <x:panelGroup>                      
                 <f:verbatim>
                     <br />
-                    <fieldset>
+                    <fieldset class="fieldSet">
                         <legend>
                             Analog and Status Points
                         </legend>

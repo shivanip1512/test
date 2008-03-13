@@ -5,7 +5,7 @@
 
 <f:subview id="ptStatusEditor" rendered="#{ptEditorForm.visibleTabs['PointStatus']}" >
 
-	<f:verbatim><fieldset><legend>Physical Setup</legend></f:verbatim>
+	<f:verbatim><fieldset class="fieldSet"><legend>Physical Setup</legend></f:verbatim>
 
 		<f:verbatim><br/></f:verbatim>
 		<x:outputLabel for="Point_Offset" value="Point Offset: " title="The physical offset value within the current device or parent this point belongs to" />
@@ -20,7 +20,7 @@
 
 
 	<f:verbatim><br/></f:verbatim>
-	<f:verbatim><fieldset><legend>Control Settings</legend></f:verbatim>
+	<f:verbatim><fieldset class="fieldSet"><legend>Control Settings</legend></f:verbatim>
 	<h:panelGrid id="cntrlSettings" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
 
 		<h:column>

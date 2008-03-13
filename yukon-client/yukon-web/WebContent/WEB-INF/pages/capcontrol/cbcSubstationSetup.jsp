@@ -24,7 +24,7 @@
 	<f:verbatim>
 	<br />
 	<br />
-	<fieldset>
+	<fieldset class="fieldSet">
 	<legend>
 	SubBus Info
 	</legend>
@@ -49,7 +49,7 @@
     <f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Sub Bus Points
     </legend>
@@ -76,7 +76,7 @@
 	<f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     VAR Point Setup
     </legend>
@@ -176,7 +176,7 @@
     <f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Watt Point Setup
     </legend>
@@ -216,7 +216,7 @@
     <f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Volt Point Setup
     </legend>

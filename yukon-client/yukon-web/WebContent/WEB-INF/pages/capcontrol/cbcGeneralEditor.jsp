@@ -5,7 +5,7 @@
 
 <f:subview id="general" rendered="#{capControlForm.visibleTabs['General']}" >
 
-	<f:verbatim><fieldset><legend>General</legend></f:verbatim>
+	<f:verbatim><fieldset class="fieldSet"><legend>General</legend></f:verbatim>
 	    <x:div id="topDiv">
 		<f:verbatim><br/></f:verbatim>
 		

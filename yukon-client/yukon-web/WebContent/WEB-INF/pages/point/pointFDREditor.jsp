@@ -7,7 +7,7 @@
 
 <f:subview id="fdr" rendered="#{ptEditorForm.visibleTabs['FDR']}" >
 
-	<f:verbatim><fieldset><legend>Data Routing</legend></f:verbatim>
+	<f:verbatim><fieldset class="fieldSet"><legend>Data Routing</legend></f:verbatim>
     <f:verbatim><br/></f:verbatim>
    	<h:commandButton id="addAction" value="New Routing" styleClass="submenuLink"
    		action="#{ptEditorForm.pointFDREntry.addTranslation}"

@@ -55,7 +55,7 @@
                 </f:facet>
 
                 <x:panelGroup>
-                    <f:verbatim><br/><fieldset><legend>General</legend></f:verbatim>
+                    <f:verbatim><br/><fieldset class="fieldSet"><legend>General</legend></f:verbatim>
 
                     <f:verbatim><br/></f:verbatim>
                     <x:outputLabel for="Name" value="Name: " title="A label for the item in the system"/>

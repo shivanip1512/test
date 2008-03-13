@@ -17,7 +17,7 @@
     
     <f:verbatim>
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Special Area Info
     </legend>
@@ -41,7 +41,7 @@
     <f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     <legend>
     Control Point Setup
     </legend>

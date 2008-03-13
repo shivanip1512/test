@@ -48,7 +48,7 @@
 	 <f:verbatim>
 	             <br />
 	             <br />
-	              <fieldset>
+	              <fieldset class="fieldSet">
 	                 <legend>
 	                    Communication
 	                 </legend>
@@ -85,7 +85,7 @@
 		 <f:verbatim>
 	             <br />
 	             <br />
-	              <fieldset>
+	              <fieldset class="fieldSet">
 	                 <legend>
 	                    Location
 	                 </legend>
@@ -108,7 +108,7 @@
  <f:verbatim>
     <br />
     <br />
-    <fieldset>
+    <fieldset class="fieldSet">
     	<legend>
             Maintenance
         </legend>

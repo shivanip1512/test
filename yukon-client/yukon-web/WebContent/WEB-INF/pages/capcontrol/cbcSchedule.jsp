@@ -7,7 +7,7 @@
 	<h:panelGrid id="cbcBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
 
 		<h:column>
-		    <f:verbatim><br/><fieldset><legend>Schedule</legend></f:verbatim>
+		    <f:verbatim><br/><fieldset class="fieldSet"><legend>Schedule</legend></f:verbatim>
 
 			<f:verbatim><br/></f:verbatim>
 			<x:outputLabel for="interval" value="Repeat Interval: " title="How often this schedule will execute" />
@@ -32,7 +32,7 @@
 
 
 		<h:column>
-		    <f:verbatim><br/><fieldset><legend>Info</legend></f:verbatim>
+		    <f:verbatim><br/><fieldset class="fieldSet"><legend>Info</legend></f:verbatim>
 
 			<f:verbatim><br/></f:verbatim>
             <h:outputText id="lastRunTime" value="Last Run Time: " title="The last time this schedule ran" />

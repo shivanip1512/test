@@ -112,7 +112,7 @@
 		<h:column rendered="#{capControlForm.currentStrategyID != 0}" >
 		
 		    <f:verbatim><br/>
-                <fieldset>
+                <fieldset class="fieldSet">
                     <legend>Strategy Detail</legend>
 		    </f:verbatim>
 		    <f:verbatim>
@@ -315,7 +315,7 @@
 	
             <h:panelGrid rendered="#{!capControlForm.timeOfDay}">
             <h:column>
-		    <f:verbatim><br/><fieldset><legend>Strategy Operations</legend></f:verbatim>
+		    <f:verbatim><br/><fieldset class="fieldSet"><legend>Strategy Operations</legend></f:verbatim>
 			<x:outputLabel for="Max_Daily_Ops" value="Max Daily Operations: " title="The total number of controls allowed per day"/>
 			<x:inputText id="Max_Daily_Ops" styleClass="char16Label" required="true"
 					disabled="#{!capControlForm.editingCBCStrategy}"
@@ -335,7 +335,7 @@
 		</h:column>
 
 		<h:column rendered="#{capControlForm.currentStrategyID != 0 && (!capControlForm.timeOfDay)}" >
-            <f:verbatim><br/><fieldset><legend>Strategy Peaks</legend>
+            <f:verbatim><br/><fieldset class="fieldSet"><legend>Strategy Peaks</legend>
             <table>
             <tr>
             <td>
@@ -692,7 +692,7 @@
     </table>
     </f:verbatim>
     <f:verbatim></fieldset></f:verbatim>
-    <f:verbatim><br/><fieldset><legend>Peak Operating Days</legend></f:verbatim>
+    <f:verbatim><br/><fieldset class="fieldSet"><legend>Peak Operating Days</legend></f:verbatim>
     
         <x:selectManyCheckbox id="Peak_Operating_Days" value="#{capControlForm.stratDaysOfWeek}"
         disabled="#{!capControlForm.editingCBCStrategy}" layout="pageDirection" 
@@ -704,7 +704,7 @@
          
     <h:column rendered="#{capControlForm.currentStrategyID != 0 && (capControlForm.timeOfDay)}" >
          
-        <f:verbatim><br/><fieldset><legend>Strategy Settings</legend>
+        <f:verbatim><br/><fieldset class="fieldSet"><legend>Strategy Settings</legend>
         <table>
         <tr>
         <td/>
