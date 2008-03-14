@@ -1608,8 +1608,11 @@ public void setValue(Object o)
 	
 		getJComboBoxCycleCountSndType().setSelectedItem( StringUtils.addCharBetweenWords( ' ', s.getMethodOptionType() ) );
 	
-	if(s.getFrontRampOption().compareTo(CtiUtilities.STRING_NONE) != 0)
+	if(s.getFrontRampOption().compareTo(CtiUtilities.STRING_NONE) != 0) {
 		getJCheckBoxNoRamp().setSelected(true);
+	} else {
+	    getJCheckBoxNoRamp().setSelected(false);
+	}
     
     if(gear instanceof TargetCycleGear) {
         if(s.getKWReduction().doubleValue() == 0.0)
