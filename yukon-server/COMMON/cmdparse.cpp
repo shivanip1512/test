@@ -831,9 +831,9 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
         }
 
 
-        if(CmdStr.contains(" froz"))        // Sourcing from CmdStr, which is the entire command string.
+        if(CmdStr.contains(" freeze"))
         {
-            flag |= CMD_FLAG_FROZEN;
+            _cmd["freeze"] = true;
         }
         if(CmdStr.contains(" upd"))         // Sourcing from CmdStr, which is the entire command string.
         {
