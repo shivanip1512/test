@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:aop="http://www.springframework.org/schema/aop"
+    xmlns:tx="http://www.springframework.org/schema/tx"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
+
+    <description>
+        These beans are defined in a separate file so this context can be 
+        referenced from a unit test.
+    </description>
+
+    <context:annotation-config />
+    
+    <bean id="dateFormattingService"
+        class="com.cannontech.core.service.impl.DateFormattingServiceImpl">
+        <property name="dateParserLookup">
+            <map>
+                <entry key="MDY" value-ref="mdyDateParser"/>
+                <entry key="YMD" value-ref="ymdDateParser"/>
+                <entry key="DMY" value-ref="dmyDateParser"/>
+            </map>
+        </property>
+    </bean>
+
+    <bean id="mdyDateParser" class="com.cannontech.core.service.impl.ConfigurableFlexibleDateParser">
+        <property name="dateTimeFormats">
+            <list>
+                <value>MM/dd/yy hh:mma</value>
+                <value>MM/dd/yyyy hh:mma</value>
+                <value>MM/dd/yy hh:mm a</value>
+                <value>MM/dd/yyyy hh:mm a</value>
+                <value>MM/dd/yy HH:mm</value>
+                <value>MM/dd/yyyy HH:mm</value>
+            </list>
+        </property>
+        <property name="dateFormats">
+            <list>
+                <value>MM/dd/yy</value>
+                <value>MM/dd/yyyy</value>
+            </list>
+        </property>
+        <property name="alternativeAmPmList">
+            <list>
+                <value>AM,PM</value>
+                <value>A,P</value>
+                <value>A.M.,P.M.</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="ymdDateParser" class="com.cannontech.core.service.impl.ConfigurableFlexibleDateParser">
+        <property name="dateTimeFormats">
+            <list>
+                <value>yyyy-MM-dd hh:mma</value>
+                <value>yyyy-MM-dd hh:mm a</value>
+                <value>yyyy-MM-dd HH:mm</value>
+            </list>
+        </property>
+        <property name="dateFormats">
+            <list>
+                <value>yyyy-MM-dd</value>
+            </list>
+        </property>
+        <property name="alternativeAmPmList">
+            <list>
+                <value>AM,PM</value>
+                <value>A,P</value>
+                <value>A.M.,P.M.</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="dmyDateParser" class="com.cannontech.core.service.impl.ConfigurableFlexibleDateParser">
+        <property name="dateTimeFormats">
+            <list>
+                <value>dd/MM/yy hh:mma</value>
+                <value>dd/MM/yyyy hh:mma</value>
+                <value>dd/MM/yy hh:mm a</value>
+                <value>dd/MM/yyyy hh:mm a</value>
+                <value>dd/MM/yy HH:mm</value>
+                <value>dd/MM/yyyy HH:mm</value>
+            </list>
+        </property>
+        <property name="dateFormats">
+            <list>
+                <value>dd/MM/yy</value>
+                <value>dd/MM/yyyy</value>
+            </list>
+        </property>
+        <property name="alternativeAmPmList">
+            <list>
+                <value>AM,PM</value>
+                <value>A,P</value>
+                <value>A.M.,P.M.</value>
+            </list>
+        </property>
+    </bean>
+
+</beans>

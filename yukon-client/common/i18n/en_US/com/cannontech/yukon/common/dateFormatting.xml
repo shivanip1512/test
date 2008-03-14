@@ -10,4 +10,6 @@
 <entry key="yukon.common.dateFormatting.DATEHM">MM/dd/yyyy HH:mm zz</entry>
 <entry key="yukon.common.dateFormatting.DATEH_AP">MM/dd/yyyy ha zz</entry>
 
+<entry key="yukon.common.dateFormatting.parserImplementation">MDY</entry>
+
 </properties>

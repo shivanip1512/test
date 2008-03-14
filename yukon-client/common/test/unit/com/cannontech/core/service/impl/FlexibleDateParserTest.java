@@ -8,27 +8,57 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
-import org.junit.Before;
+import javax.annotation.Resource;
+
+import org.apache.commons.lang.LocaleUtils;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import com.cannontech.user.SystemUserContext;
+import com.cannontech.core.service.DateFormattingService.DateOnlyMode;
 
-public class DateFormattingServiceImplTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@ContextConfiguration(locations={"/com/cannontech/mockContext.xml","/com/cannontech/core/service/dateContext.xml"})
+public class FlexibleDateParserTest {
     
-    private DateFormattingServiceImpl impl;
+    @Resource(name="mdyDateParser")
+    private FlexibleDateParser mdy_en;
+    
+    @Resource(name="ymdDateParser")
+    private FlexibleDateParser ymd_en;
     
     private DateFormat standardFormat = SimpleDateFormat.getInstance();
 
-
-    @Before
-    public void setUp() throws Exception {
-        impl = new DateFormattingServiceImpl();
-
+    @Test
+    public void testFlexibleDateParserYMD_en() {
+        // build up our list
+        List<DatePair> pairs = new ArrayList<DatePair>();
+        try {
+            pairs.add(new DatePair("1978-03-07 1:00PM", "03/07/1978 1:00 PM"));
+            pairs.add(new DatePair("1978-03-07 1:00 PM", "03/07/1978 1:00 PM"));
+            pairs.add(new DatePair("1978-3-7 1:00 PM", "03/07/1978 1:00 PM"));
+            pairs.add(new DatePair("1978-3-7 1:00PM", "03/07/1978 1:00 PM"));
+            pairs.add(new DatePair("1978-03-7 13:00", "03/07/1978 1:00 PM"));
+            pairs.add(new DatePair("1978-03-7 1:00", "03/07/1978 1:00 AM"));
+            pairs.add(new DatePair("1978-03-7", "03/07/1978 12:00 AM"));
+            pairs.add(new DatePair("1978-03-07", "03/07/1978 12:00 AM"));
+        } catch (ParseException e) {
+            fail("unable to initialize list");
+        }
+        
+        Locale testLocale = LocaleUtils.toLocale("en_US");
+        TimeZone testTimeZone = TimeZone.getDefault(); // must match timezone of standardFormat
+        
+        testPairs(ymd_en, pairs, testLocale, testTimeZone);
+        
     }
 
     @Test
-    public void testFlexibleDateParserStringLiteYukonUser() {
+    public void testFlexibleDateParserMDY_en() {
         // build up our list
         List<DatePair> pairs = new ArrayList<DatePair>();
         try {
@@ -57,15 +87,22 @@ public class DateFormattingServiceImplTest {
             fail("unable to initialize list");
         }
         
+        Locale testLocale = LocaleUtils.toLocale("en_US");
+        TimeZone testTimeZone = TimeZone.getDefault(); // must match timezone of standardFormat
+        
+        testPairs(mdy_en, pairs, testLocale, testTimeZone);
+
+    }
+
+    private void testPairs(FlexibleDateParser parser, List<DatePair> pairs, Locale testLocale, TimeZone testTimeZone) {
         for (DatePair pair : pairs) {
             try {
-                Date date = impl.flexibleDateParser(pair.userInput, new SystemUserContext());
+                Date date = parser.parseDate(pair.userInput, DateOnlyMode.START_OF_DAY, testLocale, testTimeZone);
                 assertEquals(pair.userInput + " doesn't match expected value", pair.fullDate, date);
             } catch (ParseException e) {
                 fail("unable to parse date: " + pair.userInput);
             }
         }
-
     }
     
     public class DatePair {

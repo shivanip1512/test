@@ -18,6 +18,7 @@
 			<value>com/cannontech/core/authorization/applicationContext.xml</value>
 			<value>com/cannontech/core/dao/applicationContext.xml</value>
 			<value>com/cannontech/core/dynamic/applicationContext.xml</value>
+            <value>com/cannontech/core/service/dateContext.xml</value>
        </list>
      </constructor-arg>
    </bean>

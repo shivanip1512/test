@@ -96,7 +96,7 @@
        <property name="service">
 		    <bean class="java.util.concurrent.Executors"
 		    	factory-method="newScheduledThreadPool"
-		    	destroy-method="shutdownNow">
+		    	destroy-method="shutdownNow"> <!-- It isn't in the interface, but this method will exist. -->
 		    	<constructor-arg value="2" />
 		    </bean>
        </property>
@@ -109,12 +109,6 @@
     
     <bean id="timeSource" class="com.cannontech.common.util.TimeSourceImpl"/>
 
-    <bean id="dateFormattingService"
-        class="com.cannontech.core.service.impl.DateFormattingServiceImpl">
-    </bean>
-    
-    
-    
     <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
         <property name="basenames">
             <list>
@@ -142,7 +136,7 @@
         <property name="fallbackToSystemLocale" value="false"/>
         <property name="parentThemeSource" ref="rootThemeSource"/>
         <property name="useCodeAsDefaultMessage" value="true"/>
-        <property name="cacheSeconds" value="0"/>
+        <property name="cacheSeconds" value="1"/>
     </bean>
     
     <bean id="yukonUserContextMessageSourceResolver" class="com.cannontech.i18n.YukonUserContextMessageSourceResolverImpl">
