@@ -95,7 +95,7 @@ copy:
         @echo:
         @%cd $(OBJ)
         $(CC) $(CFLAGS) $(INCLPATHS) $(RWLINKFLAGS)  /Fe..\$(BIN)\$(@B).exe \
-        $(@B).obj $(CCU_SIMULATOR_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS)
+        $(@B).obj $(CCU_SIMULATOR_OBJS) -link /subsystem:console $(COMPILEBASE)\lib\ctibase.lib $(COMPILEBASE)\lib\clrdump.lib $(BOOSTLIBS) $(BOOSTTESTLIBS) $(RWLIBS) $(LINKFLAGS)
 
         -@if not exist $(YUKONOUTPUT) md $(YUKONOUTPUT)
         -copy ..\$(BIN)\$(@B).exe $(YUKONOUTPUT)
