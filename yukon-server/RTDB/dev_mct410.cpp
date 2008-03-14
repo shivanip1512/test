@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.154 $
-* DATE         :  $Date: 2008/03/14 19:55:08 $
+* REVISION     :  $Revision: 1.155 $
+* DATE         :  $Date: 2008/03/14 23:37:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -464,21 +464,25 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
 {
     CommandSet cs;
 
-    cs.insert(CommandStore(Emetcon::Scan_Accum,                     Emetcon::IO_Function_Read, FuncRead_MReadPos,           FuncRead_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_KWH,                   Emetcon::IO_Function_Read, FuncRead_MReadPos,           FuncRead_MReadLen));
-    cs.insert(CommandStore(Emetcon::GetValue_FrozenKWH,             Emetcon::IO_Function_Read, FuncRead_FrozenMReadPos,     FuncRead_FrozenMReadLen));
-    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Function_Read, FuncRead_DemandPos,          FuncRead_DemandLen));
-    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,               Emetcon::IO_Function_Read, 0,                           0));
-    cs.insert(CommandStore(Emetcon::GetValue_LoadProfile,           Emetcon::IO_Function_Read, 0,                           0));
-    cs.insert(CommandStore(Emetcon::GetValue_LoadProfilePeakReport, Emetcon::IO_Function_Read, 0,                           0));
-    cs.insert(CommandStore(Emetcon::GetValue_Demand,                Emetcon::IO_Function_Read, FuncRead_DemandPos,          FuncRead_DemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,            Emetcon::IO_Function_Read, FuncRead_PeakDemandPos,      FuncRead_PeakDemandLen));
-    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,      Emetcon::IO_Function_Read, FuncRead_FrozenPos,          FuncRead_FrozenLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Voltage,               Emetcon::IO_Function_Read, FuncRead_VoltagePos,         FuncRead_VoltageLen));
-    cs.insert(CommandStore(Emetcon::GetValue_FrozenVoltage,         Emetcon::IO_Function_Read, FuncRead_FrozenVoltagePos,   FuncRead_FrozenVoltageLen));
-    cs.insert(CommandStore(Emetcon::GetValue_Outage,                Emetcon::IO_Function_Read, FuncRead_OutagePos,          FuncRead_OutageLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_Internal,             Emetcon::IO_Read,          Memory_StatusPos,            Memory_StatusLen));
-    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,          Emetcon::IO_Function_Read, FuncRead_LPStatusPos,        FuncRead_LPStatusLen));
+    cs.insert(CommandStore(Emetcon::Scan_Accum,                     Emetcon::IO_Function_Read, FuncRead_MReadPos,             FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_KWH,                   Emetcon::IO_Function_Read, FuncRead_MReadPos,             FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenKWH,             Emetcon::IO_Function_Read, FuncRead_FrozenMReadPos,       FuncRead_FrozenMReadLen));
+    cs.insert(CommandStore(Emetcon::Scan_Integrity,                 Emetcon::IO_Function_Read, FuncRead_DemandPos,            FuncRead_DemandLen));
+    cs.insert(CommandStore(Emetcon::Scan_LoadProfile,               Emetcon::IO_Function_Read, 0,                             0));
+    cs.insert(CommandStore(Emetcon::GetValue_LoadProfile,           Emetcon::IO_Function_Read, 0,                             0));
+    cs.insert(CommandStore(Emetcon::GetValue_LoadProfilePeakReport, Emetcon::IO_Function_Read, 0,                             0));
+    cs.insert(CommandStore(Emetcon::GetValue_Demand,                Emetcon::IO_Function_Read, FuncRead_DemandPos,            FuncRead_DemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_PeakDemand,            Emetcon::IO_Function_Read, FuncRead_PeakDemandPos,        FuncRead_PeakDemandLen));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenPeakDemand,      Emetcon::IO_Function_Read, FuncRead_FrozenPos,            FuncRead_FrozenLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Voltage,               Emetcon::IO_Function_Read, FuncRead_VoltagePos,           FuncRead_VoltageLen));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenVoltage,         Emetcon::IO_Function_Read, FuncRead_FrozenVoltagePos,     FuncRead_FrozenVoltageLen));
+    cs.insert(CommandStore(Emetcon::GetValue_Outage,                Emetcon::IO_Function_Read, FuncRead_OutagePos,            FuncRead_OutageLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Internal,             Emetcon::IO_Read,          Memory_StatusPos,              Memory_StatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_LoadProfile,          Emetcon::IO_Function_Read, FuncRead_LPStatusPos,          FuncRead_LPStatusLen));
+    cs.insert(CommandStore(Emetcon::GetStatus_Freeze,               Emetcon::IO_Read,          Memory_LastFreezeTimestampPos, Memory_LastFreezeTimestampLen
+                                                                                                                              + Memory_FreezeCounterLen
+                                                                                                                              + Memory_LastVoltageFreezeTimestampLen
+                                                                                                                              + Memory_VoltageFreezeCounterLen));
 
     //  These need to be duplicated from DeviceMCT because the 400 doesn't need the ARML.
     cs.insert(CommandStore(Emetcon::Control_Connect,            Emetcon::IO_Write,          Command_Connect,                0));
@@ -961,6 +965,8 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case Emetcon::GetStatus_LoadProfile:        status = decodeGetStatusLoadProfile(InMessage, TimeNow, vgList, retList, outList);  break;
 
         case Emetcon::GetStatus_Disconnect:         status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
+
+        case Emetcon::GetStatus_Freeze:             status = decodeGetStatusFreeze(InMessage, TimeNow, vgList, retList, outList);       break;
 
         case Emetcon::GetConfig_Disconnect:         status = decodeGetConfigDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
 
@@ -1888,6 +1894,68 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
     else
     {
         nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
+    }
+
+    if( found )
+    {
+        // Load all the other stuff that is needed
+        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
+    }
+
+    if( errRet )
+    {
+        delete errRet;
+        errRet = 0;
+    }
+
+    return nRet;
+}
+
+
+INT CtiDeviceMCT410::executeGetStatus( CtiRequestMsg              *pReq,
+                                       CtiCommandParser           &parse,
+                                       OUTMESS                   *&OutMessage,
+                                       list< CtiMessage* >  &vgList,
+                                       list< CtiMessage* >  &retList,
+                                       list< OUTMESS* >     &outList )
+{
+    INT nRet = NoMethod;
+
+
+    bool found = false;
+
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   string(OutMessage->Request.CommandStr),
+                                                   string(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   CtiMultiMsg_vec( ));
+
+    if(parse.isKeyValid("freeze"))
+    {
+        found = getOperation(Emetcon::GetStatus_Freeze, OutMessage->Buffer.BSt);
+
+        OutMessage->Sequence = Emetcon::GetStatus_Freeze;
+    }
+    else
+    {
+        nRet = Inherited::executeGetStatus(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     if( found )
@@ -3572,6 +3640,75 @@ INT CtiDeviceMCT410::decodeGetStatusLoadProfile( INMESS *InMessage, CtiTime &Tim
         //resultString += "Current Interval Pointer: " + CtiNumStr(DSt->Message[10]) + string("\n");
         resultString += (DSt->Message[11] & 0x01)?"Boundary Error\n":"";
         resultString += (DSt->Message[11] & 0x02)?"Power Fail\n":"";
+
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT410::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        string resultString;
+        unsigned long tmpTime;
+        CtiTime lpTime;
+
+        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        CtiPointDataMsg      *pData = NULL;
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        resultString += getName() + " / Freeze status:\n";
+
+        tmpTime = DSt->Message[0] << 24 |
+                  DSt->Message[1] << 16 |
+                  DSt->Message[2] <<  8 |
+                  DSt->Message[3];
+
+        updateFreezeInfo(DSt->Message[4], tmpTime);
+
+        resultString += "Last freeze timestamp: " + CtiTime(tmpTime).asString() + "\n";
+
+        resultString += "Freeze counter: " + CtiNumStr(getCurrentFreeze()) + "\n";
+        resultString += "Next freeze expected: freeze ";
+        resultString += ((getCurrentFreeze() % 2)?("two"):("one"));
+        resultString += "\n";
+
+        tmpTime = DSt->Message[5] << 24 |
+                  DSt->Message[6] << 16 |
+                  DSt->Message[7] <<  8 |
+                  DSt->Message[8];
+
+        //  we should eventually save the voltage freeze info as well
+
+        resultString += "Last voltage freeze timestamp: " + CtiTime(tmpTime).asString() + "\n";
+
+        resultString += "Voltage freeze counter: " + CtiNumStr(static_cast<unsigned>(DSt->Message[9])) + "\n";
+        resultString += "Next voltage freeze expected: freeze ";
+        resultString += ((DSt->Message[9] % 2)?("two"):("one"));
+        resultString += "\n";
+
+        resultString += "\n";
 
         ReturnMsg->setResultString(resultString);
 
