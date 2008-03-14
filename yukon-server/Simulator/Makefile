@@ -9,11 +9,11 @@ all:
 
 copy:
             @$(MAKE) -nologo -f makeexe.mak $@
-            @$(MAKE) -nologo -f maketest.mak
+            @$(MAKE) -nologo -f maketest.mak $@
 
 deps:
             @$(MAKE) -nologo -f makeexe.mak $@
-            @$(MAKE) -nologo -f maketest.mak
+            @$(MAKE) -nologo -f maketest.mak $@
 
 
 clean:

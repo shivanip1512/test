@@ -195,6 +195,8 @@ clean:
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\scanner
         @$(MAKE) -nologo  $@
+	@%cd $(COMPILEBASE)\Simulator
+	@$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\pil
         @$(MAKE) -nologo  $@
         @%cd $(COMPILEBASE)\service
@@ -254,6 +256,9 @@ deps:
         $(MAKE) -nologo  $@
         %cd $(COMPILEBASE)\scanner
         title %cd%
+        $(MAKE) -nologo  $@
+	@%cd $(COMPILEBASE)\Simulator
+	title %cd%
         $(MAKE) -nologo  $@
         %cd $(COMPILEBASE)\pil
         title %cd%
