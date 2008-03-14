@@ -540,6 +540,9 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 					        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=capBank.getControlDeviceID()%>">
 	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
 	                        </a>
+	                        <a href="/editor/copyBase.jsf?itemid=<%=capBank.getControlDeviceID()%>&type=1>">
+                               <img src="/editor/images/page_copy.png" border="0" height="15" width="15"/>
+                            </a>
                         </cti:checkProperty>
                     <%
 				    }
