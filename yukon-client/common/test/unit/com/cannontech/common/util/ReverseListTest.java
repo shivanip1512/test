@@ -27,8 +27,8 @@ public class ReverseListTest {
     @Test
     public void testGetInt() {
         ReverseList<Integer> r = new ReverseList<Integer>(listA);
-        assertEquals(5, r.get(0));
-        assertEquals(1, r.get(4));
+        assertEquals(5, (int)r.get(0));
+        assertEquals(1, (int)r.get(4));
         assertEquals(listB, r);
     }
 

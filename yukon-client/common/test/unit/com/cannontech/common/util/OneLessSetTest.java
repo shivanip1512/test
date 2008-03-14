@@ -11,8 +11,6 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.cannontech.common.util.OneLessSet;
-
 public class OneLessSetTest {
     private Set<Integer> theWholeSet;
 
@@ -43,13 +41,13 @@ public class OneLessSetTest {
         Set<Integer> oneLess = new OneLessSet<Integer>(theWholeSet, 1);
         Iterator<Integer> it = oneLess.iterator();
         assertTrue(it.hasNext());
-        assertEquals(2, it.next());
+        assertEquals(2, (int)it.next());
         assertTrue(it.hasNext());
-        assertEquals(3, it.next());
+        assertEquals(3, (int)it.next());
         assertTrue(it.hasNext());
-        assertEquals(4, it.next());
+        assertEquals(4, (int)it.next());
         assertTrue(it.hasNext());
-        assertEquals(5, it.next());
+        assertEquals(5, (int)it.next());
         assertFalse(it.hasNext());
     }
 
@@ -58,13 +56,13 @@ public class OneLessSetTest {
         Set<Integer> oneLess = new OneLessSet<Integer>(theWholeSet, 3);
         Iterator<Integer> it = oneLess.iterator();
         assertTrue(it.hasNext());
-        assertEquals(1, it.next());
+        assertEquals(1, (int)it.next());
         assertTrue(it.hasNext());
-        assertEquals(2, it.next());
+        assertEquals(2, (int)it.next());
         assertTrue(it.hasNext());
-        assertEquals(4, it.next());
+        assertEquals(4, (int)it.next());
         assertTrue(it.hasNext());
-        assertEquals(5, it.next());
+        assertEquals(5, (int)it.next());
         assertFalse(it.hasNext());
     }
     
@@ -73,13 +71,13 @@ public class OneLessSetTest {
         Set<Integer> oneLess = new OneLessSet<Integer>(theWholeSet, 5);
         Iterator<Integer> it = oneLess.iterator();
         assertTrue(it.hasNext());
-        assertEquals(1, it.next());
+        assertEquals(1, (int)it.next());
         assertTrue(it.hasNext());
-        assertEquals(2, it.next());
+        assertEquals(2, (int)it.next());
         assertTrue(it.hasNext());
-        assertEquals(3, it.next());
+        assertEquals(3, (int)it.next());
         assertTrue(it.hasNext());
-        assertEquals(4, it.next());
+        assertEquals(4, (int)it.next());
         assertFalse(it.hasNext());
     }
     
