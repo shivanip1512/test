@@ -222,6 +222,8 @@ ERRSTRUCT CTIErrors[] = {
 
     { ErrorInvalidData,     "Invalid data was was received for one or more data points.",               ERRTYPEPROTOCOL, " N/A"},
 
+    { ErrorFreezeNotRecorded,           "There is no record of the last freeze sent to this device.",   ERRTYPEPROTOCOL, " N/A"},
+
     { CtiInvalidRequest,    "Invalid/Incomplete Request",                       ERRTYPESYSTEM, " N/A"},
     { UnknownError,         "Unknown Error",                                    ERRTYPESYSTEM, " N/A"},
 
