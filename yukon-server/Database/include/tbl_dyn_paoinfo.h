@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.20 $
-* DATE         :  $Date: 2008/03/12 14:54:52 $
+* REVISION     :  $Revision: 1.21 $
+* DATE         :  $Date: 2008/03/14 23:32:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,7 +121,7 @@ public:
         Key_MCT_LLPInterest_RequestEnd,
 
         Key_FreezeCounter,
-        Key_ExpectedFreeze,
+        Key_FreezeExpected,
         Key_VerificationSequence,
         Key_FrozenRateAPeakTimestamp,
         Key_FrozenRateBPeakTimestamp,

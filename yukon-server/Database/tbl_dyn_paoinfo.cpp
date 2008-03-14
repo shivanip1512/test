@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/03/12 14:54:52 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2008/03/14 23:32:56 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -172,7 +172,7 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_IEDLoadProfileInterval, &_key_mct_ied_loadprofile_interval));
 
     retval.insert(make_pair(Key_FreezeCounter,              &_key_freeze_counter));
-    retval.insert(make_pair(Key_ExpectedFreeze,             &_key_expected_freeze));
+    retval.insert(make_pair(Key_FreezeExpected,             &_key_expected_freeze));
     retval.insert(make_pair(Key_VerificationSequence,       &_key_verification_sequence));
 
     retval.insert(make_pair(Key_MCT_TimeAdjustTolerance,        &_key_mct_time_adjust_tolerance));
