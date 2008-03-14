@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.125 $
-* DATE         :  $Date: 2008/03/14 19:55:08 $
+* REVISION     :  $Revision: 1.126 $
+* DATE         :  $Date: 2008/03/14 23:36:39 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4194,6 +4194,11 @@ int CtiDeviceMCT::getNextFreeze( void ) const
 }
 
 
+int CtiDeviceMCT::getCurrentFreeze( void ) const
+{
+    return _freeze_counter;
+}
+
 int CtiDeviceMCT::getExpectedFreeze( void ) const
 {
     return _freeze_expected;
@@ -4203,6 +4208,17 @@ bool CtiDeviceMCT::getExpectedFreezeParity( void ) const
 {
     return !(_freeze_expected % 2);
 }
+
+void CtiDeviceMCT::updateFreezeInfo( int freeze_counter, unsigned long freeze_timestamp )
+{
+    _freeze_counter  = freeze_counter;
+    _freeze_expected = freeze_counter;
+
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, freeze_timestamp);
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter,  _freeze_counter);
+    setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeExpected, _freeze_expected);
+}
+
 
 void CtiDeviceMCT::setExpectedFreeze( int next_freeze )
 {
@@ -4216,9 +4232,9 @@ void CtiDeviceMCT::setExpectedFreeze( int next_freeze )
             _freeze_counter = getDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter);
         }
 
-        if( _freeze_expected == std::numeric_limits<int>::min() && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze) )
+        if( _freeze_expected == std::numeric_limits<int>::min() && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeExpected) )
         {
-            _freeze_expected = getDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze);
+            _freeze_expected = getDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeExpected);
         }
 
         if( _freeze_expected >= 0 )
@@ -4228,7 +4244,7 @@ void CtiDeviceMCT::setExpectedFreeze( int next_freeze )
                 _freeze_expected = (_freeze_expected + 1) & 0xff;
 
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, CtiTime::now().seconds());
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, _freeze_expected);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeExpected, _freeze_expected);
             }
         }
         else if( _freeze_counter >= 0 )
@@ -4238,7 +4254,7 @@ void CtiDeviceMCT::setExpectedFreeze( int next_freeze )
                 _freeze_expected = (_freeze_counter + 1) & 0xff;
 
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, CtiTime::now().seconds());
-                setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, _freeze_expected);
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeExpected, _freeze_expected);
             }
         }
     }
@@ -4249,9 +4265,9 @@ int CtiDeviceMCT::checkFreezeLogic( int incoming_counter, string &error_string )
 {
     int status = NoError;
 
-    if( _freeze_expected == std::numeric_limits<int>::min() && hasDynamicInfo(Keys::Key_ExpectedFreeze) )
+    if( _freeze_expected == std::numeric_limits<int>::min() && hasDynamicInfo(Keys::Key_FreezeExpected) )
     {
-        _freeze_expected = getDynamicInfo(Keys::Key_ExpectedFreeze);
+        _freeze_expected = getDynamicInfo(Keys::Key_FreezeExpected);
     }
 
     _freeze_counter = incoming_counter;
@@ -4301,7 +4317,7 @@ int CtiDeviceMCT::checkFreezeLogic( int incoming_counter, string &error_string )
 
         _freeze_expected = tmp_expected * -1;
 
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, _freeze_expected);
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeExpected, _freeze_expected);
     }
 
     return status;
