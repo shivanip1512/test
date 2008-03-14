@@ -1289,6 +1289,9 @@ public class StarsAdminUtil {
 					CtiUtilities.getDatabaseAlias()
 					);
 			stmt.execute();
+			
+			List operatorLoginIDs = energyCompany.getOperatorLoginIDs();
+			operatorLoginIDs.add(yukonUser.getUserID());
 		}
 		
 		LiteYukonUser liteUser = new LiteYukonUser(
