@@ -22,7 +22,6 @@
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
 	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
-	<classpathentry kind="lib" path="/third-party/junit-4.1.jar" sourcepath="Z:/java/Third-Party Sources/junit-4.1-src.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-fileupload.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
