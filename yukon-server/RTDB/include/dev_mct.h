@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2008/03/14 19:55:08 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2008/03/14 23:36:19 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -77,8 +77,10 @@ protected:
 
     unsigned long _disconnectAddress;
 
-    int  getExpectedFreeze(void) const;
-    bool getExpectedFreezeParity(void) const;
+    int  getCurrentFreeze () const;
+    int  getExpectedFreeze() const;
+    bool getExpectedFreezeParity() const;
+    void updateFreezeInfo(int freeze_counter, unsigned long freeze_timestamp);
 
     static bool getMCTDebugLevel(int mask);
 
