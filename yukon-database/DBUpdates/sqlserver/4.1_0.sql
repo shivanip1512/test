@@ -129,7 +129,7 @@ ALTER TABLE DYNAMICBILLINGFIELD ADD PadSide varchar(5);
 go
 UPDATE DYNAMICBILLINGFIELD SET PadSide = 'none';
 go
-ALTER TABLE DYNAMICBILLINGFIELD alter columnPadSide varchar(5) not null;
+ALTER TABLE DYNAMICBILLINGFIELD alter column PadSide varchar(5) not null;
 go
 
 ALTER TABLE DYNAMICBILLINGFIELD ADD ReadingType varchar(12);
