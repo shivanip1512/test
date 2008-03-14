@@ -1,17 +1,15 @@
 package com.cannontech.billing.format.dynamic;
 
-import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
-import java.text.Format;
 import java.text.SimpleDateFormat;
-import java.util.StringTokenizer;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.billing.format.BillingFormatterBase;
+import com.cannontech.common.dynamicBilling.Channel;
 import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
@@ -58,7 +56,13 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 
 			// if it is plain text, just write the format into the file
 			if (fName.equals("Plain Text")) {
-				writeToFile.append(field.getFormat());
+			    
+			    String valueString = field.getFormat();
+			    if(field.getMaxLength() > 0) {
+                    valueString = processValueString(field, valueString);
+                }
+			    writeToFile.append(valueString);
+
 			} else {
 				BillableField billableField = BillableField.valueOf(fName);
 
@@ -66,74 +70,62 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 				try {
 
 					// the field have reading format associated with them
-					Format format = null;
 					if (field.getName().endsWith(READING) == true) {
 
 						if (device.getValue(billableField) == null) {
 							writeToFile.append("");
 						} else {
-							double value = device.getValue(billableField);
+						    Double value = device.getValue(Channel.ONE, field.getReadingType(), billableField);
 							String valueString = String.valueOf(value);
 
 							String formatString = field.getFormat();
 
+							DecimalFormat formatter;
 							// if there are no format, default it
 							if (formatString.equals("")) {
 								formatString = "#####.00";
-								format = new DecimalFormat(formatString);
+								formatter = new DecimalFormat(formatString);
 							} else {
 								if (StringUtils.isBlank(formatString)) {
 									throw new RuntimeException(
 											"WARNING: EMPTY STRING");
 								} else {
-									format = new DecimalFormat(formatString);
+									formatter = new DecimalFormat(formatString);
 								}
 							}
 
-							// Convert to BigDecimal to truncate the decimal digits
-							// to the correct length
-							BigDecimal val = new BigDecimal(value);
-
-							// if a decimal is put as first character, there is at least 1 integer
-							if (formatString.startsWith(".")) {
-								formatString = "0" + formatString;
-							}
-							int maxLength = field.getMaxLength();
-							int decimals = getNoDec(formatString);
-
-                            if(maxLength > 0) {
-    							((DecimalFormat) format).setMaximumIntegerDigits(maxLength);
-                            }
-							val = val.setScale(decimals, BigDecimal.ROUND_DOWN);
-							
-							valueString = format.format(val);
+							valueString = formatter.format(value);
+							valueString = processValueString(field, valueString);
 
 							writeToFile.append(valueString);
 						}
 
 						// the field have timestamp format associated with them
 					} else if (field.getName().endsWith(TIMESTAMP) == true) {
-						Timestamp timestamp = device
-								.getTimestamp(billableField);
+						Timestamp timestamp = device.getTimestamp(billableField);
 						if (timestamp == null) {
 							writeToFile.append("");
 						} else {
 							String formatString = field.getFormat();
 
+							SimpleDateFormat dateFormatter;
 							// if no format, default it
 							if (formatString.equals("")) {
-								format = new SimpleDateFormat(
+								dateFormatter = new SimpleDateFormat(
 										"MM/dd/yyyy hh:mm:ss zZ");
 							} else {
 								if (StringUtils.isBlank(formatString)) {
 									throw new RuntimeException(
 											"WARNING: EMPTY STRING");
 								} else {
-									format = new SimpleDateFormat(formatString);
+									dateFormatter = new SimpleDateFormat(formatString);
 								}
 							}
-
-							writeToFile.append(format.format(timestamp));
+							
+							String valueString = dateFormatter.format(timestamp);
+                            valueString = processValueString(field, valueString);
+							
+							writeToFile.append(valueString);
 						}
 
 						// no timestamp or reading, just data
@@ -142,6 +134,7 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 							writeToFile.append("");
 						} else {
 							String data = device.getData(billableField);
+                            data = processValueString(field, data);
 							writeToFile.append(data);
 						}
 					}
@@ -171,7 +164,42 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 		return writeToFile.toString();
 	}
 
-	/**
+	// This method takes care of any modifying that needs to take place
+	// on the valueString to output the wanted representation 
+	private String processValueString(DynamicBillingField field, String valueString) {
+	    // This if checks to see if we need more padding or 
+	    // to truncate from the front of the value
+	    if(field.getMaxLength() > 0) {
+
+	        int neededPadSize = field.getMaxLength() - valueString.length();
+	        if (neededPadSize > 0) {
+	            if (!field.getPadChar().equalsIgnoreCase("")){
+	                // This generates the padding string that will be added to
+	                // the beginning/end of the string.
+	                String paddedStr = "";
+	                for (int i = 0; i < neededPadSize; i++){
+	                    paddedStr += field.getPadChar();
+	                }
+
+	                // Put the padding on the left or right
+	                if (field.getPadSide().equalsIgnoreCase("left")) {
+	                    valueString = paddedStr + valueString;
+	                }
+	                if (field.getPadSide().equalsIgnoreCase("right")) {
+	                    valueString += paddedStr;
+	                }
+	            }
+
+	            // Too much padding truncating first part of the valueString
+	        } else {
+	            int desiredStartPos = - neededPadSize;
+	            valueString = valueString.substring(desiredStartPos,valueString.length());
+	        }
+	    }
+	    return valueString;
+	}
+
+    /**
 	 * This method is used to load a dynamic billing format from persistance.
 	 * 
 	 * @param formatId -Id of the format to load
@@ -181,34 +209,6 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 			dynamicFormat = dynamicBillingFileDao.retrieve(formatId);
 		} catch (EmptyResultDataAccessException er) {
 			throw new RuntimeException("WARNING: Format is not found in database");
-		}
-	}
-
-	/**
-	 * Helper method to get the number of decimal part of the format
-	 * 
-	 * @param format - the string pattern
-	 */
-	private static int getNoDec(String format) {
-		int digits = 0;
-		StringTokenizer st = new StringTokenizer(format, ".");
-		if (st.hasMoreTokens() == false) {
-			return 0;
-		} else {
-			st.nextToken();
-		}
-		if (st.hasMoreTokens() == false) {
-			return 0;
-		} else {
-			format = st.nextToken(); // get the decimal
-
-			for (int i = 0; i < format.length(); i++) {
-				if (format.charAt(i) == '#' || format.charAt(i) == '0') {
-					digits++;
-				}
-			}
-
-			return digits;
 		}
 	}
 

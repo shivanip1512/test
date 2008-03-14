@@ -37,7 +37,9 @@
 		<input 
 			type="text" 
 			id="delimiter" 
-			name="delimiter" 
+			name="delimiter"
+            size="1" 
+            maxLength="1"
 			style="width:50px;" 
 			value="<c:out value="${format.delim}"/>" 
 			<c:if test="${format.delim == ',' || format.delim == ';' || format.delim ==':'}">readOnly="readonly" </c:if>
@@ -57,7 +59,7 @@
 			
 		<input type="hidden" id="formatId" name="formatId" value="${initiallySelected}" >
 		<input type="hidden" id="fieldArray" name="fieldArray" value="">
-		<table width="870" height="223" border="0" cellpadding="0" cellspacing="0">
+		<table width="1200" height="223" border="0" cellpadding="0" cellspacing="0">
 			<tr>
 	    		<td width="260" align="center">
     				<h4 style="display: inline;">Available Fields</h4>
@@ -75,7 +77,7 @@
     				<h4 style="display: inline;">Selected Fields</h4>
 	        		<select id="selectedFields" name="selectedFields" style="width:260px; height:200px;" multiple="multiple" onchange="selectedFieldsChanged()" >
 						<c:forEach var="field" items="${selectedFields}">
-							<option format="<c:out value="${field.format}" />" maxLength="<c:out value="${field.maxLength}" />" >${field.name}</option>
+							<option format="<c:out value="${field.format}" />" maxLength="<c:out value="${field.maxLength}" />" padChar="<c:out value="${field.padChar}" />" padSide="<c:out value="${field.padSide}" />" readingType="<c:out value="${field.readingType}" />" >${field.name}</option>
 						</c:forEach>
 					</select>
 	    		</td>
@@ -84,39 +86,149 @@
 	    			<input type="button" id="downArrowButton" onclick="yukonGeneral_moveOptionPositionInSelect(selectedFields, 1);selectedFieldsChanged();" value="&darr;" disabled="disabled"/>
 	    		</td>
 	    		
-	    		<td align="center" valign="top" width="200px">
-	    			<div id="valueFormatDiv" style="display:none"> 
+	    		<td id="fieldFormats" valign="middle" width="600px" >
+                    <div id="valueFormatDiv" style="display:none"> 
 	    				<div id="valueWords"> </div>
-	    				<select id="valueFormatSelect" onchange="updateFormat('valueFormatSelect', 'valueFormat', 'select');">
-	    					<option value="No Format" selected="selected">No Format</option>
-	    					<option value="Custom">Custom</option>
-	    					<option value="###.###">###.###</option>
-	    					<option value="####.##">####.##</option>
-	    				</select> <br /> 
-	    				reading pattern: <br />
-	    				<input type="text" id="valueFormat" maxlength="30" value="" onkeyup="updateFormat('valueFormatSelect', 'valueFormat', 'text');" /> <br/>
-						max length (0 for no max): <br/>
-	    				<input type="text" id="maxLength" maxlength="30" value="" onkeyup="updateFormat(this, 'maxLength', 'maxLength');" /> <br/>
-	    				<a href="javascript:displayHelper($('valueHelper'));">Help with pattern</a>  <br />
+                        <table><tr>
+                                <td>Reading Type:</td>
+                                <td>
+                                    <select id="readingReadingType" onchange="updateFormat('reading', 'readingType');">
+                                        <c:forEach var="readingTypeValue" items="${readingTypes}">
+                                            <option value="${readingTypeValue}">${readingTypeValue}</option>
+                                        </c:forEach>
+                                    </select>
+                                </td>
+                            </tr><tr>
+                                <td>Reading Pattern:</td>
+                                <td>
+	    				           <select id="readingFormatSelect" onchange="updateFormat('reading', 'formatWithSelect');">
+	    					          <option value="No Format" selected="selected">No Format</option>
+	    					          <option value="Custom">Custom</option>
+	    					          <option value="###.###">###.###</option>
+	    					          <option value="####.##">####.##</option>
+	    				           </select>  
+	    				           <input type="text" id="readingFormat" maxlength="30" value="" onkeyup="updateFormat('reading', 'formatWithSelectText');" />
+                                </td>
+                            </tr><tr>
+                                <td>Field Size:</td>
+                                <td>
+                                    <input type="text" id="readingMaxLength" size="5" maxlength="5" value="" onkeyup="updateFormat('reading', 'maxLength');" /> (0 for no max)
+                                </td>
+	    				    </tr><tr>
+                                <td>Padding:</td>
+                                <td>
+                                    <select id="readingPadSide" onchange="updateFormat('reading', 'padSide');">
+                                        <option value="none">None</option>
+                                        <option value="left">Left</option>
+                                        <option value="right">Right</option> 
+                                    </select>
+                                    Character
+                                    <select id="readingPadCharSelect" onchange="updateFormat('reading', 'padCharSelect');">
+                                        <option value="Space" selected="selected">Space</option>
+                                        <option value="Zero">Zero</option>
+                                        <option value="Custom">Custom</option> 
+                                    </select>
+                        
+                                    <input type="text" id="readingPadChar" size="1" maxLength="1" value="" onkeyup="updateFormat('reading', 'padChar');" />
+                                </td>
+                            </tr><tr align="center">
+                                <td colspan="2">
+                                    <a href="javascript:displayHelper($('readingHelper'));">Help with Format</a>
+                                </td>
+                            </tr>
+                        </table>
 	    			</div> 
-	    			<div id="timestampFormatDiv" style="display:none"> 
-	    				<div id="timestampWords"> </div>
-	    				<select id="timestampFormatSelect" onchange="updateFormat('timestampFormatSelect', 'timestampFormat', 'select');">
-	    					<option selected="selected">No Format</option>
-	    					<option>Custom</option>
-	    					<option>dd/MM/yyyy</option>
-	    					<option>MM/dd/yyyy</option>
-	    					<option>hh:mm:ss a</option>
-	    					<option>HH:mm:ss</option>
-	    				</select> <br /> 
-	    				timestamp pattern: <br/>
-	    				<input type="text" id="timestampFormat" maxlength="30" value="" onkeyup="updateFormat('timestampFormatSelect', 'timestampFormat', 'text');"/> <br/> 
-	    				<a href="javascript:displayHelper($('timestampHelper'));" >Help with pattern</a> <br/>
+	    			
+                    <div id="timestampFormatDiv" style="display:none"> 
+                        <div id="timestampWords"> </div>
+                        <table><tr>
+                                <td>Reading Type:</td>
+                                <td>
+                                    <select id="timestampReadingType" onchange="updateFormat('timestamp', 'readingType');">
+                                        <c:forEach var="readingTypeValue" items="${readingTypes}">
+                                            <option value="${readingTypeValue}">${readingTypeValue}</option>
+                                        </c:forEach>
+                                    </select>
+                                </td>
+                            </tr><tr>
+                                <td>Timestamp Pattern: </td>
+                                <td>
+                                   <select id="timestampFormatSelect" onchange="updateFormat('timestamp', 'formatWithSelect');">
+                                        <option value="No Format" selected="selected">No Format</option>
+                                        <option value="Custom">Custom</option>
+                                        <option value="dd/MM/yyyy">dd/MM/yyyy</option>
+                                        <option value="MM/dd/yyyy">MM/dd/yyyy</option>
+                                        <option value="hh:mm:ss a">hh:mm:ss a</option>
+                                        <option value="HH:mm:ss">HH:mm:ss</option>
+                                    </select>
+                                    <input type="text" id="timestampFormat" maxlength="30" value="" onkeyup="updateFormat('timestamp', 'formatWithSelectText');"/> 
+                                </td>
+                            </tr><tr>
+                                <td>Field Size:</td>
+                                <td>
+                                    <input type="text" id="timestampMaxLength" size="5" maxlength="5" value="" onkeyup="updateFormat('timestamp', 'maxLength');" /> (0 for no max)
+                                </td>
+                            </tr><tr>
+                                <td>Padding:</td>
+                                <td>
+                                    <select id="timestampPadSide" onchange="updateFormat('timestamp', 'padSide');">
+                                        <option value="none">None</option>
+                                        <option value="left">Left</option>
+                                        <option value="right">Right</option> 
+                                    </select>
+                                    Character
+                                    <select id="timestampPadCharSelect" onchange="updateFormat('timestamp', 'padCharSelect');">
+                                        <option value="Space">Space</option>
+                                        <option value="Zero">Zero</option>
+                                        <option value="Custom">Custom</option> 
+                                    </select>
+                        
+                                    <input type="text" id="timestampPadChar" size="1" maxLength="1" value="" onkeyup="updateFormat('timestamp', 'padChar');" />
+                                </td>
+                            </tr><tr align="center">
+                                <td colspan="2">
+                                    <a href="javascript:displayHelper($('timestampHelper'));" >Help with Format</a>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    
+                    <div id="plainTextDiv" style="display:none">
+                        <table><tr>
+                                <td>Plain Text Input:</td>
+                                <td>
+                                    <input type="text" id="plainFormat" maxlength="30" value="" onkeyup="updateFormat('plain', 'formatWithoutSelect');">
+                                </td>
+                            </tr>
+                        </table>
 	    			</div>
-	    			<div id="plainTextDiv" style="display:none">
-	    				Plain Text Input:<br />
-	    				<input type="text" id="plainTextFormat" maxlength="30" value="" onkeyup="updateFormat(this, 'plainTextFormat', 'text');">
-	    			</div>
+                    
+                    <div id="genericFormatDiv" style="display:none">
+                        <table><tr>
+                                <td>Field Size:</td>
+                                <td>
+                                    <input type="text" id="genericMaxLength" size="5" maxlength="5" value="" onkeyup="updateFormat('generic', 'maxLength');" /> (0 for no max)
+                                </td>
+                            </tr><tr>
+                                <td>Padding:</td>
+                                <td>
+                                    <select id="genericPadSide" onchange="updateFormat('generic', 'padSide');">
+                                        <option value="none">None</option>
+                                        <option value="left">Left</option>
+                                        <option value="right">Right</option> 
+                                    </select>
+                                    Character
+                                    <select id="genericPadCharSelect" onchange="updateFormat('generic', 'padCharSelect');">
+                                        <option value="Space">Space</option>
+                                        <option value="Zero">Zero</option>
+                                        <option value="Custom">Custom</option> 
+                                    </select>
+                        
+                                    <input type="text" id="genericPadChar" size="1" maxLength="1" value="" onkeyup="updateFormat('generic', 'padChar');" />
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
 	    		</td>
 	  		</tr>
 		</table>
@@ -202,7 +314,7 @@
 				</table>
 			</div>
 		</div>
-		<div id="valueHelper" class="popUpDiv" style="display:none;">
+		<div id="readingHelper" class="popUpDiv" style="display:none;">
 			<!--  fix for IE6 bug (see itemPicker.css for more info) -->
 			<!--[if lte IE 6.5]><iframe></iframe><![endif]-->
 			<div align="left" style="border: 3px solid #888; padding: 5px 5px;" >

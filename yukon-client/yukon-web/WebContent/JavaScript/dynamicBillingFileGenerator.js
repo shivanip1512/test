@@ -13,7 +13,10 @@ function addToSelected(){
 		var tempOption = document.createElement('option');
 		tempOption.text = fields[i];
 		tempOption.setAttribute("format","");
+        tempOption.setAttribute("readingType", "ELECTRIC");
 		tempOption.setAttribute("maxLength","0");
+        tempOption.setAttribute("padChar"," ");
+        tempOption.setAttribute("padSide","none");
 		
 		// IE hack
 		try {
@@ -81,42 +84,46 @@ function selectedFieldsChanged(){
 
 		// Show format ui if applicable
 		if(selectedSelectedFields.length == 1) {
-			
 			var option = selectedFields.options[selectedFields.selectedIndex];
 			
+            // Checks to see if the format is reading
 			var valueDiv = $("valueFormatDiv");
-			var timestampDiv = $("timestampFormatDiv");
-			var plainTextDiv = $("plainTextDiv");
-			
 			if(option.text.include('reading')) {
 				valueDiv.style.display = "block";
-				
-				var format = getAttributeValue(option, 'format');
-				var maxLength = getAttributeValue(option, 'maxLength');
-				$('valueFormat').value = format;
-				$('maxLength').value = maxLength;
-
-				selectFormatOption($('valueFormatSelect'), format)
+				updateReadingFormatFields(option);
 			} else {
 				valueDiv.style.display = "none";
 			}
 
-			if(option.text.include('timestamp')) {
+            // Checks to see if the format is timestamp
+			var timestampDiv = $("timestampFormatDiv");
+            if(option.text.include('timestamp')) {
 				timestampDiv.style.display = "block";
-				var format = getAttributeValue(option, 'format');
-				$('timestampFormat').value = format;
-				selectFormatOption($('timestampFormatSelect'), format)
+                updateTimestampFormatFields(timestampDiv, option);
 			} else {
 				timestampDiv.style.display = "none";
 			}
 
-			if(option.text == 'Plain Text') {
+            // Checks to see if the format is plain text
+			var plainTextDiv = $("plainTextDiv");
+            if(option.text == 'Plain Text') {
 				plainTextDiv.style.display = "block";
-				var format = getAttributeValue(option, 'format');
-				$('plainTextFormat').value = format;
+                updatePlainTextFormatFields(plainTextDiv, option);
 			} else {
 				plainTextDiv.style.display = "none";
 			}
+
+            // Checks to see if it is non of the above cases
+            var genericFormatDiv = $("genericFormatDiv");
+            if(option.text.include('reading') || 
+               option.text.include('timestamp') ||
+               option.text == 'Plain Text'){
+               
+                genericFormatDiv.style.display = "none";
+            } else {
+				genericFormatDiv.style.display = "block";
+                updateGenericFormatFields(genericFormatDiv, option);
+            }
 		}
 		
 	} else {
@@ -127,12 +134,12 @@ function selectedFieldsChanged(){
 }
 
 function saveButton(){
-	$("begin").action = "save";
+    $("begin").action = "save";
 	save();
 	var errorMsg = "";
 	
 	var name = $("formatName").value;
-	$('errorMsg').innerHTML = "&nbsp;";
+    $('errorMsg').innerHTML = "&nbsp;";
 	
 	//name and fields cannot be empty;
 	if ($("selectedFields").length == 0){
@@ -154,10 +161,7 @@ function saveButton(){
 		$('errorMsg').innerHTML = "Error saving format: <br />" + errorMsg + "<br/>";
 		var currTime = new Date();
 		//check if it's less than 2 sec = 2000 ms
-		if ( currTime - errorHighlight < 2000){
-			//do nothing
-		}
-		else{
+		if ( currTime - errorHighlight >= 2000){
 			//do highlighting and set new date 
 			new Effect.Highlight($('errorMsg'), {'duration': 2, 'startcolor': '#FFE900'});
 			errorHighlight = new Date();
@@ -183,6 +187,9 @@ function save(){
 		
 		currentField.format = getAttributeValue(currentOption, 'format');
 		currentField.maxLength = getAttributeValue(currentOption, 'maxLength');
+        currentField.padChar = getAttributeValue(currentOption, 'padChar');
+        currentField.padSide = getAttributeValue(currentOption, 'padSide');
+        currentField.readingType = getAttributeValue(currentOption, 'readingType');
 		
 		fieldArray.push(currentField);
 	}
@@ -195,7 +202,6 @@ function save(){
 function getAttributeValue(option, attribute){
 	
 	var value = option.readAttribute(attribute);
-	
 	if(value == null){
 		return "";
 	}
@@ -239,44 +245,123 @@ function updateDelimiter(){
 	updatePreview();
 }
 
-function updateFormat(input, attribute, method){ 
+function updateFormat(headerText, method){ 
 
 	var selectedFields = $("selectedFields");
 	var index = selectedFields.selectedIndex;
-
+    
     if (index != -1 && method != 'noUpdate'){
+        var option = selectedFields.options[index];
 
-        if (method == 'maxLength') {
-            selectedFields.options[index].setAttribute('maxLength', $(attribute).value);
-        } else {
-            var patternIndex = $(input).selectedIndex;
-            if (patternIndex != null){
-                var inputValue = $(input).options[patternIndex].value;
-
-                if(method == 'select') {
+        switch (method){
+            case "maxLength":
+                var attributeValue = $(headerText+'MaxLength').value;
+                option.setAttribute('maxLength', attributeValue);
+                break;
+            case "padChar":
+                var attributeValue = $(headerText+'PadChar').value;
+                selectPadCharSelectOption($(headerText+'PadCharSelect'), attributeValue);
+                option.setAttribute('padChar', attributeValue);
+                break;
+            case "padSide":
+                var attributeValue = $(headerText+'PadSide').value;
+                option.setAttribute('padSide', attributeValue);
+                updatePadSideSelect(selectedFields, attributeValue);
+                checkPaddingSide(headerText, attributeValue);
+                break;
+            case "padCharSelect":
+                var attributeValue = getAttributeValue(option, 'padChar');
+                var selectDiv = $(headerText+'PadCharSelect');
+                var patternIndex = selectDiv.selectedIndex;
+                if (patternIndex != null) {
+                    var inputValue = selectDiv.options[patternIndex].value;
                     switch(inputValue) {
-                        case "No Format":
-                            $(attribute).value = "";
+                        case "Space":
+                            attributeValue = " ";
+                            break;
+                        case "Zero":
+                            attributeValue = "0";
                             break;
                         case "Custom":
+                            attributeValue = "";
+                            $(headerText+'PadChar').focus();
                             break;
                         default:
-                            $(attribute).value = inputValue;
-                            selectFormatOption($(input), $(attribute).value);
                             break;
                     }
                 }
-                if (method == 'text') {
-                    selectFormatOption($(input), $(attribute).value);
+                option.setAttribute('padChar', attributeValue);
+                $(headerText+'PadChar').value = attributeValue
+                break;
+            case "readingType":
+                var attributeValue = $(headerText+'ReadingType').value;
+                option.setAttribute('readingType', attributeValue);
+                break;
+            case "formatWithSelect":
+                var attributeValue = getAttributeValue(option, 'format');
+                
+                var selectDiv = $(headerText+'FormatSelect');
+                var patternIndex = selectDiv.selectedIndex;
+                if (patternIndex != null){
+                    var inputValue = selectDiv.options[patternIndex].value;
+                    switch(inputValue) {
+                        case "No Format":
+                            attributeValue = "";
+                            break;
+                        case "Custom":
+                            $(headerText+'Format').focus();
+                            break;
+                        default:
+                            attributeValue = inputValue;
+                            break;
+                    }
                 }
-            }
-            selectedFields.options[index].setAttribute('format', $(attribute).value);
+                selectedFields.options[index].setAttribute('format', attributeValue);
+                $(headerText+'Format').value = attributeValue;
+                break;
+            case "formatWithSelectText":
+                var attributeValue = $(headerText+'Format').value;
+                selectedFields.options[index].setAttribute('format', attributeValue);
+                selectFormatOption($(headerText+'FormatSelect'), attributeValue);
+                break;
+            case "formatWithoutSelect":
+                var attributeValue = $(headerText+'Format').value;
+                selectedFields.options[index].setAttribute('format', attributeValue);
+                break;
+            default:
+                break;
         }
     }
 	//make sure to save to the array 
 	save(); 
 	
 	updatePreview();
+}
+
+function checkPaddingSide(headerText, padSideValue){
+    if (padSideValue == "none") {
+        $(headerText+'PadChar').disabled = true;
+        $(headerText+'PadCharSelect').disabled = true;
+    } else {
+        $(headerText+'PadChar').disabled = false;
+        $(headerText+'PadCharSelect').disabled = false;
+    }
+}
+
+function selectPadCharSelectOption(select, value) { 
+    if (value == '0') {
+        value = 'Zero';
+    }
+    if (value == ' ') {
+        value = 'Space';
+    }
+    for (var i = 0; i < select.options.length; i++){
+        if (select.options[i].text == value){
+            select.selectedIndex = i;
+            return;
+        }
+    }
+    select.selectedIndex = 2;
 }
 
 function selectFormatOption(select, value) { 
@@ -348,4 +433,112 @@ function updatePreview(){
 //Helper function to make a html element display appear or disappear
 function displayHelper(elem){
 	elem.toggle();
+}
+
+//Helps with setting the padding side
+function updatePadSideSelect(padSideSelect, padSide){
+    for ( var i = 0; i < padSideSelect.options.length; i++) {
+        if (padSideSelect.options[i].value == padSide){
+            padSideSelect.options.selectedIndex = i;
+        }
+    }
+}
+
+// gets all the initial values for the current selected field
+function updateReadingFormatFields(option){
+
+    // gets the initial readingType value
+    var readingTypeValue = getAttributeValue(option, 'readingType');
+    $('readingReadingType').value = readingTypeValue;
+
+    // gets the initial format value
+    var format = getAttributeValue(option, 'format');
+    $('readingFormat').value = format;
+    selectFormatOption($('readingFormatSelect'), format);
+    
+    // get the initial maxLength value
+    var maxLength = getAttributeValue(option, 'maxLength');
+    $('readingMaxLength').value = maxLength;
+
+    // get the initial padChar value
+    var padChar = getAttributeValue(option, 'padChar');
+    $('readingPadChar').value = padChar;
+    selectPadCharSelectOption($('readingPadCharSelect'), padChar);
+
+    // get the initial padChar value
+    var padSide = getAttributeValue(option, 'padSide');
+    updatePadSideSelect($('readingPadSide'), padSide);
+    if (padSide == "none") {
+        $('readingPadChar').disabled = true;
+        $('readingPadCharSelect').disabled = true;
+    } else {
+        $('readingPadChar').disabled = false;
+        $('readingPadCharSelect').disabled = false;
+    }
+}
+
+// gets all the initial values for the current selected field
+function updateTimestampFormatFields(timestampDiv, option){
+
+    // gets the initial readingType value
+    var readingTypeValue = getAttributeValue(option, 'readingType');
+    $('timestampReadingType').value = readingTypeValue;
+
+    // gets the initial format value
+    var format = getAttributeValue(option, 'format');
+    $('timestampFormat').value = format;
+    selectFormatOption($('timestampFormatSelect'), format);
+    
+    // get the initial maxLength value
+    var maxLength = getAttributeValue(option, 'maxLength');
+    $('timestampMaxLength').value = maxLength;
+
+    // get the initial padChar value
+    var padChar = getAttributeValue(option, 'padChar');
+    $('timestampPadChar').value = padChar;
+    selectPadCharSelectOption($('timestampPadCharSelect'), padChar);
+
+    // get the initial padChar value
+    var padSide = getAttributeValue(option, 'padSide');
+    updatePadSideSelect($('timestampPadSide'), padSide);
+    if (padSide == "none") {
+        $('timestampPadChar').disabled = true;
+        $('timestampPadCharSelect').disabled = true;
+    } else {
+        $('timestampPadChar').disabled = false;
+        $('timestampPadCharSelect').disabled = false;
+    }
+}
+
+// gets all the initial values for the current selected field
+function updatePlainTextFormatFields(plainTextDiv, option){
+
+    // gets the initial format value
+    var format = getAttributeValue(option, 'format');
+    $('plainFormat').value = format;
+    
+}
+
+// gets all the initial values for the current selected field
+function updateGenericFormatFields(genericFormatDiv, option){
+
+    // get the initial maxLength value
+    var maxLength = getAttributeValue(option, 'maxLength');
+    $('genericMaxLength').value = maxLength;
+
+    // get the initial padChar value
+    var padChar = getAttributeValue(option, 'padChar');
+    $('genericPadChar').value = padChar;
+    selectPadCharSelectOption($('genericPadCharSelect'), padChar);
+
+    // get the initial padChar value
+    var padSide = getAttributeValue(option, 'padSide');
+    updatePadSideSelect($('genericPadSide'), padSide);
+    if (padSide == "none") {
+        $('genericPadChar').disabled = true;
+        $('genericPadCharSelect').disabled = true;
+    } else {
+        $('genericPadChar').disabled = false;
+        $('genericPadCharSelect').disabled = false;
+    }
 }

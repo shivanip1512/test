@@ -1,5 +1,7 @@
 package com.cannontech.common.dynamicBilling.model;
 
+import com.cannontech.common.dynamicBilling.ReadingType;
+
 /**
  * Model class which represents a billing field for a dynamic format
  */
@@ -11,6 +13,9 @@ public class DynamicBillingField {
     private int order;
     private String format = null;
     private int maxLength = 0;
+    private String padChar = " ";
+    private String padSide = "none";
+    private ReadingType readingType = ReadingType.ELECTRIC;
 
     public String getFormat() {
         return format;
@@ -60,8 +65,31 @@ public class DynamicBillingField {
         this.maxLength = maxLength;
     }
 
+    public String getPadChar() {
+        return padChar;
+    }
+
+    public void setPadChar(String padChar) {
+        this.padChar = padChar;
+    }
+
     public String toString() {
         return name + ", " + order + ", " + format;
     }
 
+    public String getPadSide() {
+        return padSide;
+    }
+
+    public void setPadSide(String padSide) {
+        this.padSide = padSide;
+    }
+
+    public ReadingType getReadingType() {
+        return readingType;
+    }
+
+    public void setReadingType(ReadingType readingType) {
+        this.readingType = readingType;
+    }
 }

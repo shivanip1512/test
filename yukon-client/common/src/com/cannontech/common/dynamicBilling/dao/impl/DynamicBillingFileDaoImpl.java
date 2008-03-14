@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
@@ -120,14 +121,17 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 		for (DynamicBillingField field : format.getFieldList()) {
 			int currentId = nextValueHelper.getNextValue("DynamicBillingField");
 			simpleJdbcTemplate.update(
-					"INSERT INTO DynamicBillingField (id, FormatID, FieldName, FieldOrder, FieldFormat, MaxLength) "
-						+ "VALUES(?,?,?,?,?,?)", 
+					"INSERT INTO DynamicBillingField (id, FormatID, FieldName, FieldOrder, FieldFormat, MaxLength, PadChar, PadSide, ReadingType) "
+						+ "VALUES(?,?,?,?,?,?,?,?,?)", 
 					currentId, 
 					format.getFormatId(),
 					field.getName(), 
 					field.getOrder(), 
 					field.getFormat(),
-                    field.getMaxLength());
+                    field.getMaxLength(),
+                    field.getPadChar(),
+                    field.getPadSide(),
+                    field.getReadingType().toString());
 		}
 	}
 
@@ -187,6 +191,9 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 			field.setOrder(rs.getInt("FieldOrder"));
 			field.setFormat(rs.getString("FieldFormat"));
 			field.setMaxLength(rs.getInt("MaxLength"));
+			field.setPadChar(rs.getString("PadChar"));
+			field.setPadSide(rs.getString("PadSide"));
+			field.setReadingType(ReadingType.valueOf(rs.getString("ReadingType")));
 			return field;
 		}
 

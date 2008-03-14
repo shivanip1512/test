@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -38,7 +39,6 @@ import com.cannontech.web.util.TextView;
 public class DynamicBillingController extends MultiActionController {
 
 	private DynamicBillingFormatter dynamicFormatter = null;
-
 	private DynamicBillingFileDao dynamicBillingFileDao = null;
 
 	public ModelAndView overview(HttpServletRequest request,
@@ -62,6 +62,13 @@ public class DynamicBillingController extends MultiActionController {
 		availableFields.add(0, "Plain Text");
 		mav.addObject("availableFields", availableFields);
 
+		List<String> readingTypes = getValidReadingTypes();
+		mav.addObject("readingTypes", readingTypes);
+
+		DynamicFormat format = new DynamicFormat();
+		format.setDelim(",");
+		mav.addObject("format", format);
+		
 		mav.addObject("initiallySelected", -1);
 		mav.addObject("title", "Create New Format");
 
@@ -120,6 +127,10 @@ public class DynamicBillingController extends MultiActionController {
 		}
 		mav.addObject("selectedFields", selectedFields);
 
+	    List<String> readingTypes = getValidReadingTypes();
+	    mav.addObject("readingTypes", readingTypes);
+
+		
 		mav.addObject("title", "Edit Format");
 
 		return mav;
@@ -165,6 +176,9 @@ public class DynamicBillingController extends MultiActionController {
 		}
 		mav.addObject("selectedFields", selectedFields);
 
+		List<String> readingTypes = getValidReadingTypes();
+		mav.addObject("readingTypes", readingTypes);
+		
 		mav.addObject("title", "Edit Format");
 
 		return mav;
@@ -272,7 +286,9 @@ public class DynamicBillingController extends MultiActionController {
 			throws ServletRequestBindingException {
 
 		DynamicFormat format = new DynamicFormat();
-		List<DynamicBillingField> fieldList = new ArrayList<DynamicBillingField>();
+//		List<DynamicBillingField> fieldList = new ArrayList<DynamicBillingField>();
+
+        List<DynamicBillingField> fieldList = format.getFieldList();
 
 		format.setFormatId(ServletRequestUtils.getIntParameter(request, "formatId"));
 		format.setName(ServletRequestUtils.getStringParameter( request, "formatName"));
@@ -302,7 +318,21 @@ public class DynamicBillingController extends MultiActionController {
             if(!StringUtils.isEmpty(maxLength)) {
                 field.setMaxLength(Integer.valueOf(maxLength));
             }
-			fieldList.add(i, field);
+            
+            field.setPadChar(object.getString("padChar"));
+            
+            String padSide = object.getString("padSide");
+            if(!StringUtils.isEmpty(padSide)){
+                field.setPadSide(padSide);
+            }
+            
+            String readingTypeStr = object.getString("readingType");
+            if(!StringUtils.isEmpty(readingTypeStr)){
+                ReadingType readingType = ReadingType.valueOf(readingTypeStr);
+                field.setReadingType(readingType);
+            }
+            
+            fieldList.add(i, field);
 		}
 		format.setFieldList(fieldList);
 
@@ -358,7 +388,7 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.totalConsumption, data);
+		setAllReadingTypes(device, BillableField.totalConsumption, data);
 
 		// Add rate A consumption
 		data = new BillingData();
@@ -367,7 +397,7 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.rateAConsumption, data);
+        setAllReadingTypes(device, BillableField.rateAConsumption, data);
 
 		// Add rate B consumption
 		data = new BillingData();
@@ -376,7 +406,7 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.rateBConsumption, data);
+        setAllReadingTypes(device, BillableField.rateBConsumption, data);
 
 		// Add rate C consumption
 		data = new BillingData();
@@ -385,7 +415,7 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.rateCConsumption, data);
+        setAllReadingTypes(device, BillableField.rateCConsumption, data);
 
 		// Add rate D consumption
 		data = new BillingData();
@@ -394,7 +424,7 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(1);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.rateDConsumption, data);
+        setAllReadingTypes(device, BillableField.rateDConsumption, data);
 
 		// Add total peak demand
 		data = new BillingData();
@@ -403,7 +433,7 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(0);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.totalPeakDemand, data);
+        setAllReadingTypes(device, BillableField.totalPeakDemand, data);
 
 		// Add rate A demand
 		data = new BillingData();
@@ -412,7 +442,7 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(0);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.rateADemand, data);
+        setAllReadingTypes(device, BillableField.rateADemand, data);
 
 		// Add rate B demand
 		data = new BillingData();
@@ -421,7 +451,7 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(0);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.rateBDemand, data);
+        setAllReadingTypes(device, BillableField.rateBDemand, data);
 
 		// Add rate C demand
 		data = new BillingData();
@@ -430,7 +460,7 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(0);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.rateCDemand, data);
+        setAllReadingTypes(device, BillableField.rateCDemand, data);
 
 		// Add rate D demand
 		data = new BillingData();
@@ -439,11 +469,41 @@ public class DynamicBillingController extends MultiActionController {
 		data.setUnitOfMeasure(0);
 		data.setTimestamp(new Timestamp(new Date().getTime()));
 
-		device.addData(BillableField.rateDDemand, data);
+        setAllReadingTypes(device, BillableField.rateDDemand, data);
 
 		return device;
 	}
 
+	/**
+	 * This function sets all the default data for all readingTypes
+	 * 
+	 * @param device
+	 * @param billableField
+	 * @param data
+	 */
+	private void setAllReadingTypes(BillingDeviceBase device,
+            BillableField billableField, BillingData data) {
+	    
+	    ReadingType[] readingTypes = ReadingType.values();
+	    for (ReadingType readingType : readingTypes) {
+	        device.addData(Channel.ONE, readingType, billableField, data);
+        }
+    }
+
+    private List<String> getValidReadingTypes(){
+        List<String> readingTypeStrs = new ArrayList<String>();
+        
+        Set<ReadingType> readingTypeExcludeList = Collections.singleton(ReadingType.DEVICE_DATA);
+	    ReadingType[] readingTypes = ReadingType.values();
+	    for (ReadingType readingType : readingTypes) {
+	        if(!readingTypeExcludeList.contains(readingType)){
+	            readingTypeStrs.add(readingType.toString());
+	        }
+	    }
+	    
+	    return readingTypeStrs;
+	}
+	
 	public DynamicBillingFileDao getDynamicBillingFileDao() {
 		return dynamicBillingFileDao;
 	}
