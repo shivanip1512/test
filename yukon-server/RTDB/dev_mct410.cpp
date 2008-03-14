@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.153 $
-* DATE         :  $Date: 2008/02/13 16:08:22 $
+* REVISION     :  $Revision: 1.154 $
+* DATE         :  $Date: 2008/03/14 19:55:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2359,8 +2359,6 @@ int CtiDeviceMCT410::executePutConfigOptions(CtiRequestMsg *pReq,CtiCommandParse
 INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
-    ULONG i,x;
-    INT pid;
     INT tags = 0;
     CtiTime pointTime;
     bool valid_data = true;
@@ -2370,9 +2368,8 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
     point_info pi, pi_freezecount;
 
-    CtiPointSPtr         pPoint;
-    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg      *pData = NULL;
+    CtiPointSPtr   pPoint;
+    CtiReturnMsg  *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
@@ -2400,113 +2397,68 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
         if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
         {
-            if( _expected_freeze < 0 && hasDynamicInfo(Keys::Key_ExpectedFreeze) )
-            {
-                _expected_freeze = getDynamicInfo(Keys::Key_ExpectedFreeze);
-            }
-
-            if( _freeze_counter  < 0 && hasDynamicInfo(Keys::Key_FreezeCounter) )
-            {
-                _freeze_counter = getDynamicInfo(Keys::Key_FreezeCounter);
-            }
+            string freeze_error;
 
             pi_freezecount = CtiDeviceMCT4xx::getData(DSt->Message + 3, 1, ValueType_Raw);
 
-            if( _freeze_counter < 0 || pi_freezecount.value >= _freeze_counter )
+            if( status = checkFreezeLogic(pi_freezecount.value, freeze_error) )
             {
-                if( pi_freezecount.value > (_freeze_counter + 1) )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
-                                            ") has increased by more than expected value (" << _freeze_counter + 1 <<
-                                            ") on device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                _freeze_counter = pi_freezecount.value;
-
-                setDynamicInfo(Keys::Key_FreezeCounter, _freeze_counter);
-            }
-            else
-            {
-                valid_data = false;
-
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
-                                        ") less than expected value (" << _freeze_counter <<
-                                        ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                }
-
-                ReturnMsg->setResultString("Invalid freeze counter (" + CtiNumStr(pi_freezecount.value) + ") < (" + CtiNumStr(_freeze_counter) + ")");
-                status = ErrorInvalidFreezeCounter;
+                ReturnMsg->setResultString(freeze_error);
             }
         }
 
-        for( int i = 0; i < ChannelCount; i++ )
+        if( !status )
         {
-            int offset = (i * 3);
-
-            if( !i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
+            for( int i = 0; i < ChannelCount; i++ )
             {
-                if( InMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum ||
-                    InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_KWH )
+                int offset = (i * 3);
+
+                if( !i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
                 {
-                    //  normal KWH read, nothing too special
-                    tags = TAG_POINT_MUST_ARCHIVE;
-
-                    pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_Accumulator);
-
-                    pointTime -= pointTime.seconds() % 60;
-                }
-                else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
-                {
-                    //  but this is where the action is - frozen decode
-                    tags = 0;
-
-                    if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
-
-                    pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
-
-                    if( pi.freeze_bit == _expected_freeze )  //  low-order bit indicates which freeze caused the value to be stored
+                    if( InMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum ||
+                        InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_KWH )
                     {
-                        //  assign time from the last freeze time, if the lower bit of dp.first matches the last freeze
-                        //    and the freeze counter (DSt->Message[3]) is what we expect
-                        //  also, archive the received freeze and the freeze counter into the dynamicpaoinfo table
+                        //  normal KWH read, nothing too special
+                        tags = TAG_POINT_MUST_ARCHIVE;
 
-                        if( hasDynamicInfo(Keys::Key_DemandFreezeTimestamp) )
+                        pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_Accumulator);
+
+                        pointTime -= pointTime.seconds() % 60;
+                    }
+                    else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
+                    {
+                        //  but this is where the action is - frozen decode
+                        tags = 0;
+
+                        if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
+
+                        pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
+
+                        if( pi.freeze_bit != getExpectedFreezeParity() )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
+                                                    ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
+                                                    "/" << getExpectedFreeze() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            pi.description  = "Freeze parity does not match (";
+                            pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
+                            pi.description += "/" + CtiNumStr(getExpectedFreeze()) + ")";
+                            pi.quality = InvalidQuality;
+                            pi.value = 0;
+
+                            ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp)).asString());
+                            status = ErrorInvalidFrozenReadingParity;
+                        }
+                        else
                         {
                             pointTime  = CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp));
                             pointTime -= pointTime.seconds() % 60;
                         }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-
-                            pointTime -= pointTime.seconds() % 60;
-                        }
                     }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
-                                                ") does not match expected freeze bit (" << _expected_freeze <<
-                                                ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
 
-                        valid_data = false;
-                        ReturnMsg->setResultString("Invalid freeze parity (" + CtiNumStr(pi.freeze_bit) + ") != (" + CtiNumStr(_expected_freeze) + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp)).asString());
-                        status = ErrorInvalidFrozenReadingParity;
-                    }
-                }
-
-                if( valid_data )
-                {
                     string point_name;
                     bool reported = false;
 
@@ -2517,7 +2469,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                                           ReturnMsg, pi, point_name, pointTime, 0.1, tags);
 
                     //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
-                    if( pi.quality == InvalidQuality && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
+                    if( pi.quality == InvalidQuality && !status && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
                     {
                         ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1));
                         status = ErrorInvalidData;

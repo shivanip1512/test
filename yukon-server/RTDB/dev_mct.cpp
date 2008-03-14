@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.124 $
-* DATE         :  $Date: 2007/12/03 21:43:22 $
+* REVISION     :  $Revision: 1.125 $
+* DATE         :  $Date: 2008/03/14 19:55:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,6 +19,7 @@
 #include <time.h>
 #include <utility>
 #include <list>
+#include <limits>
 
 #include "numstr.h"
 
@@ -56,8 +57,8 @@ CtiDeviceMCT::CtiDeviceMCT() :
     _configType(ConfigInvalid),
     _peakMode(PeakModeInvalid),
     _disconnectAddress(0),
-    _freeze_counter(-1),
-    _expected_freeze(-1)
+    _freeze_counter (std::numeric_limits<int>::min()),
+    _freeze_expected(std::numeric_limits<int>::min())
 {
     _lastReadDataPurgeTime = _lastReadDataPurgeTime.now();
     for( int i = 0; i < MCTConfig_ChannelCount; i++ )
@@ -1988,14 +1989,14 @@ INT CtiDeviceMCT::executePutStatus(CtiRequestMsg                  *pReq,
                 function = Emetcon::PutStatus_FreezeOne;
                 found = getOperation(function, OutMessage->Buffer.BSt);
 
-                setExpectedFreeze(parse.getiValue("freeze"));
+                setExpectedFreeze(1);
             }
             else if( parse.getiValue("freeze") == 2 )
             {
                 function = Emetcon::PutStatus_FreezeTwo;
                 found = getOperation(function, OutMessage->Buffer.BSt);
 
-                setExpectedFreeze(parse.getiValue("freeze"));
+                setExpectedFreeze(2);
             }
         }
     }
@@ -4167,34 +4168,142 @@ void CtiDeviceMCT::setConfigData( const string &configName, int configType, cons
 
 int CtiDeviceMCT::getNextFreeze( void ) const
 {
-    return ((_expected_freeze + 1) % 2) + 1;
+    //  default to 1 - not ideal, but the best we can do with the analyzeWhiteRabbits() function call
+    int retval = 1;
+
+    if( _freeze_expected != std::numeric_limits<int>::min() )
+    {
+        retval = abs(_freeze_expected % 2) + 1;
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - _freeze_counter not set in CtiDeviceMCT::getNextFreeze(), sending _freeze_expected + 1 (" << retval << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+    }
+    else if( _freeze_counter >= 0 )
+    {
+        retval = (_freeze_counter % 2) + 1;
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " **** Checkpoint - _freeze_counter not set in CtiDeviceMCT::getNextFreeze(), sending 1 **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+    }
+
+    return retval;
 }
 
 
+int CtiDeviceMCT::getExpectedFreeze( void ) const
+{
+    return _freeze_expected;
+}
+
+bool CtiDeviceMCT::getExpectedFreezeParity( void ) const
+{
+    return !(_freeze_expected % 2);
+}
+
 void CtiDeviceMCT::setExpectedFreeze( int next_freeze )
 {
-    //  this function should be called even when a manual freeze is sent
+    //  0-based
+    next_freeze--;
 
-    if( next_freeze == 1 || next_freeze == 2 )
+    if( next_freeze == 0 || next_freeze == 1 )
     {
-        _expected_freeze = next_freeze - 1;
-
-        //  if it's uninitialized,
-        if( (_freeze_counter < 0) && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter) )
+        if( _freeze_counter == std::numeric_limits<int>::min() && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter) )
         {
             _freeze_counter = getDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter);
         }
 
-        if( (_freeze_counter > 0) &&
-            (_freeze_counter % 2) != _expected_freeze )
+        if( _freeze_expected == std::numeric_limits<int>::min() && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze) )
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - _freeze_counter = " << _freeze_counter << ", next_freeze = " << next_freeze << " in setExpectedFreeze() for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-            }
+            _freeze_expected = getDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze);
         }
 
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, CtiTime::now().seconds());
-        setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, (long)_expected_freeze);
+        if( _freeze_expected >= 0 )
+        {
+            if( (_freeze_expected % 2) == next_freeze )
+            {
+                _freeze_expected = (_freeze_expected + 1) & 0xff;
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, CtiTime::now().seconds());
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, _freeze_expected);
+            }
+        }
+        else if( _freeze_counter >= 0 )
+        {
+            if( (_freeze_counter % 2) == next_freeze )
+            {
+                _freeze_expected = (_freeze_counter + 1) & 0xff;
+
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp, CtiTime::now().seconds());
+                setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, _freeze_expected);
+            }
+        }
     }
 }
+
+
+int CtiDeviceMCT::checkFreezeLogic( int incoming_counter, string &error_string )
+{
+    int status = NoError;
+
+    if( _freeze_expected == std::numeric_limits<int>::min() && hasDynamicInfo(Keys::Key_ExpectedFreeze) )
+    {
+        _freeze_expected = getDynamicInfo(Keys::Key_ExpectedFreeze);
+    }
+
+    _freeze_counter = incoming_counter;
+    setDynamicInfo(Keys::Key_FreezeCounter, _freeze_counter);
+
+    if( _freeze_expected == std::numeric_limits<int>::min() )
+    {
+       {
+           CtiLockGuard<CtiLogger> doubt_guard(dout);
+           dout << CtiTime() << " **** Checkpoint - no freeze recorded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+       }
+
+       error_string  = "No freeze has been recorded for this device";
+       error_string += " - current freeze counter (" + CtiNumStr(_freeze_counter) + "), device expecting a \"freeze ";
+       error_string += ((_freeze_counter % 2)?("two"):("one")) + string("\"");
+       status = ErrorFreezeNotRecorded;
+    }
+    else if( !hasDynamicInfo(Keys::Key_DemandFreezeTimestamp) )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - no freeze timestamp recorded for device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        error_string  = "No freeze has been recorded for this device";
+        error_string += " - current freeze counter (" + CtiNumStr(_freeze_counter) + "), device expecting a \"freeze ";
+        error_string += ((_freeze_counter % 2)?("two"):("one")) + string("\"");
+        status = ErrorFreezeNotRecorded;
+    }
+    else if( _freeze_counter != _freeze_expected )
+    {
+        int tmp_expected = abs(_freeze_expected);
+
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " **** Checkpoint - incoming freeze counter (" << _freeze_counter <<
+                                ") does not match expected value (" << tmp_expected <<
+                                ") on device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }
+
+        error_string  = "Invalid freeze counter (" + CtiNumStr(_freeze_counter) + ", expected ";
+        error_string += CtiNumStr(tmp_expected);
+        error_string += "), send device a \"freeze ";
+        error_string += (_freeze_counter % 2)?("two"):("one");
+        error_string += "\" to resynchronize";
+        status = ErrorInvalidFreezeCounter;
+
+        _freeze_expected = tmp_expected * -1;
+
+        setDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze, _freeze_expected);
+    }
+
+    return status;
+}
+

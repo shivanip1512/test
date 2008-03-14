@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2008/01/23 21:53:19 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2008/03/14 19:55:08 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3413,7 +3413,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                pi_freezecount;
     CtiTime    kw_time,
                kwh_time;
-    bool       valid_data = true;
+    string     result_string;
 
     CtiTableDynamicPaoInfo::Keys key_peak_timestamp;
 
@@ -3521,110 +3521,92 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
 
         if( parse.getFlags() & CMD_FLAG_FROZEN )
         {
-            if( _expected_freeze < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze) )
-            {
-                _expected_freeze = getDynamicInfo(CtiTableDynamicPaoInfo::Key_ExpectedFreeze);
-            }
+            string freeze_error;
 
-            if( _freeze_counter  < 0 && hasDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter) )
+            //  this check is mainly for the frozen kWh reading
+            if( status = checkFreezeLogic(pi_freezecount.value, freeze_error) )
             {
-                _freeze_counter = getDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter);
-            }
+                result_string += freeze_error + "\n";
 
-            if( _freeze_counter < 0 || (pi_freezecount.value >= _freeze_counter) )
-            {
-                if( pi_freezecount.value > (_freeze_counter + 1) )
+                pi_kwh.quality = InvalidQuality;
+                pi_kwh.value = 0;
+
+                switch( status )
                 {
-                    //  it's incremented by more than one, yet the reading seems to be valid, parity-wise - we need to yelp, at least
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
-                                            ") has increased by more than expected value (" << _freeze_counter + 1 <<
-                                            ") on device \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
+                    case ErrorFreezeNotRecorded:    pi_kwh.description = "Last freeze not stored";  break;
+                    case ErrorInvalidFreezeCounter: pi_kwh.description = "Invalid freeze counter";  break;
                 }
             }
-            else
+            else if( pi_kwh.freeze_bit != getExpectedFreezeParity() )
             {
-                valid_data = false;
-
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - incoming freeze counter (" << pi_freezecount.value <<
-                                        ") less than expected value (" << _freeze_counter <<
+                    dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi_kwh.freeze_bit <<
+                                        ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
                                         ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                ReturnMsg->setResultString("Invalid freeze counter (" + CtiNumStr(pi_freezecount.value) + ") < (" + CtiNumStr(_freeze_counter) + ")");
-                status = ErrorInvalidFreezeCounter;
-            }
+                result_string += "Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(getExpectedFreezeParity()).toString() + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + "\n";
+                status = ErrorInvalidFrozenReadingParity;
 
-            if( kw_time.seconds() >= getDynamicInfo(key_peak_timestamp) )
-            {
-                if( kw_time.seconds() <= getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
-                {
-                    if( pi_kwh.freeze_bit == _expected_freeze )  //  LSB indicates which freeze caused the value to be stored
-                    {
-                        //  success - allow normal processing
-
-                        setDynamicInfo(key_peak_timestamp, kw_time.seconds());
-
-                        if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) )
-                        {
-                            kwh_time  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
-                            kwh_time -= kwh_time.seconds() % 300;
-                        }
-                        else
-                        {
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** Checkpoint - device \"" << getName() << "\" does not have a freeze timestamp for KWH timestamp, defaulting to current time **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                            }
-                        }
-
-                        _freeze_counter = pi_freezecount.value;
-
-                        setDynamicInfo(CtiTableDynamicPaoInfo::Key_FreezeCounter, _freeze_counter);
-                    }
-                    else
-                    {
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi_kwh.freeze_bit <<
-                                                ") does not match expected freeze bit (" << _expected_freeze <<
-                                                ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-
-                        valid_data = false;
-                        ReturnMsg->setResultString("Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(_expected_freeze).toString() + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString());
-                        status = ErrorInvalidFrozenReadingParity;
-                    }
-                }
-                else
-                {
-                    valid_data = false;
-
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is before KW freeze time \"" << CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-
-                    ReturnMsg->setResultString("Peak timestamp before freeze  (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + ")");
-                    status = ErrorInvalidFrozenPeakTimestamp;
-                }
+                pi_kwh.description = "Invalid freeze parity";
+                pi_kwh.quality = InvalidQuality;
+                pi_kwh.value = 0;
             }
             else
             {
-                valid_data = false;
+                kwh_time  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
+                kwh_time -= kwh_time.seconds() % 60;
+            }
 
+            if( kw_time.is_special() )
+            {
+                pi_kw.description = "Invalid peak timestamp";
+                pi_kw.quality = InvalidQuality;
+                pi_kw.value = 0;
+            }
+            else if( hasDynamicInfo(key_peak_timestamp) && getDynamicInfo(key_peak_timestamp) > kw_time.seconds() )
+            {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint - new KW peak time \"" << kw_time << "\" is before old KW peak time \"" << CtiTime(getDynamicInfo(key_peak_timestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                ReturnMsg->setResultString("New peak is before old peak (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(key_peak_timestamp)).asString() + ")");
-                status = ErrorInvalidFrozenPeakTimestamp;
+                //  defer to the kWh errors
+                if( !status )
+                {
+                    status = ErrorInvalidFrozenPeakTimestamp;
+                }
+
+                result_string += "New peak is before old peak (" + kw_time.asString() + ") < (" + CtiTime(getDynamicInfo(key_peak_timestamp)).asString() + ")\n";
+
+                pi_kw.description = "Invalid peak timestamp";
+                pi_kw.quality = InvalidQuality;
+                pi_kw.value = 0;
+            }
+            else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)
+                     && getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) < kw_time.seconds() )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is after KW freeze time \"" << CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                //  defer to the kWh errors
+                if( !status )
+                {
+                    status = ErrorInvalidFrozenPeakTimestamp;
+                }
+
+                result_string += "Peak timestamp after freeze  (" + kw_time.asString() + ") > (" + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + ")\n";
+
+                pi_kw.description = "Invalid peak timestamp";
+                pi_kw.quality = InvalidQuality;
+                pi_kw.value = 0;
+            }
+            else
+            {
+                setDynamicInfo(key_peak_timestamp, kw_time.seconds());
             }
         }
         else
@@ -3634,39 +3616,33 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             kwh_time  = CtiTime::now();
         }
 
-        if( valid_data )  //  valid
+        string peak_demand_str   = "Peak Demand",
+               meter_reading_str = "Meter Reading";
+
+        if( parse.getiValue("channel") > 1 )
         {
-            bool kw_valid = true;
+            string channel_str = "Channel " + CtiNumStr(parse.getiValue("channel")) + " ";
 
-            //  if it's a TOU read and the MCT isn't at least at MCT410::SspecRev_TOUPeak_Min, we omit the data
-            if( parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET) )
-            {
-                if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec) == CtiDeviceMCT410::Sspec &&
-                    getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) < CtiDeviceMCT410::SspecRev_TOUPeak_Min )
-                {
-                    kw_valid = false;
-                }
-            }
+            peak_demand_str   = channel_str + peak_demand_str;
+            meter_reading_str = channel_str + meter_reading_str;
+        }
 
-            string peak_demand_str   = "Peak Demand",
-                   meter_reading_str = "Meter Reading";
+        //  NEGATIVE LOGIC - if it's a TOU read and the MCT isn't at least at MCT410::SspecRev_TOUPeak_Min, we omit the data
+        if( !((parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET))
+              && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpec)         == CtiDeviceMCT410::Sspec
+              && getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_SSpecRevision) <  CtiDeviceMCT410::SspecRev_TOUPeak_Min) )
+        {
+            insertPointDataReport(DemandAccumulatorPointType, pointoffset + PointOffset_PeakOffset,
+                                  ReturnMsg, pi_kw, peak_demand_str, kw_time);
+        }
 
-            if( parse.getiValue("channel") > 1 )
-            {
-                string channel_str = "Channel " + CtiNumStr(parse.getiValue("channel")) + " ";
+        insertPointDataReport(PulseAccumulatorPointType, pointoffset,
+                              ReturnMsg, pi_kwh, meter_reading_str, kwh_time, 0.1);
 
-                peak_demand_str   = channel_str + peak_demand_str;
-                meter_reading_str = channel_str + meter_reading_str;
-            }
-
-            if( kw_valid )
-            {
-                insertPointDataReport(DemandAccumulatorPointType, pointoffset + PointOffset_PeakOffset,
-                                      ReturnMsg, pi_kw, peak_demand_str, kw_time);
-            }
-
-            insertPointDataReport(PulseAccumulatorPointType, pointoffset,
-                                  ReturnMsg, pi_kwh, meter_reading_str, kwh_time, 0.1);
+        if( !result_string.empty() )
+        {
+            //  we want any error messages to follow at the end
+            ReturnMsg->setResultString(ReturnMsg->ResultString() + "\n" + result_string);
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );

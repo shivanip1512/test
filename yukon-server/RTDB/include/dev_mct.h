@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct.h-arc  $
-* REVISION     :  $Revision: 1.60 $
-* DATE         :  $Date: 2007/12/03 22:19:41 $
+* REVISION     :  $Revision: 1.61 $
+* DATE         :  $Date: 2008/03/14 19:55:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,9 @@ private:
     static CommandSet initCommandStore();
 
     CtiTime _lastReadDataPurgeTime;
+
+    int _freeze_counter,
+        _freeze_expected;
 
 protected:
 
@@ -74,8 +77,8 @@ protected:
 
     unsigned long _disconnectAddress;
 
-    int _freeze_counter,
-        _expected_freeze;
+    int  getExpectedFreeze(void) const;
+    bool getExpectedFreezeParity(void) const;
 
     static bool getMCTDebugLevel(int mask);
 
@@ -285,6 +288,7 @@ public:
     void setConfigData( const string &configName, int configType, const string &configMode, const int mctwire[MCTConfig_ChannelCount], const double mpkh[MCTConfig_ChannelCount] );
 
     void setExpectedFreeze( int freeze );  //  overrides a do-nothing virtual in dev_base
+    int  checkFreezeLogic( int incoming_counter, std::string &error_string );
     int  getNextFreeze( void ) const;
 
     static  INT extractStatusData( const INMESS *InMessage, INT type, USHORT *StatusData );
