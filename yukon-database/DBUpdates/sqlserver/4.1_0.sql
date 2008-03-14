@@ -118,25 +118,25 @@ go
 /* End YUK-5337 */
 
 /* Start YUK-5454 */
-ALTER TABLE DYNAMICBILLINGFIELD ADD PadText varchar(50);
+ALTER TABLE DYNAMICBILLINGFIELD ADD PadChar char(1);
 go
-UPDATE DYNAMICBILLINGFIELD SET PadText = ' ';
+UPDATE DYNAMICBILLINGFIELD SET PadChar = ' ';
 go
-ALTER TABLE DYNAMICBILLINGFIELD alter column PadText varchar(50) not null;
+ALTER TABLE DYNAMICBILLINGFIELD alter column PadChar char(1) not null;
 go
 
-ALTER TABLE DYNAMICBILLINGFIELD ADD PadSide varchar(50);
+ALTER TABLE DYNAMICBILLINGFIELD ADD PadSide varchar(5);
 go
 UPDATE DYNAMICBILLINGFIELD SET PadSide = 'none';
 go
-ALTER TABLE DYNAMICBILLINGFIELD alter columnPadSide varchar(50) not null;
+ALTER TABLE DYNAMICBILLINGFIELD alter columnPadSide varchar(5) not null;
 go
 
-ALTER TABLE DYNAMICBILLINGFIELD ADD ReadingType varchar(50);
+ALTER TABLE DYNAMICBILLINGFIELD ADD ReadingType varchar(12);
 go
 UPDATE DYNAMICBILLINGFIELD SET ReadingType = 'ELECTRIC';
 go
-ALTER TABLE DYNAMICBILLINGFIELD alter column ReadingType varchar(50) not null;
+ALTER TABLE DYNAMICBILLINGFIELD alter column ReadingType varchar(12) not null;
 go
 /* End YUK-5454 */
 /**************************************************************/

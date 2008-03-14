@@ -98,17 +98,17 @@ WHERE Permission = 'N';
 /* End YUK-5337 */
 
 /* Start YUK-5454 */
-ALTER TABLE DYNAMICBILLINGFIELD ADD PadText varchar(50);
-UPDATE DYNAMICBILLINGFIELD SET PadText = ' ';
-ALTER TABLE DYNAMICBILLINGFIELD modify PadText varchar(50) not null;
+ALTER TABLE DYNAMICBILLINGFIELD ADD PadChar char(1);
+UPDATE DYNAMICBILLINGFIELD SET PadChar = ' ';
+ALTER TABLE DYNAMICBILLINGFIELD modify PadChar char(1) not null;
 
-ALTER TABLE DYNAMICBILLINGFIELD ADD PadSide varchar(50);
+ALTER TABLE DYNAMICBILLINGFIELD ADD PadSide varchar(5);
 UPDATE DYNAMICBILLINGFIELD SET PadSide = 'none';
-ALTER TABLE DYNAMICBILLINGFIELD modify PadSide varchar(50) not null;
+ALTER TABLE DYNAMICBILLINGFIELD modify PadSide varchar(5) not null;
 
-ALTER TABLE DYNAMICBILLINGFIELD ADD ReadingType varchar(50);
+ALTER TABLE DYNAMICBILLINGFIELD ADD ReadingType varchar(12);
 UPDATE DYNAMICBILLINGFIELD SET ReadingType = 'ELECTRIC';
-ALTER TABLE DYNAMICBILLINGFIELD modify ReadingType varchar(50) not null;
+ALTER TABLE DYNAMICBILLINGFIELD modify ReadingType varchar(12) not null;
 /* End YUK-5454 */
 
 /**************************************************************/

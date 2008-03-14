@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/13/2008 4:02:06 PM                         */
+/* Created on:     3/14/2008 9:25:02 AM                         */
 /*==============================================================*/
 
 
@@ -5520,9 +5520,9 @@ create table DYNAMICBILLINGFIELD (
    FieldOrder           numeric              not null,
    FieldFormat          varchar(50)          null,
    MaxLength            numeric              not null,
-   PadText              varchar(50)          not null,
-   PadSide              varchar(50)          not null,
-   ReadingType          varchar(50)          not null,
+   PadChar              char(1)              not null,
+   PadSide              varchar(5)           not null,
+   ReadingType          varchar(12)          not null,
    constraint PK_DYNAMICBILLINGFIELD primary key (id)
 )
 go

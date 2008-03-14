@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     3/13/2008 4:03:31 PM                         */
+/* Created on:     3/14/2008 9:19:19 AM                         */
 /*==============================================================*/
 
 
@@ -3134,9 +3134,9 @@ create table DYNAMICBILLINGFIELD  (
    FieldOrder           NUMBER                          not null,
    FieldFormat          VARCHAR2(50),
    MaxLength            NUMBER                          not null,
-   PadText              VARCHAR2(50)                    not null,
-   PadSide              VARCHAR2(50)                    not null,
-   ReadingType          VARCHAR2(50)                    not null,
+   PadChar              CHAR(1)                         not null,
+   PadSide              VARCHAR2(5)                     not null,
+   ReadingType          VARCHAR2(12)                    not null,
    constraint PK_DYNAMICBILLINGFIELD primary key (id)
 );
 
