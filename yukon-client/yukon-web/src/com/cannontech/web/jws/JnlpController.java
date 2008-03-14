@@ -75,6 +75,8 @@ public class JnlpController extends AbstractController {
         Element j2seElem = new Element("j2se");
         //j2seElem.setAttribute("href", "http://java.sun.com/products/autodl/j2se");
         j2seElem.setAttribute("version", "1.6");
+        j2seElem.setAttribute("initial-heap-size", "128m");
+        j2seElem.setAttribute("max-heap-size", "384m");
         resourcesElem.addContent(j2seElem);        
         
         // add main class jar
