@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2007/12/03 21:42:20 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/03/14 23:33:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,6 +114,7 @@ public:
         GetStatus_Powerfail,
         GetStatus_Internal,
         GetStatus_External,
+        GetStatus_Freeze,
 
         // PutStatus Commands
         PutStatus_Reset,
