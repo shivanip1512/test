@@ -620,13 +620,15 @@ public static void main(java.lang.String[] args) {
 /**
  * setValue method comment.
  */
+@Override
 public void setValue(Object o) 
 {
 	if (o == null) {
         String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
         initialAuthType = AuthType.valueOf(defaultAuthTypeStr);
         getJListAuthType().setSelectedItem(initialAuthType);
-        passwordRequiresChanging = true;
+        boolean supportsPasswordSet = authenticationService.supportsPasswordSet(initialAuthType);
+        passwordRequiresChanging = supportsPasswordSet;
 
         return;
     }
