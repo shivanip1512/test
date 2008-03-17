@@ -14,6 +14,8 @@ import java.awt.event.MouseMotionListener;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
 
 import javax.swing.JDialog;
@@ -57,7 +59,6 @@ import com.cannontech.esub.element.StaticText;
 import com.cannontech.esub.util.ESubDrawingUpdater;
 import com.cannontech.message.dispatch.ClientConnection;
 import com.cannontech.message.util.Command;
-import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.EsubEditorRole;
 import com.cannontech.yukon.conns.ConnPool;
 import com.loox.jloox.LxComponent;
@@ -852,7 +853,17 @@ public class Editor extends JPanel {
      * the device on one to many elements.
      */
     public void changeDevice() {
-        ChangeDeviceDialog cd = new ChangeDeviceDialog(frame ,drawing.getLxGraph().getSelectedObjects());
+        List<DynamicText> textElems = new ArrayList<DynamicText>();
+        List<StateImage> stateImageElems = new ArrayList<StateImage>();
+        
+        for(Object obj : drawing.getLxGraph().getSelectedObjects()) {
+            if(obj instanceof DynamicText) {
+                textElems.add((DynamicText) obj);
+            }else if(obj instanceof StateImage) {
+                stateImageElems.add((StateImage)obj);
+            }
+        }
+        ChangeDeviceDialog cd = new ChangeDeviceDialog(frame ,textElems, stateImageElems);
         cd.show();
     }
 }

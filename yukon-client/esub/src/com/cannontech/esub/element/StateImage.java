@@ -37,7 +37,7 @@ public class StateImage extends LxAbstractImage implements DrawingElement, Yukon
 	// Map<Integer - rawstate, Integer - image id>
 	// There may or may not be an entry for all of the points stategroups
 	// Look here first to find the current image
-	private Map customImageMap = new HashMap(13);
+	private Map<Integer, Integer> customImageMap = new HashMap<Integer, Integer>(13);
 	
 	private LiteState currentState;
 		
@@ -145,7 +145,7 @@ public void setPointID(int pointID) {
 		LiteState state = getCurrentState();
 		if(state != null) {
 			int imageId = state.getImageID();
-			Integer customImageId = (Integer) customImageMap.get(new Integer(state.getStateRawState()));
+			Integer customImageId = customImageMap.get(new Integer(state.getStateRawState()));
 			if(customImageId != null) {
 				imageId = customImageId.intValue();
 			}
@@ -158,8 +158,8 @@ public void setPointID(int pointID) {
 	 * Returns a list of image names corresponding to each of the points raw states
 	 * @return
 	 */
-	public List getImageNames() {
-		List imageNames = new ArrayList(6);
+	public List<String> getImageNames() {
+		List<String> imageNames = new ArrayList<String>(6);
 		LitePoint point = getPoint();
         if(point == null) {
             imageNames.add(Util.DEFAULT_IMAGE_NAME);
@@ -167,15 +167,15 @@ public void setPointID(int pointID) {
         }
         
 		LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-		List states = lsg.getStatesList();
+		List<LiteState> states = lsg.getStatesList();
 		for(int i = 0; i < states.size(); i++) {
-			Integer imgIdObj = (Integer) customImageMap.get(new Integer(i));
+			Integer imgIdObj = customImageMap.get(new Integer(i));
 			int imgId; 
 			if(imgIdObj != null) {
 				imgId = imgIdObj.intValue();
 			} 
 			else {
-				imgId = ((LiteState) states.get(i)).getImageID();
+				imgId = states.get(i).getImageID();
 			}
 			LiteYukonImage lyi = DaoFactory.getYukonImageDao().getLiteYukonImage(imgId); 
 			if(lyi != null) {
@@ -295,11 +295,11 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
 	 * This exists only for persistence, do not use it for other purposes
 	 * @return
 	 */
-	public Map getCustomImageMap() {
+	public Map<Integer, Integer> getCustomImageMap() {
 		return customImageMap;
 	}
 	
-	public void setCustomImageMap(Map m) {
+	public void setCustomImageMap(Map<Integer, Integer> m) {
 		customImageMap = m;
 	}
 }

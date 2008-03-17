@@ -7,6 +7,7 @@ import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -14,14 +15,17 @@ import javax.swing.JPanel;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.esub.editor.element.DeviceSelectionPanel;
+import com.cannontech.esub.element.DynamicText;
+import com.cannontech.esub.element.StateImage;
 
 /**
  * @author asolberg
  *
  */
 public class ChangeDeviceDialog extends JDialog implements ActionListener{
-
-    private Object[] comps;
+    
+    private List<DynamicText> textElems = null;
+    private List<StateImage> stateImageElems = null;
     private Frame owner = null;
     private JPanel contentPanel = null;
     private JButton okButton = null;
@@ -30,10 +34,11 @@ public class ChangeDeviceDialog extends JDialog implements ActionListener{
     private JPanel componentPanel = null;
     private DeviceSelectionPanel deviceSelectionPanel = null;
     
-    public ChangeDeviceDialog(java.awt.Frame owner, Object[] components) {
+    public ChangeDeviceDialog(Frame owner, List<DynamicText> textElems, List<StateImage> stateImageElems) {
         super(owner, true);
         this.owner = owner;
-        this.comps = components;
+        this.textElems = textElems;
+        this.stateImageElems = stateImageElems;
         initialize();
     }
     
@@ -72,7 +77,8 @@ public class ChangeDeviceDialog extends JDialog implements ActionListener{
     public void actionPerformed(ActionEvent e) {
         Object source = e.getSource();
         if(source == getOkButton()) {
-            
+            Util.changeDeviceForDynamicTextElements(textElems, deviceSelectionPanel.getSelectedDevice());
+            Util.changeDeviceForStateImageElements(stateImageElems, deviceSelectionPanel.getSelectedDevice());
             this.dispose();
         }else if (source == getCancelButton()) {
             this.dispose();
@@ -92,8 +98,6 @@ public class ChangeDeviceDialog extends JDialog implements ActionListener{
      * @param exception java.lang.Throwable
      */
     private void handleException(Throwable exception) {
-
-        CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
         CTILogger.error( exception.getMessage(), exception );
     }
     

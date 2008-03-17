@@ -23,7 +23,6 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.db.activity.ActivityLog;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.DynamicGraphElement;
-import com.cannontech.message.dispatch.ClientConnection;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxRotatable;
 
@@ -174,8 +173,6 @@ public class Util {
 				0,
 				59
 				 	};
-
-	private static ClientConnection dispatchConnection = null;
 
 	/**
 	 * Util constructor comment.
