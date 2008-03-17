@@ -50,7 +50,6 @@ public class LoginFilter implements Filter {
             LoginController.LOGIN_URL, // aka /login.jsp
             "/servlet/LoginController", 
             "/servlet/LoggingServlet", 
-            "/servlet/ReportGenerator",
             "/soap/**", 
             "/servlet/PWordRequest",
             "/pwordreq.jsp", 
@@ -67,7 +66,7 @@ public class LoginFilter implements Filter {
             "/capcontrol/**",
             "/operator/**",
             "/editor/**",
-            "/user/**"
+            "/user/**",
         };
     }
 
