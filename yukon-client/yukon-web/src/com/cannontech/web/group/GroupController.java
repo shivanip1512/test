@@ -1,7 +1,6 @@
 package com.cannontech.web.group;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,7 +15,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringEscapeUtils;
@@ -132,7 +131,7 @@ public class GroupController extends MultiActionController {
     }
     
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
+            throws Exception, ServletException {
 
         ModelAndView mav = new ModelAndView("home.jsp");
 
@@ -160,9 +159,6 @@ public class GroupController extends MultiActionController {
         
         mav.addObject("moveGroups", moveGroups);
 
-        DeviceGroupHierarchy groupHierarchy = createHierarchy(rootGroup, childList);
-        mav.addObject("groupHierarchy", groupHierarchy);
-        
         List<DeviceGroup> childGroups = childList.get(group);
         mav.addObject("subGroups", childGroups);
 
@@ -174,6 +170,15 @@ public class GroupController extends MultiActionController {
         mav.addObject("deviceIdsInGroup", StringUtils.join(deviceIdList, ","));
 
         mav.addObject("deviceCount", deviceIdList.size());
+        
+        // Ext tree JSON
+        DeviceGroup selectedDeviceGroup = group;
+        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup);
+        ExtTreeNode root = makeDeviceGroupExtTree(groupHierarchy, "Groups", selectedDeviceGroup);
+        
+        JSONObject jsonObj = new JSONObject(root.toMap());
+        String dataJson = jsonObj.toString();
+        mav.addObject("dataJson", dataJson);
         
         return mav;
 
@@ -206,78 +211,36 @@ public class GroupController extends MultiActionController {
         return moveGroups;
     }
     
-    /**
-     * Returns a JSON string representing the group heirarchy.
-     * Uses makeGroupTreeNode() to create  tree nodes with attributes expected by Ext-js TreePanel,
-     * those nodes are converted maps and then converted to JSON.
-     * @param request
-     * @param response
-     * @return
-     * @throws Exception
-     */
-    public ModelAndView deviceGroupHierarchyJson(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        
-        String selectedGroupStr = ServletRequestUtils.getStringParameter(request, "selectedGroup");
-        DeviceGroup selectedDeviceGroup = deviceGroupService.resolveGroupName(StringEscapeUtils.unescapeHtml(selectedGroupStr));
-        
-        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        List<DeviceGroup> groups = deviceGroupDao.getAllGroups();
-        MapQueue<DeviceGroup, DeviceGroup> childList = getChildList(groups);
-        DeviceGroupHierarchy groupHierarchy = createHierarchy(rootGroup, childList);
-        
-        // recursively create a tree when this node is the root
-        ExtTreeNode root = makeGroupTreeNode(groupHierarchy, selectedDeviceGroup);
-        
-        // make a list containing maps which represents each group node
-        List<Map<String, Object>> groupList = new ArrayList<Map<String, Object>>();
-        for (ExtTreeNode n : root.getChildren()) {
-            groupList.add(n.toMap());
-        }
-        
-        // convert list to JSON array
-        JSONArray jsonArray = new JSONArray(groupList);
-        
-        // write JSON to response
-        PrintWriter writer = response.getWriter();
-        String responseJsonStr = jsonArray.toString();
-        writer.write(responseJsonStr);
-
-        return null;
-        
-    }
-    
-    /**
-     * Creates a tree node with attributes that are expected by an Ext-js TreePanel
-     * @param dgh
-     * @param selectedDeviceGroup
-     * @return
-     * @throws Exception
-     */
-    private ExtTreeNode makeGroupTreeNode(DeviceGroupHierarchy dgh, DeviceGroup selectedDeviceGroup) throws Exception{
+    public static ExtTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, DeviceGroup selectedDeviceGroup) throws Exception{
         
         DeviceGroup deviceGroup = dgh.getGroup();
-        String groupFullName = deviceGroup.getFullName();
         
         ExtTreeNode node = new ExtTreeNode();
-        node.setAttribute("id", deviceGroup.hashCode());
+        String nodeId = deviceGroup.getFullName().replaceAll("[^a-zA-Z0-9]","");
+        node.setAttribute("id", nodeId);
         
         // display name
-        node.setAttribute("text", StringEscapeUtils.escapeHtml(deviceGroup.getName()));
+        if (rootName != null) {
+            node.setAttribute("text", rootName);
+        }
+        else {
+            node.setAttribute("text", StringEscapeUtils.escapeHtml(deviceGroup.getName()));
+        }
         
         // link
         Map<String, String> parameterMap = new HashMap<String, String>();
-        parameterMap.put("groupName", groupFullName);
+        parameterMap.put("groupName", deviceGroup.getFullName());
         String href = "/spring/group/home?" + ServletUtil.buildSafeQueryStringFromMap(parameterMap, true);
         node.setAttribute("href", href);
         
         // highlight if this is the selected group
-        if (selectedDeviceGroup.getFullName().equals(groupFullName)) {
+        if (selectedDeviceGroup != null && selectedDeviceGroup.getFullName().equals(deviceGroup.getFullName())) {
             node.setAttribute("cls", "highlighted");
         }
         
         // recursively add child groups
         for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
-            node.addChild(makeGroupTreeNode(d, selectedDeviceGroup));
+            node.addChild(makeDeviceGroupExtTree(d, null, selectedDeviceGroup));
         }
         
         // leaf? (must be after child groups are added)
@@ -301,7 +264,7 @@ public class GroupController extends MultiActionController {
      * @param node
      * @param deviceGroup
      */
-    private void setIconCls(ExtTreeNode node, DeviceGroup deviceGroup) {
+    public static void setIconCls(ExtTreeNode node, DeviceGroup deviceGroup) {
         
         for (SystemGroupEnum systemGroup : SystemGroupEnum.values()) {
             if ((deviceGroup.getFullName() + "/").equals(systemGroup.getFullPath())) {
@@ -311,17 +274,6 @@ public class GroupController extends MultiActionController {
         }
     }
     
-    private DeviceGroupHierarchy createHierarchy(DeviceGroup root, MapQueue<DeviceGroup, DeviceGroup> childList) {
-        DeviceGroupHierarchy result = new DeviceGroupHierarchy();
-        result.setGroup(root);
-        List<DeviceGroup> list = childList.get(root);
-        for (DeviceGroup childGroup : list) {
-            DeviceGroupHierarchy childHierarchy = createHierarchy(childGroup, childList);
-            result.getChildGroupList().add(childHierarchy);
-        }
-        return result;
-    }
-
     public ModelAndView getDevicesForGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 

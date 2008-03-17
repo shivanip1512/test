@@ -41,17 +41,19 @@ TreePanelState.prototype.onCollapse = function(node){
     this.saveState(newState);
 }
 TreePanelState.prototype.restoreState = function(defaultPath) { 
+    
     if (this.state.length == 0) {
         var newState = new Array(defaultPath);
         this.saveState(newState);       
         this.mytree.expandPath(defaultPath);
         return;
     }
-    for (var i = 0; i < this.state.length; ++i) {
+    var stateToRestore=this.state;
+    for (var i = 0; i < stateToRestore.length; ++i) {
         // activate all path strings from the state
         try {
-            var path = this.state[i];
-            this.mytree.expandPath(path);       
+            var path = stateToRestore[i];
+            this.mytree.expandPath(path);   
         } catch(e) {
             // ignore invalid path, seems to be remove in the datamodel
             // TODO fix state at this point

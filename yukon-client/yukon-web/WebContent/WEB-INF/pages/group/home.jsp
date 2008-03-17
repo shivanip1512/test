@@ -114,27 +114,20 @@
 	<div style="float: left; margin-right: .75em; margin-bottom: .5em; width: 450px;">
 
 		<tags:boxContainer title="Groups" hideEnabled="false">
-			<c:choose>
-				<c:when test="${fn:length(groupHierarchy.childGroupList) > 0}">
                 
-                    <c:set var="selectedGroupParam">
-                        <jsp:attribute name="value">
-                            "${fn:escapeXml(group.fullName)}"
-                        </jsp:attribute>
-                    </c:set>
-                    
-                    <tags:extTree   name="Groups" 
-                                    dataUrl="/spring/group/deviceGroupHierarchyJson"
-                                    baseParams="{selectedGroup:${selectedGroupParam}}"
-                                    width="432"
-                                    height="600" 
-                                    rootVisible="true"
-                                    treeCss="deviceGroup-tree.css" />
-				</c:when>
-				<c:otherwise>
-					No groups found?
-				</c:otherwise>
-			</c:choose>
+            <c:set var="selectedGroupParam">
+                <jsp:attribute name="value">
+                    "${fn:escapeXml(group.fullName)}"
+                </jsp:attribute>
+            </c:set>
+            
+            <tags:extTree   treeId="deviceGroupEditorTree"
+                            dataJson="${dataJson}"
+                            width="432"
+                            height="600" 
+                            rootVisible="true"
+                            treeCss="/JavaScript/extjs_cannon/resources/css/deviceGroup-tree.css" />
+                            
 		</tags:boxContainer>
 	</div>
 	
