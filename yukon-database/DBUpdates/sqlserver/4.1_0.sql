@@ -115,6 +115,14 @@ UPDATE DeviceGroup
 SET Permission = 'EDIT_MOD'
 WHERE Permission = 'N';
 go
+
+update devicegroup
+set Permission = 'NOEDIT_NOMOD'
+where
+	GroupName = 'System'
+	and ParentDeviceGroupID = 0
+	and Type = 'STATIC';
+go
 /* End YUK-5337 */
 
 /* Start YUK-5454 */
