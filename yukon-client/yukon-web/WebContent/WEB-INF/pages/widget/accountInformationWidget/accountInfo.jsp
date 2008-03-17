@@ -59,6 +59,9 @@
             <c:if test='${serviceInfo.siteNumber != null}'>
                 <tags:nameValue name="Site Number">${serviceInfo.siteNumber}</tags:nameValue>
             </c:if>
+            <c:if test='${serviceInfo.mapLocation != null}'>
+                <tags:nameValue name="Map Location">${serviceInfo.mapLocation}</tags:nameValue>
+            </c:if>
          <tags:nameValue name="Address">
         <tags:notNullDataLine value="${serviceInfo.address.locationAddress1}"/>
         <tags:notNullDataLine value="${serviceInfo.address.locationAddress2}"/>
