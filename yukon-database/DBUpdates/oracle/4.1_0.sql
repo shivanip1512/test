@@ -2,6 +2,8 @@
 /**** Oracle DBupdates   		       ****/
 /******************************************/
 
+set define off;
+
 /* Start YUK-5103 */
 /* @error ignore-begin */
 insert into pointalarming(pointid, alarmstates, excludenotifystates, notifyonacknowledge, notificationgroupid, recipientid)

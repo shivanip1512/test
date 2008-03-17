@@ -2,6 +2,8 @@
 /**** Oracle DBupdates   		       ****/
 /******************************************/
 
+set define off;
+
 /* Start YUK-5287 */
 alter table dynamicccarea add controlvalue number;
 update dynamicccarea set controlvalue = 0;
