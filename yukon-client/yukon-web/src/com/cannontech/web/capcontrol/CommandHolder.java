@@ -44,7 +44,9 @@ public enum CommandHolder {
     CBC_DISABLE_OVUV(CBCCommand.BANK_DISABLE_OVUV, "Disable OV/UV", false),
     CBC_SCAN_2WAY(CBCCommand.SCAN_2WAY_DEV, "Init Scan", false),
     CBC_TIMESYNC(CBCCommand.SEND_TIMESYNC, "Send TimeSync", false),
-    CBC_FLIP(CBCCommand.FLIP_7010_CAPBANK, "Flip", false);
+    CBC_FLIP(CBCCommand.FLIP_7010_CAPBANK, "Flip", false),
+    
+    OPERATIONAL_STATECHANGE(CBCCommand.OPERATIONAL_STATECHANGE, "Change Operational State", false);
     
     private final int cmdId;
     private final String commandName;

@@ -28,6 +28,14 @@
                        onclick="cClick(); showResetOpCountSpan('${paoId}');">${resetOpsCmdHolder.commandName}</a>
                 </td>
             </tr> 
+            <tr>
+                <td colspan="2">
+                    <a href="javascript:void(0);" 
+                       class="optDeselect"
+                       onmouseover="changeOptionStyle(this);"
+                       onclick="cClick(); showChangeOpStateMenu('${paoId}');">${changeOpStateCmdHolder.commandName}</a>
+                </td>
+            </tr> 
             <c:forEach var="state" items="${states}">
                 <tr>
                     <td colspan="2">

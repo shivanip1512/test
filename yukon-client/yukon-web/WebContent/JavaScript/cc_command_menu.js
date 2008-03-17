@@ -1,7 +1,18 @@
 var executeURL = '/spring/capcontrol/commandexecutor?action=';
 var executeTierURL = executeURL + 'executeCommandTier';
 var reasonMenuURL = '/spring/capcontrol/tier/popupmenu?menu=reasonMenu';
+var reasonForOpStateChangeMenuURL = '/spring/capcontrol/tier/popupmenu?menu=opStateChangeMenu';
 var tempMoveBackURL = executeURL + 'executeTempMoveBack';
+
+function showChangeOpStateMenu(paoId) {
+    var url = reasonForOpStateChangeMenuURL +
+    '&id=' + paoId +
+    '&cmdId=35' +
+    '&controlType=CAPBANK' +
+    '&commandName=Change Operational State';
+     
+    getMenuFromURL(url);
+}
 
 function showResetOpCountSpan(paoId) {
     $('cb_state_td_hdr2').show();
@@ -194,5 +205,53 @@ function sendSystemEnableCommand (systemIsOn) {
 			asynchronous:true
 			});
 
+}
+
+function submitChangeOpStateMenu() {
+
+    var operationalStateChange = false;
+
+    var index = $("operationalStateValue").selectedIndex;
+    var state = $("operationalStateValue").options[index].value;
+    var origState = $('operationalStateValue_orig').value;
+    operationalStateChange = state != origState;
+    
+    if (!(operationalStateChange)) {
+        alert("No change was made.");
+        return false;   
+    }    
+        
+    params = {};
+    params['paoId'] = $('paoId').value;
+    params['controlType'] = $('controlType').value;
+        
+    params['operationalStateValue'] = $('operationalStateValue').options[$('operationalStateValue').selectedIndex].value;
+        
+    params['operationalStateChange'] = operationalStateChange;
+        
+    params['operationalStateReason'] = $('operationalStateReason').value;
+        
+    var confirmMessage = '';
+    if (operationalStateChange) confirmMessage += 'Operational State Change';
+        
+    if (!confirm(confirmMessage)) return false;
+        
+    var url = $('url').value;
+    
+    new Ajax.Request(url, {
+        method: 'POST',
+        onSuccess: function(transport) {
+            display_status("Change Operational State", "Success", "green");       
+        },
+        onFailure: function(transport) {
+            display_status("Change Operational State", "Failed", "red");   
+        },
+        onException: function(transport) {
+            display_status("Change Operational State", "Failed", "red");   
+        },
+        parameters:params
+    });
+    
+    cClick();
 }
 

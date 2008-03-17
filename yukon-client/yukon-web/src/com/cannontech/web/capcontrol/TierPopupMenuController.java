@@ -10,7 +10,9 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CapControlType;
@@ -35,6 +37,14 @@ public class TierPopupMenuController extends MultiActionController {
     private PaoDao paoDao;
     private AuthDao authDao;
     private CapControlCommentService capControlCommentService;
+    private static final CapBankOperationalState[] allowedOperationStates;
+    
+    static {
+        allowedOperationStates  = new CapBankOperationalState[] {
+                                                                 CapBankOperationalState.Fixed,
+                                                                 CapBankOperationalState.StandAlone,
+                                                                 CapBankOperationalState.Switched};
+    }
     
     public void setCapControlCommentService(
             CapControlCommentService capControlCommentService) {
@@ -289,6 +299,7 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("list", list);
         
         mav.addObject("resetOpsCmdHolder", CommandHolder.RESET_OP_COUNTS);
+        mav.addObject("changeOpStateCmdHolder", CommandHolder.OPERATIONAL_STATECHANGE);
 
         LiteState[] states = CBCUtils.getCBCStateNames();
         mav.addObject("states", states);
@@ -296,6 +307,36 @@ public class TierPopupMenuController extends MultiActionController {
         mav.addObject("isCapBankSystemMenu", true);
         mav.addObject("controlType", CapControlType.CAPBANK);
         mav.setViewName("tier/popupmenu/menu");
+        return mav;    
+    }
+    
+    public ModelAndView opStateChangeMenu(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final ModelAndView mav = new ModelAndView();
+        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        final LiteYukonUser user = ServletUtil.getYukonUser(request);
+        
+        final CapBankDevice capBank = capControlCache.getCapBankDevice(id);
+        String operationalStateReason = capControlCommentService.getReason(id, CommentAction.STANDALONE_REASON, CapControlType.CAPBANK);
+        CapBankOperationalState operationalState = CapBankOperationalState.valueOf(capBank.getOperationalState());
+        mav.addObject("paoId", id);
+        
+        String paoName = capBank.getCcName();
+        mav.addObject("paoName", paoName);
+        
+        boolean allowAddComments = authDao.checkRoleProperty(user, CBCSettingsRole.ADD_COMMENTS);
+        mav.addObject("allowAddComments", allowAddComments);
+        
+        List<String> comments = capControlCommentService.getComments(id, 15);
+        mav.addObject("comments", comments);
+        
+        mav.addObject("changeOpStateCmdHolder", CommandHolder.OPERATIONAL_STATECHANGE);
+        
+        mav.addObject("operationalState", operationalState);
+        mav.addObject("allowedOperationStates", allowedOperationStates);
+        
+        mav.addObject("operationalStateReason", operationalStateReason);
+        mav.addObject("controlType", CapControlType.CAPBANK);
+        mav.setViewName("tier/popupmenu/opStateChangeMenu");
         return mav;    
     }
     

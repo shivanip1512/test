@@ -8,8 +8,6 @@ package com.cannontech.yukon.cbc;
 
 public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage 
 {
-	//The following are the different commands that
-	//can be applied to strategies and map into the C++ side
 	public static final int ENABLE_SUBBUS = 0;
 	public static final int DISABLE_SUBBUS = 1;
 	public static final int ENABLE_FEEDER = 2;
@@ -50,7 +48,6 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
     public static final int SEND_TIMESYNC = 34;
     public static final int OPERATIONAL_STATECHANGE = 35;
     
-	//server does not use these commands
 	public static final int CMD_MANUAL_ENTRY = 30;
 	public static final int CMD_BANK_TEMP_MOVE	= 31;
 	public static final int VERIFY_OFFSET = 40;
@@ -103,7 +100,7 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 		"",
 		"Scan All 2Way CBCs",
 		"",
-		"",
+		"Change Operational State",
 		"",
 		"",
 		"",
