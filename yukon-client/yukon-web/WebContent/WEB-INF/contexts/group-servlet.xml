@@ -51,6 +51,8 @@
         
         <property name="paoDao" ref="paoDao" />
         <property name="meterDao" ref="meterDao" />
+        
+        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
     
 	<bean id="bulkDeviceAdd" class="org.springframework.web.servlet.mvc.ParameterizableViewController">

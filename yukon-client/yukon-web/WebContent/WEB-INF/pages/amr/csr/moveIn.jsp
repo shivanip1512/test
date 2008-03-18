@@ -19,18 +19,27 @@
 	<h2>Move In</h2>
 	<br><br>
 	
+	<%-- show widget or show results? --%>
 	<c:choose>
 		<c:when test="${not (submissionType eq 'moveIn')}">
 	
-	    	<div id="meterinfo" style="width: 400px">
-	            <ct:widget bean="meterInformationWidget"
-	                identify="false" deviceId="${deviceId}"
-	                hideEnabled="false" />
-	
-		        <div id="movein">
-		            <jsp:include page="${moveInFormUrl}" />
-		        </div>
-	        </div>
+			<%-- only show widget if user has permission --%>
+            <c:choose>
+                <c:when test="${readable}">
+			    	<div id="meterinfo" style="width: 400px">
+			            <ct:widget bean="meterInformationWidget"
+			                identify="false" deviceId="${deviceId}"
+			                hideEnabled="false" />
+						<br>
+				        <div id="movein">
+				            <jsp:include page="${moveInFormUrl}" />
+				        </div>
+			        </div>
+			    </c:when>
+			    <c:otherwise>
+			    	<div style="color:red;text-align:center;font-size:14px;font-weight:bold;">User is not authorized to perform Move In</div>
+			    </c:otherwise>
+			</c:choose>
 	    </c:when>
 	    <c:otherwise>
 	        <div id="results">

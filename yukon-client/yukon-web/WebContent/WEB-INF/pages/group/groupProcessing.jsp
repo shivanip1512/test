@@ -55,19 +55,29 @@
 				</ct:nameValue>
 	
 				<ct:nameValue name="Select command">
-					<select id="commandSelect" name="commandSelect" onchange="selectCommand();selectEmailSubject()">
-						<c:forEach var="commandOption" items="${commands}">
+					
+					<c:choose>
+						<c:when test="${fn:length(commands) <= 0}">
+							No pre-defined commands authorized for this user.
+						</c:when>
 						
-							<c:if test="${commandOption.command == command}">
-								<c:set var="selected" value="selected" scope="page"></c:set>
-							</c:if>
-							<c:if test="${commandOption.command != command}">
-								<c:set var="selected" value="" scope="page"></c:set>
-							</c:if>
-						
-							<option value="${commandOption.command}" ${selected}> ${commandOption.label}</option>
-						</c:forEach>
-					</select>
+						<c:otherwise>
+							<select id="commandSelect" name="commandSelect" onchange="selectCommand();selectEmailSubject()">
+								<c:forEach var="commandOption" items="${commands}">
+								
+									<c:if test="${commandOption.command == command}">
+										<c:set var="selected" value="selected" scope="page"></c:set>
+									</c:if>
+									<c:if test="${commandOption.command != command}">
+										<c:set var="selected" value="" scope="page"></c:set>
+									</c:if>
+								
+									<option value="${commandOption.command}" ${selected}> ${commandOption.label}</option>
+								</c:forEach>
+							</select>
+						</c:otherwise>
+					</c:choose>
+					
 					<br>
 					<input style="margin-top: .25em;" type="text" id="commandString" name="commandString" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" />
 				</ct:nameValue>

@@ -25,6 +25,7 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutEmailService;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
@@ -40,6 +41,7 @@ public class MoveInMoveOutController extends MultiActionController {
     private MeterDao meterDao = null;
     private MoveInMoveOutEmailService moveInMoveOutEmailService = null;
     private MoveInMoveOutService moveInMoveOutService = null;
+    private PaoCommandAuthorizationService commandAuthorizationService = null;
 
     /**
      * @param request
@@ -62,6 +64,10 @@ public class MoveInMoveOutController extends MultiActionController {
         mav.addObject("meter", meter);
         mav.addObject("deviceId", meter.getDeviceId());
         mav.addObject("currentDate", currentDateFormatted);
+        
+        // readable?
+        boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
+        mav.addObject("readable", readable);
 
         return mav;
     }
@@ -164,6 +170,11 @@ public class MoveInMoveOutController extends MultiActionController {
         mav.addObject("meter", meter);
         mav.addObject("deviceId", meter.getDeviceId());
         mav.addObject("currentDate", currentDateFormatted);
+        
+        // readable?
+        boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
+        mav.addObject("readable", readable);
+        
         return mav;
     }
 
@@ -376,4 +387,10 @@ public class MoveInMoveOutController extends MultiActionController {
             MoveInMoveOutService moveInMoveOutService) {
         this.moveInMoveOutService = moveInMoveOutService;
     }
+
+    @Required
+	public void setCommandAuthorizationService(
+			PaoCommandAuthorizationService commandAuthorizationService) {
+		this.commandAuthorizationService = commandAuthorizationService;
+	}
 }

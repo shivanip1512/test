@@ -19,18 +19,31 @@
 
     <h2>Move Out</h2>
     <br><br>
+    
+    <%-- show widget or show results? --%>
 	<c:choose>
-	    <c:when test="${not (submissionType eq 'moveOut')}">
-	        
-	        <div id="meterinfo" style="width: 400px">
-	            <ct:widget bean="meterInformationWidget"
-	                identify="false" deviceId="${deviceId}"
-	                hideEnabled="false" />
-	        
-		        <div id="moveout">
-		            <jsp:include page="${moveOutFormUrl}" />
-		        </div>
-	        </div>
+		<c:when test="${not (submissionType eq 'moveOut')}">
+		
+			<%-- only show widget if user has permission --%>
+            <c:choose>
+                <c:when test="${readable}">
+    
+        
+			        <div id="meterinfo" style="width: 400px">
+			            <ct:widget bean="meterInformationWidget"
+			                identify="false" deviceId="${deviceId}"
+			                hideEnabled="false" />
+			        	<br>
+				        <div id="moveout">
+				            <jsp:include page="${moveOutFormUrl}" />
+				        </div>
+			        </div>
+			    </c:when>
+			    <c:otherwise>
+			    	<div style="color:red;text-align:center;font-size:14px;font-weight:bold;">User is not authorized to perform Move Out</div>
+			    </c:otherwise>
+			</c:choose>
+			
 	    </c:when>
 	    <c:otherwise>
 	        <div id="results">

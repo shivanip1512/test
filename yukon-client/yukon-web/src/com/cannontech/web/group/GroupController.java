@@ -54,6 +54,7 @@ import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.PaoDao;
@@ -84,6 +85,8 @@ public class GroupController extends MultiActionController {
 
     private PaoDao paoDao = null;
     private MeterDao meterDao = null;
+    
+    private PaoCommandAuthorizationService commandAuthorizationService = null;
 
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
@@ -130,6 +133,12 @@ public class GroupController extends MultiActionController {
         this.meterDao = meterDao;
     }
     
+    @Required
+	public void setCommandAuthorizationService(
+			PaoCommandAuthorizationService commandAuthorizationService) {
+		this.commandAuthorizationService = commandAuthorizationService;
+	}
+
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
             throws Exception, ServletException {
 
@@ -689,16 +698,17 @@ public class GroupController extends MultiActionController {
             throws ServletException {
 
         ModelAndView mav = new ModelAndView("groupProcessing.jsp");
-
-        Vector commands = commandDao.getAllCommandsByCategory(DeviceTypes.STRING_MCT_410IL[0]);
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        
+        List<LiteCommand> commands = getAuthorizedCommands(user);
         mav.addObject("commands", commands);
 
         List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
         mav.addObject("groups", groups);
 
         String defaultEmailSubject = "Group Processing completed";
-        if (!groups.isEmpty()) {
-            defaultEmailSubject = "Group Processing for " + groups.get(0).getFullName() + " completed. (" + ((LiteCommand) commands.get(0)).getCommand() + ")";
+        if (!groups.isEmpty() && commands.size() > 0) {
+            defaultEmailSubject = "Group Processing for " + groups.get(0).getFullName() + " completed. (" + (commands.get(0)).getCommand() + ")";
         }
         String emailSubject = ServletRequestUtils.getStringParameter(request,
                                                                      "emailSubject",
@@ -742,12 +752,16 @@ public class GroupController extends MultiActionController {
         } else if (StringUtils.isBlank(command)) {
             error = true;
             mav.addObject("errorMsg", "You must enter a valid command");
+        } else if (!commandAuthorizationService.isAuthorized(user, command, new LiteYukonPAObject(-1))) {
+        	error = true;
+            mav.addObject("errorMsg", "User is not authorized to execute this command.");
         }
-
+        
+        
         if (error) {
             mav.setViewName("groupProcessing.jsp");
 
-            Vector commands = commandDao.getAllCommandsByCategory(DeviceTypes.STRING_MCT_410IL[0]);
+            List<LiteCommand> commands = getAuthorizedCommands(user);
             mav.addObject("commands", commands);
 
             List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
@@ -803,6 +817,20 @@ public class GroupController extends MultiActionController {
         }
 
         return true;
+    }
+    
+    private List<LiteCommand> getAuthorizedCommands(LiteYukonUser user) {
+    	
+    	Vector<LiteCommand> commands = commandDao.getAllCommandsByCategory(DeviceTypes.STRING_MCT_410IL[0]);
+        
+        List<LiteCommand> authorizedCommands = new ArrayList<LiteCommand>();
+        for (LiteCommand command : commands) {
+        	if (commandAuthorizationService.isAuthorized(user, command.getCommand(), new LiteYukonPAObject(-1))) {
+        		authorizedCommands.add(command);
+        	}
+        }
+        
+        return authorizedCommands;
     }
 
 }
