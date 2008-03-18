@@ -3,6 +3,7 @@ package com.cannontech.billing.format;
 import java.text.SimpleDateFormat;
 
 import com.cannontech.billing.device.base.BillableDevice;
+import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 
 /**
@@ -31,7 +32,7 @@ public class CTICSVRecordFormatter extends BillingFormatterBase {
     public String dataToString(BillableDevice device) {
 
         StringBuffer writeToFile = new StringBuffer();
-        String paoName = device.getData(BillableField.paoName);
+        String paoName = device.getData(ReadingType.DEVICE_DATA, BillableField.paoName);
 
         writeToFile.append(this.getFormattedRow(device, paoName, BillableField.totalPeakDemand));
         writeToFile.append(this.getFormattedRow(device, paoName, BillableField.totalConsumption));
@@ -43,30 +44,30 @@ public class CTICSVRecordFormatter extends BillingFormatterBase {
     private String getFormattedRow(BillableDevice device, String paoName, BillableField field) {
 
         StringBuffer writeToFile = new StringBuffer();
-
+        
         addToStringBufferWithTrailingFiller(writeToFile, paoName, 20, " ", true);
 
-        if (device.getCalculatedValue(field) == null) {
+        if (device.getValue(ReadingType.ELECTRIC, field) == null) {
             return "";
         }
 
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             format(device.getCalculatedValue(field),
+                                             format(device.getValue(ReadingType.ELECTRIC, field),
                                                     DECIMAL_FORMAT_10V2),
                                              13,
                                              " ",
                                              true);
 
-        String unitOfMeasure = device.getUnitOfMeasure(field);
+        String unitOfMeasure = device.getUnitOfMeasure(ReadingType.ELECTRIC, field);
         // Default to 'KWH'
         if (unitOfMeasure == null) {
             unitOfMeasure = MEASURE_LABEL;
         }
         addToStringBufferWithTrailingFiller(writeToFile, unitOfMeasure, 6, " ", true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(field), DATE_FORMAT), true);
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, field), DATE_FORMAT), true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(field), TIME_FORMAT), true);
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, field), TIME_FORMAT), true);
 
         writeToFile.append(STATUS + "\r\n");
 

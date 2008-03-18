@@ -5,6 +5,7 @@ import java.text.Format;
 import java.text.SimpleDateFormat;
 
 import com.cannontech.billing.device.base.BillableDevice;
+import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 
 /**
@@ -67,26 +68,26 @@ public class TurtleRecordFormatter extends BillingFormatterBase {
         addToStringBuffer(writeToFile, RECORD_INDICATOR, true);
 
         addToStringBufferWithTrailingFiller(writeToFile,
-                                            device.getData(BillableField.meterNumber),
+                                            device.getData(ReadingType.DEVICE_DATA, BillableField.meterNumber),
                                             10,
                                             " ",
                                             true);
 
-        if (device.getCalculatedValue(BillableField.totalConsumption) == null) {
+        if (device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption) == null) {
             return "";
         }
 
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             format(device.getCalculatedValue(BillableField.totalConsumption),
+                                             format(device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                                     FORMAT_NODECIMAL),
                                              5,
                                              " ",
                                              true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalConsumption),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                               TIME_FORMAT), true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalConsumption),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                               getDateFormat()), true);
 
         if (this instanceof SEDC54RecordFormatter) {
@@ -96,16 +97,16 @@ public class TurtleRecordFormatter extends BillingFormatterBase {
 
         // Peak
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             format(device.getCalculatedValue(BillableField.totalPeakDemand),
+                                             format(device.getValue(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                                     getKwFormat()),
                                              getKwFieldSize(),
                                              " ",
                                              true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalPeakDemand),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                               TIME_FORMAT), true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalPeakDemand),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                               getDateFormat()), false);
 
         if (this instanceof NCDCRecordFormatter || this instanceof NISC_NCDCRecordFormatter) {

@@ -3,6 +3,7 @@ package com.cannontech.billing.format;
 import java.text.DecimalFormat;
 
 import com.cannontech.billing.device.base.BillableDevice;
+import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 
 /**
@@ -40,7 +41,7 @@ public class SimpleTOU_DeviceNameRecordFormatter extends SimpleTOURecordFormatte
         	superData = superData.replaceAll("\r\n", "");	//remove the end of line
         	addToStringBuffer(writeToFile, superData, true);
 
-        	addToStringBuffer(writeToFile, device.getData(BillableField.paoName), false);
+        	addToStringBuffer(writeToFile, device.getData(ReadingType.DEVICE_DATA, BillableField.paoName), false);
 
         	writeToFile.append("\r\n");
         	

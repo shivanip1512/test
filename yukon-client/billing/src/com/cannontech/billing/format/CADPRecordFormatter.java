@@ -59,9 +59,9 @@ public class CADPRecordFormatter extends BillingFormatterBase {
         StringBuffer writeToFile = new StringBuffer();
 
         // Account number
-        String accountNumber = device.getData(BillableField.accountNumber);
+        String accountNumber = device.getData(ReadingType.DEVICE_DATA, BillableField.accountNumber);
         if (accountNumber == null) {
-            accountNumber = device.getData(BillableField.paoName);
+            accountNumber = device.getData(ReadingType.DEVICE_DATA, BillableField.paoName);
         }
         if (accountNumber != null && accountNumber.length() > 10) {
             accountNumber = accountNumber.substring(0, 10);
@@ -69,7 +69,7 @@ public class CADPRecordFormatter extends BillingFormatterBase {
         addToStringBufferWithPrecedingFiller(writeToFile, accountNumber, 10, "0", false);
 
         // Total Consumption
-        Double totalConsumption = device.getValue(BillableField.totalConsumption);
+        Double totalConsumption = device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption);
         if (totalConsumption == null) {
             totalConsumption = new Double(0);
         } else {
@@ -78,7 +78,7 @@ public class CADPRecordFormatter extends BillingFormatterBase {
         addToStringBuffer(writeToFile, format(totalConsumption, DECIMAL_FORMAT5V0), false);
 
         // kW Total Demand
-        Double totalDemand = device.getCalculatedValue(BillableField.totalPeakDemand);
+        Double totalDemand = device.getValue(ReadingType.ELECTRIC, BillableField.totalPeakDemand);
         String totalDemandString = "       ";
         if (totalDemand != null && totalDemand.doubleValue() != 0) {
             noRecord = false;

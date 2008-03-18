@@ -52,10 +52,10 @@ public class CADPXL2RecordFormatter extends BillingFormatterBase {
     public String dataToString(BillableDevice device) {
 
         StringBuffer writeToFile = new StringBuffer();
-
-        String accountNumber = device.getData(BillableField.accountNumber);
+        
+        String accountNumber = device.getData(ReadingType.DEVICE_DATA, BillableField.accountNumber);
         if (accountNumber == null) {
-            accountNumber = device.getData(BillableField.paoName);
+            accountNumber = device.getData(ReadingType.DEVICE_DATA, BillableField.paoName);
         }
 
         // only keep 10 characters
@@ -78,7 +78,7 @@ public class CADPXL2RecordFormatter extends BillingFormatterBase {
 
         writeToFile.append(BATCH_NUMBER);
 
-        Timestamp totalConsumptionTimestamp = device.getTimestamp(BillableField.totalConsumption);
+        Timestamp totalConsumptionTimestamp = device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption);
         if (totalConsumptionTimestamp == null) {
             return "";
         }
@@ -87,12 +87,12 @@ public class CADPXL2RecordFormatter extends BillingFormatterBase {
         writeToFile.append(WHO_READ_METER);
 
         addToStringBufferWithTrailingFiller(writeToFile,
-                                            device.getData(BillableField.meterNumber),
+                                            device.getData(ReadingType.DEVICE_DATA, BillableField.meterNumber),
                                             15,
                                             " ",
                                             false);
 
-        String meterPostionNumber = device.getData(BillableField.meterPositionNumber);
+        String meterPostionNumber = device.getData(ReadingType.DEVICE_DATA, BillableField.meterPositionNumber);
         if (meterPostionNumber == null) {
             meterPostionNumber = "01";
         }
@@ -129,7 +129,7 @@ public class CADPXL2RecordFormatter extends BillingFormatterBase {
                                              false);
 
         // kWh Total consumption
-        String totalConsumption = format(device.getCalculatedValue(channel,
+        String totalConsumption = format(device.getValue(channel,
                                                                    ReadingType.ELECTRIC,
                                                                    BillableField.totalConsumption),
                                          DECIMAL_FORMAT9V0);
@@ -143,7 +143,7 @@ public class CADPXL2RecordFormatter extends BillingFormatterBase {
         channelDataString.append(totalConsumption);
 
         // kW Total demand
-        String totalDemand = format(device.getCalculatedValue(channel,
+        String totalDemand = format(device.getValue(channel,
                                                               ReadingType.ELECTRIC,
                                                               BillableField.totalPeakDemand),
                                     DECIMAL_FORMAT6V3);
@@ -157,7 +157,7 @@ public class CADPXL2RecordFormatter extends BillingFormatterBase {
         channelDataString.append(totalDemand);
 
         // kVar Total demand
-        totalDemand = format(device.getCalculatedValue(channel,
+        totalDemand = format(device.getValue(channel,
                                                        ReadingType.KVAR,
                                                        BillableField.totalPeakDemand),
                              DECIMAL_FORMAT_7V2);

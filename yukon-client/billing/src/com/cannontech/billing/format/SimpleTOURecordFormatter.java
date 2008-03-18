@@ -3,6 +3,7 @@ package com.cannontech.billing.format;
 import java.text.DecimalFormat;
 
 import com.cannontech.billing.device.base.BillableDevice;
+import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 
 /**
@@ -34,67 +35,67 @@ public class SimpleTOURecordFormatter extends BillingFormatterBase {
 
         StringBuffer writeToFile = new StringBuffer();
 
-        addToStringBuffer(writeToFile, device.getData(BillableField.meterNumber), true);
+        addToStringBuffer(writeToFile, device.getData(ReadingType.DEVICE_DATA, BillableField.meterNumber), true);
 
-        if (device.getCalculatedValue(BillableField.totalConsumption) != null ||
-        		device.getCalculatedValue(BillableField.rateAConsumption) != null ||
-        		device.getCalculatedValue(BillableField.rateBConsumption) != null ) {
+        if (device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption) != null ||
+        		device.getValue(ReadingType.ELECTRIC, BillableField.rateAConsumption) != null ||
+        		device.getValue(ReadingType.ELECTRIC, BillableField.rateBConsumption) != null ) {
             // KWH
             addToStringBuffer(writeToFile,
-                              format(device.getCalculatedValue(BillableField.totalConsumption),
+                              format(device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption),
                             		  getKWHFormat()),
                               true);
 
             addToStringBuffer(writeToFile,
-                              format(device.getTimestamp(BillableField.totalConsumption),
+                              format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                      TIME_FORMAT),
                               true);
 
             addToStringBuffer(writeToFile,
-                              format(device.getTimestamp(BillableField.totalConsumption),
+                              format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                      DATE_FORMAT),
                               true);
 
             // KW
             addToStringBuffer(writeToFile,
-                              format(device.getCalculatedValue(BillableField.totalPeakDemand),
+                              format(device.getValue(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                      getKWFormat()),
                               true);
 
             addToStringBuffer(writeToFile,
-                              format(device.getTimestamp(BillableField.totalPeakDemand),
+                              format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                      TIME_FORMAT),
                               true);
 
             addToStringBuffer(writeToFile,
-                              format(device.getTimestamp(BillableField.totalPeakDemand),
+                              format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                      DATE_FORMAT),
                               true);
 
             // On Peak
-            addToStringBuffer(writeToFile, format(device.getValue(BillableField.rateAConsumption),
+            addToStringBuffer(writeToFile, format(device.getValue(ReadingType.ELECTRIC, BillableField.rateAConsumption),
                                                   getKWHFormat()), true);
 
-            addToStringBuffer(writeToFile, format(device.getValue(BillableField.rateADemand),
+            addToStringBuffer(writeToFile, format(device.getValue(ReadingType.ELECTRIC, BillableField.rateADemand),
                                                   getKWFormat()), true);
 
-            addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.rateADemand),
+            addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.rateADemand),
                                                   TIME_FORMAT), true);
 
-            addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.rateADemand),
+            addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.rateADemand),
                                                   DATE_FORMAT), true);
 
             // Off Peak
-            addToStringBuffer(writeToFile, format(device.getValue(BillableField.rateBConsumption),
+            addToStringBuffer(writeToFile, format(device.getValue(ReadingType.ELECTRIC, BillableField.rateBConsumption),
                                                   getKWHFormat()), true);
 
-            addToStringBuffer(writeToFile, format(device.getValue(BillableField.rateBDemand),
+            addToStringBuffer(writeToFile, format(device.getValue(ReadingType.ELECTRIC, BillableField.rateBDemand),
                                                   getKWFormat()), true);
 
-            addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.rateBDemand),
+            addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.rateBDemand),
                                                   TIME_FORMAT), true);
 
-            addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.rateBDemand),
+            addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.rateBDemand),
                                                   DATE_FORMAT), false);
 
             writeToFile.append("\r\n");

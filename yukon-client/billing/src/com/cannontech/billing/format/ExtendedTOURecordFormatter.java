@@ -295,6 +295,6 @@ public class ExtendedTOURecordFormatter extends BillingFormatterBase {
      * @param code - Type code for this reading type
      */
     protected String getMeterNumber(BillableDevice device, String code ) {
-        return device.getData(BillableField.meterNumber);
+        return device.getData(ReadingType.DEVICE_DATA, BillableField.meterNumber);
     }
 }

@@ -23,7 +23,7 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
         StringBuffer writeToFile = new StringBuffer("");
 
         // Meter number
-        String meterNumber = device.getData(BillableField.meterNumber);
+        String meterNumber = device.getData(ReadingType.DEVICE_DATA, BillableField.meterNumber);
         if (meterNumber != null && meterNumber.length() > 8) {
             // cut the account down to field size
             meterNumber = meterNumber.substring(meterNumber.length() - 8);
@@ -36,20 +36,20 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
 
         // kWh time, date, reading
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             format(device.getTimestamp(BillableField.totalConsumption),
+                                             format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                                     TIME_FORMAT),
                                              4,
                                              "0",
                                              false);
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             format(device.getTimestamp(BillableField.totalConsumption),
+                                             format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                                     DATE_FORMAT),
                                              6,
                                              "0",
                                              false);
 
         //Need to truncate the decimals from the reading, instead of round.
-        Double r = Math.floor(device.getCalculatedValue(BillableField.totalConsumption));
+        Double r = Math.floor(device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption));
         String value = format(r, DECIMAL_FORMAT7V0);
         if (value == null) {
             return "";
@@ -58,18 +58,18 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
 
         // kW time, date, reading
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             format(device.getTimestamp(BillableField.totalPeakDemand),
+                                             format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                                     TIME_FORMAT),
                                              4,
                                              "0",
                                              false);
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             format(device.getTimestamp(BillableField.totalPeakDemand),
+                                             format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                                     DATE_FORMAT),
                                              6,
                                              "0",
                                              false);
-        value = format(device.getCalculatedValue(BillableField.totalPeakDemand), DECIMAL_FORMAT4V3);
+        value = format(device.getValue(ReadingType.ELECTRIC, BillableField.totalPeakDemand), DECIMAL_FORMAT4V3);
         if (value != null) {
             value = value.replaceAll("\\.", "");
         }
@@ -92,7 +92,7 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
                                              6,
                                              "0",
                                              false);
-        value = format(device.getCalculatedValue(Channel.ONE,
+        value = format(device.getValue(Channel.ONE,
                                                  ReadingType.KVAR,
                                                  BillableField.totalPeakDemand), DECIMAL_FORMAT4V3);
         if (value != null) {
@@ -101,7 +101,7 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
         addToStringBufferWithPrecedingFiller(writeToFile, value, 7, "0", false);
 
         // Account
-        String account = device.getData(BillableField.paoName);
+        String account = device.getData(ReadingType.DEVICE_DATA, BillableField.paoName);
         if (account != null && account.length() > 11) {
             // cut the account down to field size
             account = account.substring(account.length() - 11);

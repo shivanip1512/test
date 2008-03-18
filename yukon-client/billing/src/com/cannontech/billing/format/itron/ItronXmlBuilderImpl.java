@@ -71,9 +71,9 @@ public class ItronXmlBuilderImpl implements ItronXmlBuilder{
     }
     
     private Element createChannelElement(final BillableDevice device, final Channel channel) {
-        String meterId = device.getData(BillableField.meterNumber);
+        String meterId = device.getData(ReadingType.DEVICE_DATA, BillableField.meterNumber);
         Double value = getValue(device, channel, BillableField.totalConsumption); 
-        Timestamp timeStamp = device.getTimestamp(BillableField.totalConsumption);
+        Timestamp timeStamp = device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption);
 
         if (meterId == null || value == null || timeStamp == null) return null;
 
@@ -85,7 +85,7 @@ public class ItronXmlBuilderImpl implements ItronXmlBuilder{
     
     private Double getValue(final BillableDevice device, final Channel channel, final BillableField field) {
         for (ReadingType type : ReadingType.values()) {
-            Double value = device.getCalculatedValue(channel, type, field);
+            Double value = device.getValue(channel, type, field);
             if (value != null) return value;
         }
         return null;

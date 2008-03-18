@@ -101,8 +101,8 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
 
         // Only write the row if kwh is included OR there is a value for kw or
         // kvarh
-        if ((includeKwh && device.getCalculatedValue(BillableField.totalConsumption) != null)
-                || device.getValue(kwField) != null
+        if ((includeKwh && device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption) != null)
+                || device.getValue(ReadingType.ELECTRIC, kwField) != null
                 || device.getValue(Channel.ONE, ReadingType.KVAR, kvarhField) != null) {
 
             StringBuffer writeToFile = new StringBuffer();
@@ -111,7 +111,7 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
             addToStringBuffer(writeToFile, RECORD_INDICATOR, true);
 
             addToStringBufferWithTrailingFiller(writeToFile,
-                                                device.getData(BillableField.meterNumber),
+                                                device.getData(ReadingType.DEVICE_DATA, BillableField.meterNumber),
                                                 10,
                                                 " ",
                                                 true);
@@ -122,7 +122,7 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
             // Total kWh
             if (includeKwh) {
                 addToStringBufferWithPrecedingFiller(writeToFile,
-                                                     format(device.getCalculatedValue(BillableField.totalConsumption),
+                                                     format(device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                                             FORMAT_NODECIMAL),
                                                      5,
                                                      " ",
@@ -131,23 +131,23 @@ public class NISC_TOU_kVarHRecordFormatter extends BillingFormatterBase {
                 writeToFile.append("     ,");
             }
             addToStringBuffer(writeToFile,
-                              format(device.getTimestamp(BillableField.totalConsumption),
+                              format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                      TIME_FORMAT),
                               true);
             addToStringBuffer(writeToFile,
-                              format(device.getTimestamp(BillableField.totalConsumption),
+                              format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                      DATE_FORMAT),
                               true);
 
             // Peak kW
             addToStringBufferWithPrecedingFiller(writeToFile,
-                                                 format(device.getValue(kwField),
+                                                 format(device.getValue(ReadingType.ELECTRIC, kwField),
                                                         DECIMAL_FORMAT_3v2),
                                                  7,
                                                  " ",
                                                  true);
-            addToStringBuffer(writeToFile, format(device.getTimestamp(kwField), TIME_FORMAT), true);
-            addToStringBuffer(writeToFile, format(device.getTimestamp(kwField), DATE_FORMAT), true);
+            addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, kwField), TIME_FORMAT), true);
+            addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, kwField), DATE_FORMAT), true);
 
             // Total kVarh
             addToStringBufferWithPrecedingFiller(writeToFile,

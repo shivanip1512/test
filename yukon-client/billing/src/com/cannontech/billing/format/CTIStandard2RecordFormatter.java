@@ -3,6 +3,7 @@ package com.cannontech.billing.format;
 import java.text.SimpleDateFormat;
 
 import com.cannontech.billing.device.base.BillableDevice;
+import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 
 /**
@@ -32,24 +33,24 @@ public class CTIStandard2RecordFormatter extends BillingFormatterBase {
 
         StringBuffer writeToFile = new StringBuffer();
 
-        String data = device.getData(BillableField.address);
+        String data = device.getData(ReadingType.DEVICE_DATA, BillableField.address);
         addToStringBuffer(writeToFile, data, true);
 
         addToStringBufferWithTrailingFiller(writeToFile,
-                                            device.getData(BillableField.totalConsumption),
+                                            device.getData(ReadingType.DEVICE_DATA, BillableField.totalConsumption),
                                             20,
                                             " ",
                                             true);
-        Double totalConsumptionValue = device.getValue(BillableField.totalConsumption);
+        Double totalConsumptionValue = device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption);
         if (totalConsumptionValue == null) {
             return "";
         }
         addToStringBuffer(writeToFile, format(totalConsumptionValue, DECIMAL_FORMAT_8V3), true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalConsumption),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                               DATE_FORMAT), true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalConsumption),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                               TIME_FORMAT), true);
 
         writeToFile.append(QUALITY + "\r\n");

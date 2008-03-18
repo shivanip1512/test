@@ -1,6 +1,7 @@
 package com.cannontech.billing.format;
 
 import com.cannontech.billing.device.base.BillableDevice;
+import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 
 /**
@@ -29,28 +30,28 @@ public class OPURecordFormatter extends BillingFormatterBase {
         StringBuffer writeToFile = new StringBuffer("\"");
 
         addToStringBufferWithTrailingFiller(writeToFile,
-                                            device.getData(BillableField.paoName),
+                                            device.getData(ReadingType.DEVICE_DATA, BillableField.paoName),
                                             20,
                                             " ",
                                             true);
 
         addToStringBufferWithTrailingFiller(writeToFile,
-                                            device.getData(BillableField.totalConsumption),
+                                            device.getData(ReadingType.DEVICE_DATA, BillableField.totalConsumption),
                                             20,
                                             " ",
                                             true);
 
-        Double totalConsumptionValue = device.getCalculatedValue(BillableField.totalConsumption);
+        Double totalConsumptionValue = device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption);
         if (totalConsumptionValue == null) {
             return "";
         }
         addToStringBufferWithPrecedingFiller(writeToFile, format(totalConsumptionValue,
                                                                  DECIMAL_FORMAT_7V2), 10, " ", true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalConsumption),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                               DATE_FORMAT), true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalConsumption),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                               TIME_FORMAT), true);
 
         writeToFile.append(QUALITY + "\"\r\n");

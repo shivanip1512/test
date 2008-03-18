@@ -1,6 +1,7 @@
 package com.cannontech.billing.format;
 
 import com.cannontech.billing.device.base.BillableDevice;
+import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 
 /**
@@ -55,28 +56,28 @@ public class StandardRecordFormatter extends BillingFormatterBase {
         addToStringBuffer(writeToFile, RECORD_INDICATOR, true);
 
         addToStringBuffer(writeToFile,
-        				  device.getData(BillableField.meterNumber),
+        				  device.getData(ReadingType.DEVICE_DATA, BillableField.meterNumber),
         				  true);
 
         addToStringBuffer(writeToFile,
-        				  format(device.getCalculatedValue(BillableField.totalConsumption), FORMAT_NODECIMAL),
+        				  format(device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption), FORMAT_NODECIMAL),
         				  true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalConsumption),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                               TIME_FORMAT), true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalConsumption),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalConsumption),
                                               DATE_FORMAT), true);
 
         // Peak
         addToStringBuffer(writeToFile,
-        				  format(device.getCalculatedValue(BillableField.totalPeakDemand), KW_FORMAT),
+        				  format(device.getValue(ReadingType.ELECTRIC, BillableField.totalPeakDemand), KW_FORMAT),
         				  true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalPeakDemand),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                               TIME_FORMAT), true);
 
-        addToStringBuffer(writeToFile, format(device.getTimestamp(BillableField.totalPeakDemand),
+        addToStringBuffer(writeToFile, format(device.getTimestamp(ReadingType.ELECTRIC, BillableField.totalPeakDemand),
                                               DATE_FORMAT), false);
 
         writeToFile.append("\r\n");
@@ -85,8 +86,8 @@ public class StandardRecordFormatter extends BillingFormatterBase {
     }
     
     private boolean isValid(BillableDevice device) {
-    	if (device.getCalculatedValue(BillableField.totalConsumption) == null &&
-    			device.getCalculatedValue(BillableField.totalPeakDemand) == null )
+    	if (device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption) == null &&
+    			device.getValue(ReadingType.ELECTRIC, BillableField.totalPeakDemand) == null )
     		return false;
 
     	return true;
