@@ -72,12 +72,11 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 					// the field have reading format associated with them
 					if (field.getName().endsWith(READING) == true) {
 
-						if (device.getValue(billableField) == null) {
-							writeToFile.append("");
+					    Double value = device.getValue(field.getReadingType(), billableField);
+						if (value == null) {
+							writeToFile.append( processValueString(field, "") );
 						} else {
-						    Double value = device.getValue(Channel.ONE, field.getReadingType(), billableField);
 							String valueString = String.valueOf(value);
-
 							String formatString = field.getFormat();
 
 							DecimalFormat formatter;
@@ -102,9 +101,9 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 
 						// the field have timestamp format associated with them
 					} else if (field.getName().endsWith(TIMESTAMP) == true) {
-						Timestamp timestamp = device.getTimestamp(billableField);
+						Timestamp timestamp = device.getTimestamp(field.getReadingType(), billableField);
 						if (timestamp == null) {
-							writeToFile.append("");
+							writeToFile.append(processValueString(field, ""));
 						} else {
 							String formatString = field.getFormat();
 
@@ -130,10 +129,10 @@ public class DynamicBillingFormatter extends BillingFormatterBase {
 
 						// no timestamp or reading, just data
 					} else {
-						if (device.getData(billableField) == null) {
-							writeToFile.append("");
+					    String data = device.getData(field.getReadingType(), billableField);
+						if (data == null) {
+							writeToFile.append(processValueString(field, ""));
 						} else {
-							String data = device.getData(billableField);
                             data = processValueString(field, data);
 							writeToFile.append(data);
 						}

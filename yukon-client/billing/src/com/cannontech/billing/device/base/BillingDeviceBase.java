@@ -16,37 +16,27 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
     private Map<Channel, Map<ReadingType, Map<BillableField, BillingData>>> channelMap = new HashMap<Channel, Map<ReadingType, Map<BillableField, BillingData>>>();
 
-    public Double getValue(BillableField field) {
-        return this.getValue(Channel.ONE, ReadingType.ELECTRIC, field);
-    }
+    /**
+     * Helper method to return an adjusted/aggregate Value on channel 1, 2, or 3 (in that order) 
+     * for ReadingType type.
+     */
+    public Double getValue(ReadingType type, BillableField field) {
+    	
+    	Double value = this.getValue(Channel.ONE, type, field);
+    	if( value == null) 
+    		value = this.getValue(Channel.TWO, type, field);
+    	if( value == null)
+    		value = this.getValue(Channel.THREE, type, field);
 
-    public Double getValue(Channel channel, ReadingType type, BillableField field) {
-
-        if (!field.hasValue()) {
-            throw new IllegalArgumentException("Field: " + field.toString()
-                    + " does not have a value");
-        }
-
-        BillingData data = this.getBillingData(channel, type, field);
-        return (data != null) ? data.getValue() : null;
+        return value;
     }
 
     /**
-     * Helper method to return a Calculated Value on channel 1, 2, or 3 (in that order) 
-     * for ReadingType.Electric
+     * Returns the value for Channel and ReadingType for field.  If field is totalConsumption 
+     * or totalPeakDemand, then the value is adjusted/aggregated.  Else the exact value 
+     * for field is returned.
      */
-    public Double getCalculatedValue(BillableField field) {
-    	
-    	Double calcValue = this.getCalculatedValue(Channel.ONE, ReadingType.ELECTRIC, field);
-    	if( calcValue == null) 
-    		calcValue = this.getCalculatedValue(Channel.TWO, ReadingType.ELECTRIC, field);
-    	if( calcValue == null)
-    		calcValue = this.getCalculatedValue(Channel.THREE, ReadingType.ELECTRIC, field);
-
-        return calcValue;
-    }
-
-    public Double getCalculatedValue(Channel channel, ReadingType type, BillableField field) {
+    public Double getValue(Channel channel, ReadingType type, BillableField field) {
 
         if (!field.hasValue()) {
             throw new IllegalArgumentException("Field: " + field.toString()
@@ -68,17 +58,22 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
     /**
      * Helper method to return a timestamp on channel 1, 2, or 3 (in that order) 
-     * for ReadingType.Electric
+     * for readingType
      */
-    public Timestamp getTimestamp(BillableField field) {
-    	Timestamp returnTS = this.getTimestamp(Channel.ONE, ReadingType.ELECTRIC, field);
-    	if( returnTS == null) 
-    		returnTS = this.getTimestamp(Channel.TWO, ReadingType.ELECTRIC, field);
-    	if( returnTS == null)
-    		returnTS = this.getTimestamp(Channel.THREE, ReadingType.ELECTRIC, field);
+    public Timestamp getTimestamp(ReadingType type, BillableField field) {
+        Timestamp returnTS = this.getTimestamp(Channel.ONE, type, field);
+        if( returnTS == null) 
+            returnTS = this.getTimestamp(Channel.TWO, type, field);
+        if( returnTS == null)
+            returnTS = this.getTimestamp(Channel.THREE, type, field);
         return returnTS; 
     }
 
+    /**
+     * Returns the timestamp for Channel and ReadingType for field.  If field is totalConsumption 
+     * or totalPeakDemand, then the timestamp is adjusted/aggregated.  Else the exact timestamp 
+     * for field is returned.
+     */
     public Timestamp getTimestamp(Channel channel, ReadingType type, BillableField field) {
 
         if (!field.hasTimestamp()) {
@@ -99,9 +94,9 @@ public abstract class BillingDeviceBase implements BillableDevice {
         return (data != null) ? data.getTimestamp() : null;
     };
 
-    public String getData(BillableField field) {
+    public String getData(ReadingType defaultType, BillableField field) {
 
-        ReadingType type = ReadingType.ELECTRIC;
+        ReadingType type = defaultType;
 
         // Check to see if the field is a device base data field
         if (BillableField.meterNumber.equals(field) || BillableField.address.equals(field)
@@ -132,8 +127,8 @@ public abstract class BillingDeviceBase implements BillableDevice {
         return (data != null) ? data.getData() : null;
     }
 
-    public String getUnitOfMeasure(BillableField field) {
-        return this.getUnitOfMeasure(Channel.ONE, ReadingType.ELECTRIC, field);
+    public String getUnitOfMeasure(ReadingType type, BillableField field) {
+        return this.getUnitOfMeasure(Channel.ONE, type, field);
     }
 
     public String getUnitOfMeasure(Channel channel, ReadingType type, BillableField field) {
@@ -158,12 +153,13 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
     /**
      * Method to add data to the dataMap (key: field, value: data). Data will be
-     * added to the defaultChannel and electric type
+     * added to the defaultChannel and readingType type
      * @param field - Field to be used as the key in the map entry
+     * @param type - Type that the data is for 
      * @param data - Data to be used as the value in the map entry
      */
-    public void addData(BillableField field, BillingData data) {
-        this.addData(Channel.ONE, ReadingType.ELECTRIC, field, data);
+    public void addData(BillableField field, ReadingType type, BillingData data) {
+        this.addData(Channel.ONE, type, field, data);
     }
 
     /**
@@ -194,8 +190,8 @@ public abstract class BillingDeviceBase implements BillableDevice {
         }
     }
 
-    public void addData(BillableField field, String dataValue) {
-        this.addData(Channel.ONE, ReadingType.ELECTRIC, field, dataValue);
+    public void addData(BillableField field, ReadingType type, String dataValue) {
+        this.addData(Channel.ONE, type, field, dataValue);
     }
 
     public void addData(Channel channel, ReadingType type, BillableField field, String dataValue) {
