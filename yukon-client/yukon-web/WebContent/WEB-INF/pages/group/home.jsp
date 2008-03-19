@@ -256,9 +256,13 @@
                     
                     <%-- GENERATE REPORTS --%>
                     <h4>Generate Report</h4>
+                    <c:url value="/spring/amr/reports/groupDevicesReport" var="htmlUrl">
+                        <c:param name="def" value="groupDevicesDefinition"/>
+                        <c:param name="groupName" value="${group.fullName}"/>
+                    </c:url>
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
-                            <a href="/spring/amr/reports/groupDevicesReport?def=groupDevicesDefinition&groupName=${fn:escapeXml(group.fullName)}">HTML</a>
+                            <a href="${htmlUrl}">HTML</a>
                             |
                             <cti:simpleReportLinkFromNameTag definitionName="groupDevicesDefinition" viewType="csvView" groupName="${group.fullName}">CSV</cti:simpleReportLinkFromNameTag>
                             |
