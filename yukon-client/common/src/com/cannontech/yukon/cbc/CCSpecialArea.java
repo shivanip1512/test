@@ -1,27 +1,29 @@
 package com.cannontech.yukon.cbc;
 
-
-public class CBCArea extends StreamableCapObject {
+public class CCSpecialArea extends StreamableCapObject {
 
     private Boolean disableFlag;
     private Boolean ovUvDisabledFlag;
+    private Boolean voltReductionFlag;
     private String paoDescription;
     private String paoType;
     private String paoName;
     private String paoCategory;
     private Integer paoID;
     private String paoClass;
-    int[] stations = null;
+	//should only contain objects of type integer
+	private int[] ccSubIds = null;
     private Double powerFactorValue = null;
     private Double estimatedPFValue = null;
-    private Boolean voltReductionFlag;
     
-    public int[] getStations() {
-		return stations;
+
+
+    public int[] getCcSubIds() {
+		return ccSubIds;
 	}
 
-	public void setStations(int[] stations) {
-		this.stations = stations;
+	public void setCcSubIds(int[] ccSubIds) {
+		this.ccSubIds = ccSubIds;
 	}
 
 	public void setPaoID(Integer integer) {
@@ -82,15 +84,15 @@ public class CBCArea extends StreamableCapObject {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof CBCArea) {
-            CBCArea area = (CBCArea) obj;
+        if (obj instanceof CCSpecialArea) {
+            CCSpecialArea area = (CCSpecialArea) obj;
             return area.getPaoID().equals(getPaoID());
         }
         return false;
     }
 
-    public CBCArea copy() {
-        CBCArea copy = new CBCArea();
+    public CCSpecialArea copy() {
+        CCSpecialArea copy = new CCSpecialArea();
         copy.setPaoID(getPaoID());
         copy.setPaoCategory(getPaoCategory());
         copy.setPaoClass(getPaoClass());
@@ -101,13 +103,13 @@ public class CBCArea extends StreamableCapObject {
         return copy;
     }
 
-	public Boolean getOvUvDisabledFlag() {
-		return ovUvDisabledFlag;
-	}
+    public Boolean getOvUvDisabledFlag() {
+        return ovUvDisabledFlag;
+    }
 
-	public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
-		this.ovUvDisabledFlag = ovUvDisabledFlag;
-	}
+    public void setOvUvDisabledFlag(Boolean ovUvDisabledFlag) {
+        this.ovUvDisabledFlag = ovUvDisabledFlag;
+    }
     
     /**
      * Returns the powerFactorValue.
@@ -150,3 +152,4 @@ public class CBCArea extends StreamableCapObject {
 	}
 
 }
+

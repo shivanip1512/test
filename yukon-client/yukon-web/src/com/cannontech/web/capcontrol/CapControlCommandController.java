@@ -21,8 +21,8 @@ import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CapControlCommand;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.SubStation;
 
 public class CapControlCommandController extends MultiActionController {
@@ -67,14 +67,14 @@ public class CapControlCommandController extends MultiActionController {
 
 	    LiteYukonUser user = ServletUtil.getYukonUser(request);
 	    
-	    if (cmdId == CBCCommand.ENABLE_AREA) {
+	    if (cmdId == CapControlCommand.ENABLE_AREA) {
 	        final List<String> subsInConflict = new ArrayList<String>();
 	        // Check for other special areas with this special area's subIds that are enabled.
 	        List<SubStation> subs = capControlCache.getSubstationsBySpecialArea(paoId);
 	        for (final SubStation sub : subs) {
 	            boolean alreadyUsed = sub.getSpecialAreaEnabled();
 	            if (alreadyUsed) {
-	                CBCSpecialArea otherArea = capControlCache.getCBCSpecialArea(sub.getSpecialAreaId());
+	                CCSpecialArea otherArea = capControlCache.getCBCSpecialArea(sub.getSpecialAreaId());
 	                if (!otherArea.getCcDisableFlag()) {
 	                    String areaName = otherArea.getCcName();
 	                    String value = areaName + " : " + sub.getCcName();
@@ -123,7 +123,7 @@ public class CapControlCommandController extends MultiActionController {
         final String controlTypeString = ServletRequestUtils.getStringParameter(request, "controlType", emptyString);
         CapControlType controlType = CapControlType.valueOf(controlTypeString);
 
-        exec.execute(controlType, CBCCommand.CMD_MANUAL_ENTRY, paoId, new float[]{rawStateId}, null);
+        exec.execute(controlType, CapControlCommand.CMD_MANUAL_ENTRY, paoId, new float[]{rawStateId}, null);
 	}
 	
 	public void executeCommandOneLine(HttpServletRequest request, HttpServletResponse response) throws Exception {
@@ -214,29 +214,29 @@ public class CapControlCommandController extends MultiActionController {
         //Check what the empty case will be
     	String updatedReason = defaultReason;
 
-        if (cmdId == CBCCommand.BANK_ENABLE_OVUV || cmdId == CBCCommand.SEND_ALL_ENABLE_OVUV) {
+        if (cmdId == CapControlCommand.BANK_ENABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_ENABLE_OVUV) {
             
             updatedReason = "PaoID " + paoId + " Enabled OVUV by " + userName;
             
-        } else if (cmdId == CBCCommand.BANK_DISABLE_OVUV || cmdId == CBCCommand.SEND_ALL_DISABLE_OVUV) {
+        } else if (cmdId == CapControlCommand.BANK_DISABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_DISABLE_OVUV) {
             
             updatedReason = "PaoID " + paoId + " Disabled OVUV by " + userName;
 
-        } else if ( cmdId == CBCCommand.ENABLE_CAPBANK || 
-        			cmdId == CBCCommand.ENABLE_AREA || 
-        			cmdId == CBCCommand.ENABLE_FEEDER ||
-        			cmdId == CBCCommand.ENABLE_SUBBUS) {
+        } else if ( cmdId == CapControlCommand.ENABLE_CAPBANK || 
+        			cmdId == CapControlCommand.ENABLE_AREA || 
+        			cmdId == CapControlCommand.ENABLE_FEEDER ||
+        			cmdId == CapControlCommand.ENABLE_SUBBUS) {
 
         	updatedReason = "PaoID " + paoId + " Enabled by " + userName;
 
-        } else if ( cmdId == CBCCommand.DISABLE_CAPBANK || 
-    			cmdId == CBCCommand.DISABLE_AREA || 
-    			cmdId == CBCCommand.DISABLE_FEEDER ||
-    			cmdId == CBCCommand.DISABLE_SUBBUS) {
+        } else if ( cmdId == CapControlCommand.DISABLE_CAPBANK || 
+    			cmdId == CapControlCommand.DISABLE_AREA || 
+    			cmdId == CapControlCommand.DISABLE_FEEDER ||
+    			cmdId == CapControlCommand.DISABLE_SUBBUS) {
 
         	updatedReason = "PaoID " + paoId + " Disabled by " + userName;
 
-        } else if (cmdId == CBCCommand.OPERATIONAL_STATECHANGE) {
+        } else if (cmdId == CapControlCommand.OPERATIONAL_STATECHANGE) {
 
         	updatedReason = "PaoID " + paoId + " Operational State updated by " + userName;
 
@@ -248,29 +248,29 @@ public class CapControlCommandController extends MultiActionController {
     private String getAction(int cmdId) {
         CommentAction action;
         
-        if (cmdId == CBCCommand.BANK_ENABLE_OVUV || cmdId == CBCCommand.SEND_ALL_ENABLE_OVUV) {
+        if (cmdId == CapControlCommand.BANK_ENABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_ENABLE_OVUV) {
             
         	action = CommentAction.ENABLED_OVUV;
             
-        } else if (cmdId == CBCCommand.BANK_DISABLE_OVUV || cmdId == CBCCommand.SEND_ALL_DISABLE_OVUV) {
+        } else if (cmdId == CapControlCommand.BANK_DISABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_DISABLE_OVUV) {
             
         	action = CommentAction.DISABLED_OVUV;
 
-        } else if ( cmdId == CBCCommand.ENABLE_CAPBANK || 
-        			cmdId == CBCCommand.ENABLE_AREA || 
-        			cmdId == CBCCommand.ENABLE_FEEDER ||
-        			cmdId == CBCCommand.ENABLE_SUBBUS) {
+        } else if ( cmdId == CapControlCommand.ENABLE_CAPBANK || 
+        			cmdId == CapControlCommand.ENABLE_AREA || 
+        			cmdId == CapControlCommand.ENABLE_FEEDER ||
+        			cmdId == CapControlCommand.ENABLE_SUBBUS) {
 
         	action = CommentAction.ENABLED;
 
-        } else if ( cmdId == CBCCommand.DISABLE_CAPBANK || 
-    			cmdId == CBCCommand.DISABLE_AREA || 
-    			cmdId == CBCCommand.DISABLE_FEEDER ||
-    			cmdId == CBCCommand.DISABLE_SUBBUS) {
+        } else if ( cmdId == CapControlCommand.DISABLE_CAPBANK || 
+    			cmdId == CapControlCommand.DISABLE_AREA || 
+    			cmdId == CapControlCommand.DISABLE_FEEDER ||
+    			cmdId == CapControlCommand.DISABLE_SUBBUS) {
 
         	action = CommentAction.DISABLED;
 
-        } else if (cmdId == CBCCommand.OPERATIONAL_STATECHANGE) {
+        } else if (cmdId == CapControlCommand.OPERATIONAL_STATECHANGE) {
 
         	action = CommentAction.STANDALONE_REASON;
 
@@ -285,15 +285,15 @@ public class CapControlCommandController extends MultiActionController {
     private int getDisableCommandId(final CapControlType controlType) {
         switch (controlType) {
             case AREA :
-            case SPECIAL_AREA : return CBCCommand.DISABLE_AREA;
+            case SPECIAL_AREA : return CapControlCommand.DISABLE_AREA;
            
-            case SUBSTATION : return CBCCommand.DISABLE_AREA;//on purpose
+            case SUBSTATION : return CapControlCommand.DISABLE_AREA;//on purpose
            
-            case SUBBUS : return CBCCommand.DISABLE_SUBBUS;
+            case SUBBUS : return CapControlCommand.DISABLE_SUBBUS;
             
-            case FEEDER : return CBCCommand.DISABLE_FEEDER;
+            case FEEDER : return CapControlCommand.DISABLE_FEEDER;
             
-            case CAPBANK : return CBCCommand.DISABLE_CAPBANK;
+            case CAPBANK : return CapControlCommand.DISABLE_CAPBANK;
             
             default: throw new UnsupportedOperationException("No Disable Command Id for type: " + controlType);
         }
@@ -302,15 +302,15 @@ public class CapControlCommandController extends MultiActionController {
     private int getEnableCommandId(final CapControlType controlType) {
         switch (controlType) {
             case AREA :
-            case SPECIAL_AREA : return CBCCommand.ENABLE_AREA;
+            case SPECIAL_AREA : return CapControlCommand.ENABLE_AREA;
        
-            case SUBSTATION : return CBCCommand.ENABLE_AREA;//on purpose
+            case SUBSTATION : return CapControlCommand.ENABLE_AREA;//on purpose
        
-            case SUBBUS : return CBCCommand.ENABLE_SUBBUS;
+            case SUBBUS : return CapControlCommand.ENABLE_SUBBUS;
         
-            case FEEDER : return CBCCommand.ENABLE_FEEDER;
+            case FEEDER : return CapControlCommand.ENABLE_FEEDER;
         
-            case CAPBANK : return CBCCommand.ENABLE_CAPBANK;
+            case CAPBANK : return CapControlCommand.ENABLE_CAPBANK;
         
             default: throw new UnsupportedOperationException("No Enable Command Id for type: " + controlType);
         }    
@@ -322,9 +322,9 @@ public class CapControlCommandController extends MultiActionController {
             case SPECIAL_AREA :
             case SUBSTATION :
             case SUBBUS :    
-            case FEEDER : return CBCCommand.SEND_ALL_ENABLE_OVUV;
+            case FEEDER : return CapControlCommand.SEND_ALL_ENABLE_OVUV;
     
-            case CAPBANK : return CBCCommand.BANK_ENABLE_OVUV;
+            case CAPBANK : return CapControlCommand.BANK_ENABLE_OVUV;
     
             default: throw new UnsupportedOperationException("No Enable OVUV Command Id for type: " + controlType);
         }    
@@ -336,9 +336,9 @@ public class CapControlCommandController extends MultiActionController {
             case SPECIAL_AREA :
             case SUBSTATION :
             case SUBBUS :    
-            case FEEDER : return CBCCommand.SEND_ALL_DISABLE_OVUV;
+            case FEEDER : return CapControlCommand.SEND_ALL_DISABLE_OVUV;
 
-            case CAPBANK : return CBCCommand.BANK_DISABLE_OVUV;
+            case CAPBANK : return CapControlCommand.BANK_DISABLE_OVUV;
 
             default: throw new UnsupportedOperationException("No Disable OVUV Command Id for type: " + controlType);
         }    
@@ -355,7 +355,7 @@ public class CapControlCommandController extends MultiActionController {
     }
     
     private int getOperationalStateCommandId() {
-    	return CBCCommand.OPERATIONAL_STATECHANGE;
+    	return CapControlCommand.OPERATIONAL_STATECHANGE;
     }
     
     public void setCommentDao(CapControlCommentDao commentDao) {

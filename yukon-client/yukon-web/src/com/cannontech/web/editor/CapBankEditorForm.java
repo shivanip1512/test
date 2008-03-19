@@ -46,19 +46,10 @@ import com.cannontech.web.util.JSFComparators;
 
 public class CapBankEditorForm extends DBEditorForm {
 
-    // private static final long serialVersionUID = 5491225604682004562L;
     private List<CapBankMonitorPointParams> unassignedPoints = null;
     private List<CapBankMonitorPointParams> assignedPoints = null;
     private MultiDBPersistent monitorPointsVector = null;
-    // this variable exists only to display relevant information about a cbc
-    // in the cap bank editor. Right now it is not possible to
-    // edit cbc from cap bank editor (which is how it should be since there is a
-    // separate editor for CBC).
-    // This object should be decoupled from CBController class which is where
-    // editing occurs.
-    // TODO move the setting of the control device to this menu as well
     private DeviceBase controller = null;
-    // this cap bank that we are editing
     private CapBank capBank = null;
     private String[] DYNAMIC_TABLE_NAMES = { "DynamicCCMonitorBankHistory",
             "DynamicCCMonitorPointResponse" };
@@ -526,9 +517,12 @@ public class CapBankEditorForm extends DBEditorForm {
     public String getCtlPaoName() {
         if (capBank != null) {
             Integer controlDeviceID = capBank.getCapBank().getControlDeviceID();
+            if(controlDeviceID < 1) {
+                return "(none)";
+            }
             return paoDao.getLiteYukonPAO(controlDeviceID).getPaoName();
         } else
-            return "";
+            return "(none)";
     }
 
     public String getCtlPointName() {
@@ -539,7 +533,7 @@ public class CapBankEditorForm extends DBEditorForm {
         } catch (NullPointerException npe) {
             CTILogger.info(npe.getMessage());
         }
-        return "";
+        return "(none)";
     }
 
     public Integer getCtlPaoID() {

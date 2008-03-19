@@ -6,9 +6,9 @@ import com.cannontech.cbc.web.CBCWebUpdatedObjectMap;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.web.lite.LiteWrapper;
-import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCClientConnection;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CCArea;
+import com.cannontech.yukon.cbc.CapControlClientConnection;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -25,9 +25,9 @@ public interface CapControlCache {
     
     public StreamableCapObject getArea(int paoId) throws NotFoundException;
     
-    public CBCArea getCBCArea(int id);
+    public CCArea getCBCArea(int id);
     
-    public CBCSpecialArea getCBCSpecialArea(int id);
+    public CCSpecialArea getCBCSpecialArea(int id);
     
     public StreamableCapObject getObject(int id);
     
@@ -39,7 +39,7 @@ public interface CapControlCache {
     
     public SubStation getSubstation( int subId);
     
-    public CBCClientConnection getConnection();
+    public CapControlClientConnection getConnection();
     
     public Boolean getSystemStatusOn();
     
@@ -185,14 +185,14 @@ public interface CapControlCache {
 	 * 
 	 * @return List
 	 */
-	public abstract List<CBCArea> getCbcAreas();
+	public abstract List<CCArea> getCbcAreas();
     
     /**
      * Distinct special area Strings that are used by substations
      * 
      * @return List
      */
-    public abstract List<CBCSpecialArea> getSpecialCbcAreas();
+    public abstract List<CCSpecialArea> getSpecialCbcAreas();
 
 	/**
 	 * State group & states to use for CapBanks

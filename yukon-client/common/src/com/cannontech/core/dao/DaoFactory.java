@@ -112,12 +112,12 @@ public class DaoFactory {
         return (YukonGroupDao) YukonSpringHook.getBean("yukonGroupDao");
     }
     
-    public static CBCDao getCBCDao () {
-        return  (CBCDao) YukonSpringHook.getBean("cbcDao");
+    public static CapControlDao getCBCDao () {
+        return  (CapControlDao) YukonSpringHook.getBean("cbcDao");
     }
     
-    public static CBCDao getCapControlDao () {
-        return  (CBCDao) YukonSpringHook.getBean("capControlDao");
+    public static CapControlDao getCapControlDao () {
+        return  (CapControlDao) YukonSpringHook.getBean("capControlDao");
     }
     
     public static SeasonScheduleDao getSeasonSchedule () {

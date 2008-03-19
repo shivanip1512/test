@@ -14,7 +14,7 @@ public class DefineCollectableCBCSubStations extends DefineCollectableCBCMessage
 	}
 
 	public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-		return new CBCSubStations();
+		return new CCSubStations();
 	}
 
 	public com.roguewave.tools.v2_0.Comparator getComparator() {
@@ -33,14 +33,14 @@ public class DefineCollectableCBCSubStations extends DefineCollectableCBCMessage
 	}
 
 	public Class getJavaClass() {
-		return CBCSubStations.class;
+		return CCSubStations.class;
 	}
 
 	public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException 
 	{
 		super.restoreGuts( obj, vstr, polystr );
 
-		CBCSubStations cbcSub = (CBCSubStations) obj;
+		CCSubStations cbcSub = (CCSubStations) obj;
 		cbcSub.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
 	    Vector stations = VectorExtract.extractVector(vstr,polystr);
 

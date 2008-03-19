@@ -68,8 +68,8 @@ if (allowCtlVal!=null) {
             </tr>
 <%
 	String css = "tableCell";
-	List<CBCArea> cbcAreas = filterCapControlCache.getCbcAreas();
-	for( CBCArea area : cbcAreas ) {
+	List<CCArea> ccAreas = filterCapControlCache.getCbcAreas();
+	for( CCArea area : ccAreas ) {
 		css = ("tableCell".equals(css) ? "altTableCell" : "tableCell");
 		List<SubStation> areaStations = filterCapControlCache.getSubstationsByArea(area.getPaoID());
 %>

@@ -37,8 +37,8 @@ import com.cannontech.database.db.state.StateGroupUtils;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.lite.LiteWrapper;
-import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CCArea;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.CapControlConst;
 import com.cannontech.yukon.cbc.Feeder;
@@ -67,8 +67,8 @@ public final class CBCUtils {
         }
     };
     
-    public static final Comparator<CBCArea> CBC_AREA_COMPARATOR = new Comparator<CBCArea>() {
-        public int compare(CBCArea o1, CBCArea o2) {
+    public static final Comparator<CCArea> CBC_AREA_COMPARATOR = new Comparator<CCArea>() {
+        public int compare(CCArea o1, CCArea o2) {
             try {
                 String thisArea = o1.getPaoName();
                 String anotherArea = o2.getPaoName();
@@ -83,8 +83,8 @@ public final class CBCUtils {
         }
     };
     
-    public static final Comparator<CBCSpecialArea> CBC_SPECIAL_AREA_COMPARATOR = new Comparator<CBCSpecialArea>() {
-        public int compare(CBCSpecialArea o1, CBCSpecialArea o2) {
+    public static final Comparator<CCSpecialArea> CBC_SPECIAL_AREA_COMPARATOR = new Comparator<CCSpecialArea>() {
+        public int compare(CCSpecialArea o1, CCSpecialArea o2) {
             try {
                 String thisArea = o1.getPaoName();
                 String anotherArea = o2.getPaoName();
@@ -298,7 +298,7 @@ public final class CBCUtils {
     	String ret = "(none)";
     	SubStation station  = ccCache.getSubstation(subID);
 		int areaId = station.getParentID();
-		CBCArea area = ccCache.getCBCArea(areaId);
+		CCArea area = ccCache.getCBCArea(areaId);
 		if( area != null ) {
 			ret = area.getPaoName();
 		}

@@ -6,8 +6,8 @@ import java.util.List;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.WebUpdatedPAObjectMap;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CCArea;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -19,7 +19,7 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
 	public CBCWebUpdatedObjectMap() {
 	}
 	
-	public void handleCBCChangeEvent(CBCArea area, Date date) {
+	public void handleCBCChangeEvent(CCArea area, Date date) {
 	    List<SubStation> subList = capControlCache.getSubstationsByArea(area.getPaoID());
 	    for (final SubStation substation : subList) {
 	        handleCBCChangeEvent(substation, date);
@@ -27,7 +27,7 @@ public class CBCWebUpdatedObjectMap extends WebUpdatedPAObjectMap<Integer>{
 	    updateMap(area.getPaoID(), date);
 	}
 	
-	public void handleCBCChangeEvent(CBCSpecialArea specialArea, Date date) {
+	public void handleCBCChangeEvent(CCSpecialArea specialArea, Date date) {
 	    List<SubStation> substationList = capControlCache.getSubstationsBySpecialArea(specialArea.getPaoID());
 	    for (final SubStation subStation : substationList) {
 	        handleCBCChangeEvent(subStation, date);

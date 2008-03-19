@@ -22,7 +22,7 @@ public DefineCollectableCBCSubstationBuses() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new CBCSubstationBuses();
+	return new CCSubstationBuses();
 }
 /**
  * getComparator method comment.
@@ -47,7 +47,7 @@ public int getCxxClassId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return CBCSubstationBuses.class;
+	return CCSubstationBuses.class;
 }
 /**
  * restoreGuts method comment.
@@ -56,7 +56,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 {
 	super.restoreGuts( obj, vstr, polystr );
 
-	CBCSubstationBuses cbcSubBuses = (CBCSubstationBuses) obj;
+	CCSubstationBuses cbcSubBuses = (CCSubstationBuses) obj;
 
 	cbcSubBuses.setMsgInfoBitMask( new Integer( (int)vstr.extractUnsignedInt() ) );
     

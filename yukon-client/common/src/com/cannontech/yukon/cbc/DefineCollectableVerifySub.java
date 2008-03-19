@@ -16,7 +16,7 @@ public class DefineCollectableVerifySub extends DefineCollectableCBCMessage {
 	 */
 	public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException 
 	{
-		return new CBCVerifySubBus();
+		return new CCVerifySubBus();
 	}
 
 	/**
@@ -52,7 +52,7 @@ public class DefineCollectableVerifySub extends DefineCollectableCBCMessage {
 	 */
 	public Class getJavaClass() 
 	{
-		return CBCVerifySubBus.class;
+		return CCVerifySubBus.class;
 	}
 	/**
 	 * restoreGuts method comment.
@@ -71,7 +71,7 @@ public class DefineCollectableVerifySub extends DefineCollectableCBCMessage {
 	{
 		super.saveGuts( obj, vstr, polystr );
 	
-		CBCVerifySubBus verifySub = (CBCVerifySubBus)obj;
+		CCVerifySubBus verifySub = (CCVerifySubBus)obj;
 	
 		vstr.insertUnsignedInt( (int) (verifySub.getAction()));
 		vstr.insertUnsignedInt( (int) verifySub.getSubId());

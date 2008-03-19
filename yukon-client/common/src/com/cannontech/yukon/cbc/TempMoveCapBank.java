@@ -2,7 +2,7 @@ package com.cannontech.yukon.cbc;
 
 /**
  */
-public class CBCTempMoveCapBank extends com.cannontech.yukon.cbc.CBCMessage 
+public class TempMoveCapBank extends com.cannontech.yukon.cbc.CapControlMessage 
 {	
 	private int oldFeedID = -1;
 	private boolean permanentMove = false;
@@ -15,12 +15,12 @@ public class CBCTempMoveCapBank extends com.cannontech.yukon.cbc.CBCMessage
     /**
 	 * comment.
 	 */
-	public CBCTempMoveCapBank() 
+	public TempMoveCapBank() 
 	{
 		super();
 	}
 
-	public CBCTempMoveCapBank( int oldFeedID_, int newFeedID_, int capBankID_, float order_, float cO, float tO, boolean permMove_ ) 
+	public TempMoveCapBank( int oldFeedID_, int newFeedID_, int capBankID_, float order_, float cO, float tO, boolean permMove_ ) 
 	{
 		super();
 

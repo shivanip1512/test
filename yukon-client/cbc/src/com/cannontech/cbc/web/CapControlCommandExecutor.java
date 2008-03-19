@@ -9,10 +9,10 @@ import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.yukon.cbc.CBCTempMoveCapBank;
-import com.cannontech.yukon.cbc.CBCVerifySubBus;
-import com.cannontech.yukon.cbc.CBCVerifySubStation;
+import com.cannontech.yukon.cbc.CapControlCommand;
+import com.cannontech.yukon.cbc.TempMoveCapBank;
+import com.cannontech.yukon.cbc.CCVerifySubBus;
+import com.cannontech.yukon.cbc.CCVerifySubStation;
 import com.cannontech.yukon.cbc.CapBankDevice;
 
 /**
@@ -84,20 +84,20 @@ public class CapControlCommandExecutor
     }
     
     public void executeSubAreaCommand(int cmdId, int paoId) {
-        CBCCommand cmd = new CBCCommand (cmdId, paoId);    
+        CapControlCommand cmd = new CapControlCommand (cmdId, paoId);    
         capControlCache.getConnection().write(cmd);
     }
     
     public void executeSubStationCommand(int cmdId, int paoId) {
-        if( cmdId == CBCCommand.CONFIRM_CLOSE || cmdId == CBCCommand.CONFIRM_OPEN ) {
+        if( cmdId == CapControlCommand.CONFIRM_CLOSE || cmdId == CapControlCommand.CONFIRM_OPEN ) {
             executeConfirmSubstation( paoId );
         }
-        if ((cmdId == CBCCommand.CMD_ALL_BANKS) ||
-            (cmdId == CBCCommand.CMD_FQ_BANKS) ||
-            (cmdId == CBCCommand.CMD_FAILED_BANKS) ||
-            (cmdId == CBCCommand.CMD_QUESTIONABLE_BANKS) ||
-            (cmdId == CBCCommand.CMD_DISABLE_VERIFY)   ||
-            (cmdId == CBCCommand.CMD_STANDALONE_VERIFY)) {
+        if ((cmdId == CapControlCommand.CMD_ALL_BANKS) ||
+            (cmdId == CapControlCommand.CMD_FQ_BANKS) ||
+            (cmdId == CapControlCommand.CMD_FAILED_BANKS) ||
+            (cmdId == CapControlCommand.CMD_QUESTIONABLE_BANKS) ||
+            (cmdId == CapControlCommand.CMD_DISABLE_VERIFY)   ||
+            (cmdId == CapControlCommand.CMD_STANDALONE_VERIFY)) {
             executeVerifySubstation (paoId, cmdId);
         } else {
             executeCommand( paoId, cmdId );           
@@ -105,15 +105,15 @@ public class CapControlCommandExecutor
     }
 
     public void executeSubBusCommand(int cmdId, int paoId) {
-		if (cmdId == CBCCommand.CONFIRM_CLOSE || cmdId == CBCCommand.CONFIRM_OPEN ) {
+		if (cmdId == CapControlCommand.CONFIRM_CLOSE || cmdId == CapControlCommand.CONFIRM_OPEN ) {
 			executeConfirmSub( paoId );
 		}
-		if ((cmdId == CBCCommand.CMD_ALL_BANKS) ||
-			(cmdId == CBCCommand.CMD_FQ_BANKS) ||
-			(cmdId == CBCCommand.CMD_FAILED_BANKS) ||
-			(cmdId == CBCCommand.CMD_QUESTIONABLE_BANKS) ||
-			(cmdId == CBCCommand.CMD_DISABLE_VERIFY)	||
-            (cmdId == CBCCommand.CMD_STANDALONE_VERIFY))
+		if ((cmdId == CapControlCommand.CMD_ALL_BANKS) ||
+			(cmdId == CapControlCommand.CMD_FQ_BANKS) ||
+			(cmdId == CapControlCommand.CMD_FAILED_BANKS) ||
+			(cmdId == CapControlCommand.CMD_QUESTIONABLE_BANKS) ||
+			(cmdId == CapControlCommand.CMD_DISABLE_VERIFY)	||
+            (cmdId == CapControlCommand.CMD_STANDALONE_VERIFY))
 		{
 			executeVerifySub (paoId, cmdId);
 		}
@@ -127,19 +127,19 @@ public class CapControlCommandExecutor
     
     private void executeVerifySubstation(int paoId, int cmdId) {
         int action = 0;
-        if (cmdId == CBCCommand.CMD_DISABLE_VERIFY)
+        if (cmdId == CapControlCommand.CMD_DISABLE_VERIFY)
             action = 1;
-        int strat = cmdId - CBCCommand.VERIFY_OFFSET;  
-        CBCVerifySubStation msg = new CBCVerifySubStation (action, paoId, strat, CBCVerifySubStation.DEFAULT_CB_INACT_TIME);
+        int strat = cmdId - CapControlCommand.VERIFY_OFFSET;  
+        CCVerifySubStation msg = new CCVerifySubStation (action, paoId, strat, CCVerifySubStation.DEFAULT_CB_INACT_TIME);
         capControlCache.getConnection().write(msg);
     }
 
 	private void executeVerifySub(int paoId, int cmdId) {
 		int action = 0;
-		if (cmdId == CBCCommand.CMD_DISABLE_VERIFY)
+		if (cmdId == CapControlCommand.CMD_DISABLE_VERIFY)
 			action = 1;
-		int strat = cmdId - CBCCommand.VERIFY_OFFSET;	
-		CBCVerifySubBus msg = new CBCVerifySubBus (action, paoId, strat, CBCVerifySubBus.DEFAULT_CB_INACT_TIME);
+		int strat = cmdId - CapControlCommand.VERIFY_OFFSET;	
+		CCVerifySubBus msg = new CCVerifySubBus (action, paoId, strat, CCVerifySubBus.DEFAULT_CB_INACT_TIME);
 		capControlCache.getConnection().write(msg);
 	}
 
@@ -180,35 +180,35 @@ public class CapControlCommandExecutor
 	
 	public void executeCapBankCommand(int cmdId, int paoId, float[] optionalParams, int operationalState) {
 	    switch (cmdId) {
-	        case CBCCommand.CONFIRM_CLOSE : {
+	        case CapControlCommand.CONFIRM_CLOSE : {
 	            executeCapBankCmdConfirm(paoId, defaultOperationalState);
 	            break;
 	        }
-	        case CBCCommand.CONFIRM_OPEN : {
+	        case CapControlCommand.CONFIRM_OPEN : {
 	            executeCapBankCmdConfirm(paoId, defaultOperationalState);
                 break;
 	        }
-	        case CBCCommand.CLOSE_CAPBANK : {
+	        case CapControlCommand.CLOSE_CAPBANK : {
 	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
 	            break;
 	        }
-	        case CBCCommand.OPEN_CAPBANK : {
+	        case CapControlCommand.OPEN_CAPBANK : {
 	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
                 break;
 	        }
-	        case CBCCommand.BANK_DISABLE_OVUV : {
+	        case CapControlCommand.BANK_DISABLE_OVUV : {
 	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
                 break;
 	        }
-	        case CBCCommand.BANK_ENABLE_OVUV : {
+	        case CapControlCommand.BANK_ENABLE_OVUV : {
 	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
                 break;
 	        }
-	        case CBCCommand.SCAN_2WAY_DEV : {
+	        case CapControlCommand.SCAN_2WAY_DEV : {
 	            executeCapBankCmdByCmdId(paoId, cmdId, defaultOperationalState);
                 break;
 	        }
-	        case CBCCommand.CMD_MANUAL_ENTRY : {
+	        case CapControlCommand.CMD_MANUAL_ENTRY : {
 	            if (optionalParams.length == 0) {
 	                executeCapBankDefault(paoId, cmdId, defaultOperationalState);
 	                break;
@@ -216,11 +216,11 @@ public class CapControlCommandExecutor
 	            executeCBCCommand(paoId, optionalParams);
 	            break;
 	        }
-	        case CBCCommand.RESET_OPCOUNT : {
+	        case CapControlCommand.RESET_OPCOUNT : {
 	            executeCapBankCmdResetOpCount(paoId, optionalParams);
 	            break;
 	        }
-	        case CBCCommand.CMD_BANK_TEMP_MOVE : {
+	        case CapControlCommand.CMD_BANK_TEMP_MOVE : {
 	            if (optionalParams.length < 5) {
 	                executeCapBankDefault(paoId, cmdId, defaultOperationalState);
                     break;
@@ -228,23 +228,23 @@ public class CapControlCommandExecutor
 	            executeCapBankCmdTempMove(paoId, optionalParams);
 	            break;
 	        }
-	        case CBCCommand.DISABLE_CAPBANK : {
+	        case CapControlCommand.DISABLE_CAPBANK : {
 	            executeCapBankDefault(paoId, cmdId, operationalState);
                 break;
 	        }
-	        case CBCCommand.ENABLE_CAPBANK : {
+	        case CapControlCommand.ENABLE_CAPBANK : {
 	            executeCapBankDefault(paoId, cmdId, operationalState);
                 break;
 	        }
-	        case CBCCommand.OPERATIONAL_STATECHANGE : {
+	        case CapControlCommand.OPERATIONAL_STATECHANGE : {
 	            executeCapBankDefault(paoId, cmdId, operationalState);
 	            break;
 	        }
-	        case CBCCommand.RETURN_BANK_TO_FEEDER : {
+	        case CapControlCommand.RETURN_BANK_TO_FEEDER : {
 	        	executeCapBankDefault(paoId, cmdId, operationalState);
 	        	break;
 	        }
-	        case CBCCommand.SEND_TIMESYNC : {
+	        case CapControlCommand.SEND_TIMESYNC : {
 	            executeCapBankDefault(paoId, cmdId, operationalState);
 	            break;
 	        }
@@ -261,7 +261,7 @@ public class CapControlCommandExecutor
 	
 	private void executeCapBankCmdTempMove(final int paoId, final float[] optionalParams) {
 	    //TODO: Validate Optional parameters is not null
-		CBCTempMoveCapBank msg = new CBCTempMoveCapBank(
+		TempMoveCapBank msg = new TempMoveCapBank(
 	                                                    (int)optionalParams[0], // original feeder ID
 	                                                    (int)optionalParams[1], // new feeder ID
 	                                                    paoId,
@@ -310,12 +310,12 @@ public class CapControlCommandExecutor
 	    int deviceId = bank.getControlDeviceID();
 	    
 	    if (CapBankDevice.isInAnyOpenState(bank)) {
-	        executeCommand(deviceId, CBCCommand.CONFIRM_OPEN, operationalState);
+	        executeCommand(deviceId, CapControlCommand.CONFIRM_OPEN, operationalState);
 	        return;
 	    }
 	    
 	    if (CapBankDevice.isInAnyCloseState(bank)) {
-	        executeCommand(deviceId, CBCCommand.CONFIRM_CLOSE, operationalState);
+	        executeCommand(deviceId, CapControlCommand.CONFIRM_CLOSE, operationalState);
 	        return;
 	    }
 	}
@@ -326,13 +326,13 @@ public class CapControlCommandExecutor
 
 		switch( cmdId )
 		{
-			case CBCCommand.RETURN_BANK_TO_FEEDER:
+			case CapControlCommand.RETURN_BANK_TO_FEEDER:
 				return bank.isBankMoved();			
 
-			case CBCCommand.ENABLE_CAPBANK:
+			case CapControlCommand.ENABLE_CAPBANK:
 				return bank.getCcDisableFlag().booleanValue();
 
-			case CBCCommand.DISABLE_CAPBANK:
+			case CapControlCommand.DISABLE_CAPBANK:
 				return !bank.getCcDisableFlag().booleanValue();
 		}		
 
@@ -345,8 +345,8 @@ public class CapControlCommandExecutor
 	}
 
 	private void executeConfirmSub(int paoId) {
-		Multi<CBCCommand> multi = new Multi<CBCCommand>();
-		CBCCommand command = new CBCCommand (CBCCommand.CONFIRM_SUB, paoId);
+		Multi<CapControlCommand> multi = new Multi<CapControlCommand>();
+		CapControlCommand command = new CapControlCommand (CapControlCommand.CONFIRM_SUB, paoId);
 		command.setUserName(getUserName());
 		multi.getVector().add(command);
 		if (multi.getVector().size() > 0) {
@@ -355,8 +355,8 @@ public class CapControlCommandExecutor
 	}
 	
     private void executeConfirmSubstation(int paoId) {
-        Multi<CBCCommand> multi = new Multi<CBCCommand>();
-        CBCCommand command = new CBCCommand (CBCCommand.CONFIRM_SUBSTATION, paoId);
+        Multi<CapControlCommand> multi = new Multi<CapControlCommand>();
+        CapControlCommand command = new CapControlCommand (CapControlCommand.CONFIRM_SUBSTATION, paoId);
         command.setUserName(getUserName());
         multi.getVector().add(command);
         if (multi.getVector().size() > 0) {
@@ -369,7 +369,7 @@ public class CapControlCommandExecutor
     }
     
 	public void executeCommand(int paoId, int cmdOperation, int operationalState) {
-		CBCCommand cmd = new CBCCommand();
+		CapControlCommand cmd = new CapControlCommand();
 		cmd.setDeviceID( paoId );
 		cmd.setCommand( cmdOperation );
 		cmd.setUserName( getUserName() );

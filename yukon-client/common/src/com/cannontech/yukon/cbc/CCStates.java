@@ -2,13 +2,13 @@ package com.cannontech.yukon.cbc;
 
 /**
  */
-public class CBCStates extends com.cannontech.yukon.cbc.CBCMessage {
+public class CCStates extends com.cannontech.yukon.cbc.CapControlMessage {
 	
 	private java.util.Vector states;
 /**
  * ScheduleCommand constructor comment.
  */
-public CBCStates() {
+public CCStates() {
 	super();
 }
 /**

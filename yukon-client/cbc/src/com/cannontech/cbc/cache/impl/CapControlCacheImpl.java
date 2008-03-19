@@ -44,14 +44,14 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.web.lite.LiteWrapper;
 import com.cannontech.yukon.IServerConnection;
-import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCClientConnection;
-import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
-import com.cannontech.yukon.cbc.CBCSubAreas;
-import com.cannontech.yukon.cbc.CBCSubSpecialAreas;
-import com.cannontech.yukon.cbc.CBCSubStations;
-import com.cannontech.yukon.cbc.CBCSubstationBuses;
+import com.cannontech.yukon.cbc.CCArea;
+import com.cannontech.yukon.cbc.CapControlClientConnection;
+import com.cannontech.yukon.cbc.CapControlCommand;
+import com.cannontech.yukon.cbc.CCSpecialArea;
+import com.cannontech.yukon.cbc.CCSubAreas;
+import com.cannontech.yukon.cbc.CCSubSpecialAreas;
+import com.cannontech.yukon.cbc.CCSubStations;
+import com.cannontech.yukon.cbc.CCSubstationBuses;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -68,8 +68,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     private Hashtable<Integer, CapBankDevice> capBankMap = new Hashtable<Integer, CapBankDevice> ();
     private HashMap<Integer, int[]> subToBankMap = new HashMap<Integer, int[]>();
     private CBCWebUpdatedObjectMap updatedObjMap = null;
-    private Map<Integer, CBCArea> cbcAreaMap = Collections.synchronizedMap(new HashMap<Integer, CBCArea>());
-    private Map<Integer, CBCSpecialArea> cbcSpecialAreaMap = Collections.synchronizedMap(new HashMap<Integer, CBCSpecialArea>());
+    private Map<Integer, CCArea> cbcAreaMap = Collections.synchronizedMap(new HashMap<Integer, CCArea>());
+    private Map<Integer, CCSpecialArea> cbcSpecialAreaMap = Collections.synchronizedMap(new HashMap<Integer, CCSpecialArea>());
     private Boolean systemStatusOn = Boolean.TRUE;
 
     private PaoDao paoDao;
@@ -301,8 +301,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     public synchronized boolean isSpecialCBCArea(int deviceID) {
-        List<CBCSpecialArea> areaList = getSpecialCbcAreas();
-        for (final CBCSpecialArea area : areaList) {
+        List<CCSpecialArea> areaList = getSpecialCbcAreas();
+        for (final CCSpecialArea area : areaList) {
             boolean result = area.getPaoID().equals(deviceID);
             if (result) return true;
         }
@@ -514,8 +514,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Distinct area Strings that are used by substations
      * @return List
      */
-    public synchronized List<CBCArea> getCbcAreas() {
-        List<CBCArea> list = new ArrayList<CBCArea>(cbcAreaMap.values());
+    public synchronized List<CCArea> getCbcAreas() {
+        List<CCArea> list = new ArrayList<CCArea>(cbcAreaMap.values());
         Collections.sort(list, CBCUtils.CBC_AREA_COMPARATOR);
         return list;
     }
@@ -524,8 +524,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Distinct special area Strings that are used by substations
      * @return List
      */
-    public synchronized List<CBCSpecialArea> getSpecialCbcAreas() {
-        List<CBCSpecialArea> list = new ArrayList<CBCSpecialArea>(cbcSpecialAreaMap.values());
+    public synchronized List<CCSpecialArea> getSpecialCbcAreas() {
+        List<CCSpecialArea> list = new ArrayList<CCSpecialArea>(cbcSpecialAreaMap.values());
         Collections.sort(list, CBCUtils.CBC_SPECIAL_AREA_COMPARATOR);
         return list;
     }
@@ -585,15 +585,15 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     	return id;
     }    
     /**
-    * @param CBCSubAreas
+    * @param CCSubAreas
     */
-    private synchronized void handleSpecialAreaList(CBCSubSpecialAreas areas) {
+    private synchronized void handleSpecialAreaList(CCSubSpecialAreas areas) {
         clearCacheMap(cbcSpecialAreaMap);
         
         final Date date = new Date();
         
-        List<CBCSpecialArea> list = areas.getAreas();
-        for (final CBCSpecialArea area : list) {
+        List<CCSpecialArea> list = areas.getAreas();
+        for (final CCSpecialArea area : list) {
         	int areaId = area.getPaoID();
             cbcSpecialAreaMap.put(areaId, area);
             getUpdatedObjMap().handleCBCChangeEvent(area, date);
@@ -601,15 +601,15 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
     
     /**
-    * @param CBCSubAreas
+    * @param CCSubAreas
     */
-    private synchronized void handleAreaList(CBCSubAreas areas) {
+    private synchronized void handleAreaList(CCSubAreas areas) {
         clearCacheMap(cbcAreaMap);
         
         final Date date = new Date();
         
-        List<CBCArea> list = areas.getAreas();
-        for (final CBCArea area : list) {
+        List<CCArea> list = areas.getAreas();
+        for (final CCArea area : list) {
             Integer areaId = area.getPaoID();
             cbcAreaMap.put(areaId, area);
             getUpdatedObjMap().handleCBCChangeEvent(area, date);
@@ -639,7 +639,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Process multiple SubBuses
      * @param busesMsg
      */
-    private synchronized void handleSubBuses( CBCSubstationBuses busesMsg ) {
+    private synchronized void handleSubBuses( CCSubstationBuses busesMsg ) {
         logAllSubs(busesMsg);
         //If this is a full reload of all subs.
     	if (busesMsg.isAllSubs()) {
@@ -660,7 +660,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Process multiple SubBuses
      * @param busesMsg
      */
-    private synchronized void handleSubStations( CBCSubStations stationsMsg ) {
+    private synchronized void handleSubStations( CCSubStations stationsMsg ) {
     	logAllSubStations(stationsMsg);
         //If this is a full reload of all subs.
     	if (stationsMsg.isAllSubStations()) {
@@ -675,7 +675,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     }
 
     
-    private synchronized void handleDeletedSubs(CBCSubstationBuses busesMsg) {
+    private synchronized void handleDeletedSubs(CCSubstationBuses busesMsg) {
         for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ ){
         	//remove old
         	SubBus bus = busesMsg.getSubBusAt(i);
@@ -684,14 +684,14 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
-    private synchronized void handleDeletedSubStations(CBCSubStations stationsMsg) {
+    private synchronized void handleDeletedSubStations(CCSubStations stationsMsg) {
         for( int i = 0; i < stationsMsg.getNumberOfStations(); i++ ){
         	//remove old
         	handleDeletedSubstation( stationsMsg.getSubAt(i).getCcId() );
         }
     }
     
-    private synchronized void logAllSubs(CBCSubstationBuses busesMsg) {
+    private synchronized void logAllSubs(CCSubstationBuses busesMsg) {
         for( int i = (busesMsg.getNumberOfBuses()-1); i >= 0; i-- ){
         	CTILogger.debug( new Date().toString()
         			+ " : Received SubBus - " + busesMsg.getSubBusAt(i).getCcName() 
@@ -699,20 +699,20 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         }
     }
     
-    private synchronized void logAllSubStations(CBCSubStations stationsMsg) {
+    private synchronized void logAllSubStations(CCSubStations stationsMsg) {
         for( int i = (stationsMsg.getNumberOfStations()-1); i >= 0; i-- ){
         	CTILogger.debug( new Date().toString()
         			+ " : Received SubStations - " + stationsMsg.getSubAt(i).getCcName() 
         			+ "/" + stationsMsg.getSubAt(i).getCcArea() );
         }
     }   
-    private synchronized void handleAllSubs(CBCSubstationBuses busesMsg) {
+    private synchronized void handleAllSubs(CCSubstationBuses busesMsg) {
         for( int i = 0; i < busesMsg.getNumberOfBuses(); i++ ) {
         	handleSubBus( busesMsg.getSubBusAt(i) );
         }
     }
     
-    private synchronized void handleAllSubStation(CBCSubStations stationsMsg) {
+    private synchronized void handleAllSubStation(CCSubStations stationsMsg) {
         for( int i = 0; i < stationsMsg.getNumberOfStations(); i++ ) {
         	handleSubStation( stationsMsg.getSubAt(i) );
         }
@@ -720,15 +720,15 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
     /**
      * Process a command message from the server
      */
-    private synchronized void handleCBCCommand( CBCCommand serverConfirmation ) {
+    private synchronized void handleCBCCommand( CapControlCommand serverConfirmation ) {
     
         int deviceID = serverConfirmation.getDeviceID();
         switch( serverConfirmation.getCommand() ) {
             //delete the given subID
-            case CBCCommand.DELETE_ITEM:
+            case CapControlCommand.DELETE_ITEM:
                 handleDeleteItem(deviceID);
                 break;
-            case CBCCommand.SYSTEM_STATUS:
+            case CapControlCommand.SYSTEM_STATUS:
                 handleSystemCommand(serverConfirmation);
                 break;
         }
@@ -777,7 +777,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         removeFromCacheMap(feederMap, deviceID);    
     }
     
-    private void handleSystemCommand(CBCCommand serverConfirmation) {
+    private void handleSystemCommand(CapControlCommand serverConfirmation) {
         synchronized (systemStatusOn ) {
             if (serverConfirmation.isSystemDisabled()) {
                 systemStatusOn = Boolean.FALSE;
@@ -842,8 +842,8 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      * Allows access the a CBCClientConnection instance
      * @return
      */
-    public CBCClientConnection getConnection() {
-        return (CBCClientConnection)ConnPool.getInstance().getDefCapControlConn();
+    public CapControlClientConnection getConnection() {
+        return (CapControlClientConnection)ConnPool.getInstance().getDefCapControlConn();
     }
     
     /**
@@ -853,7 +853,7 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
         CTILogger.debug("Refreshing CapControl Cache");
         
         try  {
-            getConnection().executeCommand( 0, CBCCommand.REQUEST_ALL_AREAS );
+            getConnection().executeCommand( 0, CapControlCommand.REQUEST_ALL_AREAS );
         } catch ( IOException ioe ) {
             CTILogger.error( "Exception occurred during a refresh_cache operation", ioe );
             return false;
@@ -867,39 +867,39 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     public synchronized void messageReceived( MessageEvent e ) {
         Message in = e.getMessage();
-        if( in instanceof CBCSubstationBuses )
+        if( in instanceof CCSubstationBuses )
         {
-            handleSubBuses( (CBCSubstationBuses)in );
+            handleSubBuses( (CCSubstationBuses)in );
         }
-        else if( in instanceof CBCSubStations )
+        else if( in instanceof CCSubStations )
         {
-        	handleSubStations( (CBCSubStations)in );
+        	handleSubStations( (CCSubStations)in );
         }        
-        else if( in instanceof CBCSubSpecialAreas )
+        else if( in instanceof CCSubSpecialAreas )
         {
-            handleSpecialAreaList( (CBCSubSpecialAreas)in );
+            handleSpecialAreaList( (CCSubSpecialAreas)in );
         }
-        else if( in instanceof CBCSubAreas ) 
+        else if( in instanceof CCSubAreas ) 
         {
-            handleAreaList( (CBCSubAreas)in );
+            handleAreaList( (CCSubAreas)in );
         }
-        else if( in instanceof CBCCommand ) 
+        else if( in instanceof CapControlCommand ) 
         {
-            handleCBCCommand( (CBCCommand)in );
+            handleCBCCommand( (CapControlCommand)in );
         }
     
     }
     
     
-    public synchronized CBCArea getCBCArea(int id) throws NotFoundException {
-        CBCArea area = cbcAreaMap.get(id);
-        checkObjectFound(area, id, CBCArea.class);
+    public synchronized CCArea getCBCArea(int id) throws NotFoundException {
+        CCArea area = cbcAreaMap.get(id);
+        checkObjectFound(area, id, CCArea.class);
         return area;
     }
     
-    public synchronized CBCSpecialArea getCBCSpecialArea(int id) throws NotFoundException {
-        CBCSpecialArea area = cbcSpecialAreaMap.get(id);
-        checkObjectFound(area, id, CBCSpecialArea.class);        
+    public synchronized CCSpecialArea getCBCSpecialArea(int id) throws NotFoundException {
+        CCSpecialArea area = cbcSpecialAreaMap.get(id);
+        checkObjectFound(area, id, CCSpecialArea.class);        
         return area;
     }
     

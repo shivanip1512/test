@@ -50,9 +50,9 @@ import com.cannontech.servlet.xml.ResultXML;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
 import com.cannontech.web.navigation.CtiNavObject;
-import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CCArea;
+import com.cannontech.yukon.cbc.CapControlCommand;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -192,7 +192,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         try {
             Writer writer = response.getWriter();
             String ovuvEnabled = getOvUvEnabled(user);
-            CBCArea area = cbcCache.getCBCArea(areaId);
+            CCArea area = cbcCache.getCBCArea(areaId);
             String msg = area.getPaoName() + ":" + areaId + ":";
             msg += (area.getDisableFlag()) ? "DISABLED" : "ENABLED";
             if (area.getOvUvDisabledFlag()) {
@@ -211,7 +211,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         try {
             Writer writer = response.getWriter();
             String ovuvEnabled = getOvUvEnabled(user);
-            CBCSpecialArea area = cbcCache.getCBCSpecialArea(areaId);
+            CCSpecialArea area = cbcCache.getCBCSpecialArea(areaId);
             String msg = area.getPaoName() + ":" + areaId + ":";
             msg += (area.getDisableFlag())? "DISABLED" : "ENABLED";
             if (area.getOvUvDisabledFlag()) { 
@@ -557,13 +557,13 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         
         List<String> subsInConflict = new ArrayList<String>();
 
-        if (controlType.equals(CapControlType.SPECIAL_AREA) && cmdID == CBCCommand.ENABLE_AREA) {
+        if (controlType.equals(CapControlType.SPECIAL_AREA) && cmdID == CapControlCommand.ENABLE_AREA) {
             // Check for other special areas with this special area's subIds that are enabled.
             List<SubStation> subs = cbcCache.getSubstationsBySpecialArea(paoID);
             for(SubStation sub : subs) {
                 boolean alreadyUsed = sub.getSpecialAreaEnabled();
                 if(alreadyUsed) {
-                    CBCSpecialArea otherArea = cbcCache.getCBCSpecialArea(sub.getSpecialAreaId());
+                    CCSpecialArea otherArea = cbcCache.getCBCSpecialArea(sub.getSpecialAreaId());
                     if(!otherArea.getCcDisableFlag()) {
                         String areaName = otherArea.getCcName();
                         String value = areaName + " : " + sub.getCcName();

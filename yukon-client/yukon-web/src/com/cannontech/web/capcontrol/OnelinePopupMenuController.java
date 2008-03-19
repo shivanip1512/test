@@ -21,13 +21,13 @@ import com.cannontech.cbc.service.CapControlCommentService;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.CBCDao;
+import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.point.CBCPointTimestampParams;
 import com.cannontech.database.db.capcontrol.CapBankAdditional;
-import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -38,7 +38,7 @@ public class OnelinePopupMenuController extends MultiActionController {
     private CapControlCommentService capControlCommentService;
     private DataSource dataSource;
     private PaoDao paoDao;
-    private CBCDao cbcDao = null;
+    private CapControlDao cbcDao = null;
     
     static {
         allowedOperationStates  = new CapBankOperationalState[] {
@@ -224,13 +224,13 @@ public class OnelinePopupMenuController extends MultiActionController {
         String paoName = capBank.getCcName();
         mav.addObject("paoName", paoName);
         
-        int open = CBCCommand.OPEN_CAPBANK;
+        int open = CapControlCommand.OPEN_CAPBANK;
         mav.addObject("open", open);
         
-        int close = CBCCommand.CLOSE_CAPBANK;
+        int close = CapControlCommand.CLOSE_CAPBANK;
         mav.addObject("close", close);
         
-        int confirm = CBCCommand.CONFIRM_OPEN;
+        int confirm = CapControlCommand.CONFIRM_OPEN;
         mav.addObject("confirm", confirm);
         
         boolean isTwoWay = CBCUtils.isTwoWay(cbcPaoObject);
@@ -256,25 +256,25 @@ public class OnelinePopupMenuController extends MultiActionController {
         String paoName = feeder.getCcName();
         mav.addObject("paoName", paoName);
         
-        int resetOpCount = CBCCommand.RESET_OPCOUNT;
+        int resetOpCount = CapControlCommand.RESET_OPCOUNT;
         mav.addObject("resetOpCount", resetOpCount);
         
-        int openAllFdr = CBCCommand.SEND_ALL_OPEN;
+        int openAllFdr = CapControlCommand.SEND_ALL_OPEN;
         mav.addObject("openAllFdr", openAllFdr);
         
-        int closeAllFdr = CBCCommand.SEND_ALL_CLOSE;
+        int closeAllFdr = CapControlCommand.SEND_ALL_CLOSE;
         mav.addObject("closeAllFdr", closeAllFdr);
         
-        int enableOvUvFdr = CBCCommand.SEND_ALL_ENABLE_OVUV;
+        int enableOvUvFdr = CapControlCommand.SEND_ALL_ENABLE_OVUV;
         mav.addObject("enableOvUvFdr", enableOvUvFdr);
         
-        int disableOvUvFdr = CBCCommand.SEND_ALL_DISABLE_OVUV;
+        int disableOvUvFdr = CapControlCommand.SEND_ALL_DISABLE_OVUV;
         mav.addObject("disableOvUvFdr", disableOvUvFdr);
         
-        int sendAll2WayFdr = CBCCommand.SCAN_2WAY_DEV;
+        int sendAll2WayFdr = CapControlCommand.SCAN_2WAY_DEV;
         mav.addObject("sendAll2WayFdr", sendAll2WayFdr);
         
-        int sendTimeSyncFdr = CBCCommand.SEND_TIMESYNC;
+        int sendTimeSyncFdr = CapControlCommand.SEND_TIMESYNC;
         mav.addObject("sendTimeSyncFdr", sendTimeSyncFdr);
         
         mav.addObject("controlType", CapControlType.FEEDER);
@@ -295,46 +295,46 @@ public class OnelinePopupMenuController extends MultiActionController {
         boolean isV = subBus.getVerificationFlag();
         mav.addObject("isV", isV);
         
-        int resetOpCount = CBCCommand.RESET_OPCOUNT;
+        int resetOpCount = CapControlCommand.RESET_OPCOUNT;
         mav.addObject("resetOpCount", resetOpCount);
         
-        int confirmSub = CBCCommand.CONFIRM_CLOSE;
+        int confirmSub = CapControlCommand.CONFIRM_CLOSE;
         mav.addObject("confirmSub", confirmSub);
         
-        int openAllSub = CBCCommand.SEND_ALL_OPEN;
+        int openAllSub = CapControlCommand.SEND_ALL_OPEN;
         mav.addObject("openAllSub", openAllSub);
         
-        int closeAllSub = CBCCommand.SEND_ALL_CLOSE;
+        int closeAllSub = CapControlCommand.SEND_ALL_CLOSE;
         mav.addObject("closeAllSub", closeAllSub);
         
-        int enableOvUvSub = CBCCommand.SEND_ALL_ENABLE_OVUV;
+        int enableOvUvSub = CapControlCommand.SEND_ALL_ENABLE_OVUV;
         mav.addObject("enableOvUvSub", enableOvUvSub);
         
-        int disableOvUvSub = CBCCommand.SEND_ALL_DISABLE_OVUV;
+        int disableOvUvSub = CapControlCommand.SEND_ALL_DISABLE_OVUV;
         mav.addObject("disableOvUvSub", disableOvUvSub);
         
-        int sendAll2WaySub = CBCCommand.SCAN_2WAY_DEV;
+        int sendAll2WaySub = CapControlCommand.SCAN_2WAY_DEV;
         mav.addObject("sendAll2WaySub", sendAll2WaySub);
         
-        int sendTimeSyncSub = CBCCommand.SEND_TIMESYNC;
+        int sendTimeSyncSub = CapControlCommand.SEND_TIMESYNC;
         mav.addObject("sendTimeSyncSub", sendTimeSyncSub);
         
-        int verifyAll = CBCCommand.CMD_ALL_BANKS;
+        int verifyAll = CapControlCommand.CMD_ALL_BANKS;
         mav.addObject("verifyAll", verifyAll);
         
-        int verifyFQ = CBCCommand.CMD_FQ_BANKS;
+        int verifyFQ = CapControlCommand.CMD_FQ_BANKS;
         mav.addObject("verifyFQ", verifyFQ);
         
-        int verifyFailed = CBCCommand.CMD_FAILED_BANKS;
+        int verifyFailed = CapControlCommand.CMD_FAILED_BANKS;
         mav.addObject("verifyFailed", verifyFailed);
         
-        int verifyQuestion = CBCCommand.CMD_QUESTIONABLE_BANKS;
+        int verifyQuestion = CapControlCommand.CMD_QUESTIONABLE_BANKS;
         mav.addObject("verifyQuestion", verifyQuestion);
         
-        int verifyStandalone = CBCCommand.CMD_STANDALONE_VERIFY;
+        int verifyStandalone = CapControlCommand.CMD_STANDALONE_VERIFY;
         mav.addObject("verifyStandalone", verifyStandalone);
         
-        int verifyStop = CBCCommand.CMD_DISABLE_VERIFY;
+        int verifyStop = CapControlCommand.CMD_DISABLE_VERIFY;
         mav.addObject("verifyStop", verifyStop);
         
         mav.addObject("controlType", CapControlType.SUBBUS);
@@ -356,13 +356,13 @@ public class OnelinePopupMenuController extends MultiActionController {
         boolean scanDisabled = !CBCUtils.isTwoWay( lite );
         mav.addObject("scanDisabled", scanDisabled);
         
-        int scanCmdId = CBCCommand.SCAN_2WAY_DEV;
+        int scanCmdId = CapControlCommand.SCAN_2WAY_DEV;
         mav.addObject("scanCmdId", scanCmdId);
         
-        int enableOVUVCmdId = CBCCommand.BANK_ENABLE_OVUV;
+        int enableOVUVCmdId = CapControlCommand.BANK_ENABLE_OVUV;
         mav.addObject("enableOVUVCmdId", enableOVUVCmdId);
         
-        int sendTimeSyncCmdId = CBCCommand.SEND_TIMESYNC;
+        int sendTimeSyncCmdId = CapControlCommand.SEND_TIMESYNC;
         mav.addObject("sendTimeSyncCmdId", sendTimeSyncCmdId);
         
         mav.addObject("controlType", CapControlType.CAPBANK);
@@ -380,7 +380,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         String paoName = capBank.getCcName();
         mav.addObject("paoName", paoName);
         
-        int resetOpcount = CBCCommand.RESET_OPCOUNT;
+        int resetOpcount = CapControlCommand.RESET_OPCOUNT;
         mav.addObject("resetOpcount", resetOpcount);
         
         LiteState[] states = CBCUtils.getCBCStateNames();
@@ -445,7 +445,7 @@ public class OnelinePopupMenuController extends MultiActionController {
         this.dataSource = dataSource;
     }
     
-    public void setCbcDao(CBCDao cbcDao) {
+    public void setCbcDao(CapControlDao cbcDao) {
         this.cbcDao = cbcDao;
     }
     

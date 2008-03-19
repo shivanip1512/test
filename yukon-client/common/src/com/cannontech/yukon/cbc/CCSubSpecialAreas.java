@@ -4,22 +4,22 @@ import java.util.List;
 
 /**
  */
-public class CBCSubSpecialAreas extends com.cannontech.yukon.cbc.CBCMessage
+public class CCSubSpecialAreas extends com.cannontech.yukon.cbc.CapControlMessage
 {   
     //contains Strings
-    private List<CBCSpecialArea> areas;
+    private List<CCSpecialArea> areas;
 
 /**
  * SpecialCBCSubAreaNames constructor comment.
  */
-public CBCSubSpecialAreas() {
+public CCSubSpecialAreas() {
     super();
 }
 
 /**
  * This method was created in VisualAge.
  */
-public CBCSpecialArea getArea(int index) {
+public CCSpecialArea getArea(int index) {
     return getAreas().get(index);
 }
 
@@ -28,7 +28,7 @@ public CBCSpecialArea getArea(int index) {
  * Creation date: (2/6/2001 1:17:13 PM)
  * @return java.util.Vector
  */
-public List<CBCSpecialArea> getAreas() {
+public List<CCSpecialArea> getAreas() {
     return areas;
 }
 
@@ -43,7 +43,7 @@ public int getNumberOfAreas() {
 /**
  * This method was created in VisualAge.
  */
-public void setAreas(List<CBCSpecialArea> a) {
+public void setAreas(List<CCSpecialArea> a) {
     areas = a;
 }
 

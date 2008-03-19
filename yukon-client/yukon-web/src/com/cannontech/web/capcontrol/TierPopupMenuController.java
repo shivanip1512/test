@@ -23,9 +23,9 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCCommand;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CCArea;
+import com.cannontech.yukon.cbc.CapControlCommand;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -55,7 +55,7 @@ public class TierPopupMenuController extends MultiActionController {
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        final CBCSpecialArea area = capControlCache.getCBCSpecialArea(id);
+        final CCSpecialArea area = capControlCache.getCBCSpecialArea(id);
         
         boolean isDisabled = area.getCcDisableFlag();
         boolean isDisabledOVUV = area.getOvUvDisabledFlag();
@@ -68,7 +68,7 @@ public class TierPopupMenuController extends MultiActionController {
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        final CBCArea area = capControlCache.getCBCArea(id);
+        final CCArea area = capControlCache.getCBCArea(id);
         
         boolean isDisabled = area.getCcDisableFlag();
         boolean isDisabledOVUV = area.getOvUvDisabledFlag();
@@ -353,7 +353,7 @@ public class TierPopupMenuController extends MultiActionController {
         String paoName = capBank.getCcName();
         mav.addObject("paoName", paoName);
         
-        int cmdId = CBCCommand.RETURN_BANK_TO_FEEDER;
+        int cmdId = CapControlCommand.RETURN_BANK_TO_FEEDER;
         mav.addObject("cmdId", cmdId);
         
         String displayName = "Temp Move Back";

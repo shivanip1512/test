@@ -1,6 +1,6 @@
 package com.cannontech.yukon.cbc;
 
-public class CBCVerifySubBus extends CBCMessage {
+public class CCVerifySubBus extends CapControlMessage {
     public static final long DEFAULT_CB_INACT_TIME = -1;
     
 	int action; //enable or disable...
@@ -8,11 +8,11 @@ public class CBCVerifySubBus extends CBCMessage {
     int strategy;
     long cbInactivityTime;
 	
-	public CBCVerifySubBus() {
+	public CCVerifySubBus() {
 		super();
 	}
 
-	public CBCVerifySubBus (int _action_, int _subId_, int _strategy_, long _cbInactivityTime_){
+	public CCVerifySubBus (int _action_, int _subId_, int _strategy_, long _cbInactivityTime_){
 		action = _action_;
 		subId = _subId_;
 		strategy = _strategy_;

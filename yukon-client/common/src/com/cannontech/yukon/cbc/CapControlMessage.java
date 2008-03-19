@@ -3,12 +3,12 @@ package com.cannontech.yukon.cbc;
 /**
  * This type was created in VisualAge.
  */
-public class CBCMessage extends com.cannontech.message.util.Message {
+public class CapControlMessage extends com.cannontech.message.util.Message {
 	private String message = new String();
 /**
  * Message constructor comment.
  */
-public CBCMessage() {
+public CapControlMessage() {
 	super();	
 }
 /**

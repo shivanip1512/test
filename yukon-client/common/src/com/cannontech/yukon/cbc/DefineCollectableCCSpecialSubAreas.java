@@ -7,24 +7,27 @@ import java.util.Vector;
 
 import com.cannontech.message.util.VectorExtract;
 import com.roguewave.tools.v2_0.Comparator;
+import com.roguewave.vsj.CollectableStreamer;
+import com.roguewave.vsj.VirtualInputStream;
+import com.roguewave.vsj.VirtualOutputStream;
 
-public class DefineCollectableCBCSubAreas extends DefineCollectableCBCMessage {
+public class DefineCollectableCCSpecialSubAreas extends DefineCollectableCBCMessage {
     // RogueWave classId
-    public static final int CTIAREA_MESSAGE_ID = 509;
+    //TODO get a real id
+    public static final int CTISPECIAL_AREA_MESSAGE_ID = 522;
 
     /**
      * DefineCollectableMessage constructor comment.
      */
-    public DefineCollectableCBCSubAreas() {
+    public DefineCollectableCCSpecialSubAreas() {
         super();
     }
 
     /**
      * create method comment.
      */
-    public Object create(com.roguewave.vsj.VirtualInputStream vstr)
-            throws java.io.IOException {
-        return new CBCSubAreas();
+    public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
+        return new CCSubSpecialAreas();
     }
 
     /**
@@ -45,41 +48,34 @@ public class DefineCollectableCBCSubAreas extends DefineCollectableCBCMessage {
      * getCxxClassId method comment.
      */
     public int getCxxClassId() {
-        return CTIAREA_MESSAGE_ID;
+        return CTISPECIAL_AREA_MESSAGE_ID;
     }
 
     /**
      * getJavaClass method comment.
      */
     public Class getJavaClass() {
-        return CBCSubAreas.class;
+        return CCSubSpecialAreas.class;
     }
 
     /**
      * restoreGuts method comment.
      */
-    public void restoreGuts(Object obj,
-            com.roguewave.vsj.VirtualInputStream vstr,
-            com.roguewave.vsj.CollectableStreamer polystr)
-            throws java.io.IOException {
+    public void restoreGuts(Object obj, VirtualInputStream vstr, CollectableStreamer polystr) throws java.io.IOException {
 
         super.restoreGuts(obj, vstr, polystr);
-
         Vector areaNames = VectorExtract.extractVector(vstr, polystr);
-
-        ((CBCSubAreas) obj).setAreas(areaNames);
+        ((CCSubSpecialAreas) obj).setAreas(areaNames);
     }
 
     /**
      * saveGuts method comment.
      */
-    public void saveGuts(Object obj,
-            com.roguewave.vsj.VirtualOutputStream vstr,
-            com.roguewave.vsj.CollectableStreamer polystr)
-            throws java.io.IOException {
+    public void saveGuts(Object obj, VirtualOutputStream vstr, CollectableStreamer polystr) throws java.io.IOException {
         com.cannontech.clientutils.CTILogger.info("**********************************************************************************");
-        com.cannontech.clientutils.CTILogger.info("com.cannontech.cbc.DefineCollectableCBCStrategyAreaMessage.saveGuts() should not be called");
+        com.cannontech.clientutils.CTILogger.info("com.cannontech.cbc.DefineCollectableCBCSpecialSubAreas.saveGuts() should not be called");
         com.cannontech.clientutils.CTILogger.info("**********************************************************************************");
 
     }
 }
+

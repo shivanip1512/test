@@ -18,7 +18,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ParamUtil;
-import com.cannontech.yukon.cbc.CBCCommand;
+import com.cannontech.yukon.cbc.CapControlCommand;
 
 public class CBCAjaxMultiActionController extends MultiActionController {
     private CapControlCache capControlCache;
@@ -64,8 +64,8 @@ public class CBCAjaxMultiActionController extends MultiActionController {
                                                 .getAttribute(LoginController.YUKON_USER);
         CapControlCommandExecutor executor = new CapControlCommandExecutor(cbcCache, user);
         boolean turnSystemOff = ParamUtil.getBoolean(req, "turnSystemOff");
-        int commandID = (turnSystemOff) ? CBCCommand.DISABLE_SYSTEM
-                : CBCCommand.ENABLE_SYSTEM;
+        int commandID = (turnSystemOff) ? CapControlCommand.DISABLE_SYSTEM
+                : CapControlCommand.ENABLE_SYSTEM;
         if (allowControl(user)) {
             executor.executeCommand(0, commandID);
         } else {

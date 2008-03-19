@@ -14,7 +14,7 @@ import com.cannontech.roles.yukon.SystemRole;
 import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.DefineCollectable;
 
-public class CBCClientConnection extends ClientConnection
+public class CapControlClientConnection extends ClientConnection
 {
 	private String host = "127.0.0.1";
 	private int port = 1910;
@@ -31,7 +31,7 @@ public class CBCClientConnection extends ClientConnection
 		new DefineCollectableFeeder(),
 		new DefineCollectableState(),
 		new DefineCollectableCBCArea(),
-        new DefineCollectableCBCSpecialSubAreas(),
+        new DefineCollectableCCSpecialSubAreas(),
         new DefineCollectableSpecialCBCArea(),
 		
         //Collectable Mappings
@@ -42,7 +42,7 @@ public class CBCClientConnection extends ClientConnection
 		new DefineCollectableCBCStateGroupMessage(),
 		new com.cannontech.message.dispatch.message.DefineCollectableMulti(),
 		new DefineCollectableCBCCommand(),
-		new DefineCollectableCBCSubAreas(),
+		new DefineCollectableCCSubAreas(),
 		new DefineCollectableCBCSubstationBuses(),
 		new DefineCollectableCBCMessage(), // not used except as a superclass
 		new com.cannontech.message.dispatch.message.DefineCollectablePointData(),
@@ -57,11 +57,11 @@ public class CBCClientConnection extends ClientConnection
 	 * @param host java.lang.String
 	 * @param port int
 	 */
-	public CBCClientConnection() 
+	public CapControlClientConnection() 
 	{
 		super("CBC");// "127.0.0.1", 1910 );
         initialize();
-        setRegistrationMsg(new CBCCommand ( CBCCommand.REQUEST_ALL_AREAS, 0) );
+        setRegistrationMsg(new CapControlCommand ( CapControlCommand.REQUEST_ALL_AREAS, 0) );
 	}
 	
 	/**
@@ -87,7 +87,7 @@ public class CBCClientConnection extends ClientConnection
 	 */
 	public void executeCommand(int deviceID, int cmdOperation) throws java.io.IOException
 	{
-		CBCCommand cmd = new CBCCommand();
+		CapControlCommand cmd = new CapControlCommand();
 		cmd.setDeviceID( deviceID );
 		cmd.setCommand( cmdOperation );
 	
@@ -156,7 +156,7 @@ public class CBCClientConnection extends ClientConnection
 	 * 
 	 * @return nothing
 	 */
-	public void sendCommand( CBCCommand cmd )
+	public void sendCommand( CapControlCommand cmd )
 	{
 		//Don't bother sending this out if were not in a good state
 		if( !isValid() )
@@ -168,7 +168,7 @@ public class CBCClientConnection extends ClientConnection
 		}
 	
 		
-		com.cannontech.common.util.MessageEvent msgEvent = new com.cannontech.common.util.MessageEvent( this, CBCCommand.getCommandString(cmd.getCommand()) + " was executed." );
+		com.cannontech.common.util.MessageEvent msgEvent = new com.cannontech.common.util.MessageEvent( this, CapControlCommand.getCommandString(cmd.getCommand()) + " was executed." );
 		msgEvent.setMessageType( MessageEvent.INFORMATION_MESSAGE );
 		fireMsgEventGUI(msgEvent);
 	}

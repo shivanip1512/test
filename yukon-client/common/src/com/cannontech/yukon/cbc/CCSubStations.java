@@ -2,7 +2,7 @@ package com.cannontech.yukon.cbc;
 
 import java.util.Vector;
 
-public class CBCSubStations extends com.cannontech.yukon.cbc.CBCMessage
+public class CCSubStations extends com.cannontech.yukon.cbc.CapControlMessage
 {
 	public static final int STATION_ALL    = 0x00000001;
 	public static final int STATION_DEL    = 0x00000002;
@@ -12,7 +12,7 @@ public class CBCSubStations extends com.cannontech.yukon.cbc.CBCMessage
 	private Vector stations;
 	private Integer msgInfoBitMask = new Integer(0);
 	
-	public CBCSubStations() {
+	public CCSubStations() {
 		super();
 	}
 	

@@ -3,11 +3,11 @@ package com.cannontech.cbc.web;
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.core.dao.CBCDao;
+import com.cannontech.core.dao.CapControlDao;
 
 public class ParentStringPrinterFactory {
     private CapControlCache capControlCache;
-    private CBCDao cbcDao;
+    private CapControlDao cbcDao;
 
     public ParentStringPrinter createParentStringPrinter(final HttpServletRequest request) {
         final ParentStringPrinter printer = new ParentStringPrinter(request);
@@ -20,7 +20,7 @@ public class ParentStringPrinterFactory {
         this.capControlCache = capControlCache;
     }
     
-    public void setCbcDao(CBCDao cbcDao) {
+    public void setCbcDao(CapControlDao cbcDao) {
         this.cbcDao = cbcDao;
     }
     

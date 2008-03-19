@@ -2,21 +2,21 @@ package com.cannontech.yukon.cbc;
 
 import java.util.List;
 
-public class CBCSubAreas extends com.cannontech.yukon.cbc.CBCMessage {	
+public class CCSubAreas extends com.cannontech.yukon.cbc.CapControlMessage {	
     
-	private List<CBCArea> areas;
+	private List<CCArea> areas;
 
 /**
  * CBCSubAreaNames constructor comment.
  */
-public CBCSubAreas() {
+public CCSubAreas() {
 	super();
 }
 
 /**
  * This method was created in VisualAge.
  */
-public CBCArea getArea(int index) 
+public CCArea getArea(int index) 
 {
 	return getAreas().get(index);
 }
@@ -26,7 +26,7 @@ public CBCArea getArea(int index)
  * Creation date: (2/6/2001 1:17:13 PM)
  * @return java.util.Vector
  */
-public List<CBCArea> getAreas() {
+public List<CCArea> getAreas() {
 	return areas;
 }
 
@@ -41,7 +41,7 @@ public int getNumberOfAreas() {
 /**
  * This method was created in VisualAge.
  */
-public void setAreas(List<CBCArea> a) {
+public void setAreas(List<CCArea> a) {
 	areas = a;
 }
 

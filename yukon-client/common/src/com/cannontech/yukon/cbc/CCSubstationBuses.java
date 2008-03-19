@@ -6,7 +6,7 @@ import java.util.Vector;
  */
 
 
-public class CBCSubstationBuses extends com.cannontech.yukon.cbc.CBCMessage {
+public class CCSubstationBuses extends com.cannontech.yukon.cbc.CapControlMessage {
 	
 	private java.lang.Integer msgInfoBitMask = new Integer(0);
 	private java.util.Vector<SubBus> buses;
@@ -20,7 +20,7 @@ public class CBCSubstationBuses extends com.cannontech.yukon.cbc.CBCMessage {
 	/**
 	 * CBCSubstationBuses constructor comment.
 	 */
-	public CBCSubstationBuses() {
+	public CCSubstationBuses() {
 		super();
 	}
 	

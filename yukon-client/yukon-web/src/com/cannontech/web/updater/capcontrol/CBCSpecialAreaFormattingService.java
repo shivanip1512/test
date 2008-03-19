@@ -6,21 +6,21 @@ import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.SubStation;
 
-public class CBCSpecialAreaFormattingService extends AbstractAreaFormatingService<CBCSpecialArea> {
+public class CBCSpecialAreaFormattingService extends AbstractAreaFormatingService<CCSpecialArea> {
 
     @Override
-    protected String getState(final CBCSpecialArea latestValue, final CBCDisplay cbcDisplay) {
+    protected String getState(final CCSpecialArea latestValue, final CBCDisplay cbcDisplay) {
         String state = (latestValue.getDisableFlag()) ? "DISABLED" : "ENABLED";
         if (latestValue.getOvUvDisabledFlag()) state += "-V";
         return state;
     }
 
     @Override
-    protected String getPFactor(final CBCSpecialArea latestValue, final CBCDisplay cbcDisplay) {
+    protected String getPFactor(final CCSpecialArea latestValue, final CBCDisplay cbcDisplay) {
         int paoId = latestValue.getCcId();
         List<SubStation> areaStations = getAreaStations(paoId, cbcDisplay.getUser());
         String currPF = cbcDisplay.getPowerFactorText(CBCUtils.calcAvgPF(areaStations), true);
@@ -30,7 +30,7 @@ public class CBCSpecialAreaFormattingService extends AbstractAreaFormatingServic
     }
     
     @Override
-    protected String getWarningFlag(final CBCSpecialArea latestValue, final CBCDisplay cbcDisplay) {
+    protected String getWarningFlag(final CCSpecialArea latestValue, final CBCDisplay cbcDisplay) {
         Boolean flag = latestValue.getVoltReductionFlag();
         return flag.toString();
     }

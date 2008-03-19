@@ -1,11 +1,13 @@
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h" %>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x" %>
 <%@ page import="com.cannontech.web.editor.point.PointForm" %>
 
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.CapControlForm" %>
-
+<c:url var="orphanURL" value="/spring/capcontrol/tier/cceditorpopup"/>
 
 <%
 	CapControlForm capControlForm = (CapControlForm)JSFParamUtil.getJSFVar( "capControlForm" );
@@ -28,8 +30,28 @@
 
 <script type="text/javascript">
 formatSelectedPoint ('cbcPointDiv');
-var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.criteria.CBCControlPointCriteria',
-				'pointName:ctlPoint;deviceName:cbcDevice','cbcPointPicker','', attachPoint, saveOldPoint);
+
+function closeOrphanedCBCPopup(){
+    $('orphanedCBCContent').hide();
+}
+
+function showOrphanedCBCPopup(){
+    
+	new Ajax.Updater('orphanedCBCBody', '${orphanURL}', {
+        method: 'post'
+	});
+	$('orphanedCBCContent').show();
+}
+
+function setCBC( deviceName, pointId, pointName){
+    var device = $('cbcDevice')
+    device.innerHTML = deviceName;
+    $('ctlPoint').innerHTML = pointName;
+    $('cbc_point').value = pointId;
+}
+
+/* var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.criteria.CBCControlPointCriteria',
+				'pointName:ctlPoint;deviceName:cbcDevice','cbcPointPicker','', attachPoint, saveOldPoint); */
 
 </script>
 	
@@ -144,13 +166,14 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
                  styleClass="medStaticLabel"/>
                  <x:outputText id="cbcDevice" forceId="true" 
                  value="#{capBankEditor.ctlPaoName}" /> 
-
+                <x:outputText id="devicePointSeperator" value=" : "/> 
+                 
                  <x:outputText id="ctlPoint" forceId="true" 
                  value="#{capBankEditor.ctlPointName}" /> 
                 <f:verbatim>
                     <br/>
                 </f:verbatim>
-                    <h:outputLink  value="javascript:cbcPointPicker.showPicker()" >
+                    <h:outputLink  value="javascript:void(0);" onclick="showOrphanedCBCPopup();" >
                        <h:outputText value="Select point..."/>
                     </h:outputLink>
                 </x:div>
@@ -169,9 +192,7 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
             <br />
             <fieldset class="fieldSet"><legend> Cap Bank Points </legend>
         </f:verbatim>
-        <x:div forceId="true" id="SubstationBusEditorScrollDiv"
-            styleClass="scrollSmall">
-            <%-- binding="#{capControlForm.pointTreeForm.pointTree}" --%>
+        <x:div forceId="true" id="SubstationBusEditorScrollDiv" styleClass="scrollSmall">
             <x:tree2 
                 id="SubstationBusEditPointTree"
                 value="#{capControlForm.pointTreeForm.pointList}" var="node"
@@ -395,14 +416,30 @@ var cbcPointPicker = new PointPicker('cbc_point','com.cannontech.common.search.c
             </x:panelGroup>
             
        <f:verbatim></fieldset></f:verbatim>
-       
-     
-  </x:column>
-    
-
-    
-    </x:panelGrid>
- 			
-    <x:inputHidden id="capbankHiden" forceId="true" value="#{capControlForm.offsetMap['capbankHiden']}"/>
-
+	</x:column>
+	</x:panelGrid>
+	<f:verbatim>
+        <div id="orphanedCBCContent" class="popUpDiv simplePopup" style="display:none;">
+			<!--  fix for IE6 bug (see itemPicker.css for more info) -->
+			<!--[if lte IE 6.5]><iframe></iframe><![endif]-->
+			<div class="titledContainer boxContainer">
+			
+			    <div class="titleBar boxContainer_titleBar">
+			              <div class="controls" onclick="closeOrphanedCBCPopup()">
+			                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/collapse.gif">
+			              </div>
+			        <div class="title boxContainer_title">
+			            Orphaned CBC's
+			        </div>
+			    </div>
+			    
+			    <div class="content boxContainer_content">
+			        <div id="orphanedCBCBody">
+			        </div>
+			    </div>    
+                
+            </div>
+        </div>
+	</f:verbatim>
+	<x:inputHidden id="capbankHiden" forceId="true" value="#{capControlForm.offsetMap['capbankHiden']}"/>
 </f:subview>

@@ -22,7 +22,7 @@ public class DefineCollectableCBCTempMoveCapBank extends DefineCollectableCBCMes
 	 */
 	public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException 
 	{
-		return new CBCTempMoveCapBank();
+		return new TempMoveCapBank();
 	}
 	/**
 	 * getComparator method comment.
@@ -57,7 +57,7 @@ public class DefineCollectableCBCTempMoveCapBank extends DefineCollectableCBCMes
 	 */
 	public Class getJavaClass() 
 	{
-		return CBCTempMoveCapBank.class;
+		return TempMoveCapBank.class;
 	}
 	/**
 	 * restoreGuts method comment.
@@ -76,7 +76,7 @@ public class DefineCollectableCBCTempMoveCapBank extends DefineCollectableCBCMes
 	{
 		super.saveGuts( obj, vstr, polystr );
 	
-		CBCTempMoveCapBank tmpMove = (CBCTempMoveCapBank)obj;
+		TempMoveCapBank tmpMove = (TempMoveCapBank)obj;
 	
 		vstr.insertUnsignedInt( (long) (tmpMove.getPermanentMove() ? 1 : 0) );
 		vstr.insertUnsignedInt( (long) tmpMove.getOldFeedID() );

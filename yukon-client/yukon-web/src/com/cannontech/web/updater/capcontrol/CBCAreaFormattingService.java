@@ -5,27 +5,27 @@ import java.util.List;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.SubStation;
 
-public class CBCAreaFormattingService extends AbstractAreaFormatingService<CBCArea> {
+public class CBCAreaFormattingService extends AbstractAreaFormatingService<CCArea> {
     
     @Override
-    protected String getState(final CBCArea latestValue, final CBCDisplay cbcDisplay) {
+    protected String getState(final CCArea latestValue, final CBCDisplay cbcDisplay) {
         String state = (latestValue.getDisableFlag()) ? "DISABLED" : "ENABLED";
         if (latestValue.getOvUvDisabledFlag()) state += "-V";
         return state;
     }
     
     @Override
-    protected String getPFactor(final CBCArea latestValue, final CBCDisplay cbcDisplay) {
+    protected String getPFactor(final CCArea latestValue, final CBCDisplay cbcDisplay) {
         String pFactory = cbcDisplay.getAreaValueAt(latestValue, CBCDisplay.AREA_POWER_FACTOR_COLUMN);
         return pFactory;
     }
     
     @Override
-    protected String getWarningFlag(final CBCArea latestValue, CBCDisplay cbcDisplay) {
+    protected String getWarningFlag(final CCArea latestValue, CBCDisplay cbcDisplay) {
         Boolean flag = latestValue.getVoltReductionFlag();
         return flag.toString();
     }

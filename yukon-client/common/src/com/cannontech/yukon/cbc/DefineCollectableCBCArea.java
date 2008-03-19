@@ -24,7 +24,7 @@ public class DefineCollectableCBCArea extends
     @Override
     public Object create(com.roguewave.vsj.VirtualInputStream vstr)
             throws java.io.IOException {
-        return new CBCArea();
+        return new CCArea();
     }
 
     /**
@@ -47,8 +47,8 @@ public class DefineCollectableCBCArea extends
      * getJavaClass method comment.
      */
     @Override
-    public Class<CBCArea> getJavaClass() {
-        return CBCArea.class;
+    public Class<CCArea> getJavaClass() {
+        return CCArea.class;
     }
 
     /**
@@ -61,7 +61,7 @@ public class DefineCollectableCBCArea extends
             com.roguewave.vsj.CollectableStreamer polystr)
             throws java.io.IOException {
         
-        CBCArea area = (CBCArea) obj;
+        CCArea area = (CCArea) obj;
 
         int paoId = (int) vstr.extractUnsignedInt();
         area.setPaoID(paoId);
@@ -107,7 +107,7 @@ public class DefineCollectableCBCArea extends
             throws java.io.IOException {
         //super.saveGuts(obj, vstr, polystr);
 
-        CBCArea area = (CBCArea) obj;
+        CCArea area = (CCArea) obj;
         vstr.insertUnsignedInt(area.getPaoID().intValue());
         vstr.saveObject(area.getPaoCategory(), SimpleMappings.CString);
         vstr.saveObject(area.getPaoClass(), SimpleMappings.CString);

@@ -13,7 +13,7 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.IMACSConnection;
 import com.cannontech.yukon.INotifConnection;
 import com.cannontech.yukon.IServerConnection;
-import com.cannontech.yukon.cbc.CBCClientConnection;
+import com.cannontech.yukon.cbc.CapControlClientConnection;
 
 /**
  * @author rneuharth
@@ -240,12 +240,12 @@ public class ConnPool
     public IServerConnection getDefCapControlConn()
     {
         //check our master Map of existing connections
-        CBCClientConnection cbcConn =
-            (CBCClientConnection)getAllConns().get(CAPCONTROL_CONN);
+        CapControlClientConnection cbcConn =
+            (CapControlClientConnection)getAllConns().get(CAPCONTROL_CONN);
 
         if( cbcConn == null )
         {		
-        	cbcConn = (CBCClientConnection)createCapControlConn();
+        	cbcConn = (CapControlClientConnection)createCapControlConn();
             cbcConn.setHost( standaloneRoleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_MACHINE ) );
             String portStr = standaloneRoleDao.getGlobalPropertyValue( SystemRole.CAP_CONTROL_PORT );
             cbcConn.setPort( Integer.parseInt(portStr ) );
@@ -286,7 +286,7 @@ public class ConnPool
      */
     private IServerConnection createCapControlConn()
     {       
-    	CBCClientConnection cbcConn = new CBCClientConnection();
+    	CapControlClientConnection cbcConn = new CapControlClientConnection();
         return cbcConn;
     }
     

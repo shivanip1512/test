@@ -21,7 +21,7 @@ public DefineCollectableCBCMessage() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new CBCMessage();
+	return new CapControlMessage();
 }
 /**
  * getComparator method comment.
@@ -52,7 +52,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.yukon.cbc.CBCMessage.class;
+	return com.cannontech.yukon.cbc.CapControlMessage.class;
 }
 /**
  * restoreGuts method comment.
@@ -62,14 +62,14 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	super.restoreGuts( obj, vstr, polystr );
 	String message = (String) vstr.restoreObject( SimpleMappings.CString );
 
-	((CBCMessage) obj).setMessage( message );
+	((CapControlMessage) obj).setMessage( message );
 }
 /**
  * saveGuts method comment.
  */
 public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.saveGuts( obj, vstr, polystr );
-	String message = ((CBCMessage) obj).getMessage();
+	String message = ((CapControlMessage) obj).getMessage();
 
 	vstr.saveObject( message, SimpleMappings.CString );	
 }

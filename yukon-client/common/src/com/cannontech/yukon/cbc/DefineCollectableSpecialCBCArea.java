@@ -26,7 +26,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
     @Override
     public Object create(com.roguewave.vsj.VirtualInputStream vstr)
             throws java.io.IOException {
-        return new CBCSpecialArea();
+        return new CCSpecialArea();
     }
 
     /**
@@ -49,8 +49,8 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
      * getJavaClass method comment.
      */
     @Override
-    public Class<CBCSpecialArea> getJavaClass() {
-        return CBCSpecialArea.class;
+    public Class<CCSpecialArea> getJavaClass() {
+        return CCSpecialArea.class;
     }
 
     /**
@@ -60,7 +60,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
     @Override
     public void restoreGuts(Object obj, VirtualInputStream vstr, CollectableStreamer polystr) throws java.io.IOException {
         
-        CBCSpecialArea area = (CBCSpecialArea) obj;
+        CCSpecialArea area = (CCSpecialArea) obj;
 
         int paoId = (int) vstr.extractUnsignedInt();
         area.setPaoID(paoId);
@@ -101,7 +101,7 @@ public class DefineCollectableSpecialCBCArea extends DefineCollectableStreamable
      */
     @Override
     public void saveGuts(Object obj, VirtualOutputStream vstr, CollectableStreamer polystr) throws java.io.IOException {
-    	CBCSpecialArea area = (CBCSpecialArea) obj;
+    	CCSpecialArea area = (CCSpecialArea) obj;
         
         vstr.insertUnsignedInt(area.getPaoID().intValue());
         vstr.saveObject(area.getPaoCategory(), SimpleMappings.CString);

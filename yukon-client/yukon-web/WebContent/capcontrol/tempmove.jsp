@@ -38,7 +38,7 @@
 	int bankid = ParamUtil.getInteger(request, "bankid");
 	int subbusID = 0;
 	boolean oneline = ParamUtil.getBoolean(request,"oneline",false);
-	List<CBCArea> allAreas = filterCapControlCache.getCbcAreas();	
+	List<CCArea> allAreas = filterCapControlCache.getCbcAreas();	
 	CapBankDevice capBank = filterCapControlCache.getCapBankDevice( new Integer(bankid) );
 	int oldfdrid = 0;
 	if( oneline ){
@@ -134,7 +134,7 @@ Event.observe(window, 'load', updateFeederBankInfo );
 String css = "altTableCell";
 int z = 0;
 String indent = "\t";
-for( CBCArea area : allAreas )
+for( CCArea area : allAreas )
 {
 	List<SubStation> stationsOnArea = filterCapControlCache.getSubstationsByArea( area.getPaoID() );
 	%>

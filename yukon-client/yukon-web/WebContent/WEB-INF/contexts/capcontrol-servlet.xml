@@ -39,6 +39,9 @@
                 <entry key="/tier/popupmenu">
                     <ref bean="tierPopupMenuController"/>
                 </entry>
+                <entry key="/tier/cceditorpopup">
+                    <ref bean="ccEditorController"/>
+                </entry>
                 <entry key="/comments">
                     <ref bean="capControlCommentController"/>
                 </entry>
@@ -93,6 +96,10 @@
 		</property>
 		<property name="requireSession" value="true"/>  
 		<property name="capControlCache" ref="capControlCache"/>
+	</bean>
+	
+	<bean id="ccEditorController" class="com.cannontech.web.capcontrol.CCEditorController">
+	   <property name="CBCDao" ref="cbcDao"/>
 	</bean>
 
 	<bean id="onelineBookmarkController"

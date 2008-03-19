@@ -1,5 +1,7 @@
 package com.cannontech.core.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,16 +11,19 @@ import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.capcontrol.CBCPointGroup;
+import com.cannontech.capcontrol.OrphanCBC;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.util.MapQueue;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.CBCDao;
+import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
@@ -37,7 +42,7 @@ import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.database.data.point.ScalarPoint;
 import com.cannontech.message.dispatch.message.PointData;
 
-public class CBCDaoImpl  implements CBCDao{
+public class CapControlDaoImpl  implements CapControlDao{
 
     private PointDao pointDao;
     private PaoDao paoDao;
@@ -46,7 +51,8 @@ public class CBCDaoImpl  implements CBCDao{
     private DynamicDataSource dynamicDataSource;
     private JdbcTemplate jdbcOps;
     private DeviceDefinitionDao deviceDefinitionDao = null;
-	
+    List<OrphanCBC> cbcList;
+    
     private static MapQueue<CBCPointGroup, String> pointGroupConfig = new MapQueue<CBCPointGroup, String>();
     
     // Initialize point group config
@@ -112,7 +118,7 @@ public class CBCDaoImpl  implements CBCDao{
     	
     }
     
-    public CBCDaoImpl() {
+    public CapControlDaoImpl() {
         super();
     }
     
@@ -350,6 +356,28 @@ public class CBCDaoImpl  implements CBCDao{
         }
         return parentID;
     }
-
+    
+    public List<OrphanCBC> getOrphanedCBCs(){
+        
+        SqlStatementBuilder query = new SqlStatementBuilder();
+        query.append("select y.paoname as devicename, p.pointid as pointid, p.pointname as pointname from point p, yukonpaobject y ");
+        query.append("where p.paobjectid in ( ");
+        query.append("select paobjectid from yukonpaobject where type like 'CBC%' ");
+        query.append("and paobjectid not in (select controldeviceid from capbank) ");
+        query.append(") and p.pointoffset = 1 and p.pointtype = 'STATUS' and p.paobjectid = y.paobjectid");
+        query.append("order by y.paoname");
+        cbcList = new ArrayList<OrphanCBC>();
+        jdbcOps.query(query.toString(), new RowCallbackHandler() {
+            public void processRow(ResultSet rs) throws SQLException {
+                String deviceName = rs.getString("devicename");
+                Integer pointId = rs.getInt("pointid");
+                String pointName = rs.getString("pointname");
+                OrphanCBC cbc = new OrphanCBC(deviceName, pointId, pointName);
+                cbcList.add(cbc);
+            }
+        });
+        return cbcList;
+    }
+    
 }
 

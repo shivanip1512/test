@@ -22,7 +22,7 @@ public DefineCollectableCBCStateGroupMessage() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new CBCStates();
+	return new CCStates();
 }
 /**
  * getComparator method comment.
@@ -47,7 +47,7 @@ public int getCxxClassId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return com.cannontech.yukon.cbc.CBCStates.class;
+	return com.cannontech.yukon.cbc.CCStates.class;
 }
 /**
  * restoreGuts method comment.
@@ -59,7 +59,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     
     Vector stateStore = VectorExtract.extractVector(vstr,polystr);
 
-	((CBCStates) obj).setStates( stateStore );
+	((CCStates) obj).setStates( stateStore );
 }
 /**
  * saveGuts method comment.

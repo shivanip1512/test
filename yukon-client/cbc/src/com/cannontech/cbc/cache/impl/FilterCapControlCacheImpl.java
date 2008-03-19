@@ -11,9 +11,9 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.web.lite.LiteWrapper;
-import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCClientConnection;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CCArea;
+import com.cannontech.yukon.cbc.CapControlClientConnection;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -67,14 +67,14 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	    return null;
 	}
 
-	public CBCArea getCBCArea(int id) {
-		CBCArea area = cache.getCBCArea(id);
+	public CCArea getCBCArea(int id) {
+		CCArea area = cache.getCBCArea(id);
 		if (filter.valid(area)) return area;
 		return null;
 	}
 
-	public CBCSpecialArea getCBCSpecialArea(int id) {
-		CBCSpecialArea area = cache.getCBCSpecialArea(id);
+	public CCSpecialArea getCBCSpecialArea(int id) {
+		CCSpecialArea area = cache.getCBCSpecialArea(id);
 		if (filter.valid(area)) return area;
 			return null;
 	}
@@ -136,11 +136,11 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return cache.getCapControlPAO(paoID);
 	}
 
-	public List<CBCArea> getCbcAreas() {
-		List<CBCArea> aList = cache.getCbcAreas();
-		List<CBCArea> retList = new ArrayList<CBCArea>(aList.size());
+	public List<CCArea> getCbcAreas() {
+		List<CCArea> aList = cache.getCbcAreas();
+		List<CCArea> retList = new ArrayList<CCArea>(aList.size());
 		
-		for( CBCArea a : aList ){
+		for( CCArea a : aList ){
 			if ( filter.valid(a) )
 				retList.add(a);
 		}
@@ -203,11 +203,11 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 		return CtiUtilities.NONE_ZERO_ID;
 	}
 
-	public List<CBCSpecialArea> getSpecialCbcAreas() {
-		List<CBCSpecialArea> aList = cache.getSpecialCbcAreas();
-		List<CBCSpecialArea> retList = new ArrayList<CBCSpecialArea>(aList.size());
+	public List<CCSpecialArea> getSpecialCbcAreas() {
+		List<CCSpecialArea> aList = cache.getSpecialCbcAreas();
+		List<CCSpecialArea> retList = new ArrayList<CCSpecialArea>(aList.size());
 		
-		for( CBCSpecialArea a : aList ){
+		for( CCSpecialArea a : aList ){
 			if ( filter.valid(a) )
 				retList.add(a);
 		}
@@ -275,7 +275,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
         return cache.getParentAreaID(childID);
     }
 
-    public CBCClientConnection getConnection() {
+    public CapControlClientConnection getConnection() {
         return cache.getConnection();
     }
 
@@ -288,7 +288,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     }
 
     public List<CapBankDevice> getCapBanksBySpecialArea(int areaID) {
-        CBCSpecialArea area = cache.getCBCSpecialArea(areaID);
+        CCSpecialArea area = cache.getCBCSpecialArea(areaID);
         if ( filter.valid(area) )
             return cache.getCapBanksByArea(areaID);
 
@@ -296,7 +296,7 @@ public class FilterCapControlCacheImpl implements CapControlCache {
     }
     
     public List<SubStation> getSubstationsBySpecialArea(int areaId) {
-        CBCSpecialArea area = cache.getCBCSpecialArea(areaId);
+        CCSpecialArea area = cache.getCBCSpecialArea(areaId);
         if ( filter.valid(area) )
             return cache.getSubstationsByArea(areaId);
         

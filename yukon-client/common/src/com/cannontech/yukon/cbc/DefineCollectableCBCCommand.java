@@ -20,7 +20,7 @@ public DefineCollectableCBCCommand() {
  * create method comment.
  */
 public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.IOException {
-	return new CBCCommand();
+	return new CapControlCommand();
 }
 /**
  * getComparator method comment.
@@ -51,7 +51,7 @@ public String getCxxStringId() {
  * getJavaClass method comment.
  */
 public Class getJavaClass() {
-	return CBCCommand.class;
+	return CapControlCommand.class;
 }
 /**
  * restoreGuts method comment.
@@ -59,7 +59,7 @@ public Class getJavaClass() {
 public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, com.roguewave.vsj.CollectableStreamer polystr) throws java.io.IOException {
 	super.restoreGuts( obj, vstr, polystr );
 	
-	CBCCommand cmd = (CBCCommand) obj;
+	CapControlCommand cmd = (CapControlCommand) obj;
 
 	cmd.setCommand( (int)vstr.extractUnsignedInt() );
 	cmd.setDeviceID( (int)vstr.extractUnsignedInt() );
@@ -72,7 +72,7 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
 {
 	super.saveGuts( obj, vstr, polystr );
 
-	CBCCommand cmd = (CBCCommand) obj;
+	CapControlCommand cmd = (CapControlCommand) obj;
 
 	vstr.insertUnsignedInt( (long) cmd.getCommand() );
 	vstr.insertUnsignedInt( (long) cmd.getDeviceID() );

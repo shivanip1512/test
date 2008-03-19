@@ -43,7 +43,7 @@ if (popupEvent == null) popupEvent = "onmouseover";
 List areas = capControlCache.getCbcAreas();
 List movedCaps = new ArrayList(10);   
    for (Iterator iter = areas.iterator(); iter.hasNext();) {
-    CBCArea area = (CBCArea) iter.next();
+    CCArea area = (CCArea) iter.next();
 	List<CapBankDevice> capBanks = capControlCache.getCapBanksByArea(area.getPaoID());
 	for (CapBankDevice capBank : capBanks) {
 		if (capBank.isBankMoved())

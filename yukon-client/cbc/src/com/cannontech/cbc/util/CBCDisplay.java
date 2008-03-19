@@ -18,7 +18,7 @@ import com.cannontech.database.data.point.PointUnits;
 import com.cannontech.roles.capcontrol.CBCOnelineSettingsRole;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ColorUtil;
-import com.cannontech.yukon.cbc.CBCArea;
+import com.cannontech.yukon.cbc.CCArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.CapControlConst;
 import com.cannontech.yukon.cbc.Feeder;
@@ -312,7 +312,7 @@ public class CBCDisplay {
         }
     }
 
-    public String getAreaValueAt(CBCArea area, int col) {
+    public String getAreaValueAt(CCArea area, int col) {
         if (area == null) return "";
 
         switch (col) {

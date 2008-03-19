@@ -6,7 +6,7 @@ package com.cannontech.yukon.cbc;
  * and the server only receives them.
  */
 
-public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage 
+public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessage 
 {
 	public static final int ENABLE_SUBBUS = 0;
 	public static final int DISABLE_SUBBUS = 1;
@@ -122,13 +122,13 @@ public class CBCCommand extends com.cannontech.yukon.cbc.CBCMessage
 /**
  * ScheduleCommand constructor comment.
  */
-public CBCCommand() {
+public CapControlCommand() {
 	super();
 }
 /**
  * ScheduleCommand constructor comment.
  */
-public CBCCommand(int command_, int deviceid_)
+public CapControlCommand(int command_, int deviceid_)
 {
 	super();
 	setCommand( command_ );

@@ -6,10 +6,10 @@ import org.apache.commons.lang.Validate;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.core.dao.CBCDao;
+import com.cannontech.core.dao.CapControlDao;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.yukon.cbc.CBCArea;
-import com.cannontech.yukon.cbc.CBCSpecialArea;
+import com.cannontech.yukon.cbc.CCArea;
+import com.cannontech.yukon.cbc.CCSpecialArea;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.StreamableCapObject;
@@ -23,7 +23,7 @@ public class ParentStringPrinter {
     private static final String ORPH_STRING = "---";
     private final HttpServletRequest request;
     private CapControlCache capControlCache;
-    private CBCDao cbcDao;
+    private CapControlDao cbcDao;
 
     public ParentStringPrinter(final HttpServletRequest request) {
         this.request = request;
@@ -31,7 +31,7 @@ public class ParentStringPrinter {
 
     public String printPAO(final Integer paoId) {
         StreamableCapObject obj = getStreamable(paoId);
-        if (obj instanceof CBCArea || obj instanceof CBCSpecialArea) return ORPH_STRING;
+        if (obj instanceof CCArea || obj instanceof CCSpecialArea) return ORPH_STRING;
         
         Integer parentId = (obj != null) ? obj.getParentID() : getCapBankForController(paoId);
         if (parentId < 1) return ORPH_STRING;
@@ -68,11 +68,11 @@ public class ParentStringPrinter {
         final String paoName = capObject.getCcName();
         final Integer paoId = capObject.getCcId();
 
-        if (capObject instanceof CBCArea) {
+        if (capObject instanceof CCArea) {
             result = buildLink(request, paoName, null, AREA_URL);
         }
 
-        if (capObject instanceof CBCSpecialArea) {
+        if (capObject instanceof CCSpecialArea) {
             result = buildLink(request, paoName, null, SPECIAL_AREA_URL);
         }
 
@@ -174,7 +174,7 @@ public class ParentStringPrinter {
     private Integer getSubstationId(Integer paoId) {
         final StreamableCapObject capObject = capControlCache.getCapControlPAO(paoId);
         
-        if (capObject instanceof CBCArea || capObject instanceof CBCSpecialArea)
+        if (capObject instanceof CCArea || capObject instanceof CCSpecialArea)
             throw new UnsupportedOperationException("Area not supported");
         
         if (capObject instanceof SubStation) {
@@ -244,7 +244,7 @@ public class ParentStringPrinter {
         this.capControlCache = capControlCache;
     }
 
-    public void setCbcDao(CBCDao cbcDao) {
+    public void setCbcDao(CapControlDao cbcDao) {
         this.cbcDao = cbcDao;
     }
 
