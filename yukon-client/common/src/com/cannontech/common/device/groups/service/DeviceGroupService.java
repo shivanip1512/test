@@ -83,5 +83,13 @@ public interface DeviceGroupService {
      * @return The hierarchy
      */
     public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root);
+    
+    /**
+     * Returns a DeviceGroupHierarchy containing only groups that belong to a modifible group and are 
+     * modifiable themseleves.
+     * @param root
+     * @return
+     */
+    public DeviceGroupHierarchy getModifiableDeviceGroupHierarchy(DeviceGroup root);
 
 }

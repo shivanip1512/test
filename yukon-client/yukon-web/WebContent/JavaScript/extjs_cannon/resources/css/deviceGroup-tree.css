@@ -6,11 +6,14 @@
  * http://extjs.com/license
  */
 
-/* all standard ext tree styles and cannon overrrides of standard ext tree styles */
+/*------------------------------ STANDARD EXT TREE STYLES ----------------------------------------*/
+/* Cannon version of Ext's tree.css. Imports all standard Ext tree styles plus */
+/* contains overrides and additions that apply to All cannon trees */ 
 @import url('tree.css');
 
+/*------------------------------------- OVERRRIDES -----------------------------------------------*/ 
 
-/* Default - for device groups, leafs should be shown as folders */
+/* leafs should be shown as folders */
 .x-tree-node-expanded .x-tree-node-icon{
 	background-image:url(/JavaScript/extjs/resources/images/default/tree/folder-open.gif);
 }
@@ -21,6 +24,12 @@
 	background-image:url(/JavaScript/extjs/resources/images/default/tree/folder.gif);
 }
 
+/*------------------------------- ADDITIONAL CANNON STYLES ---------------------------------------*/
+
+/* to set the backgroud color without ext overrriding you with a style it applies later*/
+.highlightNode {
+    background-color:yellow !important;
+}
 
 /* Meter */
 .x-tree-node-expanded .x-tree-node-icon.METERS{

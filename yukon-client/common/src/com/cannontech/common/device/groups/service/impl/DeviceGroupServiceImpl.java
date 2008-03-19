@@ -136,7 +136,18 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         DeviceGroupHierarchy hierarchy = new DeviceGroupHierarchy();
         hierarchy.setGroup(root);
 
-        setChildHierarchy(hierarchy);
+        setChildHierarchy(hierarchy, false);
+
+        return hierarchy;
+    }
+    
+    
+    public DeviceGroupHierarchy getModifiableDeviceGroupHierarchy(DeviceGroup root) {
+
+        DeviceGroupHierarchy hierarchy = new DeviceGroupHierarchy();
+        hierarchy.setGroup(root);
+
+        setChildHierarchy(hierarchy, true);
 
         return hierarchy;
     }
@@ -145,17 +156,21 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
      * Helper method to recursively set child hierarchy
      * @param hierarchy - parent hierarchy to set children on
      */
-    private void setChildHierarchy(DeviceGroupHierarchy hierarchy) {
+    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, Boolean onlyModifiable) {
 
         List<DeviceGroupHierarchy> childGroupList = new ArrayList<DeviceGroupHierarchy>();
         List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(hierarchy.getGroup());
         for (DeviceGroup childGroup : childGroups) {
-            DeviceGroupHierarchy childHierarchy = new DeviceGroupHierarchy();
-            childHierarchy.setGroup(childGroup);
-
-            setChildHierarchy(childHierarchy);
-
-            childGroupList.add(childHierarchy);
+            
+            if (!onlyModifiable || childGroup.isModifiable()) {
+            
+                DeviceGroupHierarchy childHierarchy = new DeviceGroupHierarchy();
+                childHierarchy.setGroup(childGroup);
+    
+                setChildHierarchy(childHierarchy, onlyModifiable);
+    
+                childGroupList.add(childHierarchy);
+            }
         }
 
         hierarchy.setChildGroupList(childGroupList);

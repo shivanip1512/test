@@ -49,6 +49,12 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     
     @Override
     public void addDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
+        
+        DeviceGroupPermission groupPermission = group.getPermission();
+        if (!(groupPermission == DeviceGroupPermission.EDIT_MOD || groupPermission == DeviceGroupPermission.NOEDIT_MOD)) {
+            throw new UnsupportedOperationException("Cannot add devices to a non-modifiable group.");
+        }
+        
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("insert into DeviceGroupMember");
         sql.append("(DeviceGroupId, YukonPaoId)");
