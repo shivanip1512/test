@@ -63,6 +63,8 @@
         <property name="synchronizeOnSession">
             <value type="boolean">true</value>
         </property>
+        <property name="deviceDao" ref="deviceDao"/>
+        <property name="authDao" ref="authDao"/>
     </bean>
     
     <bean id="VoltageAndTouController" class="com.cannontech.web.amr.voltagetou.VoltageAndTouController" >

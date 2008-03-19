@@ -1,3 +1,4 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
 
@@ -31,10 +32,18 @@
             <div class="widgetColumns">
         
     			<ct:widget bean="meterInformationWidget" />
-    			<br>
-    			<ct:widget bean="profileWidget" />
-    			<br>
-    			<ct:widget bean="peakReportWidget" />
+    			
+    			<%-- profile collection widget --%>
+    			<c:if test="${lpSupported && lpEnabled}">
+	    			<br>
+	    			<ct:widget bean="profileWidget" />
+    			</c:if>
+    			
+    			<%-- peak report widget --%>
+    			<c:if test="${peakReportSupported}">
+	    			<br>
+	    			<ct:widget bean="peakReportWidget" />
+    			</c:if>
                 
             </div>
                 
