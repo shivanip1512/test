@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2008/02/29 21:09:59 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2008/03/19 18:38:43 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1554,9 +1554,16 @@ void UDPInterface::processInbounds( void )
 
                             if( status || dr->work.xfer.getInCountActual() )
                             {
+                                int om_retry = 0;
+
                                 traceInbound(dr->ip, dr->port, dr->work.status, dr->work.xfer.getInBuffer(), dr->work.xfer.getInCountActual(), _traceList, dr->device);
 
-                                processCommResult(status, dr->id, dr->id, dr->work.outbound.front()->Retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
+                                if( !dr->work.outbound.empty() && dr->work.outbound.front() )
+                                {
+                                    om_retry = dr->work.outbound.front()->Retry;
+                                }
+
+                                processCommResult(status, dr->id, dr->id, om_retry > 0, boost::static_pointer_cast<CtiDeviceBase>(dr->device));
 
                                 if( status && !dr->device->isTransactionComplete() )
                                 {
