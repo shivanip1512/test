@@ -1,5 +1,7 @@
 package com.cannontech.web.stars.action.importmanager;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
 
@@ -7,7 +9,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.lang.StringUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
@@ -27,16 +31,21 @@ public class ImportCustAccountsController extends StarsImportManagerActionContro
 	public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
 			final HttpSession session, final StarsYukonUser user, final LiteStarsEnergyCompany energyCompany) throws Exception {
 
-        final List<FileItem> itemList = ServletUtils.getItemList(request);
-        
+	    MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
         try {
-            final FileItem custFile = ServletUtils.getUploadFile( itemList, "CustFile" );
-            final FileItem hwFile = ServletUtils.getUploadFile( itemList, "HwFile" );
-            final String email = ServletUtils.getFormField( itemList, "Email" );
+            final String email = mRequest.getParameter("email");
             
-            if (custFile == null && hwFile == null)
+            // Setting up temp files that will be used in the import process
+            MultipartFile custMultipartFile = mRequest.getFile("CustFile");
+            MultipartFile hwMultipartFile = mRequest.getFile("HwFile");
+            
+            if (custMultipartFile == null && hwMultipartFile == null) {
                 throw new WebClientException( "No import file is provided" );
+            } 
                  
+            final File custFile = convertToTempFile(custMultipartFile, "CustomerImport", ".csv");
+            final File hwFile = convertToTempFile(hwMultipartFile, "HardwareImport", ".csv");
+            
             String logMsg = "Customer account import process started.";
             ActivityLogger.logEvent( user.getUserID(), ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, logMsg );
 
@@ -176,6 +185,13 @@ public class ImportCustAccountsController extends StarsImportManagerActionContro
             response.sendRedirect(redirect);
             return;
         }
+        catch (IOException ioe) {
+            CTILogger.error( ioe.getMessage(), ioe );
+            session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, ioe.getMessage());
+            String redirect = this.getReferer(request);
+            response.sendRedirect(redirect);
+            return;
+        }
         catch (WebClientException e) {
             CTILogger.error( e.getMessage(), e );
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());
@@ -186,4 +202,15 @@ public class ImportCustAccountsController extends StarsImportManagerActionContro
 		
 	}
 
+    private File convertToTempFile(MultipartFile multipartFile, String prefix, String postfix) throws IOException{
+        File tempFile = null;
+        
+        if (!StringUtils.isBlank(multipartFile.getOriginalFilename())) {
+            tempFile = File.createTempFile(prefix, postfix);
+            tempFile.deleteOnExit();
+            multipartFile.transferTo(tempFile);
+        } 
+        
+        return tempFile;
+    }
 }

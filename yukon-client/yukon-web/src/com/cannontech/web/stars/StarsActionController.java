@@ -7,6 +7,8 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.Controller;
 
@@ -18,11 +20,8 @@ public class StarsActionController implements Controller,BeanFactoryAware {
     private String defaultBeanName;
     
     public ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        final boolean isMultiPart = ServletUtils.isMultiPartRequest(request);
 
-        final String action = (isMultiPart) ?
-                ServletUtils.getFormField(ServletUtils.getItemList(request), "action") : ServletRequestUtils.getStringParameter(request, "action");
-        
+        String action = ServletRequestUtils.getStringParameter(request, "action");
         final String beanName = (isEmpty(action)) ? prefix + defaultBeanName : prefix + action;
 
         Controller actionController = (Controller) beanFactory.getBean(beanName, Controller.class);

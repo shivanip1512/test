@@ -141,8 +141,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
     private static final int COL_DEVICE_LABEL = hw_col++;
     
 	LiteStarsEnergyCompany energyCompany = null;
-	FileItem custFile = null;
-	FileItem hwFile = null;
+	File custFile = null;
+	File hwFile = null;
 	String email = null;
 	boolean preScan = false;
     boolean insertSpecified = false;
@@ -174,7 +174,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
 	}
 	
-	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, FileItem custFile, FileItem hwFile, String email, boolean preScan, Integer userID) 
+	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, File custFile, File hwFile, String email, boolean preScan, Integer userID) 
     {
 		this.energyCompany = energyCompany;
 		this.custFile = custFile;
@@ -283,7 +283,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				custLines = new TreeMap();
 				boolean hwInfoContained = false;
 				
-				BufferedReader reader = new BufferedReader(new InputStreamReader(custFile.getInputStream()));
+				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(custFile)));
 				String line = null;
 				int lineNo = 0;
 				Integer lineNoKey;
@@ -653,7 +653,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			if (hwFile != null) {
 				hwFieldsList = new ArrayList();
 				
-				BufferedReader reader = new BufferedReader(new InputStreamReader(hwFile.getInputStream()));
+				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(hwFile)));
 				String line = null;
 				hwLines = new TreeMap();
 				int lineNo = 0;
@@ -1252,7 +1252,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             }
         }
 
-        LiteYukonUser currentUser = ((YukonUserDao)YukonSpringHook.getBean("YukonUserDao")).getLiteYukonUser(userID);
+        LiteYukonUser currentUser = ((YukonUserDao)YukonSpringHook.getBean("yukonUserDao")).getLiteYukonUser(userID);
         ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, currentUser );
 		
 		if (appFields != null && appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {

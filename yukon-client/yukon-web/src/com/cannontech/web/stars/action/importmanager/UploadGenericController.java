@@ -6,7 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.FileItem;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -25,17 +26,17 @@ public class UploadGenericController extends StarsImportManagerActionController 
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user, final LiteStarsEnergyCompany energyCompany) throws Exception {
         
-        List<FileItem> itemList = ServletUtils.getItemList(request);
+        MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
         String redirect = null;
         
         try 
         {
-            FileItem genericFile = ServletUtils.getUploadFile( itemList, "GenericFile" );
+            MultipartFile genericMultipartFile = mRequest.getFile("GenericFile");
             
-            if (genericFile == null)
+            if (genericMultipartFile == null)
                 throw new WebClientException( "No file is provided" );
             
-            TimeConsumingTask task = new UploadGenericFileTask( energyCompany, genericFile );
+            TimeConsumingTask task = new UploadGenericFileTask( energyCompany, genericMultipartFile );
             long id = ProgressChecker.addTask( task );
             
             // Wait 5 seconds for the task to finish (or error out), if not, then go to the progress page

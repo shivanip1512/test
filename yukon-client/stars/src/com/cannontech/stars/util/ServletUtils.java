@@ -12,9 +12,11 @@ import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.core.dao.DaoFactory;
@@ -724,16 +726,16 @@ public class ServletUtils {
     	return null;
     }
 	
-	@SuppressWarnings("unchecked")
-	public static List<FileItem> getItemList(final HttpServletRequest request) throws FileUploadException {
-		DiskFileUpload upload = new DiskFileUpload();
-		List<FileItem> items = upload.parseRequest( request );
-		return items;
+	public static List<FileItem> getItemList(HttpServletRequest request) throws FileUploadException {
+	    FileItemFactory factory = new DiskFileItemFactory();
+	    ServletFileUpload upload = new ServletFileUpload(factory);
+	    List<FileItem> parseRequest = upload.parseRequest(request);
+	    
+	    return parseRequest;
 	}
 	
-	public static boolean isMultiPartRequest(final HttpServletRequest request) {
-		boolean result = DiskFileUpload.isMultipartContent(request);
-		return result;
+	public static boolean isMultiPartRequest(HttpServletRequest request) {
+	    return ServletFileUpload.isMultipartContent(request);
 	}
     
     public static FileItem getUploadFile(final List<FileItem> itemList, final String fieldName) throws WebClientException {

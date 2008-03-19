@@ -8,8 +8,7 @@ package com.cannontech.stars.util.task;
 
 import java.io.File;
 
-import org.apache.commons.fileupload.DiskFileUpload;
-import org.apache.commons.fileupload.FileItem;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -24,10 +23,10 @@ import com.cannontech.stars.util.WebClientException;
  */
 public class UploadGenericFileTask extends TimeConsumingTask {
 
-	FileItem genericFile = null;
+	MultipartFile genericFile = null;
 	LiteStarsEnergyCompany inc = null;
 	
-	public UploadGenericFileTask (LiteStarsEnergyCompany company, FileItem uploadFile) 
+	public UploadGenericFileTask (LiteStarsEnergyCompany company, MultipartFile uploadFile) 
 	{
 		this.genericFile = uploadFile;
 		this.inc = company;
@@ -56,28 +55,20 @@ public class UploadGenericFileTask extends TimeConsumingTask {
 		
 		try 
 		{
-			DiskFileUpload upload = new DiskFileUpload();
-			String fName = genericFile.getName();
-			String fieldName = genericFile.getFieldName();
-			boolean isFormField = genericFile.isFormField(); 
+	        String fName = genericFile.getOriginalFilename();
 			
 			//make sure this is actually a file	
-			if (isFormField == true)
-			{
-				String value = genericFile.getString();
+			if (genericFile == null) {
+				String value = genericFile.getName();
 
 				CTILogger.error( value + " is not a valid file.");
 				status = STATUS_ERROR;
 				throw new WebClientException( value + " is not a valid file." );
-			}  
-			else
-			{
+			} else {
 				// save to file
 				String genericFilename; 
 				File uploadFile;
 				final String fs = System.getProperty( "file.separator" );
-				//need to alter the filename a bit or we get the whole path
-				fName = fName.substring(fName.lastIndexOf("\\"));
 				
 				String dirPath = ServerUtils.getStarsTempDir() + fs + "fileholder"
 					+ fs + inc.getName();
@@ -87,15 +78,12 @@ public class UploadGenericFileTask extends TimeConsumingTask {
 				uploadFile.mkdirs();
 				uploadFile = new File(genericFilename);
 
-				try
-				{	
-					genericFile.write(uploadFile);
+				try	{
+				    genericFile.transferTo(uploadFile);
 					
 					status = STATUS_FINISHED;
 					return;
-				}
-				catch(Exception e)
-				{
+				} catch(Exception e) {
 					status = STATUS_ERROR;
 					throw e;
 				}
