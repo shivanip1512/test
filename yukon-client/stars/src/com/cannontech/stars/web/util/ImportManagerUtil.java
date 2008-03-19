@@ -935,7 +935,7 @@ public class ImportManagerUtil {
 		StarsProgramSignUp progSignUp = new StarsProgramSignUp();
 		progSignUp.setStarsSULMPrograms( suPrograms );
 	    
-	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, null );
+	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, currentUser );
 		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	
