@@ -49,12 +49,14 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
                                              false);
 
         //Need to truncate the decimals from the reading, instead of round.
-        Double r = Math.floor(device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption));
-        String value = format(r, DECIMAL_FORMAT7V0);
-        if (value == null) {
+        Double totalConsumption = device.getValue(ReadingType.ELECTRIC, BillableField.totalConsumption);
+        if ( totalConsumption == null ){
             return "";
+        } else {
+            Double r = Math.floor(totalConsumption);
+            String value = format(r, DECIMAL_FORMAT7V0);
+            addToStringBufferWithPrecedingFiller(writeToFile, value, 7, "0", false);
         }
-        addToStringBufferWithPrecedingFiller(writeToFile, value, 7, "0", false);
 
         // kW time, date, reading
         addToStringBufferWithPrecedingFiller(writeToFile,
@@ -69,7 +71,7 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
                                              6,
                                              "0",
                                              false);
-        value = format(device.getValue(ReadingType.ELECTRIC, BillableField.totalPeakDemand), DECIMAL_FORMAT4V3);
+        String value = format(device.getValue(ReadingType.ELECTRIC, BillableField.totalPeakDemand), DECIMAL_FORMAT4V3);
         if (value != null) {
             value = value.replaceAll("\\.", "");
         }
