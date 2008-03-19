@@ -1,6 +1,7 @@
 package com.cannontech.importer.progress;
 
 import java.io.*;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -29,12 +30,15 @@ public class ProgressImporter {
         return false;
     }
     
-    private static byte[] generateCSV( ProgressPointList p )throws IOException {
-    	ByteArrayOutputStream ret = new ByteArrayOutputStream();
-        OutputStreamWriter strWriter = new OutputStreamWriter( ret );
+    private static List<ByteArrayOutputStream> generateCSV( ProgressPointList p )throws IOException {
+    	ByteArrayOutputStream analogOutputStream = new ByteArrayOutputStream();
+        OutputStreamWriter analogStreamWriter = new OutputStreamWriter( analogOutputStream );
+    	Writer analogWriter = new BufferedWriter(analogStreamWriter);
     	
-    	Writer tout = new BufferedWriter(strWriter);
-        
+    	ByteArrayOutputStream statusOutputStream = new ByteArrayOutputStream();
+        OutputStreamWriter statusStreamWriter = new OutputStreamWriter( statusOutputStream );
+    	Writer statusWriter = new BufferedWriter(statusStreamWriter);
+    	
         int i = 1;
         Iterator itr = p.iterator();
         ProgressTranslatedPoint point;
@@ -61,8 +65,20 @@ public class ProgressImporter {
                             curDevice = point.getPaoName();
                             i = highestOffset+1;
                         }
-                        tout.write(point.getPointName() + ",Analog," + point.getPaoName() + "," + i + "," + point.getUoM()  );
-                        tout.write(",1,0,0,1,,,,,,,NONE,,,,(none),,\n");
+                        //"hackish" way to detect that we want a status point
+                        if(point.getPointName().endsWith("VRD")) {
+                            //status 
+                			/*
+                			 *PointName,PointType,DeviceName,PointOffset,StateGroupName,CtrlType,Ctrloffset,time1,time2,
+                			 *Archive,State1,State2,NonUpdate,Abnormal,UnCommanded,CommandFail
+                			 */
+                        	statusWriter.write(point.getPointName() + ",Status," + point.getPaoName() + "," + i + "," +"TwoStateStatus,"  );
+                        	statusWriter.write(",,,,,,,,,,,,\n");
+                        }else {
+	                        //analog
+	                        analogWriter.write(point.getPointName() + ",Analog," + point.getPaoName() + "," + i + "," + point.getUoM()  );
+	                        analogWriter.write(",1,0,0,1,,,,,,,NONE,,,,(none),,\n");
+                        }
                         i++;
                     }else
                         System.out.println("Skipped");
@@ -73,8 +89,12 @@ public class ProgressImporter {
                 }
             }
         }
-        tout.flush();
-        return ret.toByteArray();
+        analogWriter.flush();
+        statusWriter.flush();
+        List<ByteArrayOutputStream> retList = new ArrayList<ByteArrayOutputStream>();
+        retList.add(analogOutputStream);
+        retList.add(statusOutputStream);
+        return retList;
     }
         
 
@@ -108,12 +128,14 @@ public class ProgressImporter {
             p.addDevicesToDatabase();
 
             //create CSV file for PointImportUtility
-            byte[] b = generateCSV(p);
-            BufferedReader buffReader = new BufferedReader( new InputStreamReader( new ByteArrayInputStream(b)) );            
-            
-            //run point importer
+            List<ByteArrayOutputStream> outputlist = generateCSV(p);
+            //run point importer on analog
+            BufferedReader buffReader = new BufferedReader( new InputStreamReader( new ByteArrayInputStream(outputlist.get(0).toByteArray())) );            
             PointImportUtility.processAnalogPoints(buffReader);
 
+            buffReader = new BufferedReader( new InputStreamReader( new ByteArrayInputStream(outputlist.get(1).toByteArray())) );            
+            PointImportUtility.processStatusPoints(buffReader);
+            
             //add FDR translations to the points in the database.
             p.addTranslationToPoints();
             
