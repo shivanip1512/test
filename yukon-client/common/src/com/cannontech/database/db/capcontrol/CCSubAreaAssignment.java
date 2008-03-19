@@ -16,7 +16,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.DBPersistent;
-import com.cannontech.yukon.cbc.StreamableCapObject;
 
 public class CCSubAreaAssignment extends DBPersistent{
     private Integer areaID;
