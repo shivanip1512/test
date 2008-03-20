@@ -95,7 +95,7 @@ Event.observe(window, 'load', updateFeederBankInfo );
 	<input type="hidden" name="redirectURL" value="/capcontrol/moved.jsp" id="redirectURL" >
 	<input type="hidden" name="controlType" value="<%=CapControlType.CAPBANK%>">
 	<input type="hidden" name="paoId" value="<%=bankid%>">
-	<input type="hidden" name="cmdId" value="<%=CBCCommand.CMD_BANK_TEMP_MOVE%>">
+	<input type="hidden" name="cmdId" value="<%=CapControlCommand.CMD_BANK_TEMP_MOVE%>">
 	<input type="hidden" name="opt" value="<%=oldfdrid%>">  <!--Old Feeder ID-->
 	<input type="hidden" name="opt"> <!--New Feeder ID-->
 	<input type="hidden" name="opt"> <!--Display Order-->
