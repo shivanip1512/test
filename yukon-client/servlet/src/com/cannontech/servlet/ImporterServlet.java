@@ -17,9 +17,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.fileupload.DiskFileUpload;
 import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
@@ -46,11 +48,12 @@ public class ImporterServlet extends HttpServlet {
 			DBFuncs.writeNextImportTime(new java.util.Date(), true);
 		} else {
 			HttpSession session = req.getSession(false);
-			boolean isMultiPart = DiskFileUpload.isMultipartContent(req);
+			boolean isMultiPart = ServletFileUpload.isMultipartContent(req);
 			if (isMultiPart) {
 				try {
 					List items = null;
-					DiskFileUpload upload = new DiskFileUpload();
+					FileItemFactory factory = new DiskFileItemFactory();
+			        	ServletFileUpload upload = new ServletFileUpload(factory);
 					items = upload.parseRequest(req);
 					FileItem dataFile = null;
 					for (int i = 0; i < items.size(); i++) {

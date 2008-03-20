@@ -13,10 +13,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
-import org.apache.commons.fileupload.FileUploadException;
-import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 import com.cannontech.common.exception.NotLoggedInException;
 import com.cannontech.core.dao.DaoFactory;
@@ -32,8 +28,6 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
-import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.ContactNotification;
 import com.cannontech.stars.xml.serialize.ControlSummary;
@@ -726,18 +720,6 @@ public class ServletUtils {
     	return null;
     }
 	
-	public static List<FileItem> getItemList(HttpServletRequest request) throws FileUploadException {
-	    FileItemFactory factory = new DiskFileItemFactory();
-	    ServletFileUpload upload = new ServletFileUpload(factory);
-	    List<FileItem> parseRequest = upload.parseRequest(request);
-	    
-	    return parseRequest;
-	}
-	
-	public static boolean isMultiPartRequest(HttpServletRequest request) {
-	    return ServletFileUpload.isMultipartContent(request);
-	}
-    
     public static FileItem getUploadFile(final List<FileItem> itemList, final String fieldName) throws WebClientException {
         for (final FileItem item : itemList) {
             if (!item.isFormField() && item.getFieldName().equals(fieldName)) {

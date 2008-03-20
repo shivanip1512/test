@@ -9,8 +9,6 @@ package com.cannontech.stars.util.task;
 import java.io.*;
 import java.util.*;
 
-import org.apache.commons.fileupload.FileItem;
-
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;

@@ -46,7 +46,7 @@
         <webClassPathEntry>/third-party/commons-collections-3.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-dbcp-1.2.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-discovery.jar</webClassPathEntry>
-        <webClassPathEntry>/third-party/commons-fileupload-1.2.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/commons-fileupload-1.2.1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-httpclient.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-io-1.3.2.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/commons-lang-2.3.jar</webClassPathEntry>
