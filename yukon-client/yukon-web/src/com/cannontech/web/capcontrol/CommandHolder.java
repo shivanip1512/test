@@ -5,18 +5,18 @@ import com.cannontech.yukon.cbc.CapControlCommand;
 public enum CommandHolder {
     
     CONFIRM_AREA(CapControlCommand.CONFIRM_AREA, "Confirm Area", false),
-    CONFIRM_SUBSTATION(CapControlCommand.CONFIRM_SUBSTATION, "Confirm SubStation", false),
-    CONFIRM_SUBBUS(CapControlCommand.CONFIRM_SUB, "Confirm SubBus", false),
+    CONFIRM_SUBSTATION(CapControlCommand.CONFIRM_SUBSTATION, "Confirm Substation", false),
+    CONFIRM_SUBBUS(CapControlCommand.CONFIRM_SUB, "Confirm Subbus", false),
     
     ENABLE_AREA(CapControlCommand.ENABLE_AREA, "Enable Area", true),
-    ENABLE_SUBSTATION(CapControlCommand.ENABLE_AREA, "Enable SubStation", true),
-    ENABLE_SUBBUS(CapControlCommand.ENABLE_SUBBUS, "Enable SubBus", true),
+    ENABLE_SUBSTATION(CapControlCommand.ENABLE_AREA, "Enable Substation", true),
+    ENABLE_SUBBUS(CapControlCommand.ENABLE_SUBBUS, "Enable Subbus", true),
     ENABLE_FEEDER(CapControlCommand.ENABLE_FEEDER, "Enable Feeder", true),
     ENABLE_CAPBANK(CapControlCommand.ENABLE_CAPBANK, "Enable CapBank", true),
     
     DISABLE_AREA(CapControlCommand.DISABLE_AREA, "Disable Area", true),
-    DISABLE_SUBSTATION(CapControlCommand.DISABLE_AREA, "Disable SubStation", true),
-    DISABLE_SUBBUS(CapControlCommand.DISABLE_SUBBUS, "Disable SubBus", true),
+    DISABLE_SUBSTATION(CapControlCommand.DISABLE_AREA, "Disable Substation", true),
+    DISABLE_SUBBUS(CapControlCommand.DISABLE_SUBBUS, "Disable Subbus", true),
     DISABLE_FEEDER(CapControlCommand.DISABLE_FEEDER, "Disable Feeder", true),
     DISABLE_CAPBANK(CapControlCommand.DISABLE_CAPBANK, "Disable CapBank", true),
     
