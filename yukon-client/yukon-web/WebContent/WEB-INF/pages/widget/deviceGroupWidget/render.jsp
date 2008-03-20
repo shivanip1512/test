@@ -107,6 +107,7 @@
 
 <input type="hidden" id="groupIds" name="groupIds" />
 
+<cti:msg key="yukon.web.deviceGroups.addDeviceToGroup.rootName" var="rootName"/>
 <cti:msg key="yukon.web.deviceGroups.addDeviceToGroup" var="addDeviceTitle"/>
 <cti:msg key="yukon.web.deviceGroups.addDeviceToGroup.submitPopup" var="submitText"/>
 <cti:msg key="yukon.web.deviceGroups.addDeviceToGroup.closePopup" var="closeText"/>
@@ -128,6 +129,6 @@
                                 
                                 dataUrl="/spring/widget/deviceGroupWidget/deviceGroupHierarchyJson"
                                 baseParams="{deviceId:'${deviceId}'}"
-                                rootAttributes="{id:'root',text:'Groups',href:'javascript:void(0);',disabled:true}" />
+                                rootAttributes="{id:'root',text:'${rootName}',href:'javascript:void(0);',disabled:true}" />
 
 
