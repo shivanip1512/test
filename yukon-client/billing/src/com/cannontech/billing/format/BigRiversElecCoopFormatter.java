@@ -1,5 +1,6 @@
 package com.cannontech.billing.format;
 
+import java.sql.Timestamp;
 import java.text.SimpleDateFormat;
 
 import com.cannontech.billing.device.base.BillableDevice;
@@ -77,26 +78,29 @@ public class BigRiversElecCoopFormatter extends BillingFormatterBase {
         }
         addToStringBufferWithPrecedingFiller(writeToFile, value, 7, "0", false);
 
-        // kVar time, date, reading
+        // kVar time, date, reading (Use kVa time, date, reading if kVar is null)
+        //  - First... attempt to find the KVAR reading/timestamp, if not found attempt to find the KVA reading.
+        //  - The secondary lookup of kVa data is for Big Rivers (and Jackson Purchase) specfically.
+        Timestamp totalPeakDemandTS = device.getTimestamp(Channel.ONE,ReadingType.KVAR, BillableField.totalPeakDemand);
+        Double totalPeakDemand = device.getValue(Channel.ONE, ReadingType.KVAR, BillableField.totalPeakDemand);
+        
+        //If Kvar returned us nothing, then look for kVa
+        if (totalPeakDemandTS == null && totalPeakDemand == null) {
+            totalPeakDemandTS = device.getTimestamp(Channel.ONE,ReadingType.KVA, BillableField.totalPeakDemand);
+            totalPeakDemand = device.getValue(Channel.ONE, ReadingType.KVA, BillableField.totalPeakDemand);
+        }
+        
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             format(device.getTimestamp(Channel.ONE,
-                                                                        ReadingType.KVAR,
-                                                                        BillableField.totalPeakDemand),
-                                                    TIME_FORMAT),
+                                             format(totalPeakDemandTS, TIME_FORMAT),
                                              4,
                                              "0",
                                              false);
         addToStringBufferWithPrecedingFiller(writeToFile,
-                                             format(device.getTimestamp(Channel.ONE,
-                                                                        ReadingType.KVAR,
-                                                                        BillableField.totalPeakDemand),
-                                                    DATE_FORMAT),
+                                             format(totalPeakDemandTS, DATE_FORMAT),
                                              6,
                                              "0",
                                              false);
-        value = format(device.getValue(Channel.ONE,
-                                                 ReadingType.KVAR,
-                                                 BillableField.totalPeakDemand), DECIMAL_FORMAT4V3);
+        value = format(totalPeakDemand, DECIMAL_FORMAT4V3);
         if (value != null) {
             value = value.replaceAll("\\.", "");
         }
