@@ -1,11 +1,10 @@
 package com.cannontech.web.delete;
 
 import javax.faces.application.FacesMessage;
-import javax.faces.context.ExternalContext;
-import javax.faces.context.FacesContext;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DBDeleteResult;
+import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -72,7 +71,6 @@ public abstract class DeleteForm extends DBEditorForm
 	public void initItem() {
 
 		//must be int[] paoIDs
-        ExternalContext ex = FacesContext.getCurrentInstance().getExternalContext();
 		String[] ids =   JSFParamUtil.getReqParamsVar("value");
 		if( ids == null ) return;
 		
@@ -105,7 +103,7 @@ public abstract class DeleteForm extends DBEditorForm
 				
 			int res = DaoFactory.getDbDeletionDao().deletionAttempted( delRes );
 			delItem.setDeleteAllowed(
-				DaoFactory.getDbDeletionDao().STATUS_DISALLOW != res );
+				DBDeletionDao.STATUS_DISALLOW != res );
 			
 			delItem.setWarningMsg(
 				delItem.isDeleteAllowed()
