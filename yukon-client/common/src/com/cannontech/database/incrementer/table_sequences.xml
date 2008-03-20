@@ -106,5 +106,8 @@
         <table name="JobStatus" identitycolumn="JobStatusId"/>
         <table name="Job" identitycolumn="JobId"/>
       </sequence>
+      <sequence name="DeviceEvent">
+        <table name="DeviceEvent" identitycolumn="DeviceEventId" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

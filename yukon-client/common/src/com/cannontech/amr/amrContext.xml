@@ -45,6 +45,7 @@
         <property name="dynamicDataSource" ref="dynamicDataSource" />
         <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
         <property name="meterDao" ref="meterDao" />
+        <property name="nextValueHelper" ref="nextValueHelper"/>
     </bean>
 
     <!-- Moving JobDefinitions -->

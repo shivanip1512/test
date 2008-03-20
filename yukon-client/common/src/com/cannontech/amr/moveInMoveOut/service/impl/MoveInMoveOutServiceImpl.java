@@ -35,6 +35,7 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.jobs.service.JobManager;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.message.dispatch.message.PointData;
@@ -55,6 +56,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private DynamicDataSource dynamicDataSource;
     private MeterDao meterDao;
     private SimpleJdbcOperations jdbcTemplate = null;
+    private NextValueHelper nextValueHelper = null;
 
     public MoveInResult moveIn(MoveInForm moveInFormObj) {
 
@@ -295,9 +297,10 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
         if (autoArchivingEnabled) {
 
-            String sql = " INSERT INTO DeviceEvent (DeviceId, Timestamp, DeviceEventComment) " + " VALUES (?, ?, ?)";
+            String sql = " INSERT INTO DeviceEvent (DeviceEventId, DeviceId, Timestamp, DeviceEventComment) " + " VALUES (?, ?, ?, ?)";
 
             jdbcTemplate.update(sql,
+                                nextValueHelper.getNextValue("DeviceEvent"),
                                 oldMeter.getDeviceId(),
                                 new Date(moveDate.getTime() + 1),
                                 deviceEvent.getEventType());
@@ -404,4 +407,8 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
     }
 
+    @Required
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
+    }
 }
