@@ -657,8 +657,4 @@
         <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
     </bean>
     
-    <bean id="deviceGroupSelectorTagPrototype" class="com.cannontech.web.taglib.DeviceGroupSelectorTag">
-        <property name="deviceGroupService" ref="deviceGroupService"/>
-    </bean>
-
 </beans>
