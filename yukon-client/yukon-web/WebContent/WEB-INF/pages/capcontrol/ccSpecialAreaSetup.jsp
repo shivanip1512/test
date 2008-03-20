@@ -43,7 +43,7 @@
     <br />
     <fieldset class="fieldSet">
     <legend>
-    Control Point Setup
+    Volt Reduction Control Point Setup
     </legend>
     <br/>
     </f:verbatim>
