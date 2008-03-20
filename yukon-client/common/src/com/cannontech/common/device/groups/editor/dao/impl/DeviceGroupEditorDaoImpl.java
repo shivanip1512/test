@@ -50,8 +50,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     public void addDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
         
-        DeviceGroupPermission groupPermission = group.getPermission();
-        if (!(groupPermission == DeviceGroupPermission.EDIT_MOD || groupPermission == DeviceGroupPermission.NOEDIT_MOD)) {
+        if (!group.isModifiable()) {
             throw new UnsupportedOperationException("Cannot add devices to a non-modifiable group.");
         }
         
