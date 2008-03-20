@@ -56,26 +56,31 @@ public abstract class DeleteForm extends DBEditorForm {
                 
                 //this message will be filled in by the super class
                 FacesMessage facesMsg = new FacesMessage();
-                try {               
+                try {
+                    CCArea area = null;
+                    
                     Deleteable deleteable = deletables[i];
+                    if(deleteable.getDbPersistent() instanceof CapControlSubstation) { // get these before the delete
+                        com.cannontech.database.db.capcontrol.CapControlSubstation subDB = ((CapControlSubstation)deleteable.getDbPersistent()).getCapControlSubstation();
+                        Integer subId = subDB.getSubstationID();
+                        SubStation sub = capControlCache.getSubstation(subId);
+                        Integer areaId = sub.getParentID();
+                        area = capControlCache.getCBCArea(areaId);
+                    }
                     //be sure we can attempt to delete this item
                     if( deleteable.isDeleteAllowed() && deleteable.getChecked().booleanValue() ) {
                         deleteDBObject( deleteable.getDbPersistent(), facesMsg );
                         deleteable.setWasDeleted( true );
                         facesMsg.setDetail( "...deleted" );
                         
-                        if(deleteable.getDbPersistent() instanceof CapControlSubstation) {
+                        if(area != null) {
                             HttpSession session = (HttpSession) ex.getSession(false);
                             CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
                             String currentPage = navObject.getCurrentPage();
                             if(currentPage.contains("feeders.jsp")) {
                                 navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)ex.getRequest(), "/capcontrol/subareas.jsp"));
                             }else {
-                                com.cannontech.database.db.capcontrol.CapControlSubstation subDB = ((CapControlSubstation)deleteable.getDbPersistent()).getCapControlSubstation();
-                                Integer subId = subDB.getSubstationID();
-                                SubStation sub = capControlCache.getSubstation(subId);
-                                Integer areaId = sub.getParentID();
-                                CCArea area = capControlCache.getCBCArea(areaId);
+                                
                                 if(area.getStations().length < 1) {
                                     navObject.setModuleExitPage(ServletUtil.createSafeUrl((ServletRequest)ex.getRequest(), "/capcontrol/subareas.jsp"));
                                 }
