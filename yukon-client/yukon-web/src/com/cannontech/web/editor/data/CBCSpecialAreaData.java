@@ -44,7 +44,9 @@ public class CBCSpecialAreaData {
                                        .getLiteYukonPAO(id)
                                        .getPaoName();
             cbcData.setSubName(paoName);
-            cbcData.setDisplayOrder(list.indexOf(id));
+            // Start display order at 1 for display purposes.
+            // The database still starts with 0.
+            cbcData.setDisplayOrder(list.indexOf(id) + 1);
             returnList.add(cbcData);
         }
         return returnList;
