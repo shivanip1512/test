@@ -276,12 +276,12 @@ public void runImport(List<ImportData> imps) {
         List<Integer> routeIDsFromSub = new ArrayList<Integer>();
 		
 		//validation
-        String errorMsgBase = "Import entry with name "+name+" ";
+        String logMsgPrefix = "Import entry with name "+name+" ";
         List<String> errorMsg = new ArrayList<String>();
 		
 		if (StringUtils.isBlank(address)) {
-            String error = errorMsgBase+"has a a blank address.  ";
-			log.error(error);
+            String error = "Has a a blank address.  ";
+			log.error(logMsgPrefix + error);
 			errorMsg.add(error);
 		} else {
 			try{
@@ -289,23 +289,23 @@ public void runImport(List<ImportData> imps) {
 				Double doubleAddress = Double.parseDouble(address);				
 				updateDeviceID = DBFuncs.getDeviceIDByAddress(doubleAddress.toString());
 			} catch (NumberFormatException nfe) {
-                String error = errorMsgBase+"has an incorrect address ("+address+").  ";
-				log.error(error);
+                String error = "Has an incorrect address ("+address+").  ";
+				log.error(logMsgPrefix + error);
                 errorMsg.add(error);
             }
 		}
 		
         if (StringUtils.isBlank(templateName)) {
             if (updateDeviceID == null) {
-                String error = errorMsgBase+"has no 410 template specified.  ";
-                log.error(error);
+                String error = "Has no 410 template specified.  ";
+                log.error(logMsgPrefix + error);
                 errorMsg.add(error);
             }
         } else {
             template400SeriesBase = DBFuncs.get410FromTemplateName(templateName);
             if(template400SeriesBase.getDevice().getDeviceID().intValue() == -12) {
-                String error = errorMsgBase+"specifies a template MCT ("+templateName+") not in the Yukon database.  ";
-                log.error(error);
+                String error = "Specifies a template MCT ("+templateName+") not in the Yukon database.  ";
+                log.error(logMsgPrefix + error);
                 errorMsg.add(error);
             }
         }
@@ -316,23 +316,23 @@ public void runImport(List<ImportData> imps) {
             errorMsg.add(error);
         } else {
             if(name.length() > 60) {
-                String error = errorMsgBase+"has a name with an improper length.  ";
-                log.error(error);
+                String error = "Has a name with an improper length.  ";
+                log.error(logMsgPrefix + error);
                 errorMsg.add(error);
             } else {
                 if(name.indexOf(',') != -1) {
-                    String error = errorMsgBase+"has a name that uses invalid characters.  ";
-                    log.error(error);
+                    String error = "Has a name that uses invalid characters.  ";
+                    log.error(logMsgPrefix + error);
                     errorMsg.add(error);
                 } else {
                     if( updateDeviceID != null) {
                         notUpdate = false;
-                        log.info("Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.");
+                        log.info(logMsgPrefix + "Address " + address + " is already used by a 400 series MCT in the Yukon database.  Attempting to modify device.");
                     }
                 
                     if (DBFuncs.IsDuplicateName(name) && notUpdate) {
-                        String error = errorMsgBase+"is already used by a 400 series MCT in the Yukon database.  ";
-                        log.error(error);
+                        String error = "Already used by a 400 series MCT in the Yukon database.  ";
+                        log.error(logMsgPrefix + error);
                         errorMsg.add(error);
                     }
                 }
@@ -341,43 +341,43 @@ public void runImport(List<ImportData> imps) {
         
         /*Address range check for 400 series*/
 		if(template400SeriesBase instanceof MCT410IL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410IL, Long.parseLong(address))) {
-            String error = errorMsgBase+"has an incorrect MCT410IL address ("+address+").  ";
-            log.error(error);
+            String error = "Has an incorrect MCT410IL address ("+address+").  ";
+            log.error(logMsgPrefix + error);
             errorMsg.add(error);
 		}
         else if(template400SeriesBase instanceof MCT410CL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410CL, Long.parseLong(address))) {
-            String error = errorMsgBase+"has an incorrect MCT410CL address ("+address+").  ";
-            log.error(error);
+            String error = "Has an incorrect MCT410CL address ("+address+").  ";
+            log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
         else if(template400SeriesBase instanceof MCT410FL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410FL, Long.parseLong(address))) {
-            String error = errorMsgBase+"has an incorrect MCT410FL address ("+address+").  ";
-            log.error(error);
+            String error = "Has an incorrect MCT410FL address ("+address+").  ";
+            log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
         else if(template400SeriesBase instanceof MCT410GL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT410GL, Long.parseLong(address))) {
-            String error = errorMsgBase+"has an incorrect MCT410GL address ("+address+").  ";
-            log.error(error);
+            String error = "Has an incorrect MCT410GL address ("+address+").  ";
+            log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
         else if(template400SeriesBase instanceof MCT430S4 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430S4, Long.parseLong(address))) {
-            String error = errorMsgBase+"has an incorrect MCT430LG address ("+address+").  ";
-            log.error(error);
+            String error = "Has an incorrect MCT430LG address ("+address+").  ";
+            log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
         else if(template400SeriesBase instanceof MCT430A && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430A, Long.parseLong(address))) {
-            String error = errorMsgBase+"has an incorrect MCT430EL address ("+address+").  ";
-            log.error(error);
+            String error = "Has an incorrect MCT430EL address ("+address+").  ";
+            log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
         else if(template400SeriesBase instanceof MCT430SL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430SL, Long.parseLong(address))) {
-            String error = errorMsgBase+"has an incorrect MCT430IN address ("+address+").  ";
-            log.error(error);
+            String error = "Has an incorrect MCT430IN address ("+address+").  ";
+            log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
         else if(template400SeriesBase instanceof MCT470 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT470, Long.parseLong(address))) {
-            String error = errorMsgBase+"has an incorrect MCT470 address ("+address+").  ";
-            log.error(error);
+            String error = "Has an incorrect MCT470 address ("+address+").  ";
+            log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
         
@@ -386,49 +386,49 @@ public void runImport(List<ImportData> imps) {
          */
         if (notUpdate) {
             if(StringUtils.isBlank(meterNumber)) {
-                String error = errorMsgBase+"has no meter number.  ";
-                log.error(error);
+                String error = "Has no meter number.  ";
+                log.error(logMsgPrefix + error);
                 errorMsg.add(error);
             }
             if(StringUtils.isBlank(collectionGrp)) {
-                String error = errorMsgBase+"has no collection group.  ";
-                log.warn(error);
+                String error = "Has no collection group.  ";
+                log.warn(logMsgPrefix + error);
                 errorMsg.add(error);
             } else {
                 try {
                     collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp());
                 } catch (NotFoundException nfe) {
-                    String error = errorMsgBase+"has a collection group that does not exist.  Creating device group.  ";
-                    log.warn(error);
+                    String error = "Has a collection group that does not exist.  Creating device group.  ";
+                    log.warn(logMsgPrefix + error);
                     deviceGroupEditorDao.addGroup(collectionGroupBase, DeviceGroupType.STATIC, currentEntry.getCollectionGrp());
                     collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp());
                 }
             }
             if(StringUtils.isBlank(altGrp)) {
-                String error = errorMsgBase+"has no alternate group.  ";
-                log.warn(error);
+                String error = "Has no alternate group.  ";
+                log.warn(logMsgPrefix + error);
                 errorMsg.add(error);
             } else {
                 try {
                     alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp());
                 } catch (NotFoundException nfe) {
-                    String error = errorMsgBase+"has an alternate group that does not exist.  Creating device group.  ";
-                    log.warn(error);
+                    String error = "Has an alternate group that does not exist.  Creating device group.  ";
+                    log.warn(logMsgPrefix + error);
                     deviceGroupEditorDao.addGroup(alternateGroupBase, DeviceGroupType.STATIC, currentEntry.getAltGrp());
                     alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp());
                 }
                 
             }
             if(StringUtils.isBlank(billGrp)) {
-                String warning = errorMsgBase+"has no billing group.  ";
-                log.warn(warning);
+                String warning = "Has no billing group.  ";
+                log.warn(logMsgPrefix + warning);
                 //This is not an error.  Otherwise we could not be backwards compatible, but we should note it anyways in the log file.
             } else {
                 try {
                     billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup());
                 } catch (NotFoundException nfe) {
-                    String error = errorMsgBase+"has a billing group that does not exist.  Creating device group.  ";
-                    log.warn(error);
+                    String error = "Has a billing group that does not exist.  Creating device group.  ";
+                    log.warn(logMsgPrefix + error);
                     deviceGroupEditorDao.addGroup(billingGroupBase, DeviceGroupType.STATIC, currentEntry.getBillingGroup());
                     billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup());
                 }
@@ -438,21 +438,21 @@ public void runImport(List<ImportData> imps) {
         if(StringUtils.isBlank(routeName)) {
             if(StringUtils.isBlank(substationName)) {
                 if(notUpdate) {
-                    String error = errorMsgBase+"has no specified substation or route.  ";
-                    log.error(error);
+                    String error = "Has no specified substation or route.  ";
+                    log.error(logMsgPrefix + error);
                     errorMsg.add(error);
                 }
             }
         else if(!StringUtils.isBlank(substationName)) {
             routeIDsFromSub = DBFuncs.getRouteIDsFromSubstationName(substationName);
             if(routeIDsFromSub.size() < 1) {
-                String error = errorMsgBase+"specifies a substation ("+substationName+") with routes not in the Yukon database.  ";
-                log.error(error);
+                String error = "Specifies a substation ("+substationName+") with routes not in the Yukon database.  ";
+                log.error(logMsgPrefix + error);
                 errorMsg.add(error);
             }
         } else if(!notUpdate) {
-                String error = errorMsgBase+"has no specified route ("+routeName+").  ";
-                log.error(error);
+                String error = "Has no specified route ("+routeName+").  ";
+                log.error(logMsgPrefix + error);
                 errorMsg.add(error);
             } else {
                 routeID = new Integer(-12);
@@ -461,8 +461,8 @@ public void runImport(List<ImportData> imps) {
 		else {
 			routeID = DBFuncs.getRouteFromName(routeName);
 			if(routeID.intValue() == -12) {
-                String error = errorMsgBase+"specifies a route ("+routeName+") not in the Yukon database.";
-				log.error(error);
+                String error = "Specifies a route ("+routeName+") not in the Yukon database.";
+				log.error(logMsgPrefix + error);
                 errorMsg.add(error);
 			}
 		}

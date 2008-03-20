@@ -48,9 +48,18 @@ function removeDataFromTable(table) {
 function addRowsToTable(table, items, itemFieldNames) {
     
     function addColumnToRow(row, idx, val) {
+        
         var cell = row.insertCell(idx);
-        var textNode = document.createTextNode(val);
-        cell.appendChild(textNode);
+        
+        var valItems = $A(val.split('<br>'));
+        valItems.each(function(valItem) {
+        
+        	var textNode = document.createTextNode(valItem);
+        	var br = document.createElement('br');
+        	
+        	cell.appendChild(textNode);
+        	cell.appendChild(br);
+       	});
     }
 
     items.each(function(item) {
