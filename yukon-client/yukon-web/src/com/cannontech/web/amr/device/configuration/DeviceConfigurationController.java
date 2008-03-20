@@ -157,7 +157,11 @@ public class DeviceConfigurationController extends MultiActionController {
         ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
 
         // Save config with new name and id (name can only be 60 characters long)
-        configuration.setName(configuration.getName().substring(0, 53) + " (copy)");
+        String configName = configuration.getName();
+        if(configName.length() > 53) {
+            configName = configName.substring(0, 52);
+        }
+        configuration.setName(configName + " (copy)");
         configuration.setId(null);
         deviceConfigurationDao.save(configuration);
 
