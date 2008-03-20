@@ -15,10 +15,15 @@
  *    Copyright (C) 2005 Cannon Technologies, Inc.  All rights reserved.
  *
  *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinterface.cpp-arc  $
- *    REVISION     :  $Revision: 1.28 $
- *    DATE         :  $Date: 2007/04/10 23:42:09 $
+ *    REVISION     :  $Revision: 1.29 $
+ *    DATE         :  $Date: 2008/03/20 21:27:14 $
  *    History:
  *     $Log: fdrinterface.cpp,v $
+ *     Revision 1.29  2008/03/20 21:27:14  tspar
+ *     YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
+ *
+ *     Changed all uses of the tokenizer to have a local copy of the string being tokenized.
+ *
  *     Revision 1.28  2007/04/10 23:42:09  tspar
  *     Added even more protection against bad input when tokenizing.
  *
@@ -110,16 +115,13 @@ bool isPointIdEqual(CtiFDRPoint* aPoint, void *arg)
 bool isTranslationNameEqual(CtiFDRPoint* aPoint, void *arg)
 {
     string name = *((string*)arg);  // Wha tis the ID of the pointI care for!
-    BOOL  retVal = false;
 
     for (int x=0; x < aPoint->getDestinationList().size(); x++)
     {
         if (!stringCompareIgnoreCase(aPoint->getDestinationList()[x].getTranslation(),name))
-            retVal = true;
+            return true;
     }
-
-
-    return retVal;
+    return false;
 }
 
 
@@ -214,8 +216,9 @@ long CtiFDRInterface::getClientLinkStatusID(string &aClientName)
                 for (x=0; x < translationPoint->getDestinationList().size(); x++)
                 {
                     string tempString1,tempString2;
+                    const string translation = translationPoint->getDestinationList()[x].getTranslation();
                     boost::char_separator<char> sep(";");
-                    Boost_char_tokenizer nextTranslate(translationPoint->getDestinationList()[x].getTranslation(), sep);
+                    Boost_char_tokenizer nextTranslate(translation, sep);
                     Boost_char_tokenizer::iterator tok_iter = nextTranslate.begin();
 
                     if ( tok_iter != nextTranslate.end() )

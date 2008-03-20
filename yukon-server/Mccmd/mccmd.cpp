@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2008/01/02 17:44:18 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2008/03/20 21:27:19 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -342,7 +342,8 @@ int Mccmd_Connect(ClientData clientData, Tcl_Interp* interp, int argc, char* arg
             {
                 low = *nextLowSerial.begin();
             }
-            Boost_char_tokenizer nextHighSerial(range.erase(0,low.size()), hig_sep);
+            range.erase(0,low.size());
+            Boost_char_tokenizer nextHighSerial(range, hig_sep);
             if( nextHighSerial.begin() != nextHighSerial.end() )
             {
                 high = *nextHighSerial.begin();

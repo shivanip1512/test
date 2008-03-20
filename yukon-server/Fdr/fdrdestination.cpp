@@ -23,8 +23,8 @@
 #include "fdrpoint.h"
 #include "fdrdestination.h"
 #include "rwutil.h"
-
-
+#include "logger.h"
+#include "guard.h"
 /** local definitions **/
 
 CtiFDRDestination::CtiFDRDestination(CtiFDRPoint* parentPoint, string &translation, string &destination)
@@ -110,32 +110,33 @@ CtiFDRDestination& CtiFDRDestination::setParentPoint (CtiFDRPoint* aParentPoint)
 }
 
 string CtiFDRDestination::getTranslationValue(string propertyName) const {
-  string result("");
-  string nameValuePair;
-  int pos;
-
-
-  boost::char_separator<char> sep(";");
-  Boost_char_tokenizer pairTokenizer(getTranslation(), sep);
-
-  for ( Boost_char_tokenizer::iterator itr = pairTokenizer.begin() ;
+    string result("");
+    string nameValuePair;
+    int pos;
+    const string translation = getTranslation();
+    
+    boost::char_separator<char> sep(";");
+    Boost_char_tokenizer pairTokenizer(translation, sep);
+    for ( Boost_char_tokenizer::iterator itr = pairTokenizer.begin() ;
         itr != pairTokenizer.end() ; 
         ++itr) 
-  {
-      nameValuePair = *itr;
-
-      //grab the name so we can tell if this is the token we want.
-      //Find the  ':' and copy everything before it into a string. This is the name.
-      pos = nameValuePair.find(":",0);     
-      string name(nameValuePair,0,pos);
-      
-    if (name == propertyName) {
-      //matched. Everything after pos is the value we want to return.
-      result = string (nameValuePair,pos+1,nameValuePair.size());
-      break;
+    {
+        nameValuePair = *itr;
+        //grab the name so we can tell if this is the token we want.
+        //Find the  ':' and copy everything before it into a string. This is the name.
+        pos = nameValuePair.find(":",0);
+        if( pos != -1 )
+        {
+            string name(nameValuePair,0,pos);
+            if (name == propertyName)
+            {
+              //matched. Everything after pos is the value we want to return.
+              result = string (nameValuePair,pos+1,nameValuePair.size());
+              break;
+            }
+        }
     }
-  }
-  return result;
+    return result;
 }
 
 std::ostream& operator<< (std::ostream& os, const CtiFDRDestination& dest)

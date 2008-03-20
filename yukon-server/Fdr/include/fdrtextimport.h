@@ -7,8 +7,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.5 $
-*    DATE         :  $Date: 2007/08/30 17:03:39 $
+*    REVISION     :  $Revision: 1.6 $
+*    DATE         :  $Date: 2008/03/20 21:27:14 $
 *
 *
 *    AUTHOR: David Sutton
@@ -20,6 +20,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.h,v $
+      Revision 1.6  2008/03/20 21:27:14  tspar
+      YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
+
+      Changed all uses of the tokenizer to have a local copy of the string being tokenized.
+
       Revision 1.5  2007/08/30 17:03:39  tspar
       YUK-4318
 
@@ -95,8 +100,8 @@ public:
                            int aQuality,
                            string aTranslationName,
                            CtiMessage **aRetMsg);
-    USHORT ForeignToYukonQuality (string aQuality);
-    CtiTime ForeignToYukonTime (string aTime, CHAR aDstFlag);
+    USHORT ForeignToYukonQuality (char aQuality);
+    CtiTime ForeignToYukonTime (string& aTime, CHAR aDstFlag);
 
     bool processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRetMsg);
 
@@ -112,11 +117,14 @@ public:
     CtiString& getFileImportBaseDrivePath(); 
     CtiString& setFileImportBaseDrivePath(CtiString importBase); 
 
-    list<string> parseFiles( list<std::iostream*> &istrmList );
+    list<string> parseFiles();
     list<string> getFileNames();
 
     bool moveFiles   ( std::list<string> &fileNames );
+    bool moveFile   ( string fileName );
     bool deleteFiles ( std::list<string> &fileNames );
+    bool deleteFile ( string fileName );
+    void handleFilePostOp( string fileName );
 
     void threadFunctionReadFromFile( void );
     virtual bool loadTranslationLists(void);
@@ -142,7 +150,7 @@ private:
     CtiString _fileImportBaseDrivePath; 
 
     vector <CtiFDRTextFileInterfaceParts> _fileInfoList; 
-
+    std::map<string,int> nameToPointId;
 };
 
 
