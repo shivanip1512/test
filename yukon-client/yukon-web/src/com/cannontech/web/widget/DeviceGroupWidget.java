@@ -112,7 +112,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         DeviceGroupHierarchy groupHierarchy = deviceGroupService.getModifiableDeviceGroupHierarchy(rootGroup);
         
         // recursively create a tree when this node is the root
-        ExtTreeNode root = makeDeviceGroupExtTree(groupHierarchy, "Groups", currentGroups);
+        ExtTreeNode root = makeDeviceGroupExtTree(groupHierarchy, currentGroups);
         
         // make a list containing maps which represents each group node
         List<Map<String, Object>> groupList = new ArrayList<Map<String, Object>>();
@@ -132,7 +132,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         
     }
     
-    public static ExtTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, List<DeviceGroup> currentGroups) throws Exception{
+    public static ExtTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, List<DeviceGroup> currentGroups) throws Exception{
         
         DeviceGroup deviceGroup = dgh.getGroup();
         
@@ -142,12 +142,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         node.setAttribute("id", groupId);
         
         // display name
-        if (rootName != null) {
-            node.setAttribute("text", rootName);
-        }
-        else {
-            node.setAttribute("text", StringEscapeUtils.escapeHtml(deviceGroup.getName()));
-        }
+        node.setAttribute("text", StringEscapeUtils.escapeHtml(deviceGroup.getName()));
         
         // disabled groups we already belong to
         if (currentGroups.contains(deviceGroup)) {
@@ -156,7 +151,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         
         // recursively add child groups
         for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
-            node.addChild(makeDeviceGroupExtTree(d, null, currentGroups));
+            node.addChild(makeDeviceGroupExtTree(d, currentGroups));
         }
         
         // leaf? (must be after child groups are added)
