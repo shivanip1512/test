@@ -13,7 +13,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 
-public class CBCSpecialAreaAddressingModel extends BareReportModelBase<CBCSpecialAreaAddressingModel.ModelRow> implements CapControlFilterable  {
+public class CBCSpecialAreaAssignmentModel extends BareReportModelBase<CBCSpecialAreaAssignmentModel.ModelRow> implements CapControlFilterable  {
 
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private Set<Integer> capBankIds;
@@ -52,7 +52,7 @@ public class CBCSpecialAreaAddressingModel extends BareReportModelBase<CBCSpecia
         jdbcOps.query(sql.toString(), new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 
-                CBCSpecialAreaAddressingModel.ModelRow row = new CBCSpecialAreaAddressingModel.ModelRow();
+                CBCSpecialAreaAssignmentModel.ModelRow row = new CBCSpecialAreaAssignmentModel.ModelRow();
 
                 row.specialArea = rs.getString("specialArea");
                 row.area = rs.getString("area");
@@ -169,7 +169,7 @@ public class CBCSpecialAreaAddressingModel extends BareReportModelBase<CBCSpecia
     }
 
     public String getTitle() {
-        return "CBC Special Area Addressing Report";
+        return "CBC Special Area Assignment Report";
     }
     
     public void setOrderBy(String order_) {

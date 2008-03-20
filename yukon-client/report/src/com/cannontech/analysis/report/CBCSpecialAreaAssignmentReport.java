@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
-import com.cannontech.analysis.tablemodel.CBCSpecialAreaAddressingModel;
+import com.cannontech.analysis.tablemodel.CBCSpecialAreaAssignmentModel;
 
-public class CBCSpecialAreaAddressingReport extends SimpleYukonReportBase {
+public class CBCSpecialAreaAssignmentReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Special Area", "specialArea", 100),
@@ -18,12 +18,12 @@ public class CBCSpecialAreaAddressingReport extends SimpleYukonReportBase {
         new ColumnLayoutData("CBC", "cbc", 100)
     };
 
-    public CBCSpecialAreaAddressingReport(BareReportModel bareModel) {
+    public CBCSpecialAreaAssignmentReport(BareReportModel bareModel) {
         super(bareModel);
     }
     
-    public CBCSpecialAreaAddressingReport() {
-        this(new CBCSpecialAreaAddressingModel());
+    public CBCSpecialAreaAssignmentReport() {
+        this(new CBCSpecialAreaAssignmentModel());
     }
 
     @Override

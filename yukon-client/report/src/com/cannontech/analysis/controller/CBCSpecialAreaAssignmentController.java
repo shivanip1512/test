@@ -4,14 +4,14 @@ import java.util.HashSet;
 import javax.servlet.http.HttpServletRequest;
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.analysis.report.CBCSpecialAreaAddressingReport;
+import com.cannontech.analysis.report.CBCSpecialAreaAssignmentReport;
 import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.analysis.tablemodel.CBCSpecialAreaAddressingModel;
+import com.cannontech.analysis.tablemodel.CBCSpecialAreaAssignmentModel;
 import com.cannontech.analysis.tablemodel.CapControlFilterable;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 
-public class CBCSpecialAreaAddressingController extends CapControlReportControllerBase {
+public class CBCSpecialAreaAssignmentController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.CAPCONTROLSUBBUS,
@@ -24,10 +24,10 @@ public class CBCSpecialAreaAddressingController extends CapControlReportControll
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     private String[] orderByTypes = {"Special Area", "Area", "Substation", "Substation Bus", "Feeder", "Cap Bank", "CBC"};
     
-    public CBCSpecialAreaAddressingController() {
+    public CBCSpecialAreaAssignmentController() {
         super();
-        model = new CBCSpecialAreaAddressingModel();
-        report = new CBCSpecialAreaAddressingReport(model);
+        model = new CBCSpecialAreaAssignmentModel();
+        report = new CBCSpecialAreaAssignmentReport(model);
     }
 
     public YukonReportBase getReport() {
@@ -69,7 +69,7 @@ public class CBCSpecialAreaAddressingController extends CapControlReportControll
 
     public void setRequestParameters(HttpServletRequest request) {
         CapControlFilterable filterableModel = (CapControlFilterable) model;
-        CBCSpecialAreaAddressingModel addressingModel = (CBCSpecialAreaAddressingModel) model;
+        CBCSpecialAreaAssignmentModel addressingModel = (CBCSpecialAreaAssignmentModel) model;
         super.setRequestParameters(request);
         int idsArray[] = ServletRequestUtils.getIntParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
         HashSet<Integer> idsSet = new HashSet<Integer>();
