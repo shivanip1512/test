@@ -112,7 +112,8 @@ public final class FileFormatTypes {
     }
 
     public final static int getFormatID(String typeStr) {
-        final String sql = "SELECT FORMATID FROM BillingFileFormats WHERE FORMATTYPE = ?";
+        final String sql = "SELECT FORMATID FROM BillingFileFormats WHERE FORMATTYPE = ? " +
+                            " AND FORMATID >= 0";
         int formatId = jdbcTemplate.queryForInt(sql, typeStr);
         return formatId;
     }
@@ -167,7 +168,7 @@ public final class FileFormatTypes {
 	}
     
     public static Map<String, Integer> getValidFormats() {
-        final String sql = "SELECT FORMATID,FORMATTYPE FROM BillingFileFormats WHERE FORMATID >= 0 Order By FormatType desc";
+        final String sql = "SELECT FORMATID,FORMATTYPE FROM BillingFileFormats WHERE FORMATID >= 0";
         final SortedMap<String, Integer> resultMap = new TreeMap<String, Integer>();
         try {
             jdbcTemplate.getJdbcOperations().query(sql, new RowCallbackHandler() {
