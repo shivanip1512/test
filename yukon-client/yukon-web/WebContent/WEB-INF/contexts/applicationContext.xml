@@ -649,6 +649,24 @@
         </property>
     </bean>
     
+    <bean id="loginRequestHandlers" class="java.util.LinkedList">
+        <constructor-arg>
+            <list>
+                <!--  processed by insertion order, starting with defaultParamLoginRequestHandler -->
+                <ref bean="defaultParamLoginRequestHandler"/>
+                <ref bean="bgeSiteMinderLoginRequestHandler"/>
+            </list>
+        </constructor-arg>
+    </bean>
+    
+    <bean id="defaultParamLoginRequestHandler" class="com.cannontech.web.login.impl.DefaultParamLoginRequestHandler">
+        <property name="loginService" ref="loginService"/>
+    </bean>
+    
+    <bean id="bgeSiteMinderLoginRequestHandler" class="com.cannontech.web.login.impl.BGESiteMinderLoginRequestHandler">
+        <property name="config" ref="localMasterConfig"/>
+    </bean>
+    
     <bean id="loginCookieHelper" class="com.cannontech.web.login.impl.LoginCookieHelperImpl">
         <property name="cryptoService" ref="cryptoService"/>    
     </bean>

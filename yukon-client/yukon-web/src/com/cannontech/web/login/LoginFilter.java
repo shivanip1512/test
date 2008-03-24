@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.security.GeneralSecurityException;
+import java.util.List;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -18,7 +19,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
-import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.UrlPathHelper;
@@ -39,6 +39,7 @@ public class LoginFilter implements Filter {
     private LoginService loginService;
     private LoginCookieHelper loginCookieHelper;
     private YukonUserContextResolver userContextResolver;
+    private List<LoginRequestHandler> loginRequestHandlers;
     private PathMatcher pathMatcher = new AntPathMatcher();
     private UrlPathHelper urlPathHelper = new UrlPathHelper();
 
@@ -49,9 +50,9 @@ public class LoginFilter implements Filter {
         excludedFilePaths = new String[] {
             LoginController.LOGIN_URL, // aka /login.jsp
             "/servlet/LoginController", 
-            "/servlet/LoggingServlet", 
+            "/servlet/LoggingServlet",
             "/voice/login.jsp", 
-            "/voice/inboundLogin.jsp", 
+            "/voice/inboundLogin.jsp",  
             "/soap/**", 
             "/servlet/PWordRequest",
             "/pwordreq.jsp", 
@@ -62,13 +63,14 @@ public class LoginFilter implements Filter {
             "/**/*.gif", 
             "/**/*.jpg", 
             "/**/*.html",
-            "/jws/*.jar"};
+            "/jws/*.jar"
+        };
         
         excludedRedirectedPaths = new String[] {
             "/capcontrol/**",
             "/operator/**",
             "/editor/**",
-            "/user/**",
+            "/user/**"
         };
     }
 
@@ -79,17 +81,9 @@ public class LoginFilter implements Filter {
         final HttpServletRequest request = (HttpServletRequest) req;
         final HttpServletResponse response = (HttpServletResponse) resp;
         
-        // try to attach the user to the request
-        try {
-            YukonUserContext resolveContext = userContextResolver.resolveContext(request);
-            request.setAttribute(YukonUserContextUtils.userContextAttrName, resolveContext);
-        } catch(RuntimeException e) {
-            request.setAttribute(YukonUserContextUtils.userContextAttrName, e);
-            log.debug("Unable to attach YukonUserContext to request", e);
-        }
-
         boolean loggedIn = isLoggedIn(request);
         if (loggedIn) {
+            attachYukonUserContext(request);
             chain.doFilter(req, resp);
             return;
         }
@@ -97,6 +91,7 @@ public class LoginFilter implements Filter {
         boolean excludedRequest = isExcludedRequest(request, excludedFilePaths);
         if (excludedRequest) {
             log.debug("Proceeding with request that passes exclusion filter");
+            attachYukonUserContext(request); //try to attach, but may not be logged in.
             chain.doFilter(req, resp);
             return;
         }
@@ -111,6 +106,7 @@ public class LoginFilter implements Filter {
                 boolean success = loginService.login(request, holder.getUsername(), holder.getPassword());
                 if (success) {
                     log.info("Proceeding with request after successful Remember Me login");
+                    attachYukonUserContext(request);
                     chain.doFilter(req, resp);
                     return;
                 }
@@ -124,15 +120,18 @@ public class LoginFilter implements Filter {
             }
         }
 
-        // second try the username/password parameters
-        String username = ServletRequestUtils.getStringParameter(request, LoginController.USERNAME);
-        String password = ServletRequestUtils.getStringParameter(request, LoginController.PASSWORD);
-        if (username != null && password != null) {
-            boolean success = loginService.login(request, username, password);
-            if (success) {
-                log.debug("Proceeding with request after sucessful request parameter login");
+        // second, try to use a LoginRequestHandler to handle the login request.
+        for (final LoginRequestHandler handler : loginRequestHandlers) {
+            try {
+                boolean success = handler.handleLoginRequest(request);
+                if (!success) continue;
+
+                log.debug("Proceeding with request after successful handler login");
+                attachYukonUserContext(request);
                 chain.doFilter(req, resp);
                 return;
+            } catch (Exception e) {
+                log.debug("failed login request with handler", e);
             }
         }
         
@@ -189,13 +188,25 @@ public class LoginFilter implements Filter {
             return false;
         }
     }
+    
+    private void attachYukonUserContext(HttpServletRequest request) {
+        try {
+            YukonUserContext resolveContext = userContextResolver.resolveContext(request);
+            request.setAttribute(YukonUserContextUtils.userContextAttrName, resolveContext);
+        } catch(RuntimeException e) {
+            request.setAttribute(YukonUserContextUtils.userContextAttrName, e);
+            log.debug("Unable to attach YukonUserContext to request", e);
+        }
+    }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void init(FilterConfig filterConfig) throws ServletException {
         context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
         loginService = (LoginService) context.getBean("loginService", LoginService.class);
         loginCookieHelper = (LoginCookieHelper) context.getBean("loginCookieHelper", LoginCookieHelper.class);
         userContextResolver = (YukonUserContextResolver) context.getBean("userContextResolver", YukonUserContextResolver.class);
+        loginRequestHandlers = (List) context.getBean("loginRequestHandlers", List.class);
     }
 
     @Override
