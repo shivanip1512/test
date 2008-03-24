@@ -43,10 +43,7 @@ Category: <xsl:value-of select="category"/>
 Abnormal: <xsl:value-of select="abnormal"/>
 Acknowledged: <xsl:value-of select="acknowledged"/>
 Point Type: <xsl:value-of select="pointtype"/>
-Notification Group: <xsl:value-of select="notificationgroup"/>
-SHORT Format: <xsl:value-of select="shortvalue"/>
-FULL Format: <xsl:value-of select="fullvalue"/>
-DATE Format: <xsl:value-of select="datevalue"/>
+Notification Group: <xsl:value-of select="notificationgroup"/>    
       </body>
   </xsl:template>
   
