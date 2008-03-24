@@ -48,6 +48,7 @@ import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
+import com.cannontech.common.device.groups.service.AnyDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MapQueue;
@@ -182,7 +183,7 @@ public class GroupController extends MultiActionController {
         
         // Ext tree JSON
         DeviceGroup selectedDeviceGroup = group;
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup);
+        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new AnyDeviceGroupPredicate());
         ExtTreeNode root = makeDeviceGroupExtTree(groupHierarchy, "Groups", selectedDeviceGroup);
         
         JSONObject jsonObj = new JSONObject(root.toMap());

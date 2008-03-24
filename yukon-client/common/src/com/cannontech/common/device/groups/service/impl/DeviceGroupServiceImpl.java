@@ -18,6 +18,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
+import com.cannontech.common.device.groups.service.DeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -131,23 +132,12 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         this.deviceGroupDao = deviceGroupDao;
     }
 
-    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root) {
+    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, DeviceGroupPredicate deviceGroupPredicate) {
 
         DeviceGroupHierarchy hierarchy = new DeviceGroupHierarchy();
         hierarchy.setGroup(root);
 
-        setChildHierarchy(hierarchy, false);
-
-        return hierarchy;
-    }
-    
-    
-    public DeviceGroupHierarchy getModifiableDeviceGroupHierarchy(DeviceGroup root) {
-
-        DeviceGroupHierarchy hierarchy = new DeviceGroupHierarchy();
-        hierarchy.setGroup(root);
-
-        setChildHierarchy(hierarchy, true);
+        setChildHierarchy(hierarchy, deviceGroupPredicate);
 
         return hierarchy;
     }
@@ -156,18 +146,18 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
      * Helper method to recursively set child hierarchy
      * @param hierarchy - parent hierarchy to set children on
      */
-    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, Boolean onlyModifiable) {
+    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, DeviceGroupPredicate deviceGroupPredicate) {
 
         List<DeviceGroupHierarchy> childGroupList = new ArrayList<DeviceGroupHierarchy>();
         List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(hierarchy.getGroup());
         for (DeviceGroup childGroup : childGroups) {
             
-            if (!onlyModifiable || childGroup.isModifiable()) {
+            if (deviceGroupPredicate.evaluate(childGroup)) {
             
                 DeviceGroupHierarchy childHierarchy = new DeviceGroupHierarchy();
                 childHierarchy.setGroup(childGroup);
     
-                setChildHierarchy(childHierarchy, onlyModifiable);
+                setChildHierarchy(childHierarchy, deviceGroupPredicate);
     
                 childGroupList.add(childHierarchy);
             }

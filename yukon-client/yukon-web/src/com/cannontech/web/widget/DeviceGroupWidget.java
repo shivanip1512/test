@@ -26,6 +26,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.ModifiableDeviceGroupPredicate;
 import com.cannontech.web.util.ExtTreeNode;
 import com.cannontech.web.widget.support.WidgetControllerBase;
 import com.cannontech.web.widget.support.WidgetParameterHelper;
@@ -109,7 +110,7 @@ public class DeviceGroupWidget extends WidgetControllerBase {
         List<DeviceGroup> currentGroups = new ArrayList<DeviceGroup>(currentGroupsSet);
         
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getModifiableDeviceGroupHierarchy(rootGroup);
+        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new ModifiableDeviceGroupPredicate());
         
         // recursively create a tree when this node is the root
         ExtTreeNode root = makeDeviceGroupExtTree(groupHierarchy, currentGroups);

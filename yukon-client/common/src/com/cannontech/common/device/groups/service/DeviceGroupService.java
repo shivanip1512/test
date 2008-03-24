@@ -78,18 +78,11 @@ public interface DeviceGroupService {
 
     /**
      * Method to get a hierarchy of the current device groups starting with the
-     * given group.
-     * @param root - Group to use as the root to the hierarchy
-     * @return The hierarchy
-     */
-    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root);
-    
-    /**
-     * Returns a DeviceGroupHierarchy containing only groups that belong to a modifible group and are 
-     * modifiable themseleves.
+     * given group. Predicate is evaluated to determine if child groups should be included in heirarchy.
      * @param root
+     * @param predicate
      * @return
      */
-    public DeviceGroupHierarchy getModifiableDeviceGroupHierarchy(DeviceGroup root);
+    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, DeviceGroupPredicate predicate);
 
 }
