@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2008/03/20 21:27:19 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2008/03/24 20:50:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1700,6 +1700,7 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
     std::deque<CtiTableMeterReadLog> resultQueue;
 
     RWCollectable* msg = NULL;
+    int queueDataZeroCount = 0;
     bool status;
 
     do
@@ -1738,7 +1739,15 @@ static int DoRequest(Tcl_Interp* interp, string& cmd_line, long timeout, bool tw
                         output += " devices left to respond. If the script does not finish very soon this";
                         output += " should be considered a problem.";
                         WriteOutput(output.c_str());
-                        // At some point we could break; here if we are confident about this.
+                        queueDataZeroCount++;
+
+                        if( queueDataZeroCount > 1 )
+                        {
+                            // At some point we could break; here if we are confident about this.
+                            output = "Queue data reports a need to exit, current command is exiting!";
+                            WriteOutput(output.c_str());
+                            break;
+                        }
                     }
                 }
             }
