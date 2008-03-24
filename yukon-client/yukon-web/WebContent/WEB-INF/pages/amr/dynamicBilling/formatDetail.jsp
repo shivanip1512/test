@@ -133,7 +133,7 @@
                                 </td>
                             </tr><tr align="center">
                                 <td colspan="2">
-                                    <a href="javascript:displayHelper($('readingHelper'));">Help with Format</a>
+                                    <a href="javascript:displayHelper($('valueHelper'));">Help with Format</a>
                                 </td>
                             </tr>
                         </table>
@@ -314,12 +314,12 @@
 				</table>
 			</div>
 		</div>
-		<div id="readingHelper" class="popUpDiv" style="display:none;">
+		<div id="valueHelper" class="popUpDiv" style="display:none">
 			<!--  fix for IE6 bug (see itemPicker.css for more info) -->
 			<!--[if lte IE 6.5]><iframe></iframe><![endif]-->
-			<div align="left" style="border: 3px solid #888; padding: 5px 5px;" >
-				<div align="right" > <a href="javascript:displayHelper($('valueHelper'));"  style="font-size: 10px" >close</a></div>
-				<br />
+			<div style="border: 3px solid #888; padding: 5px 5px; font-size: 10px;" >
+				<div align="right"> <a href="javascript:displayHelper($('valueHelper'));" >close</a> </div>
+				<br/>
 				<div style="font-size: 12px;">
 					The reading pattern input box will accept a textual pattern that represents a number format.  The format will be applied
 					to the selected field when the billing file is generated. Acceptable symbols for the pattern are: ,(comma) .(decimal) 
