@@ -2277,7 +2277,7 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
         getScriptTemplate().setParameterValue(BILLING_ENERGY_DAYS_PARAM, getEnergyDaysTextField().getText());
         getScriptTemplate().setParameterValue(BILLING_DEMAND_DAYS_PARAM, getDemandDaysTextField().getText());
     
-        if(getBillingGroupTree().getSelectionPath() != null && ((TreeNode)getBillingGroupTree().getSelectionPath().getLastPathComponent()).isLeaf()) {
+        if(getBillingGroupTree().getSelectionPath() != null) {
             DeviceGroup billingGroup = modelFactory.getGroupForPath(getBillingGroupTree().getSelectionPath());
             getScriptTemplate().setParameterValue(BILLING_GROUP_NAME_PARAM, billingGroup.getFullName());
         }
