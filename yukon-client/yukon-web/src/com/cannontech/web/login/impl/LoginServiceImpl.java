@@ -68,7 +68,7 @@ public class LoginServiceImpl implements LoginService {
         }
     }
     
-    private void createSession(HttpServletRequest request, LiteYukonUser user) {
+    public final void createSession(HttpServletRequest request, LiteYukonUser user) {
         HttpSession session = request.getSession(false);
         if (session != null) session.invalidate();
         session = request.getSession(true);

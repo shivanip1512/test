@@ -17,6 +17,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.http.Cookie;
@@ -1138,6 +1140,28 @@ public static Date roundToMinute(Date toRound) {
         } else {
             return url;
         }
+    }
+    
+    /**
+     * Strips what could be harmful redirect information out of a URL.
+     * At the very least returning "/".
+     * @param request
+     * @param url
+     * @return a stripped version of the URL
+     */
+    public static String createSafeRedirectUrl(final ServletRequest request, final String url) {
+        Matcher matcher = Pattern.compile("^\\w{3,}://.+(/.*)$").matcher(url);
+        boolean matches = matcher.matches();
+        
+        String safeUrl;
+        if (matches) {
+            String matchedUrl = matcher.group(1);
+            safeUrl = (matchedUrl != null) ? matchedUrl : "/";
+        } else {
+            safeUrl = url;
+        }
+        
+        return ServletUtil.createSafeUrl(request, safeUrl);
     }
     
     /**

@@ -1403,6 +1403,21 @@ public static final String toDatabaseString(java.util.Date date)
 	return format.format(date).toUpperCase();
 }
 
+/**
+ * 
+ * @param input - byte[] to be formatted into Hex
+ * @return - a hex String representation of the byte[]
+ */
+public static final String toHexString(final byte[] input) {
+    final StringBuilder sb = new StringBuilder();
+    for (final byte b : input) {
+        String byteToHex = String.format("%02x", b);
+        sb.append(byteToHex);
+    }
+    String result = sb.toString();
+    return result;
+}
+
 /*
  * Get the extension of a file.
  */

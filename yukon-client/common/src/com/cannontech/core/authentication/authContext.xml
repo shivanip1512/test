@@ -35,10 +35,14 @@
     <bean id="localShaAuthentication" class="com.cannontech.core.authentication.service.impl.LocalHashAuthenticationService">
       <property name="yukonUserPasswordDao" ref="yukonUserPasswordDao"/>
       <property name="passwordHasher">
-        <bean class="com.cannontech.core.authentication.service.impl.MessageDigestHasher">
+        <bean class="com.cannontech.core.authentication.service.impl.YukonPaswordHasher">
           <constructor-arg value="SHA"/>
         </bean>
       </property>
+    </bean>
+    
+    <bean id="simpleMD5Hasher" class="com.cannontech.core.authentication.service.impl.SimpleMessageDigestHasher">
+        <constructor-arg value="MD5"/>
     </bean>
     
     <!--  Allow startup when radius library is missing by using a proxy bean -->

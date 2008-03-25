@@ -3,7 +3,6 @@ package com.cannontech.web.login;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.security.GeneralSecurityException;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -12,7 +11,6 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -36,8 +34,6 @@ public class LoginFilter implements Filter {
     private static final String[] excludedFilePaths;
     private static final String[] excludedRedirectedPaths;
     private WebApplicationContext context;
-    private LoginService loginService;
-    private LoginCookieHelper loginCookieHelper;
     private YukonUserContextResolver userContextResolver;
     private List<LoginRequestHandler> loginRequestHandlers;
     private PathMatcher pathMatcher = new AntPathMatcher();
@@ -96,43 +92,16 @@ public class LoginFilter implements Filter {
             return;
         }
 
-        // first, try to use the remember me cookie
-        Cookie rememberMeCookie = ServletUtil.getCookie(request, LoginController.REMEMBER_ME_COOKIE);
-        if (rememberMeCookie != null) {
-            try {
-                String encryptedValue = rememberMeCookie.getValue();
-                UserPasswordHolder holder = loginCookieHelper.decodeCookieValue(encryptedValue);
-
-                boolean success = loginService.login(request, holder.getUsername(), holder.getPassword());
-                if (success) {
-                    log.info("Proceeding with request after successful Remember Me login");
-                    attachYukonUserContext(request);
-                    chain.doFilter(req, resp);
-                    return;
-                }
-                log.info("Remember Me login failed");
-
-                //cookie login failed, remove cookie and go on to second try.
-                ServletUtil.deleteAllCookies(request, response);
-            } catch (GeneralSecurityException e) {
-                log.error("Unable to decrypt cookie value", e);
-                ServletUtil.deleteAllCookies(request, response);
-            }
-        }
-
-        // second, try to use a LoginRequestHandler to handle the login request.
+        // try to use a LoginRequestHandler to handle the login request.
         for (final LoginRequestHandler handler : loginRequestHandlers) {
-            try {
-                boolean success = handler.handleLoginRequest(request);
-                if (!success) continue;
+            boolean success = handler.handleLoginRequest(request, response);
+            if (!success) continue;
 
-                log.debug("Proceeding with request after successful handler login");
-                attachYukonUserContext(request);
-                chain.doFilter(req, resp);
-                return;
-            } catch (Exception e) {
-                log.debug("failed login request with handler", e);
-            }
+            log.debug("Proceeding with request after successful handler login");
+            attachYukonUserContext(request);
+            // FilterChain.doFilter() cannot be in a try/catch, it would break the ErrorHelperFilter
+            chain.doFilter(req, resp);
+            return;
         }
         
         log.debug("All login attempts failed, returning error");
@@ -166,8 +135,10 @@ public class LoginFilter implements Filter {
         String url = request.getRequestURL().toString();
         String urlParams = request.getQueryString();
         String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
+        // strip any unsafe navigation from the URL before it gets encoded.
+        String safeNavUrl = ServletUtil.createSafeRedirectUrl(request, navUrl);
         try {
-            String encodedNavUrl = URLEncoder.encode(navUrl, "UTF-8");
+            String encodedNavUrl = URLEncoder.encode(safeNavUrl, "UTF-8");
             return encodedNavUrl;
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
@@ -203,8 +174,6 @@ public class LoginFilter implements Filter {
     @SuppressWarnings("unchecked")
     public void init(FilterConfig filterConfig) throws ServletException {
         context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
-        loginService = (LoginService) context.getBean("loginService", LoginService.class);
-        loginCookieHelper = (LoginCookieHelper) context.getBean("loginCookieHelper", LoginCookieHelper.class);
         userContextResolver = (YukonUserContextResolver) context.getBean("userContextResolver", YukonUserContextResolver.class);
         loginRequestHandlers = (List) context.getBean("loginRequestHandlers", List.class);
     }

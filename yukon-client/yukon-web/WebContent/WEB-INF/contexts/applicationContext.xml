@@ -652,19 +652,33 @@
     <bean id="loginRequestHandlers" class="java.util.LinkedList">
         <constructor-arg>
             <list>
-                <!--  processed by insertion order, starting with defaultParamLoginRequestHandler -->
+                <!--  processed by insertion order -->
+                <ref bean="cookieLoginRequestHandler"/>
                 <ref bean="defaultParamLoginRequestHandler"/>
-                <ref bean="bgeSiteMinderLoginRequestHandler"/>
+                <ref bean="siteMinderLoginRequestHandler"/>
             </list>
         </constructor-arg>
     </bean>
-    
-    <bean id="defaultParamLoginRequestHandler" class="com.cannontech.web.login.impl.DefaultParamLoginRequestHandler">
+
+    <bean id="abstractLoginRequestHandler" class="com.cannontech.web.login.AbstractLoginRequestHandler"
+          abstract="true">
         <property name="loginService" ref="loginService"/>
+        <property name="config" ref="localMasterConfig"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
+    </bean>          
+    
+    <bean id="cookieLoginRequestHandler" class="com.cannontech.web.login.impl.CookieLoginRequestHandler"
+          parent="abstractLoginRequestHandler">
+        <property name="loginCookieHelper" ref="loginCookieHelper"/>
     </bean>
     
-    <bean id="bgeSiteMinderLoginRequestHandler" class="com.cannontech.web.login.impl.BGESiteMinderLoginRequestHandler">
-        <property name="config" ref="localMasterConfig"/>
+    <bean id="defaultParamLoginRequestHandler" class="com.cannontech.web.login.impl.DefaultParamLoginRequestHandler"
+          parent="abstractLoginRequestHandler">
+    </bean>
+    
+    <bean id="siteMinderLoginRequestHandler" class="com.cannontech.web.login.impl.SiteMinderLoginRequestHandler"
+          parent="abstractLoginRequestHandler">
+        <property name="passwordHasher" ref="simpleMD5Hasher"/>    
     </bean>
     
     <bean id="loginCookieHelper" class="com.cannontech.web.login.impl.LoginCookieHelperImpl">

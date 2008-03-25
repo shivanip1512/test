@@ -12,6 +12,8 @@ public interface LoginService {
     
     public void logout(HttpServletRequest request, HttpServletResponse response) throws Exception;
     
+    public void createSession(HttpServletRequest request, LiteYukonUser user);
+    
     public void clientLogin(HttpServletRequest request, HttpServletResponse response) throws Exception;
     
     public void outboundVoiceLogin(HttpServletRequest request, HttpServletResponse response) throws Exception;
