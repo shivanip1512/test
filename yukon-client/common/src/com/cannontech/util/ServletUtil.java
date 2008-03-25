@@ -1150,7 +1150,7 @@ public static Date roundToMinute(Date toRound) {
      * @return a stripped version of the URL
      */
     public static String createSafeRedirectUrl(final ServletRequest request, final String url) {
-        Matcher matcher = Pattern.compile("^\\w{3,}://.+(/.*)$").matcher(url);
+        Matcher matcher = Pattern.compile("^\\w{3,}://.+?(/.*)$").matcher(url);
         boolean matches = matcher.matches();
         
         String safeUrl;
