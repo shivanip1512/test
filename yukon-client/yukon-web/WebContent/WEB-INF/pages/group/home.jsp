@@ -97,7 +97,17 @@
 			
 		}
         
-
+        function toggleExpand(expand) {
+        
+            var rootNode = window['root_deviceGroupEditorTree'];
+            
+            if (expand) {
+                rootNode.expandChildNodes(true);
+            }
+            else {
+                rootNode.collapseChildNodes(true);
+            }
+        }
 		
 	</script>
 
@@ -121,7 +131,14 @@
                 </jsp:attribute>
             </c:set>
             
-            <tags:extTree   treeId="deviceGroupEditorTree"
+            <div style="text-align:right;padding-left:2px;padding-bottom:5px;">
+                Expand/Collapse All
+                <img src="<c:url value="/WebConfig/yukon/Icons/expand.gif"/>" onclick="toggleExpand(true);" title="Expand All">
+                <img src="<c:url value="/WebConfig/yukon/Icons/collapse.gif"/>" onclick="toggleExpand(false);" title="Collapse All"> 
+            </div>
+            
+            
+            <tags:extTree   id="deviceGroupEditorTree"
                             dataJson="${dataJson}"
                             width="432"
                             height="600" 

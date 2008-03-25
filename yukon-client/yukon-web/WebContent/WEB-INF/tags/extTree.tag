@@ -1,5 +1,5 @@
 <%-- treeId will be used as part of the name of the state cookie (among other internal things I assume) --%>
-<%@ attribute name="treeId" required="true" type="java.lang.String"%>
+<%@ attribute name="id" required="true" type="java.lang.String"%>
 <%@ attribute name="width" required="true" type="java.lang.Integer"%>
 <%@ attribute name="height" required="true" type="java.lang.Integer"%>
 <%@ attribute name="rootVisible" required="true" type="java.lang.String"%>
@@ -42,6 +42,9 @@
 <cti:uniqueIdentifier prefix="exttree" var="elId"/>
 
 <script type="text/javascript">
+
+    var tree_${id};
+    var root_${id}; 
     
     Ext.BLANK_IMAGE_URL = '/JavaScript/extjs/resources/images/default/s.gif';
     Ext.onReady(function(){
@@ -52,27 +55,28 @@
             <c:when test="${not empty dataUrl}">
             
                 var treeLoader = new Ext.tree.TreeLoader({
-                        dataUrl:"${dataUrl}"
+                        dataUrl:"${dataUrl}",
+                        
                         <c:if test="${not empty baseParams}">
-                            , baseParams:${baseParams}
+                            baseParams:${baseParams}
                         </c:if>
                     })
                     
                 var rootAttributes = $H(${rootAttributes});
                 rootAttributes['id'] = "${treeId}_root"
-                var root = new Ext.tree.AsyncTreeNode(rootAttributes);
+                root_${id} = new Ext.tree.AsyncTreeNode(rootAttributes);
                     
             </c:when>
             <c:otherwise>
             
                 var treeLoader = new Ext.tree.TreeLoader();
-                var root = new Ext.tree.AsyncTreeNode(${dataJson});
+                root_${id} = new Ext.tree.AsyncTreeNode(${dataJson});
                 
             </c:otherwise>
         </c:choose>
         
         // tree panel
-        var tree = new Ext.tree.TreePanel({
+        tree_${id} = new Ext.tree.TreePanel({
                 id:"${treeId}",
                 el:"${elId}",
                 useArrows:false,
@@ -84,15 +88,15 @@
                 pathSeperator:'>',
                 loader: treeLoader
             });
-        tree.setRootNode(root);
-        tree.render();
+        tree_${id}.setRootNode(root_${id});
+        tree_${id}.render();
         
         // manage tree state
-        var treeState = new TreePanelState(tree);
+        var treeState = new TreePanelState(tree_${id});
         treeState.init();
-        tree.on('expandnode', treeState.onExpand, treeState);
-        tree.on('collapsenode', treeState.onCollapse, treeState);
-        treeState.restoreState(tree.root.getPath());
+        tree_${id}.on('expandnode', treeState.onExpand, treeState);
+        tree_${id}.on('collapsenode', treeState.onCollapse, treeState);
+        treeState.restoreState(tree_${id}.root.getPath());
                 
     });
     
