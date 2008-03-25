@@ -643,7 +643,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                 
 				<td>
                     <a id="dateTime_${thisCapBankId}"
-				       onmouseover = "showDynamicPopupAbove($('capBankStatusPopup_${thisCapBankId}'))"
+				       onmouseover = "showDynamicPopupAbove($('capBankStatusPopup_${thisCapBankId}'), 250)"
 				       onmouseout="nd()">
                         <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="DATE_TIME"/> 
                     </a>

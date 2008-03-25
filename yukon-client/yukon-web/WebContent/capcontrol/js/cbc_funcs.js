@@ -419,9 +419,19 @@ function statusMsg(elem, msgStr) {
 // Leaves the closing of the popup to the caller.
 // -------------------------------------------
 function showDynamicPopup(elem) {
-	var spans = elem.getElementsByTagName('span');
-	var msg = spans[0].innerHTML;
-    overlib( msg, WIDTH, 200, CSSCLASS, TEXTFONTCLASS, 'flyover' );
+	showDynamicPopup(elem, 200);
+}
+
+// -------------------------------------------
+// Shows a popup of the given message string with
+// a custom width.
+// Uses the overlib library for display purposes.
+// Leaves the closing of the popup to the caller.
+// -------------------------------------------
+function showDynamicPopup(elem, spanWidth) {
+    var spans = elem.getElementsByTagName('span');
+    var msg = spans[0].innerHTML;
+    overlib( msg, WIDTH, spanWidth, CSSCLASS, TEXTFONTCLASS, 'flyover' );
 }
 
 // -------------------------------------------
@@ -430,9 +440,19 @@ function showDynamicPopup(elem) {
 // Leaves the closing of the popup to the caller.
 // -------------------------------------------
 function showDynamicPopupAbove(elem) {
+    showDynamicPopupAbove(elem, 200);
+}
+
+// -------------------------------------------
+// Shows a popup of the given message string with
+// a custom width.
+// Uses the overlib library for display purposes.
+// Leaves the closing of the popup to the caller.
+// -------------------------------------------
+function showDynamicPopupAbove(elem, spanWidth) {
     var spans = elem.getElementsByTagName('span');
     var msg = spans[0].innerHTML;
-    overlib( msg, WIDTH, 200, CSSCLASS, TEXTFONTCLASS, 'flyover', ABOVE );
+    overlib( msg, WIDTH, spanWidth, CSSCLASS, TEXTFONTCLASS, 'flyover', ABOVE );
 }
 
 // -------------------------------------------
