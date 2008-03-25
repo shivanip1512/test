@@ -171,5 +171,31 @@
 <entry key="yukon.web.menu.config.commanderSelect.capcontrol">Cap Control</entry>
 <entry key="yukon.web.menu.config.commanderSelect.capcontrol.capcontrolsub">Cap Control</entry>
 
+<!-- Consumer Module -->
+<entry key="yukon.web.menu.config.consumer.account">Account</entry>
+<entry key="yukon.web.menu.config.consumer.account.general">General</entry>
+<entry key="yukon.web.menu.config.consumer.account.contacts">Contacts</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat">Thermostat</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat.all">All</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat.all.select">Select Thermostats</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat.all.schedule">Schedule</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat.all.manual">Manual</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat.name">{0}</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat.changeLabel">Change Label</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat.schedule">Schedule</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat.manual">Manual</entry>
+<entry key="yukon.web.menu.config.consumer.thermostat.savedSchedules">Saved Schedules</entry>
+<entry key="yukon.web.menu.config.consumer.programs">Programs</entry>
+<entry key="yukon.web.menu.config.consumer.programs.controlHistory">Control History</entry>
+<entry key="yukon.web.menu.config.consumer.programs.enrollment">Enrollment</entry>
+<entry key="yukon.web.menu.config.consumer.programs.optOut">Opt Out</entry>
+<entry key="yukon.web.menu.config.consumer.trending">Trending</entry>
+<entry key="yukon.web.menu.config.consumer.trending.name">{0}</entry>
+<entry key="yukon.web.menu.config.consumer.questions">Questions</entry>
+<entry key="yukon.web.menu.config.consumer.questions.contactUs">Contact Us</entry>
+<entry key="yukon.web.menu.config.consumer.questions.faq">FAQ</entry>
+<entry key="yukon.web.menu.config.consumer.administration">Administration</entry>
+<entry key="yukon.web.menu.config.consumer.administration.changeLogin">Change Login</entry>
+
 
 </properties>

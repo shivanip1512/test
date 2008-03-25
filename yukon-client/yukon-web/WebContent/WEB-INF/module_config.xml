@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml-stylesheet type="text/xsl" href="module_config.xsl"?>
 <mainmenu>
 <!-- 
      If you need to add functionality to the menu, please see the following classes:
@@ -23,12 +24,12 @@
      respectively.
 -->
   <portals>
-    
+    <links>
     <!-- Consumer Account Information -->
-    <portal id="consumerAccountInformation">
+    <option id="consumerAccountInformation">
       <requireRole value="ConsumerInfoRole.ROLEID" />
 
-      <sublinks>  
+      <links>  
         <option id="newAccount">
           <requireProperty value="ConsumerInfoRole.NEW_ACCOUNT_WIZARD"/>
           <link>Consumer/New.jsp?Init=true&amp;Wizard=true</link>
@@ -37,14 +38,14 @@
           <requireFalseProperty value="ConsumerInfoRole.NEW_ACCOUNT_WIZARD"/>
           <link>Consumer/New.jsp?Init=true</link>
         </option>
-      </sublinks>
-    </portal>
+      </links>
+    </option>
 
     <!-- Metering -->
-    <portal id="metering">
+    <option id="metering">
       <requiredRole value="MeteringRole.ROLEID" />
 
-      <sublinks>
+      <links>
         <option id="allTrends">
           <link>/operator/Metering/Metering.jsp</link>
           <requireRole value="TrendingRole.ROLEID"/>
@@ -53,19 +54,26 @@
         <option id="bulkImporter">
           <link>/spring/amr/bulkimporter/home</link>
           <requireProperty value="operator.MeteringRole.IMPORTER_ENABLED"/>
+          <sublinks>
+            <option></option>
+            <option></option>
+            <option></option>
+            <option></option>
+            <option></option>
+          </sublinks>
         </option>
 
         <option id="metering">
           <link>/spring/csr/search</link>
         </option>
-      </sublinks>
-    </portal>
+      </links>
+    </option>
 
     <!-- Client Launcher -->
-    <portal id="clientLauncher">
+    <option id="clientLauncher">
       <requireProperty value="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED" />
    
-      <sublinks>
+      <links>
         <option id="databaseEditor">
           <requireRole value="DBEditorRole.ROLEID" />
           <link>javascript:jwsLaunch('/jws/dbeditor.jnlp')</link>
@@ -91,14 +99,14 @@
           <link>javascript:jwsLaunch('/jws/commander.jnlp')</link>
         </option>
         
-      </sublinks>
-    </portal>
+      </links>
+    </option>
 
     <!-- Load Response -->
-    <portal id="loadResponse">
+    <option id="loadResponse">
       <requiredRole value="DirectLoadcontrolRole.ROLEID"/>
       
-      <sublinks>
+      <links>
         <option id="direct">
           <link>/operator/LoadControl/oper_direct.jsp</link>
           <requireRole value="DirectLoadcontrolRole.ROLEID"/>
@@ -121,26 +129,26 @@
           <requireProperty value="DirectLoadcontrolRole.THREE_TIER_DIRECT" />
         </option>
         
-      </sublinks>
-    </portal>
+      </links>
+    </option>
 
     <!-- Capacitor Control -->
-    <portal id="capacitorControl">
+    <option id="capacitorControl">
       <requireRole value="CBCSettingsRole.ROLEID" />
 
-      <sublinks>
+      <links>
         <option id="capControl">
           <link>/capcontrol/subareas.jsp</link>
         </option>
 
-      </sublinks>
-    </portal>
+      </links>
+    </option>
 
     <!-- Hardware Inventory -->
-    <portal id="hardwareInventory">
+    <option id="hardwareInventory">
       <requireRole value="InventoryRole.ROLEID" />
       
-      <sublinks>
+      <links>
         <option id="inventory">
           <link>/operator/Hardware/Filter.jsp</link>
           <requireProperty value="InventoryRole.INVENTORY_SHOW_ALL" />
@@ -151,13 +159,13 @@
           <requireProperty value="InventoryRole.PURCHASING_ACCESS" />
         </option>
       
-      </sublinks>
-    </portal>
+      </links>
+    </option>
 
     <!-- Analysis -->
-    <portal id="analysis">
+    <option id="analysis">
       
-      <sublinks>
+      <links>
         <option id="reporting">
           <link>/analysis/Reports.jsp</link>
           <requireRole value="ReportingRole.ROLEID"/>
@@ -168,14 +176,14 @@
           <requireRole value="CommanderRole.ROLEID" />
         </option>
 
-      </sublinks>
-    </portal>
+      </links>
+    </option>
     
     <!-- Administration -->
-    <portal id="administration">
+    <option id="administration">
       <requireRole value="operator.AdministratorRole.ROLEID" />
 
-      <sublinks>
+      <links>
         <option id="configEnergyCompany">
           <link>/operator/Admin/AdminTest.jsp</link>
           <requireProperty value="operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"/>
@@ -230,21 +238,21 @@
           <requireProperty value="AdministratorRole.ADMIN_VIEW_CONFIG"/>
         </option>
 
-      </sublinks>
-    </portal>
+      </links>
+    </option>
     
-
+    </links>
   </portals>    
 
   <!--  Modules -->
   <module name="amr">
     <skin name="standard"/>
-   	<toplinks>
+   	<links>
    		<option id="deviceselection">
    		   <link>/spring/csr/search</link>	
    		</option>
    		<option id="billing">
-   		   <sublinks>
+   		   <links>
 	          <option id="generation">
 	            <requireRole value="BillingRole.ROLEID"/>
 	   		    <link>/operator/Metering/Billing.jsp</link>
@@ -253,7 +261,7 @@
 	          	<requireRole value="BillingRole.ROLEID"/>
 	            <link>/spring/dynamicBilling/overview</link>
 	          </option>
-          </sublinks>	
+          </links>	
    		</option>
 		<option id="scheduler">
 		   <requireRole value="SchedulerRole.ROLEID"/>
@@ -261,7 +269,7 @@
    		</option>
 		<option id="devicegroups">
           <requireRole value="CommanderRole.ROLEID"/> <!-- THIS ROLE will change when more group items are added -->
-		  <sublinks>
+		  <links>
 		    <option id="home">
               <link>/spring/group/home</link>
             </option>
@@ -269,16 +277,106 @@
               <link>/spring/group/groupProcessing</link>
               <requireRole value="CommanderRole.ROLEID"/>
             </option>
-          </sublinks>
+          </links>
 	    </option>
-  	</toplinks>  
+  	</links>  
+    <search action="/spring/csr/search" method="get" fieldname="Quick Search"/>
+  </module>
+
+  <module name="consumer">
+    <skin name="leftSideMenu"/>
+   	<links>
+   		<option id="account">
+   		   <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_ACCOUNT_GENERAL" />
+   		   <links>
+	          <option id="general">
+	   		    <link>/spring/stars/consumer/general</link>
+	          </option>
+	          <option id="contacts">
+	            <requireProperty value="ResidentialCustomerRole.CONTACTS_ACCESS" />
+                <link>/user/ConsumerStat/stat/Contacts.jsp</link>
+	          </option>
+          </links>	
+   		</option>
+		<option id="thermostat">
+   		   <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT" />
+   		   <links>
+	   		   <option id="all">
+	               <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL" />
+	   		       <links>
+		              <option id="select">
+		                <link>/user/ConsumerStat/stat/AllTherm.jsp</link>
+		              </option>
+		              <option id="schedule">
+		                <link>/user/ConsumerStat/stat/ThermSchedule.jsp?AllTherm</link>
+		              </option>
+		              <option id="manual">
+		                <link>/user/ConsumerStat/stat/Thermostat.jsp?AllTherm</link>
+		              </option>
+		          </links>  
+	   		   </option>	
+	   		   <option>
+	   		       <dynamic>themostatMenuOption</dynamic>
+	   		   </option>	
+   		   </links>
+   		</option>
+		<option id="programs">
+		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
+		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
+		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT" />
+		  <links>
+		    <option id="controlHistory">
+			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
+              <link>/user/ConsumerStat/stat/ProgramHist.jsp</link>
+            </option>
+		    <option id="enrollment">
+			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
+              <link>/user/ConsumerStat/stat/Enrollment.jsp</link>
+            </option>
+		    <option id="optOut">
+			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT" />
+              <link>/user/ConsumerStat/stat/OptOut.jsp</link>
+            </option>
+          </links>
+	    </option>
+		<option id="trending">
+		  <requireRole value="TrendingRole.ROLEID" />
+		  <links>
+		    <option>
+				<dynamic>trendingMenuOption</dynamic>
+            </option>
+          </links>
+	    </option>
+		<option id="questions">
+		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL" />
+		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ" />
+		  <links>
+		    <option id="contactUs">
+			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL" />
+              <link>/user/ConsumerStat/stat/Util.jsp</link>
+            </option>
+		    <option id="faq">
+			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ" />
+              <link>/user/ConsumerStat/stat/FAQ.jsp</link>
+            </option>
+          </links>
+	    </option>
+		<option id="administration">
+		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN" />
+		  <links>
+		    <option id="changeLogin">
+              <link>/user/ConsumerStat/stat/Password.jsp</link>
+            </option>
+          </links>
+	    </option>
+  	</links>  
   </module>
   
   <module name="capcontrol">
-    <toplinks>
+    <links>
       <option id="create">
         <requireProperty value="capcontrol.CBCSettingsRole.CBC_DATABASE_EDIT"/>
-        <sublinks>
+        <links>
           <option id="area">
             <link>/editor/cbcWizBase.jsf?type=4002</link>
           </option>
@@ -306,11 +404,11 @@
           <option id="strategy">
             <link>/editor/cbcWizBase.jsf?type=5</link>
           </option>
-        </sublinks>
+        </links>
       </option>
       <option id="analysis">
         <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_REPORTS"/>
-        <sublinks>
+        <links>
           <option id="todaykvarperwatt">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('Today kVAR/Watt', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=VW&amp;period=DAY')</script>
@@ -327,10 +425,10 @@
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_GRAPHS"/>
             <script>loadPointChartGreyBox('30 Day PF', '/spring/reports/cbcAnalysisChart/cbcChart?analysisType=PF&amp;period=MONTH')</script>
           </option>
-        </sublinks>
+        </links>
       </option>
       <option id="view">
-        <sublinks>
+        <links>
           <option id="schedules">
             <script>post('/editor/paoSchedListBase.jsf')</script>
           </option>
@@ -350,10 +448,10 @@
        	  <option id="specialareas">
        		<link>specialSubAreas.jsp</link>  
        	  </option>
-        </sublinks>
+        </links>
       </option>
       <option id="orphans">
-        <sublinks>
+        <links>
         <option id="orphanedsubstations">
             <script>resultsPost('cbc_lastSearch=__cti_oSubstations__')</script>
           </option>
@@ -369,9 +467,9 @@
           <option id="orphanedcbcs">
             <script>resultsPost('cbc_lastSearch=__cti_oCBCs__')</script>
           </option>
-        </sublinks>
+        </links>
       </option>
-    </toplinks>
+    </links>
     <search action="results.jsp" method="post" fieldname="cbc_lastSearch"/>
     <skin name="standard"/>
     <css file="css/base.css"/> <!-- normally this should be an absolute path -->
@@ -385,12 +483,12 @@
   </module>
   
   <module name="commercialcurtailment">
-    <toplinks>
+    <links>
       <option id="ccurt_events">
         <link>/cc/programSelect.jsf</link>
       </option>
       <option id="ccurt_setup">
-        <sublinks>
+        <links>
           <option id="ccurt_programs">
             <link>/cc/programList.jsf</link>
           </option>
@@ -400,16 +498,16 @@
           <option id="ccurt_customers">
             <link>/cc/customerList.jsf</link>
           </option>
-        </sublinks>
+        </links>
       </option>
-    </toplinks>
+    </links>
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
   </module>
   
   <module name="commercialcurtailment_user">
-    <toplinks>
+    <links>
       <option id="control">
         <link>/cc/user/overview.jsf</link>
       </option>
@@ -419,16 +517,16 @@
       <option id="profile">
         <link>/user/CILC/customerProfile.jsf</link>
       </option>
-    </toplinks>
+    </links>
     <css file="/cc/base.css"/>
     <css file="/WebConfig/yukon/styles/commcurtaillogos.css"/>
     <skin name="standard"/>
   </module>
   
   <module name="reporting">
-   <toplinks>
+   <links>
       <option id="reports">
-        <sublinks>
+        <links>
           <option id="administrator">
             <link>/analysis/Reports.jsp?groupType=ADMINISTRATIVE</link>
             <requireProperty value="ReportingRole.ADMIN_REPORTS_GROUP"/>
@@ -465,9 +563,9 @@
             <link>/analysis/Reports.jsp?groupType=CCURT</link>
             <requireProperty value="ReportingRole.CI_CURTAILMENT_REPORTS_GROUP"/>
           </option>
-        </sublinks>
+        </links>
       </option>
-    </toplinks>
+    </links>
   	<skin name="standard"/>
   	<css file="/WebConfig/yukon/Base.css"/>
     <css file="/WebConfig/yukon/styles/reportinglogos.css"/>
@@ -489,26 +587,26 @@
     <css file="setupStyle.css"/>
     
     
-    <toplinks>
+    <links>
     <option id="multispeak">
-    	<sublinks>
+    	<links>
     	  <option id="interfaces">
     		<link>/msp_setup.jsp?init</link>
     	  </option>
     	  <option id="mappings">
     		<link>/spring/multispeak/setup/routemapping/mappings</link>
     	  </option>
-    	</sublinks>
+    	</links>
       </option>
-    </toplinks>
+    </links>
   </module>
         
   <module name="debug">
     <skin name="standard"/>
     
-    <toplinks>
+    <links>
     <option id="scheduler">
-    	<sublinks>
+    	<links>
     	  <option id="active" >
     		<link>/spring/debug/scheduler/active</link>
     	  </option>
@@ -518,15 +616,19 @@
     	  <option id="jobs">
     		<link>/spring/debug/scheduler/jobs</link>
     	  </option>
-    	</sublinks>
+    	</links>
       </option>
-    </toplinks>
+    </links>
   </module>
         
    <module name="blank">
     <skin name="standard"/>
   </module>
 
+  <module name="dr_user">
+    <skin name="standard"/>
+  </module>
+  
   <module name="operations">
     <skin name="standard"/>
     <css file="/WebConfig/yukon/styles/operationsStyles.css"/>
@@ -538,11 +640,11 @@
   </module>
 
   <module name="commander">
-    <toplinks>
+    <links>
       <option id="deviceselection">
         <link>/apps/SelectDevice.jsp</link>
       </option>
-    </toplinks>
+    </links>
     <skin name="standard"/>
     <css file="/WebConfig/yukon/styles/commanderStyles.css"/>
     <css file="/WebConfig/yukon/Base.css"/>
@@ -552,9 +654,9 @@
     <skin name="standard"/>
     <css file="/WebConfig/yukon/styles/commanderStyles.css"/>
     
-    <toplinks>
+    <links>
       <option id="devices">
-        <sublinks>
+        <links>
           <option id="mct">
             <link>SelectDevice.jsp?SortBy=1004</link>
           </option>
@@ -570,10 +672,10 @@
           <option id="group">
             <link>/spring/group/groupProcessing</link>
           </option>
-        </sublinks>
+        </links>
       </option>
       <option id="lm">
-        <sublinks>
+        <links>
           <option id="group">
             <link>SelectDevice.jsp?SortBy=1005</link>
           </option>
@@ -593,15 +695,15 @@
             <link>CommandDevice.jsp?deviceID=-1&amp;manual&amp;sa305</link>
             <requireProperty value="CommanderRole.DCU_SA305_SERIAL_MODEL"/>
           </option>
-        </sublinks>
+        </links>
       </option>
       <option id="capcontrol">
-        <sublinks>
+        <links>
           <option id="capcontrolsub">
             <link>SelectDevice.jsp?SortBy=4</link>
           </option>
-        </sublinks>
+        </links>
       </option>
-    </toplinks>
+    </links>
   </module>
 </mainmenu>

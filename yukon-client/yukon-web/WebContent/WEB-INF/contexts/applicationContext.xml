@@ -38,8 +38,14 @@
     </bean>
     
     <bean id="menuBuilder" class="com.cannontech.web.menu.CommonModuleBuilder" init-method="processConfigFile">
-      <constructor-arg value="/WEB-INF/module_config.xml"/>
-      <property name="userCheckerFactory" ref="rolePropertyUserCheckerFactory"/>
+        <constructor-arg value="/WEB-INF/module_config.xml"/>
+        <property name="userCheckerFactory" ref="rolePropertyUserCheckerFactory"/>
+        <property name="menuOptionProducerFactory">
+            <bean class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
+                <property name="serviceLocatorInterface" 
+                    value="com.cannontech.web.menu.option.producer.MenuOptionProducerFactory" />
+            </bean>
+        </property>
     </bean>
     
     <bean id="widgetInput.deviceId" class="com.cannontech.web.widget.support.SimpleWidgetInput">
@@ -688,5 +694,15 @@
     <bean id="starsSessionInitializer" class="com.cannontech.web.login.impl.StarsSessionInitializer">
         <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
     </bean>
+    
+    <bean id="themostatMenuOption" class="com.cannontech.web.menu.option.producer.ThermostatMenuOptionProducer">
+        <property name="inventoryDao" ref="inventoryDao" />
+        <property name="customerAccountDao" ref="customerAccountDao" />
+    </bean>
+    
+    <bean id="trendingMenuOption" class="com.cannontech.web.menu.option.producer.TrendingMenuOptionProducer">
+        <property name="graphDao" ref="graphDao" />
+    </bean>
+
     
 </beans>

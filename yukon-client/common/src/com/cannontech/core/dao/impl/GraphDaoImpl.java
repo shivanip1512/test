@@ -1,8 +1,13 @@
 package com.cannontech.core.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.GraphDao;
@@ -22,6 +27,8 @@ public final class GraphDaoImpl implements GraphDao {
     
     private PaoDao paoDao;
     private IDatabaseCache databaseCache;
+    
+    private SimpleJdbcTemplate simpleJdbcTemplate;
     
 	public GraphDaoImpl() { }
 
@@ -116,6 +123,45 @@ public final class GraphDaoImpl implements GraphDao {
 
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+
+    @Override
+    public List<LiteGraphDefinition> getGraphDefinitionsForUser(int yukonUserId) {
+
+        String sql = "SELECT gd.GraphDefinitionId, gd.name " + 
+            "FROM GraphDefinition gd, GraphCustomerList gcl, Customer c, Contact co " + 
+            "WHERE gd.GraphDefinitionId = gcl.GraphDefinitionId " + 
+            "AND gcl.CustomerId = c.customerId " + 
+            "AND c.primaryContactId = co.contactId " + 
+            "AND co.loginId = ? " + 
+            "ORDER BY gd.name";
+
+        List<LiteGraphDefinition> liteGraph = simpleJdbcTemplate.query(
+                       sql,
+                       new ParameterizedRowMapper<LiteGraphDefinition>() {
+
+                           @Override
+                           public LiteGraphDefinition mapRow(
+                                   ResultSet rs,
+                                   int rowNum)
+                                   throws SQLException {
+
+                               int graphId = rs.getInt("GraphDefinitionId");
+                               String name = rs.getString("name");
+
+                               LiteGraphDefinition definition = new LiteGraphDefinition(graphId,
+                                                                                        name);
+
+                               return definition;
+                           }
+                       },
+                       yukonUserId);
+
+        return liteGraph;
     }
     
 }

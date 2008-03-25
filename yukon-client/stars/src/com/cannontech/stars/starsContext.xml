@@ -57,6 +57,10 @@
         <property name="nextValueHelper" ref="nextValueHelper" />
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
+    
+    <bean id="inventoryDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryDaoImpl">
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
+    </bean>
 
     <bean id="inventoryBaseDao"
         class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl">

@@ -1,7 +1,9 @@
-package com.cannontech.web.menu;
+package com.cannontech.web.menu.renderer;
 
 import java.io.IOException;
 import java.io.Writer;
+
+import com.cannontech.web.menu.MenuFeatureSet;
 
 /**
  * Some day there may be other MenuRenderers. So, this interface describes what

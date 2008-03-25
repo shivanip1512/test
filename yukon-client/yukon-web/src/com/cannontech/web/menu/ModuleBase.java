@@ -7,7 +7,9 @@ import java.util.List;
 import org.apache.commons.collections.iterators.FilterIterator;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.user.checker.UserChecker;
+import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 
 /**
  * Represents the logical base of the menu for a given module. The main components are
@@ -21,7 +23,7 @@ public class ModuleBase {
     private String searchPath;
     private String searchFieldName;
     private String searchMethod;
-    private List<BaseMenuOption> portalLinks;
+    private List<MenuOptionProducer> portalLinks;
     private List<String> cssFiles = new ArrayList<String>(2);
     private List<String> scriptFiles = new ArrayList<String>(2);
     private String skin;
@@ -48,16 +50,17 @@ public class ModuleBase {
         this.searchPath = searchPath;
     }
     
-    public List<BaseMenuOption> getPortalLinks() {
+    public List<MenuOptionProducer> getPortalLinks() {
         return portalLinks;
     }
     
-    public void setPortalLinks(List<BaseMenuOption> portalLinks) {
+    public void setPortalLinks(List<MenuOptionProducer> portalLinks) {
         this.portalLinks = portalLinks;
     }
     
-    public Iterator<BaseMenuOption> getValidPortalLinks(LiteYukonUser user) {
-        return new FilterIterator(portalLinks.iterator(), new CheckUserPredicate(user));
+    @SuppressWarnings("unchecked")
+    public Iterator<MenuOptionProducer> getValidPortalLinks(YukonUserContext userContext) {
+        return new FilterIterator(portalLinks.iterator(), new CheckUserPredicate(userContext));
     }
     
     public boolean isUserAuthorized(LiteYukonUser user) {

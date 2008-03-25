@@ -21,19 +21,17 @@ import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.application.WebClientRole;
-import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.CommonModuleBuilder;
-import com.cannontech.web.menu.MenuRenderer;
 import com.cannontech.web.menu.ModuleBase;
-import com.cannontech.web.menu.StandardMenuRenderer;
+import com.cannontech.web.menu.renderer.LeftSideMenuRenderer;
+import com.cannontech.web.menu.renderer.MenuRenderer;
+import com.cannontech.web.menu.renderer.StandardMenuRenderer;
 import com.cannontech.web.taglib.StandardPageInfo;
 import com.cannontech.web.taglib.StandardPageTag;
 import com.cannontech.web.taglib.Writable;
@@ -59,7 +57,7 @@ public class LayoutController {
 
     @RequestMapping("/")
     public String display(HttpServletRequest request, HttpServletResponse response, ModelMap map, Locale locale) throws JspException {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+
         // get data passed over in attributes
         final BodyContent bodyContent = StandardPageTag.getBodyContent(request);
         map.addAttribute("bodyContent", new Writable() {
@@ -99,11 +97,16 @@ public class LayoutController {
         finalScriptList.addAll(info.getScriptFiles());
         map.addAttribute("javaScriptFiles", finalScriptList);
         
+        String skin = moduleBase.getSkin();
         if (info.isShowMenu()) {
             // setup menu
-            MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
-            final MenuRenderer menuRenderer = new StandardMenuRenderer(request, moduleBase, messageSourceAccessor);
-
+            
+            final MenuRenderer menuRenderer;
+            if("leftSideMenu".equals(skin)) {
+                menuRenderer = new LeftSideMenuRenderer(request, moduleBase, messageSourceResolver);
+            } else {
+                menuRenderer = new StandardMenuRenderer(request, moduleBase, messageSourceResolver);
+            }
             menuRenderer.setMenuSelection(info.getMenuSelection());
             menuRenderer.setBreadCrumb(info.getBreadCrumbs());
             map.addAttribute("menuRenderer", new Writable() {
@@ -116,7 +119,7 @@ public class LayoutController {
         // prevent Firefox "back-forward cache" http://developer.mozilla.org/en/docs/Using_Firefox_1.5_caching
         response.addHeader("Cache-Control", "no-store");                                                                                                
 
-        return moduleBase.getSkin();
+        return skin;
     }
     
     @ModelAttribute("yukonVersion")
