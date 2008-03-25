@@ -584,8 +584,10 @@ proc exportBillingFile { args } {
             append groupType "\""
 
             if { $argCount > 2 } {
-                # format was specified
+                # format was specified, surround billing format with quotes, in case there are spaces in it
+				append billFormat "\""
                 append billFormat [lindex $args 2]
+                append billFormat "\""
             } else {
                 # default the format
                 append billFormat "CTI-CSV"
@@ -603,9 +605,12 @@ proc exportBillingFile { args } {
                 set exportFile [lindex $args 4]
             }
 
-            # add the file name to path
+            # add the file name to path, surround export filename with quotes, in case there are spaces in it
             append exportFile [lindex $args 3]
-            append exportSpec $exportFile
+			set exportFileNameFull "\""
+			append exportFileNameFull $exportFile
+            append exportFileNameFull "\""
+            append exportSpec $exportFileNameFull
 
             if { $argCount < 6 } {
                 # export the file with 5 parameters
