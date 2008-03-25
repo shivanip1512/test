@@ -18,8 +18,8 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
-import com.cannontech.common.device.groups.service.DeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
@@ -132,7 +132,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         this.deviceGroupDao = deviceGroupDao;
     }
 
-    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, DeviceGroupPredicate deviceGroupPredicate) {
+    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, Predicate<DeviceGroup> deviceGroupPredicate) {
 
         DeviceGroupHierarchy hierarchy = new DeviceGroupHierarchy();
         hierarchy.setGroup(root);
@@ -146,7 +146,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
      * Helper method to recursively set child hierarchy
      * @param hierarchy - parent hierarchy to set children on
      */
-    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, DeviceGroupPredicate deviceGroupPredicate) {
+    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate) {
 
         List<DeviceGroupHierarchy> childGroupList = new ArrayList<DeviceGroupHierarchy>();
         List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(hierarchy.getGroup());

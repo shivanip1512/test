@@ -1,19 +1,12 @@
 package com.cannontech.common.device.groups.service;
 
-import org.apache.commons.collections.Predicate;
+import com.cannontech.common.util.predicate.Predicate;
 
 import com.cannontech.common.device.groups.model.DeviceGroup;
 
-public class AnyDeviceGroupPredicate implements Predicate, DeviceGroupPredicate {
-
-    public AnyDeviceGroupPredicate() {
-        super();
-    }
+public class AnyDeviceGroupPredicate implements Predicate<DeviceGroup> {
     
-    public boolean evaluate(Object obj) {
-        if (!(obj instanceof DeviceGroup)) {
-            return false;
-        }
+    public boolean evaluate(DeviceGroup deviceGroup) {
         return true;
     }
 }

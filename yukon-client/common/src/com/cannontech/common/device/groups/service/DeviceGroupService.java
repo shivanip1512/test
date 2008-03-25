@@ -7,6 +7,7 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.common.util.predicate.Predicate;
 
 /**
  * This is the primary interface that should be used for determining what devices
@@ -83,6 +84,6 @@ public interface DeviceGroupService {
      * @param predicate
      * @return
      */
-    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, DeviceGroupPredicate predicate);
+    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, Predicate<DeviceGroup> predicate);
 
 }
