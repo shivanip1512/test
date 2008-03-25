@@ -35,6 +35,8 @@
         <webClassPathEntry>/third-party/antlr-2.7.6rc1.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm-attrs.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/asm.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/aspectjrt.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/aspectjweaver.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/axis.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/batik.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/bsf-2.3.0.jar</webClassPathEntry>

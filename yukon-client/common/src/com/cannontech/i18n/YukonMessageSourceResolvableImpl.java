@@ -16,6 +16,11 @@ public class YukonMessageSourceResolvableImpl extends
         this.code = code;
     }
 
+    public YukonMessageSourceResolvableImpl(String code, Object[] args, String defaultMessage) {
+        super(new String[]{ code }, args, defaultMessage);
+        this.code = code;
+    }
+    
     @Override
     public String getCode() {
         return this.code;

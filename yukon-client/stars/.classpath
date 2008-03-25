@@ -4,6 +4,10 @@
 	<classpathentry kind="src" path="app"/>
 	<classpathentry kind="src" path="test"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/common"/>
+	<classpathentry kind="src" path="/commander"/>
+	<classpathentry kind="src" path="/dbeditor"/>
+	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/SqlServer.jar"/>
 	<classpathentry kind="lib" path="/third-party/acme.jar"/>
 	<classpathentry kind="lib" path="/third-party/classes12.jar"/>
@@ -11,16 +15,12 @@
 	<classpathentry kind="lib" path="/third-party/led.jar"/>
 	<classpathentry kind="lib" path="/third-party/rwav.jar"/>
 	<classpathentry kind="lib" path="/third-party/struts.jar"/>
-	<classpathentry kind="src" path="/common"/>
 	<classpathentry kind="lib" path="/third-party/jaxm-runtime.jar"/>
 	<classpathentry kind="lib" path="/third-party/jruntags.jar"/>
 	<classpathentry kind="lib" path="/third-party/castor-xml.jar"/>
 	<classpathentry kind="lib" path="/third-party/dom4j.jar"/>
-	<classpathentry kind="src" path="/commander"/>
 	<classpathentry kind="lib" path="/third-party/jtds.jar"/>
-	<classpathentry kind="src" path="/dbeditor"/>
 	<classpathentry kind="lib" path="/third-party/saaj.jar"/>
-	<classpathentry kind="lib" path="/third-party/servlet-api.jar"/>
 	<classpathentry kind="lib" path="/third-party/mail.jar"/>
 	<classpathentry kind="lib" path="/third-party/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="/third-party/spring-webmvc.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.1-with-dependencies.zip"/>

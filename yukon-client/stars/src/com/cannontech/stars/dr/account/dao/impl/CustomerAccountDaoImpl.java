@@ -5,12 +5,14 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.commons.lang.Validate;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -38,7 +40,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         
         updateSql = "UPDATE CustomerAccount SET AccountSiteId = ?, AccountNumber = ?, CustomerId = ?, BillingAddressId = ?, AccountNotes = ? WHERE AccountId = ?";
         
-        selectSql = "SELECT AccountId,AccountSiteId,AccountNumber,CustomerId,BillingAddressId,AccountNotes FROM CustomerAccount";
+        selectSql = "SELECT AccountId,AccountSiteId,AccountNumber,CustomerAccount.CustomerId,BillingAddressId,AccountNotes FROM CustomerAccount";
         
         selectByIdSql = selectSql + " WHERE AccountId = ?";
         
@@ -101,6 +103,25 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         CustomerAccount account = simpleJdbcTemplate.queryForObject(selectByAccountNumberSql, rowMapper, accountNumber);
         return account;
     }
+    
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<CustomerAccount> getByUser(final LiteYukonUser user) throws DataAccessException {
+        Validate.notNull(user, "user parameter cannot be null.");
+        
+        final StringBuilder sb = new StringBuilder(selectSql);
+        sb.append(",Customer,Contact,YukonUser");
+        sb.append(" WHERE CustomerAccount.CustomerId = Customer.CustomerId"); 
+        sb.append(" AND Customer.PrimaryContactId = Contact.ContactId");
+        sb.append(" AND YukonUser.UserId = Contact.LoginId");
+        sb.append(" AND YukonUser.UserId = ? ");
+        sb.append(" ORDER BY CustomerAccount.AccountId");
+        
+        String sql = sb.toString();
+        List<CustomerAccount> list = simpleJdbcTemplate.query(sql, rowMapper, user.getUserID());
+        return list;
+    }
+    
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccount> getAll() {

@@ -48,6 +48,8 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/quartz-all-1.6.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/dom4j.jar"/>
 	<classpathentry kind="lib" path="/third-party/spring-test.jar" sourcepath="Z:/java/Third-Party Sources/spring-framework-2.5.2-with-dependencies.zip"/>
-	<classpathentry kind="lib" path="/third-party/junit-4.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/junit-4.4.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/aspectjrt.jar"/>
+	<classpathentry exported="true" kind="lib" path="/third-party/aspectjweaver.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

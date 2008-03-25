@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.dao.DataAccessException;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 
@@ -18,6 +19,8 @@ public interface CustomerAccountDao {
     public CustomerAccount getById(int accountId) throws DataAccessException;
     
     public CustomerAccount getByAccountNumber(String accountNumber) throws DataAccessException;
+    
+    public List<CustomerAccount> getByUser(LiteYukonUser user) throws DataAccessException;
     
     public List<CustomerAccount> getAll();
     

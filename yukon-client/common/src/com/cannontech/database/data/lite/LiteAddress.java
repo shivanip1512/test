@@ -143,5 +143,26 @@ public class LiteAddress extends LiteBase {
 	public void setCounty(String county) {
 		this.county = county;
 	}
+	
+	/**
+	 * @return a HTML formated String of this LiteAddress
+	 */
+	public String toHTMLString() {
+	    final StringBuilder sb = new StringBuilder();
+
+	    if (notEmpty(locationAddress1)) sb.append(locationAddress1 + "<br>");
+	    if (notEmpty(locationAddress2)) sb.append(locationAddress2 + "<br>");
+	    if (notEmpty(cityName)) sb.append(cityName + ", ");
+	    if (notEmpty(stateCode)) sb.append(stateCode + " ");
+	    if (notEmpty(zipCode)) sb.append(zipCode);
+	    
+	    String toString = sb.toString();
+	    return toString;
+	}
+	
+	private boolean notEmpty(String value) {
+	    boolean result = (value != null && value.trim().length() > 0);
+	    return result;
+	}
 
 }

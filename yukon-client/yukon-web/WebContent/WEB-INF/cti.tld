@@ -581,6 +581,17 @@
   </tag> 
   
   <tag>
+    <name>customerAccountInfoTag</name>
+    <tag-class>com.cannontech.web.stars.dr.taglib.CustomerAccountInfoTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>accountNumber</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>dataUpdaterCallback</name>
     <tag-class>com.cannontech.web.updater.DataUpdaterCallbackTag</tag-class>
     <body-content>empty</body-content>
