@@ -1128,7 +1128,6 @@ void CtiCCSubstationBusStore::reset()
 
             resetAllOperationStats();
             reCalculateOperationStatsFromDatabase( );
-            printAllOperationStats();
 
             if ( _CC_DEBUG )
             {
@@ -3629,6 +3628,10 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                                          }
                                          currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
                                          currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                         if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
+                                         {
+                                             currentCCSubstationBus->figureNextCheckTime();
+                                         }
                                          for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
                                          {
                                              ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
@@ -3725,6 +3728,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                          }
                     }
 
+                    CtiHolidayManager::getInstance().refresh();
                     if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3992,6 +3996,10 @@ void CtiCCSubstationBusStore::reloadAndAssignHolidayStrategysFromDatabase(long s
                                          }
                                          currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
                                          currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                         if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
+                                         {
+                                             currentCCSubstationBus->figureNextCheckTime();
+                                         }
                                          for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
                                          {
                                              ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
@@ -4596,8 +4604,6 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                 pointid_station_map->insert(make_pair(currentCCSubstation->getVoltReductionControlId(), currentCCSubstation));
                                 //currentCCSubstation->getPointIds()->push_back(currentCCSubstation->getVoltReductionControlId());
                             }
-                            
-                            ccSubstations->push_back( currentCCSubstation );
                         }
 
                     }
@@ -4675,21 +4681,27 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                             rdr["substationbusid"] >> currentSubstationId;
                             rdr["displayorder"] >>displayOrder;
                             currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
-                            currentCCSubstation->setParentId(currentAreaId);
-                            currentCCSubstation->setDisplayOrder(displayOrder);
-                            CtiCCAreaPtr currentCCArea = NULL;
-                       
-                            if (substationId > 0)
-                                currentCCArea = findAreaByPAObjectID(currentAreaId);
-                            else
+                            if (currentCCSubstation != NULL)
                             {
-                                if (paobject_area_map->find(currentAreaId) != paobject_area_map->end())
-                                    currentCCArea = paobject_area_map->find(currentAreaId)->second;
-                            }
-                            substation_area_map->insert(make_pair(currentSubstationId, currentAreaId));
-                            if (currentCCArea != NULL)
-                            {
-                                currentCCArea->getSubStationList()->push_back(currentSubstationId);
+                            
+                                currentCCSubstation->setParentId(currentAreaId);
+                                currentCCSubstation->setDisplayOrder(displayOrder);
+                                CtiCCAreaPtr currentCCArea = NULL;
+                               
+                                if (substationId > 0)
+                                    currentCCArea = findAreaByPAObjectID(currentAreaId);
+                                else
+                                {
+                                    if (paobject_area_map->find(currentAreaId) != paobject_area_map->end())
+                                        currentCCArea = paobject_area_map->find(currentAreaId)->second;
+                                }
+                                substation_area_map->insert(make_pair(currentSubstationId, currentAreaId));
+                                if (currentCCArea != NULL)
+                                {
+                                    currentCCArea->getSubStationList()->push_back(currentSubstationId);
+                                }
+                               
+                                ccSubstations->push_back( currentCCSubstation );
                             }
                         }
                         
@@ -4728,7 +4740,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                             CtiCCSpecialPtr currentCCSpArea = NULL;
                             if (substationId > 0)
                                 currentCCSpArea = findSpecialAreaByPAObjectID(currentSpAreaId);
-                            else
+                            else                                       
                             {
                                 if (paobject_specialarea_map->find(currentSpAreaId) != paobject_specialarea_map->end())
                                     currentCCSpArea = paobject_specialarea_map->find(currentSpAreaId)->second;
@@ -4743,7 +4755,18 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                     if (currentStation->getSaEnabledId() == 0) 
                                     {
                                         currentStation->setSaEnabledId(currentSpAreaId);
+                                    } 
+                                    if (!currentCCSpArea->getDisableFlag())
+                                    {
+                                        currentStation->setSaEnabledId(currentSpAreaId);
+                                        currentStation->setSaEnabledFlag(TRUE);
                                     }
+                                    if (currentStation->getParentId() <= 0)
+                                    {
+                                        currentStation->setParentId(currentSpAreaId);
+                                        //currentStation->setParentId(0);
+                                        ccSubstations->push_back( currentStation );
+                                    } 
                                     
                                 }
                                 substation_specialarea_map->insert(make_pair(currentSubId, currentSpAreaId));
@@ -4801,6 +4824,14 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                                     if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
                                     {//op stats point ids.
                                         if (currentStation->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_station_map->insert(make_pair(tempPointId,currentStation));
+                                            currentStation->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
+                                    else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
+                                    {//op stats point ids.
+                                        if (currentStation->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                                         {
                                             pointid_station_map->insert(make_pair(tempPointId,currentStation));
                                             currentStation->getPointIds()->push_back(tempPointId);
@@ -5037,6 +5068,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                     }
 
                     //CHECK HOLIDAY SETTINGS
+                    CtiHolidayManager::getInstance().refresh();
                     if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
                     {
                         RWDBSelector selector = db.selector();
@@ -5445,6 +5477,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                     }
 
                     //CHECK FOR HOLIDAY SETTTINGS
+                    CtiHolidayManager::getInstance().refresh();
                     if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
                     {
                         RWDBSelector selector = db.selector();
@@ -5612,6 +5645,14 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                                             currentSpArea->getPointIds()->push_back(tempPointId);
                                         }
                                     }
+                                    else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
+                                    {//op stats point ids.
+                                        if (currentSpArea->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_specialarea_map->insert(make_pair(tempPointId,currentSpArea));
+                                            currentSpArea->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
                                     else
                                     {//undefined area point
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5644,17 +5685,37 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                             dout << CtiTime() << " - " << selector.asString().data() << endl;
                         }
                         RWDBReader rdr = selector.reader(conn);
-                        long currentSubId;
+                        long currentSubId, currentSpAreaId;
                         RWDBNullIndicator isNull;
                         while ( rdr() )
                         {
 
                             rdr["substationbusid"] >> currentSubId;
+                            rdr["areaid"] >> currentSpAreaId;
+
                             //add substationbusids to special area list...;
                             reloadSubstationFromDatabase(currentSubId,&_paobject_substation_map,
                                                    &_paobject_area_map, &_paobject_specialarea_map, 
                                                          &_pointid_station_map, &_substation_area_map,
                                                    &_substation_specialarea_map, _ccSubstations );
+
+                            CtiCCSpecialPtr currentCCSpArea = findSpecialAreaByPAObjectID(currentSpAreaId);
+                            if( currentCCSpArea != NULL )
+                            {
+                                if (!currentCCSpArea->getDisableFlag())
+                                {
+                                     CtiCCSubstationPtr currentCCStation = findSubstationByPAObjectID(currentSubId);
+                                     if (currentCCStation != NULL)
+                                     {
+                                         if (!currentCCStation->getSaEnabledFlag())
+                                         {
+                                             currentCCStation->setSaEnabledFlag(TRUE);
+                                             currentCCStation->setSaEnabledId(currentSpAreaId);
+
+                                         }
+                                     }
+                                }
+                            }
 
                         }
 
@@ -5817,7 +5878,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
 
                             
-                                cCSubstationBuses->push_back(currentCCSubstationBus);
+                                //cCSubstationBuses->push_back(currentCCSubstationBus);
 
                         }
                         {
@@ -5853,38 +5914,43 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                 rdr["substationbusid"] >> currentSubBusId;
                                 rdr["displayorder"] >>displayOrder;
                                 currentCCSubstationBus = paobject_subbus_map->find(currentSubBusId)->second;
-                                currentCCSubstationBus->setParentId(currentSubstationId);
-                                currentCCSubstationBus->setDisplayOrder(displayOrder);
-                                CtiCCSubstationPtr currentCCSubstation = NULL;
+                                if (currentCCSubstationBus != NULL)
+                                {                                 
 
-                                if (subBusId > 0)
-                                    currentCCSubstation = findSubstationByPAObjectID(currentSubstationId);
-                                else
-                                {
-                                    if (paobject_substation_map->find(currentSubstationId) != paobject_substation_map->end())
-                                        currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
-                                }
-
-                                if (currentCCSubstation != NULL)
-                                {
-                                    currentCCSubstationBus->setParentName(currentCCSubstation->getPAOName());
-                                    list <LONG>::const_iterator iterBus = currentCCSubstation->getCCSubIds()->begin();
-                                    bool found = false;
-                                    for( ;iterBus != currentCCSubstation->getCCSubIds()->end(); iterBus++)
-                                    { 
-                                        if (*iterBus == currentSubBusId)
+                                    currentCCSubstationBus->setParentId(currentSubstationId);
+                                    currentCCSubstationBus->setDisplayOrder(displayOrder);
+                                    CtiCCSubstationPtr currentCCSubstation = NULL;
+                                   
+                                    if (subBusId > 0)
+                                        currentCCSubstation = findSubstationByPAObjectID(currentSubstationId);
+                                    else
+                                    {
+                                        if (paobject_substation_map->find(currentSubstationId) != paobject_substation_map->end())
+                                            currentCCSubstation = paobject_substation_map->find(currentSubstationId)->second;
+                                    }
+                                   
+                                    if (currentCCSubstation != NULL)
+                                    {
+                                        currentCCSubstationBus->setParentName(currentCCSubstation->getPAOName());
+                                        list <LONG>::const_iterator iterBus = currentCCSubstation->getCCSubIds()->begin();
+                                        bool found = false;
+                                        for( ;iterBus != currentCCSubstation->getCCSubIds()->end(); iterBus++)
+                                        { 
+                                            if (*iterBus == currentSubBusId)
+                                            {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if(!found)
                                         {
-                                            found = true;
-                                            break;
+                                            currentCCSubstation->getCCSubIds()->push_back(currentSubBusId);
                                         }
                                     }
-                                    if(!found)
-                                    {
-                                        currentCCSubstation->getCCSubIds()->push_back(currentSubBusId);
-                                    }
+                                   
+                                    cCSubstationBuses->push_back(currentCCSubstationBus);
+                                    subbus_substation_map->insert(make_pair(currentSubBusId, currentSubstationId));
                                 }
-
-                                subbus_substation_map->insert(make_pair(currentSubBusId, currentSubstationId));
                             }
                         }
                         {
@@ -5987,6 +6053,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                         }
 
                         //CHECK HOLIDAY SETTINGS
+                        CtiHolidayManager::getInstance().refresh();
                         if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
                         {
                             RWDBSelector selector = db.selector();
@@ -6069,6 +6136,10 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                              }
                                              currentCCSubstationBus->setStrategyId(currentCCStrategy->getStrategyId());
                                              currentCCSubstationBus->setStrategyValues(currentCCStrategy);
+                                             if (!stringCompareIgnoreCase(currentCCStrategy->getControlMethod(),CtiCCSubstationBus::TimeOfDayMethod) )
+                                             {
+                                                 currentCCSubstationBus->figureNextCheckTime();
+                                             }
                                              for (int i = 0; i < currentCCSubstationBus->getCCFeeders().size(); i++ )
                                              {
                                                  ((CtiCCFeederPtr)currentCCSubstationBus->getCCFeeders()[i])->setStrategyValues(currentCCStrategy);
@@ -6354,6 +6425,14 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                     else if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
                                     {//op stats point ids.
                                         if (currentCCSubstationBus->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
+                                            currentCCSubstationBus->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
+                                    else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
+                                    {//op stats point ids.
+                                        if (currentCCSubstationBus->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                                         {
                                             pointid_subbus_map->insert(make_pair(tempPointId,currentCCSubstationBus));
                                             currentCCSubstationBus->getPointIds()->push_back(tempPointId);
@@ -6697,6 +6776,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                          }
                     }
 
+                    CtiHolidayManager::getInstance().refresh();
                     if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
                     {
                         RWDBSelector selector = db.selector();
@@ -7025,6 +7105,14 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                                     else if ( tempPointOffset >= 10000  && tempPointOffset <=10003)
                                     {//op stats point ids.
                                         if (currentCCFeeder->getOperationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
+                                            currentCCFeeder->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
+                                    else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
+                                    {//op stats point ids.
+                                        if (currentCCFeeder->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
                                         {
                                             pointid_feeder_map->insert(make_pair(tempPointId,currentCCFeeder));
                                             currentCCFeeder->getPointIds()->push_back(tempPointId);
@@ -7442,6 +7530,14 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                                         pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
                                     }
                                 }
+                                else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
+                                {//op stats point ids.
+                                    if (currentCCCapBank->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                    {
+                                        currentCCCapBank->getPointIds()->push_back(tempPointId);
+                                        pointid_capbank_map->insert(make_pair(tempPointId,currentCCCapBank));
+                                    }
+                                }
                                 else if ( !(resolvePointType(tempPointType) == StatusPointType && tempPointOffset == -1)) //tag point = status with -1 offset
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -7783,12 +7879,6 @@ void CtiCCSubstationBusStore::reloadMonitorPointsFromDatabase(long capBankId, ma
 
                     CtiTime currentDateTime;
                     RWDBDatabase db = getDatabase();
-                    //RWDBTable yukonPAObjectTable = db.table("yukonpaobject");
-                    //RWDBTable pointTable = db.table("point");
-                   // RWDBTable deviceTable = db.table("device");
-                    //RWDBTable capBankTable = db.table("capbank");
-                   // RWDBTable dynamicCCCapBankTable = db.table("dynamiccccapbank");
-                   // RWDBTable ccFeederBankListTable = db.table("ccfeederbanklist");
                     RWDBTable ccMonitorBankListTable = db.table("ccmonitorbanklist");
                     RWDBTable dynamicCCMonitorBankHistoryTable = db.table("dynamicccmonitorbankhistory");
                     RWDBTable dynamicCCMonitorPointResponseTable = db.table("dynamicccmonitorpointresponse");
@@ -9821,33 +9911,36 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 CtiCCExecutorFactory f;
                 CtiCCExecutor* executor;
 
-                if (msgBitMask & CtiCCSubstationBusMsg::AllSubBusesSent) 
-                    executor = f.createExecutor(new CtiCCSubstationBusMsg(*_ccSubstationBuses,msgBitMask));
-                else
-				{
-
-                    if (_CC_DEBUG & CC_DEBUG_RIDICULOUS) 
-                    {
-                        for (int ii = 0; ii < modifiedSubsList.size(); ii++) 
+                if (modifiedSubsList.size() > 0 || (msgBitMask & CtiCCSubstationBusMsg::AllSubBusesSent) )
+                {
+                    if (msgBitMask & CtiCCSubstationBusMsg::AllSubBusesSent) 
+                        executor = f.createExecutor(new CtiCCSubstationBusMsg(*_ccSubstationBuses,msgBitMask));
+                    else
+				    {
+                        
+                        if (_CC_DEBUG & CC_DEBUG_RIDICULOUS) 
                         {
-                            CtiCCSubstationBusPtr subby = (CtiCCSubstationBusPtr)modifiedSubsList[ii];
+                            for (int ii = 0; ii < modifiedSubsList.size(); ii++) 
                             {
-                                CtiLockGuard<CtiLogger> logger_guard(dout);
-                                dout << CtiTime() << " - SUBBY! "<<subby->getPAOName() << endl;
-                            }
-                            for (int iii = 0; iii < subby->getCCFeeders().size(); iii++) 
-                            {
+                                CtiCCSubstationBusPtr subby = (CtiCCSubstationBusPtr)modifiedSubsList[ii];
                                 {
                                     CtiLockGuard<CtiLogger> logger_guard(dout);
-                                    dout << CtiTime() << " - FEEDY! "<<((CtiCCFeederPtr)subby->getCCFeeders()[iii])->getPAOName() << endl;
+                                    dout << CtiTime() << " - SUBBY! "<<subby->getPAOName() << endl;
+                                }
+                                for (int iii = 0; iii < subby->getCCFeeders().size(); iii++) 
+                                {
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - FEEDY! "<<((CtiCCFeederPtr)subby->getCCFeeders()[iii])->getPAOName() << endl;
+                                    }
                                 }
                             }
                         }
-                    }
-                    executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,msgBitMask));
-				}
-                executor->Execute();
-                delete executor;
+                        executor = f.createExecutor(new CtiCCSubstationBusMsg((CtiCCSubstationBus_vec&)modifiedSubsList,msgBitMask));
+				    }
+                    executor->Execute();
+                    delete executor;
+                }
                 executor = f.createExecutor(new CtiCCCapBankStatesMsg(*_ccCapBankStates));
                 executor->Execute();
                 delete executor;
@@ -9857,25 +9950,28 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 executor = f.createExecutor(new CtiCCSpecialAreasMsg(*_ccSpecialAreas));
                 executor->Execute();
                 delete executor; 
-                if (msgSubsBitMask & CtiCCSubstationsMsg::AllSubsSent) 
-                    executor = f.createExecutor(new CtiCCSubstationsMsg(*_ccSubstations, msgSubsBitMask));
-                else
-				{
-                    for (int ii = 0; ii < modifiedSubsList.size(); ii++) 
-                    {
-                        CtiCCSubstationBusPtr subby = (CtiCCSubstationBusPtr)modifiedSubsList[ii];
-                        CtiCCSubstationPtr station = findSubstationByPAObjectID(subby->getParentId());
-                        if (station != NULL)
-                        {  
-                            modifiedStationsList.push_back(station);
-                            updateSubstationObjectList(subby->getParentId(), modifiedStationsList);
-
+                if (modifiedSubsList.size() > 0 || (msgSubsBitMask & CtiCCSubstationsMsg::AllSubsSent) )
+                {
+                    if (msgSubsBitMask & CtiCCSubstationsMsg::AllSubsSent) 
+                        executor = f.createExecutor(new CtiCCSubstationsMsg(*_ccSubstations, msgSubsBitMask));
+                    else
+				    {
+                        for (int ii = 0; ii < modifiedSubsList.size(); ii++) 
+                        {
+                            CtiCCSubstationBusPtr subby = (CtiCCSubstationBusPtr)modifiedSubsList[ii];
+                            CtiCCSubstationPtr station = findSubstationByPAObjectID(subby->getParentId());
+                            if (station != NULL)
+                            {  
+                                modifiedStationsList.push_back(station);
+                                updateSubstationObjectList(subby->getParentId(), modifiedStationsList);
+                        
+                            }
                         }
-                    }
-                    executor = f.createExecutor(new CtiCCSubstationsMsg((CtiCCSubstation_vec&)modifiedStationsList, msgSubsBitMask));
-                } 
-                executor->Execute();
-                delete executor; 
+                        executor = f.createExecutor(new CtiCCSubstationsMsg((CtiCCSubstation_vec&)modifiedStationsList, msgSubsBitMask));
+                    } 
+                    executor->Execute();
+                    delete executor; 
+                }
 
                 _wassubbusdeletedflag = false;
             }
@@ -10500,6 +10596,61 @@ void CtiCCSubstationBusStore::resetAllOperationStats()
     return;
 }
 
+
+/*---------------------------------------------------------------------------
+    setControlStatus
+
+    Sets the control status of the capbank
+---------------------------------------------------------------------------*/
+void CtiCCSubstationBusStore::resetAllConfirmationStats()
+{
+
+    LONG i=0;
+    for(i=0;i<_ccGeoAreas->size();i++)
+    {
+        CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
+        currentArea->getConfirmationStats().init();
+    }
+
+    for(i=0;i<_ccSpecialAreas->size();i++)
+    {
+        CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
+        currentSpArea->getConfirmationStats().init();
+
+    }
+
+    for(i=0;i<_ccSubstations->size();i++)
+    {
+        CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
+        currentStation->getConfirmationStats().init();
+
+    }
+    
+    for(i=0;i<_ccSubstationBuses->size();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
+        currentSubstationBus->getConfirmationStats().init();
+        
+        CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
+    
+        for(LONG j=0; j < ccFeeders.size(); j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+            currentFeeder->getConfirmationStats().init();
+    
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+    
+            for(LONG k=0;k<ccCapBanks.size();k++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
+                currentCapBank->getConfirmationStats().init();
+            }
+        }
+    }
+
+    return;
+}
+
 void CtiCCSubstationBusStore::printAllOperationStats()
 {
 
@@ -10510,31 +10661,31 @@ void CtiCCSubstationBusStore::printAllOperationStats()
         currentArea->getOperationStats().printOpStats();
     }
 
-   /* for(i=0;i<_ccSpecialAreas->size();i++)
+    for(i=0;i<_ccSpecialAreas->size();i++)
     {
         CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
-        currentSpArea->getOperationStats().init();
+        currentSpArea->getOperationStats().printOpStats();
 
     }
 
     for(i=0;i<_ccSubstations->size();i++)
     {
         CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
-        currentStation->getOperationStats().init();
+        currentStation->getOperationStats().printOpStats();
 
     }
     
     for(i=0;i<_ccSubstationBuses->size();i++)
     {
         CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
-        currentSubstationBus->getOperationStats().init();
+        currentSubstationBus->getOperationStats().printOpStats();
         
         CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
     
         for(LONG j=0; j < ccFeeders.size(); j++)
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
-            currentFeeder->getOperationStats().init();
+            currentFeeder->getOperationStats().printOpStats();
     
             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
     
@@ -10544,7 +10695,7 @@ void CtiCCSubstationBusStore::printAllOperationStats()
                 currentCapBank->getOperationStats().printOpStats();
             }
         }
-    }   */
+    }   
 
     return;
 }
@@ -10598,6 +10749,15 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                         dout << CtiTime() << " - " << selector.asString().data() << endl;
                     }
 
+                    if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << "*** userDefWindow " << CtiTime(userDefWindow) 
+                        << "*** yesterday " << CtiTime(yesterday) 
+                        << "*** lastWeek " << CtiTime(lastWeek) 
+                        << "*** oneMonthAgo " <<CtiTime(oneMonthAgo) << endl;
+                    }
+
                     RWDBReader rdr = selector.reader(conn);
                     RWDBNullIndicator isNull;
                     while ( rdr() )
@@ -10624,26 +10784,29 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
 
                         if (logDateTime >= userDefWindow )
                         {
+                            if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " logDateTime >= userDefWindow " << CtiTime(logDateTime) <<">="<<CtiTime(userDefWindow) << endl;
                             }
 
                             if (cap != NULL)
-                                cap->getOperationStats().incrementUserDefOpCounts();
+                                cap->getOperationStats().incrementAllOpCounts();
                             if (feeder != NULL)
-                                feeder->getOperationStats().incrementUserDefOpCounts();
+                                feeder->getOperationStats().incrementAllOpCounts();
                             if (bus != NULL)
-                                bus->getOperationStats().incrementUserDefOpCounts();
+                                bus->getOperationStats().incrementAllOpCounts();
                             if (station != NULL)
-                                station->getOperationStats().incrementUserDefOpCounts();
+                                station->getOperationStats().incrementAllOpCounts();
                             if (area != NULL)
-                                area->getOperationStats().incrementUserDefOpCounts();
+                                area->getOperationStats().incrementAllOpCounts();
                             if (spArea != NULL)
-                                spArea->getOperationStats().incrementUserDefOpCounts();
+                                spArea->getOperationStats().incrementAllOpCounts();
+
                         }
                         if (logDateTime >= yesterday )
-                        {
+                        {   
+                            if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " logDateTime >= yesterday " << CtiTime(logDateTime) <<">="<<CtiTime(yesterday) << endl;
@@ -10663,6 +10826,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                         }
                         else if (logDateTime >= lastWeek )
                         {
+                            if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " logDateTime >= lastWeek " << CtiTime(logDateTime) <<">="<<CtiTime(lastWeek) << endl;
@@ -10682,22 +10846,23 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                         }
                         else if (logDateTime >= oneMonthAgo )
                         {
+                            if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " logDateTime >= oneMonthAgo " << CtiTime(logDateTime) <<">="<<CtiTime(oneMonthAgo) << endl;
                             }
                             if (cap != NULL)
-                                cap->getOperationStats().incrementAllOpCounts();
+                                cap->getOperationStats().incrementMonthlyOpCounts();
                             if (feeder != NULL)
-                                feeder->getOperationStats().incrementAllOpCounts();
+                                feeder->getOperationStats().incrementMonthlyOpCounts();
                             if (bus != NULL)
-                                bus->getOperationStats().incrementAllOpCounts();
+                                bus->getOperationStats().incrementMonthlyOpCounts();
                             if (station != NULL)
-                                station->getOperationStats().incrementAllOpCounts();
+                                station->getOperationStats().incrementMonthlyOpCounts();
                             if (area != NULL)
                                 area->getOperationStats().incrementAllOpCounts();
                             if (spArea != NULL)
-                                spArea->getOperationStats().incrementAllOpCounts();
+                                spArea->getOperationStats().incrementMonthlyOpCounts();
                         }
                         else
                         {
@@ -10751,18 +10916,18 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
 
                         if (logDateTime >= userDefWindow )
                         {
-                            if (cap != NULL)
-                                cap->getOperationStats().incrementUserDefOpFails();
+                             if (cap != NULL)
+                                cap->getOperationStats().incrementAllOpFails();
                             if (feeder != NULL)
-                                feeder->getOperationStats().incrementUserDefOpFails();
+                                feeder->getOperationStats().incrementAllOpFails();
                             if (bus != NULL)
-                                bus->getOperationStats().incrementUserDefOpFails();
+                                bus->getOperationStats().incrementAllOpFails();
                             if (station != NULL)
-                                station->getOperationStats().incrementUserDefOpFails();
+                                station->getOperationStats().incrementAllOpFails();
                             if (area != NULL)
-                                area->getOperationStats().incrementUserDefOpFails();
+                                area->getOperationStats().incrementAllOpFails();
                             if (spArea != NULL)
-                                spArea->getOperationStats().incrementUserDefOpFails();
+                                spArea->getOperationStats().incrementAllOpFails();
                         }
                         else if (logDateTime >= yesterday )
                         {
@@ -10797,17 +10962,17 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                         else if (logDateTime >= oneMonthAgo )
                         {
                             if (cap != NULL)
-                                cap->getOperationStats().incrementAllOpFails();
+                                cap->getOperationStats().incrementMonthlyOpFails();
                             if (feeder != NULL)
-                                feeder->getOperationStats().incrementAllOpFails();
+                                feeder->getOperationStats().incrementMonthlyOpFails();
                             if (bus != NULL)
-                                bus->getOperationStats().incrementAllOpFails();
+                                bus->getOperationStats().incrementMonthlyOpFails();
                             if (station != NULL)
-                                station->getOperationStats().incrementAllOpFails();
+                                station->getOperationStats().incrementMonthlyOpFails();
                             if (area != NULL)
-                                area->getOperationStats().incrementAllOpFails();
+                                area->getOperationStats().incrementMonthlyOpFails();
                             if (spArea != NULL)
-                                spArea->getOperationStats().incrementAllOpFails();
+                                spArea->getOperationStats().incrementMonthlyOpFails();
                         }
                         else
                         {
@@ -10817,6 +10982,271 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                     }
 
                 } 
+            }
+                             
+        }
+
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+
+}
+
+
+
+
+void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
+{   
+    try
+    {
+        CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+        RWDBConnection conn = getConnection();
+        {
+            if ( conn.isValid() )
+            {   
+
+                CtiTime currentDateTime;
+                CtiTime userDefWindow = currentDateTime.seconds() - (_OP_STATS_USER_DEF_PERIOD * 60);
+                INT capCount = 0;
+
+
+                RWDBDatabase db = getDatabase();
+                RWDBTable dynamicPaoStatistics = db.table("dynamicpaostatistics");
+                
+                {
+                    RWDBSelector selector = db.selector();
+                    //MONTHLY OP TOTALS
+                    selector << dynamicPaoStatistics["paobjectid"]
+                             << dynamicPaoStatistics["attempts"]
+                             << dynamicPaoStatistics["commerrors"]
+                             << dynamicPaoStatistics["protocolerrors"]
+                             << dynamicPaoStatistics["systemerrors"]
+                             << dynamicPaoStatistics["statistictype"]
+                             << dynamicPaoStatistics["startdatetime"]
+                             << dynamicPaoStatistics["stopdatetime"];
+
+                    selector.from(dynamicPaoStatistics);
+
+                    selector.where(dynamicPaoStatistics["attempts"] > 0 );
+                    
+                     
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+                    RWDBNullIndicator isNull;
+                    while ( rdr() )
+                    {
+
+                        LONG paobjectId, attempts, commErrors, protocolErrors, systemErrors, errorTotal;
+                        string statisticType;
+                        DOUBLE successPercent = 100;
+                        CtiTime start;
+                        CtiTime stop;
+
+                        rdr["paobjectid"] >> paobjectId; //cbc Id.
+                        rdr["attempts"]  >> attempts;
+                        rdr["commerrors"] >> commErrors;
+                        rdr["protocolerrors"] >> protocolErrors;
+                        rdr["systemerrors"] >> systemErrors;
+                        rdr["statistictype"] >> statisticType; 
+                        rdr["startdatetime"] >> start;
+                        rdr["stopdatetime"] >> stop;
+
+
+                        errorTotal = commErrors + protocolErrors + systemErrors;
+
+                        CtiCCCapBankPtr cap = NULL;
+                        LONG capId = findCapBankIDbyCbcID(paobjectId);
+                        if (capId != NULL)
+                            cap = findCapBankByPAObjectID(capId);
+                        CtiCCFeederPtr feeder = NULL;
+                        CtiCCSubstationBusPtr bus = NULL;
+                        CtiCCSubstationPtr station = NULL;
+                        CtiCCAreaPtr area = NULL;
+                        CtiCCSpecialPtr spArea = NULL;
+                        if (cap != NULL)
+                        {
+                        
+                            feeder = findFeederByPAObjectID(cap->getParentId());
+                            if (feeder != NULL)
+                            {
+                                bus = findSubBusByPAObjectID(feeder->getParentId());
+                                if (bus != NULL)
+                                {
+                                    station = findSubstationByPAObjectID(bus->getParentId());
+                                    if (station != NULL)
+                                    {
+                                        if (station->getSaEnabledFlag())
+                                            spArea = findSpecialAreaByPAObjectID(station->getSaEnabledId());
+                                        else
+                                            area = findAreaByPAObjectID(station->getParentId());
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!stringCompareIgnoreCase(statisticType, "Monthly"))
+                        {
+                            if (cap != NULL)
+                            {
+                                cap->getConfirmationStats().setMonthlyCommCount(attempts);
+                                cap->getConfirmationStats().setMonthlyCommFail(errorTotal);
+                                successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);
+                                cap->getConfirmationStats().setMonthlyCommSuccessPercent(successPercent);
+
+                                //getCapBankParents(cap, spArea, area, station, bus, feeder);
+                                if (feeder != NULL)
+                                {
+                                    feeder->getConfirmationStats().incrementMonthlyCommCounts(attempts);
+                                    feeder->getConfirmationStats().incrementMonthlyCommFails(errorTotal);
+                                }
+                                if (bus != NULL)
+                                {
+                                    bus->getConfirmationStats().incrementMonthlyCommCounts(attempts);
+                                    bus->getConfirmationStats().incrementMonthlyCommFails(errorTotal);
+                                }
+                                if (station != NULL)
+                                {
+                                    station->getConfirmationStats().incrementMonthlyCommCounts(attempts);
+                                    station->getConfirmationStats().incrementMonthlyCommFails(errorTotal);
+                                }
+                                if (area != NULL)
+                                {
+                                    area->getConfirmationStats().incrementMonthlyCommCounts(attempts);
+                                    area->getConfirmationStats().incrementMonthlyCommFails(errorTotal);
+                                }
+                                if (spArea != NULL)
+                                {
+                                    spArea->getConfirmationStats().incrementMonthlyCommCounts(attempts);
+                                    spArea->getConfirmationStats().incrementMonthlyCommFails(errorTotal);
+                                }
+                            }
+                        }
+                        else if (!stringCompareIgnoreCase(statisticType, "Weekly"))
+                        {
+                            if (cap != NULL)
+                            {
+                                cap->getConfirmationStats().setWeeklyCommCount(attempts);
+                                cap->getConfirmationStats().setWeeklyCommFail(errorTotal);
+                                successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);
+                                cap->getConfirmationStats().setWeeklyCommSuccessPercent(successPercent);
+                            
+                                //getCapBankParents(cap, spArea, area, station, bus, feeder);
+                                if (feeder != NULL)
+                                {
+                                    feeder->getConfirmationStats().incrementWeeklyCommCounts(attempts);
+                                    feeder->getConfirmationStats().incrementWeeklyCommFails(errorTotal);
+                                }
+                                if (bus != NULL)
+                                {
+                                    bus->getConfirmationStats().incrementWeeklyCommCounts(attempts);
+                                    bus->getConfirmationStats().incrementWeeklyCommFails(errorTotal);
+                                }
+                                if (station != NULL)
+                                {
+                                    station->getConfirmationStats().incrementWeeklyCommCounts(attempts);
+                                    station->getConfirmationStats().incrementWeeklyCommFails(errorTotal);
+                                }
+                                if (area != NULL)
+                                {
+                                    area->getConfirmationStats().incrementWeeklyCommCounts(attempts);
+                                    area->getConfirmationStats().incrementWeeklyCommFails(errorTotal);
+                                }
+                                if (spArea != NULL)
+                                {
+                                    spArea->getConfirmationStats().incrementWeeklyCommCounts(attempts);
+                                    spArea->getConfirmationStats().incrementWeeklyCommFails(errorTotal);
+                                }
+                            }
+                        }
+                        else if (!stringCompareIgnoreCase(statisticType, "Daily"))
+                        {
+                            if (cap != NULL)
+                            {
+                                cap->getConfirmationStats().setDailyCommCount(attempts);
+                                cap->getConfirmationStats().setDailyCommFail(errorTotal);
+                                successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);
+                                cap->getConfirmationStats().setDailyCommSuccessPercent(successPercent);
+                                //getCapBankParents(cap, spArea, area, station, bus, feeder);
+
+                                if (feeder != NULL)
+                                {
+                                    feeder->getConfirmationStats().incrementDailyCommCounts(attempts);
+                                    feeder->getConfirmationStats().incrementDailyCommFails(errorTotal);
+                                }
+                                if (bus != NULL)
+                                {
+                                    bus->getConfirmationStats().incrementDailyCommCounts(attempts);
+                                    bus->getConfirmationStats().incrementDailyCommFails(errorTotal);
+                                }
+                                if (station != NULL)
+                                {
+                                    station->getConfirmationStats().incrementDailyCommCounts(attempts);
+                                    station->getConfirmationStats().incrementDailyCommFails(errorTotal);
+                                }
+                                if (area != NULL)
+                                {
+                                    area->getConfirmationStats().incrementDailyCommCounts(attempts);
+                                    area->getConfirmationStats().incrementDailyCommFails(errorTotal);
+                                }
+                                if (spArea != NULL)
+                                {
+                                    spArea->getConfirmationStats().incrementDailyCommCounts(attempts);
+                                    spArea->getConfirmationStats().incrementDailyCommFails(errorTotal);
+                                }
+                            }
+                        }
+                        else if (stringContainsIgnoreCase(statisticType, "Hour"))
+                        {
+                            if (start > userDefWindow)
+                            {
+                            
+                                if (cap != NULL)
+                                {
+                                    cap->getConfirmationStats().setUserDefCommCount(attempts);
+                                    cap->getConfirmationStats().setUserDefCommFail(errorTotal);
+                                    successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);
+                                    cap->getConfirmationStats().setUserDefCommSuccessPercent(successPercent);
+                                    //getCapBankParents(cap, spArea, area, station, bus, feeder);
+
+                                
+                                    if (feeder != NULL)
+                                    {
+                                        feeder->getConfirmationStats().incrementUserDefCommCounts(attempts);
+                                        feeder->getConfirmationStats().incrementUserDefCommFails(errorTotal);
+                                    }
+                                    if (bus != NULL)
+                                    {
+                                        bus->getConfirmationStats().incrementUserDefCommCounts(attempts);
+                                        bus->getConfirmationStats().incrementUserDefCommFails(errorTotal);
+                                    }
+                                    if (station != NULL)
+                                    {
+                                        station->getConfirmationStats().incrementUserDefCommCounts(attempts);
+                                        station->getConfirmationStats().incrementUserDefCommFails(errorTotal);
+                                    }
+                                    if (area != NULL)
+                                    {
+                                        area->getConfirmationStats().incrementUserDefCommCounts(attempts);
+                                        area->getConfirmationStats().incrementUserDefCommFails(errorTotal);
+                                    }
+                                    if (spArea != NULL)
+                                    {
+                                        spArea->getConfirmationStats().incrementUserDefCommCounts(attempts);
+                                        spArea->getConfirmationStats().incrementUserDefCommFails(errorTotal);
+                                    }
+                                }
+                            }
+                        } 
+                    }
+                }
             }
                              
         }
@@ -10868,11 +11298,65 @@ void CtiCCSubstationBusStore::setControlStatusAndIncrementFailCount(CtiMultiMsg_
     }
     
     incrementOperationFailCounts(cap, feeder, subBus, station, area, spArea);
+    createOperationStatPointDataMsgs(pointChanges, cap, feeder, subBus, station, area, spArea);
+
 
     return;
 }
 
+void CtiCCSubstationBusStore::createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges)
+{
+    LONG i=0;
+    for(i=0;i<_ccGeoAreas->size();i++)
+    {
+        CtiCCArea* currentArea = (CtiCCArea*)_ccGeoAreas->at(i);
+        currentArea->getOperationStats().createPointDataMsgs(pointChanges);
+        currentArea->getConfirmationStats().createPointDataMsgs(pointChanges);
+    }
 
+    for(i=0;i<_ccSpecialAreas->size();i++)
+    {
+        CtiCCSpecial* currentSpArea = (CtiCCSpecial*)_ccSpecialAreas->at(i);
+        currentSpArea->getOperationStats().createPointDataMsgs(pointChanges);
+        currentSpArea->getConfirmationStats().createPointDataMsgs(pointChanges);
+
+    }
+
+    for(i=0;i<_ccSubstations->size();i++)
+    {
+        CtiCCSubstation* currentStation = (CtiCCSubstation*)_ccSubstations->at(i);
+        currentStation->getOperationStats().createPointDataMsgs(pointChanges);
+        currentStation->getConfirmationStats().createPointDataMsgs(pointChanges);
+
+    }
+
+    for(i=0;i<_ccSubstationBuses->size();i++)
+    {
+        CtiCCSubstationBus* currentSubstationBus = (CtiCCSubstationBus*)_ccSubstationBuses->at(i);
+        currentSubstationBus->getOperationStats().createPointDataMsgs(pointChanges);
+        currentSubstationBus->getConfirmationStats().createPointDataMsgs(pointChanges);
+
+        CtiFeeder_vec &ccFeeders = currentSubstationBus->getCCFeeders();
+
+        for(LONG j=0; j < ccFeeders.size(); j++)
+        {
+            CtiCCFeeder* currentFeeder = (CtiCCFeeder*)(ccFeeders.at(j));
+            currentFeeder->getOperationStats().createPointDataMsgs(pointChanges);
+            currentFeeder->getConfirmationStats().createPointDataMsgs(pointChanges);
+
+            CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
+
+            for(LONG k=0;k<ccCapBanks.size();k++)
+            {
+                CtiCCCapBank* currentCapBank = (CtiCCCapBank*)(ccCapBanks[k]);
+                currentCapBank->getOperationStats().createPointDataMsgs(pointChanges);
+                currentCapBank->getConfirmationStats().createPointDataMsgs(pointChanges);
+            }
+        }
+    }
+    
+    return;
+}
 
 
 
@@ -11003,8 +11487,6 @@ void CtiCCSubstationBusStore::getFeederParentInfo(CtiCCFeeder* feeder, LONG &spA
     }
     return;
 }
-
-
 
 
 /* Private Static members */

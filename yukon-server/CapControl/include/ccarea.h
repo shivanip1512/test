@@ -98,6 +98,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     DOUBLE getEstPFactor() const;
     std::list<long>* getSubStationList(){return &_subStationIds;};
     CtiCCOperationStats& getOperationStats();
+    CtiCCConfirmationStats& getConfirmationStats();
     list <LONG>* getPointIds() {return &_pointIds;};
 
     void deleteCCSubs(long subId);
@@ -215,6 +216,7 @@ RWDECLARE_COLLECTABLE( CtiCCArea )
     std::list <long> _pointIds;
 
     CtiCCOperationStats _operationStats;
+    CtiCCConfirmationStats _confirmationStats;
 
        //don't stream
     BOOL _insertDynamicDataFlag;

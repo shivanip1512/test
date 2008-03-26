@@ -47,6 +47,7 @@ CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
      _twoWayPoints = NULL;
      _ovuvSituationFlag = false;
      _operationStats.setPAOId(_paoid);
+     _confirmationStats.setPAOId(_paoid);
 }
 
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)  
@@ -97,10 +98,15 @@ CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
 
 }
 
+
 CtiCCOperationStats& CtiCCCapBank::getOperationStats()
 {
     return _operationStats;
+}
 
+CtiCCConfirmationStats& CtiCCCapBank::getConfirmationStats()
+{
+    return _confirmationStats;
 }
 
 

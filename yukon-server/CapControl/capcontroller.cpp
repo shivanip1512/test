@@ -231,8 +231,10 @@ void CtiCapController::controlLoop()
         CtiMultiMsg* multiCapMsg = new CtiMultiMsg();
         CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
         LONG lastThreadPulse = 0;
+        LONG lastOpStatsThreadPulse = 0;
         LONG lastDailyReset = 0;
-        BOOL waitToBroadCastEverything = FALSE;
+        BOOL waitToBroadCastEverything = FALSE; 
+        BOOL startUpSendStats = TRUE;
 
         CtiTime rwnow;
         CtiTime announceTime((unsigned long) 0);
@@ -252,6 +254,12 @@ void CtiCapController::controlLoop()
                 currentDateTime = CtiTime();
                 LONG secondsFromBeginningOfDay = (currentDateTime.hour() * 3600) + (currentDateTime.minute() * 60) + currentDateTime.second();
                 ULONG secondsFrom1901 = currentDateTime.seconds();
+
+
+                CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
+                CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
+                CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
+                CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
 
                 {
                     if( currentDateTime.seconds() > fifteenMinCheck.seconds() && secondsFrom1901 != lastThreadPulse)
@@ -275,14 +283,21 @@ void CtiCapController::controlLoop()
                         lastDailyReset = secondsFrom1901;
                     }
 
-                   /* if( currentDateTime.seconds() > opStatRefreshRate.seconds() && secondsFrom1901 != lastThreadPulse)
+                    if( (currentDateTime.seconds() > opStatRefreshRate.seconds() && secondsFrom1901 != lastOpStatsThreadPulse) ||
+                        startUpSendStats )
                     {
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Controller refreshing OP STATS" << endl;
                         }
                         store->reCalculateOperationStatsFromDatabase( );
-                    }*/
+                        store->reCalculateConfirmationStatsFromDatabase( );
+                        lastOpStatsThreadPulse = secondsFrom1901;
+                        opStatRefreshRate =  nextScheduledTimeAlignedOnRate( currentDateTime,  _OP_STATS_REFRESH_RATE );
+                        store->createAllStatsPointDataMsgs(pointChanges);
+
+                        startUpSendStats = FALSE;
+                    }
                 }
 
                 
@@ -346,12 +361,9 @@ void CtiCapController::controlLoop()
                     dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
                 }
 
-                CtiMultiMsg_vec& pointChanges = multiDispatchMsg->getData();
-                CtiMultiMsg_vec& pilMessages = multiPilMsg->getData();
-                CtiMultiMsg_vec& capMessages = multiCapMsg->getData();
-                CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
 
-                 if (store->getLinkStatusPointId() > 0 && 
+
+                if (store->getLinkStatusPointId() > 0 && 
                      (store->getLinkStatusFlag() == CLOSED) &&
                      store->getLinkDropOutTime().seconds() + (60* _LINK_STATUS_TIMEOUT) < currentDateTime.seconds()) 
                 {
@@ -2571,34 +2583,37 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                          currentSubstationBus->getPhaseCId() == pointID ) &&
                          currentSubstationBus->getUsePhaseData())
                 {
-                    currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
+                    if( timestamp > currentSubstationBus->getLastCurrentVarPointUpdateTime() )
+                    {
+                        currentSubstationBus->setNewPointDataReceivedFlag(TRUE);
 
-                    if (currentSubstationBus->getPhaseBId() == pointID) 
-                    {
-                        if (currentSubstationBus->getPhaseBValue() != value) 
+                        if (currentSubstationBus->getPhaseBId() == pointID) 
                         {
-                            currentSubstationBus->setPhaseBValue(value,timestamp);
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->getPhaseAValue() + currentSubstationBus->getPhaseBValue() + currentSubstationBus->getPhaseCValue(),timestamp);
+                            if (currentSubstationBus->getPhaseBValue() != value) 
+                            {
+                                currentSubstationBus->setPhaseBValue(value,timestamp);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->getPhaseAValue() + currentSubstationBus->getPhaseBValue() + currentSubstationBus->getPhaseCValue(),timestamp);
+                            }
                         }
-                    }
-                    if (currentSubstationBus->getPhaseCId() == pointID) 
-                    {
-                        if (currentSubstationBus->getPhaseCValue() != value) 
+                        if (currentSubstationBus->getPhaseCId() == pointID) 
                         {
-                            currentSubstationBus->setPhaseCValue(value,timestamp);
-                            currentSubstationBus->setBusUpdatedFlag(TRUE);
-                            currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->getPhaseAValue() + currentSubstationBus->getPhaseBValue() + currentSubstationBus->getPhaseCValue(),timestamp);
+                            if (currentSubstationBus->getPhaseCValue() != value) 
+                            {
+                                currentSubstationBus->setPhaseCValue(value,timestamp);
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                currentSubstationBus->setCurrentVarLoadPointValue(currentSubstationBus->getPhaseAValue() + currentSubstationBus->getPhaseBValue() + currentSubstationBus->getPhaseCValue(),timestamp);
+                            }
                         }
+                        
+                        if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
+                            !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
+                        {
+                            currentSubstationBus->setAltSubControlValue(currentSubstationBus->getCurrentVarLoadPointValue());
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                        }
+                        currentSubstationBus->figureEstimatedVarLoadPointValue();
                     }
-                    
-                    if (currentSubstationBus->getAltDualSubId() == currentSubstationBus->getPAOId() &&
-                        !stringCompareIgnoreCase(currentSubstationBus->getControlUnits(), CtiCCSubstationBus::KVARControlUnits) )
-                    {
-                        currentSubstationBus->setAltSubControlValue(currentSubstationBus->getCurrentVarLoadPointValue());
-                        currentSubstationBus->setBusUpdatedFlag(TRUE);
-                    }
-                    currentSubstationBus->figureEstimatedVarLoadPointValue();
                 }
                 else if (currentSubstationBus->getEstimatedPowerFactorPointId()  == pointID|| 
                          currentSubstationBus->getEstimatedVarLoadPointId()  == pointID||
@@ -2667,7 +2682,6 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                                 executor->Execute();
                                 delete executor;
                             }
-                            
                         }
                     }
                     else 
@@ -2683,7 +2697,6 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
                                 executor->Execute();
                                 delete executor;
                             }
-
                         }
                     }
                      
@@ -2856,27 +2869,30 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                          currentFeeder->getPhaseCId() == pointID ) &&
                          currentFeeder->getUsePhaseData())
                     {
-                        currentFeeder->setNewPointDataReceivedFlag(TRUE);
-
-                        if (currentFeeder->getPhaseBId() == pointID) 
+                        if( timestamp > currentFeeder->getLastCurrentVarPointUpdateTime() )
                         {
-                            if (currentFeeder->getPhaseBValue() != value) 
+                            currentFeeder->setNewPointDataReceivedFlag(TRUE);
+                           
+                            if (currentFeeder->getPhaseBId() == pointID) 
                             {
-                                currentFeeder->setPhaseBValue(value, timestamp);
-                                currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue(),timestamp);
+                                if (currentFeeder->getPhaseBValue() != value) 
+                                {
+                                    currentFeeder->setPhaseBValue(value, timestamp);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue(),timestamp);
+                                }
                             }
-                        }
-                        if (currentFeeder->getPhaseCId() == pointID) 
-                        {
-                            if (currentFeeder->getPhaseCValue() != value) 
+                            if (currentFeeder->getPhaseCId() == pointID) 
                             {
-                                currentFeeder->setPhaseCValue(value, timestamp);
-                                currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue(),timestamp);
+                                if (currentFeeder->getPhaseCValue() != value) 
+                                {
+                                    currentFeeder->setPhaseCValue(value, timestamp);
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    currentFeeder->setCurrentVarLoadPointValue(currentFeeder->getPhaseAValue() + currentFeeder->getPhaseBValue() + currentFeeder->getPhaseCValue(),timestamp);
+                                }
                             }
+                            currentFeeder->figureEstimatedVarLoadPointValue();
                         }
-                        currentFeeder->figureEstimatedVarLoadPointValue();
 
                     }
                 }
@@ -2997,7 +3013,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 text1 += afterVarsString;
                                 currentCapBank->setAfterVarsString(afterVarsString);
                                 currentCapBank->setPercentChangeString(" --- ");
-                                text1 += " command! Adjusting state,  ";
+                                text1 += " command! Adjusting state, ";
                                 currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
                                 text1 += currentCapBank->getControlStatusText();
                                 currentCapBank->setControlStatusQuality(CC_NoControl);
@@ -3098,7 +3114,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                     currentCapBank->setOvUvDisabledFlag(TRUE);
                                 }
                             }
-                            if (twoWayPts->getOvCondition() || twoWayPts->getUvCondition() ) 
+                            if //(twoWayPts->getOvCondition() || twoWayPts->getUvCondition() ) 
+                            (twoWayPts->getOvCondition() || twoWayPts->getUvCondition() ) 
                             {
                                 if (!currentCapBank->getOvUvSituationFlag())
                                 {
@@ -3132,6 +3149,27 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 currentCapBank->setIgnoredReason(value);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
+                            else if (twoWayPts->getVoltageId() == pointID)
+                            {
+                                if( twoWayPts->getVoltage() > twoWayPts->getOvSetPoint() ||  
+                                    twoWayPts->getVoltage() < twoWayPts->getUvSetPoint())
+                                {
+                                    if (!currentCapBank->getOvUvSituationFlag())
+                                    {
+                                        currentCapBank->setOvUvSituationFlag(TRUE);
+                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    }
+                                }
+                                else
+                                {   
+                                    if (currentCapBank->getOvUvSituationFlag())
+                                    {
+                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                        currentCapBank->setOvUvSituationFlag(FALSE);
+                                    }
+                                }
+                            }
+                                
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3318,10 +3356,10 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                             eventMsg->setActionId(CCEventActionIdGen(currentCapBank->getStatusPointId()));
                             eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                             getCCEventMsgQueueHandle().write(eventMsg);
+                            currentCapBank->setLastStatusChangeTime(CtiTime());
 
                         }
                         sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,"cap control"));
-                        currentCapBank->setLastStatusChangeTime(CtiTime());
                     }
                     else
                     {
@@ -3342,8 +3380,9 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                             currentSubstationBus->setRecentlyControlledFlag(FALSE);
                             currentFeeder->setRecentlyControlledFlag(FALSE);
                         }
-                        currentSubstationBus->setBusUpdatedFlag(TRUE);
                     }
+
+                    currentSubstationBus->setBusUpdatedFlag(TRUE);
                 }
             }
         }

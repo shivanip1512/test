@@ -406,6 +406,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
 
     CtiCCOperationStats& getOperationStats();
+    CtiCCConfirmationStats& getConfirmationStats();
+
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -581,6 +583,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
 
 
     CtiCCOperationStats _operationStats;
+    CtiCCConfirmationStats _confirmationStats;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

@@ -29,6 +29,7 @@
 #include "resolvers.h"
 #include "utility.h"
 #include "ccOperationStats.h"
+#include "ccConfirmationStats.h"
 
 extern ULONG _CC_DEBUG;
 
@@ -45,6 +46,7 @@ CtiCCSpecial::CtiCCSpecial(RWDBReader& rdr)
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
+    _confirmationStats.setPAOId(_paoid);
 }
 
 CtiCCSpecial::CtiCCSpecial(const CtiCCSpecial& special)  
@@ -69,6 +71,12 @@ CtiCCOperationStats& CtiCCSpecial::getOperationStats()
 {
     return _operationStats;
 }
+
+CtiCCConfirmationStats& CtiCCSpecial::getConfirmationStats()
+{
+    return _confirmationStats;
+}
+
 
 
 /*-------------------------------------------------------------------------
@@ -189,8 +197,8 @@ CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
         _substationIds.assign(right._substationIds.begin(), right._substationIds.end());
 
 
-        _operationStats = right._operationStats;
-          
+        _operationStats = right._operationStats;  
+        _confirmationStats = right._confirmationStats;
     }
     return *this;
 }

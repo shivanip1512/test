@@ -27,6 +27,7 @@
 #include "ccmonitorpoint.h"
 #include "cctwowaycbcpoints.h"
 #include "ccoperationstats.h"
+#include "ccConfirmationStats.h"
 #include "dbaccess.h"
 #include "observe.h"
 #include "ctitime.h"
@@ -224,6 +225,7 @@ public:
     CtiCCPointResponse* getPointResponse(CtiCCMonitorPoint* point);
 
     CtiCCOperationStats& getOperationStats();
+    CtiCCConfirmationStats& getConfirmationStats();
 
     CtiCCCapBank* replicate() const;
     virtual int compareTo(const RWCollectable* right) const;
@@ -352,6 +354,7 @@ private:
 
 
     CtiCCOperationStats _operationStats;
+    CtiCCConfirmationStats _confirmationStats;
     
     //don't stream
     BOOL _insertDynamicDataFlag;

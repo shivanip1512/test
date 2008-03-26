@@ -44,6 +44,7 @@ CtiCCArea::CtiCCArea(RWDBReader& rdr)
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
+    _confirmationStats.setPAOId(_paoid);
 }
 
 CtiCCArea::CtiCCArea(const CtiCCArea& area) 
@@ -69,6 +70,12 @@ CtiCCOperationStats& CtiCCArea::getOperationStats()
 {
     return _operationStats;
 }
+
+CtiCCConfirmationStats& CtiCCArea::getConfirmationStats()
+{
+    return _confirmationStats;
+}
+
 
 /*-------------------------------------------------------------------------
     restoreGuts
@@ -187,6 +194,7 @@ CtiCCArea& CtiCCArea::operator=(const CtiCCArea& right)
         _reEnableAreaFlag = right._reEnableAreaFlag;
 
         _operationStats = right._operationStats;
+        _confirmationStats = right._confirmationStats;
         
     }
     return *this;

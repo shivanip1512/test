@@ -65,6 +65,7 @@ CtiCCFeeder::CtiCCFeeder(RWDBReader& rdr)
     restore(rdr);
 
     _operationStats.setPAOId(_paoid);
+    _confirmationStats.setPAOId(_paoid);
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionB = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -97,6 +98,11 @@ CtiCCFeeder::~CtiCCFeeder()
 CtiCCOperationStats& CtiCCFeeder::getOperationStats()
 {
     return _operationStats;
+}  
+
+CtiCCConfirmationStats& CtiCCFeeder::getConfirmationStats()
+{
+    return _confirmationStats;
 }
 
 
@@ -1953,7 +1959,8 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                 !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                 ( currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
                   currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
-                  currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ) )
+                  currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ) &&
+                !currentCapBank->getIgnoreFlag()  )
             {
                 //have we went past the max daily ops
                 if( currentCapBank->getMaxDailyOps() > 0 &&
@@ -2035,7 +2042,8 @@ CtiCCCapBank* CtiCCFeeder::findCapBankToChangeVars(DOUBLE kvarSolution)
                 !stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState) &&
                 ( currentCapBank->getControlStatus() == CtiCCCapBank::Close ||
                   currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
-                  currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ) )
+                  currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending ) && 
+                !currentCapBank->getIgnoreFlag())
             {
                 //have we went past the max daily ops
                 if( currentCapBank->getMaxDailyOps() > 0 &&
@@ -3040,7 +3048,10 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             }
                         }
                     }
-                    else
+                    else if (( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) &&
+                          getIVControl() < leadLevel ) ||
+                        ( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::VoltControlUnits) &&
+                          getIVControl() > leadLevel ) ) 
                     {
                         //if( _CC_DEBUG )
                         if( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) )
@@ -3100,6 +3111,14 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                                     
                         }
 
+                    } 
+                    else
+                    {
+                        if (_CC_DEBUG & CC_DEBUG_EXTENDED)
+                        {   
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Max Daily Ops Hit. Control Inhibited on: " << getPAOName() << endl;
+                        }
                     }
     
                     if( request != NULL )
@@ -3271,6 +3290,15 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                             
                 }
             }
+            else
+            {
+                if (_CC_DEBUG & CC_DEBUG_EXTENDED)
+                {   
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Max Daily Ops Hit. Control Inhibited on: " << getPAOName() << endl;
+                }
+
+            }
             if( request != NULL )
             {
                 pilMessages.push_back(request);
@@ -3372,7 +3400,8 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         {
                             //currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
                             store->setControlStatusAndIncrementFailCount(pointChanges, CtiCCCapBank::OpenFail, currentCapBank);
-                            currentCapBank->setControlStatusQuality(CC_Fail);
+                            if (currentCapBank->getControlStatusQuality() != CC_CommFail)
+                                currentCapBank->setControlStatusQuality(CC_Fail);
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - CapBank Control Status: OpenFail" << endl;
@@ -3472,7 +3501,8 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         {
                             //currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                             store->setControlStatusAndIncrementFailCount(pointChanges, CtiCCCapBank::CloseFail, currentCapBank);
-                            currentCapBank->setControlStatusQuality(CC_Fail);
+                            if (currentCapBank->getControlStatusQuality() != CC_CommFail)
+                                currentCapBank->setControlStatusQuality(CC_Fail);
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
                                 dout << CtiTime() << " - CapBank Control Status: CloseFail" << endl;
@@ -3530,6 +3560,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                 }
+
             }
             else
             {
@@ -3575,6 +3606,8 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
             }
             found = TRUE;
+
+            currentCapBank->setIgnoreFlag(FALSE);
             break;
         }
     }
@@ -3695,7 +3728,8 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         {
                             //currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
                             store->setControlStatusAndIncrementFailCount(pointChanges, CtiCCCapBank::OpenFail, currentCapBank);
-                            currentCapBank->setControlStatusQuality(CC_Normal);
+                            if (currentCapBank->getControlStatusQuality() != CC_CommFail)
+                                currentCapBank->setControlStatusQuality(CC_Fail);
                         }
                         else if( minConfirmPercent != 0 )
                         {
@@ -3804,7 +3838,8 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         {
                             //currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
                             store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::CloseFail, currentCapBank);
-                            currentCapBank->setControlStatusQuality(CC_Normal);
+                            if (currentCapBank->getControlStatusQuality() != CC_CommFail)
+                                currentCapBank->setControlStatusQuality(CC_Fail);
                         }
                         else if( minConfirmPercent != 0 )
                         {
@@ -3896,6 +3931,8 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                 << " DeviceID: " << currentCapBank->getPAOId() << " doesn't have a status point!" << endl;
             }
             found = TRUE;
+
+            currentCapBank->setIgnoreFlag(FALSE);
             break;
         }
     }
@@ -4246,6 +4283,8 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                //setBusUpdatedFlag(TRUE);
                return returnBoolean;
            }
+
+           currentCapBank->setIgnoreFlag(FALSE);
            foundCap = TRUE;
            break;
        }
@@ -6796,6 +6835,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
         }
 
         _operationStats = right._operationStats;
+        _confirmationStats = right._confirmationStats;
     }
     return *this;
 }

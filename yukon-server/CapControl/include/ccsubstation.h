@@ -76,6 +76,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
     
     list <LONG>* getCCSubIds(){return &_subBusIds;};
     CtiCCOperationStats& getOperationStats();
+    CtiCCConfirmationStats& getConfirmationStats();
 
     list <LONG>* getPointIds() {return &_pointIds;};
 
@@ -139,6 +140,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstation )
 
     LONG _voltReductionControlId;
     CtiCCOperationStats _operationStats;
+    CtiCCConfirmationStats _confirmationStats;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

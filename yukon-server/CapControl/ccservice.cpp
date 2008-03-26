@@ -404,7 +404,7 @@ void CtiCCService::Init()
     strcpy(var, "CAP_CONTROL_LINK_STATUS_TIMEOUT");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        _LINK_STATUS_TIMEOUT = atoi(str.data())+1;
+        _LINK_STATUS_TIMEOUT = atoi(str.data());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -423,7 +423,7 @@ void CtiCCService::Init()
     strcpy(var, "CAP_CONTROL_LIKEDAY_OVERRIDE_TIMEOUT");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        _LIKEDAY_OVERRIDE_TIMEOUT = atoi(str.data())+1;
+        _LIKEDAY_OVERRIDE_TIMEOUT = atoi(str.data());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -492,7 +492,7 @@ void CtiCCService::Init()
     strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_COMMANDS");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        _VOLT_REDUCTION_COMMANDS = atoi(str.data())+1;
+        _VOLT_REDUCTION_COMMANDS = atoi(str.data());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -509,7 +509,7 @@ void CtiCCService::Init()
     strcpy(var, "CAP_CONTROL_VOLT_REDUCTION_COMMAND_DELAY");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        _VOLT_REDUCTION_COMMAND_DELAY = atoi(str.data())+1;
+        _VOLT_REDUCTION_COMMAND_DELAY = atoi(str.data());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -526,7 +526,7 @@ void CtiCCService::Init()
     strcpy(var, "CAP_CONTROL_OP_STATS_USER_DEF_PERIOD");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        _OP_STATS_USER_DEF_PERIOD = atoi(str.data())+1;
+        _OP_STATS_USER_DEF_PERIOD = atoi(str.data());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -544,7 +544,7 @@ void CtiCCService::Init()
     strcpy(var, "CAP_CONTROL_OP_STATS_REFRESH_RATE");
     if( !(str = gConfigParms.getValueAsString(var)).empty() )
     {
-        _OP_STATS_REFRESH_RATE = atoi(str.data())+1;
+        _OP_STATS_REFRESH_RATE = atoi(str.data());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

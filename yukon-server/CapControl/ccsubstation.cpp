@@ -45,6 +45,7 @@ CtiCCSubstation::CtiCCSubstation(RWDBReader& rdr)
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
+    _confirmationStats.setPAOId(_paoid);
 }
 
 CtiCCSubstation::CtiCCSubstation(const CtiCCSubstation& substation) 
@@ -73,6 +74,13 @@ CtiCCOperationStats& CtiCCSubstation::getOperationStats()
 {
     return _operationStats;
 }
+
+
+CtiCCConfirmationStats& CtiCCSubstation::getConfirmationStats()
+{
+    return _confirmationStats;
+}
+
 
 
 
@@ -182,6 +190,7 @@ CtiCCSubstation& CtiCCSubstation::operator=(const CtiCCSubstation& right)
         _subBusIds.assign(right._subBusIds.begin(), right._subBusIds.end());
 
         _operationStats = right._operationStats;
+        _confirmationStats = right._confirmationStats;
 
     }
     return *this;

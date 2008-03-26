@@ -260,14 +260,10 @@ public:
                                                         map< long, CtiCCSpecialPtr > *paobject_specialarea_map );
     void reloadAndAssignHolidayStrategysFromDatabase(long strategyId, map< long, CtiCCStrategyPtr > *strategy_map);
     void reCalculateOperationStatsFromDatabase( );
-    void reCalculateCapBankOperationStatsFromDatabase( );
-    void reCalculateFeederOperationStatsFromDatabase( );
-    void reCalculateSubBusOperationStatsFromDatabase( );
-    void reCalculateSubstationOperationStatsFromDatabase( );
-    void reCalculateAreaOperationStatsFromDatabase( );
-    void reCalculateSpecialOperationStatsFromDatabase( );
     void resetAllOperationStats();
-
+    void resetAllConfirmationStats();
+    void reCalculateConfirmationStatsFromDatabase( );
+    
     
     void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
                        map<long, CtiCCFeederPtr> paobject_feeder_map, map<long, long> capbank_feeder_map, map<long, long> feeder_subbus_map);
@@ -324,6 +320,7 @@ public:
                                   CtiCCArea* area, CtiCCSpecial* spArea);
     void createOperationStatPointDataMsgs(CtiMultiMsg_vec& pointChanges, CtiCCCapBank* cap, CtiCCFeeder* feed, CtiCCSubstationBus* bus,
                                   CtiCCSubstation* station, CtiCCArea* area, CtiCCSpecial* spArea);
+    void createAllStatsPointDataMsgs(CtiMultiMsg_vec& pointChanges);
 
     void setControlStatusAndIncrementFailCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap);
     void setControlStatusAndIncrementOpCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap);

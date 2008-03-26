@@ -35,6 +35,7 @@ using std::list;
 #include "msg_cmd.h"
 #include "ccstrategy.h"
 #include "ccOperationStats.h"
+#include "ccConfirmationStats.h"
               
 class CtiCCSpecial : public RWCollectable
 {
@@ -134,8 +135,8 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
 
     list <LONG>* getSubstationIds() {return &_substationIds;};
     list <LONG>* getPointIds() {return &_pointIds;};
-    CtiCCOperationStats& getOperationStats();
-
+    CtiCCOperationStats& getOperationStats(); 
+    CtiCCConfirmationStats& getConfirmationStats();
 
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -205,6 +206,7 @@ RWDECLARE_COLLECTABLE( CtiCCSpecial )
     std::list <long> _pointIds;
 
     CtiCCOperationStats _operationStats;
+    CtiCCConfirmationStats _confirmationStats;
 
    //don't stream
     BOOL _insertDynamicDataFlag;

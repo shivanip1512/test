@@ -77,6 +77,8 @@ public:
     CtiCCOperationStats& setMonthlyConfFail(LONG value);
     CtiCCOperationStats& incrementAllOpCounts();
     CtiCCOperationStats& incrementAllOpFails();
+    CtiCCOperationStats& incrementMonthlyOpCounts();
+    CtiCCOperationStats& incrementMonthlyOpFails();
     CtiCCOperationStats& incrementWeeklyOpCounts();
     CtiCCOperationStats& incrementWeeklyOpFails();
     CtiCCOperationStats& incrementDailyOpCounts();

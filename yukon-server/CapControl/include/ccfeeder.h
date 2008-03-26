@@ -402,6 +402,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     BOOL isDataOldAndFallBackNecessary(string controlUnits);
 
     CtiCCOperationStats& getOperationStats();
+    CtiCCConfirmationStats& getConfirmationStats();
 
     BOOL isDirty() const;
     void dumpDynamicData();
@@ -561,6 +562,7 @@ private:
     CtiTime _lastVoltPointTime;
 
     CtiCCOperationStats _operationStats;
+    CtiCCConfirmationStats _confirmationStats;
 
 
     //don't stream

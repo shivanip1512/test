@@ -63,6 +63,7 @@ CtiCCSubstationBus::CtiCCSubstationBus(RWDBReader& rdr)
 {
     restore(rdr);
     _operationStats.setPAOId(_paoid);
+    _confirmationStats.setPAOId(_paoid);
 
     regression = CtiRegression(_RATE_OF_CHANGE_DEPTH);
     regressionA = CtiRegression(_RATE_OF_CHANGE_DEPTH);
@@ -102,6 +103,11 @@ CtiCCSubstationBus::~CtiCCSubstationBus()
 CtiCCOperationStats& CtiCCSubstationBus::getOperationStats()
 {
     return _operationStats;
+}
+
+CtiCCConfirmationStats& CtiCCSubstationBus::getConfirmationStats()
+{
+    return _confirmationStats;
 }
 
 /*---------------------------------------------------------------------------
@@ -3221,7 +3227,10 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                             
                 }
             }
-            else  // lead Level is greater than currentVarPointValue
+            else if (( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
+                      getIVControl() < leadLevel ) ||
+                    ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) &&
+                      getIVControl() > leadLevel )) // lead Level is greater than currentVarPointValue
             {
                 if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) )
                 {
@@ -3325,6 +3334,15 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     setCorrectionNeededNoBankAvailFlag(FALSE);
                             
                 }
+            }
+            else
+            {
+                if (_CC_DEBUG & CC_DEBUG_EXTENDED)
+                {   
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Max Daily Ops Hit. Control Inhibited on: " << getPAOName() << endl;
+                }
+
             }
         }
         else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
@@ -3548,6 +3566,15 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                     setCorrectionNeededNoBankAvailFlag(FALSE);
                             
                 }
+            }
+            else
+            {
+                if (_CC_DEBUG & CC_DEBUG_EXTENDED)
+                {   
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " - Max Daily Ops Hit. Control Inhibited on: " << getPAOName() << endl;
+                }
+
             }
         }
 
@@ -9697,6 +9724,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _percentToClose = right._percentToClose;
 
         _operationStats = right._operationStats;
+        _confirmationStats = right._confirmationStats;
 
         regression = right.regression;
         regressionA = right.regressionA;
@@ -9804,7 +9832,8 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setControlUnits("KVAR");
     setControlDelayTime(0);
     setControlSendRetries(0);
-    
+
+    setSendMoreTimeControlledCommandsFlag(FALSE);
     figureNextCheckTime();
     setNewPointDataReceivedFlag(FALSE);
     setBusUpdatedFlag(FALSE);
@@ -10018,6 +10047,11 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         _voltReductionFlag = (_additionalFlags[14]=='y'?TRUE:FALSE); 
         _sendMoreTimeControlledCommandsFlag  = (_additionalFlags[15]=='y'?TRUE:FALSE);
 
+        if (!_TIME_OF_DAY_VAR_CONF)
+        {
+            setSendMoreTimeControlledCommandsFlag(FALSE);
+        }
+        
         if (_voltReductionControlId <= 0 )
         {
             setVoltReductionFlag(FALSE);

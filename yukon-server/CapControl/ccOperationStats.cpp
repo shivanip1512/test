@@ -36,6 +36,15 @@ CtiCCOperationStats::CtiCCOperationStats()
     _paoid = 0;
 
     init();
+    _userDefOpSuccessPercentId  = 0;
+    _userDefOpSuccessPercent    = 0;
+    _dailyOpSuccessPercentId    = 0;
+    _dailyOpSuccessPercent      = 0;
+    _weeklyOpSuccessPercentId   = 0;
+    _weeklyOpSuccessPercent     = 0;
+    _monthlyOpSuccessPercentId  = 0;
+    _monthlyOpSuccessPercent    = 0;
+
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;
 
@@ -69,15 +78,6 @@ void CtiCCOperationStats::init()
     _weeklyConfFail = 0;
     _monthlyOpCount = 0;
     _monthlyConfFail = 0;
-
-    _userDefOpSuccessPercentId  = 0;
-    _userDefOpSuccessPercent    = 0;
-    _dailyOpSuccessPercentId    = 0;
-    _dailyOpSuccessPercent      = 0;
-    _weeklyOpSuccessPercentId   = 0;
-    _weeklyOpSuccessPercent     = 0;
-    _monthlyOpSuccessPercentId  = 0;
-    _monthlyOpSuccessPercent    = 0;
 
     return;
 }
@@ -368,26 +368,39 @@ CtiCCOperationStats& CtiCCOperationStats::incrementAllOpFails()
     return *this;
 }
 
+CtiCCOperationStats& CtiCCOperationStats::incrementMonthlyOpCounts()
+{  
+    setMonthlyOpCount(_monthlyOpCount+1);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+
+    return *this;
+}
+
+CtiCCOperationStats& CtiCCOperationStats::incrementMonthlyOpFails()
+{
+    setMonthlyConfFail(_monthlyConfFail+1);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
+
+    return *this;
+}
+
+
 CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpCounts()
 {  
+    setMonthlyOpCount(_monthlyOpCount+1);
     setWeeklyOpCount(_weeklyOpCount+1);
-    setDailyOpCount(_dailyOpCount+1);
-    setUserDefOpCount(_userDefOpCount+1);
-    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
-    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
     _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
 
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpFails()
 {
+    setMonthlyConfFail(_monthlyConfFail+1);
     setWeeklyConfFail(_weeklyConfFail+1);
-    setDailyConfFail(_dailyConfFail+1);
-    setUserDefConfFail(_userDefConfFail+1);
-    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
-    _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
     _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
 
     return *this;
 }
@@ -395,19 +408,23 @@ CtiCCOperationStats& CtiCCOperationStats::incrementWeeklyOpFails()
 CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpCounts()
 {  
     setDailyOpCount(_dailyOpCount+1);
-    setUserDefOpCount(_userDefOpCount+1);
-    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
+    setMonthlyOpCount(_monthlyOpCount+1);
+    setWeeklyOpCount(_weeklyOpCount+1);
     _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
 
     return *this;
 }
 
 CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpFails()
 {
+    setMonthlyConfFail(_monthlyConfFail+1);
+    setWeeklyConfFail(_weeklyConfFail+1);
     setDailyConfFail(_dailyConfFail+1);
-    setUserDefConfFail(_userDefConfFail+1);
-    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
     _dailyOpSuccessPercent   = calculateSuccessPercent(_dailyOpCount, _dailyConfFail);
+    _weeklyOpSuccessPercent  = calculateSuccessPercent(_weeklyOpCount, _weeklyConfFail);
+    _monthlyOpSuccessPercent = calculateSuccessPercent(_monthlyOpCount, _monthlyConfFail);
 
     return *this;
 }
@@ -535,7 +552,7 @@ DOUBLE CtiCCOperationStats::calculateSuccessPercent(LONG opCount, LONG failCount
     DOUBLE retVal = 0;
     if (opCount > 0 && opCount >= failCount)
     {
-        retVal = (DOUBLE) (opCount - failCount) /(DOUBLE) opCount;
+        retVal = ((DOUBLE) (opCount - failCount) /(DOUBLE) opCount) * 100;
     }
     else 
         retVal = 0;
