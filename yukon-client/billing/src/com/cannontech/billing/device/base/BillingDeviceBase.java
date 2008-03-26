@@ -300,6 +300,10 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
     /**
      * Helper method to get the billing data for the total consumption
+     * Returns the totalConsumption billingData UNLESS it does not exist.
+     * If TotalConsumption is null, then an aggregated (fake) billingData object will be created.
+     * The aggregated BillingData object will contain the value equal to the sum of all rates consumption reading
+     *  and the timestamp equal to the maximum timestamp of all rates consumption timestamp. 
      * @param channel - Channel to get the total consumption for
      * @param type - Reading type to get the total consumption for
      * @return BillingData for the total consumption
@@ -310,23 +314,26 @@ public abstract class BillingDeviceBase implements BillableDevice {
 
         if (returnData == null) {
 
-            returnData = BillingData.compareForTimestamp(BillingData.compareForTimestamp(this.getBillingData(channel,
-                                                                                                             type,
-                                                                                                             BillableField.rateAConsumption),
-                                                                                         this.getBillingData(channel,
-                                                                                                             type,
-                                                                                                             BillableField.rateBConsumption)),
-                                                         BillingData.compareForTimestamp(this.getBillingData(channel,
-                                                                                                             type,
-                                                                                                             BillableField.rateCConsumption),
-                                                                                         this.getBillingData(channel,
-                                                                                                             type,
-                                                                                                             BillableField.rateDConsumption)));
-
+            BillingData aggregatedBillingData = new BillingData();
+            aggregatedBillingData.addForTotalConsumption(this.getBillingData(channel,
+                                                                            type,
+                                                                            BillableField.rateAConsumption));
+            aggregatedBillingData.addForTotalConsumption(this.getBillingData(channel,
+                                                                            type,
+                                                                            BillableField.rateBConsumption));
+            aggregatedBillingData.addForTotalConsumption(this.getBillingData(channel,
+                                                                            type,
+                                                                            BillableField.rateCConsumption));
+            aggregatedBillingData.addForTotalConsumption(this.getBillingData(channel,
+                                                                            type,
+                                                                            BillableField.rateDConsumption));
+            
+            //Verify that we got an actual Value during our aggregated calculations
+            if( aggregatedBillingData.getValue() != null)
+                returnData = aggregatedBillingData;
         }
 
         return returnData;
-
     }
 
     /**

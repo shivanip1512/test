@@ -104,39 +104,12 @@ public class BillingData {
                         || (this.timestamp != null && this.timestamp.getTime() < data.getTimestamp()
                                                                                      .getTime())) {
                     this.timestamp = data.getTimestamp();
-
+                    //Set the additional fields data and unitOfMeasure to be set with the same values from the Timestamp.
+                    //Don't assume that this is the total consumption point name, it is simply the field values that correspond to the timestamp used.
+                    this.data = data.getData();
+                    this.unitOfMeasure = data.getUnitOfMeasure();
                 }
-
             }
-
         }
-    }
-
-    /**
-     * Method to determine if this billing data has a newer timestamp than the
-     * one passed in
-     * @param data1 - Billing data to compare
-     * @return Newest billing data
-     */
-    public static BillingData compareForTimestamp(BillingData data1, BillingData data2) {
-
-        if (data1 == null) {
-            return data2;
-        }
-        if (data2 == null) {
-            return data1;
-        }
-
-        if (data1.getTimestamp() != null) {
-
-            if (data2.timestamp != null
-                    && data2.timestamp.getTime() < data1.getTimestamp().getTime()) {
-                return data1;
-            }
-
-        }
-
-        return data2;
-
     }
 }
