@@ -165,4 +165,8 @@
   <bean id="pointPropertyValueDao" class="com.cannontech.common.point.alarm.dao.impl.PointPropertyValueDaoImpl">
       <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean> 
+  
+  <bean id="fdrTranslationDao" class="com.cannontech.core.dao.impl.FdrTranslationDaoImpl">
+       <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
+   </bean> 
 </beans>

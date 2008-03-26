@@ -67,6 +67,7 @@
         <webClassPathEntry>/third-party/jcommon.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jcpagelayout450K.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jdom.jar</webClassPathEntry>
+        <webClassPathEntry>/third-party/jeasyopc.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jfreechart.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jfreereport.jar</webClassPathEntry>
         <webClassPathEntry>/third-party/jloox30.jar</webClassPathEntry>
