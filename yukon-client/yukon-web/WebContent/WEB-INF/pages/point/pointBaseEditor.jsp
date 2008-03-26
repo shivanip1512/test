@@ -5,7 +5,7 @@
 
 <f:subview id="general" rendered="#{ptEditorForm.visibleTabs['General']}" >
 
-<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
+<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn, gridColumn" >
 
 	<h:column>
 	<f:verbatim><fieldset class="fieldSet"><legend>General</legend></f:verbatim>

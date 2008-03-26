@@ -5,7 +5,7 @@
 
 <f:subview id="alarming" rendered="#{ptEditorForm.visibleTabs['Alarming']}" >
 
-	<h:panelGrid id="alarming_body" columns="2" styleClass="gridLayout" columnClasses="gridColumn" >
+	<h:panelGrid id="alarming_body" columns="2" styleClass="gridLayout" columnClasses="gridColumn, gridColumn" >
 
 	<h:column>
 		<f:verbatim><fieldset class="fieldSet"><legend>Notifcation</legend></f:verbatim>

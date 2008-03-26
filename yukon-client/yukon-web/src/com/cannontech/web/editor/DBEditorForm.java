@@ -12,6 +12,7 @@ import javax.faces.component.UIData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.DefaultDatabaseCache;
@@ -69,7 +70,8 @@ public abstract class DBEditorForm
 	 * Updates a given DB object.
 	 */
 	protected void updateDBObject( DBPersistent db, FacesMessage facesMsg ) throws TransactionException {
-		Connection conn = prehandleDbConnection(db);
+		//Connection conn = prehandleDbConnection(db);
+	    db.setDbConnection(null);
         if( facesMsg == null ) facesMsg = new FacesMessage();
         
 		try {
@@ -95,7 +97,7 @@ public abstract class DBEditorForm
 			throw new TransactionException(e.getMessage(), e); //chuck this thing up
 		}
 		finally {
-		    posthandleDbConnection(conn);
+		    //posthandleDbConnection(conn);
         }
 		
 	}
@@ -105,14 +107,7 @@ public abstract class DBEditorForm
  */
 
     private void posthandleDbConnection(Connection conn) {
-        if (conn  != null)
-        {
-            try {
-                conn.close();
-            } catch (SQLException e) {
-                CTILogger.error(e);
-            }
-        }
+        SqlUtils.close(conn);
     }
 
 
@@ -124,16 +119,11 @@ public abstract class DBEditorForm
     */
     private Connection prehandleDbConnection(DBPersistent db) {
         Connection conn = null;
-        try {
-               if (db.getDbConnection() == null || db.getDbConnection().isClosed())
-                {
-                    conn = CBCDBUtil.getConnection();
-                    db.setDbConnection( conn);
-                    
-                }
-            } 
-        catch (SQLException e1) {
-            CTILogger.error(e1);
+        if (db.getDbConnection() == null)
+        {
+            conn = CBCDBUtil.getConnection();
+            db.setDbConnection( conn);
+
         }
         return conn;
     }

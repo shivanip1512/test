@@ -48,7 +48,7 @@
 			<h:selectBooleanCheckbox id="disablePaoForCaps" value="#{capBankEditor.capBank.disabled}" 
 			rendered="#{capControlForm.PAOBase.PAOType == 'CAP BANK'}"/>
 
-			<x:outputLabel for="disablePao" value="Disable" title="Removes this item from automatic control" />
+			<x:outputLabel for="disablePao" value="Disable" title="Disables/Enables the object." />
 		</h:panelGroup>		
 
 

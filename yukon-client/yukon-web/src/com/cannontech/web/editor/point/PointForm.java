@@ -633,7 +633,9 @@ public class PointForm extends DBEditorForm
 
         getPointBase().getPointAlarming().setAlarmStates( alarmStates );
         getPointBase().getPointAlarming().setExcludeNotifyStates( exclNotify );
-        
+        if( getPointBase() instanceof ScalarPoint && pointLimitEntry != null) {
+            ((ScalarPoint) getPointBase()).setPointLimitsMap(pointLimitEntry.getScalarPoint().getPointLimitsMap());
+        }
         //special case for archiving the status point 
         handleArchiveStatus();
         

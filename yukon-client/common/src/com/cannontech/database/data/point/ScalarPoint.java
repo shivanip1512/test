@@ -89,7 +89,11 @@ public HashMap<Integer, PointLimit> getPointLimitsMap() {
  * if no limit is set.
  */
 public PointLimit getLimitOne() {
-	return getPointLimitsMap().get( new Integer(1) );
+    PointLimit plOne = getPointLimitsMap().get( new Integer(1) );
+    if(plOne == null) {
+        return new PointLimit(getPoint().getPointID(), new Integer(1), new Double(0.0), new Double(0.0), new Integer(0));
+    }
+	return plOne;
 }
 
 /**
@@ -97,7 +101,11 @@ public PointLimit getLimitOne() {
  * if no limit is set.
  */
 public PointLimit getLimitTwo() {
-	return getPointLimitsMap().get( new Integer(2) );
+    PointLimit plTwo = getPointLimitsMap().get( new Integer(2) );
+    if(plTwo == null) {
+        return new PointLimit(getPoint().getPointID(), new Integer(2), new Double(0.0), new Double(0.0), new Integer(0));
+    }
+    return plTwo;
 }
 
 /**

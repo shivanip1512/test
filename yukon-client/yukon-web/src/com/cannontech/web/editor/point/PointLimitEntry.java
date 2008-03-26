@@ -25,7 +25,7 @@ public class PointLimitEntry {
 	/**
 	 * The instance of the underlying base object
 	 */
-	private ScalarPoint getScalarPoint() {
+	public ScalarPoint getScalarPoint() {
 		return scalarPoint;
 	}
 
