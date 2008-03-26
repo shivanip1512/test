@@ -1,10 +1,10 @@
-package com.cannontech.importer.progress;
+package com.cannontech.importer.fdr;
 
 import com.cannontech.database.data.device.VirtualDevice;
 
-public class VirtualDeviceTS extends VirtualDevice {
+public class ImporterVirtualDevice extends VirtualDevice {
 
-    public VirtualDeviceTS() {
+    public ImporterVirtualDevice() {
         super();
     }
     /**
@@ -15,7 +15,7 @@ public class VirtualDeviceTS extends VirtualDevice {
     {
         String one, two;
         one = this.getPAOName();
-        two = ((VirtualDeviceTS)obj).getPAOName();
+        two = ((ImporterVirtualDevice)obj).getPAOName();
         if ( one.compareTo(two) == 0 )
             return true;
         else

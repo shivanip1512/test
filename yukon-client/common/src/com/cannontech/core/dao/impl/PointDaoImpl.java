@@ -301,6 +301,18 @@ public final class PointDaoImpl implements PointDao {
         }
 	}
     
+    @SuppressWarnings("unchecked")
+    public List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId, int pointType) throws NotFoundException {
+        final String sqlString = litePointSql + " WHERE PaObjectId = ? AND POINTTYPE = ?";
+        try {
+            List<LitePoint> pointList = jdbcOps.query(sqlString,
+                                                      new Object[]{deviceId, PointTypes.getType(pointType)},
+                                                      PointDaoImpl.litePointRowMapper);  
+            return pointList;
+        } catch (IncorrectResultSizeDataAccessException e) {
+            throw new NotFoundException("Unable to find point for deviceId=" + deviceId + ", pointType=" + pointType);
+        }
+    }
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.PointDao#retrievePointData(int)
      */

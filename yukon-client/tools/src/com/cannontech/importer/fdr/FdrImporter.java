@@ -1,0 +1,311 @@
+package com.cannontech.importer.fdr;
+
+import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
+
+
+import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.opc.model.FdrTranslation;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.FdrTranslationDao;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.PoolManager;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.importer.fdr.translation.ProgressOpcImportParserImpl;
+import com.cannontech.importer.fdr.translation.ProgressTextImportParseImpl;
+import com.cannontech.importer.fdr.translation.TranslationBase;
+import com.cannontech.importer.fdr.translation.TranslationParse;
+import com.cannontech.importer.point.PointImportUtility;
+import com.cannontech.spring.YukonSpringHook;
+
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import org.springframework.dao.DataAccessException;
+
+
+public class FdrImporter {
+    
+    private PointDao pointDao = YukonSpringHook.getBean("pointDao",PointDao.class);
+    private String fileName;
+    private List<String> inputStrings;
+    private TranslationParse parser;
+    private List<TranslationBase> translationList;
+    
+    public FdrImporter(String argZero) {
+        fileName = argZero;
+    }
+    
+    public void setParser(TranslationParse parser) {
+        this.parser = parser;
+    }
+    
+    private boolean pointNameinList(List<LitePoint> pnts, String name) {
+        
+        for( LitePoint point : pnts ) {
+            if( point.getPointName().equalsIgnoreCase(name))
+                return true;
+        }
+        return false;
+    }
+    
+    public void loadInputStringsFromFile() throws IOException{
+        String line;
+        inputStrings = new ArrayList<String>();
+        BufferedReader reader = new BufferedReader(new FileReader(fileName));
+        
+        while( true ){
+            try{
+                if( reader.ready() )
+                    line = new String(reader.readLine());
+                else
+                    break;
+            }catch(IOException e){
+                System.out.print(e);
+
+                throw e;
+            }
+            if( line != null ){
+                inputStrings.add(line);
+            }else{
+                break;
+            }
+        }
+        reader.close();
+    }
+    public void parseStrings() {
+        translationList = new ArrayList<TranslationBase>();
+                
+        for(String input : inputStrings) {
+            TranslationBase base = new TranslationBase(input);
+            try{
+                parser.parse(base);
+                translationList.add(base);
+            }catch(IOException e) {
+                CTILogger.error("Input skipped",e);
+            }
+        }
+    }
+    public void addDevicesToDatabase(Connection dbconn) {
+        DeviceDao deviceDao = YukonSpringHook.getBean("deviceDao",DeviceDao.class);
+        for( TranslationBase base : translationList ) {
+            ImporterVirtualDevice device = base.getDevice();
+            device.setDbConnection(dbconn);
+            LiteYukonPAObject obj = deviceDao.getLiteYukonPaobjectByDeviceName(device.getPAOName());
+            if(obj != null) {
+                //update
+                device.setDeviceID(obj.getYukonID());
+                try{
+                    device.update();
+                }catch(SQLException e) {
+                    CTILogger.error("Error updating " + device.getPAOName() + " in the database.");
+                }
+            }else {
+                //add
+                try{
+                    device.add();
+                }catch(SQLException e) {
+                    CTILogger.error("Error adding " + device.getPAOName() + " to the database.");
+                }
+            }
+        }
+    }
+    public void addPoints() throws IOException {
+        List<ByteArrayOutputStream> strmList = generateCSVFile();
+        //run point importer on analog
+        BufferedReader buffReader = new BufferedReader( new InputStreamReader( new ByteArrayInputStream(strmList.get(0).toByteArray())) );            
+        PointImportUtility.processAnalogPoints(buffReader);
+
+        buffReader = new BufferedReader( new InputStreamReader( new ByteArrayInputStream(strmList.get(1).toByteArray())) );            
+        PointImportUtility.processStatusPoints(buffReader);
+    }
+    
+    private List<ByteArrayOutputStream> generateCSVFile() throws IOException {
+        ByteArrayOutputStream analogOutputStream = new ByteArrayOutputStream();
+        OutputStreamWriter analogStreamWriter = new OutputStreamWriter( analogOutputStream );
+        Writer analogWriter = new BufferedWriter(analogStreamWriter);
+        
+        ByteArrayOutputStream statusOutputStream = new ByteArrayOutputStream();
+        OutputStreamWriter statusStreamWriter = new OutputStreamWriter( statusOutputStream );
+        Writer statusWriter = new BufferedWriter(statusStreamWriter);
+        
+        int i = 1;
+
+        String curDevice = new String();
+        for(TranslationBase base : translationList) {
+            
+            ImporterVirtualDevice  vs = base.getDevice();
+            if( vs != null ){
+                List<LitePoint> pnts = DaoFactory.getPointDao().getLitePointsByPaObjectId(vs.getPAObjectID());
+                int highestOffset = 0;
+                boolean statusPoint = base.getPointParameter("POINTTYPE").equalsIgnoreCase("Status");
+                for( LitePoint p2 : pnts )
+                {
+                    if( p2.getPointOffset() > highestOffset)
+                        highestOffset = p2.getPointOffset();
+                }
+                if( pnts == null || !pointNameinList(pnts, base.getPointParameter("PointName")) )
+                {
+                    if( curDevice.equalsIgnoreCase(base.getPointParameter("PaoName")) ){
+                        curDevice = base.getPointParameter("PaoName");
+                        i = highestOffset+1;
+                    }
+
+                    if( statusPoint ) {
+
+                        statusWriter.write(base.getPointParameter("PointName") + ",Status," 
+                                           + base.getPointParameter("PaoName") + "," + i + "," 
+                                           + "TwoStateStatus,"  );
+                        statusWriter.write(",,,,,,,,,,,,\n");
+                    }else {
+                        //analog
+                        analogWriter.write(base.getPointParameter("PointName") + ",Analog," 
+                                           + base.getPointParameter("PaoName") + "," + i 
+                                           + "," + base.getPointParameter("uom")  );
+                        analogWriter.write(",1,0,0,1,,,,,,,NONE,,,,(none),,\n");
+                    }
+                    base.getPointParametersMap().put("OFFSET", Integer.toString(i));
+                    i++;
+                }else {
+                    System.out.println("Skipped");
+                    int deviceid = base.getDevice().getPAObjectID();
+                    int type;
+                    if( statusPoint ) {
+                        type = PointTypes.STATUS_POINT;
+                    }else {
+                        type = PointTypes.ANALOG_POINT;
+                    }
+                    List<LitePoint> list = pointDao.getLitePointIdByDeviceId_PointType(deviceid,type);
+                    
+                    if( list.size() == 0) {
+                        CTILogger.error("Point not found in the database, translation cannot be added.");
+                    }else {
+                        LitePoint p = null;
+                        for( LitePoint point : list ) {
+                            if( point.getPointName().equalsIgnoreCase(base.getPointParameter("PointName"))) {
+                                p = point;
+                                break;
+                            }
+                        }
+                        if( p != null) {
+                            int id = p.getPointOffset();
+                            base.getPointParametersMap().put("OFFSET", Integer.toString(id));
+                        }else {
+                            CTILogger.error("Point not found in the database, translation cannot be added.");
+                        }
+                    }
+                }
+            }
+            else
+            {
+                System.out.println("Device NULL:" + base.getPointParameter("PaoName") );
+            }
+        }
+        analogWriter.flush();
+        statusWriter.flush();
+        List<ByteArrayOutputStream> retList = new ArrayList<ByteArrayOutputStream>();
+        retList.add(analogOutputStream);
+        retList.add(statusOutputStream);
+        return retList;
+    }
+    
+    public void addTranslationToPoints() {
+        FdrTranslationDao fdrDao = YukonSpringHook.getBean("fdrTranslationDao",FdrTranslationDao.class);
+
+        //Need to get the point id for the new points in the DB
+        
+        for(TranslationBase base : translationList) {
+            FdrTranslation fdr = base.getTranslation();
+            int type = 0;
+            if( "Analog".equalsIgnoreCase(base.getPointParameter("POINTTYPE")) ) {
+                type = PointTypes.ANALOG_POINT;
+            }else {
+                type = PointTypes.STATUS_POINT;
+            }
+            try{ 
+                int offset = Integer.parseInt(base.getPointParameter("OFFSET"));
+                int deviceid = base.getDevice().getDevice().getDeviceID();
+                
+                LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(deviceid,offset,type);
+                
+                int liteid = point.getLiteID();
+                fdr.setFdrPointId(liteid);
+                if( fdr.getFdrPointId() != 0) {
+                    try{
+                        fdrDao.add(fdr);
+                    }catch(DataAccessException e) {
+                        CTILogger.error("Translation already in the database");
+                    }
+                }else {
+                    CTILogger.warn("FdrTranslation not added to the database because of bad pointid:");
+                    CTILogger.warn(fdr.getTranslation());
+                }
+            }catch( NotFoundException e ) {
+                CTILogger.error("Point Name, " + base.getPointParameter("PointName") 
+                                + ", not found in database cannot add translation");
+            }catch( NumberFormatException e) {
+                CTILogger.error("Point Name, " + base.getPointParameter("PointName") 
+                                + ", Offset is incorrect, cannot find point to add translation");
+            }
+        }
+    }
+    /**
+     * 
+     */
+    public static void main(String[] args) {
+        Connection conn = PoolManager.getYukonConnection();
+        if( args.length < 2){
+            CTILogger.info(" Missing input, please input filename and the number of desired input type.");
+            CTILogger.info("1 : Text Import - Progress");
+            CTILogger.info("2 : OPC - Progress");
+            return;
+        }else
+            CTILogger.info( args[0] );
+
+        FdrImporter importer = new FdrImporter(args[0]);
+        
+        try{
+            importer.loadInputStringsFromFile();
+        }catch(IOException e) {
+            CTILogger.error("Error Reading File. ",e);
+        }
+        
+        int parserType = Integer.parseInt(args[1]);
+        
+        TranslationParse parser = null;
+        switch(parserType) {
+            case 1: {
+                parser = new ProgressTextImportParseImpl();
+                break;
+            }
+            case 2: {
+                parser = new ProgressOpcImportParserImpl();
+                break;
+            }
+            default: {
+                CTILogger.error("Not a valid input type! Exiting Application.");
+                return;
+            }
+        }
+        importer.setParser(parser);
+        importer.parseStrings();
+        
+        importer.addDevicesToDatabase(conn);
+        
+        try{
+            importer.addPoints();
+        }catch(IOException e) {
+            CTILogger.error("Unable to add points, aborting.");
+            return;
+        }
+        
+        importer.addTranslationToPoints();
+        
+        //done
+    }   
+}
