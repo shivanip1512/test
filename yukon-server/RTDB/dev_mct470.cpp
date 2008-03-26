@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.114 $
-* DATE         :  $Date: 2008/03/26 14:07:39 $
+* REVISION     :  $Revision: 1.115 $
+* DATE         :  $Date: 2008/03/26 14:47:05 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -943,7 +943,7 @@ CtiDeviceMCT470::point_info CtiDeviceMCT470::getData( unsigned char *buf, int le
             description = "Unknown/reserved error [" + CtiNumStr(error_code).hex() + "]";
         }
     }
-    else if( vt == ValueType_IED )
+    else if( vt == ValueType_IED && error_pad >= 0xfc )
     {
         value   = 0;
         quality = InvalidQuality;
