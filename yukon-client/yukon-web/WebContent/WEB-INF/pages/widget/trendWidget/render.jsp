@@ -81,16 +81,16 @@
         			<tr id="optionalDateFields" name="optionalDateFields">
         				<td>&nbsp;</td>
         				<td>
-            				<tags:dateInputCalendar fieldName="startDateParam" fieldValue="${startDateStr}" />&nbsp;
-            				<tags:dateInputCalendar fieldName="stopDateParam" fieldValue="${stopDateStr}" />&nbsp;
+            				<tags:dateInputCalendar fieldName="startDateParam" fieldValue="${startDate}" />&nbsp;
+            				<tags:dateInputCalendar fieldName="stopDateParam" fieldValue="${stopDate}" />&nbsp;
             				<tags:widgetActionRefreshImage method="render" title="Reload Graph Using Custom Dates" imgSrc="/WebConfig/yukon/Icons/arrow_refresh_small.gif" imgSrcHover="/WebConfig/yukon/Icons/arrow_refresh.gif" />
         				</td>
         			</tr>
         		</c:when>
             
         		<c:otherwise>
-        			<input type="hidden" name="startDateParam" value="${startDateStr}">
-        			<input type="hidden" name="stopDateParam" value="${stopDateStr}"> 
+        			<input type="hidden" name="startDateParam" value="${startDate}">
+        			<input type="hidden" name="stopDateParam" value="${stopDate}"> 
         		</c:otherwise>
                 
     		</c:choose>

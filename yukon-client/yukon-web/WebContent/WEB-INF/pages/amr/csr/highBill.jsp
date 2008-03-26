@@ -42,7 +42,7 @@
                 
                     <c:when test="${lmPointExists}">
                         <td class="widgetColumnCell" valign="top">
-                            <ct:widget bean="profilePeakWidget"  width="700px" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"  hideEnabled="false"/>
+                            <ct:widget bean="profilePeriodTrendWidget"  width="700px" identify="false" deviceId="${deviceId}" collectLPVisible="true" highlight="usage,averageUsage" loadProfileRequestOrigin="HBC"  hideEnabled="false"/>
                         </td>
                     
                         <td class="widgetColumnCell" valign="top">
@@ -60,12 +60,6 @@
                     </c:otherwise>
                 
                 </c:choose>
-            </tr>
-            
-            <tr>
-                <td class="widgetColumnCell" colspan="2" valign="top">
-                    <ct:widget bean="hbcTrendWidget" tabularDataViewer="hbcArchivedDataReport" defaultAttribute="LOAD_PROFILE" />
-                </td>
             </tr>
             
         </table>

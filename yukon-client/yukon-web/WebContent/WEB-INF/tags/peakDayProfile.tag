@@ -5,6 +5,7 @@
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="profileRequestOrigin" required="true" type="java.lang.String"%>
 <%@ attribute name="isReadable" required="true" type="java.lang.Boolean"%>
+<%@ attribute name="availableDaysAfterPeak" required="true" type="java.util.List"%>
 
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -56,11 +57,9 @@
             </td>
             <td style="text-align:center;">
                 <select id="${id}_afterDays">
-                    <option value="0" selected>0</option>
-                    <option value="1">1</option>
-                    <option value="2">2</option>
-                    <option value="3">3</option>
-                    <option value="all">All</option>
+                    <c:forEach var="d" items="${availableDaysAfterPeak}">
+                        <option value="${d}" <c:if test="${d == '0'}">selected</c:if>>${d}</option>
+                    </c:forEach>
                 </select>
             </td>
         </tr>

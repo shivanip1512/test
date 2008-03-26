@@ -25,8 +25,7 @@
 	<table width="95%">
 		<tr>
 			<td>
-				Report: Peak Daily Usage
-				<input type="hidden" id="reportType" name="reportType" value="day">
+				<b>Report: Peak Daily Usage<b>
 			</td>
 			<td>
 				Start Date:
@@ -51,37 +50,25 @@
 			</td>
 		</tr>
 	</table>
-	
-	<!-- Daily Usage Report -->
 	<br>
-	<b>Daily Usage Report:</b>
-	<cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${startDateDate}" stopDate="${stopDateDate}">HTML</cti:simpleReportLinkFromNameTag>
-    |
-    <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${startDateDate}" stopDate="${stopDateDate}">CSV</cti:simpleReportLinkFromNameTag>
-    |
-    <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${startDateDate}" stopDate="${stopDateDate}">PDF</cti:simpleReportLinkFromNameTag>
-	<br/><br/>
-	
+
 	<!-- Profile peak results section -->
-	<c:if test="${!empty preResult || !empty postResult}">
-		<br><b>Previous Profile Reports:</b>
-	</c:if>
-	
-	<br/><br/>
-	
 	<c:if test="${! empty preResult || ! empty postResult}">
+    
+        <div style="font-weight:bold;padding-top:10px;padding-bottom:5px;">Previous Profile Reports:</div>
+        
 		<table class="miniResultsTable" width="100%">
 			<tr>
-				<th width="150px">
+				<th>
 					Period
 				</th>
-				<th width="130px">
+				<th>
 					Avg Daily / <br /> Total Usage
 				</th>
 				<th>
 					Peak ${displayName}
 				</th>
-				<th width="200px">
+				<th>
 					Peak Day Total Usage
 				</th>
 				<th>Profile</th>
@@ -90,14 +77,15 @@
 					<c:choose>
 						<c:when test="${!preResult.noData && preResult.deviceError == ''}">
 							<tr>
-								<td width="150px">
-									${prePeriodStartDateDisplay} -<br/>
-									${prePeriodStopDateDisplay}
+								<td>
+                                    <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${prePeriodStartDate}" stopDate="${prePeriodStopDate}">
+									   ${prePeriodStartDateDisplay} - ${prePeriodStopDateDisplay}
+                                    </cti:simpleReportLinkFromNameTag>
 								</td>
 								<td>
 									${preResult.averageDailyUsage} / ${preResult.totalUsage} kWH
 								</td>
-								<td width="150px">
+								<td>
 									${prePeakValue}
 								</td>
 								<td>
@@ -107,7 +95,7 @@
 									<!-- Load Profile collection -->
 									<c:if test="${widgetParameters.collectLPVisible}">
 										<br/>
-										<tags:peakDayProfile isReadable="${readable}" deviceId="${widgetParameters.deviceId}" peakDate="${prePeakValue}" startDate="${prePeriodStartDateDisplay}" stopDate="${prePeriodStopDateDisplay}" styleClass="Link1" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:peakDayProfile>
+										<tags:peakDayProfile isReadable="${readable}" deviceId="${widgetParameters.deviceId}" peakDate="${prePeakValue}" startDate="${prePeriodStartDateDisplay}" stopDate="${prePeriodStopDateDisplay}" styleClass="Link1" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}" availableDaysAfterPeak="${preAvailableDaysAfterPeak}">Profile</tags:peakDayProfile>
 									</c:if>
 								</td>
 							</tr>
@@ -132,13 +120,15 @@
 					<c:choose>
 						<c:when test="${!postResult.noData && postResult.deviceError == ''}">
 							<tr>
-								<td width="150px">
-									${postPeriodStartDateDisplay} - ${postPeriodStopDateDisplay}
-								</td>
 								<td>
+                                    <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${postPeriodStartDate}" stopDate="${postPeriodStopDate}">
+									   ${postPeriodStartDateDisplay} - ${postPeriodStopDateDisplay}
+                                    </cti:simpleReportLinkFromNameTag>
+								</td>
+								<td nowrap>
 									${postResult.averageDailyUsage} / ${postResult.totalUsage} kWH
 								</td>
-								<td width="150px">
+								<td>
 									${postPeakValue}
 								</td>
 								<td>
@@ -148,7 +138,7 @@
 									<!-- Load Profile collection -->
 									<c:if test="${widgetParameters.collectLPVisible}">
 										<br/>
-										<tags:peakDayProfile isReadable="${readable}" deviceId="${widgetParameters.deviceId}" peakDate="${postPeakValue}" startDate="${postPeriodStartDateDisplay}" stopDate="${postPeriodStopDateDisplay}" styleClass="Link1" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}">Profile</tags:peakDayProfile>
+										<tags:peakDayProfile isReadable="${readable}" deviceId="${widgetParameters.deviceId}" peakDate="${postPeakValue}" startDate="${postPeriodStartDateDisplay}" stopDate="${postPeriodStopDateDisplay}" styleClass="Link1" profileRequestOrigin="${widgetParameters.loadProfileRequestOrigin}" availableDaysAfterPeak="${postAvailableDaysAfterPeak}">Profile</tags:peakDayProfile>
 									</c:if>
 								</td>
 							</tr>
@@ -170,5 +160,10 @@
 				</c:if>
 		</table>
 	</c:if>
+    
+    <%-- TREND --%>
+    <br><br>
+    <c:url var="trendUrl" value="/WEB-INF/pages/widget/trendWidget/render.jsp" />
+    <jsp:include page="${trendUrl}" />
 	
 </span>

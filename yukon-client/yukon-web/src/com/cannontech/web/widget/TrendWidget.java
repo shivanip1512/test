@@ -151,8 +151,8 @@ public class TrendWidget extends WidgetControllerBase {
         mav.addObject("attributeGraphType", attributeGraphType);
         mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
         mav.addObject("period", period);
-        mav.addObject("startDateStr", startDateStr);
-        mav.addObject("stopDateStr", stopDateStr);
+        mav.addObject("startDate", startDateStr);
+        mav.addObject("stopDate", stopDateStr);
         mav.addObject("graphType", graphType);
 
         if (!period.equals("NOPERIOD")) {
