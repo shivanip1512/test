@@ -35,7 +35,7 @@
     <bean id="localShaAuthentication" class="com.cannontech.core.authentication.service.impl.LocalHashAuthenticationService">
       <property name="yukonUserPasswordDao" ref="yukonUserPasswordDao"/>
       <property name="passwordHasher">
-        <bean class="com.cannontech.core.authentication.service.impl.YukonPaswordHasher">
+        <bean class="com.cannontech.core.authentication.service.impl.YukonPasswordHasher">
           <constructor-arg value="SHA"/>
         </bean>
       </property>

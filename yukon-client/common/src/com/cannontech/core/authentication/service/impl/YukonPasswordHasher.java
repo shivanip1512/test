@@ -6,11 +6,11 @@ import java.util.Formatter;
 
 import com.cannontech.core.authentication.service.MessageDigestHasher;
 
-public class YukonPaswordHasher extends MessageDigestHasher {
+public class YukonPasswordHasher extends MessageDigestHasher {
     // the following value must never, ever, ever be changed
     private static final String salt = "88302c9d15581fd7abc6aa6742cf71b9da852d33";
 
-    public YukonPaswordHasher(final String algorithm) throws NoSuchAlgorithmException {
+    public YukonPasswordHasher(final String algorithm) throws NoSuchAlgorithmException {
         super(algorithm);
     }
 

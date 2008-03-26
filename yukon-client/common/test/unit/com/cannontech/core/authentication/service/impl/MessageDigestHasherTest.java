@@ -17,15 +17,15 @@ import com.cannontech.core.authentication.service.MessageDigestHasher;
 public class MessageDigestHasherTest {
     
     @Test
-    public void test_YukonPaswordHasher_MD5Password() throws NoSuchAlgorithmException {
-        MessageDigestHasher authenticationService = new YukonPaswordHasher("MD5");
+    public void test_YukonPasswordHasher_MD5Password() throws NoSuchAlgorithmException {
+        MessageDigestHasher authenticationService = new YukonPasswordHasher("MD5");
         String string = authenticationService.hashPassword("Tom Is Stupid!");
         Assert.assertEquals("Hash doesn't match precomputed value", "754b118eaa8457f636193782dcecb2e", string);
     }
 
     @Test
-    public void test_YukonPaswordHasher_SHAPassword() throws NoSuchAlgorithmException {
-        MessageDigestHasher authenticationService = new YukonPaswordHasher("SHA");
+    public void test_YukonPasswordHasher_SHAPassword() throws NoSuchAlgorithmException {
+        MessageDigestHasher authenticationService = new YukonPasswordHasher("SHA");
         String string = authenticationService.hashPassword("Tom Is Stupid!");
         Assert.assertEquals("Hash doesn't match precomputed value", "3b385b6395434bb21f35c6a518228684aca41b", string);
         
