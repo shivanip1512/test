@@ -134,21 +134,24 @@ legend, .legendLikeLabel{
     border: 1px solid gray;
 }
 
-.nonBorderedScrollerTable {
-    padding: 2px;
-    width: 300px;
+.dataCell {
+    vertical-align: top;
+    width: 100%; /*  For FF and IE7  */
+    width: expression(this.scrollHeight > 400 ? "94%" : "100%"); /*  For IE6  */
 }
 
 .scrollerDivWithBorder {
 	border: 1px solid gray;
     max-height: 400px;
-    max-width: 320px;
+    width: 60%;
+    height: expression(this.scrollHeight > 400 ? "400px" : "auto");  /* Hack for IE6 */
     overflow: auto;
 }
 
 .fullTable {
 	width: 100%;
 }
+
 .bigScrollerTable {
 	padding: 2px;
     border-style: solid;

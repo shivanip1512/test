@@ -7,16 +7,16 @@
     <f:verbatim>
         <br/>
         <fieldset class="fieldSet">
-        <legend>Substation Assignment</legend>
+        <legend>Substation Assignmentpoop</legend>
         <br/>
     </f:verbatim>
 
-    <h:panelGrid id="areaBody" columns="2" styleClass="gridLayout"
-        rowClasses="gridCell" columnClasses="gridCell">
+    <h:panelGrid id="areaBody" columns="2" styleClass="gridLayout" rowClasses="gridCell" columnClasses="gridCell, gridCell">
         <x:panelGroup>
-            <x:div styleClass="scrollerDivWithBorder">
+            <x:div styleClass="scrollerDivWithBorder" style="height: expression(this.height > 400 ? '400px' : true);">
                 <h:dataTable id="subAvailData" var="sub" 
-                    styleClass="nonBorderedScrollerTable" headerClass="scrollerTableHeader"
+                    styleClass="dataCell"
+                    headerClass="scrollerTableHeader"
                     footerClass="scrollerTableHeader"
                     rowClasses="tableRow,altTableRow"
                     value="#{capControlForm.dataModel.unassigned}">

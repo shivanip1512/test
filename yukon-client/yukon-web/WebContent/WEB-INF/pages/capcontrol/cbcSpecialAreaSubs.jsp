@@ -11,12 +11,12 @@
         <br/>
     </f:verbatim>
         
-    <h:panelGrid id="areaBody" columns="2" styleClass="gridLayout"
-        rowClasses="gridCell" columnClasses="gridCell">
+    <h:panelGrid id="areaBody" columns="2" styleClass="gridLayout" rowClasses="gridCell" columnClasses="gridCell, gridCell">
         <x:panelGroup>
             <x:div styleClass="scrollerDivWithBorder">
                 <h:dataTable id="subAvailData" var="sub" 
-                    styleClass="nonBorderedScrollerTable" headerClass="scrollerTableHeader"
+                    styleClass="dataCell"
+                    headerClass="scrollerTableHeader"
                     footerClass="scrollerTableHeader"
                     rowClasses="tableRow,altTableRow"
                     value="#{capControlForm.dataModel.unassigned}">
