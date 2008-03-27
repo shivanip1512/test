@@ -8,10 +8,6 @@
     <f:subview id="paoFeeder" rendered="#{capControlForm.visibleTabs['CBCFeeder']}" >    
     <f:verbatim>
     <script type="text/javascript">
-        formatSelectedPoint ('feederVarDiv');
-        formatSelectedPoint ('feederWattDiv');
-        formatSelectedPoint ('feederVoltDiv');
-		
 		var feederVarPointPicker = new PointPicker('varPoint','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPoint;deviceName:feederVarDevice','feederVarPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
 		var feederVarPhaseBPointPicker = new PointPicker('varPhaseBPoint','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPhaseBPoint;deviceName:feederVarPhaseBDevice','feederVarPhaseBPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);
 		var feederVarPhaseCPointPicker = new PointPicker('varPhaseCPoint','com.cannontech.common.search.criteria.CCVarCriteria','pointName:feederVarPhaseCPoint;deviceName:feederVarPhaseCDevice','feederVarPhaseCPointPicker','',Prototype.emptyFunction,Prototype.emptyFunction);

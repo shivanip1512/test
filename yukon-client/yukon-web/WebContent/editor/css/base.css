@@ -74,12 +74,13 @@ a.submenuLink:hover, legend, .editorHeader, .legendLikeLabel {
 }
 
 .scrollSmall {
-	overflow: scroll;
-	height: 200px;
+	overflow: auto;
+	max-height: 200px;
+	height: expression(this.scrollHeight > 200 ? "200px" : "auto");  /* Hack for IE6 */
 }
 
 .widthSet,.scrollSmallWidthSet,.scrollVerySmall {
-  width:  390px;  
+    width:  390px;  
 }
 
 .scrollSmallWidthSet {
@@ -97,19 +98,9 @@ legend, .legendLikeLabel{
 	width: 100%;
 }
 
-	/*
-.gridLayout, .pageLayout, .pageHeader,
-.pageNavigation, .pageBody, .pageFooter {
-*/
-
 .stdButton {
 	margin-left: 3px;
 	margin-right: 3px;
-}
-
-.gridCell {
-	margin-left: 30px;
-	margin-right: 30px;
 }
 
 /* red */
@@ -159,7 +150,6 @@ legend, .legendLikeLabel{
 	width: 100%;	
 }
 
-
 .scrollerCentered {
     text-align: center;
 }
@@ -176,9 +166,6 @@ legend, .legendLikeLabel{
 	font-weight: bold;
 }
 
-.tableRow {
-}
-
 .altTableRow {
 	background-color: #eeeeee;
 }
@@ -186,6 +173,11 @@ legend, .legendLikeLabel{
 .gridColumn, .gridCell, .gridCellSmall, .gridCellMedium, .gridCellLarge {
 	vertical-align: top;
 	width: 50%;
+}
+
+.gridCell {
+    margin-left: 30px;
+    margin-right: 30px;
 }
 
 .gridCellSmall {
@@ -248,17 +240,16 @@ legend, .legendLikeLabel{
 	
 }
 
-
-
 .listWithNoBullets { 
 	list-style-type: none;
 	margin-left: 5px;
 	padding: 0;
-	
-	}
+}
+
 .bigFont {
     font-size: 20px;
 }
+
 .scrollVerySmall {
     height: 50px; 
 }
@@ -268,10 +259,10 @@ legend, .legendLikeLabel{
 }
 
 .myFaces_panelTabbedPane_activeHeaderCell input {
-color: black;
-padding: 2px 5px;
-border: 2px solid;
-border-color: white;
-background-color: white;
-display: block;
+    color: black;
+    padding: 2px 5px;
+    border: 2px solid;
+    border-color: white;
+    background-color: white;
+    display: block;
 }

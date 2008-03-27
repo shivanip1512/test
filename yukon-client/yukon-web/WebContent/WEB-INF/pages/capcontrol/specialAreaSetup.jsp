@@ -5,7 +5,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <f:verbatim>
     <script type="text/javascript">
-        formatSelectedPoint ('specAreaVoltReductionPointDiv');
         var specAreaVoltReductionPointPicker = new PointPicker('specAreaVoltReductionPointValue','com.cannontech.common.search.criteria.StatusPointCriteria','pointName:specAreaVoltReductionPoint;deviceName:areaDevice','specAreaVoltReductionPointPicker','', Prototype.emptyFunction,Prototype.emptyFunction);
     </script>
 </f:verbatim>

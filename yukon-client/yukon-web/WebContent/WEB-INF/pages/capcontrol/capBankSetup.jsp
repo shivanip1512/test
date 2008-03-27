@@ -29,8 +29,6 @@
 </div>
 
 <script type="text/javascript">
-formatSelectedPoint ('cbcPointDiv');
-
 function closeOrphanedCBCPopup(){
     $('orphanedCBCContent').hide();
 }
@@ -161,7 +159,7 @@ function setCBC( deviceName, pointId, pointName){
                  <x:div id="cbcPointDiv" forceId="true">
                  <x:inputHidden id="cbc_point" forceId="true"
                  value="#{capBankEditor.capBank.capBank.controlPointID }" valueChangeListener="#{capBankEditor.ctlPointChanged}"/>        
-                <x:outputLabel for="cntrlPoint" value="Control Device/Point: " 
+                <x:outputLabel for="cbcDevice" value="Control Device/Point: " 
                  title="Point used for monitoring the control (Only displays points that are not yet used by CapBanks)" 
                  styleClass="medStaticLabel"/>
                  <x:outputText id="cbcDevice" forceId="true" 
@@ -288,7 +286,7 @@ function setCBC( deviceName, pointId, pointName){
             <f:verbatim><br/></f:verbatim>
             <x:panelGroup id="oneWayCBC" rendered="#{capBankEditor.oneWayController}">
                 <f:verbatim><br/></f:verbatim>
-                <x:outputLabel for="cntrlSerNum" value="Serial Number: " title="Serial number of the controller device" rendered="#{capBankEditor.capBank.capBank.controlPointID != 0}"/>
+                <x:outputLabel for="cntrlSerNumEd" value="Serial Number: " title="Serial number of the controller device" rendered="#{capBankEditor.capBank.capBank.controlPointID != 0}"/>
                 <x:inputText id="cntrlSerNumEd" styleClass="staticLabel" disabled="true" rendered="#{capBankEditor.capBank.capBank.controlPointID != 0}"
                         value="#{capBankEditor.controller.deviceCBC.serialNumber}" maxlength="9" size="9">
                     <f:validateLongRange minimum="0" maximum="9999999999" />
@@ -305,7 +303,7 @@ function setCBC( deviceName, pointId, pointName){
 
             <x:panelGroup id="twoWayCBC" rendered="#{capBankEditor.twoWayController}" >
                 <f:verbatim><br/></f:verbatim>
-                <x:outputLabel for="cntrlSerNum2" value="Serial Number: " title="Serial number of the controller device" />
+                <x:outputLabel for="cntrlSerNumEd2" value="Serial Number: " title="Serial number of the controller device" />
                 <x:inputText id="cntrlSerNumEd2" styleClass="staticLabel" disabled="true"
                         value="#{capBankEditor.controller.deviceCBC.serialNumber}" >
                     <f:validateLongRange minimum="0" maximum="9999999999" />
