@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.20 $
-*    DATE         :  $Date: 2008/03/20 21:27:14 $
+*    REVISION     :  $Revision: 1.21 $
+*    DATE         :  $Date: 2008/03/27 21:04:17 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,9 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.21  2008/03/27 21:04:17  tspar
+      Minor bug fix for fdrinet
+
       Revision 1.20  2008/03/20 21:27:14  tspar
       YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
 
@@ -556,8 +559,20 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
                                                 std::transform(translationName.begin(), translationName.end(), translationName.begin(), ::toupper);
             
                                                 translationPoint->getDestinationList()[x].setTranslation(translationName);
+                                                /***/
                                                 string s = translationPoint->getDestinationList()[x].getDestination();
-                                                translationPoint->getDestinationList()[x].getDestination() = std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+                                                if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << " Destination: " << translationPoint->getDestinationList()[x].getDestination() << endl;
+                                                }
+                                                translationPoint->getDestinationList()[x].setDestination(std::transform(s.begin(), s.end(), s.begin(), ::toupper)); 
+                                                if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+                                                {
+                                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                                    dout << " Destination: " << translationPoint->getDestinationList()[x].getDestination() << endl;
+                                                }
+                                                /***/
                                                 successful = true;
             
                                                 if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
