@@ -149,4 +149,11 @@ public class MockPointDao implements PointDao {
         return null;
     }
 
+    @Override
+    public List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId,
+            int pointType) throws NotFoundException {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
 }
