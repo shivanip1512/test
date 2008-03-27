@@ -1003,35 +1003,35 @@ insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access t
 insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment');
 /* End YUK-4745 */
 
-/* Start YUK-4906 */
+/* Start YUK-4906, YUK-5522 */
 alter table MSPVendor add MaxReturnRecords int;
 go
-update MSPVendor set MaxReturnRecords = 10000;
+update MSPVendor set MaxReturnRecords = 10000 where MaxReturnRecords is null;
 go
 alter table MSPVendor alter column MaxReturnRecords int not null;
 go
 
 alter table MSPVendor add RequestMessageTimeout int;
 go
-update MSPVendor set RequestMessageTimeout = 120000;
+update MSPVendor set RequestMessageTimeout = 120000 where RequestMessageTimeout is null;
 go
 alter table MSPVendor alter column RequestMessageTimeout int not null;
 go
 
 alter table MSPVendor add MaxInitiateRequestObjects int;
 go
-update MSPVendor set MaxInitiateRequestObjects = 15;
+update MSPVendor set MaxInitiateRequestObjects = 15 where MaxInitiateRequestObjects is null;
 go
 alter table MSPVendor alter column MaxInitiateRequestObjects int not null;
 go
 
 alter table MSPVendor add TemplateNameDefault varchar(50);
 go
-update MSPVendor set TemplateNameDefault = '*Default Template';
+update MSPVendor set TemplateNameDefault = '*Default Template' where TemplateNameDefault is null;
 go
 alter table MSPVendor alter column TemplateNameDefault varchar(50) not null;
 go
-/* End YUK-4906 */
+/* End YUK-4906, YUK-5522 */
 /* @error ignore-end */
 
 /* Start YUK-4733 */

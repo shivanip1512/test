@@ -33,24 +33,26 @@ go
 delete from yukonlistentry where entryid = 125;
 go
 
+/* Start YUK-5522 */
 alter table MspVendor add AppName varchar(64);
 go
-update MspVendor set AppName = '(none)';
+update MspVendor set AppName = '(none)' where AppName is null;
 go
 alter table MspVendor alter column AppName varchar(64) not null;
 go
 alter table MspVendor add OutUserName varchar(64);
 go
-update MspVendor set OutUserName = '(none)';
+update MspVendor set OutUserName = '(none)' where OutUserName is null;
 go
 alter table MspVendor alter column OutUserName varchar(64) not null;
 go
 alter table MspVendor add OutPassword varchar(64);
 go
-update MspVendor set OutPassword = '(none)';
+update MspVendor set OutPassword = '(none)' where OutPassword is null;
 go
 alter table MspVendor alter column OutPassword varchar(64) not null;
 go
+/* End YUK-5522 */
 
 delete YukonGroupRole where Roleid = -7;
 delete YukonUserRole where RoleID = -7;
@@ -104,40 +106,42 @@ alter table SubstationToRouteMapping
       references Route (RouteID);
 go
 
+/* Start YUK-5522 */
 alter table ImportData add BillGrp varchar(64);
 go
-update ImportData set BillGrp = '';
+update ImportData set BillGrp = '' where BillGrp is null;
 go
 alter table ImportData alter column BillGrp varchar(64) not null;
 go
 
 alter table ImportData add SubstationName varchar(50);
 go
-update ImportData set SubstationName = '';
+update ImportData set SubstationName = '' where SubstationName is null;
 go
 alter table ImportData alter column SubstationName varchar(50) not null;
 go
 
 alter table ImportFail add BillGrp varchar(64);
 go
-update ImportFail set BillGrp = '';
+update ImportFail set BillGrp = '' where BillGrp is null;
 go
 alter table ImportFail alter column BillGrp varchar(64) not null;
 go
 
 alter table ImportFail add SubstationName varchar(50);
 go
-update ImportFail set SubstationName = '';
+update ImportFail set SubstationName = '' where SubstationName is null;
 go
 alter table ImportFail alter column SubstationName varchar(50) not null;
 go
 
 alter table ImportFail add FailType varchar(64);
 go
-update ImportFail set FailType = '';
+update ImportFail set FailType = '' where FailType is null;
 go
 alter table ImportFail alter column FailType varchar(64) not null;
 go
+/* End YUK-5522 */
 
 create table ImportPendingComm (
    DeviceID	       	   	numeric		    	 not null,
@@ -334,32 +338,34 @@ alter table SystemLog drop constraint SYS_C0013408;
 go
 
 /* @error ignore-begin */
+/* Start YUK-5522 */
 alter table cceventlog add kvarBefore float;
 go
-update cceventlog set kvarBefore = 0.0;
+update cceventlog set kvarBefore = 0.0 where kvarBefore is null;
 go
 alter table cceventlog alter column kvarBefore float not null;
 go
 
 alter table cceventlog add kvarAfter float;
 go
-update cceventlog set kvarAfter = 0.0;
+update cceventlog set kvarAfter = 0.0 where kvarAfter is null;
 go
 alter table cceventlog alter column kvarAfter float not null;
 go
 
 alter table cceventlog add kvarChange float;
 go
-update cceventlog set kvarChange = 0.0;
+update cceventlog set kvarChange = 0.0 where kvarChange is null;
 go
 alter table cceventlog alter column kvarChange float not null;
 go
 
 alter table cceventlog add additionalInfo varchar(20);
 go
-update cceventlog set additionalInfo = '(none)';
+update cceventlog set additionalInfo = '(none)' where additionalInfo is null;
 go
 alter table cceventlog alter column additionalInfo varchar(20) not null;
+/* End YUK-5522 */
 
 insert into YukonRoleProperty values(-10813, -108,'Show flip command', 'false', 'Show flip command for Cap Banks with 7010 type controller');
 go
@@ -478,18 +484,20 @@ alter table GroupPaoPermission
 go
 
 /* @error ignore-begin */
+/* Start YUK-5522 */
 alter table dynamiccccapbank add twowaycbcstate numeric;
 go
-update dynamiccccapbank set twowaycbcstate = -1;
+update dynamiccccapbank set twowaycbcstate = -1 where twowaycbcstate is null;
 go
 alter table dynamiccccapbank alter column twowaycbcstate numeric not null;
 go
 alter table dynamiccccapbank add twowaycbcstatetime datetime;
 go
-update dynamiccccapbank set twowaycbcstatetime = '01-JAN-1990';
+update dynamiccccapbank set twowaycbcstatetime = '01-JAN-1990' where twowaycbcstatetime is null;
 go
 alter table dynamiccccapbank alter column twowaycbcstatetime datetime not null;
 go
+/* End YUK-5522 */
 /* @error ignore-end */
 
 create table DEVICEREADJOBLOG (
