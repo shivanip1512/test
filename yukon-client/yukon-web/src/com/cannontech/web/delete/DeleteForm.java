@@ -11,6 +11,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DBDeleteResult;
 import com.cannontech.core.dao.DBDeletionDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.capcontrol.CapControlSubstation;
@@ -65,7 +66,13 @@ public abstract class DeleteForm extends DBEditorForm {
                         Integer subId = subDB.getSubstationID();
                         SubStation sub = capControlCache.getSubstation(subId);
                         Integer areaId = sub.getParentID();
-                        area = capControlCache.getCBCArea(areaId);
+                        if(areaId > 0) {
+                            try {
+                                area = capControlCache.getCBCArea(areaId);
+                            }catch (NotFoundException nfe) {
+                                area = null;
+                            }
+                        }
                     }
                     //be sure we can attempt to delete this item
                     if( deleteable.isDeleteAllowed() && deleteable.getChecked().booleanValue() ) {
@@ -87,8 +94,9 @@ public abstract class DeleteForm extends DBEditorForm {
                             }
                         }
                     }
-                    else
+                    else {
                         facesMsg.setDetail( "Item not deleted" );
+                    }
                 }
                 catch( TransactionException te ) {
                     //do nothing since the appropriate actions was taken in the super
