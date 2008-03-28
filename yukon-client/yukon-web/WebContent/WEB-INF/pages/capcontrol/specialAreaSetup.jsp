@@ -11,77 +11,61 @@
 
 <f:subview id="specialAreaSetup" rendered="#{capControlForm.visibleTabs['CBCSpecialArea']}">
     <f:subview id="paoArea" rendered="#{capControlForm.visibleTabs['CBCSpecialArea']}">
-    <x:panelGrid id="areaBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn">
-    <h:column>
+        <x:panelGrid id="areaBody" columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell">
+            <h:column>
     
-    <f:verbatim>
-    <br />
-    <fieldset class="fieldSet">
-    <legend>
-    Special Area Info
-    </legend>
-    </f:verbatim>
+                <x:htmlTag value="fieldset" styleClass="fieldSet">
+                    <f:verbatim><legend>Special Area Info</legend></f:verbatim>
     
-    <x:outputLabel for="geoLocation" value="#{capControlForm.PAODescLabel}: " 
-        title="Physical location of the area." 
-        rendered="#{!empty capControlForm.PAODescLabel}" />
-    <x:inputText id="geoLocation" value="#{capControlForm.PAOBase.geoAreaName}" 
-        required="true" maxlength="60" styleClass="char32Label" 
-        rendered="#{!empty capControlForm.PAODescLabel}" />
+                    <x:outputLabel for="geoLocation" value="#{capControlForm.PAODescLabel}: " 
+                        title="Physical location of the area." 
+                        rendered="#{!empty capControlForm.PAODescLabel}" />
+                    <x:inputText id="geoLocation" value="#{capControlForm.PAOBase.geoAreaName}" 
+                        required="true" maxlength="60" styleClass="char32Label" 
+                        rendered="#{!empty capControlForm.PAODescLabel}" />
 
-    <f:verbatim>
-    <br />
-    </fieldset>
-    </f:verbatim>
+                    <f:verbatim><br /></f:verbatim>
+                </x:htmlTag>
+            
+            </h:column>
+            
+            <h:column>
     
-    </h:column>
-    <h:column>
+                <x:htmlTag value="fieldset" styleClass="fieldSet">
+                    <f:verbatim><legend>Volt Reduction Control Point Setup</legend></f:verbatim>
     
-    <f:verbatim>
-    <br />
-    <br />
-    <fieldset class="fieldSet">
-    <legend>
-    Volt Reduction Control Point Setup
-    </legend>
-    <br/>
-    </f:verbatim>
+                    <x:div id="specAreaVoltReductionPointDiv" forceId="true">
+                    
+                        <x:inputHidden id="specAreaVoltReductionPointValue" forceId="true" value="#{capControlForm.PAOBase.capControlSpecialArea.voltReductionPointId }" />
+                        <x:outputLabel for="areaDevice" value="Selected Point: " title="Point used for control." styleClass="medStaticLabel"/>
+                        <x:outputText id="areaDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSpecialArea.voltReductionPointId]}"/> 
+                        <x:outputText id="areaDevicePointSeperator" forceId="true" value=" : " />
+                        <x:outputText id="specAreaVoltReductionPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSpecialArea.voltReductionPointId]}" /> 
     
-    <x:div id="specAreaVoltReductionPointDiv" forceId="true">
-    <x:inputHidden id="specAreaVoltReductionPointValue" forceId="true" value="#{capControlForm.PAOBase.capControlSpecialArea.voltReductionPointId }" />
-    <x:outputLabel for="areaDevice" value="Selected Point: " title="Point used for control." styleClass="medStaticLabel"/>
-    <x:outputText id="areaDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlSpecialArea.voltReductionPointId]}"/> 
-    <x:outputText id="areaDevicePointSeperator" forceId="true" value=" : " />
-    <x:outputText id="specAreaVoltReductionPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSpecialArea.voltReductionPointId]}" /> 
+                        <x:htmlTag value="br"/>
     
-    <f:verbatim>
-    <br/>
-    </f:verbatim>
-    
-    <h:outputLink  value="javascript:specAreaVoltReductionPointPicker.showPicker()" >
-        <h:outputText value="Select point"/>
-    </h:outputLink>
+                        <h:outputLink  value="javascript:specAreaVoltReductionPointPicker.showPicker()" >
+                            <h:outputText value="Select point"/>
+                        </h:outputLink>
                  
-    <f:verbatim>
-    <br/>
-    <br/>
-    </f:verbatim>
+                        <x:htmlTag value="br"/>
+                        <x:htmlTag value="br"/>
+                        
+                        <x:commandLink id="specialAreaVoltReductionPoint_setNone" 
+                            title="Do not use a point for control." 
+                            styleClass="medStaticLabel"
+                            value="No Volt Reduction Point" 
+                            actionListener="#{capControlForm.specialAreaNoVoltReductionPointClicked}">
+                            <f:param name="ptId" value="0"/>
+                        </x:commandLink>
+                    </x:div>
     
-    <x:commandLink id="specialAreaVoltReductionPoint_setNone" 
-        title="Do not use a point for control." 
-        styleClass="medStaticLabel"
-        value="No Volt Reduction Point" 
-        actionListener="#{capControlForm.specialAreaNoVoltReductionPointClicked}">
-        <f:param name="ptId" value="0"/>
-    </x:commandLink>
-    </x:div>
+                </x:htmlTag>
     
-    <f:verbatim>
-    </fieldset>
-    </f:verbatim>
-    
-    </h:column>
-    </x:panelGrid>
+            </h:column>
+            
+        </x:panelGrid>
+        
     </f:subview>
 </f:subview>
     

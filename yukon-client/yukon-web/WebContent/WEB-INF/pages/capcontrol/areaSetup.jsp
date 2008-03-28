@@ -11,148 +11,111 @@
 
 <f:subview id="areaSetup" rendered="#{capControlForm.visibleTabs['CBCArea']}">
     <f:subview id="paoArea" rendered="#{capControlForm.visibleTabs['CBCArea']}">
-    <x:panelGrid id="areaBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn">
-    <h:column>
-    <f:verbatim>
-    <br />
-    <br />
-    <fieldset class="fieldSet">
-    <legend>
-    Area Info
-    </legend>
-    </f:verbatim>
-    <x:outputLabel for="geoLocation" value="#{capControlForm.PAODescLabel}: " 
-        title="Physical location of the area." 
-        rendered="#{!empty capControlForm.PAODescLabel}" />
-    <x:inputText id="geoLocation" value="#{capControlForm.PAOBase.geoAreaName}" 
-        required="true" maxlength="60" styleClass="char32Label" 
-        rendered="#{!empty capControlForm.PAODescLabel}" />
+        <x:panelGrid id="areaBody" columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell">
+            <h:column>
+                <x:htmlTag value="fieldset" styleClass="fieldSet">
+                    <x:htmlTag value="legend"><x:outputText value="Area Info"/></x:htmlTag>
+                    <x:outputLabel for="geoLocation" value="#{capControlForm.PAODescLabel}: " 
+                        title="Physical location of the area." 
+                        rendered="#{!empty capControlForm.PAODescLabel}" />
+                    <x:inputText id="geoLocation" value="#{capControlForm.PAOBase.geoAreaName}" 
+                        required="true" maxlength="60" styleClass="char32Label" 
+                        rendered="#{!empty capControlForm.PAODescLabel}" />
 
-    <f:verbatim>
-    <br />
-    </fieldset>
-    </f:verbatim>
-    
-    <x:panelGroup>
-        <f:verbatim>
-            <br />
-            <fieldset class="fieldSet"><legend> Area Points </legend>
-        </f:verbatim>
-        <x:div forceId="true" id="SubstationBusEditorScrollDiv"
-            styleClass="scrollSmall">
-            <%-- Find out why you can't do this and why the capcontrolform is newly created! --%>
-            <%-- binding="#{capControlForm.pointTreeForm.pointTree}" --%>
-            <x:tree2 
-                id="SubstationBusEditPointTree"
-                value="#{capControlForm.pointTreeForm.pointList}" var="node"
-                showRootNode="false" varNodeToggler="t" preserveToggle="true"
-                clientSideToggle="false" showLines="false">
+                    <x:htmlTag value="br"/>
+                </x:htmlTag>
+            
+                <x:panelGroup>
+                    <x:htmlTag value="br"/>
+                    <x:htmlTag value="fieldset" styleClass="fieldSet">
+                        <x:htmlTag value="legend"><x:outputText value="Area Points"/></x:htmlTag>
+                        <x:div forceId="true" id="SubstationBusEditorScrollDiv" styleClass="scrollSmall">
+                        <%-- Find out why you can't do this and why the capcontrolform is newly created! --%>
+                        <%-- binding="#{capControlForm.pointTreeForm.pointTree}" --%>
+                            <x:tree2 id="SubstationBusEditPointTree"
+                                value="#{capControlForm.pointTreeForm.pointList}" var="node"
+                                showRootNode="false" varNodeToggler="t" preserveToggle="true"
+                                clientSideToggle="false" showLines="false">
 
-                <f:facet name="root">
-                    <x:panelGroup>
-                        <x:outputText id="rootLink" value="#{node.description}" />
-                    </x:panelGroup>
-                </f:facet>
-                <f:facet name="pointtype">
-                    <x:panelGroup>
-                        <x:outputText id="paChCnt"
-                            value="#{node.description} (#{node.childCount})"
-                            rendered="#{!empty node.children}" />
-                    </x:panelGroup>
-                </f:facet>
+                                <f:facet name="root">
+                                    <x:panelGroup>
+                                        <x:outputText id="rootLink" value="#{node.description}" />
+                                    </x:panelGroup>
+                                </f:facet>
+                                
+                                <f:facet name="pointtype">
+                                    <x:panelGroup>
+                                        <x:outputText id="paChCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+                                    </x:panelGroup>
+                                </f:facet>
 
-                <f:facet name="sublevels">
-                    <x:panelGroup>
-                        <x:outputText id="subLvlCnt"
-                            value="#{node.description} (#{node.childCount})"
-                            rendered="#{!empty node.children}" />
-                    </x:panelGroup>
-                </f:facet>
+                                <f:facet name="sublevels">
+                                    <x:panelGroup>
+                                        <x:outputText id="subLvlCnt" value="#{node.description} (#{node.childCount})" rendered="#{!empty node.children}" />
+                                    </x:panelGroup>
+                                </f:facet>
 
-                <f:facet name="points">
-                    <x:panelGroup>
-                        <x:commandLink id="ptLink" value="#{node.description}"
-                            actionListener="#{capControlForm.pointTreeForm.pointClick}">
-                            <f:param name="ptID" value="#{node.identifier}" />
-                        </x:commandLink>
-                    </x:panelGroup>
-                </f:facet>
-            </x:tree2>
-        </x:div>
-        <f:verbatim>
-            </fieldset>
-        </f:verbatim>
-    </x:panelGroup>
+                                <f:facet name="points">
+                                    <x:panelGroup>
+                                        <x:commandLink id="ptLink" value="#{node.description}" actionListener="#{capControlForm.pointTreeForm.pointClick}">
+                                            <f:param name="ptID" value="#{node.identifier}" />
+                                        </x:commandLink>
+                                    </x:panelGroup>
+                                </f:facet>
+                            </x:tree2>
+                        </x:div>
+                    </x:htmlTag>
+                </x:panelGroup>
     
-    <f:verbatim>
-        <br />
-    </f:verbatim>
+                <x:htmlTag value="br"/>    
+                
+                <h:outputText styleClass="tableHeader" value="Point Editor: " />
     
-    <h:outputText styleClass="tableHeader" value="Point Editor: " />
+                <x:commandLink id="addPtLnk" value="Add Point" actionListener="#{capControlForm.pointTreeForm.addPointClick}">
+                    <f:param name="parentId" value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
+                </x:commandLink>
     
-    <x:commandLink id="addPtLnk" value="Add Point"
-        actionListener="#{capControlForm.pointTreeForm.addPointClick}">
-        <f:param name="parentId"
-            value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
-    </x:commandLink>
+			    <x:outputText> | </x:outputText>
     
-    <f:verbatim>
-        &nbsp; <bold>|</bold>&nbsp;
-    </f:verbatim>
+                <x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}"/>
     
-    <x:commandLink id="deletePtLnk" value="Delete Point"
-        actionListener="#{capControlForm.pointTreeForm.deletePointClick}">
-    </x:commandLink>
+            </h:column>
+            
+            <h:column>
+                <x:htmlTag value="fieldset" styleClass="fieldSet">
+                <x:htmlTag value="legend"><x:outputText value="Volt Reduction Control Point Setup"/></x:htmlTag>
+                    <x:div id="areaVoltReductionPointDiv" forceId="true">
+                        
+                        <x:htmlTag value="br"/>
     
-    </h:column>
-    <h:column>
-    <f:verbatim>
-    <br />
-    <br />
-    <fieldset class="fieldSet">
-    <legend>
-    Volt Reduction Control Point Setup
-    </legend>
-    </f:verbatim>
-    <x:div id="areaVoltReductionPointDiv" forceId="true">
-    <f:verbatim>
-    <br/>
-    </f:verbatim>
+                        <x:inputHidden id="areaVoltReductionPointValue" forceId="true" value="#{capControlForm.PAOBase.capControlArea.voltReductionPointId }" />
+                        <x:outputLabel for="areaDevice" value="Selected Point: " title="Point used for control." styleClass="medStaticLabel"/>
+                        <x:outputText id="areaDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlArea.voltReductionPointId]}"/> 
+                        <x:outputText id="areaDevicePointSeperator" forceId="true" value=" : " />
+                        <x:outputText id="areaVoltReductionPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlArea.voltReductionPointId]}" /> 
     
-    <x:inputHidden id="areaVoltReductionPointValue" forceId="true" value="#{capControlForm.PAOBase.capControlArea.voltReductionPointId }" />
-    <x:outputLabel for="areaDevice" value="Selected Point: " title="Point used for control." styleClass="medStaticLabel"/>
-    <x:outputText id="areaDevice" forceId="true" value="#{capControlForm.paoNameMap[capControlForm.PAOBase.capControlArea.voltReductionPointId]}"/> 
-    <x:outputText id="areaDevicePointSeperator" forceId="true" value=" : " />
-    <x:outputText id="areaVoltReductionPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlArea.voltReductionPointId]}" /> 
-    
-    <f:verbatim>
-    <br/>
-    </f:verbatim>
-    
-    <h:outputLink  value="javascript:areaVoltReductionPointPicker.showPicker()" >
-    <h:outputText value="Select point"/>
-    </h:outputLink>
+                        <x:htmlTag value="br"/>
+                            
+                        <h:outputLink  value="javascript:areaVoltReductionPointPicker.showPicker()" >
+                            <h:outputText value="Select point"/>
+                        </h:outputLink>
                  
-    <f:verbatim>
-    <br/>
-    <br/>
-    </f:verbatim>
-    
-    <x:commandLink id="areaVoltReductionPoint_setNone" 
-        title="Do not use a point for control." 
-        styleClass="medStaticLabel"
-        value="No Volt Reduction Point" 
-        actionListener="#{capControlForm.areaNoVoltReductionPointClicked}">
-    <f:param name="ptId" value="0"/>
-    </x:commandLink>
+						<x:htmlTag value="br"/>
+						<x:htmlTag value="br"/>
+                        
+                        <x:commandLink id="areaVoltReductionPoint_setNone" 
+                            title="Do not use a point for control." 
+                            styleClass="medStaticLabel"
+                            value="No Volt Reduction Point" 
+                            actionListener="#{capControlForm.areaNoVoltReductionPointClicked}">
+                            <f:param name="ptId" value="0"/>
+                        </x:commandLink>
 
-    </x:div>
-    <f:verbatim>
-    </fieldset>
-    </f:verbatim>
+                    </x:div>
+                </x:htmlTag>
     
-    </h:column>
-    </x:panelGrid>
+            </h:column>
+        </x:panelGrid>
     </f:subview>
 </f:subview>
     

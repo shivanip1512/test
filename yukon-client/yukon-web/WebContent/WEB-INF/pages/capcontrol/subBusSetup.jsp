@@ -19,7 +19,7 @@
         <x:panelGrid id="subBody" columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell">
             <h:column>
                 <x:htmlTag value="fieldSet" styleClass="fieldSet">
-                    <f:verbatim><legend> Subtation Bus Info </legend></f:verbatim>
+                    <x:htmlTag value="legend"><x:outputText value="Subtation Bus Info"/></x:htmlTag>
 
 					<x:panelGrid columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell">
 
@@ -46,8 +46,7 @@
                 <x:htmlTag value="br"/>
 	
                 <x:htmlTag value="fieldset" styleClass="fieldSet">
-                
-                    <f:verbatim><legend> Volt Reduction Control Point Setup </legend></f:verbatim>
+                    <x:htmlTag value="legend"><x:outputText value="Volt Reduction Control Point Setup"/></x:htmlTag>
     
                     <x:div id="subVoltReductionDiv" forceId="true">
                         <x:inputHidden id="subReductionPointValue" forceId="true" value="#{capControlForm.PAOBase.capControlSubstationBus.voltReductionPointId}"/>
@@ -56,13 +55,14 @@
                         <x:outputText id="substationBusDevicePointSeperator" forceId="true" value=" : " />
                         <x:outputText id="substationBusVoltReductionPoint" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.voltReductionPointId]}" /> 
 	    
-                        <f:verbatim><br/></f:verbatim>
+                        <x:htmlTag value="br"/>
 	    
                         <h:outputLink  value="javascript:substationBusVoltReductionPointPicker.showPicker()" >
                             <h:outputText value="Select point"/>
                         </h:outputLink>
 	
-                        <f:verbatim><br/><br/></f:verbatim>
+                        <x:htmlTag value="br"/>
+                        <x:htmlTag value="br"/>
 	    
                         <x:commandLink id="substationBusVoltReductionPoint_setNone" 
                             title="Do not use a point for control." 
@@ -77,7 +77,7 @@
                 <x:panelGroup>
                     <x:htmlTag value="br"/>
                     <x:htmlTag value="fieldset" styleClass="fieldSet">
-                        <f:verbatim><legend> Substation Bus Points </legend></f:verbatim>
+                        <x:htmlTag value="legend"><x:outputText value="Substation Bus Points"/></x:htmlTag>
                     
                         <x:div forceId="true" id="SubstationBusEditorScrollDiv" styleClass="scrollSmall">
 	                        <x:tree2 
@@ -137,7 +137,7 @@
             <h:column>
 	
                 <x:htmlTag value="fieldset" styleClass="fieldSet">
-                    <f:verbatim><legend> VAR Point Setup </legend></f:verbatim>
+                    <x:htmlTag value="legend"><x:outputText value="VAR Point Setup"/></x:htmlTag>
     
                     <x:div id="subVarDiv" forceId="true">
                         <h:selectBooleanCheckbox id="Use_Phase_Data_Checkbox" onclick="submit();" 
@@ -147,7 +147,7 @@
                             title="Check this box to use 3 phase var data." 
                             styleClass="smallStaticLabel"/>
                  	
-                        <f:verbatim><br/></f:verbatim>
+                        <x:htmlTag value="br"/> 
     
                         <h:selectBooleanCheckbox id="Use_Totalized_Value_Checkbox" 
                             onclick="submit();"
@@ -159,7 +159,8 @@
                             styleClass="smallStaticLabel"
                             rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
         
-                        <f:verbatim><br/><br/></f:verbatim>
+                        <x:htmlTag value="br"/> 
+                        <x:htmlTag value="br"/> 
     
                         <x:inputHidden id="var_point" forceId="true" value="#{capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID }" />
                         <x:outputLabel for="sub_Var_Device" value="Selected Point: " title="Data Point used for the current VAR value" styleClass="medStaticLabel"rendered="#{!capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
@@ -168,14 +169,15 @@
                         <x:outputText id="sub_Var_Device_Point_Seperator" forceId="true" value=" : " />
                         <x:outputText id="sub_Var_Point" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.currentVarLoadPointID]}" /> 
     
-                        <f:verbatim><br/></f:verbatim>
+                        <x:htmlTag value="br"/> 
     
                         <h:outputLink  value="javascript:sub_Var_PointPicker.showPicker()" >
                             <h:outputText value="Select point" rendered="#{!capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
                             <h:outputText value="Select point for Phase A" rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}"/>
                         </h:outputLink>
                  
-                        <f:verbatim><br/><br/></f:verbatim>
+                        <x:htmlTag value="br"/> 
+                        <x:htmlTag value="br"/> 
 
                         <x:div id="use_Phase_Data_Div" forceId="true" rendered="#{capControlForm.PAOBase.capControlSubstationBus.usePhaseDataBoolean}">
                  
@@ -186,13 +188,14 @@
                             <x:outputText id="sub_Var_PhaseB_Device_Point_Seperator" forceId="true" value=" : "/>
                             <x:outputText id="sub_Var_PhaseB_Point" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.phaseB]}"/> 
 	
-                            <f:verbatim><br/></f:verbatim>
+                            <x:htmlTag value="br"/> 
 	
                             <h:outputLink  value="javascript:sub_Var_PhaseB_PointPicker.showPicker()">
                                 <h:outputText value="Select point for Phase B"/>
                             </h:outputLink>
 	
-                            <f:verbatim><br/><br/></f:verbatim>
+                            <x:htmlTag value="br"/> 
+                            <x:htmlTag value="br"/> 
                  
                             <!-- PhaseC Var Point -->
                             <x:inputHidden id="var_phase_c_point" forceId="true" value="#{capControlForm.PAOBase.capControlSubstationBus.phaseC}"/>
@@ -201,7 +204,7 @@
                             <x:outputText id="sub_Var_PhaseC_Device_Point_Seperator" forceId="true" value=" : "/>
                             <x:outputText id="sub_Var_PhaseC_Point" forceId="true" value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.phaseC]}"/> 
                  
-                            <f:verbatim><br/></f:verbatim>
+                            <x:htmlTag value="br"/> 
     
                             <h:outputLink  value="javascript:sub_Var_PhaseC_PointPicker.showPicker()">
                                 <h:outputText value="Select point for Phase C"/>
@@ -210,7 +213,7 @@
                         </x:div>
                     </x:div>
                 
-                    <f:verbatim><br/></f:verbatim>
+                    <x:htmlTag value="br"/> 
                 
                     <x:commandLink id="varPoint_setNone" 
                         title="Do not use a point for the VAR value" 
@@ -224,7 +227,7 @@
                 
                 <x:htmlTag value="br"/>
                 <x:htmlTag value="fieldset" styleClass="fieldSet">
-                    <f:verbatim><legend> Watt Point Setup </legend></f:verbatim>
+                    <x:htmlTag value="legend"><x:outputText value="Watt Point Setup"/></x:htmlTag>
 
                     <x:div id="subWattDiv" forceId="true">
                         <x:inputHidden id="watt_point" forceId="true" 
@@ -238,14 +241,14 @@
                         <x:outputText id="subWattPoint" forceId="true" 
                             value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.currentWattLoadPointID]}" /> 
 	    
-                        <f:verbatim><br/></f:verbatim>
+                        <x:htmlTag value="br"/> 
 	    
                         <h:outputLink  value="javascript:subWattPointPicker.showPicker()" >
                             <h:outputText value="Select point..."/>
                         </h:outputLink>
                     </x:div>
     
-                    <f:verbatim><br/></f:verbatim>
+                    <x:htmlTag value="br"/> 
     
                     <x:commandLink id="wattPoint_setNone" title="Do not use a point for the watt value" 
                         styleClass="medStaticLabel"
@@ -256,8 +259,7 @@
                 </x:htmlTag>
                 <x:htmlTag value="br"/>
                 <x:htmlTag value="fieldset" styleClass="fieldSet">
-                
-                    <f:verbatim><legend> Volt Point Setup </legend></f:verbatim>
+                    <x:htmlTag value="legend"><x:outputText value="Volt Point Setup"/></x:htmlTag>
 
                     <x:div id="subVoltDiv" forceId="true">
                         <x:inputHidden id="volt_point" forceId="true" 
@@ -270,14 +272,14 @@
                         <x:outputText id="subVoltPoint" forceId="true" 
                             value="#{capControlForm.pointNameMap[capControlForm.PAOBase.capControlSubstationBus.currentVoltLoadPointID]}" /> 
 	    
-                        <f:verbatim><br/></f:verbatim>
+                        <x:htmlTag value="br"/> 
 	                
                         <h:outputLink  value="javascript:subVoltPointPicker.showPicker()" >
                             <h:outputText value="Select point..."/>
                         </h:outputLink>
                     </x:div>
     
-                    <f:verbatim><br/></f:verbatim>
+                    <x:htmlTag value="br"/> 
     
                     <x:commandLink id="voltPoint_setNone" title="Do not use a point for the volt value" 
                         styleClass="medStaticLabel"

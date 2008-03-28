@@ -115,7 +115,7 @@
                     </x:panelTab>
 
                     <x:panelTab id="tabController" label="Setup" rendered="#{capControlForm.visibleTabs['CBCController']}">
-                        <jsp:include page="/WEB-INF/pages/capcontrol/capBankController.jsp"/>
+                        <jsp:include page="/WEB-INF/pages/capcontrol/capBankControllerSetup.jsp"/>
                     </x:panelTab>
 
                     <x:panelTab id="tabSchedule" label="Schedule" rendered="#{capControlForm.visibleTabs['CBCSchedule']}">
