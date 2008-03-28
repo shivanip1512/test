@@ -908,16 +908,17 @@ alter table CAPCONTROLCOMMENT
       references YukonUser (UserID);
 /* End YUK-4762, YUK-4969 */
 
-/* Start YUK-4810 */
+/* Start YUK-4810, YUK-5434 */
 insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true','Allows a user to setup automatic archiving on their yukon system pertaining to the move in/move out interface');
 
 create table DEVICEEVENT  (
+   DeviceEventID        NUMBER                          not null,
    DeviceID             NUMBER                          not null,
    TimeStamp            DATE                            not null,
-   DeviceEventComment            VARCHAR2(50)                    not null,
-   constraint PK_DEVICEEVENT primary key (DeviceID, TimeStamp)
+   DeviceEventComment   VARCHAR2(50)                    not null,
+   constraint PK_DEVICEEVENT primary key (DeviceEventID)
 );
-/* End YUK-4810 */
+/* End YUK-4810, YUK-5434 */
 
 /* Begin YUK-4815 */
 insert into YukonRoleProperty values (-100205, -1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');

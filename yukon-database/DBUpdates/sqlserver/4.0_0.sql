@@ -1079,7 +1079,7 @@ alter table CAPCONTROLCOMMENT
 go
 /* End YUK 4762, YUK-4969 */
 
-/* Start YUK-4810 */
+/* Start YUK-4810, YUK-5434 */
 insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true','Allows a user to setup automatic archiving on their yukon system pertaining to the move in/move out interface');
 
 if exists (select 1
@@ -1090,13 +1090,14 @@ if exists (select 1
 go
 
 create table DEVICEEVENT (
+   DeviceEventID        numeric              not null,
    DeviceID             numeric              not null,
    TimeStamp            datetime             not null,
-   DeviceEventComment              varchar(50)          not null,
-   constraint PK_DEVICEEVENT primary key (DeviceID, TimeStamp)
+   DeviceEventComment   varchar(50)          not null,
+   constraint PK_DEVICEEVENT primary key (DeviceEventID)
 );
 go
-/* End YUK-4810 */
+/* End YUK-4810, YUK-5434 */
 
 /* Begin YUK-4815 */
 insert into YukonRoleProperty values (-100205, -1002, 'Capbank Fixed/Static Text', 'Fixed', 'The text to display for fixed/static capbanks');
