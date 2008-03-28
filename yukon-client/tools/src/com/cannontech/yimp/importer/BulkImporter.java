@@ -396,7 +396,13 @@ public void runImport(List<ImportData> imps) {
                 errorMsg.add(error);
             } else {
                 try {
-                    collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp());
+                    String fullGrpName = collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp();
+                    collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
+                    if(!fullGrpName.equals(collectionGroup.getFullName())) {
+                        String error = logMsgPrefix + "Has an incorrect collection group name (check case).  ";
+                        log.warn(error);
+                        errorMsg.add(error);
+                    }
                 } catch (NotFoundException nfe) {
                     String error = "Has a collection group that does not exist.  Creating device group.  ";
                     log.warn(logMsgPrefix + error);
@@ -410,7 +416,13 @@ public void runImport(List<ImportData> imps) {
                 errorMsg.add(error);
             } else {
                 try {
-                    alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp());
+                    String fullGrpName = alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp();
+                    alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
+                    if(!fullGrpName.equals(alternateGroup.getFullName())) {
+                        String error = logMsgPrefix + "Has an incorrect alternate group name (check case).  ";
+                        log.warn(error);
+                        errorMsg.add(error);
+                    }
                 } catch (NotFoundException nfe) {
                     String error = "Has an alternate group that does not exist.  Creating device group.  ";
                     log.warn(logMsgPrefix + error);
@@ -425,7 +437,13 @@ public void runImport(List<ImportData> imps) {
                 //This is not an error.  Otherwise we could not be backwards compatible, but we should note it anyways in the log file.
             } else {
                 try {
-                    billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup());
+                    String fullGrpName = billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup();
+                    billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
+                    if(!fullGrpName.equals(billingGroup.getFullName())) {
+                        String error = logMsgPrefix + "Has an incorrect billing group name (check case).  ";
+                        log.warn(error);
+                        errorMsg.add(error);
+                    }
                 } catch (NotFoundException nfe) {
                     String error = "Has a billing group that does not exist.  Creating device group.  ";
                     log.warn(logMsgPrefix + error);
@@ -627,7 +645,7 @@ public void runImport(List<ImportData> imps) {
                                                 templateName, tempErrorMsg.toString(), now.getTime(), 
                                                 billGrp, substationName, ImportFuncs.FAIL_DATABASE);
 				failures.add(currentFailure);
-				log.error(current400Series.getPAOType() + " with name " + name + "failed on INSERT into database.");
+				log.error(current400Series.getPAOType() + " with name " + name + " failed on INSERT into database.");
 			}
 			finally {
 				try {
