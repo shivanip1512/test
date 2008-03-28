@@ -24,6 +24,10 @@ import com.cannontech.common.opc.model.FdrInterfaceType;
 import com.cannontech.common.opc.model.FdrTranslation;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.FdrTranslationDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.database.cache.DBChangeListener;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointQualities;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Multi;
@@ -32,12 +36,14 @@ import com.cannontech.message.util.*;
 import com.cannontech.yukon.BasicServerConnection;
 import com.cannontech.database.data.point.PointTypes;
 
-public class OpcService implements Runnable, MessageListener, OpcAsynchGroupListener, OpcConnectionListener{
+public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnectionListener, DBChangeListener{
 	
 	private FdrTranslationDao fdrTranslationDao;
 	private BasicServerConnection dispatchConnection;
+	private AsyncDynamicDataSource dataSource;
 	private ConfigurationSource config;	
-
+	private PointDao pointDao;
+	
 	private final Map<String,OpcConnection> opcServerMap;
 	private final Map<Integer,OpcConnection> pointIdToOpcServer;
 	private final Map<String,String> serverAddressMap;
@@ -93,11 +99,11 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
         if( newServiceState != serviceEnabled) {
             if(serviceEnabled == false) {
                 //Turn on
-                dispatchConnection.addMessageListener(this);
+                dataSource.addDBChangeListener(this);
                 refresh = true;
             }else {
                 //Turn Off
-                dispatchConnection.removeMessageListener(this);
+                dataSource.removeDBChangeListener(this);
                 shutdownAll();
                 refresh = false;
                 deadConnection = false;
@@ -162,7 +168,7 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
         }
         
         if(serviceEnabled) {
-            dispatchConnection.addMessageListener(this);
+            dataSource.addDBChangeListener(this);
         }else {
             refresh = false;
         }
@@ -214,19 +220,12 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
 		String server = fdr.getParameter("Server Name");
 		String groupName = fdr.getParameter("OPC Group");
 		String itemName = fdr.getParameter("OPC Item");
-		String pointTypeStr = fdr.getParameter("POINTTYPE");
 		String serverAddress;
-		int pointType = -1;
 		boolean newConnection = false;
 		
-		pointType = PointTypes.getType(pointTypeStr);
-
-		if(pointType < 0) {   
-		    log.error("Unknown Point type, skipping item: " + itemName);
-		    return;
-		}
+		int pointId = fdr.getId();
+		LitePoint point = pointDao.getLitePoint(pointId);
 		
-		Integer pointId = fdr.getId();
 		if( !pointIdToOpcServer.containsKey(pointId)) {
 			
 			serverAddress = serverAddressMap.get(server);
@@ -244,19 +243,32 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
 			OpcGroup[] groupArray = conn.getGroups();
 			OpcGroup group = null; 
 			
-			for(OpcGroup g : groupArray) {
-				if( g.getGroupName().equals(groupName) ) {
-					group = g;
-					break;
-				}
-			}
-			if(group == null) {
-				group = new OpcGroup(groupName, true, refreshSeconds*1000, 0.0f);
-				group.addAsynchListener(this);
-				conn.addGroup(group);
-			}
-			OpcItem item = new YukonOpcItem(itemName,true,"",pointId,pointType);
-			group.addItem(item);
+			for (OpcGroup g : groupArray) {
+                if (g.getGroupName().equals(groupName)) {
+                    group = g;
+                    break;
+                }
+            }
+            if (group == null) {
+                group = new OpcGroup(groupName,
+                                     true,
+                                     refreshSeconds * 1000,
+                                     0.0f);
+                group.addAsynchListener(this);
+                conn.addGroup(group);
+            }
+
+            OpcItem item;
+
+            if (point.getPointType() == PointTypes.ANALOG_POINT) {
+                int dataOffset = pointDao.getPointDataOffset(pointId);
+                double dataMultiplier = pointDao.getPointMultiplier(pointId);
+                item = new YukonOpcItem(itemName,true,"",point,dataOffset,dataMultiplier);
+            } else {
+                item = new YukonOpcItem(itemName, true, "", point);
+            }
+
+            group.addItem(item);
 			
 			/* Sync up maps */
 		    if(newConnection) opcServerMap.put(server, conn);
@@ -285,6 +297,14 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
 
     public void setConfig(ConfigurationSource config) {
         this.config = config;
+    }
+    
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+
+    public void setDataSource(AsyncDynamicDataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     /* Thread Control */
@@ -376,10 +396,14 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
                 }
                 case VariantTypes.VT_R4: {
                     newValue = value.getFloat();
+                    newValue *= yOpcItem.getMultiplier();
+                    newValue += yOpcItem.getOffset();
                     break;
                 }
                 case VariantTypes.VT_R8: {
                     newValue = value.getDouble();
+                    newValue *= yOpcItem.getMultiplier();
+                    newValue += yOpcItem.getOffset();
                     break;
                 }
                 default: {
@@ -394,7 +418,6 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
             pointData.setType(yOpcItem.getPointType());
             pointData.setValue(newValue);
             pointData.setTimeStamp(timeStamp.getTime());
-            
             log.debug("OPC DEBUG: Sending update for " + itemName + ". Value: " + newValue + " to PointID: " + pointId );
             multi.getVector().add(pointData);
 
@@ -403,33 +426,6 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
 		    dispatchConnection.write(multi);
 		}catch( ConnectionException e) {
 		    log.info("OPC: Dispatch not connected. Point updates cannot go out.");
-		}
-	}
-	/**
-	 * messageReceived(MessageEvent e)
-	 * 
-	 * If a db change message come in on a point we are monitoring we 
-	 * will restart the service to have the most up to date information.
-	 * All other messages from dispatch are ignored.
-	 */
-	@Override
-	public synchronized void messageReceived(MessageEvent e) {
-		log.debug("OPC DEBUG: OPC dispatch event");
-		Message msg = e.getMessage();
-		if( msg instanceof DBChangeMsg) {
-			int pid = ((DBChangeMsg)msg).getId();
-			if( pointIdToOpcServer.containsKey(pid) ) {
-				log.debug("OPC DEBUG: Change to Point involved with OPC");
-				refresh = true;
-			} else {
-				try {
-					fdrTranslationDao.getByPointIdAndType(pid,FdrInterfaceType.OPC);
-					refresh = true;
-					log.debug("OPC DEBUG: translation found, new FDR translation");
-				} catch ( DataRetrievalFailureException exception ) {
-					log.debug("OPC DEBUG: translation not found, not a new FDR translation");
-				}
-			}
 		}
 	}
 	
@@ -455,4 +451,30 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
         if( id != null)
             sendStatusUpdate(id,value);
     }
+    /**
+     * dbChangeReceived(MessageEvent e)
+     * 
+     * If a db change message come in on a point we are monitoring we 
+     * will restart the service to have the most up to date information.
+     * All other messages from dispatch are ignored.
+     */
+    @Override
+    public synchronized void dbChangeReceived(DBChangeMsg dbChange) {
+        log.debug("OPC DEBUG: OPC dispatch event");
+
+        int pid = dbChange.getId();
+        if (pointIdToOpcServer.containsKey(pid)) {
+            log.debug("OPC DEBUG: Change to Point involved with OPC");
+            refresh = true;
+        } else {
+            try {
+                fdrTranslationDao.getByPointIdAndType(pid, FdrInterfaceType.OPC);
+                refresh = true;
+                log.debug("OPC DEBUG: translation found, new FDR translation");
+            } catch (DataRetrievalFailureException exception) {
+                log.debug("OPC DEBUG: translation not found, not a new FDR translation");
+            }
+        }
+    }
+
 }

@@ -19,5 +19,6 @@
 	    <property name="dispatchConnection" ref="dispatchConnection" />
 	    <property name="globalScheduledExecutor" ref = "globalScheduledExecutor" />
 	    <property name="config" ref = "configurationSource" />
+	    <property name="dataSource" ref="asyncDynamicDataSource"/>
 	</bean> 
 </beans>
