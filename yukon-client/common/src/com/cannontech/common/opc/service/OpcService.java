@@ -38,10 +38,10 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
 	private BasicServerConnection dispatchConnection;
 	private ConfigurationSource config;	
 
-	private Map<String,OpcConnection> opcServerMap;
-	private Map<Integer,OpcConnection> pointIdToOpcServer;
-	private Map<String,String> serverAddressMap;
-	private Map<String,Integer> opcServerToStatusPointIdMap;
+	private final Map<String,OpcConnection> opcServerMap;
+	private final Map<Integer,OpcConnection> pointIdToOpcServer;
+	private final Map<String,String> serverAddressMap;
+	private final Map<String,Integer> opcServerToStatusPointIdMap;
 	
 	private int refreshSeconds;
 	private ScheduledExecutor globalScheduledExecutor;
@@ -53,6 +53,7 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
     Logger log = YukonLogManager.getLogger(OpcService.class);
     
 	public OpcService() {
+	    pointIdToOpcServer = new HashMap<Integer,OpcConnection>();
 		opcServerMap =  new HashMap<String,OpcConnection>();
 		serverAddressMap = new HashMap<String,String>();
 		opcServerToStatusPointIdMap = new HashMap<String,Integer>();		
@@ -170,9 +171,9 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
 	/**
      * Call to reload all service configurations.
      */
-    private void setupService() {
+    private synchronized void setupService() {
         shutdownAll();
-        pointIdToOpcServer = new HashMap<Integer, OpcConnection>();
+        pointIdToOpcServer.clear();
 
         List<FdrTranslation> opcTranslations = fdrTranslationDao.getByInterfaceType(FdrInterfaceType.OPC);
 
@@ -340,7 +341,7 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
 	 */
 	@Override	
 	public void getAsynchEvent( AsynchEvent event) {
-
+	    //This does not need to be synchronized since it is receiving a copy in the event.
 		log.debug("OPC DEBUG: OPC Asynch event");
 		OpcGroup group = event.getOPCGroup();
 		List<OpcItem> items = group.getItems();
@@ -412,7 +413,7 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
 	 * All other messages from dispatch are ignored.
 	 */
 	@Override
-	public void messageReceived(MessageEvent e) {
+	public synchronized void messageReceived(MessageEvent e) {
 		log.debug("OPC DEBUG: OPC dispatch event");
 		Message msg = e.getMessage();
 		if( msg instanceof DBChangeMsg) {
@@ -443,7 +444,7 @@ public class OpcService implements Runnable, MessageListener, OpcAsynchGroupList
     }
 	
     @Override
-    public void connectionStatusChanged(String serverName, boolean newStatus) {
+    public synchronized void connectionStatusChanged(String serverName, boolean newStatus) {
         double value;
         if(newStatus) {
             value = 1.0;
