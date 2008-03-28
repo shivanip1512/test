@@ -20,5 +20,6 @@
 	    <property name="globalScheduledExecutor" ref = "globalScheduledExecutor" />
 	    <property name="config" ref = "configurationSource" />
 	    <property name="dataSource" ref="asyncDynamicDataSource"/>
+	    <property name="pointDao" ref="pointDao"/>
 	</bean> 
 </beans>
