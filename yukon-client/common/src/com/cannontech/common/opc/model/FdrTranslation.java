@@ -15,7 +15,7 @@ public class FdrTranslation {
 
 	private int id;
 	private FdrDirection direction;
-	private FdrInterfaceType interfaceType;
+	private FdrInterfaceType fdrInterfaceType;
 	private FdrInterfaceType destination;
 	private String translation;
 	
@@ -26,11 +26,11 @@ public class FdrTranslation {
 		parameterMap = new HashMap<String,String>();
 	}
 	
-	public int getFdrPointId() {
+	public int getId() {
 		return id;
 	}
 
-	public void setFdrPointId(int id) {
+	public void setId(int id) {
 		this.id = id;
 	}
 
@@ -42,12 +42,12 @@ public class FdrTranslation {
 		this.direction = direction;
 	}
 
-	public FdrInterfaceType getInterfaceType() {
-		return interfaceType;
+	public FdrInterfaceType getFdrInterfaceType() {
+		return fdrInterfaceType;
 	}
 
 	public void setInterfaceType(FdrInterfaceType interfaceType) {
-		this.interfaceType = interfaceType;
+		this.fdrInterfaceType = interfaceType;
 	}
 
 	public FdrInterfaceType getDestination() {
@@ -64,27 +64,17 @@ public class FdrTranslation {
 
 	public void setTranslation(String translation) {
 		this.translation = translation;
-		convertTranslation();
 	}
 	
 	public String getParameter(String param) {
 		return parameterMap.get(param);
 	}
 	
-	private void convertTranslation() {
-		parameterMap.clear();
-		
-		String [] parameters = translation.split(";");
-		
-		for( String paramSet : parameters ) {
-			String [] keyValuePair = paramSet.split(":");
-			if( (keyValuePair.length == 2) && (keyValuePair[1] != null)) {
-				parameterMap.put(keyValuePair[0], keyValuePair[1]);
-			}
-		}
-	}
-	
-	@Override
+	public Map<String, String> getParameterMap() {
+        return parameterMap;
+    }
+
+    @Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
@@ -94,7 +84,7 @@ public class FdrTranslation {
 				+ ((direction == null) ? 0 : direction.hashCode());
 		result = prime * result + id;
 		result = prime * result
-				+ ((interfaceType == null) ? 0 : interfaceType.hashCode());
+				+ ((fdrInterfaceType == null) ? 0 : fdrInterfaceType.hashCode());
 		result = prime * result
 				+ ((translation == null) ? 0 : translation.hashCode());
 		return result;
@@ -121,10 +111,10 @@ public class FdrTranslation {
 			return false;
 		if (id != other.id)
 			return false;
-		if (interfaceType == null) {
-			if (other.interfaceType != null)
+		if (fdrInterfaceType == null) {
+			if (other.fdrInterfaceType != null)
 				return false;
-		} else if (!interfaceType.equals(other.interfaceType))
+		} else if (!fdrInterfaceType.equals(other.fdrInterfaceType))
 			return false;
 		if (translation == null) {
 			if (other.translation != null)

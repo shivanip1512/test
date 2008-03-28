@@ -48,7 +48,7 @@
 	<classpathentry exported="true" kind="lib" path="/third-party/quartz-all-1.6.0.jar"/>
 	<classpathentry kind="lib" path="/third-party/dom4j.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/junit-4.4.jar"/>
-	<classpathentry kind="lib" path="/third-party/jeasyopc.jar" sourcepath="C:/ts/Jeasy/eclipse-project/JEasyOpc/src"/>
+	<classpathentry kind="lib" path="/third-party/jeasyopc.jar" sourcepath="Z:/java/Third-Party Sources/JEasyOpc.zip"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/aspectjrt.jar"/>
 	<classpathentry exported="true" kind="lib" path="/third-party/aspectjweaver.jar"/>
 	<classpathentry kind="lib" path="/third-party/spring-test.jar"/>

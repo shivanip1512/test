@@ -234,8 +234,8 @@ public class FdrImporter {
                 LitePoint point = pointDao.getLitePointIdByDeviceId_Offset_PointType(deviceid,offset,type);
                 
                 int liteid = point.getLiteID();
-                fdr.setFdrPointId(liteid);
-                if( fdr.getFdrPointId() != 0) {
+                fdr.setId(liteid);
+                if( fdr.getId() != 0) {
                     try{
                         fdrDao.add(fdr);
                     }catch(DataAccessException e) {

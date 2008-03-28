@@ -6,10 +6,12 @@ import java.util.Properties;
 
 import javax.swing.event.EventListenerList;
 
-import com.cannontech.clientutils.CTILogger;
+import org.apache.log4j.Logger;
 
-import javafish.clients.opc.asynch.AsynchEvent;
-import javafish.clients.opc.asynch.OpcAsynchGroupListener;
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.opc.service.OpcService;
+
+
 import javafish.clients.opc.component.OpcGroup;
 import javafish.clients.opc.exception.ConnectivityException;
 import javafish.clients.opc.exception.UnableRemoveGroupException;
@@ -30,6 +32,8 @@ public class YukonJEasyOpc extends JOpc {
     /** check connectivity */
     private boolean connected = false;
 
+    private Logger log = YukonLogManager.getLogger(OpcService.class);
+    
     protected EventListenerList connectionStatusListeners;
     
     /**
@@ -94,7 +98,7 @@ public class YukonJEasyOpc extends JOpc {
             Class listenerClass = (Class) (list[i]);
             if (listenerClass == OpcConnectionListener.class) {
                 OpcConnectionListener listener = (OpcConnectionListener) (list[i + 1]);
-                listener.connectionStatusChanged(status);
+                listener.connectionStatusChanged(getServerProgID(),status);
             }
         }
     }
@@ -108,17 +112,17 @@ public class YukonJEasyOpc extends JOpc {
             try {
                 // connect to OPC-Server
                 connect();
-                CTILogger.info(Translate.getString("JEASYOPC_CONNECTED"));
+                log.info(Translate.getString("JEASYOPC_CONNECTED"));
                 
                 // register groups on server
                 registerGroups();
-                CTILogger.info(Translate.getString("JEASYOPC_GRP_REG"));
+                log.info(Translate.getString("JEASYOPC_GRP_REG"));
 
                 // run asynchronous mode 2.0
                 for (int i = 0; i < groups.size(); i++) {
                     asynch20Read(getGroupByClientHandle(i));
                 }
-                CTILogger.info(Translate.getString("JEASYOPC_ASYNCH20_START"));
+                log.info(Translate.getString("JEASYOPC_ASYNCH20_START"));
                 sendConnectionStatus(true);
                 // life cycle
                 while (running) {
@@ -137,25 +141,25 @@ public class YukonJEasyOpc extends JOpc {
                     try { // sleep time
                         wait(WAITIME);
                     } catch (InterruptedException e) {
-                        CTILogger.error(e);
+                        log.error(e);
                     }
                 } // life cycle
 
             } catch (ConnectivityException e) {
-                CTILogger.error(e);
+                log.error(e);
                 sendConnectionStatus(false);
                 try {
                     wait(CONNTIME); // try reconnect
                 } catch (InterruptedException e1) {
-                    CTILogger.error(e1);
+                    log.error(e1);
                 }
             } catch (Exception e) {
-                CTILogger.error(e);
+                log.error(e);
                 sendConnectionStatus(false);
                 try {
                     wait(CONNTIME); // try reconnect
                 } catch (InterruptedException e1) {
-                    CTILogger.error(e1);
+                    log.error(e1);
                 }
             }
             ;
@@ -163,15 +167,15 @@ public class YukonJEasyOpc extends JOpc {
 
         try {
             unregisterGroups();
-            CTILogger.info(Translate.getString("JEASYOPC_GRP_UNREG"));
+            log.info(Translate.getString("JEASYOPC_GRP_UNREG"));
         } catch (UnableRemoveGroupException e) {
-            CTILogger.error(e);
+            log.error(e);
         }
         
         sendConnectionStatus(false);
         connected = false;
         running = false;
-        CTILogger.info(Translate.getString("JEASYOPC_DISCONNECTED"));
+        log.info(Translate.getString("JEASYOPC_DISCONNECTED"));
     }
 
 }

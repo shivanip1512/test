@@ -3,6 +3,7 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -39,7 +40,7 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
             public FdrTranslation mapRow(ResultSet rs, int rowNum) throws SQLException {
             	
             	FdrTranslation fdrTranslation = new FdrTranslation();
-            	fdrTranslation.setFdrPointId(rs.getInt("PointID"));
+            	fdrTranslation.setId(rs.getInt("PointID"));
             	
             	String direction = rs.getString("directiontype");
             	fdrTranslation.setDirection(FdrDirection.getEnum(direction));
@@ -50,8 +51,21 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
             	String destination = rs.getString("destination");
             	fdrTranslation.setDestination(FdrInterfaceType.valueOf(destination));
             	
-            	fdrTranslation.setTranslation(rs.getString("translation"));
-            	
+            	String translation = rs.getString("translation");
+            	fdrTranslation.setTranslation(translation);
+            	Map<String,String> parameterMap = fdrTranslation.getParameterMap();
+
+            	parameterMap.clear();
+                    
+                String [] parameters = translation.split(";");
+                
+                for( String paramSet : parameters ) {
+                    String [] keyValuePair = paramSet.split(":");
+                    if( (keyValuePair.length == 2) && (keyValuePair[1] != null)) {
+                        parameterMap.put(keyValuePair[0], keyValuePair[1]);
+                    }
+                }
+        	
                 return fdrTranslation;
             }
         };
@@ -60,11 +74,11 @@ public class FdrTranslationDaoImpl implements FdrTranslationDao {
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
-
-    public boolean add( FdrTranslation trans) {
-        int rowsAffected = simpleJdbcTemplate.update(insertSql, trans.getFdrPointId(),
+    @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
+    public boolean add(FdrTranslation trans) {
+        int rowsAffected = simpleJdbcTemplate.update(insertSql, trans.getId(),
                                                      trans.getDirection().toString(),
-                                                     trans.getInterfaceType().toString(),
+                                                     trans.getFdrInterfaceType().toString(),
                                                      trans.getDestination().toString(),
                                                      trans.getTranslation()
                                                      );
