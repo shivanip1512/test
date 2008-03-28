@@ -122,6 +122,16 @@ UPDATE DYNAMICBILLINGFIELD SET ReadingType = 'ELECTRIC';
 ALTER TABLE DYNAMICBILLINGFIELD modify ReadingType varchar(12) not null;
 /* End YUK-5454 */
 
+/* Start YUK-5519 */
+ALTER TABLE CAPBANK
+MODIFY(MAPLOCATIONID VARCHAR2(64));
+
+ALTER TABLE CapControlFeeder
+MODIFY(MAPLOCATIONID VARCHAR2(64));
+
+ALTER TABLE CapControlSubstationBus
+MODIFY(MAPLOCATIONID VARCHAR2(64));
+/* End YUK-5519 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

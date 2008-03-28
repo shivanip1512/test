@@ -147,6 +147,15 @@ go
 ALTER TABLE DYNAMICBILLINGFIELD alter column ReadingType varchar(12) not null;
 go
 /* End YUK-5454 */
+
+/* Start YUK-5519 */
+alter table CAPBANK alter column MAPLOCATIONID varchar(64) not null;
+go
+alter table CapControlFeeder alter column MAPLOCATIONID varchar(64) not null;
+go
+alter table CapControlSubstationBus alter column MAPLOCATIONID varchar(64) not null;
+go
+/* End YUK-5519 */
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/
