@@ -436,7 +436,11 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
         pointData.setType(PointTypes.STATUS_POINT);
         pointData.setValue(status);
         pointData.setTimeStamp(new Date());
-        dispatchConnection.write(pointData);
+        try{
+            dispatchConnection.write(pointData);
+        }catch( ConnectionException e) {
+            log.info("OPC: Dispatch not connected. OPC Connection status point cannot be updated.");
+        }
     }
 	
     @Override
