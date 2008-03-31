@@ -36,16 +36,12 @@
 	<h2>Manual Commander</h2>
 	<br>
 	
-	<c:if test="${not empty errorMsg}">
-		<span class="ErrorMsg">* ${errorMsg}</span><br/><br/>
-	</c:if>
-	
 	<div style="width: 600px">
 	
       <tags:widgetContainer deviceId="${deviceId}">
 		<tags:widget bean="meterInformationWidget" />
       </tags:widgetContainer>
-	
+	  <BR>
 		<tags:boxContainer title="Execute Command" hideEnabled="false">
 			<form name="commandForm" method="POST" action="/servlet/CommanderServlet">
 	
@@ -69,7 +65,7 @@
 						</select>
 					</tags:nameValue>
 					<tags:nameValue name="Execute Command">
-		            	<input type="text" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="${ycBean.commandString}">
+		            	<input type="text" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="${YC_BEAN.commandString}">
 					</tags:nameValue>
 				</tags:nameValueContainer>	
 				
@@ -78,7 +74,7 @@
 				<br><br>
 	    		
 	    		<div class="scroll">
-	   	    		<c:out value="${ycBean.resultText}" escapeXml="false"/>
+	   	    		<c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
 	        	</div>
 	        	<div>
 		    		<input type="submit" name="clearText" value="Clear Results">
