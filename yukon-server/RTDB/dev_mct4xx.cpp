@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.74 $
-* DATE         :  $Date: 2008/03/14 19:55:08 $
+* REVISION     :  $Revision: 1.75 $
+* DATE         :  $Date: 2008/03/31 20:41:48 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3831,6 +3831,22 @@ void CtiDeviceMCT4xx::deviceInitialization( list< CtiRequestMsg * > &request_lis
             request_list.push_back(newReq);
         }
     }
+}
+
+
+unsigned CtiDeviceMCT4xx::loadTimeSync(unsigned char *buf)
+{
+    CtiTime now;
+    unsigned long time = now.seconds();
+
+    buf[0] = gMCT400SeriesSPID;  //  global SPID
+    buf[1] = (time >> 24) & 0x000000ff;
+    buf[2] = (time >> 16) & 0x000000ff;
+    buf[3] = (time >>  8) & 0x000000ff;
+    buf[4] =  time        & 0x000000ff;
+    buf[5] = now.isDST();
+
+    return FuncWrite_TSyncLen;
 }
 
 

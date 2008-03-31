@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2008/03/14 23:34:51 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2008/03/31 20:41:48 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -320,6 +320,8 @@ public:
 
     //  will start up any outstanding LLP requests
     void deviceInitialization(list< CtiRequestMsg * > &request_list);
+
+    static unsigned loadTimeSync(unsigned char *buf);
 
     INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
     INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
