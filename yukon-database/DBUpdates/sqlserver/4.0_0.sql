@@ -1914,6 +1914,252 @@ from
 where
 	b.pointtype in ('Status','CalcStatus','System','StatusOutput');
 /* End YUK-5400 */
+
+
+/* End YUK-5557 */
+/* DAILY CONTROL LIMIT */
+/* @start-block */
+declare @cbcId numeric;
+declare cbc_curs cursor for (select distinct( yp.paobjectid )
+							from yukonpaobject yp where yp.type like 'CBC 702%' 
+							and yp.paobjectid
+							not in (select paobjectid from point where pointoffset =10006));
+open cbc_curs;
+fetch cbc_curs into @cbcId;
+while (@@fetch_status = 0)
+    begin
+        insert into point (pointid, pointtype, pointname, paobjectid, logicalgroup, stategroupid, 
+			serviceflag, alarminhibit, pseudoflag, pointoffset, archivetype, archiveinterval)
+			select max(pointid) + 1, 'Analog', 'Daily Control Limit', @cbcId, 'Default', -1, 'N', 'N', 'R',
+			10006, 'None', 0 from point;
+		insert into pointanalog (pointid, deadband, transducertype, multiplier, dataoffset)
+			select max(pointid), -1, 'None', 1, 0 from point;
+		insert into pointunit (pointid, uomid, decimalplaces, highreasonabilitylimit, lowreasonabilitylimit,
+			decimaldigits)
+			select max(pointid), 9, 1, 0, 0, 0 from point;
+		insert into pointalarming (pointid, alarmstates, excludenotifystates, notifyonacknowledge, 
+			notificationgroupid, recipientid)
+			select max(pointid), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0 from point;
+		fetch cbc_curs into @cbcId;
+	end
+
+close cbc_curs;
+deallocate cbc_curs;
+/* @end-block */
+
+
+/* Emergency UV Set Point */
+/* @start-block */
+declare @cbcId numeric;
+declare cbc_curs cursor for (select distinct( yp.paobjectid )
+							from yukonpaobject yp where yp.type like 'CBC 702%' 
+							and yp.paobjectid
+							not in (select paobjectid from point where pointoffset =10007));
+open cbc_curs;
+fetch cbc_curs into @cbcId;
+while (@@fetch_status = 0)
+    begin
+        insert into point (pointid, pointtype, pointname, paobjectid, logicalgroup, stategroupid, 
+			serviceflag, alarminhibit, pseudoflag, pointoffset, archivetype, archiveinterval)
+			select max(pointid) + 1, 'Analog', 'Emergency UV Set Point', @cbcId, 'Default', -1, 'N', 'N', 'R',
+			10007, 'None', 0 from point;
+		insert into pointanalog (pointid, deadband, transducertype, multiplier, dataoffset)
+			select max(pointid), -1, 'None', 1, 0 from point;
+		insert into pointunit (pointid, uomid, decimalplaces, highreasonabilitylimit, lowreasonabilitylimit,
+			decimaldigits)
+			select max(pointid), 35, 1, 0, 0, 0 from point;
+		insert into pointalarming (pointid, alarmstates, excludenotifystates, notifyonacknowledge, 
+			notificationgroupid, recipientid)
+			select max(pointid), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0 from point;
+		fetch cbc_curs into @cbcId;
+	end
+
+close cbc_curs;
+deallocate cbc_curs;
+/* @end-block */
+
+/* Emergency OV Set Point */
+/* @start-block */
+declare @cbcId numeric;
+declare cbc_curs cursor for (select distinct( yp.paobjectid )
+							from yukonpaobject yp where yp.type like 'CBC 702%' 
+							and yp.paobjectid
+							not in (select paobjectid from point where pointoffset =10008));
+open cbc_curs;
+fetch cbc_curs into @cbcId;
+while (@@fetch_status = 0)
+    begin
+        insert into point (pointid, pointtype, pointname, paobjectid, logicalgroup, stategroupid, 
+			serviceflag, alarminhibit, pseudoflag, pointoffset, archivetype, archiveinterval)
+			select max(pointid) + 1, 'Analog', 'Emergency OV Set Point', @cbcId, 'Default', -1, 'N', 'N', 'R',
+			10008, 'None', 0 from point;
+		insert into pointanalog (pointid, deadband, transducertype, multiplier, dataoffset)
+			select max(pointid), -1, 'None', 1, 0 from point;
+		insert into pointunit (pointid, uomid, decimalplaces, highreasonabilitylimit, lowreasonabilitylimit,
+			decimaldigits)
+			select max(pointid), 35, 1, 0, 0, 0 from point;
+		insert into pointalarming (pointid, alarmstates, excludenotifystates, notifyonacknowledge, 
+			notificationgroupid, recipientid)
+			select max(pointid), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0 from point;
+		fetch cbc_curs into @cbcId;
+	end
+
+close cbc_curs;
+deallocate cbc_curs;
+/* @end-block */
+
+
+/* Emergency OVUV TrackTime */
+/* @start-block */
+declare @cbcId numeric;
+declare cbc_curs cursor for (select distinct( yp.paobjectid )
+							from yukonpaobject yp where yp.type like 'CBC 702%' 
+							and yp.paobjectid
+							not in (select paobjectid from point where pointoffset =10009));
+open cbc_curs;
+fetch cbc_curs into @cbcId;
+while (@@fetch_status = 0)
+    begin
+        insert into point (pointid, pointtype, pointname, paobjectid, logicalgroup, stategroupid, 
+			serviceflag, alarminhibit, pseudoflag, pointoffset, archivetype, archiveinterval)
+			select max(pointid) + 1, 'Analog', 'Emergency OVUV Track Time', @cbcId, 'Default', -1, 'N', 'N', 'R',
+			10009, 'None', 0 from point;
+		insert into pointanalog (pointid, deadband, transducertype, multiplier, dataoffset)
+			select max(pointid), -1, 'None', 1, 0 from point;
+		insert into pointunit (pointid, uomid, decimalplaces, highreasonabilitylimit, lowreasonabilitylimit,
+			decimaldigits)
+			select max(pointid), 31, 1, 0, 0, 0 from point;
+		insert into pointalarming (pointid, alarmstates, excludenotifystates, notifyonacknowledge, 
+			notificationgroupid, recipientid)
+			select max(pointid), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0 from point;
+		fetch cbc_curs into @cbcId;
+	end
+
+close cbc_curs;
+deallocate cbc_curs;
+/* @end-block */
+
+/* Trip Delay Time */
+/* @start-block */
+declare @cbcId numeric;
+declare cbc_curs cursor for (select distinct( yp.paobjectid )
+							from yukonpaobject yp where yp.type like 'CBC 702%' 
+							and yp.paobjectid
+							not in (select paobjectid from point where pointoffset =10015));
+open cbc_curs;
+fetch cbc_curs into @cbcId;
+while (@@fetch_status = 0)
+    begin
+        insert into point (pointid, pointtype, pointname, paobjectid, logicalgroup, stategroupid, 
+			serviceflag, alarminhibit, pseudoflag, pointoffset, archivetype, archiveinterval)
+			select max(pointid) + 1, 'Analog', 'Trip Delay Time', @cbcId, 'Default', -1, 'N', 'N', 'R',
+			10015, 'None', 0 from point;
+		insert into pointanalog (pointid, deadband, transducertype, multiplier, dataoffset)
+			select max(pointid), -1, 'None', 1, 0 from point;
+		insert into pointunit (pointid, uomid, decimalplaces, highreasonabilitylimit, lowreasonabilitylimit,
+			decimaldigits)
+			select max(pointid), 31, 1, 0, 0, 0 from point;
+		insert into pointalarming (pointid, alarmstates, excludenotifystates, notifyonacknowledge, 
+			notificationgroupid, recipientid)
+			select max(pointid), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0 from point;
+		fetch cbc_curs into @cbcId;
+	end
+
+close cbc_curs;
+deallocate cbc_curs;
+/* @end-block */
+
+/* Close Delay Time */
+/* @start-block */
+declare @cbcId numeric;
+declare cbc_curs cursor for (select distinct( yp.paobjectid )
+							from yukonpaobject yp where yp.type like 'CBC 702%' 
+							and yp.paobjectid
+							not in (select paobjectid from point where pointoffset =10016));
+open cbc_curs;
+fetch cbc_curs into @cbcId;
+while (@@fetch_status = 0)
+    begin
+        insert into point (pointid, pointtype, pointname, paobjectid, logicalgroup, stategroupid, 
+			serviceflag, alarminhibit, pseudoflag, pointoffset, archivetype, archiveinterval)
+			select max(pointid) + 1, 'Analog', 'Close Delay Time', @cbcId, 'Default', -1, 'N', 'N', 'R',
+			10016, 'None', 0 from point;
+		insert into pointanalog (pointid, deadband, transducertype, multiplier, dataoffset)
+			select max(pointid), -1, 'None', 1, 0 from point;
+		insert into pointunit (pointid, uomid, decimalplaces, highreasonabilitylimit, lowreasonabilitylimit,
+			decimaldigits)
+			select max(pointid), 31, 1, 0, 0, 0 from point;
+		insert into pointalarming (pointid, alarmstates, excludenotifystates, notifyonacknowledge, 
+			notificationgroupid, recipientid)
+			select max(pointid), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0 from point;
+		fetch cbc_curs into @cbcId;
+	end
+
+close cbc_curs;
+deallocate cbc_curs;
+/* @end-block */
+
+/* Re-Close Delay Time */
+/* @start-block */
+declare @cbcId numeric;
+declare cbc_curs cursor for (select distinct( yp.paobjectid )
+							from yukonpaobject yp where yp.type like 'CBC 702%' 
+							and yp.paobjectid
+							not in (select paobjectid from point where pointoffset =10018));
+open cbc_curs;
+fetch cbc_curs into @cbcId;
+while (@@fetch_status = 0)
+    begin
+        insert into point (pointid, pointtype, pointname, paobjectid, logicalgroup, stategroupid, 
+			serviceflag, alarminhibit, pseudoflag, pointoffset, archivetype, archiveinterval)
+			select max(pointid) + 1, 'Analog', 'Re-Close Delay Time', @cbcId, 'Default', -1, 'N', 'N', 'R',
+			10018, 'None', 0 from point;
+		insert into pointanalog (pointid, deadband, transducertype, multiplier, dataoffset)
+			select max(pointid), -1, 'None', 1, 0 from point;
+		insert into pointunit (pointid, uomid, decimalplaces, highreasonabilitylimit, lowreasonabilitylimit,
+			decimaldigits)
+			select max(pointid), 31, 1, 0, 0, 0 from point;
+		insert into pointalarming (pointid, alarmstates, excludenotifystates, notifyonacknowledge, 
+			notificationgroupid, recipientid)
+			select max(pointid), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0 from point;
+		fetch cbc_curs into @cbcId;
+	end
+
+close cbc_curs;
+deallocate cbc_curs;
+/* @end-block */
+
+/* Bank Control Time */
+/* @start-block */
+declare @cbcId numeric;
+declare cbc_curs cursor for (select distinct( yp.paobjectid )
+							from yukonpaobject yp where yp.type like 'CBC 702%' 
+							and yp.paobjectid
+							not in (select paobjectid from point where pointoffset =10017));
+open cbc_curs;
+fetch cbc_curs into @cbcId;
+while (@@fetch_status = 0)
+    begin
+        insert into point (pointid, pointtype, pointname, paobjectid, logicalgroup, stategroupid, 
+			serviceflag, alarminhibit, pseudoflag, pointoffset, archivetype, archiveinterval)
+			select max(pointid) + 1, 'Analog', 'Bank Control Time', @cbcId, 'Default', -1, 'N', 'N', 'R',
+			10017, 'None', 0 from point;
+		insert into pointanalog (pointid, deadband, transducertype, multiplier, dataoffset)
+			select max(pointid), -1, 'None', 1, 0 from point;
+		insert into pointunit (pointid, uomid, decimalplaces, highreasonabilitylimit, lowreasonabilitylimit,
+			decimaldigits)
+			select max(pointid), 19, 1, 0, 0, 0 from point;
+		insert into pointalarming (pointid, alarmstates, excludenotifystates, notifyonacknowledge, 
+			notificationgroupid, recipientid)
+			select max(pointid), '', 'NNNNNNNNNNNNNNNNNNNNNNNNNNNNNNNN', 'N', 1, 0 from point;
+		fetch cbc_curs into @cbcId;
+	end
+
+close cbc_curs;
+deallocate cbc_curs;
+/* @end-block */
+/* End YUK-5557 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
