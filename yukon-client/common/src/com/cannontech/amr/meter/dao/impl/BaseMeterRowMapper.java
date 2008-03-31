@@ -20,7 +20,7 @@ public class BaseMeterRowMapper {
         meter.setDeviceId(paObjectId);
         String paoName = rs.getString("paoName");
         meter.setName(paoName);
-        String type = rs.getString("type");
+        String type = rs.getString("type").intern();
         meter.setTypeStr(type);
         int deviceType = paoGroupsWrapper.getDeviceType(type);
         meter.setType(deviceType);

@@ -55,8 +55,6 @@ public class LiteYukonPAObject extends LiteBase
 	private int address = PAOGroups.INVALID;
 
 	
-	//childIDlist is a list of all the PAObjects owned by this PAObject
-	private int[] childIDList = new int[0];
 /**
  * LiteDevice
  */
@@ -115,14 +113,7 @@ public LiteYukonPAObject( int paoID, String name, int paoCategory, int paoType, 
 public int getCategory() {
 	return category;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/16/2001 2:24:44 PM)
- * @return int[]
- */
-public int[] getChildIDList() {
-	return childIDList;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (9/28/2001 4:57:42 PM)
@@ -255,19 +246,7 @@ public void retrieve(String dbalias)
 public void setCategory(int newCategory) {
 	category = newCategory;
 }
-/**
- * Insert the method's description here.
- * Creation date: (10/16/2001 2:24:44 PM)
- * @param newChildIDList int[]
- */
-public void setChildIDList(int[] newChildIDList) 
-{
-	//dont ever let this be set to null
-	if( newChildIDList == null )
-		childIDList = new int[0];
-	else
-		childIDList = newChildIDList;
-}
+
 /**
  * Insert the method's description here.
  * Creation date: (9/28/2001 4:57:42 PM)

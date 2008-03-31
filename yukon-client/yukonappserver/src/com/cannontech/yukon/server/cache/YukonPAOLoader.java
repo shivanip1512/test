@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.StopWatch;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -73,7 +74,10 @@ public class YukonPAOLoader implements Runnable
         String paoType = rset.getString(4).trim();
         String paoClass = rset.getString(5).trim();
         String paoDescription = rset.getString(6).trim();
-        String paoDisableFlag = rset.getString(7).trim();
+        if (CtiUtilities.STRING_NONE.equals(paoDescription)) {
+            paoDescription = paoDescription.intern();
+        }
+        String paoDisableFlag = rset.getString(7).trim().intern();
                
         LiteYukonPAObject pao = new LiteYukonPAObject(
                     paoID, 
