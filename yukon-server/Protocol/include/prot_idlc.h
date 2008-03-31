@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/01/21 20:43:50 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/03/31 21:17:35 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,7 +89,7 @@ private:
     enum ControlCodes
     {
         ControlCode_ResetRequest      = 0x1f,
-        ControlCode_ResetAcknowlegde  = 0x73,
+        ControlCode_ResetAcknowledge  = 0x73,
         ControlCode_RejectWithRestart = 0x19,  //  upper 3 bits are the sequence number of the next frame expected
         ControlCode_RetransmitRequest = 0x1d,  //  upper 3 bits are the sequence number of the frame to retransmit
         ControlCode_Unsequenced       = 0x13,
@@ -159,9 +159,11 @@ private:
 
     enum MiscNumeric
     {
+        //  these errors are all set to 1 so we immediately return control to the Klondike protocol on any error
+        //    this was mainly done so the timesyncs will be refreshed on any error - even an IDLC reset.
         MaximumCommErrors        =   1,
-        MaximumInputLoops        =   3,
-        MaximumProtocolErrors    =   3,
+        MaximumInputLoops        =   1,
+        MaximumProtocolErrors    =   1,
         MaximumFramingSeekLength = 260,
     };
 
@@ -190,7 +192,9 @@ public:
     bool init( void );
 
     void getInboundData( unsigned char *buf );
-    int  getInboundDataLength( void );
+    unsigned getInboundDataLength( void ) const;
+
+    unsigned getMaximumPayload( void ) const;
 
     enum IDLCError
     {

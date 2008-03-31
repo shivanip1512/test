@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2008/01/21 20:47:44 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/03/31 21:17:35 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,6 +46,13 @@ public:
     CCU721();
     virtual ~CCU721();
 
+    enum Commands
+    {
+        Command_Loopback,
+        Command_WriteQueue,
+        Command_ReadQueue,
+    };
+
     virtual void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
 
     void DecodeDatabaseReader(RWDBReader &rdr);
@@ -57,13 +64,15 @@ public:
     INT ErrorDecode (INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
     INT ResultDecode(INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
 
+    //  these commands just indicate that the device hasn't sent back an INMESS yet;
+    //    it says nothing about whether the messages are currently loaded into the CCU-721
     INT  queuedWorkCount() const;
     bool hasQueuedWork()   const;
+    INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
 
     virtual LONG getAddress() const;
 
-    INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
-    bool getOutMessage(CtiOutMessage *&OutMessage);
+    bool buildCommand(CtiOutMessage *&OutMessage, Commands command);
 
     virtual int recvCommRequest(OUTMESS *OutMessage);
     virtual int sendCommResult (INMESS  *InMessage);

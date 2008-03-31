@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/01/21 20:53:22 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/03/31 21:17:35 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -44,19 +44,18 @@ Protocol::Interface *CCU721::getProtocol()
 
 INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList )
 {
-    INT nRet = NORMAL;
-    bool found = false;
+    INT nRet = NoError, command = Klondike::Command_Invalid;
 
     switch(parse.getCommand())
     {
-/*        case LoopbackRequest:
+        case LoopbackRequest:
         {
-            _lmi.setCommand(CtiProtocolLMI::Command_Loopback);
-            found = true;
+            command = Klondike::Command_CheckStatus;
+            nRet = _klondike.setCommand(command);
 
             break;
         }
-
+/*
         case ScanRequest:
         {
             switch(parse.getiValue("scantype"))
@@ -140,7 +139,7 @@ INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
         }*/
     }
 
-    if( found && nRet == NoError )
+    if( !nRet && command != Klondike::Command_Invalid )
     {
         OutMessage->Port      = getPortID();
         OutMessage->DeviceID  = getID();
@@ -151,7 +150,7 @@ INT CCU721::ExecuteRequest( CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMES
                                     //    resubmitting the OM is unpredictable with protocol-based devices
         EstablishOutMessagePriority( OutMessage, pReq->getMessagePriority() );
 
-        //_lmi.sendCommRequest(OutMessage, outList);
+        _klondike.sendCommRequest(OutMessage, outList);
     }
     else
     {
@@ -224,14 +223,6 @@ void CCU721::getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selecto
     _address.getSQL(db, keyTable, selector);
 
     selector.where( (keyTable["type"] == "CCU-721") && selector.where() );
-
-    /*
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - \"" << selector.asString() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-    }
-    */
-
 }
 
 
@@ -253,92 +244,83 @@ LONG CCU721::getAddress() const
 
 bool CCU721::hasQueuedWork() const
 {
-    return true; //_klondike.get
+    return _klondike.hasQueuedWork();
 }
 
 
 INT CCU721::queuedWorkCount() const
 {
-    return 1;//_klondike.getNumCodes();
+    return _klondike.queuedWorkCount();
 }
 
 
 INT CCU721::queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt)
 {
     int retval = NORMAL;
-/*
-    if( OutMessage->Sequence == CtiProtocolLMI::Sequence_Code )
+
+    if( OutMessage->DeviceID != OutMessage->TargetID )
     {
-        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+        if( !(OutMessage->EventCode & DTRAN) )
         {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - OutMessage->VerificationSequence = " << OutMessage->VerificationSequence << " **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            //  the OM is now owned by _klondike
+            _klondike.addQueuedWork(OutMessage);
+
+            *dqcnt = _klondike.queuedWorkCount();
+
+            retval = QUEUED_TO_DEVICE;
         }
-
-        _lmi.queueCode(OutMessage);
-
-        OutMessage = 0;
-
-        retval = QUEUED_TO_DEVICE;
-
-        *dqcnt = _lmi.getNumCodes();
     }
-    else if( OutMessage->Sequence == CtiProtocolLMI::Sequence_TimeSync )
-    {
-        //  we say that we've "enqueued" the message, when really, it's just the DevicePreprocessing() code around
-        //      queueOutMessageToDevice() call that we care about
 
-        delete OutMessage;
-        OutMessage = 0;
-
-        retval = QUEUED_TO_DEVICE;
-
-        *dqcnt = _lmi.getNumCodes();
-    }
-*/
     return retval;
 }
 
 
-bool CCU721::getOutMessage(CtiOutMessage *&OutMessage)
+bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
 {
-    bool retval = false;
+    bool command_built = false;
     CtiTime now;
-/*
-    if( !isInhibited() && _seriesv.getTickTime() )
-    {
-        if( now > (_lastPreload + (_seriesv.getTickTime() * 60) / 2) )
-        {
-            if( !OutMessage )
-            {
-                OutMessage = new CtiOutMessage();
-            }
 
+    if( OutMessage )
+    {
+        switch( command )
+        {
+            case Command_ReadQueue:
+            {
+                if( _klondike.hasRemoteWork() && !_klondike.isReadingDeviceQueue() )
+                {
+                    _klondike.setReadingDeviceQueue(true);
+
+                    OutMessage->Priority = _klondike.getRemoteWorkPriority();
+
+                    command_built = true;
+                }
+
+                break;
+            }
+            case Command_WriteQueue:
+            {
+                if( _klondike.hasWaitingWork() && !_klondike.isLoadingDeviceQueue() )
+                {
+                    _klondike.setLoadingDeviceQueue(true);
+
+                    OutMessage->Priority = _klondike.getWaitingWorkPriority();
+
+                    command_built = true;
+                }
+
+                break;
+            }
+        }
+
+        if( command_built )
+        {
             OutMessage->DeviceID = getID();
-            OutMessage->Sequence = CtiProtocolLMI::Sequence_Preload;
-            OutMessage->Priority = MAXPRIORITY - 1;
-
-            OutMessage->ExpirationTime = getExclusion().getExecutionGrantExpires().seconds();  //  i'm hijacking this over
-
-            _lastPreload = now;
-        }
-        else
-        {
-            if( OutMessage )
-            {
-                delete OutMessage;
-
-                OutMessage = 0;
-            }
+            OutMessage->Port     = getPortID();
+            OutMessage->Sequence = command;
         }
     }
 
-    if(OutMessage)
-    {
-        incQueueProcessed(1, CtiTime());
-    }
-*/
-    return retval;
+    return command_built;
 }
 
 
@@ -387,27 +369,42 @@ int CCU721::sendCommResult(INMESS *InMessage)
     }
     else
     {
-        unsigned char input[255], input_length;
-
-        _klondike.getResultDirectTransmission(input, 255,input_length );
-
-        //  if this was targeted at an MCT
-        if( _current_outmessage.TargetID != _current_outmessage.DeviceID && InMessage->DeviceID != 0 && InMessage->TargetID != 0 )
+        switch( _klondike.getCommand() )
         {
-            if( (_current_outmessage.EventCode & BWORD) &&
-                (_current_outmessage.Buffer.BSt.IO & Emetcon::IO_Read ) )
+            case Klondike::Command_DirectMessageRequest:
             {
-                //  inbound command - decode the D words
-                InMessage->EventCode = Klondike::decodeDWords(input, input_length, _current_outmessage.Remote, &(InMessage->Buffer.DSt));
-                InMessage->Buffer.DSt.Time    = InMessage->Time;
-                InMessage->Buffer.DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
-                InMessage->Buffer.DSt.Length  = (input_length / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
+                unsigned char input[255], input_length;
 
-                InMessage->InLength = InMessage->Buffer.DSt.Length;
+                _klondike.getResultDirectTransmission(input, 255,input_length );
+
+                //  if this was targeted at an MCT
+                if( _current_outmessage.TargetID != _current_outmessage.DeviceID && InMessage->DeviceID != 0 && InMessage->TargetID != 0 )
+                {
+                    if( (_current_outmessage.EventCode & BWORD) &&
+                        (_current_outmessage.Buffer.BSt.IO & Emetcon::IO_Read ) )
+                    {
+                        //  inbound command - decode the D words
+                        InMessage->EventCode = Klondike::decodeDWords(input, input_length, _current_outmessage.Remote, &(InMessage->Buffer.DSt));
+                        InMessage->Buffer.DSt.Time    = InMessage->Time;
+                        InMessage->Buffer.DSt.DSTFlag = InMessage->MilliTime & DSTACTIVE;
+                        InMessage->Buffer.DSt.Length  = (input_length / DWORDLEN) * 5 - 2;  //  calculate the number of bytes we get back
+
+                        InMessage->InLength = InMessage->Buffer.DSt.Length;
+                    }
+                    else
+                    {
+                        InMessage->InLength = 0;
+                    }
+                }
+
+                break;
             }
-            else
+
+            case Klondike::Command_WaitingQueueRead:
             {
-                InMessage->InLength = 0;
+                incQueueProcessed(1, CtiTime());
+
+                break;
             }
         }
     }

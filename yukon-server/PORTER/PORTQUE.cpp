@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.61 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.62 $
+* DATE         :  $Date: 2008/03/31 21:17:35 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -74,6 +74,7 @@
 #include "guard.h"
 #include "trx_711.h"
 #include "dev_ccu.h"
+#include "dev_ccu721.h"
 #include "prot_emetcon.h"
 
 using namespace std;
@@ -149,60 +150,90 @@ static void applyBuildLGrpQ(const long unusedid, CtiDeviceSPtr Dev, void *usprti
 {
     bool foreignCCU = (gForeignCCUPorts.find(Dev->getPortID()) != gForeignCCUPorts.end());
 
-    if(!foreignCCU && !Dev->isInhibited() && Dev->getType() == TYPE_CCU711)
+    if(!foreignCCU && !Dev->isInhibited())
     {
-        CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
-        if(pInfo != NULL)
+        switch( Dev->getType() )
         {
-            if(pInfo->ActinQueueHandle != (HCTIQUEUE) NULL)
+            default:    break;
+
+            case TYPE_CCU721:
             {
-                BuildActinShed(Dev);
+                using Cti::Device::CCU721;
+                boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(Dev);
+
+                OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+
+                if( ccu->hasQueuedWork()
+                    && ccu->buildCommand(OutMessage, CCU721::Command_WriteQueue) )
+                {
+                    PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
+                }
+                else
+                {
+                    delete OutMessage;
+                }
+
+                break;
             }
 
-            /* Now check out the queue queue handle */
-            if(pInfo->QueueHandle != (HCTIQUEUE) NULL)
+            case TYPE_CCU711:
             {
-                if( pInfo->getStatus(INLGRPQ) && pInfo->getINLGRPQWarning() < CtiTime::now() )
+                CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
+                if(pInfo != NULL)
                 {
-                    CtiPortSPtr port = PortManager.PortGetEqual(Dev->getPortID());
-                    if( port )
+                    if(pInfo->ActinQueueHandle != (HCTIQUEUE) NULL)
                     {
-                        ULONG reqCount = 0, priority = 0;
-                        ULONG requestID = QUEUED_MSG_REQ_ID_BASE + Dev->getAddress();
-                        HCTIQUEUE portQueue = port->getPortQueueHandle();
+                        BuildActinShed(Dev);
+                    }
 
-                        GetRequestCountAndPriority(portQueue, requestID, reqCount, priority);
-
-                        if( reqCount > 0 )
+                    /* Now check out the queue queue handle */
+                    if(pInfo->QueueHandle != (HCTIQUEUE) NULL)
+                    {
+                        if( pInfo->getStatus(INLGRPQ) && pInfo->getINLGRPQWarning() < CtiTime::now() )
                         {
-                            pInfo->setINLGRPQWarning(CtiTime::now().seconds() + 300 ); //Yuck, but ok?
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, entry found, NOT removing entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                        else
-                        {
-                            pInfo->clearStatus(INLGRPQ);
+                            CtiPortSPtr port = PortManager.PortGetEqual(Dev->getPortID());
+                            if( port )
                             {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, no queue entry found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                ULONG reqCount = 0, priority = 0;
+                                ULONG requestID = QUEUED_MSG_REQ_ID_BASE + Dev->getAddress();
+                                HCTIQUEUE portQueue = port->getPortQueueHandle();
+
+                                GetRequestCountAndPriority(portQueue, requestID, reqCount, priority);
+
+                                if( reqCount > 0 )
+                                {
+                                    pInfo->setINLGRPQWarning(CtiTime::now().seconds() + 300 ); //Yuck, but ok?
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, entry found, NOT removing entry **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
+                                else
+                                {
+                                    pInfo->clearStatus(INLGRPQ);
+                                    {
+                                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                        dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, no queue entry found **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                    }
+                                }
+
+                            }
+                            else
+                            {
+                                pInfo->clearStatus(INLGRPQ);
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, unknown port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                                }
                             }
                         }
 
-                    }
-                    else
-                    {
-                        pInfo->clearStatus(INLGRPQ);
+                        if( !pInfo->getStatus(INLGRPQ) )
                         {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " **** CHECKPOINT **** - INLGRPQ warning, unknown port **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            BuildLGrpQ(Dev);
                         }
                     }
                 }
 
-                if( !pInfo->getStatus(INLGRPQ) )
-                {
-                    BuildLGrpQ(Dev);
-                }
+                break;
             }
         }
     }
@@ -659,13 +690,13 @@ CCUResponseDecode (INMESS *InMessage, CtiDeviceSPtr Dev, OUTMESS *OutMessage)
     /* there are more STATS but these are a start ..... <-----<<<<<<<------- */
 
     /* Now decode pertinant STATD information */
-    /* Check for persistant DLC fault */
+    /* Check for persistent DLC fault */
     if(InMessage->IDLCStat[10] & STAT_DLCFLT)
     {
         if(!(pInfo->getStatus(DLCFAULT)))
         {
             pInfo->setStatus(DLCFAULT);
-            _snprintf(tempstr, 99,"Persistant DLC Fault Detected on Port: %2hd Remote: %3hd\n", InMessage->Port, InMessage->Remote);
+            _snprintf(tempstr, 99,"Persistent DLC Fault Detected on Port: %2hd Remote: %3hd\n", InMessage->Port, InMessage->Remote);
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " " << tempstr << endl;
@@ -1164,76 +1195,103 @@ static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
     int i;
     bool rcol_sent = false;
 
-    if(Dev->getType() == TYPE_CCU711)
+    switch( Dev->getType() )
     {
-        RWRecursiveLock<RWMutexLock>::LockGuard   devguard(Dev->getMux());                  // Protect our device!
-        CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
+        default:  break;
 
-        // Verify FreeSlots!
-        LONG FreeQents = 0;
-        LONG OldFreeEnts;
-
-        ULONG nowtime = LongTime();
-        /* Check if we have anything done yet */
-        for(i = 0; i < MAXQUEENTRIES; i++)
+        case TYPE_CCU721:
         {
-            if((pInfo->QueTable[i].InUse & INUSE) && (pInfo->QueTable[i].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME))
-            {
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " " << Dev->getName() << " INUSE queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
-                }
+            using Cti::Device::CCU721;
+            boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(Dev);
 
-                /* send a message to the calling process */
-                if(pInfo->QueTable[i].EventCode & RESULT) ReturnQueuedResult(Dev, pInfo, i);
-                if(pInfo->QueTable[i].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
-                if(pInfo->FreeSlots > MAXQUEENTRIES)
+            OUTMESS *OutMessage = CTIDBG_new OUTMESS;
+
+            if( ccu->hasQueuedWork()
+                && ccu->buildCommand(OutMessage, CCU721::Command_ReadQueue) )
+            {
+                PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
+            }
+            else
+            {
+                delete OutMessage;
+            }
+
+            break;
+        }
+
+        case TYPE_CCU711:
+        {
+            RWRecursiveLock<RWMutexLock>::LockGuard   devguard(Dev->getMux());                  // Protect our device!
+            CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
+
+            // Verify FreeSlots!
+            LONG FreeQents = 0;
+            LONG OldFreeEnts;
+
+            ULONG nowtime = LongTime();
+            /* Check if we have anything done yet */
+            for(i = 0; i < MAXQUEENTRIES; i++)
+            {
+                if((pInfo->QueTable[i].InUse & INUSE) && (pInfo->QueTable[i].TimeSent <= nowtime - MAX_CCU_QUEUE_TIME))
                 {
                     {
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << CtiTime() << " " << Dev->getName() << " INUSE queue entry is more than " << MAX_CCU_QUEUE_TIME << " seconds old. " << endl;
                     }
-                }
-                pInfo->QueTable[i].InUse = 0;
-                pInfo->QueTable[i].TimeSent = -1L;
-            }
-            else if(pInfo->QueTable[i].InUse & INCCU)
-            {
-                if(pInfo->QueTable[i].TimeSent <= nowtime - 5L)
-                {
-                    if(!rcol_sent)
+
+                    /* send a message to the calling process */
+                    if(pInfo->QueTable[i].EventCode & RESULT) ReturnQueuedResult(Dev, pInfo, i);
+                    if(pInfo->QueTable[i].InUse) InterlockedIncrement( &(pInfo->FreeSlots) );
+                    if(pInfo->FreeSlots > MAXQUEENTRIES)
                     {
-                        rcol_sent = true;
-                        IDLCRColQ(Dev);
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
+                    }
+                    pInfo->QueTable[i].InUse = 0;
+                    pInfo->QueTable[i].TimeSent = -1L;
+                }
+                else if(pInfo->QueTable[i].InUse & INCCU)
+                {
+                    if(pInfo->QueTable[i].TimeSent <= nowtime - 5L)
+                    {
+                        if(!rcol_sent)
+                        {
+                            rcol_sent = true;
+                            IDLCRColQ(Dev);
+                        }
+                    }
+                    else if(pInfo->QueTable[i].TimeSent == -1L)
+                    {
+                        // 20051129 CGP - This should never hapen if we are INCCU.  I've become paranoid!
+                        pInfo->QueTable[i].TimeSent = nowtime;
+                        sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
+                    }
+                    else
+                    {
+                        sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
                     }
                 }
-                else if(pInfo->QueTable[i].TimeSent == -1L)
-                {
-                    // 20051129 CGP - This should never hapen if we are INCCU.  I've become paranoid!
-                    pInfo->QueTable[i].TimeSent = nowtime;
-                    sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
-                }
-                else
-                {
-                    sleepTime = 2500L;                             // Wake every 2.5 seconds in this case.
-                }
+
+                if(!pInfo->QueTable[i].InUse) FreeQents++;          // Counting the number of Open slots.
             }
 
-            if(!pInfo->QueTable[i].InUse) FreeQents++;          // Counting the number of Open slots.
-        }
-
-        if( FreeQents != (OldFreeEnts = InterlockedExchange(&(pInfo->FreeSlots), FreeQents)) )
-        {
+            if( FreeQents != (OldFreeEnts = InterlockedExchange(&(pInfo->FreeSlots), FreeQents)) )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** FREESLOTS CORRECTION!  **** " << __FILE__ << " (" << __LINE__ << ") " << OldFreeEnts << " != " << FreeQents << endl;
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** FREESLOTS CORRECTION!  **** " << __FILE__ << " (" << __LINE__ << ") " << OldFreeEnts << " != " << FreeQents << endl;
+                }
             }
-        }
 
-        if(!rcol_sent && pInfo->FreeSlots == MAXQUEENTRIES && pInfo->NCOcts)
-        {
-            /* Opps... something got left behind */
-            IDLCRColQ(Dev);
+            if(!rcol_sent && pInfo->FreeSlots == MAXQUEENTRIES && pInfo->NCOcts)
+            {
+                /* Opps... something got left behind */
+                IDLCRColQ(Dev);
+            }
+
+            break;
         }
     }
 }

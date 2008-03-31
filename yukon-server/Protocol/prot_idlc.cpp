@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/01/21 20:46:04 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/03/31 21:17:35 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -243,7 +243,7 @@ bool IDLC::isControlFrame(const frame &f)
 {
     bool retval = false;
 
-    if( f.header.control.code          == ControlCode_ResetAcknowlegde  ||
+    if( f.header.control.code          == ControlCode_ResetAcknowledge  ||
         f.header.control.code          == ControlCode_ResetRequest      ||
         (f.header.control.code & 0x1f) == ControlCode_RejectWithRestart ||
         (f.header.control.code & 0x1f) == ControlCode_RetransmitRequest )
@@ -277,14 +277,11 @@ int IDLC::generate( CtiXfer &xfer )
 
             case IO_Operation_Input:    recvFrame(xfer, _in_recv);  break;
 
-            case IO_Operation_Complete:
-            case IO_Operation_Invalid:
-            case IO_Operation_Failed:
             default:
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - unhandled state (" << _io_operation << ") in  **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - unhandled state (" << _io_operation << ") in Cti::Protocol::IDLC::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 retval = BADRANGE;
@@ -362,6 +359,7 @@ int IDLC::decode( CtiXfer &xfer, int status )
                         _io_operation  = IO_Operation_Complete;
                         _control_state = Control_State_OK;
                     }
+
                 }
 
                 break;
@@ -375,9 +373,6 @@ int IDLC::decode( CtiXfer &xfer, int status )
                 break;
             }
 
-            case IO_Operation_Complete:
-            case IO_Operation_Failed:
-            case IO_Operation_Invalid:
             default:
             {
                 {
@@ -463,7 +458,7 @@ int IDLC::process_control( frame in_frame )
 {
     int retval = NoError;
 
-    if( in_frame.header.control.code == ControlCode_ResetAcknowlegde )
+    if( in_frame.header.control.code == ControlCode_ResetAcknowledge )
     {
         _master_sequence = 0;
         _slave_sequence  = 0;
@@ -561,24 +556,9 @@ bool IDLC::control_pending( void )
 
 bool IDLC::isTransactionComplete( void ) const
 {
-    bool retval = false;
-
-    switch( _io_operation )
-    {
-        case IO_Operation_Input:
-        case IO_Operation_Output:
-        //case IO_Operation_Retransmit:
-            break;
-
-        //  note the "default" case there - we exit instead of looping forever
-        case IO_Operation_Complete:
-        case IO_Operation_Failed:
-        case IO_Operation_Invalid:
-        default:
-            retval = true;
-    }
-
-    return retval;
+    //  if we're not inputting or outputting, we're done
+    return !(_io_operation == IO_Operation_Input ||
+             _io_operation == IO_Operation_Output);
 }
 
 
@@ -607,6 +587,8 @@ bool IDLC::recv( void )
 
 bool IDLC::init( void )
 {
+    _io_operation = IO_Operation_Invalid;
+
     return true;
 }
 
@@ -650,9 +632,15 @@ void IDLC::getInboundData( unsigned char *buf )
 }
 
 
-int IDLC::getInboundDataLength( void )
+unsigned IDLC::getInboundDataLength( void ) const
 {
     return _in_data_length;
+}
+
+
+unsigned IDLC::getMaximumPayload( void ) const
+{
+    return Frame_MaximumDataLength;
 }
 
 

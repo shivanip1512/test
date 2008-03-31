@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/10/31 20:48:51 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/03/31 21:17:35 $
 *
 * Copyright (c) 2007 Cannon Technologies. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,8 +32,10 @@ public:
 
     virtual bool init( void ) = 0;
 
-    virtual int  getInboundDataLength( void ) = 0;
+    virtual unsigned getInboundDataLength( void ) const = 0;
     virtual void getInboundData( unsigned char *buf ) = 0;
+
+    virtual unsigned getMaximumPayload() const = 0;
 };
 
 
