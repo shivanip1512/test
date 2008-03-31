@@ -433,7 +433,7 @@
             <script>post('/editor/paoSchedListBase.jsf')</script>
           </option>
           <option id="strategies">
-            <script>post('/editor/cbcStrategyList.jsf')</script>
+            <script>post('/editor/strategyList.jsf')</script>
           </option>
           <option id="oneline">
 	        <requireFalseProperty value="capcontrol.CBCSettingsRole.HIDE_ONELINE"/>

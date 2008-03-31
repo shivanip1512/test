@@ -71,7 +71,7 @@
 	            <x:htmlTag value="br"/>
 	            <x:htmlTag value="br"/>
                 <x:htmlTag value="fieldset" styleClass="fieldSet">
-                    <x:htmlTag value="legend"><x:outputText value="Substation Assignment"/></x:htmlTag>
+                    <x:htmlTag value="legend"><x:outputText value="Links"/></x:htmlTag>
 			
                     <x:commandLink action="#{capControlForm.dataModel.createWizardLink}" 
                         value="Create Sub" 

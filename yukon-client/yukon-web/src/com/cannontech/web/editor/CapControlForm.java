@@ -30,6 +30,7 @@ import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import org.apache.myfaces.custom.tree2.TreeStateBase;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.*;
 import com.cannontech.cbc.exceptions.CBCExceptionMessages;
 import com.cannontech.cbc.exceptions.FormWarningException;
@@ -87,6 +88,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.db.CBCDBObjCreator;
+import com.cannontech.web.editor.model.CBCSpecialAreaDataModel;
 import com.cannontech.web.editor.model.CapControlStrategyModel;
 import com.cannontech.web.editor.model.DataModelFactory;
 import com.cannontech.web.editor.point.PointLists;
@@ -98,6 +100,7 @@ import com.cannontech.web.util.JSFParamUtil;
 import com.cannontech.web.util.JSFTreeUtils;
 import com.cannontech.web.util.JSFUtil;
 import com.cannontech.web.wizard.CBCWizardModel;
+import com.cannontech.yukon.cbc.SubStation;
 
 public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private String paoDescLabel = "Description";
@@ -153,6 +156,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private Integer holidayStrategyId = -1000;
     private CCStrategyTimeOfDaySet strategyTimeOfDay = null;
     
+    private CapControlCache cache = (CapControlCache)YukonSpringHook.getBean("capControlCache");
     private static CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
     private static FeederDao feederDao = YukonSpringHook.getBean("feederDao",FeederDao.class);
     private static SubstationBusDao substationBusDao = YukonSpringHook.getBean("substationBusDao", SubstationBusDao.class);
@@ -967,19 +971,46 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                     }
                 }
             }
+			
+			boolean dataModelOK = true;
+			List<String> duplicates = new ArrayList<String>();
+			
+			DBPersistent dbPers = getDbPersistent();
             if (getDataModel() != null) {
-                getDataModel().updateDataModel();    
+                if(dbPers instanceof CapControlSpecialArea) {
+                    duplicates = checkEnableSpecialArea((CapControlSpecialArea)dbPers);
+                    if(duplicates != null && !duplicates.isEmpty()) {
+                        dataModelOK = false;
+                    }else {
+                        getDataModel().updateDataModel();
+                    }
+                }else {
+                    getDataModel().updateDataModel();
+                }
             }
             
             connection = CBCDBUtil.getConnection();
-            getDbPersistent().setDbConnection(connection);
+            dbPers.setDbConnection(connection);
             
-            DBPersistent dbPers = getDbPersistent();
-            if (getDbPersistent() instanceof CapControlStrategy) {
+            
+            if (dbPers instanceof CapControlStrategy) {
                 dbPers = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
                 setEditingCBCStrategy(false);
             }
-            updateDBObject(dbPers, facesMsg);
+            
+            if(dbPers instanceof CapControlSpecialArea) {
+                
+                if(dataModelOK) {
+                    updateDBObject(dbPers, facesMsg);
+                } else {
+                    String dups = StringUtils.toStringList(duplicates);
+                    facesMsg.setDetail("Error: Some of the substations assigned are already assigned to another enabled Special Area: " + dups );
+                    facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                }
+                
+            }else {
+                updateDBObject(dbPers, facesMsg);
+            }
             if(getDbPersistent() instanceof CapControlStrategy) {
 				if(((CapControlStrategy)dbPers).getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
 					CCStrategyTimeOfDaySet ccStrategyTimeOfDay = getStrategyTimeOfDay();
@@ -997,9 +1028,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             	|| getDbPersistent() instanceof CapControlArea
             	|| getDbPersistent() instanceof CapControlSpecialArea
             	|| getDbPersistent() instanceof CapControlFeeder){
-            	int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
-            	seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
-            	holidayScheduleDao.saveHolidayScheduleStrategyAssigment(paoId, getHolidayScheduleId(), getHolidayStrategyId());
+                
+                if(dataModelOK) {
+                	int paoId = ((YukonPAObject)getDbPersistent()).getPAObjectID();
+                	seasonScheduleDao.saveSeasonStrategyAssigment(paoId, getAssignedStratMap(), getScheduleId());
+                	holidayScheduleDao.saveHolidayScheduleStrategyAssigment(paoId, getHolidayScheduleId(), getHolidayStrategyId());
+                }
             }
             pointNameMap = null;
             paoNameMap = null;
@@ -1024,6 +1058,29 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             }
         }
         return false;
+    }
+    
+    /**
+     * Method to check whether a special area should be enabled.
+     * A substation can only be in one ENABLED special area at a time.
+     * @param area
+     * @return
+     */
+    private List<String> checkEnableSpecialArea(CapControlSpecialArea area){
+        List<String> duplicates = new ArrayList<String>();
+        
+        if(!area.isDisabled()) {  // only check the newly assigned subs list if they are trying to enable this special area
+            List<Integer> assignedAreas = ((CBCSpecialAreaDataModel)getDataModel()).getAssignmentModel().getAssigned();
+            
+            for(Integer stationId: assignedAreas) {
+                SubStation substation = cache.getSubstation(stationId);
+                if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId().intValue() != area.getPAObjectID().intValue()) {
+                    duplicates.add(cache.getCBCSpecialArea(substation.getSpecialAreaId()).getCcName() 
+                                   + ": " + substation.getCcName());
+                }
+            }
+        }
+        return duplicates;
     }
 
 	private void updateDualBusEnabled() {
