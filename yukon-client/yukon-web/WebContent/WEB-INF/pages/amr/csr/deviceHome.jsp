@@ -149,5 +149,4 @@
 
 	</ct:widgetContainer>
 
-	<ct:dataUpdateEnabler />
 </cti:standardPage>

@@ -69,6 +69,4 @@
     </ct:widgetContainer>
     <div style="clear: both"></div>
 
-    <ct:dataUpdateEnabler />
-    
 </cti:standardPage>

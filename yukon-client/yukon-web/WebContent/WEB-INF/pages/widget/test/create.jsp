@@ -11,6 +11,5 @@
 </ct:widgetContainer>
 
 (Widgets are displayed at 50% width.)
-<ct:dataUpdateEnabler />
 
 </cti:standardPage>
