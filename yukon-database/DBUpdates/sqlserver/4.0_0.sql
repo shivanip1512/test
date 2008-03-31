@@ -2160,6 +2160,10 @@ deallocate cbc_curs;
 /* @end-block */
 /* End YUK-5557 */
 
+/* Start YUK-5559 */
+insert into YukonRoleProperty values(-1702,-8, 'Customer Info Importer File Location', ' ', 'File location of the automated consumer information import process.');
+/* End YUK-5559 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
