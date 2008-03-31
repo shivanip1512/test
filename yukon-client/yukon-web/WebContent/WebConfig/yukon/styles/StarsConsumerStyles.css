@@ -1,0 +1,49 @@
+h3 {
+    text-align: center;   
+}
+
+table.contentTable {
+    width: 85%;
+}
+
+table.contentTable .leftColumn {
+    width: 80%;
+    vertical-align: top;
+    padding-left: 2em;
+}
+
+table.contentTable .rightColumn {
+    width: 20%;
+    vertical-align: top;
+}
+
+table.contactTable {
+    width: 100%;    
+}
+
+table.contactTable tr {
+    text-align: right;   
+}
+
+table.contactTable tr td.contactLeft {
+    width: 40%;   
+}
+
+table.contactTable tr td.contactRight {
+    width: 60%;   
+}
+
+table.contactTable th {
+	font-size: 1em;
+	text-align: left;
+	border-bottom: 2px groove gray;
+	padding-bottom: .5em;
+}
+
+table.contactTable td {
+	font-size: .7em;
+}
+
+table.contactTable td div {
+	margin-top: .5em;
+}

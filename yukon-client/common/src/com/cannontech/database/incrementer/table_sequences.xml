@@ -109,5 +109,11 @@
       <sequence name="DeviceEvent">
         <table name="DeviceEvent" identitycolumn="DeviceEventId" initsequence="true"/>
       </sequence>
+      <sequence name="ContactNotification">
+        <table name="ContactNotification" identitycolumn="ContactNotifID" initsequence="true"/>
+      </sequence>
+      <sequence name="Contact">
+        <table name="Contact" identitycolumn="ContactID" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

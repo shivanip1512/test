@@ -21,7 +21,7 @@ public class CustomerEventService {
     }
     
     public CICustomerStub getCustomer(LiteYukonUser user) {
-        LiteCICustomer liteCICustomer = customerDao.getCustomerForUser(user);
+        LiteCICustomer liteCICustomer = customerDao.getCICustomerForUser(user);
         CICustomerStub customerStub = customerStubDao.getForLite(liteCICustomer);
         return customerStub;
     }

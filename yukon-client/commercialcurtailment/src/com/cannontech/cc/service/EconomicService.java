@@ -47,7 +47,7 @@ public class EconomicService {
     }
     
     public EconomicEventParticipant getParticipant(EconomicEvent event, LiteYukonUser yukonUser) {
-        LiteCICustomer liteCICustomer = customerDao.getCustomerForUser(yukonUser);
+        LiteCICustomer liteCICustomer = customerDao.getCICustomerForUser(yukonUser);
         CICustomerStub customerStub = customerStubDao.getForLite(liteCICustomer);
         CICustomerStub customer = customerStub;
         return economicEventParticipantDao.getForCustomerAndEvent(customer, event);

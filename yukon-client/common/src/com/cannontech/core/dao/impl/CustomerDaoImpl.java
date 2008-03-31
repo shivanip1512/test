@@ -1,7 +1,12 @@
 package com.cannontech.core.dao.impl;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Vector;
+
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
@@ -23,6 +28,8 @@ public final class CustomerDaoImpl implements CustomerDao {
     private YukonUserDao yukonUserDao;    
     private IDatabaseCache databaseCache;
     
+    private SimpleJdbcTemplate simpleJdbcTemplate;
+    
     /**
      * CustomerFuncs constructor comment.
      */
@@ -35,12 +42,11 @@ public final class CustomerDaoImpl implements CustomerDao {
      * 
      * @see com.cannontech.core.dao.CustomerDao#getAllContacts(int)
      */
-    public List getAllContacts(int customerID_) {
+    public List<LiteContact> getAllContacts(int customerID_) {
         synchronized (databaseCache) {
             LiteCustomer customer = (LiteCustomer) databaseCache
                     .getACustomerByCustomerID(customerID_);
-            java.util.Vector allContacts = new java.util.Vector(5); // guess
-                                                                    // capacity
+            Vector<LiteContact> allContacts = new Vector<LiteContact>(5); // guess capacity
             if (customer != null) {
                 int primCntctID = customer.getPrimaryContactID();
                 LiteContact liteContact = contactDao.getContact(primCntctID);
@@ -76,16 +82,23 @@ public final class CustomerDaoImpl implements CustomerDao {
         return null;
     }
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.cannontech.core.dao.CustomerDao#getLiteCustomer(int)
-     */
-    public LiteCustomer getLiteCustomer(int custID) {
-        synchronized (databaseCache) {
-            return (LiteCustomer) databaseCache
-                    .getACustomerByCustomerID(custID);
-        }
+    public LiteCustomer getLiteCustomer(int customerId) {
+
+        StringBuilder sql = new StringBuilder("SELECT c.*, ectam.EnergyCompanyId");
+        sql.append(" FROM Customer c, CustomerAccount ca, ECToAccountMapping ectam");
+        sql.append(" WHERE ectam.AccountId = ca.AccountId");
+        sql.append(" AND ca.CustomerId = c.CustomerId");
+        sql.append(" AND c.CustomerId = ?");
+
+        LiteCustomer customer = simpleJdbcTemplate.queryForObject(sql.toString(),
+                                                                  new CustomerRowMapper(),
+                                                                  customerId);
+
+        
+        List<LiteContact> additionalContacts = contactDao.getAdditionalContactsForCustomer(customerId);
+        customer.setAdditionalContacts(additionalContacts);
+        
+        return customer;
     }
 
     /**
@@ -139,10 +152,10 @@ public final class CustomerDaoImpl implements CustomerDao {
      * 
      * @see com.cannontech.core.dao.CustomerDao#getAllLiteCustomersByEnergyCompany(int)
      */
-    public Vector getAllLiteCustomersByEnergyCompany(int energyCompanyID) {
-        Vector liteCustomers = new Vector();
+    public Vector<LiteCustomer> getAllLiteCustomersByEnergyCompany(int energyCompanyID) {
+        Vector<LiteCustomer> liteCustomers = new Vector<LiteCustomer>();
         synchronized (databaseCache) {
-            List allCustomers = databaseCache.getAllCustomers();
+            List<LiteCustomer> allCustomers = databaseCache.getAllCustomers();
             for (int i = 0; i < allCustomers.size(); i++) {
                 LiteCustomer lc = (LiteCustomer) allCustomers.get(i);
                 if (lc.getEnergyCompanyID() == energyCompanyID)
@@ -157,13 +170,58 @@ public final class CustomerDaoImpl implements CustomerDao {
      * 
      * @see com.cannontech.core.dao.CustomerDao#getCustomerForUser(com.cannontech.database.data.lite.LiteYukonUser)
      */
-    public LiteCICustomer getCustomerForUser(LiteYukonUser user) {
+    public LiteCICustomer getCICustomerForUser(LiteYukonUser user) {
         LiteContact liteContact = yukonUserDao.getLiteContact(user.getUserID());
         if (liteContact == null) {
             return null;
         }
         LiteCICustomer customer = contactDao.getCICustomer(liteContact.getContactID());
         return customer;
+    }
+
+    @Override
+    public LiteCustomer getCustomerForUser(int userId) {
+
+        StringBuilder sql = new StringBuilder("SELECT cu.CustomerId");
+        sql.append(" FROM Customer cu, Contact c");
+        sql.append(" WHERE cu.PrimaryContactId = c.ContactId");
+        sql.append(" AND c.LoginId = ?");
+
+        int customerId = simpleJdbcTemplate.queryForInt(sql.toString(), userId);
+        LiteCustomer customer = this.getLiteCustomer(customerId);
+
+        return customer;
+    }
+    
+    private class CustomerRowMapper implements ParameterizedRowMapper<LiteCustomer> {
+
+        @Override
+        public LiteCustomer mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+
+            int customerId = rs.getInt("CustomerId");
+            int primaryContactId = rs.getInt("PrimaryContactId");
+            int customerTypeId = rs.getInt("CustomerTypeId");
+            String timezone = rs.getString("TimeZone");
+            String customerNumber = rs.getString("CustomerNumber");
+            int rateScheduleId = rs.getInt("RateScheduleId");
+            String altTrackNumber = rs.getString("AltTrackNum");
+            String temperatureUnit = rs.getString("TemperatureUnit");
+            int energyCompanyId = rs.getInt("energyCompanyId");
+
+            LiteCustomer customer = new LiteCustomer(customerId);
+            customer.setPrimaryContactID(primaryContactId);
+            customer.setCustomerTypeID(customerTypeId);
+            customer.setTimeZone(timezone);
+            customer.setCustomerNumber(customerNumber);
+            customer.setRateScheduleID(rateScheduleId);
+            customer.setTemperatureUnit(temperatureUnit);
+            customer.setAltTrackingNumber(altTrackNumber);
+            customer.setEnergyCompanyID(energyCompanyId);
+            
+            return customer;
+        }
+        
     }
 
     public void setContactDao(ContactDao contactDao) {
@@ -176,6 +234,10 @@ public final class CustomerDaoImpl implements CustomerDao {
 
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
+    }
+
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
 
 }

@@ -1,7 +1,6 @@
 package com.cannontech.core.dao;
 
 import java.util.Map;
-import java.util.Properties;
 
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;

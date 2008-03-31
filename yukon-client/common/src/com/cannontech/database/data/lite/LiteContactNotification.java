@@ -10,6 +10,8 @@ public class LiteContactNotification extends LiteBase
 	private int notificationCategoryID = 0;
 	private String disableFlag = null;
 	private String notification = null;
+	
+	private int order = 0;
 
 	/**
 	 * LiteContactNotification
@@ -160,4 +162,12 @@ public class LiteContactNotification extends LiteBase
 		this.notificationCategoryID = notificationCategoryID;
 	}
 
+	public int getOrder() {
+        return order;
+    }
+	
+	public void setOrder(int order) {
+        this.order = order;
+    }
+	
 }

@@ -1,13 +1,17 @@
 package com.cannontech.database.db.contact;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.database.PoolManager;
-import com.cannontech.database.SqlStatement;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.user.YukonUser;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 
 /**
@@ -21,6 +25,8 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	private String contLastName = CtiUtilities.STRING_NONE;
 	private Integer logInID = new Integer(UserUtils.USER_DEFAULT_ID);
 	private Integer addressID = new Integer(CtiUtilities.NONE_ZERO_ID);
+	
+	private static NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
 
 	
 	public static final String SETTER_COLUMNS[] = 
@@ -142,7 +148,7 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 	 */
 	public static final Contact[] getAllCustomerContacts(Integer customerID, java.sql.Connection conn ) throws java.sql.SQLException
 	{
-		java.util.ArrayList tmpList = new java.util.ArrayList(30);
+		List<Contact> tmpList = new ArrayList<Contact>(30);
 		java.sql.PreparedStatement pstmt = null;
 		java.sql.ResultSet rset = null;
 	
@@ -313,29 +319,12 @@ public class Contact extends com.cannontech.database.db.DBPersistent implements 
 
 
 	/**
-	 * Insert the method's description here.
-	 * Creation date: (12/14/99 10:31:33 AM)
-	 * @return java.lang.Integer
+	 * Method to get the next available contact id
+	 * @return Next contact id
 	 */
     public static final Integer getNextContactID() {
-    	
-        int nextID = 1;
-        SqlStatement stmt = new SqlStatement("SELECT Max(ContactID) FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
-        
-        try
-        {
-            stmt.execute();
-            
-            if( stmt.getRowCount() > 0 )
-            {
-                nextID = Integer.valueOf(stmt.getRow(0)[0].toString()).intValue() + 1;
-            }
-        }
-        catch( Exception e )
-        {
-            e.printStackTrace();
-        }
-        return new Integer( nextID );
+        int contactId = nextValueHelper.getNextValue(TABLE_NAME);
+        return contactId;
     }	
 
 	/**

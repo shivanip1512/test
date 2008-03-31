@@ -52,7 +52,7 @@ public class CustomerProfileBean {
     }
 
     private void doInitialize() {
-        LiteCICustomer liteCustomer = customerDao.getCustomerForUser(this.yukonUser);
+        LiteCICustomer liteCustomer = customerDao.getCICustomerForUser(this.yukonUser);
         Customer customer = (Customer) dbPersistentDao.retrieveDBPersistent(liteCustomer);
         thisCustomer = customer;
         additionalContactList.clear();

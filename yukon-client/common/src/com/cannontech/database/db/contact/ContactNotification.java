@@ -7,6 +7,8 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.db.NestedDBPersistent;
 import com.cannontech.database.db.notification.NotificationDestination;
 import com.cannontech.database.db.point.PointAlarming;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * This type was created in VisualAge.
@@ -19,6 +21,8 @@ public class ContactNotification extends NestedDBPersistent
 	private String disableFlag = "N";
 	private String notification = CtiUtilities.STRING_NONE;
 	private Integer ordering = new Integer(0);
+	
+	private static NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
 	
 
 	private final String CONSTRAINT_COLUMNS[] = { "ContactNotifID" };
@@ -97,9 +101,11 @@ public class ContactNotification extends NestedDBPersistent
 	 */
 	public void add() throws java.sql.SQLException 
 	{
-		if( getContactNotifID() == null )
-			setContactNotifID( getNextContactNotifID(getDbConnection()) );
-
+		if( getContactNotifID() == null ) {
+		    int notificationId = nextValueHelper.getNextValue(TABLE_NAME);
+			setContactNotifID(notificationId);
+		}
+		
 		Object setValues[] = 
 		{ 
 			getContactNotifID(), getContactID(), getNotificationCatID(), 
@@ -395,42 +401,6 @@ public class ContactNotification extends NestedDBPersistent
 		};
 		
 		update( TABLE_NAME, SELECT_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
-	}
-	
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (12/14/99 10:31:33 AM)
-	 * @return java.lang.Integer
-	 */
-	public static synchronized Integer getNextContactNotifID( java.sql.Connection conn )
-	{
-		if( conn == null )
-			throw new IllegalStateException("Database connection should not be null.");
-	
-		
-		java.sql.Statement stmt = null;
-		java.sql.ResultSet rset = null;
-		
-		try 
-		{		
-		    stmt = conn.createStatement();
-			 rset = stmt.executeQuery( "SELECT Max(ContactNotifID)+1 FROM " + TABLE_NAME );	
-				
-			 //get the first returned result
-			 rset.next();
-		    return new Integer( rset.getInt(1) );
-		}
-		catch (java.sql.SQLException e) 
-		{
-		    e.printStackTrace();
-		}
-		finally 
-		{
-			SqlUtils.close(rset, stmt );
-		}
-		
-		//strange, should not get here
-		return new Integer(CtiUtilities.NONE_ZERO_ID);
 	}
 	
 	/**

@@ -15,13 +15,14 @@ public interface CustomerDao {
      * @param userID
      * @return List LiteContact
      */
-    public List getAllContacts(int customerID_);
+    public List<LiteContact> getAllContacts(int customerID_);
 
     public LiteContact getPrimaryContact(int customerID_);
 
     /**
-     * This method was created in VisualAge.
-     * @return String
+     * Method to get a customer by id
+     * @param custID - Id of customer to get
+     * @return Customer
      */
     public LiteCustomer getLiteCustomer(int custID);
 
@@ -85,8 +86,20 @@ public interface CustomerDao {
      * @param energycompanyID
      * @return Vector liteCustomers
      */
-    public Vector getAllLiteCustomersByEnergyCompany(int energyCompanyID);
+    public Vector<LiteCustomer> getAllLiteCustomersByEnergyCompany(int energyCompanyID);
 
-    public LiteCICustomer getCustomerForUser(LiteYukonUser user);
+    /**
+     * Method to get the commercial customer for a user
+     * @param user - User in question
+     * @return - User's commercial customer
+     */
+    public LiteCICustomer getCICustomerForUser(LiteYukonUser user);
+    
+    /**
+     * Method to get the customer that a user is associated with
+     * @param userId - User in question
+     * @return - User's customer
+     */
+    public LiteCustomer getCustomerForUser(int userId);
 
 }

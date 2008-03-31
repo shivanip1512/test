@@ -2,6 +2,7 @@ package com.cannontech.database.data.lite;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.clientutils.CTILogger;
@@ -191,6 +192,12 @@ public class LiteCustomer extends LiteBase {
 	 */
 	public void setAdditionalContacts(Vector<LiteContact> additionalContacts) {
 		this.additionalContacts = additionalContacts;
+	}
+	
+	public void setAdditionalContacts(List<LiteContact> additionalContacts) {
+	    
+	    this.additionalContacts = new Vector<LiteContact>();
+	    this.additionalContacts.addAll(additionalContacts);
 	}
 
 	/**

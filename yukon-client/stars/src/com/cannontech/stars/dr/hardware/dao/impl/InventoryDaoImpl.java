@@ -36,9 +36,14 @@ public class InventoryDaoImpl implements InventoryDao {
     public List<Thermostat> getThermostatsByAccount(int accountId) {
 
         String thermostatTypes = SqlStatementBuilder.convertToSqlLikeList(THERMOSTAT_TYPES);
-        String sql = "SELECT ib.*, lmhb.* " + " FROM InventoryBase ib, LMHardwareBase lmhb " + " WHERE ib.accountid = ? " + " AND lmhb.inventoryid = ib.inventoryid " + " AND lmhb.LMHardwareTypeID IN " + " (SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID IN (" + thermostatTypes + "))";
+        StringBuilder sql = new StringBuilder("SELECT ib.*, lmhb.* ");
+        sql.append(" FROM InventoryBase ib, LMHardwareBase lmhb ");
+        sql.append(" WHERE ib.accountid = ? ");
+        sql.append(" AND lmhb.inventoryid = ib.inventoryid ");
+        sql.append(" AND lmhb.LMHardwareTypeID IN ");
+        sql.append(" (SELECT entryid FROM YukonListEntry WHERE YukonDefinitionID IN (" + thermostatTypes + "))");
 
-        List<Thermostat> thermostatList = jdbcTemplate.query(sql,
+        List<Thermostat> thermostatList = jdbcTemplate.query(sql.toString(),
                                                              new ThermostatRowMapper(),
                                                              accountId);
 

@@ -8,12 +8,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.PoolManager;
@@ -23,6 +26,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
+import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -33,9 +37,13 @@ import com.cannontech.yukon.IDatabaseCache;
 public final class ContactDaoImpl implements ContactDao 
 {
     private YukonListDao yukonListDao;
-    private ContactNotificationDao contactNotifcationDao;
+    private ContactNotificationDao contactNotificationDao;
     private YukonUserDao yukonUserDao;
     private IDatabaseCache databaseCache;
+
+    private SimpleJdbcTemplate simpleJdbcTemplate;
+    private NextValueHelper nextValueHelper;
+
     
 	/**
 	 * ContactFuncs constructor comment.
@@ -45,17 +53,21 @@ public final class ContactDaoImpl implements ContactDao
 		super();
 	}
 
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.ContactDao#getContact(int)
-     */
-	public LiteContact getContact( int contactID_ ) 
-	{
-		synchronized( databaseCache )
-		{
-			return (LiteContact)databaseCache.getAContactByContactID(contactID_);
-		}
-	}
-	
+    public LiteContact getContact(int contactId) {
+
+        StringBuilder sql = new StringBuilder("SELECT *");
+        sql.append(" FROM Contact");
+        sql.append(" WHERE ContactId = ?");
+
+        LiteContact contact = simpleJdbcTemplate.queryForObject(sql.toString(),
+                                                                new LiteContactRowMapper(),
+                                                                contactId);
+        this.loadNotifications(contact);
+
+        return contact;
+
+    }
+
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.ContactDao#getContactNotification(com.cannontech.database.data.lite.LiteContact, int)
      */
@@ -319,7 +331,7 @@ public final class ContactDaoImpl implements ContactDao
      */
 	public List<LiteContactNotification> getAllContactNotifications() 
 	{
-		return contactNotifcationDao.getAllContactNotifications();
+		return contactNotificationDao.getAllContactNotifications();
 	}
 
 
@@ -425,9 +437,186 @@ public final class ContactDaoImpl implements ContactDao
         return false;
     }
 
-    public void setContactNotifcationDao(
-            ContactNotificationDao contactNotifcationDao) {
-        this.contactNotifcationDao = contactNotifcationDao;
+    @Override
+    public LiteContact getPrimaryContactForAccount(int accountId) {
+
+        StringBuilder sql = new StringBuilder("SELECT c.*");
+        sql.append(" FROM Contact c, Customer cu, CustomerAccount ca");
+        sql.append(" WHERE c.ContactId = cu.PrimaryContactId");
+        sql.append(" AND cu.CustomerId = ca.CustomerId");
+        sql.append(" AND ca.AccountId = ?");
+
+        LiteContact contact = simpleJdbcTemplate.queryForObject(sql.toString(),
+                                                                new LiteContactRowMapper(),
+                                                                accountId);
+        this.loadNotifications(contact);
+
+        return contact;
+    }
+    
+
+    @Override
+    public List<LiteContact> getAdditionalContactsForCustomer(int customerId) {
+        
+        StringBuilder sql = new StringBuilder("SELECT c.*");
+        sql.append(" FROM Contact c, CustomerAdditionalContact cac");
+        sql.append(" WHERE c.ContactId = cac.ContactId");
+        sql.append(" AND cac.CustomerId = ?");
+        sql.append(" ORDER BY cac.Ordering");
+
+        List<LiteContact> contactList = simpleJdbcTemplate.query(sql.toString(),
+                                                                 new LiteContactRowMapper(),
+                                                                 customerId);
+
+        for (LiteContact contact : contactList) {
+            this.loadNotifications(contact);
+        }
+
+        return contactList;
+    }
+
+    @Override
+    public List<LiteContact> getAdditionalContactsForAccount(int accountId) {
+
+        StringBuilder sql = new StringBuilder("SELECT c.*");
+        sql.append(" FROM Contact c, CustomerAdditionalContact cac, Customer cu, CustomerAccount ca");
+        sql.append(" WHERE c.ContactId = cac.ContactId");
+        sql.append(" AND cac.CustomerId = cu.CustomerId");
+        sql.append(" AND cu.CustomerId = ca.CustomerId");
+        sql.append(" AND ca.AccountId = ?");
+        sql.append(" ORDER BY cac.Ordering");
+
+        List<LiteContact> contactList = simpleJdbcTemplate.query(sql.toString(),
+                                                                 new LiteContactRowMapper(),
+                                                                 accountId);
+
+        for (LiteContact contact : contactList) {
+            this.loadNotifications(contact);
+        }
+
+        return contactList;
+    }
+
+    @Override
+    @Transactional
+    public void saveContact(LiteContact contact) {
+
+        int contactId = contact.getContactID();
+
+        StringBuilder sql = new StringBuilder();
+        if (contactId == -1) {
+            // Insert if id is -1
+
+            contactId = nextValueHelper.getNextValue("Contact");
+            contact.setContactID(contactId);
+
+            sql.append("INSERT INTO Contact");
+            sql.append(" (ContFirstName, ContLastName, LogInId, AddressId, ContactId)");
+            sql.append(" VALUES (?,?,?,?,?)");
+        } else {
+            // Update if id is not -1
+
+            sql.append("UPDATE Contact");
+            sql.append(" SET ContFirstName = ?, ContLastName = ?, LogInId = ?, AddressId = ?");
+            sql.append(" WHERE ContactId = ?");
+
+        }
+
+        String firstName = contact.getContFirstName();
+        String lastName = contact.getContLastName();
+        int loginId = contact.getLoginID();
+        int addressId = contact.getAddressID();
+        simpleJdbcTemplate.update(sql.toString(),
+                                  firstName,
+                                  lastName,
+                                  loginId,
+                                  addressId,
+                                  contactId);
+
+        contactNotificationDao.saveNotificationsForContact(contactId,
+                                                           contact.getLiteContactNotifications());
+
+    }
+    
+    @Override
+    @Transactional
+    public void removeAdditionalContact(int contactId) {
+
+        // Remove all notifications
+        contactNotificationDao.removeNotificationsForContact(contactId);
+        
+        StringBuilder additionalSql = new StringBuilder("DELETE FROM CustomerAdditionalContact");
+        additionalSql.append(" WHERE ContactId = ?");
+        simpleJdbcTemplate.update(additionalSql.toString(), contactId);
+
+        StringBuilder sql = new StringBuilder("DELETE FROM Contact");
+        sql.append(" WHERE ContactId = ?");
+        simpleJdbcTemplate.update(sql.toString(), contactId);
+        
+    }
+    
+
+    @Override
+    @Transactional
+    public void addAdditionalContact(LiteContact contact, LiteCustomer customer) {
+        
+        this.saveContact(contact);
+        
+        StringBuilder sql = new StringBuilder("INSERT INTO CustomerAdditionalContact");
+        sql.append(" (CustomerId, ContactId, Ordering)");
+        sql.append(" VALUES (?,?,?)");
+        
+        int customerId = customer.getCustomerID();
+        int contactId = contact.getContactID();
+
+        StringBuilder orderSql = new StringBuilder("SELECT MAX(Ordering) + 1 FROM CustomerAdditionalContact WHERE CustomerId = ?");
+        int order = simpleJdbcTemplate.queryForInt(orderSql.toString(), customerId);
+        
+        simpleJdbcTemplate.update(sql.toString(), customerId, contactId, order);
+        
+    }
+
+    /**
+     * Helper method to load the contact's notifications
+     * @param contact - Contact to load notifications for
+     */
+    private void loadNotifications(LiteContact contact) {
+
+        int contactID = contact.getContactID();
+        List<LiteContactNotification> notifications = contactNotificationDao.getNotificationsForContact(contactID);
+
+        contact.setNotifications(notifications);
+    }
+
+    /**
+     * Helper class to map a result set into LiteContacts
+     */
+    private class LiteContactRowMapper implements
+            ParameterizedRowMapper<LiteContact> {
+
+        @Override
+        public LiteContact mapRow(ResultSet rs, int rowNum) throws SQLException {
+
+            int id = rs.getInt("ContactId");
+            int loginId = rs.getInt("LoginId");
+            int addressId = rs.getInt("AddressId");
+            String firstName = rs.getString("ContFirstName");
+            String lastName = rs.getString("ContLastName");
+
+            LiteContact contact = new LiteContact(id);
+            contact.setLoginID(loginId);
+            contact.setAddressID(addressId);
+            contact.setContFirstName(firstName);
+            contact.setContLastName(lastName);
+
+            return contact;
+        }
+
+    }
+
+    public void setContactNotificationDao(
+            ContactNotificationDao contactNotificationDao) {
+        this.contactNotificationDao = contactNotificationDao;
     }
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {
@@ -441,5 +630,13 @@ public final class ContactDaoImpl implements ContactDao
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
     }
+
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
     
+    public void setNextValueHelper(NextValueHelper nextValueHelper) {
+        this.nextValueHelper = nextValueHelper;
+    }
+
 }

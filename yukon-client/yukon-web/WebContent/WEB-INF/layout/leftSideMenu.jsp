@@ -43,10 +43,8 @@
         <div style="float: left;">
 	        <cti:outputContent writable="${menuRenderer}"/>
         </div>
-        <div>
-			<div id="Content">
-                <cti:outputContent writable="${bodyContent}"/>
-            </div>
+		<div id="Content">
+            <cti:outputContent writable="${bodyContent}"/>
         </div>
         <div style="clear: both;" />
 

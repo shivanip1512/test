@@ -294,7 +294,7 @@
 	          </option>
 	          <option id="contacts">
 	            <requireProperty value="ResidentialCustomerRole.CONTACTS_ACCESS" />
-                <link>/user/ConsumerStat/stat/Contacts.jsp</link>
+                <link>/spring/stars/consumer/contacts</link>
 	          </option>
           </links>	
    		</option>
@@ -370,6 +370,7 @@
           </links>
 	    </option>
   	</links>  
+  	<css file="/WebConfig/yukon/styles/StarsConsumerStyles.css"/>
   </module>
   
   <module name="capcontrol">

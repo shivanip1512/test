@@ -42,17 +42,22 @@
   </bean>
   <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl" >
   	<property name="yukonListDao" ref="yukonListDao"/>
-  	<property name="contactNotifcationDao" ref="contactNotificationDao"/>
+  	<property name="contactNotificationDao" ref="contactNotificationDao"/>
   	<property name="yukonUserDao" ref="yukonUserDao"/>
   	<property name="databaseCache" ref="databaseCache"/>
+  	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+     <property name="nextValueHelper" ref="nextValueHelper" />
   </bean>
   <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/>
+    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+    <property name="nextValueHelper" ref="nextValueHelper" />
   </bean>
   <bean id="customerDao" class="com.cannontech.core.dao.impl.CustomerDaoImpl" >
   	<property name="contactDao" ref="contactDao"/>
   	<property name="yukonUserDao" ref="yukonUserDao"/>
     <property name="databaseCache" ref="databaseCache"/>
+    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
   <bean id="dbDeletionDao" class="com.cannontech.core.dao.impl.DBDeletionDaoImpl" />
   <bean id="dbPersistentDao" class="com.cannontech.core.dao.impl.DBPersistentDaoImpl" >

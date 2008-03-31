@@ -7,11 +7,39 @@
     <entry key="yukon.dr.program.displayname.AC">AC</entry>
     <entry key="yukon.dr.program.displayname.WH">WH</entry>
     
+    <!--  Contact Notification types -->
+    <entry key="yukon.dr.consumer.contact.(none)">(notification type)</entry>
+    <entry key="yukon.dr.consumer.contact.CallBackPhone">Call Back Phone</entry>
+    <entry key="yukon.dr.consumer.contact.CellPhone">Cell Phone</entry>
+    <entry key="yukon.dr.consumer.contact.Email">Email</entry>
+    <entry key="yukon.dr.consumer.contact.EmailtoCell">Email to Cell</entry>
+    <entry key="yukon.dr.consumer.contact.EmailtoPager">Email to Pager</entry>
+    <entry key="yukon.dr.consumer.contact.FaxNumber">Fax Number</entry>
+    <entry key="yukon.dr.consumer.contact.HomePhone">Home Phone</entry>
+    <entry key="yukon.dr.consumer.contact.PhoneNumber">Phone Number</entry>
+    <entry key="yukon.dr.consumer.contact.WorkPhone">Work Phone</entry>
+    <entry key="yukon.dr.consumer.contact.IVRLogin">IVR Login</entry>
+    <entry key="yukon.dr.consumer.contact.VoicePIN">Voice PIN</entry>
+    
     <!--  general.jsp -->
     <entry key="yukon.dr.consumer.general.title">Welcome To Energy Company Services!</entry>
     <entry key="yukon.dr.consumer.general.description">Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!</entry>
     <entry key="yukon.dr.consumer.general.description2">This site is designed to help manage your programs on-line from anywhere with access to a Web browser.</entry>
     <entry key="yukon.dr.consumer.general.programs">Your Enrolled Programs</entry>
     <entry key="yukon.dr.consumer.general.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
+
+    <!--  contacts.jsp -->
+    <entry key="yukon.dr.consumer.contacts.header">Account - Contacts</entry>
+    <entry key="yukon.dr.consumer.contacts.primaryContact">Contact (Primary)</entry>
+    <entry key="yukon.dr.consumer.contacts.contact">Contact</entry>
+    <entry key="yukon.dr.consumer.contacts.firstName">First Name:</entry>
+    <entry key="yukon.dr.consumer.contacts.lastName">Last Name:</entry>
+    <entry key="yukon.dr.consumer.contacts.newContact">New Contact</entry>
+    <entry key="yukon.dr.consumer.contacts.noNotifications">This contact has no notifications</entry>
+    <entry key="yukon.dr.consumer.contacts.removeContact">Remove Contact</entry>
+    <entry key="yukon.dr.consumer.contacts.updateContact">Update Contact</entry>
+    <entry key="yukon.dr.consumer.contacts.addNotification">Add notification</entry>
+    <entry key="yukon.dr.consumer.contacts.removeNotificationTitle">Remove Notification</entry>
+    <entry key="yukon.dr.consumer.contacts.removeImage">/WebConfig/yukon/Icons/clearbits/close.gif</entry>
     
 </properties>    
