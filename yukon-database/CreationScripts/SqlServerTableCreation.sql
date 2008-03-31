@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     3/28/2008 3:04:11 PM                         */
+/* Created on:     3/31/2008 3:11:58 PM                         */
 /*==============================================================*/
 
 
@@ -8801,7 +8801,7 @@ create table MSPVendor (
 )
 go
 
-insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'http://127.0.0.1:8080/soap/', 'Yukon', '(none)', '(none)',10000,120000,15,'*Default Template');
+insert into MSPVendor values (1, 'Cannon', '(none)', '(none)', 'http://127.0.0.1:8080/soap/', 'Yukon', ' ', ' ',10000,120000,15,'*Default Template');
 
 /*==============================================================*/
 /* Index: INDEX_1                                               */

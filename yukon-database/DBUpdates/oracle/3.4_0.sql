@@ -7,15 +7,15 @@ delete from yukonlistentry where entryid = 125;
 
 /* Start YUK-5522 */
 alter table MspVendor add AppName varchar2(64);
-update MspVendor set AppName = '(none)' where Appname is null;
+update MspVendor set AppName = ' ' where Appname is null;
 alter table MspVendor modify AppName varchar2(64) not null;
 
 alter table MspVendor add OutUserName varchar2(64);
-update MspVendor set OutUserName = '(none)' where OutUserName is null;
+update MspVendor set OutUserName = ' ' where OutUserName is null;
 alter table MspVendor modify OutUserName varchar2(64) not null;
 
 alter table MspVendor add OutPassword varchar2(64);
-update MspVendor set OutPassword = '(none)' where OutPassword is null;
+update MspVendor set OutPassword = ' ' where OutPassword is null;
 alter table MspVendor modify OutPassword varchar2(64) not null;
 /* End YUK-5522 */
 

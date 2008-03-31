@@ -36,19 +36,19 @@ go
 /* Start YUK-5522 */
 alter table MspVendor add AppName varchar(64);
 go
-update MspVendor set AppName = '(none)' where AppName is null;
+update MspVendor set AppName = ' ' where AppName is null;
 go
 alter table MspVendor alter column AppName varchar(64) not null;
 go
 alter table MspVendor add OutUserName varchar(64);
 go
-update MspVendor set OutUserName = '(none)' where OutUserName is null;
+update MspVendor set OutUserName = ' ' where OutUserName is null;
 go
 alter table MspVendor alter column OutUserName varchar(64) not null;
 go
 alter table MspVendor add OutPassword varchar(64);
 go
-update MspVendor set OutPassword = '(none)' where OutPassword is null;
+update MspVendor set OutPassword = ' ' where OutPassword is null;
 go
 alter table MspVendor alter column OutPassword varchar(64) not null;
 go
