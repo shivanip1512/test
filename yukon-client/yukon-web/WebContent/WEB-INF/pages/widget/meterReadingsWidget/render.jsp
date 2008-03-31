@@ -6,37 +6,38 @@
 
 <ct:nameValueContainer altRowOn="true">
     <c:forEach items="${attributes}" var="attribute">
-        <ct:nameValue name="${attribute.description}">
-            <c:choose>
-                <c:when test="${not supportedAttributes[attribute]}">
-    unsupported
-    </c:when>
-                <c:when test="${not existingAttributes[attribute]}">
-    not configured
-    </c:when>
-                <c:when test="${supportedAttributes[attribute]}">
+        <c:choose>
+            <c:when test="${not supportedAttributes[attribute]}">
+	            <ct:nameValue name="${attribute.description}">
+				    unsupported
+        		</ct:nameValue>
+			</c:when>
+	        <c:when test="${not existingAttributes[attribute]}">
+    			<ct:nameValue name="${attribute.description}">
+			    not configured
+	    		</ct:nameValue>
+    		</c:when>
+            <c:when test="${supportedAttributes[attribute]}">
+            	<ct:nameValue name="${attribute.description}">
                     <ct:attributeValue device="${device}"
                         attribute="${attribute}" />
+				</ct:nameValue>
 
-                    <c:if test="${attribute == 'USAGE'}">
+                <c:if test="${attribute == 'USAGE'}">
+                    <ct:nameValue name="Previous Usage Reading">
+                        <select
+                            onChange="${widgetParameters.widgetId}_usageSelection()"
+                            id="${widgetParameters.widgetId}_prevSelect">
+                            <jsp:include page="${previousReadingOptionsUrl}" />
+                        </select>
+                    </ct:nameValue>
 
-                        <ct:nameValue name="Previous Usage Reading">
-                            <select
-                                onChange="${widgetParameters.widgetId}_usageSelection()"
-                                id="${widgetParameters.widgetId}_prevSelect">
-                                <jsp:include page="${previousReadingOptionsUrl}" />
-                            </select>
-                        </ct:nameValue>
-
-                        <ct:nameValue name="Total Consumption">
-                            <div id="${widgetParameters.widgetId}_totalConsumption"></div>
-                        </ct:nameValue>
-
-                    </c:if>
-
-                </c:when>
-            </c:choose>
-        </ct:nameValue>
+                    <ct:nameValue name="Total Consumption">
+                        <div id="${widgetParameters.widgetId}_totalConsumption"></div>
+                    </ct:nameValue>
+                </c:if>
+            </c:when>
+        </c:choose>
     </c:forEach>
 </ct:nameValueContainer>
 
