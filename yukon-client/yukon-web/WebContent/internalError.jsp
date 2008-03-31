@@ -47,7 +47,7 @@ try {
 } finally {
 }
 
-String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(throwable);
+String friendlyExceptionMessage = ErrorHelperFilter.getFriendlyExceptionMessage(pageContext.getServletContext(), throwable);
 %>
 
 <html>

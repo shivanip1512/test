@@ -42,7 +42,7 @@ public class ErrorHelperFilter  implements Filter {
 	private static final String SERVLET_STARTUP_ERROR = "comcannontechSERVLET_STARTUP_ERROR";
     private static final String SERVLET_STARTUP_ERROR_ROOT_MESSAGE = "comcannontechSERVLET_STARTUP_ERROR_ROOT_MESSAGE";
     public static final String LOG_KEY = "comcannontechSERVLET_ERROR_LOG_KEY";
-    private static ServletContext servletContext;
+    private ServletContext servletContext;
     
     private Set<Class<? extends Throwable>> exceptionToIgnore = new HashSet<Class<? extends Throwable>>();
     {
@@ -196,7 +196,7 @@ public class ErrorHelperFilter  implements Filter {
         return servletContext.getAttribute(SERVLET_STARTUP_ERROR) != null;
     }
     
-    public static String getFriendlyExceptionMessage(Throwable throwable){
+    public static String getFriendlyExceptionMessage(ServletContext servletContext, Throwable throwable) {
         
         WebApplicationContext webContext = WebApplicationContextUtils.getRequiredWebApplicationContext(servletContext);
         FriendlyExceptionResolver friendlyExceptionResolver = (FriendlyExceptionResolver)webContext.getBean("friendlyExceptionResolver");
