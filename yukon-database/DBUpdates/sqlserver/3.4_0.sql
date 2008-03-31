@@ -109,35 +109,35 @@ go
 /* Start YUK-5522 */
 alter table ImportData add BillGrp varchar(64);
 go
-update ImportData set BillGrp = '' where BillGrp is null;
+update ImportData set BillGrp = ' ' where BillGrp is null;
 go
 alter table ImportData alter column BillGrp varchar(64) not null;
 go
 
 alter table ImportData add SubstationName varchar(50);
 go
-update ImportData set SubstationName = '' where SubstationName is null;
+update ImportData set SubstationName = ' ' where SubstationName is null;
 go
 alter table ImportData alter column SubstationName varchar(50) not null;
 go
 
 alter table ImportFail add BillGrp varchar(64);
 go
-update ImportFail set BillGrp = '' where BillGrp is null;
+update ImportFail set BillGrp = ' ' where BillGrp is null;
 go
 alter table ImportFail alter column BillGrp varchar(64) not null;
 go
 
 alter table ImportFail add SubstationName varchar(50);
 go
-update ImportFail set SubstationName = '' where SubstationName is null;
+update ImportFail set SubstationName = ' ' where SubstationName is null;
 go
 alter table ImportFail alter column SubstationName varchar(50) not null;
 go
 
 alter table ImportFail add FailType varchar(64);
 go
-update ImportFail set FailType = '' where FailType is null;
+update ImportFail set FailType = ' ' where FailType is null;
 go
 alter table ImportFail alter column FailType varchar(64) not null;
 go

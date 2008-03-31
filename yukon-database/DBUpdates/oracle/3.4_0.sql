@@ -79,7 +79,7 @@ update ImportFail set SubstationName = ' ' where SubstationName is null;
 alter table ImportFail modify SubstationName varchar2(50) not null;
 
 alter table ImportFail add FailType varchar2(64);
-update ImportFail set FailType = ' ' where SubstationName is null;
+update ImportFail set FailType = ' ' where FailType is null;
 alter table ImportFail modify FailType varchar2(64) not null;
 /* End YUK-5522 */
 
