@@ -48,7 +48,7 @@
     <table cellspacing="0" width="100%" >
         <tr>
             <td align="left"><ct:stickyCheckbox id="alert_autoPopup" defaultValue="false"><cti:msg key="yukon.web.alerts.autopopup"/></ct:stickyCheckbox></td>
-            <td align="right"><input type="button" value="<cti:msg key="yukon.web.alerts.clearall"/>" onclick="javascript:alert_clearAlert();"></input></td>
+            <td align="right"><input type="button" value="<cti:msg key="yukon.web.alerts.clearall"/>" onclick="javascript:alert_clearAlert();"></td>
         </tr>
     </table>
     </div>
