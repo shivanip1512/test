@@ -212,13 +212,16 @@ public class YCBean extends YC implements MessageListener, HttpSessionBindingLis
 					}
 				}
 			}
-//			else	//Tried to do an else here because there is no reason to do both,
+			//else	//Tried to do an else here because there is no reason to do both,
 					//But if the ReturnMessage contains more the one point's data, but only one of the points 
 					//  is in the returnMsg.getVector(), we have no real way of knowing that we need to parse the 
 					// returnMsg.resultString.  Therefore, we do them both.
 			{
 				int multLineIndex = 0;
 				int beginIndex = 0;
+				//remove "(point not in DB)", need to escape the special characters ) and (
+                resultStr = resultStr.replaceAll("\\(point not in DB\\)", "");
+				
 				String tempResult = resultStr;
 				//Loop through the resultStr in case it is a multi-line return with more than one point info.
 				do
