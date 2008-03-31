@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2007/10/31 14:17:37 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2008/03/31 20:41:31 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -110,6 +110,20 @@ USHORT WWVModel = 0;
 USHORT WWVComMode = 0;
 
 
+ULONG getNextTimeSync()
+{
+    ULONG next = nextScheduledTimeAlignedOnRate(CtiTime::now(), TimeSyncRate).seconds();
+
+    if( TimeSyncRate >= 300 )
+    {
+        //  for any time sync rates slower than 5 minutes, offset them by 2.5 minutes
+        //    e.g. a rate of 1 hour (3600 seconds) will go at 2.5 minutes after the hour
+        next += 150;
+    }
+
+    return next;
+}
+
 static void apply711TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, void *lprtid)
 {
     LONG PortID = (LONG)lprtid;
@@ -152,6 +166,7 @@ static void apply711TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
         OutMessage->ReturnNexus = NULL;
         OutMessage->SaveNexus = NULL;
         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+        OutMessage->ExpirationTime = getNextTimeSync();
 
         if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
         {
@@ -222,6 +237,7 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
                         OutMessage->ReturnNexus = NULL;
                         OutMessage->SaveNexus   = NULL;
                         OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+                        OutMessage->ExpirationTime = getNextTimeSync();
 
                         OutMessage->Buffer.BSt.Port     = RemoteRecord->getPortID();
                         OutMessage->Buffer.BSt.Remote   = RemoteRecord->getAddress();
@@ -361,6 +377,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                 OutMessage->ReturnNexus = NULL;
                 OutMessage->SaveNexus   = NULL;
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+                OutMessage->ExpirationTime = getNextTimeSync();
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
@@ -406,6 +423,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
             OutMessage->ReturnNexus = NULL;
             OutMessage->SaveNexus   = NULL;
             OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+            OutMessage->ExpirationTime = getNextTimeSync();
 
 
 #if 0
@@ -457,6 +475,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                     OutMessage->ReturnNexus = NULL;
                     OutMessage->SaveNexus   = NULL;
                     OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+                    OutMessage->ExpirationTime = getNextTimeSync();
 
                     if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                     {
@@ -487,6 +506,7 @@ static void applyDeviceTimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord,
                 OutMessage->ReturnNexus = NULL;
                 OutMessage->SaveNexus   = NULL;
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+                OutMessage->ExpirationTime = getNextTimeSync();
 
                 if(PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority))
                 {
@@ -538,6 +558,7 @@ static void applyMCT400TimeSync(const long key, CtiRouteSPtr pRoute, void* d)
                 OutMessage->ReturnNexus = NULL;
                 OutMessage->SaveNexus   = NULL;
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+                OutMessage->ExpirationTime = getNextTimeSync();
 
                 OutMessage->Buffer.BSt.Port    = RemoteRecord->getPortID();
                 OutMessage->Buffer.BSt.Remote  = RemoteRecord->getAddress();
@@ -632,6 +653,7 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
                 OutMessage->ReturnNexus = NULL;
                 OutMessage->SaveNexus = NULL;
                 OutMessage->MessageFlags = MessageFlag_ApplyExclusionLogic;
+                OutMessage->ExpirationTime = getNextTimeSync();
 
                 if(PortRecord->writeQueue(OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority, PortThread))
                 {
@@ -745,16 +767,7 @@ VOID TimeSyncThread (PVOID Arg)
         // CTIResetEventSem (TimeSyncSem, &PostCount);
         ResetEvent(hPorterEvents[P_TIMESYNC_EVENT]);
 
-        if(TimeSyncRate >= 300L)
-        {
-            nextTime = nextScheduledTimeAlignedOnRate( nowTime, TimeSyncRate );
-            EventWait = 1000L * (nextTime.seconds() - nowTime.seconds() + 150L);
-        }
-        else
-        {
-            nextTime = nextScheduledTimeAlignedOnRate( nowTime, TimeSyncRate );
-            EventWait = 1000L * (nextTime.seconds() - nowTime.seconds());
-        }
+        EventWait = 1000L * (getNextTimeSync() - nowTime.seconds());
 
         dwWait = WaitForMultipleObjects(2, hTimeSyncArray, FALSE, EventWait);
 
@@ -862,7 +875,7 @@ RefreshMCTTimeSync(OUTMESS *OutMessage)
     //  this is where the processed B word starts...
     //    note that we should NEVER get an unprocessed B word through here;  only DTRAN messages, NEVER queued
     unsigned char *b_word = OutMessage->Buffer.OutMessage + PREIDLEN + PREAMLEN;
-    unsigned char timesync_message[6];
+    unsigned char timesync_message[13];
 
     address  |= (b_word[1] & 0x0f) << 18;
     address  |=  b_word[2]         << 10;
@@ -881,21 +894,7 @@ RefreshMCTTimeSync(OUTMESS *OutMessage)
                 && function  == CtiDeviceMCT4xx::FuncWrite_TSyncPos
                 && wordcount == 2) )  //  the 4xx has 6 bytes to write - two C words
     {
-        //  this is the MCT-4xx timesync
-
-        CtiTime now;
-        unsigned long time = now.seconds();
-
-        timesync_message[0] = gMCT400SeriesSPID;  //  global SPID
-        timesync_message[1] = (time >> 24) & 0x000000ff;
-        timesync_message[2] = (time >> 16) & 0x000000ff;
-        timesync_message[3] = (time >>  8) & 0x000000ff;
-        timesync_message[4] =  time        & 0x000000ff;
-        timesync_message[5] = now.isDST();
-
-        length = 6;
-
-        //OutMessage->Destination = 0;
+        length = CtiDeviceMCT4xx::loadTimeSync(timesync_message);
     }
     else if( address == CtiDeviceDLCBase::BroadcastAddress
                || (io == Cti::Protocol::Emetcon::IO_Write
