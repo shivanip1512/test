@@ -31,6 +31,17 @@ public class CCSubSpecialAreaAssignment extends DBPersistent {
     public static final String CONSTRAINT_COLUMNS[] = { "AreaID", "SubstationBusID" };
     // will need a cbc dao in the common project to have the Spring set this
     private static JdbcOperations yukonTemplate;
+    
+    public CCSubSpecialAreaAssignment() {
+        super();
+    }
+    
+    public CCSubSpecialAreaAssignment(Integer areaId, Integer subId, Integer displayOrder) {
+        super();
+        this.areaID = areaId; 
+        this.substationBusID = subId;
+        this.displayOrder = displayOrder;
+    }
 
     public static void setYukonTemplate(JdbcOperations yukonTemplate) {
         CCSubSpecialAreaAssignment.yukonTemplate = yukonTemplate;

@@ -3,12 +3,17 @@ package com.cannontech.web.editor.model;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.faces.context.FacesContext;
 
 import com.cannontech.cbc.dao.CcSubstationDao;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.capcontrol.CapControlArea;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
 import com.cannontech.spring.YukonSpringHook;
@@ -16,103 +21,142 @@ import com.cannontech.web.editor.data.CBCAreaData;
 import com.cannontech.web.util.CBCDBUtil;
 
 public class CBCAreaDataModel extends EditorDataModelImpl {
-    CapControlArea areaPers;
-    JSFAssignmentModel assignmentModel;
+    CapControlArea area;
+    CcSubstationDao substationDao = YukonSpringHook.getBean("ccSubstationDao", CcSubstationDao.class);
+    PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+    
+    List<CBCAreaData> assignedSubstations = new ArrayList<CBCAreaData>();
+    List<CBCAreaData> unassingedSubstations = new ArrayList<CBCAreaData>();
 
     public boolean isAreaNone() {
-        return areaPers.getPAOName().equalsIgnoreCase("(none)");
+        return area.getPAOName().equalsIgnoreCase("(none)");
     }
 
     public CBCAreaDataModel(CapControlArea area) {
         super(area);
-        areaPers = area;
+        this.area = area;
         init();
     }
 
     private void init() {
-        initAssignmentModel();
+        List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(area.getPAObjectID());
+        for (CCSubAreaAssignment assignment : allAreaSubs) {
+            Integer subId = assignment.getSubstationBusID();
+            String subName = paoDao.getYukonPAOName(subId);
+            Integer displayOrder = assignment.getDisplayOrder();
+            CBCAreaData data = new CBCAreaData(subId, subName, displayOrder + 1);
+            assignedSubstations.add(data);
+        }
+        
+        List<Integer> availableSubs = substationDao.getAllUnassignedSubstationIds();
+        for(Integer subId : availableSubs) {
+            String subName = paoDao.getYukonPAOName(subId);
+            Integer displayOrder = 0;
+            CBCAreaData data = new CBCAreaData(subId, subName, displayOrder);
+            unassingedSubstations.add(data);
+        }
     }
 
-    private void initAssignmentModel() {
-        assignmentModel = new JSFAssignmentModel() {
-
-            FacesContext getContext() {
-                return FacesContext.getCurrentInstance();
-            }
-
-            void populateAssigned() {
-                List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(areaPers.getPAObjectID());
-                for (CCSubAreaAssignment assignment : allAreaSubs) {
-                    assignedSubs.add(assignment.getSubstationBusID());
-                }
-            }
-
-            void populateUnassigned() {
-                CcSubstationDao dao = YukonSpringHook.getBean("ccSubstationDao", CcSubstationDao.class);
-                unassignedSubs = dao.getAllUnassignedSubstationIds();
-            }
-        };
-    }
-
+    @SuppressWarnings("unchecked")
     public void add() {
-        assignmentModel.add();
+        
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map paramMap = context.getExternalContext().getRequestParameterMap();
+        Integer subId = new Integer((String) paramMap.get("id")).intValue();
+        
+        CBCAreaData data = new CBCAreaData(subId, paoDao.getYukonPAOName(subId), 1000);
+        assignedSubstations.add(data);
+        
+        reOrderAssignedSubs(getAssigned());
+        
+        Iterator<CBCAreaData> iter = unassingedSubstations.iterator();
+        while (iter.hasNext()) {
+            CBCAreaData current = iter.next();
+            if(current.getSubID().intValue() == subId.intValue()) {
+                iter.remove();
+                break;
+            }
+        }
     }
 
+    @SuppressWarnings("unchecked")
     public void remove() {
-        assignmentModel.remove();
+        FacesContext context = FacesContext.getCurrentInstance();
+        Map paramMap = context.getExternalContext().getRequestParameterMap();
+        Integer subId = new Integer((String) paramMap.get("id")).intValue();
+        
+        Iterator<CBCAreaData> iter = assignedSubstations.iterator();
+        while(iter.hasNext()) {
+            CBCAreaData current = iter.next();
+            if(current.getSubID().intValue() == subId.intValue()) {
+                getUnassigned().add(current);
+                iter.remove();
+                break;
+            }
+        }
+        
+        reOrderAssignedSubs(getAssigned());
+    }
+    
+    private void reOrderAssignedSubs(List<CBCAreaData> list) {
+        for(int i = 0; i < list.size(); i++) {
+            CBCAreaData data = list.get(i);
+            data.setDisplayOrder(i+1);
+        }
     }
 
     public List<CBCAreaData> getAssigned() {
-        List<Integer> list = assignmentModel.getAssigned();
-        List<CBCAreaData> assigned = CBCAreaData.toList(list);
-        return assigned;
+        Collections.sort(assignedSubstations, new Comparator<CBCAreaData>() {
+            public int compare(CBCAreaData o1, CBCAreaData o2) {
+                Integer intA = o1.getDisplayOrder();
+                Integer intB = o2.getDisplayOrder();
+
+                return intA.compareTo(intB);
+            }
+        });
+        return assignedSubstations;
     }
 
     public List<CBCAreaData> getUnassigned() {
-        List<Integer> list = assignmentModel.getUnassigned();
-        List<CBCAreaData> unassigned = CBCAreaData.toList(list);
-        return unassigned;
+        return unassingedSubstations;
     }
 
     public void updateDataModel() {
-        List<Integer> assignedIDs = CBCAreaData.toIntegerList(getAssigned());
-        List<Integer> unassignedIDs = CBCAreaData.toIntegerList(getUnassigned());
+        List<Integer> assignedIds = CBCAreaData.toIntegerList(getAssigned());
+        List<Integer> unassignedIds = CBCAreaData.toIntegerList(getUnassigned());
         Connection connection = CBCDBUtil.getConnection();
-        handleAssignedIDs(assignedIDs, connection);
-        handleUnassignedIDs(unassignedIDs, connection);
-        assignNewSubs(assignedIDs, connection);
-
-        CBCDBUtil.closeConnection(connection);
+        handleAssignedIds(assignedIds, connection);
+        handleUnassignedIds(unassignedIds, connection);
+        assignNewSubs(getAssigned(), connection);
     }
 
-    public void assignNewSubs(List<Integer> assignedIDs, Connection connection) {
-        // create assignment persistent objects (CCSubAreaAssignment) from the
-        // assigned list
-        // and persist them to DB
-        ArrayList<CCSubAreaAssignment> newAssignments = CCSubAreaAssignment.asList(assignedIDs, areaPers.getPAObjectID());
-        areaPers.setAreaSubs(newAssignments);
-
+    public void assignNewSubs(List<CBCAreaData> assignedSubs, Connection connection) {
+        ArrayList<CCSubAreaAssignment> newAssignments = new ArrayList<CCSubAreaAssignment>();
+        for(CBCAreaData data : assignedSubs) {
+            CCSubAreaAssignment assignment = new CCSubAreaAssignment(area.getPAObjectID(), data.getSubID(), data.getDisplayOrder() - 1);
+            newAssignments.add(assignment);
+        }
+        area.setAreaSubs(newAssignments);
     }
 
-    public void handleUnassignedIDs(List<Integer> unassignedIDs,
-            Connection connection) {
+    public void handleUnassignedIds(List<Integer> unassignedIDs, Connection connection) {
         // see if it belongs to the current area
         // delete it from sub assignment
 
-        Integer areaID = areaPers.getPAObjectID();
+        Integer areaID = area.getPAObjectID();
         List<CCSubAreaAssignment> childList = CCSubAreaAssignment.getAllAreaSubStations(areaID);
         ArrayList<Integer> idsToRemove = CCSubAreaAssignment.getAsIntegerList(childList);
         idsToRemove.retainAll(unassignedIDs);
         CCSubAreaAssignment.deleteSubs(idsToRemove, areaID);
     }
 
-    public void handleAssignedIDs(List<Integer> assignedIDs,
+    public void handleAssignedIds(List<Integer> assignedIDs,
             Connection connection) {
         for (Integer id : assignedIDs) {
             // see if it belongs to a different area than current
             // if yes - delete assignment from the old sub
             Integer areaID = CCSubAreaAssignment.getAreaIDForSubStation(id);
-            if (areaID != null && !areaID.equals(areaPers.getPAObjectID())) {
+            if (areaID != null && !areaID.equals(area.getPAObjectID())) {
                 CCSubAreaAssignment objToDelete = new CCSubAreaAssignment();
                 objToDelete.setAreaID(areaID);
                 objToDelete.setSubstationBusID(id);
@@ -124,14 +168,6 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
                 }
             }
         }
-    }
-
-    public JSFAssignmentModel getAssignmentModel() {
-        return assignmentModel;
-    }
-
-    public void setAssignmentModel(JSFAssignmentModel assignmentModel) {
-        this.assignmentModel = assignmentModel;
     }
 
 }

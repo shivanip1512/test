@@ -88,6 +88,7 @@ import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.servlet.nav.CBCNavigationUtil;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.web.db.CBCDBObjCreator;
+import com.cannontech.web.editor.data.CBCSpecialAreaData;
 import com.cannontech.web.editor.model.CBCSpecialAreaDataModel;
 import com.cannontech.web.editor.model.CapControlStrategyModel;
 import com.cannontech.web.editor.model.DataModelFactory;
@@ -1070,10 +1071,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         List<String> duplicates = new ArrayList<String>();
         
         if(!area.isDisabled()) {  // only check the newly assigned subs list if they are trying to enable this special area
-            List<Integer> assignedAreas = ((CBCSpecialAreaDataModel)getDataModel()).getAssignmentModel().getAssigned();
+            List<CBCSpecialAreaData> assignedAreas = ((CBCSpecialAreaDataModel)getDataModel()).getAssigned();
             
-            for(Integer stationId: assignedAreas) {
-                SubStation substation = cache.getSubstation(stationId);
+            for(CBCSpecialAreaData data: assignedAreas) {
+                SubStation substation = cache.getSubstation(data.getSubID());
                 if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId().intValue() != area.getPAObjectID().intValue()) {
                     duplicates.add(cache.getCBCSpecialArea(substation.getSpecialAreaId()).getCcName() 
                                    + ": " + substation.getCcName());

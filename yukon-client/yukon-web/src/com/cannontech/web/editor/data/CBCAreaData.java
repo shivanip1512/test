@@ -3,9 +3,18 @@ package com.cannontech.web.editor.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.cannontech.core.dao.DaoFactory;
-
 public class CBCAreaData {
+    
+    public CBCAreaData() {
+        super();
+    }
+    
+    public CBCAreaData(Integer subId, String subName, Integer displayOrder) {
+        super();
+        this.subID = subId;
+        this.subName = subName;
+        this.displayOrder = displayOrder;
+    }
 
     private Integer subID;
     private String subName;
@@ -33,23 +42,6 @@ public class CBCAreaData {
 
     public String getSubName() {
         return subName;
-    }
-
-    public static List<CBCAreaData> toList(List<Integer> list) {
-        List<CBCAreaData> returnList = new ArrayList<CBCAreaData>();
-        for (Integer id : list) {
-            CBCAreaData cbcData = new CBCAreaData();
-            cbcData.setSubID(id);
-            String paoName = DaoFactory.getPaoDao()
-                                       .getLiteYukonPAO(id)
-                                       .getPaoName();
-            cbcData.setSubName(paoName);
-            // Start display order at 1 for display purposes.
-            // The database still starts with 0.
-            cbcData.setDisplayOrder(list.indexOf(id) + 1);
-            returnList.add(cbcData);
-        }
-        return returnList;
     }
 
     public static List<Integer> toIntegerList(List<CBCAreaData> assigned) {

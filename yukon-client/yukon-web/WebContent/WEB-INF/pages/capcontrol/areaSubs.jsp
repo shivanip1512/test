@@ -72,7 +72,9 @@
 	                    <f:facet name="header">
 	                    <x:outputText value="Order" title="Order used for control (Range: 1 to 1000 )" />
 	                    </f:facet>
-	                    <x:inputText value="#{sub.displayOrder}" styleClass="char4Label" required="true" ></x:inputText>
+	                    <x:inputText value="#{sub.displayOrder}" styleClass="char4Label" required="true" >
+	                       <f:validateLongRange maximum="1000" minimum="1"/>
+	                    </x:inputText>
 	                
 	                </h:column>
 	

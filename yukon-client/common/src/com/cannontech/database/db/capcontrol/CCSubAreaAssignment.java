@@ -4,15 +4,12 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.db.DBPersistent;
@@ -27,6 +24,17 @@ public class CCSubAreaAssignment extends DBPersistent{
     public static final String CONSTRAINT_COLUMNS[] = { "AreaID", "SubstationBusID" };
     // will need a cbc dao in the common project to have the Spring set this
     private static JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+    
+    public CCSubAreaAssignment() {
+        super();
+    }
+    
+    public CCSubAreaAssignment(Integer areaId, Integer subId, Integer displayOrder) {
+        super();
+        this.areaID = areaId; 
+        this.substationBusID = subId;
+        this.displayOrder = displayOrder;
+    }
     
     public static void setYukonTemplate(JdbcOperations yukonTemplate) {
         CCSubAreaAssignment.yukonTemplate = yukonTemplate;
@@ -47,7 +55,7 @@ public class CCSubAreaAssignment extends DBPersistent{
         SqlStatementBuilder allSubs = new SqlStatementBuilder();
         allSubs.append("SELECT AreaID, SubstationBusID, DisplayOrder FROM ");
         allSubs.append("CCSubAreaAssignment");
-        allSubs.append("WHERE AreaID = ?");
+        allSubs.append("WHERE AreaID = ? ORDER BY DisplayOrder");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         subStationsForAreaList = new ArrayList<CCSubAreaAssignment>();
         yukonTemplate.query(allSubs.toString(), new Integer[] { areaID }, new RowCallbackHandler() {
@@ -59,21 +67,6 @@ public class CCSubAreaAssignment extends DBPersistent{
                 subStationsForAreaList.add(assign);
             }
         });
-        Collections.sort(subStationsForAreaList, new Comparator<CCSubAreaAssignment>() {
-	            public int compare(CCSubAreaAssignment o1, CCSubAreaAssignment o2) {
-	                try {
-	                    Integer strA = o1.getDisplayOrder();
-	                    Integer strB = o2.getDisplayOrder();
-	
-	                    return strA.compareTo(strB);
-	                } catch (Exception e) {
-	                    CTILogger.error("Something went wrong with sorting, ignoring sorting rules", e);
-	                    return 0;
-	                }
-	
-	            }
-        	}
-        );
         return subStationsForAreaList;
     }
 
