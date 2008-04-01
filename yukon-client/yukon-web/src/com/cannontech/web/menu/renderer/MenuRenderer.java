@@ -7,7 +7,7 @@ import com.cannontech.web.menu.MenuFeatureSet;
 
 /**
  * Some day there may be other MenuRenderers. So, this interface describes what
- * must be provided. If an addional renderer is created, a factory class should
+ * must be provided. If an additional renderer is created, a factory class should
  * be created to control which one is used.
  */
 public interface MenuRenderer {

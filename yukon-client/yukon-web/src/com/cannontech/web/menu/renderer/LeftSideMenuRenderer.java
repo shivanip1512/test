@@ -23,6 +23,7 @@ import com.cannontech.web.menu.MenuFeatureSet;
 import com.cannontech.web.menu.ModuleBase;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOption;
+import com.cannontech.web.menu.option.SubMenuOption;
 import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 
 /**
@@ -90,18 +91,10 @@ public class LeftSideMenuRenderer implements MenuRenderer {
         Div menuDiv = new Div();
         menuDiv.setClass("leftMenu");
 
-        Iterator<MenuOptionProducer> options = menuBase.getValidTopLevelOptions(userContext);
-        while (options.hasNext()) {
-            // Iterate through each of the top-level menu option producers and
-            // generate an element containing each menu option and their
-            // children
-            MenuOptionProducer producer = options.next();
+        List<Element> menuOptions = this.generateMenuOptions(menuBase, 1);
 
-            List<Element> menuOptions = this.generateMenuOptions(producer, 1);
-
-            for (Element element : menuOptions) {
-                menuDiv.addElement(element);
-            }
+        for (Element element : menuOptions) {
+            menuDiv.addElement(element);
         }
 
         return menuDiv;
@@ -155,8 +148,8 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                     // Selected items are divs (cannot be clicked)
                     optionDiv.addElement(menuText);
                 }
-            } else {
-
+            } else if (option instanceof SubMenuOption) {
+                SubMenuOption subMenuOption = (SubMenuOption) option;
                 // Menu option has children - Create parent menu item
                 A link = new A();
                 link.addElement(menuText);
@@ -167,7 +160,7 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                 // current option
                 Div childrenDiv = new Div();
                 String childDivId = null;
-                if (level == maxParentDepth) {
+                if (level == maxParentDepth) { // why not a > here?
 
                     // Set child div id for hide/show
 
@@ -181,16 +174,11 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                 }
 
                 // Generate child menu items
-                Iterator<MenuOptionProducer> children = producer.getChildren(userContext);
-                while (children.hasNext()) {
-                    int childLevel = level + 1;
-                    MenuOptionProducer childProducer = children.next();
-
-                    List<Element> childOptions = this.generateMenuOptions(childProducer,
-                                                                          childLevel);
-                    for (Element child : childOptions) {
-                        childrenDiv.addElement(child);
-                    }
+                int childLevel = level + 1;
+                List<Element> childOptions = this.generateMenuOptions(subMenuOption,
+                                                                      childLevel);
+                for (Element child : childOptions) {
+                    childrenDiv.addElement(child);
                 }
                 optionDiv.addElement(childrenDiv);
             }

@@ -52,7 +52,7 @@ import com.cannontech.web.menu.option.producer.MenuOptionProducer;
  */
 public class StandardMenuRenderer implements MenuRenderer {
     private final ModuleBase moduleBase;
-    private List<MenuOptionProducer> subMenuParents = new ArrayList<MenuOptionProducer>(4);
+    private List<SubMenuOption> subMenuParents = new ArrayList<SubMenuOption>(4);
     private String SEPERATOR = "  ";
     private String breadCrumbs;
     private final HttpServletRequest httpServletRequest;
@@ -124,34 +124,30 @@ public class StandardMenuRenderer implements MenuRenderer {
         leftDiv.setPrettyPrint(true);
         leftDiv.setClass("stdhdr_leftSide");
         MenuBase menuBase = moduleBase.getMenuBase();
-        Iterator<MenuOptionProducer> topLevelOptionIterator = menuBase.getValidTopLevelOptions(userContext);
+        List<MenuOption> topLevelOptions = menuBase.getMenuOptions(userContext);
+        Iterator<MenuOption> topLevelOptionIterator = topLevelOptions.iterator();
         boolean first = true;
         while (topLevelOptionIterator.hasNext()) {
             if (!first) {
                 leftDiv.addElement(SEPERATOR);
             }
             first = false;
-            MenuOptionProducer menuOptionProducer = topLevelOptionIterator.next();
+            MenuOption option = topLevelOptionIterator.next();
+
             
-            if(menuOptionProducer.hasChildren(userContext)) {
-                subMenuParents.add(menuOptionProducer);
+            A link = createLink(option, "yukon.web.menu.topMenuDefaultTitle");
+
+            if (option instanceof SimpleMenuOption) {
+                SimpleMenuOption simpleOption = (SimpleMenuOption) option;
+                link.setHref(buildUrl(simpleOption.getUrl()));
+            } else if (option instanceof SubMenuOption) {
+                subMenuParents.add((SubMenuOption) option);
+                // <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">
+                link.setHref("#");
+                link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getMenuText().getCode()) + "'); return false;"));
             }
-            
-            for(MenuOption option : menuOptionProducer.getMenuOptions(userContext)) {
-            
-                A link = createLink(option, "yukon.web.menu.topMenuDefaultTitle");
-    
-                if (option instanceof SimpleMenuOption) {
-                    SimpleMenuOption simpleOption = (SimpleMenuOption) option;
-                    link.setHref(buildUrl(simpleOption.getUrl()));
-                } else if (option instanceof SubMenuOption) {
-                    // <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">
-                    link.setHref("#");
-                    link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getMenuText().getCode()) + "'); return false;"));
-                }
-                link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
-                leftDiv.addElement(link);
-            }
+            link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
+            leftDiv.addElement(link);
         }
         return leftDiv;
     }
@@ -187,45 +183,41 @@ public class StandardMenuRenderer implements MenuRenderer {
     private Div buildSubMenus() {
         Div subDiv = new Div();
         subDiv.setPrettyPrint(true);
-        for (Iterator<MenuOptionProducer> iter = subMenuParents.iterator(); iter.hasNext();) {
-            MenuOptionProducer producer = iter.next();
-            
-            for(MenuOption optionParent : producer.getMenuOptions(userContext)) {
-                Div thisMenu = new Div();
-                thisMenu.setID(generateIdForString(optionParent.getMenuText().getCode()));
-                if(!isOptionSelected(optionParent, 0)){
-                    thisMenu.setStyle("display: none;");
-                }
-                Iterator<MenuOptionProducer> subLevelOptionIterator = producer.getChildren(userContext);
-                boolean first = true;
-                while (subLevelOptionIterator.hasNext()) {
-                    if (!first) {
-                        thisMenu.addElement(SEPERATOR);
-                    }
-                    first = false;
-                    
-                    MenuOptionProducer subProducer = subLevelOptionIterator.next();
-                    for(MenuOption subOption : subProducer.getMenuOptions(userContext)) {
-                        if (subOption instanceof SimpleMenuOption) {
-                            SimpleMenuOption simpleSubOption = (SimpleMenuOption) subOption;
-                            A link = createLink(simpleSubOption, "yukon.web.menu.subMenuDefaultTitle");
-                            if(isOptionSelected(simpleSubOption, 1)){
-                                link.setClass("selected");
-                            }
-                            link.setHref(buildUrl(simpleSubOption.getUrl()));
-                            thisMenu.addElement(link);
-                        } else {
-                            // multiple menu levels aren't supported here
-                            throw new UnsupportedOperationException("StandardMenuRenderer only supports two level menus");
-                        }
-                    }
-                }
-                subDiv.addElement(thisMenu);
+        for (Iterator<SubMenuOption> iter = subMenuParents.iterator(); iter.hasNext();) {
+            SubMenuOption optionParent = iter.next();
+
+            Div thisMenu = new Div();
+            thisMenu.setID(generateIdForString(optionParent.getMenuText().getCode()));
+            if(!isOptionSelected(optionParent, 0)){
+                thisMenu.setStyle("display: none;");
             }
+            Iterator<MenuOption> subLevelOptionIterator = optionParent.getMenuOptions(userContext).iterator();
+            boolean first = true;
+            while (subLevelOptionIterator.hasNext()) {
+                if (!first) {
+                    thisMenu.addElement(SEPERATOR);
+                }
+                first = false;
+
+                MenuOption option = subLevelOptionIterator.next();
+                if (option instanceof SimpleMenuOption) {
+                    SimpleMenuOption simpleSubOption = (SimpleMenuOption) option;
+                    A link = createLink(simpleSubOption, "yukon.web.menu.subMenuDefaultTitle");
+                    if(isOptionSelected(simpleSubOption, 1)){
+                        link.setClass("selected");
+                    }
+                    link.setHref(buildUrl(simpleSubOption.getUrl()));
+                    thisMenu.addElement(link);
+                } else {
+                    // multiple menu levels aren't supported here
+                    throw new UnsupportedOperationException("StandardMenuRenderer only supports two level menus");
+                }
+            }
+            subDiv.addElement(thisMenu);
         }
         return subDiv;
     }
-    
+
     private Div buildTopRightSide() {
         
         String homeurl = DaoFactory.getAuthDao().getRolePropertyValue(userContext.getYukonUser(), WebClientRole.HOME_URL);
@@ -251,57 +243,41 @@ public class StandardMenuRenderer implements MenuRenderer {
             right.addElement("&nbsp;&nbsp;");
             String moduleMsg = messageSource.getMessage("yukon.web.menu.module");
             right.addElement(new Span(moduleMsg).setClass("stdhdr_menu"));
-            Iterator<MenuOptionProducer> portalLinkIterator = moduleBase.getValidPortalLinks(userContext);
-            Iterator<MenuOptionProducer> portalLinkIterator2 = moduleBase.getValidPortalLinks(userContext);
+            MenuBase portalLinks = moduleBase.getPortalLinks();
+            Iterator<MenuOption> portalLinkIterator = portalLinks.getMenuOptions(userContext).iterator();
             Select select = new Select();
             select.setOnChange(e("javascript:window.location=(this[this.selectedIndex].value);"));
             String locationSelectMsg = messageSource.getMessage("yukon.web.menu.locationSelect");
             select.addElement(new Option("").addElement(e(locationSelectMsg)).setSelected(true));
             OptGroup optGroup = null;
 
-            // This part of the method is used to set up the free links that have no headers
             while (portalLinkIterator.hasNext()) {
-                MenuOptionProducer menuOptionProducer = (MenuOptionProducer) portalLinkIterator.next();
-                
-                for(MenuOption baseMenuOption : menuOptionProducer.getMenuOptions(userContext)) {
-                    if (baseMenuOption instanceof SimpleMenuOption) {
-                        SimpleMenuOption simpleMenuOption = (SimpleMenuOption) baseMenuOption;
-                        Option portalOption = new Option(buildUrl(simpleMenuOption.getUrl()));
-                        String linkName = messageSource.getMessage(simpleMenuOption.getMenuText());
-                        portalOption.addElement(e(linkName));
-                        select.addElement(portalOption);
-                    }
-                }
-            }
-            
-            // This is used to set up the links with headers shown in the dropdown box. 
-            while (portalLinkIterator2.hasNext()) {
-                MenuOptionProducer menuOptionProducer = (MenuOptionProducer) portalLinkIterator2.next();
-                
-                for(MenuOption baseMenuOption : menuOptionProducer.getMenuOptions(userContext)) {
-                    if (baseMenuOption instanceof SubMenuOption){
-                        SubMenuOption subMenuOption = (SubMenuOption) baseMenuOption;
-                        if (subMenuOption.getValidSubLevelOptions(userContext).hasNext()){
-                            optGroup = new OptGroup();
-                            String menuName = messageSource.getMessage(subMenuOption.getMenuText());
-                            optGroup.addAttribute("label", e(menuName));
-                            Iterator<BaseMenuOption> validSubLevelOptions = subMenuOption.getValidSubLevelOptions(userContext);
-                            while (validSubLevelOptions.hasNext()){
-                                MenuOption menuOption = validSubLevelOptions.next();
-                                if (menuOption instanceof SimpleMenuOption) {
-                                    SimpleMenuOption simpleMenuOption = (SimpleMenuOption) menuOption;
-                                    Option portalOption = new Option(buildUrl(simpleMenuOption.getUrl()));
-                                    String linkName = messageSource.getMessage(simpleMenuOption.getMenuText());
-                                    portalOption.addElement(e(linkName));
-                                    optGroup.addElement(portalOption);
-                                } else {
-                                    // multiple menu levels aren't supported here
-                                    throw new UnsupportedOperationException("StandardMenuRenderer quick links only support two level menus");
-                                }
+                MenuOption menuOption = portalLinkIterator.next();
+
+                if (menuOption instanceof SubMenuOption) {
+                    SubMenuOption parentOption = (SubMenuOption) menuOption;
+                    List<MenuOption> subMenuOptions = parentOption.getMenuOptions(userContext);
+                    if (subMenuOptions.isEmpty()) {
+                        // we don't want useless headers
+                    } else {
+                        optGroup = new OptGroup();
+                        String menuName = messageSource.getMessage(parentOption.getMenuText());
+                        optGroup.addAttribute("label", e(menuName));
+
+                        for (MenuOption subMenuOption : subMenuOptions) {
+                            if (subMenuOption instanceof SimpleMenuOption) {
+                                Option portalOption = createPortalOption((SimpleMenuOption) subMenuOption);
+                                optGroup.addElement(portalOption);
+                            } else {
+                                // multiple menu levels aren't supported here
+                                throw new UnsupportedOperationException("StandardMenuRenderer quick links only support two level menus");
                             }
-                            select.addElement(optGroup);
                         }
+                        select.addElement(optGroup);
                     }
+                } else if (menuOption instanceof SimpleMenuOption) {
+                    Option portalOption = createPortalOption((SimpleMenuOption) menuOption);
+                    select.addElement(portalOption);
                 }
             }
             right.addElement(select);
@@ -319,6 +295,14 @@ public class StandardMenuRenderer implements MenuRenderer {
         right.addElement(logoutLink);
         right.addElement(" ");
         return right;
+    }
+
+    private Option createPortalOption(SimpleMenuOption subMenuOption) {
+        SimpleMenuOption simpleMenuOption = (SimpleMenuOption) subMenuOption;
+        Option portalOption = new Option(buildUrl(simpleMenuOption.getUrl()));
+        String linkName = messageSource.getMessage(simpleMenuOption.getMenuText());
+        portalOption.addElement(e(linkName));
+        return portalOption;
     }
     
     private Div buildBottomBar() {

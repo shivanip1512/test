@@ -6,7 +6,7 @@ import java.util.List;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
-import com.cannontech.i18n.YukonMessageSourceResolvableImpl;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -42,7 +42,7 @@ public class BulkProcessImpl implements BulkProcess {
     }
 
     public void setActionMessage(String key, String... args) {
-        this.actionMessage = new YukonMessageSourceResolvableImpl(key, args);
+        this.actionMessage = new YukonMessageSourceResolvable(key, args);
     }
 
     public int getId() {
@@ -69,8 +69,8 @@ public class BulkProcessImpl implements BulkProcess {
 
         String key = this.deviceCollection.getDescriptionKey();
         List<String> parameterList = this.deviceCollection.getParameterList();
-        YukonMessageSourceResolvableImpl resolvable = new YukonMessageSourceResolvableImpl(key,
-                                                                                   parameterList.toArray(new String[] {}));
+        YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable(key,
+                                                                                   parameterList);
 
         return resolvable;
     }

@@ -5,8 +5,7 @@ import java.util.List;
 
 import com.cannontech.core.dao.GraphDao;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
-import com.cannontech.i18n.YukonMessageSourceResolvableImpl;
-import com.cannontech.i18n.YukonMessageSourceResovable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOptionLink;
@@ -36,7 +35,7 @@ public class TrendingMenuOptionProducer extends MenuOptionProducerBase {
 
             // Get graph name
             String name = definition.getName();
-            YukonMessageSourceResovable resolvable = new YukonMessageSourceResolvableImpl("yukon.web.menu.config.consumer.trending.name",
+            YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.trending.name",
                                                                                           name);
 
             SimpleMenuOptionLink optionLink = new SimpleMenuOptionLink(resolvable);

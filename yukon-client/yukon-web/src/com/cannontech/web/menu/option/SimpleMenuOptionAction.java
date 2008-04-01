@@ -1,6 +1,7 @@
 package com.cannontech.web.menu.option;
 
-import com.cannontech.i18n.YukonMessageSourceResovable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
 
 /**
  * Represents a menu option that should execute a javascript function when it is
@@ -8,7 +9,7 @@ import com.cannontech.i18n.YukonMessageSourceResovable;
  */
 public class SimpleMenuOptionAction extends SimpleMenuOption {
 
-    public SimpleMenuOptionAction(YukonMessageSourceResovable menuText) {
+    public SimpleMenuOptionAction(YukonMessageSourceResolvable menuText) {
         super(menuText);
     }
 

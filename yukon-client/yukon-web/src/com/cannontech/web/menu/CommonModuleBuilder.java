@@ -12,11 +12,17 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.springframework.core.io.Resource;
 
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.checker.AggregateUserChecker;
 import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
 import com.cannontech.user.checker.UserChecker;
+import com.cannontech.web.menu.option.MenuOption;
+import com.cannontech.web.menu.option.SimpleMenuOptionAction;
+import com.cannontech.web.menu.option.SimpleMenuOptionLink;
+import com.cannontech.web.menu.option.SubMenuOption;
 import com.cannontech.web.menu.option.producer.MenuOptionProducer;
+import com.cannontech.web.menu.option.producer.MenuOptionProducerBase;
 import com.cannontech.web.menu.option.producer.MenuOptionProducerFactory;
 import com.cannontech.web.menu.option.producer.StaticMenuOptionProducer;
 
@@ -29,7 +35,7 @@ import com.cannontech.web.menu.option.producer.StaticMenuOptionProducer;
 public class CommonModuleBuilder implements ModuleBuilder {
     private RolePropertyUserCheckerFactory userCheckerFactory;
     private Map<String, ModuleBase> moduleMap = new TreeMap<String, ModuleBase>();
-    private List<MenuOptionProducer> portalLinkList = new ArrayList<MenuOptionProducer>(5);
+    private MenuBase portalLinksBase = null;
     private List<String> portalJavaScriptIncludes = new ArrayList<String>(3);
     private MenuOptionProducerFactory menuOptionProducerFactory;
     private final Resource moduleConfigFile;
@@ -56,7 +62,8 @@ public class CommonModuleBuilder implements ModuleBuilder {
         Element rootElem = configDoc.getRootElement();
         Element portalLinks = rootElem.getChild("portals");
         Element topLinks = portalLinks.getChild("links");
-        portalLinkList = processLinksElement(topLinks, menuKeyPrefix);
+        List<MenuOptionProducer> portalLinkList = processLinksElement(topLinks, menuKeyPrefix);
+        portalLinksBase = new MenuBase(portalLinkList);
     }
 
     private void processModules(Document configDoc) throws Exception {
@@ -72,17 +79,16 @@ public class CommonModuleBuilder implements ModuleBuilder {
         String moduleName = moduleElement.getAttributeValue("name");
         ModuleBase moduleBase = new ModuleBase(moduleName);
         // quickPortalList should have been built by now
-        moduleBase.setPortalLinks(portalLinkList);
+        moduleBase.setPortalLinks(portalLinksBase);
         for (String jsFile : portalJavaScriptIncludes) {
             moduleBase.addScriptFiles(jsFile);
         }
         
-        MenuBase menuBase = new MenuBase();
-        moduleBase.setMenuBase(menuBase);
         Element topLinks = moduleElement.getChild("links");
         List<MenuOptionProducer> topLevelOptions = processLinksElement(topLinks, menuKeyModPrefix + moduleName);
+        MenuBase menuBase = new MenuBase(topLevelOptions);
+        moduleBase.setMenuBase(menuBase);
         
-        menuBase.setTopLevelOptions(topLevelOptions);
         Element searchElement = moduleElement.getChild("search");
         if (searchElement != null) {
             moduleBase.setSearchPath(searchElement.getAttributeValue("action"));
@@ -113,60 +119,67 @@ public class CommonModuleBuilder implements ModuleBuilder {
         throws CommonMenuException {
         List<MenuOptionProducer> options = new ArrayList<MenuOptionProducer>();
         if (linksElement != null) {
-            List<?> optionElementList = linksElement.getChildren("option");
-            for (Iterator<?> iterator = optionElementList.iterator(); iterator.hasNext();) {
-                Element optionElement = (Element) iterator.next();
-                MenuOptionProducer option = processOptionElement(optionElement, prefix);
-                options.add(option);
+            List<?> elementList = linksElement.getChildren();
+            for (Iterator<?> iterator = elementList.iterator(); iterator.hasNext();) {
+                Element element = (Element) iterator.next();
+                
+                MenuOptionProducer menuOptionProducer = null;
+                if ("option".equals(element.getName())) {
+                    menuOptionProducer = processOptionElement(element, prefix);
+                } else if ("dynamicOptions".equals(element.getName())) {
+                    menuOptionProducer = processDynamicOptionsElement(element, prefix);
+                }
+                
+                if (menuOptionProducer != null) {
+                    options.add(menuOptionProducer);
+                }
             }
         }
         return options;
     }
 
+    private MenuOptionProducer processDynamicOptionsElement(Element element, String prefix) {
+        String beanName = element.getAttributeValue("bean");
+        MenuOptionProducerBase menuOptionProducer = menuOptionProducerFactory.createMenuOptions(beanName);
+        UserChecker checker = getCheckerForElement(element);
+        
+        menuOptionProducer.addUserChecker(checker);
+        
+        return menuOptionProducer;
+    }
+
     private MenuOptionProducer processOptionElement(Element optionElement, String prefix) throws CommonMenuException {
-        String topOptionId = optionElement.getAttributeValue("id");
-        String key = prefix + "." + topOptionId;
-        MenuOptionProducer topLevelOption = null;
-        Element dynamicLinks = optionElement.getChild("dynamic");
-        
-        if (dynamicLinks != null) {
-            // Dynamic menu option
-            String beanName = dynamicLinks.getTextTrim();
-            topLevelOption = menuOptionProducerFactory.createMenuOptions(beanName);
-        } else {
-            // Static menu option
-            
-            StaticMenuOptionProducer producer = new StaticMenuOptionProducer();
-            
-            producer.setKey(key);
-            
-            Element topAction = optionElement.getChild("script");
-            if(topAction != null) {
-                producer.setScript(topAction.getTextTrim());
-            }
-            
-            Element topLink = optionElement.getChild("link");
-            if(topLink != null) {
-                producer.setLinkUrl(topLink.getTextTrim());
-            }
-
-            Element subLinks = optionElement.getChild("links");
-            List<MenuOptionProducer> subLinkOptions = processLinksElement(subLinks, key);
-            producer.setChildren(subLinkOptions);
-
-            topLevelOption = producer;
-        }
-        
-        if (topLevelOption == null) {
-            throw new CommonMenuException("No script, link, or links found under: " + key);
-        }
+        MenuOption menuOption = null;
         
         UserChecker checker = getCheckerForElement(optionElement);
-        topLevelOption.setPropertyChecker(checker);
         
-        topLevelOption.setId(topOptionId);
+        String optionId = optionElement.getAttributeValue("id");
+        String key = prefix + "." + optionId;
         
-        return topLevelOption;
+        Element topAction = optionElement.getChild("script");
+        Element topLink = optionElement.getChild("link");
+        Element subLinks = optionElement.getChild("links");
+        
+        YukonMessageSourceResolvable menuText = new YukonMessageSourceResolvable(key);
+        
+        if (topAction != null) {
+            SimpleMenuOptionAction actionMenuOption = new SimpleMenuOptionAction(menuText);
+            actionMenuOption.setScript(topAction.getTextTrim());
+            menuOption = actionMenuOption;
+        } else if (topLink != null) {
+            SimpleMenuOptionLink linkMenuOption = new SimpleMenuOptionLink(menuText);
+            linkMenuOption.setLinkUrl(topLink.getTextTrim());
+            menuOption = linkMenuOption;
+        } else if (subLinks != null) {
+            List<MenuOptionProducer> subLinkOptions = processLinksElement(subLinks, key);
+            SubMenuOption subMenuOption = new SubMenuOption(menuText);
+            subMenuOption.setSubOptions(subLinkOptions);
+            menuOption = subMenuOption;
+        }
+        
+        StaticMenuOptionProducer menuOptionProducer = new StaticMenuOptionProducer(menuOption, checker);
+
+        return menuOptionProducer;
     }
 
     private UserChecker getCheckerForElement(Element topOptionElement) {

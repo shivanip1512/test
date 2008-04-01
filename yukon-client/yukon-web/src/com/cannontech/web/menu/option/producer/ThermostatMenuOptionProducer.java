@@ -1,11 +1,9 @@
 package com.cannontech.web.menu.option.producer;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import com.cannontech.i18n.YukonMessageSourceResolvableImpl;
-import com.cannontech.i18n.YukonMessageSourceResovable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -13,7 +11,8 @@ import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.web.menu.option.MenuOption;
-import com.cannontech.web.menu.option.TopLevelOption;
+import com.cannontech.web.menu.option.SimpleMenuOptionLink;
+import com.cannontech.web.menu.option.SubMenuOption;
 
 /**
  * Dynamic MenuOptionProducer for thermostats
@@ -47,11 +46,13 @@ public class ThermostatMenuOptionProducer extends MenuOptionProducerBase {
 
             for (Thermostat thermostat : thermostats) {
                 String label = thermostat.getLabel();
-                YukonMessageSourceResovable resolvable = new YukonMessageSourceResolvableImpl("yukon.web.menu.config.consumer.thermostat.name",
+                YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.thermostat.name",
                                                                                               label);
 
-                TopLevelOption option = new TopLevelOption(resolvable);
+                SubMenuOption option = new SubMenuOption(resolvable);
                 option.setId("thermostat_" + label);
+                List<MenuOptionProducer> subOptions = createSubMenu(thermostat);
+                option.setSubOptions(subOptions);
                 optionList.add(option);
             }
         }
@@ -59,48 +60,36 @@ public class ThermostatMenuOptionProducer extends MenuOptionProducerBase {
         return optionList;
     }
 
-    @Override
-    public boolean hasChildren(YukonUserContext userContext) {
-        return true;
+    public List<MenuOptionProducer> createSubMenu(Thermostat thermostat) {
+        List<MenuOptionProducer> producerList = new ArrayList<MenuOptionProducer>(4);
+
+        MenuOptionProducer producer;
+        // Create change label menu option
+        producer = createLink("changeLabel", "/user/ConsumerStat/stat/NewLabel.jsp?Item=0");
+        producerList.add(producer);
+
+        // Create schedule menu option
+        producer = createLink("schedule", "/user/ConsumerStat/stat/ThermSchedule.jsp?Item=0");
+        producerList.add(producer);
+
+        // Create schedule menu option
+        producer = createLink("manual", "/user/ConsumerStat/stat/Thermostat.jsp?Item=0");
+        producerList.add(producer);
+
+        // Create schedule menu option
+        producer = createLink("savedSchedules", "/user/ConsumerStat/stat/SavedSchedules.jsp?Item=0");
+        producerList.add(producer);
+
+        return producerList;
     }
 
-    @Override
-    public Iterator<MenuOptionProducer> getChildren(YukonUserContext userContext) {
-        List<MenuOptionProducer> producerList = new ArrayList<MenuOptionProducer>();
+    private MenuOptionProducer createLink(String labelKey, String link) {
+        YukonMessageSourceResolvable menuText = new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.thermostat." + labelKey);
+        SimpleMenuOptionLink menuOption = new SimpleMenuOptionLink(menuText);
+        menuOption.setLinkUrl(link);
+        StaticMenuOptionProducer menuOptionProducer = new StaticMenuOptionProducer(menuOption, new NullUserChecker());
 
-        // Create change label menu option
-        StaticMenuOptionProducer labelProducer = new StaticMenuOptionProducer();
-        labelProducer.setPropertyChecker(new NullUserChecker());
-        labelProducer.setId(this.getId() + "changeLabel");
-        labelProducer.setKey("yukon.web.menu.config.consumer.thermostat.changeLabel");
-        labelProducer.setLinkUrl("/user/ConsumerStat/stat/NewLabel.jsp?Item=0");
-        producerList.add(labelProducer);
-
-        // Create schedule menu option
-        StaticMenuOptionProducer scheduleProducer = new StaticMenuOptionProducer();
-        scheduleProducer.setPropertyChecker(new NullUserChecker());
-        scheduleProducer.setId(this.getId() + "schedule");
-        scheduleProducer.setKey("yukon.web.menu.config.consumer.thermostat.schedule");
-        scheduleProducer.setLinkUrl("/user/ConsumerStat/stat/ThermSchedule.jsp?Item=0");
-        producerList.add(scheduleProducer);
-
-        // Create schedule menu option
-        StaticMenuOptionProducer manualProducer = new StaticMenuOptionProducer();
-        manualProducer.setPropertyChecker(new NullUserChecker());
-        manualProducer.setId(this.getId() + "manual");
-        manualProducer.setKey("yukon.web.menu.config.consumer.thermostat.manual");
-        manualProducer.setLinkUrl("/user/ConsumerStat/stat/Thermostat.jsp?Item=0");
-        producerList.add(manualProducer);
-
-        // Create schedule menu option
-        StaticMenuOptionProducer savedSchedulesProducer = new StaticMenuOptionProducer();
-        savedSchedulesProducer.setPropertyChecker(new NullUserChecker());
-        savedSchedulesProducer.setId(this.getId() + "savedSchedules");
-        savedSchedulesProducer.setKey("yukon.web.menu.config.consumer.thermostat.savedSchedules");
-        savedSchedulesProducer.setLinkUrl("/user/ConsumerStat/stat/SavedSchedules.jsp?Item=0");
-        producerList.add(savedSchedulesProducer);
-
-        return producerList.iterator();
+        return menuOptionProducer;
     }
 
 }

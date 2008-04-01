@@ -1,6 +1,7 @@
 package com.cannontech.web.menu.option;
 
-import com.cannontech.i18n.YukonMessageSourceResovable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
 
 /**
  * Interface which represents a web menu option
@@ -13,6 +14,6 @@ public interface MenuOption {
      * Method to get the MessageSourceResovable that will generate the menu text
      * @return MessageSourceResovable
      */
-    public YukonMessageSourceResovable getMenuText();
+    public YukonMessageSourceResolvable getMenuText();
 
 }

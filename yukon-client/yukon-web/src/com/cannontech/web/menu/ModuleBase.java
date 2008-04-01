@@ -23,7 +23,7 @@ public class ModuleBase {
     private String searchPath;
     private String searchFieldName;
     private String searchMethod;
-    private List<MenuOptionProducer> portalLinks;
+    private MenuBase portalLinks;
     private List<String> cssFiles = new ArrayList<String>(2);
     private List<String> scriptFiles = new ArrayList<String>(2);
     private String skin;
@@ -50,17 +50,12 @@ public class ModuleBase {
         this.searchPath = searchPath;
     }
     
-    public List<MenuOptionProducer> getPortalLinks() {
-        return portalLinks;
-    }
-    
-    public void setPortalLinks(List<MenuOptionProducer> portalLinks) {
+    public void setPortalLinks(MenuBase portalLinks) {
         this.portalLinks = portalLinks;
     }
     
-    @SuppressWarnings("unchecked")
-    public Iterator<MenuOptionProducer> getValidPortalLinks(YukonUserContext userContext) {
-        return new FilterIterator(portalLinks.iterator(), new CheckUserPredicate(userContext));
+    public MenuBase getPortalLinks() {
+        return portalLinks;
     }
     
     public boolean isUserAuthorized(LiteYukonUser user) {

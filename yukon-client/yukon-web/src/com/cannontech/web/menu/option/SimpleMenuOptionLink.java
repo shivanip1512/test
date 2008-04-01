@@ -1,6 +1,7 @@
 package com.cannontech.web.menu.option;
 
-import com.cannontech.i18n.YukonMessageSourceResovable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
 
 /**
  * Represents a menu option that is a standard <a href="[linkUrl]"> style link.
@@ -9,7 +10,7 @@ public class SimpleMenuOptionLink extends SimpleMenuOption {
 
     private String linkUrl = "";
 
-    public SimpleMenuOptionLink(YukonMessageSourceResovable menuText) {
+    public SimpleMenuOptionLink(YukonMessageSourceResolvable menuText) {
         super(menuText);
     }
 

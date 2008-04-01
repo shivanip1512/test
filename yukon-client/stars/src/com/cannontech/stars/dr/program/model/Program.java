@@ -3,7 +3,7 @@ package com.cannontech.stars.dr.program.model;
 import org.springframework.context.MessageSourceResolvable;
 
 import com.cannontech.i18n.MessageCodeGenerator;
-import com.cannontech.i18n.YukonMessageSourceResolvableImpl;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 public class Program {
     private static final String PROGAM_PREFIX = "yukon.dr.program.displayname";
@@ -69,9 +69,11 @@ public class Program {
     public MessageSourceResolvable getDisplayName() {
         String code = MessageCodeGenerator.generateCode(PROGAM_PREFIX, programName);
         MessageSourceResolvable messageSourceResolvable = 
-            new YukonMessageSourceResolvableImpl(code,
-                                             new Object[]{ programName, Integer.toString(programId) },
-                                             programName);
+            YukonMessageSourceResolvable.createDefault(programName);
+        //TODO the YMSR should be for the simple situations
+        //TODO A. variable args must be used carefully with overloaded methods
+        //TODO B. this would be a nice use of multiple keys
+        
         return messageSourceResolvable;
     }
     

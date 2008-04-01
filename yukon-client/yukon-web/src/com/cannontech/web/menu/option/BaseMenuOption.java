@@ -1,6 +1,7 @@
 package com.cannontech.web.menu.option;
 
-import com.cannontech.i18n.YukonMessageSourceResovable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
+
 
 /**
  * Abstract base class for MenuOption
@@ -8,9 +9,9 @@ import com.cannontech.i18n.YukonMessageSourceResovable;
 public abstract class BaseMenuOption implements MenuOption {
 
     private String id = null;
-    private YukonMessageSourceResovable menuText = null;
+    private YukonMessageSourceResolvable menuText = null;
 
-    public BaseMenuOption(YukonMessageSourceResovable menuText) {
+    public BaseMenuOption(YukonMessageSourceResolvable menuText) {
         this.menuText = menuText;
     }
 
@@ -24,7 +25,7 @@ public abstract class BaseMenuOption implements MenuOption {
     }
 
     @Override
-    public YukonMessageSourceResovable getMenuText() {
+    public YukonMessageSourceResolvable getMenuText() {
         return menuText;
     }
 

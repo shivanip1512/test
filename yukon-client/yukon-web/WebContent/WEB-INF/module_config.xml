@@ -315,9 +315,7 @@
 		              </option>
 		          </links>  
 	   		   </option>	
-	   		   <option>
-	   		       <dynamic>themostatMenuOption</dynamic>
-	   		   </option>	
+	   		   <dynamicOptions bean="themostatMenuOption"/>
    		   </links>
    		</option>
 		<option id="programs">
@@ -339,14 +337,9 @@
             </option>
           </links>
 	    </option>
-		<option id="trending">
+		<dynamicOptions bean="trendingMenuOption">
 		  <requireRole value="TrendingRole.ROLEID" />
-		  <links>
-		    <option>
-				<dynamic>trendingMenuOption</dynamic>
-            </option>
-          </links>
-	    </option>
+	    </dynamicOptions>
 		<option id="questions">
 		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL" />
 		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ" />
@@ -633,6 +626,9 @@
   <module name="operations">
     <skin name="standard"/>
     <css file="/WebConfig/yukon/styles/operationsStyles.css"/>
+    <links>
+        <dynamicOptions bean="trendingMenuOption"/>
+    </links>
   </module>
   
   <module name="userlm">

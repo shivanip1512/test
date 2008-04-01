@@ -1,46 +1,41 @@
 package com.cannontech.web.menu.option;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
-import org.apache.commons.collections.iterators.FilterIterator;
-
-import com.cannontech.i18n.YukonMessageSourceResovable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.menu.CheckUserPredicate;
+import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 
 /**
  * Represents a menu option that when selected should show a sub menu with
  * additional options to choose from.
  */
-public class SubMenuOption extends BaseMenuOption {
+public class SubMenuOption extends BaseMenuOption implements MenuOptionProducer {
+    private List<MenuOptionProducer> subOptions = new ArrayList<MenuOptionProducer>();
 
-    private List<BaseMenuOption> optionChildren = new ArrayList<BaseMenuOption>(4);
-
-    public SubMenuOption(YukonMessageSourceResovable menuText) {
+    public SubMenuOption(YukonMessageSourceResolvable menuText) {
         super(menuText);
     }
 
-    public void addSubLevelOption(SimpleMenuOption subLevelOption) {
-        optionChildren.add(subLevelOption);
+    public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
+        List<MenuOption> menuOptions = expandProducers(subOptions, userContext);
+        return menuOptions;
     }
 
-    /**
-     * @return List<SimpleMenuOption>
-     */
-    public List<BaseMenuOption> getSubLevelOptions() {
-        return optionChildren;
+    public void setSubOptions(List<MenuOptionProducer> subOptions) {
+        this.subOptions = subOptions;
     }
 
-    /**
-     * @param user the current user logged in to the session
-     * @return Iterator<SimpleMenuOption>
-     */
-    @SuppressWarnings("unchecked")
-    public Iterator<BaseMenuOption> getValidSubLevelOptions(YukonUserContext userContext) {
-        return new FilterIterator(optionChildren.iterator(),
-                                  new CheckUserPredicate(userContext));
+    public static List<MenuOption> expandProducers(List<MenuOptionProducer> subOptions, YukonUserContext userContext) {
+        List<MenuOption> result = new ArrayList<MenuOption>();
+        
+        for (MenuOptionProducer menuOptionProducer : subOptions) {
+            List<MenuOption> menuOptions = menuOptionProducer.getMenuOptions(userContext);
+            result.addAll(menuOptions);
+        }
+        
+        return result;
     }
-
+    
 }

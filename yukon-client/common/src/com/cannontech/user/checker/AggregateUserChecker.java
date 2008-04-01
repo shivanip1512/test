@@ -1,5 +1,6 @@
 package com.cannontech.user.checker;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -11,6 +12,10 @@ public class AggregateUserChecker extends UserCheckerBase {
     
     public AggregateUserChecker(Collection<UserChecker> checkerList) {
         this.checkerList = checkerList;
+    }
+    
+    public AggregateUserChecker(UserChecker... checkers) {
+        this.checkerList = Arrays.asList(checkers);
     }
 
 
