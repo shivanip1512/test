@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -63,6 +64,8 @@ import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
  */
 public class StarsDatabaseCache implements DBChangeLiteListener {
 	
+    public static final AtomicBoolean allCacheLoaded = new AtomicBoolean(false);
+    
 	public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	private static final int CTRL_HIST_CACHE_INVALID_INTERVAL = 7;	// 7 days
@@ -121,6 +124,9 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
                         company.loadAllWorkOrders( true );
                     }
                 }
+                // Sets an atomic boolean so other threads can see if 
+                // StarsDatabaseCache is still loading
+                StarsDatabaseCache.allCacheLoaded.set(true);
             }
         });
         initThrd.start();

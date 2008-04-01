@@ -3,7 +3,6 @@ package com.cannontech.web.stars.action.importmanager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -33,7 +32,7 @@ public class ImportCustAccountsController extends StarsImportManagerActionContro
 
 	    MultipartHttpServletRequest mRequest = (MultipartHttpServletRequest) request;
         try {
-            final String email = mRequest.getParameter("email");
+            final String email = mRequest.getParameter("Email");
             
             // Setting up temp files that will be used in the import process
             MultipartFile custMultipartFile = mRequest.getFile("CustFile");
@@ -96,6 +95,7 @@ public class ImportCustAccountsController extends StarsImportManagerActionContro
                         if (realTask.getStatus() == ImportCustAccountsTask.STATUS_ERROR) {
                             ProgressChecker.removeTask(realTaskId);
                             this.setStatus(ImportCustAccountsTask.STATUS_ERROR);
+                            Collection<String[]> errorList = ((ImportCustAccountsTask) realTask).getErrorList();
                             return;
                         }
                     }

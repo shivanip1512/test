@@ -25,6 +25,9 @@ public class ServerUtils {
 	public static final String SWITCH_COMMAND_FILE = "switch_commands.txt";
 	public static final String OPTOUT_EVENT_FILE = "optout_events.txt";
 	public static final String UPLOAD_DIR = "upload";
+	public static final String ARCHIVE_DIR = "archive";
+	public static final String FAILED_IMPORT_DIR = "failedImport";
+	public static final String IMPORT_INPUT_DIR = "importInput";
 	
 	public static final int COMMAND_PRIORITY_CONFIG = 6;
 	public static final int COMMAND_PRIORITY_SERVICE = 7;

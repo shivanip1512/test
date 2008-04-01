@@ -7,7 +7,10 @@
 package com.cannontech.stars.util.task;
 
 import java.io.*;
+import java.sql.SQLException;
 import java.util.*;
+
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.CTILogger;
@@ -19,12 +22,14 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
@@ -147,6 +152,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
     boolean seasonalLoad = false;
     int userID = UserUtils.USER_DEFAULT_ID;
     boolean firstFinishedPass = true;
+    boolean automatedImport = false;
     
 	PrintWriter importLog = null;
 	String position = null;
@@ -183,6 +189,18 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             this.userID = userID.intValue();
 	}
 
+	public ImportCustAccountsTask (LiteStarsEnergyCompany energyCompany, File custFile, File hwFile, String email, boolean preScan, Integer userID, boolean automatedImport) 
+	{
+        this.energyCompany = energyCompany;
+        this.custFile = custFile;
+        this.hwFile = hwFile;
+        this.email = email;
+        this.preScan = preScan;
+        if(userID != null)
+            this.userID = userID.intValue();
+        this.automatedImport = automatedImport;
+	}
+	
 	/* (non-Javadoc)
 	 * @see com.cannontech.stars.util.task.TimeConsumingTask#getProgressMsg()
 	 */
@@ -256,23 +274,45 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		
         try {
 			final String fs = System.getProperty( "file.separator" );
-            String ecName = energyCompany.getName();
-            if(ecName.indexOf('<') > -1) {
-                ecName = "EnergyCompany" + energyCompany.getEnergyCompanyID();
-            }
-            File uploadDir = new File(
-                    ServerUtils.getStarsTempDir() + fs + ServerUtils.UPLOAD_DIR + fs + ecName);
-            if (!uploadDir.exists()) uploadDir.mkdirs();
+
+			File baseDir = getBaseDir(energyCompany);
 			
+            //  Gets the archive directory found inside the default directory
+            File archiveDir = new File(baseDir, fs + ServerUtils.ARCHIVE_DIR);
+            if (!archiveDir.exists()) {
+                archiveDir.mkdirs();
+            }
+
+            // Gets the upload directory found inside the default directory
+            File importFailsDir = new File(archiveDir, fs + ServerUtils.FAILED_IMPORT_DIR);
+            if (!importFailsDir.exists()) {
+                importFailsDir.mkdirs();
+            }
+            
 			Date now = new Date();
-			String logFileName = StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
-			logFile = new File(uploadDir, logFileName);
+            String logFileName = null; 
+            String custFileName = null;
+            if (custFile != null && custFile.length() > 4){
+                custFileName = custFile.getName();
+                logFileName = custFileName.substring(0, custFileName.length()-4)+"-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
+            } else {
+                logFileName = "Prescan-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
+
+            }
+			logFile = new File(importFailsDir, logFileName);
 			
 			importLog = new PrintWriter(new FileWriter(logFile), true);
 			importLog.println("Start time: " + StarsUtils.formatDate( now, energyCompany.getDefaultTimeZone() ));
 			importLog.println();
 			
 			int errors = 0;
+
+			// Creates a list of all the appliance categories names
+            List<LiteApplianceCategory> allApplianceCategories = energyCompany.getAllApplianceCategories();
+            List<String> applianceNameList = new ArrayList<String>(); 
+            for (LiteApplianceCategory liteApplianceCategory : allApplianceCategories) {
+                applianceNameList.add(liteApplianceCategory.getDescription());
+            }
 			
 			if (custFile != null) {
 				custFieldsList = new ArrayList();
@@ -280,13 +320,22 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				ArrayList removedUsernames = new ArrayList();
 				custLines = new TreeMap();
 				boolean hwInfoContained = false;
-				
-				BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(custFile)));
+				FileInputStream fiStream = new FileInputStream(custFile);
+				InputStreamReader isReader = new InputStreamReader(fiStream);
+				BufferedReader reader = new BufferedReader(isReader);
 				String line = null;
 				int lineNo = 0;
+				int custFileErrors = 0;
 				Integer lineNoKey;
 				
+	            // Sets up the archive file
+	            String archiveFileName = custFileName.substring(0,custFileName.length()-4)+"-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".csv";
+	            File archiveFile = new File(archiveDir, archiveFileName);
+	            PrintWriter archive = new PrintWriter(new FileWriter(archiveFile), true);
+	            
 				while ((line = reader.readLine()) != null) {
+				    // This line adds the latest line to the archive file
+				    archive.println(line);
 					lineNo++;
 					lineNoKey = new Integer(lineNo);
 					
@@ -321,12 +370,23 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								}
 							}
 							
-							if (custColIdx[COL_ACCOUNT_NO] == -1)
-								throw new WebClientException( "The required column '" + CUST_COLUMNS[COL_ACCOUNT_NO] + "' is missing" );
+							if (custColIdx[COL_ACCOUNT_NO] == -1) {
+							    String errorStr = "The required column \'\" + CUST_COLUMNS[COL_ACCOUNT_NO] + \"\' is missing";
+                                automationCheck(errorStr);
+							}
 							
-							hwInfoContained = (hwColIdx[COL_SERIAL_NO] != -1);
-							if (hwInfoContained && hwColIdx[COL_DEVICE_TYPE] == -1)
-								throw new WebClientException( "The required column '" + HW_COLUMNS[COL_DEVICE_TYPE] + "' is missing" );
+							hwInfoContained = (hwColIdx[COL_DEVICE_TYPE] != -1) ||
+							                  (hwColIdx[COL_SERIAL_NO] != -1);
+
+							if (hwInfoContained && hwColIdx[COL_DEVICE_TYPE] == -1) {
+                                String errorStr = "The required column \'\" + HW_COLUMNS[COL_DEVICE_TYPE] + \"\' is missing";
+                                automationCheck(errorStr);
+                            }
+							
+							if (hwInfoContained && hwColIdx[COL_SERIAL_NO] == -1) {
+							    String errorStr = "The required column \'\" + HW_COLUMNS[COL_SERIAL_NO] + \"\' is missing";
+							    automationCheck(errorStr);
+                            }
 							
 							continue;
 						}
@@ -338,10 +398,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					
 					String[] columns = StarsUtils.splitString( line, "," );
 					if (columns.length > numCustCol) {
-						errors++;
+						custFileErrors++;
 						String[] value = (String[]) custLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Incorrect number of fields]";
 						custLines.put(lineNoKey, value);
+						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
 
@@ -350,10 +411,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					setCustomerFields( custFields, columns, custColIdx );
 
 					if (custFields[ImportManagerUtil.IDX_ACCOUNT_NO].trim().length() == 0) {
-						errors++;
+						custFileErrors++;
 						String[] value = (String[]) custLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Account # cannot be empty]";
 						custLines.put(lineNoKey, value);
+						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
 
@@ -371,10 +433,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						try {
 							liteAcctInfo = importAccount( custFields, energyCompany );
 						} catch (Exception ex) {
-							errors++;
+							custFileErrors++;
 							String[] value = (String[]) custLines.get(lineNoKey);
 							value[1] = "[line: " + lineNo + " error: " + ex.getMessage() + "]";
 							custLines.put(lineNoKey, value);
+							addToLog(lineNoKey, value, importLog);
 							continue;
 						}
 					}
@@ -482,29 +545,32 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							// Check if the username already exists
 							if (checkUsername) {
 								if (custFields[ImportManagerUtil.IDX_PASSWORD].length() == 0) {
-									errors++;
+									custFileErrors++;
 									String[] value = (String[]) custLines.get(lineNoKey);
 									value[1] = "[line: " + lineNo + " error: Password cannot be empty]";
 									custLines.put(lineNoKey, value);
+									addToLog(lineNoKey, value, importLog);
 									continue;
 								}	
 
 								String username = custFields[ImportManagerUtil.IDX_USERNAME];
 								if (addedUsernames.contains( username )) {
-									errors++;
+									custFileErrors++;
 									String[] value = (String[]) custLines.get(lineNoKey);
 									value[1] = "[line: " + lineNo + " error: Username would have already been added by the import program]";
 									custLines.put(lineNoKey, value);
+									addToLog(lineNoKey, value, importLog);
 									continue;
 								}
 
 								if (removedUsernames.contains( username ))
 									removedUsernames.remove( username );
 								else if (DaoFactory.getYukonUserDao().getLiteYukonUser( username ) != null) {
-									errors++;
+									custFileErrors++;
 									String[] value = (String[]) custLines.get(lineNoKey);
 									value[1] = "[line: " + lineNo + " error: Username already exists]";
 									custLines.put(lineNoKey, value);
+									addToLog(lineNoKey, value, importLog);
 									continue;
 								}
 								addedUsernames.add( username );
@@ -530,6 +596,15 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                         {
                             seasonalLoad = hwFields[ImportManagerUtil.IDX_OPTION_PARAMS].equalsIgnoreCase(ImportManagerUtil.SEASONAL_LOAD_OPTION);
                         }
+
+                        if (hwFields[ImportManagerUtil.IDX_SERIAL_NO].trim().length() == 0) {
+                            custFileErrors++;
+                            String[] value = (String[]) custLines.get(lineNoKey);
+                            value[1] = "[line: " + lineNo + " error: Serial number cannot be empty]";
+                            custLines.put(lineNoKey, value);
+                            addToLog(lineNoKey, value, importLog);
+                            continue;
+                        }
                         
 						if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase("REMOVE")
 							|| hwFields[ImportManagerUtil.IDX_SERIAL_NO].trim().length() == 0)
@@ -543,10 +618,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						}
 						
 						if (hwFields[ImportManagerUtil.IDX_DEVICE_TYPE].trim().length() == 0) {
-							errors++;
+							custFileErrors++;
 							String[] value = (String[]) custLines.get(lineNoKey);
 							value[1] = "[line: " + lineNo + " error: Device type cannot be empty]";
 							custLines.put(lineNoKey, value);
+							addToLog(lineNoKey, value, importLog);
 							continue;
 						}
 
@@ -555,16 +631,27 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 						YukonListEntry deviceType = DaoFactory.getYukonListDao().getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
 						if (deviceType == null) {
-							errors++;
+							custFileErrors++;
 							String[] value = (String[]) custLines.get(lineNoKey);
 							value[1] = "[line: " + lineNo + " error: Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"]";
 							custLines.put(lineNoKey, value);
+							addToLog(lineNoKey, value, importLog);
 							continue;
 						}
 						String[] appFields = null;
 						if (hwColIdx[COL_APP_TYPE] != -1) {
 							appFields = ImportManagerUtil.prepareFields( ImportManagerUtil.NUM_APP_FIELDS );
 							setApplianceFields( appFields, columns, hwColIdx );
+							
+							if ((appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() >= 0) &&
+							    (!applianceNameList.contains(appFields[ImportManagerUtil.IDX_APP_TYPE]))) {
+							    custFileErrors++;
+							    String[] value = (String[]) custLines.get(lineNoKey);
+							    value[1] = "[line: " + lineNo + " error: Application Type was supplied, but doesn't exist]";
+							    custLines.put(lineNoKey, value);
+							    addToLog(lineNoKey, value, importLog);
+		                        continue;
+		                    }							
 						}
 						
 						if (!preScan) {
@@ -581,10 +668,16 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 									}
 								}
 							} catch (WebClientException e) {
-								errors++;
+								custFileErrors++;
 								String[] value = (String[]) custLines.get(lineNoKey);
 								value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
 								custLines.put(lineNoKey, value);
+								addToLog(lineNoKey, value, importLog);
+		                        continue;
+							} catch (SQLException sqle) {
+	                            String[] value = (String[]) hwLines.get(lineNoKey);
+	                            addToLog(lineNoKey, value, importLog);
+	                            importLog.println(sqle.getStackTrace());
 								continue;
 							}
 						}
@@ -615,10 +708,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							else {
 								// Insert/update a hardware in an account, if hardware already exists in another account, report an error 
 								if (acctNo != null && !acctNo.equals("") && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] )) {
-									errors++;
+									custFileErrors++;
 									String[] value = (String[]) custLines.get(lineNoKey);
 									value[1] = "[line: " + lineNo + " error: Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in account #" + acctNo + "]";
 									custLines.put(lineNoKey, value);
+									addToLog(lineNoKey, value, importLog);
 									continue;
 								}
 
@@ -643,10 +737,20 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					}
 				}
 				
+				errors += custFileErrors;
+				// Closing the buffered reader closes all the i/o behind.
+                // In this case the inputStream is closed b/c the reader is being closed.
+                reader.close();
+                
+				if(!preScan){
 				numAcctTotal = custFieldsList.size();
+				    
+	                boolean isDeleted = custFile.delete();
+				    if (isDeleted == false) {
+				        importLog.println("* "+custFile.getName()+" was not deleted *");
 			}
-
-			if (errors != 0) throw new Exception("Failed to import " + errors + " lines");
+				}
+			}
 			
 			if (hwFile != null) {
 				hwFieldsList = new ArrayList();
@@ -655,9 +759,18 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				String line = null;
 				hwLines = new TreeMap();
 				int lineNo = 0;
+				int hwFileErrors = 0;
 				Integer lineNoKey;
 				
+                // Sets up the archive file
+                String archiveFileName = hwFile.getName()+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".csv";
+                File archiveFile = new File(archiveDir, archiveFileName);
+                PrintWriter archive = new PrintWriter(new FileWriter(archiveFile), true);
+
 				while ((line = reader.readLine()) != null) {
+				    // This line adds the latest line to the archive file
+                    archive.println(line);
+                    
 					lineNo++;
 					lineNoKey = new Integer(lineNo);
 					
@@ -682,12 +795,18 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								}
 							}
 							
-							if (hwColIdx[COL_ACCOUNT_NO] == -1)
-								throw new WebClientException( "The required column '" + HW_COLUMNS[COL_ACCOUNT_NO] + "' is missing" );
-							if (hwColIdx[COL_SERIAL_NO] == -1)
-								throw new WebClientException( "The required column '" + HW_COLUMNS[COL_SERIAL_NO] + "' is missing" );
-							if (hwColIdx[COL_DEVICE_TYPE] == -1)
-								throw new WebClientException( "The required column '" + HW_COLUMNS[COL_DEVICE_TYPE] + "' is missing" );
+							if (hwColIdx[COL_ACCOUNT_NO] == -1) {
+							    String errorStr = "The required column '" + HW_COLUMNS[COL_ACCOUNT_NO] + "' is missing";
+							    automationCheck(errorStr);
+							}
+							if (hwColIdx[COL_SERIAL_NO] == -1) {
+							    String errorStr = "The required column '" + HW_COLUMNS[COL_SERIAL_NO] + "' is missing";
+							    automationCheck(errorStr);
+							}
+							if (hwColIdx[COL_DEVICE_TYPE] == -1) {
+							    String errorStr = "The required column '" + HW_COLUMNS[COL_DEVICE_TYPE] + "' is missing";
+							    automationCheck(errorStr);
+							}
 							
 							continue;
 						}
@@ -699,10 +818,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					
 					String[] columns = StarsUtils.splitString( line, "," );;
 					if (columns.length > numHwCol) {
-						errors++;
+						hwFileErrors++;
 						String[] value = (String[]) hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Incorrect number of fields]";
 						custLines.put(lineNoKey, value);
+						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
 
@@ -711,34 +831,39 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					setHardwareFields( hwFields, columns, hwColIdx );
 					
 					if (hwFields[ImportManagerUtil.IDX_ACCOUNT_ID].trim().length() == 0) {
-						errors++;
+						hwFileErrors++;
 						String[] value = (String[]) hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Account # cannot be empty]";
 						custLines.put(lineNoKey, value);
+						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
+
 					if (hwFields[ImportManagerUtil.IDX_SERIAL_NO].trim().length() == 0) {
-						errors++;
+						hwFileErrors++;
 						String[] value = (String[]) hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Serial # cannot be empty]";
 						custLines.put(lineNoKey, value);
+						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
 					if (hwFields[ImportManagerUtil.IDX_DEVICE_TYPE].trim().length() == 0) {
-						errors++;
+						hwFileErrors++;
 						String[] value = (String[]) hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Device type cannot be empty]";
 						custLines.put(lineNoKey, value);
+						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
 					
 					YukonSelectionList devTypeList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE );
 					YukonListEntry deviceType = DaoFactory.getYukonListDao().getYukonListEntry( devTypeList, hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] );
 					if (deviceType == null) {
-						errors++;
+						hwFileErrors++;
 						String[] value = (String[]) hwLines.get(lineNoKey);
 						value[1] = "[line: " + lineNo + " error: Invalid device type \"" + hwFields[ImportManagerUtil.IDX_DEVICE_TYPE] + "\"]";
 						custLines.put(lineNoKey, value);
+						addToLog(lineNoKey, value, importLog);
 						continue;
 					}
 					
@@ -762,7 +887,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								continue;
 							}
 							else {
-								errors++;
+								hwFileErrors++;
 								String[] value = (String[]) hwLines.get(lineNoKey);
 								value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " will be removed by the import program]";
 								custLines.put(lineNoKey, value);
@@ -786,10 +911,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								continue;
 							}
 							else {
-								errors++;
+								hwFileErrors++;
 								String[] value = (String[]) hwLines.get(lineNoKey);
 								value[1] = "[line: " + lineNo + " error: Cannot import hardware, account #" + hwFields[ImportManagerUtil.IDX_ACCOUNT_ID] + " doesn't exist]";
 								custLines.put(lineNoKey, value);
+								addToLog(lineNoKey, value, importLog);
 								continue;
 							}
 						}
@@ -801,6 +927,16 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						setApplianceFields( appFields, columns, hwColIdx );
 						if (preScan && appFieldsList == null)
 							appFieldsList = new ArrayList();
+						
+						if ((appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() >= 0) &&
+                            (!applianceNameList.contains(appFields[ImportManagerUtil.IDX_APP_TYPE]))) {
+						    hwFileErrors++;
+                            String[] value = (String[]) custLines.get(lineNoKey);
+                            value[1] = "[line: " + lineNo + " error: Application Type was supplied, but doesn't exist]";
+                            custLines.put(lineNoKey, value);
+                            addToLog(lineNoKey, value, importLog);
+                            continue;
+                        }
 					}
 					
 					if (!preScan) {
@@ -818,10 +954,16 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								}
 							}
 						} catch (WebClientException e) {
-							errors++;
+							hwFileErrors++;
 							String[] value = (String[]) hwLines.get(lineNoKey);
 							value[1] = "[line: " + lineNo + " error: " + e.getMessage() + "]";
 							custLines.put(lineNoKey, value);
+							addToLog(lineNoKey, value, importLog);
+	                        continue;
+						} catch (SQLException sqle) {
+						    String[] value = (String[]) hwLines.get(lineNoKey);
+						    addToLog(lineNoKey, value, importLog);
+                            importLog.println(sqle.getStackTrace());
 							continue;
 						}
 					}
@@ -846,10 +988,11 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						}
 						else {
 							if (acctNo != null && !acctNo.equals("") && (custFields != null && !acctNo.equalsIgnoreCase( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] ))) {
-								errors++;
+								hwFileErrors++;
 								String[] value = (String[]) hwLines.get(lineNoKey);
 								value[1] = "[line: " + lineNo + " error: Cannot import hardware, serial #" + hwFields[ImportManagerUtil.IDX_SERIAL_NO] + " already exists in another account]";
 								custLines.put(lineNoKey, value);
+								addToLog(lineNoKey, value, importLog);
 								continue;
 							}
 
@@ -873,38 +1016,26 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					}
 				}
 				
+				errors += hwFileErrors;
+                reader.close();
+				if(!preScan){
 				numHwTotal = hwFieldsList.size();
-			}
-
-			if (errors != 0) {
-				/*
-				final String separator = System.getProperty("file.separator");
-				final String fileName = ServerUtils.getStarsTempDir() + separator + "stars_import.log";
-				final String csvFileName = ServerUtils.getStarsTempDir() + separator + "stars_import.csv";
-
-				final java.io.FileWriter writer = new java.io.FileWriter(new File(fileName));
-				final java.io.FileWriter csvWriter = new java.io.FileWriter(new File(csvFileName));
-
-				for (int x = 0; x < errorList.size(); x++) {
-					String line = (String) errorList.get(x);
-					writer.write(line + LINE_SEPARATOR);
-					writer.flush();
-
-					String csvLine = line.split("\\]\\s")[1];
-					csvWriter.write(csvLine + LINE_SEPARATOR);
-					csvWriter.flush();
+                    boolean isDeleted = hwFile.delete();
+                    if (isDeleted == false) {
+                        importLog.println("* "+hwFile.getName()+" was not deleted *");
+                    }
 				}
-
-				writer.close();
-				csvWriter.close();
-				 */
-				throw new Exception("Failed to import " + errors + " lines");
 			}
 			
+			if (errors > 0) {
+			    status = STATUS_ERROR;
+			} else {
 			status = STATUS_FINISHED;
 		}
-		catch (Exception e) 
-        {
+			
+			
+			
+		} catch (Exception e) {
 			if (status == STATUS_CANCELED) {
 				errorMsg = "Operation was canceled by user";
 				if (position != null)
@@ -932,15 +1063,17 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			importLog.println();
 			importLog.println("Stop time: " + StarsUtils.formatDate( new Date(), energyCompany.getDefaultTimeZone() ));
 			importLog.println();
-			if (errorMsg != null) importLog.println( errorMsg );
+			if (errorMsg != null) {
+			    importLog.println( errorMsg );
+			}
 			importLog.println(getImportProgress());
 			importLog.close();
 
 			try {
-				if (email != null && email.trim().length() > 0 && !preScan)
+				if (!StringUtils.isBlank(email) && status == STATUS_ERROR) {
 					sendImportLog( logFile, email, energyCompany );
 			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				status = STATUS_ERROR;
 				if (errorMsg != null)
 					errorMsg += LINE_SEPARATOR + "Failed to send the import log by email";
@@ -1164,8 +1297,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.searchAccountByAccountNo( custFields[ImportManagerUtil.IDX_ACCOUNT_NO] );
 		
 		if (custFields[ImportManagerUtil.IDX_ACCOUNT_ACTION].equalsIgnoreCase( "REMOVE" )) {
-			if (liteAcctInfo == null)
-				throw new WebClientException( "Cannot delete customer account: account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " doesn't exist" );
+			if (liteAcctInfo == null) {
+			    String errorStr = "Cannot delete customer account: account #" + custFields[ImportManagerUtil.IDX_ACCOUNT_NO] + " doesn't exist";
+			    automationCheck(errorStr);
+			}
 			DeleteCustAccountAction.deleteCustomerAccount( liteAcctInfo, energyCompany );
 			
 			numAcctRemoved++;
@@ -1176,7 +1311,15 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			ImportProblem problem = new ImportProblem();
 			
 			if (liteAcctInfo == null) {
+			    if (automatedImport) {
+			        try {
 				liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem );
+			        } catch (WebClientException wce) {
+			            importLog.println(wce.getMessage());
+			        }
+			    } else {
+			        liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem );
+			    }
 				numAcctAdded++;
 			}
 			else if (!insertSpecified) {
@@ -1278,4 +1421,39 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		emailMsg.send();
 	}
 
+	public static File getBaseDir(LiteStarsEnergyCompany energyCompany){
+        final String fs = System.getProperty( "file.separator" );
+        String ecName = energyCompany.getName();
+        if(ecName.indexOf('<') > -1) {
+            ecName = "EnergyCompany" + energyCompany.getEnergyCompanyID();
+        }
+        
+        // Check to see if it exist in role property if not use default.
+        String baseDirRoleValue = DaoFactory.getRoleDao().getGlobalPropertyValue(ConfigurationRole.CUSTOMER_INFO_IMPORTER_FILE_LOCATION);
+
+        // Gets base Directory
+        File baseDir = null;
+        if (baseDirRoleValue.trim().length() > 0) {
+            baseDir = new File(baseDirRoleValue, ecName);
+        } else {
+            baseDir = new File(ServerUtils.getStarsTempDir() + fs + ecName);
+            if (!baseDir.exists()) {
+                baseDir.mkdirs();
+            }
+        }
+        
+        return baseDir;
+	}
+
+    private void addToLog(Integer lineNoKey, String[] value, PrintWriter importLog) {
+        importLog.println("Error found -Line "+lineNoKey+"= "+value[0]+"- Error="+value[1]);
+    }
+	
+    private void automationCheck(String errorStr) throws WebClientException{
+        if(automatedImport){
+            importLog.println(errorStr);
+        } else {
+            throw new WebClientException( "The required column '" + CUST_COLUMNS[COL_ACCOUNT_NO] + "' is missing" );
+        }
+    }
 }

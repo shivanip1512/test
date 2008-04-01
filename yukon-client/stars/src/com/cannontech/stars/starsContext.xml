@@ -108,4 +108,47 @@
     
     <bean id="starsCacheService" class="com.cannontech.stars.core.service.impl.StarsCacheServiceImpl"/>
     
+    <!-- Import Customer Accounts/Hardware Import Job -->    
+    <bean id="importCustAccountsSchedulerJob"
+        class="com.cannontech.jobs.support.SimpleYukonJobDefinition">
+        <property name="taskName">
+            <idref local="importCustAccountsSchedulerTask" />
+        </property>
+        <property name="title" value="Import Customer Account/Hardware Job" />
+        <property name="inputs">
+            <bean class="com.cannontech.web.input.InputRoot">
+                <property name="inputList">
+                    <list>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="energyCompany" />
+                            <property name="displayName"
+                                value="Energy Company" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                        <bean
+                            class="com.cannontech.web.input.InputBase">
+                            <property name="field" value="email" />
+                            <property name="displayName"
+                                value="Email Address" />
+                            <property name="type">
+                                <bean
+                                    class="com.cannontech.web.input.type.StringType" />
+                            </property>
+                        </bean>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <!--  Import Customer Account/Hardware Task -->
+    <bean id="importCustAccountsSchedulerTask"
+        class="com.cannontech.stars.util.task.ImportCustAccountsSchedulerTask"
+        scope="prototype">
+    </bean>
+    
 </beans>
