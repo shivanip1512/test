@@ -7,15 +7,15 @@ import org.apache.commons.lang.StringUtils;
  */
 public class Thermostat {
 
-    private int id = -1;
+    private Integer id;
     private String serialNumber;
     private String deviceLabel;
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
@@ -42,7 +42,7 @@ public class Thermostat {
      */
     public String getLabel() {
 
-        if (!StringUtils.isEmpty(deviceLabel.trim())) {
+        if (!StringUtils.isBlank(deviceLabel)) {
             return deviceLabel;
         }
 

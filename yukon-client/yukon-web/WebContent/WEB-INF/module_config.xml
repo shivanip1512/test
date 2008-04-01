@@ -337,9 +337,14 @@
             </option>
           </links>
 	    </option>
-		<dynamicOptions bean="trendingMenuOption">
+		<option id="trending">
 		  <requireRole value="TrendingRole.ROLEID" />
-	    </dynamicOptions>
+		  <links>
+			<dynamicOptions bean="trendingMenuOption">
+		  	  <requireRole value="TrendingRole.ROLEID" />
+	    	</dynamicOptions>
+          </links>
+	    </option>
 		<option id="questions">
 		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL" />
 		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ" />

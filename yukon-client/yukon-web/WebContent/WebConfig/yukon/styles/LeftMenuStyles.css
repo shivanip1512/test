@@ -1,0 +1,60 @@
+.leftMenuHeader {
+    color: white;
+    background-color: #0066CC; 
+    text-align: right; 
+    padding: .4em .8em;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.leftMenuHeader a:link {
+	text-decoration: none;
+    color: white;
+}
+
+.leftMenuHeader a:visited {
+	text-decoration: none;
+    color: white;
+}
+
+.leftMenu {
+    background-color: #0066CC;
+    padding-bottom: .3em;
+}
+
+.leftMenu .menuOption2 a:link {
+	color: white;
+}
+
+.leftMenu .menuOption2 a:visited {
+	color: white;
+}
+
+.leftMenu .menuOption1 {
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 12px; 
+	color: #FFCC66; 
+	font-style: italic;
+	padding: .3em;
+}
+
+.leftMenu .menuOption2 {
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 9px; 
+	color: #FFFFFF;
+	font-style: normal;
+	padding: .3em .3em .3em 1.0em;
+}
+
+.leftSelected2 {
+    color: #99FFFF !important;	
+}
+
+.leftMenu .menuOption3 {
+	font-family: Arial, Helvetica, sans-serif; 
+	font-size: 9px; 
+	color: #FFFFFF;
+	font-style: normal;
+	padding: .3em .3em .3em 1.7em;
+}
+
