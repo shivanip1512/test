@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.NotFoundException;
@@ -61,6 +62,7 @@ public class DeviceGroupTreeFactory {
     }
 
     private DeviceGroupProviderDao deviceGroupDao;
+    private DeviceGroupService deviceGroupService;
     
     public TreeNode getRootNode(boolean includeDevices, Predicate<DeviceGroup> deviceGroupFilter) {
         DeviceGroup rootGroup = deviceGroupDao.getRootGroup();
@@ -78,9 +80,10 @@ public class DeviceGroupTreeFactory {
     }
     
     public TreeModel getStaticOnlyModel() {
+        final DeviceGroup systemDeviceGrp = deviceGroupService.resolveGroupName(SystemGroupEnum.SYSTEM.getFullPath());   
         return getModel(new Predicate<DeviceGroup>() {
             public boolean evaluate(DeviceGroup object) {
-                return object.getType().equals(DeviceGroupType.STATIC) && object.isModifiable(); 
+                return object.getType().equals(DeviceGroupType.STATIC) && !object.isEqualToOrDecendentOf(systemDeviceGrp); 
             }
         });
     }
@@ -141,4 +144,8 @@ public class DeviceGroupTreeFactory {
         this.deviceGroupDao = deviceGroupDao;
     }
     
+    @Required
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
+    }
 }
