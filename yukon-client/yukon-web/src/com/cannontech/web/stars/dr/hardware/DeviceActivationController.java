@@ -16,7 +16,9 @@ import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.AccountSite;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.service.DeviceActivationService;
 import com.cannontech.stars.util.ServletUtils;
@@ -29,6 +31,7 @@ public class DeviceActivationController extends MultiActionController {
     private ContactDao contactDao;
     private AddressDao addressDao;
     private CustomerDao customerDao;
+    private AccountSiteDao accountSiteDao;
     
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
@@ -54,16 +57,17 @@ public class DeviceActivationController extends MultiActionController {
         }
         
         CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber);
+        AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
+        LiteAddress address = addressDao.getByAddressId(accountSite.getStreetAddressId());
         LiteCustomer customer = customerDao.getLiteCustomer(account.getCustomerId());
         LiteContact contact = contactDao.getContact(customer.getPrimaryContactID());
-        LiteAddress address = addressDao.getByAddressId(contact.getAddressID());
-
+        
         boolean emptyContactName = isEmptyValue(contact.getContFirstName()) && isEmptyValue(contact.getContLastName()); 
         boolean emptyAddress = isEmptyValue(address.getLocationAddress1());
 
         ModelAndView mav = new ModelAndView();
         mav.addObject("contact", (!emptyContactName) ? contact : null);
-        mav.addObject("address", (!emptyAddress) ? address : null);
+        mav.addObject("address", (!emptyAddress) ? address.toHTMLString() : null);
         mav.addObject("accountNumber", accountNumber);
         mav.addObject("serialNumber", serialNumber);
         mav.setViewName("hardware/deviceactivation/Confirmation.jsp");
@@ -122,6 +126,10 @@ public class DeviceActivationController extends MultiActionController {
     
     public void setAddressDao(AddressDao addressDao) {
         this.addressDao = addressDao;
+    }
+    
+    public void setAccountSiteDao(AccountSiteDao accountSiteDao) {
+        this.accountSiteDao = accountSiteDao;
     }
 
 }

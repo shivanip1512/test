@@ -42,7 +42,7 @@
                         </td>
                         <td valign="top" style="text-align: left">
                             <c:if test='${not empty address}'>
-                                <p>${address.locationAddress1}</p><p>${address.cityName}, ${address.stateCode} ${address.zipCode}</p>
+                                ${address}
                             </c:if>
                         </td>        
                     </tr>    
