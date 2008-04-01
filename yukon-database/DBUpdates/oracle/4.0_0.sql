@@ -2047,6 +2047,81 @@ end;
 insert into YukonRoleProperty values(-1702,-8, 'Customer Info Importer File Location', ' ', 'File location of the automated consumer information import process.');
 /* End YUK-5559 */
 
+/* Start YUK-5501 */
+insert into 
+    command 
+select 
+    min(CommandID) - 1
+    , 'getstatus freeze'
+    , 'Read the freeze timestamp, counter, and next freeze expected for demand and voltage.'
+    , 'MCT-410IL'
+from
+    Command
+group by
+    2,3,4;
+commit;
+    
+insert into
+    DeviceTypeCommand
+select
+    min(DeviceCommandID) - 1
+    , (select min(CommandID) from Command)
+    , 'MCT-410CL'
+    , (select max(DisplayOrder) + 1 from DeviceTypeCommand where DeviceType = 'MCT-410CL')
+    , 'Y'
+    , -1
+from
+    DeviceTypeCommand
+group by
+    3,5,6;
+commit;
+
+insert into
+    DeviceTypeCommand
+select
+    min(DeviceCommandID) - 1
+    , (select min(CommandID) from Command)
+    , 'MCT-410FL'
+    , (select max(DisplayOrder) + 1 from DeviceTypeCommand where DeviceType = 'MCT-410FL')
+    , 'Y'
+    , -1
+from
+    DeviceTypeCommand
+group by
+    3,5,6;
+commit;
+    
+insert into
+    DeviceTypeCommand
+select
+    min(DeviceCommandID) - 1
+    , (select min(CommandID) from Command)
+    , 'MCT-410GL'
+    , (select max(DisplayOrder) + 1 from DeviceTypeCommand where DeviceType = 'MCT-410GL')
+    , 'Y'
+    , -1
+from
+    DeviceTypeCommand
+group by
+    3,5,6;
+commit;
+    
+insert into
+    DeviceTypeCommand
+select
+    min(DeviceCommandID) - 1
+    , (select min(CommandID) from Command)
+    , 'MCT-410IL'
+    , (select max(DisplayOrder) + 1 from DeviceTypeCommand where DeviceType = 'MCT-410IL')
+    , 'Y'
+    , -1
+from
+    DeviceTypeCommand
+group by
+    3,5,6;
+commit;
+/* End YUK-5501 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
