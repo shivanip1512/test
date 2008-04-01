@@ -124,6 +124,8 @@ public class MultispeakServlet extends HttpServlet
             MultispeakDaoImpl multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(vendorId);
             mspBean.setSelectedMspVendor(mspVendor);
+            //Clear out any existing result messages
+            session.removeAttribute(MultispeakDefines.MSP_RESULT_MSG);
             return redirect;
         }
         
