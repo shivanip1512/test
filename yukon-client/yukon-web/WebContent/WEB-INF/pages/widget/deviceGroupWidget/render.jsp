@@ -107,10 +107,10 @@
 
 <input type="hidden" id="groupIds" name="groupIds" />
 
-<cti:msg key="yukon.web.deviceGroups.addDeviceToGroup.rootName" var="rootName"/>
-<cti:msg key="yukon.web.deviceGroups.addDeviceToGroup" var="addDeviceTitle"/>
-<cti:msg key="yukon.web.deviceGroups.addDeviceToGroup.submitPopup" var="submitText"/>
-<cti:msg key="yukon.web.deviceGroups.addDeviceToGroup.closePopup" var="closeText"/>
+<cti:msg key="yukon.web.deviceGroups.widget.groupTree.rootName" var="rootName"/>
+<cti:msg key="yukon.web.deviceGroups.widget.groupTree.title" var="addDeviceTitle"/>
+<cti:msg key="yukon.web.deviceGroups.widget.groupTree.submitButtonText" var="submitText"/>
+<cti:msg key="yukon.web.deviceGroups.widget.groupTree.closeButtonText" var="closeText"/>
 
 <tags:extDeviceGroupPopupTree   treeId="deviceGroupWidgetTreePopup"
                                 width="432"
