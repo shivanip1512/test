@@ -1,6 +1,6 @@
 package com.cannontech.web.stars.dr.consumer.model;
 
-import com.cannontech.i18n.YukonMessageSourceResovable;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 /**
  * Class which represents a contact notification drop down option
@@ -8,7 +8,7 @@ import com.cannontech.i18n.YukonMessageSourceResovable;
 public class ContactNotificationOption {
 
     private int notificationId;
-    private YukonMessageSourceResovable optionText;
+    private YukonMessageSourceResolvable optionText;
 
     public ContactNotificationOption(int notificationId) {
         this.notificationId = notificationId;
@@ -22,11 +22,11 @@ public class ContactNotificationOption {
         this.notificationId = notificationId;
     }
 
-    public YukonMessageSourceResovable getOptionText() {
+    public YukonMessageSourceResolvable getOptionText() {
         return optionText;
     }
 
-    public void setOptionText(YukonMessageSourceResovable optionText) {
+    public void setOptionText(YukonMessageSourceResolvable optionText) {
         this.optionText = optionText;
     }
 

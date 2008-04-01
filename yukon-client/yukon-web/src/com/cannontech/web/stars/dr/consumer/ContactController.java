@@ -25,7 +25,7 @@ import com.cannontech.database.data.lite.LiteContactNotification;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.MessageCodeGenerator;
-import com.cannontech.i18n.YukonMessageSourceResolvableImpl;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -73,7 +73,7 @@ public class ContactController {
             String text = entry.getEntryText();
             String code = MessageCodeGenerator.generateCode("yukon.dr.consumer.contact",
                                                             text);
-            YukonMessageSourceResolvableImpl message = new YukonMessageSourceResolvableImpl(code);
+            YukonMessageSourceResolvable message = new YukonMessageSourceResolvable(code);
             option.setOptionText(message);
 
             notificationOptionList.add(option);
