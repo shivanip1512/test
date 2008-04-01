@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -91,6 +92,33 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         }
         return map;
     }
+    
+    public Map<Season, Integer> getUserFriendlySeasonStrategyAssignments(int paoId) {
+        HashMap<Season, Integer> map = new HashMap<Season, Integer>();
+        SeasonSchedule schedule = getScheduleForPao(paoId);
+        List<Season> seasons = getSeasonsForSchedule(schedule.getScheduleId());
+        Iterator<Season> iter = seasons.iterator();
+        while(iter.hasNext()) {
+            Season season = iter.next();
+            String sql = "Select StrategyId From CCSeasonStrategyAssignment Where PaobjectId = ? And SeasonScheduleId = ? " 
+                + " And SeasonName = ?" ;
+            int strategyId;
+            try {
+                strategyId = jdbcTemplate.queryForInt(sql, paoId, season.getScheduleId(), season.getSeasonName());
+            } catch (EmptyResultDataAccessException e) {
+                strategyId = 0;
+            }
+            if(season.getSeasonName().startsWith("&1&")) {
+                season.setSeasonName(season.getSeasonName().replaceFirst("&1&", ""));
+                map.put(season, strategyId);
+            }else if(season.getSeasonName().startsWith("&2&")) {
+                continue;  // skip the sister season for the users sake.
+            }else {
+                map.put(season, strategyId);
+            }
+        }
+        return map;
+    }
 
     public List<Season> getSeasonsForSchedule(Integer scheduleId) {
         
@@ -99,18 +127,72 @@ public class SeasonScheduleDaoImpl implements SeasonScheduleDao{
         List<Season> seasons = jdbcTemplate.query(sql, seasonRowMapper, scheduleId);
         return seasons;
     }
+    
+    public List<Season> getUserFriendlySeasonsForSchedule(Integer scheduleId) {
+        
+        String sql = "Select SeasonName, SeasonScheduleID From DateOfSeason Where SeasonScheduleID = ?";
+        
+        List<Season> seasons = jdbcTemplate.query(sql, seasonRowMapper, scheduleId);
+        Iterator<Season> iter = seasons.iterator();
+        while(iter.hasNext()) {
+            Season season = iter.next();
+            if(season.getSeasonName().startsWith("&1&")) {
+                season.setSeasonName(season.getSeasonName().replaceFirst("&1&", ""));
+            }else if(season.getSeasonName().startsWith("&2&")) {
+                iter.remove();
+            }
+        }
+        return seasons;
+    }
 
     public void saveSeasonStrategyAssigment(int paoId, Map<Season, Integer> map, int scheduleId) {
+        List<Season> actualSeasons = getSeasonsForSchedule(scheduleId);
+        Map<Season, Integer> fixedMap = fixSeasonMapForEndOfYearJump(map, actualSeasons);
         
         String sql = "Delete From CCSeasonStrategyAssignment Where PaobjectId = ?";
         jdbcTemplate.update(sql, paoId);
-        List<Season> actualSeasons = getSeasonsForSchedule(scheduleId);
+        
         for(Season actualSeason : actualSeasons) {
-            if(map.containsKey(actualSeason)) {
+            if(fixedMap.containsKey(actualSeason)) {
                 sql = "Insert Into CCSeasonStrategyAssignment Values ( ?,?,?,? )";
-                jdbcTemplate.update( sql, paoId, actualSeason.getScheduleId(), actualSeason.getSeasonName() , map.get(actualSeason) );
+                jdbcTemplate.update( sql, paoId, actualSeason.getScheduleId(), actualSeason.getSeasonName() , fixedMap.get(actualSeason) );
             }
         }
+    }
+    
+    /**
+     * This is a hack to take the user friendly list of seasons
+     * from the user and persist them and thier assigned strategies to
+     * the database in their true, messed up, form by spliting a season that 
+     * jumps the end of the year into two seasons.  This should be 
+     * fixed on the server side to handle such seasons but alas that day
+     * has not yet dawned.
+     * @param map
+     * @param actualSeasons
+     * @return
+     */
+    public Map<Season, Integer> fixSeasonMapForEndOfYearJump(Map<Season, Integer> map, List<Season> actualSeasons){
+        HashMap<Season, Integer> newMap = new HashMap<Season, Integer>();
+        
+        for(Season season : actualSeasons) {
+            if(season.getSeasonName().startsWith("&1&")) {
+                String fakeName = season.getSeasonName().replaceFirst("&1&", "");
+                Integer scheduleId = season.getScheduleId();
+                Season newSeason = new Season(fakeName, scheduleId);
+                Integer strategyId = map.get(newSeason);
+                newMap.put(season, strategyId);
+            }else if(season.getSeasonName().startsWith("&2&")) {
+                String fakeName = season.getSeasonName().replaceFirst("&2&", "");
+                Integer scheduleId = season.getScheduleId();
+                Season newSeason = new Season(fakeName, scheduleId);
+                Integer strategyId = map.get(newSeason);
+                newMap.put(season, strategyId);
+            }else {
+                Integer strategyId = map.get(season);
+                newMap.put(season, strategyId);
+            }
+        }
+        return newMap;
     }
     
     public void saveDefaultSeasonStrategyAssigment(int paoId) {

@@ -10,7 +10,13 @@ public interface SeasonScheduleDao {
 
     public List<Season> getSeasonsForSchedule(Integer scheduleId);
     
+    public List<Season> getUserFriendlySeasonsForSchedule(Integer scheduleId);
+    
+    public Map<Season, Integer> fixSeasonMapForEndOfYearJump(Map<Season, Integer> map, List<Season> actualSeasons);
+    
     public Map<Season,Integer> getSeasonStrategyAssignments(int paoId);
+    
+    public Map<Season, Integer> getUserFriendlySeasonStrategyAssignments(int paoId);
     
     public void saveSeasonStrategyAssigment(int paoId, Map<Season,Integer> map, int scheduleId);
     

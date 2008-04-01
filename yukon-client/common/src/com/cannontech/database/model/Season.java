@@ -11,6 +11,12 @@ public class Season {
     public Season() {
         super();
     }
+    
+    public Season(String name, Integer scheduleId) {
+        super();
+        this.seasonName = name;
+        this.scheduleId = scheduleId;
+    }
 
     public String getSeasonName() {
         return seasonName;

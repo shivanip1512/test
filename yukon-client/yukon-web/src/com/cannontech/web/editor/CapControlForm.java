@@ -174,7 +174,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
      * Returns a Season object for each season of the current schedule.
      */
     public List<Season> getSeasonsForSchedule() {
-        return seasonScheduleDao.getSeasonsForSchedule(getScheduleId());
+        return seasonScheduleDao.getUserFriendlySeasonsForSchedule(getScheduleId());
     }
     
     /**
@@ -262,8 +262,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     
     public Map<Season, Integer> getAssignedStratMap(){
         if(assignedStratMap == null) {
-            HashMap<Season, Integer> map = (HashMap<Season, Integer>) seasonScheduleDao.getSeasonStrategyAssignments(((YukonPAObject)getDbPersistent()).getPAObjectID());
-            List<Season> seasons = seasonScheduleDao.getSeasonsForSchedule(getScheduleId());
+            HashMap<Season, Integer> map = (HashMap<Season, Integer>) seasonScheduleDao.getUserFriendlySeasonStrategyAssignments(((YukonPAObject)getDbPersistent()).getPAObjectID());
+            List<Season> seasons = seasonScheduleDao.getUserFriendlySeasonsForSchedule(getScheduleId());
             for(Season season : seasons) {
                 if (!map.containsKey(season)) {
                     map.put(season, 0);
