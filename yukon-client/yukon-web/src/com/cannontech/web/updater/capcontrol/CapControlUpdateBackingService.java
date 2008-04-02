@@ -7,6 +7,7 @@ import java.util.regex.Pattern;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.WebUpdatedDAO;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.updater.UpdateBackingService;
@@ -41,7 +42,19 @@ public class CapControlUpdateBackingService implements UpdateBackingService {
     
     private StreamableCapObject doGetLatestValue(int paoId, long afterDate) {
         boolean updated = updatedInCache(paoId, afterDate);
-        if (updated || afterDate == 0) return capControlCache.getObject(paoId);
+        if (updated || afterDate == 0) {
+            try {
+                StreamableCapObject obj = capControlCache.getObject(paoId);
+                return obj;
+            } catch (NotFoundException nfe) {
+                // This can happen if we delete an object and return
+                // to a page that that used to have that object before
+                // the server was able to update the cache.
+                // By returning null the service won't try to update
+                // that object.
+                return null;
+            }
+        }
         return null;    
     }
     
