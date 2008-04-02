@@ -341,7 +341,10 @@ for( SubBus subBus: subBuses ) {
 				
 					<%
 					if (subBus != null) {
-					String areaName = CBCUtils.getAreaNameForSubStationBusIdFromCache(subBus.getCcId().intValue());	
+					    String areaName = "(none)";
+					    if(!special){
+					        areaName = CBCUtils.getAreaNameForSubStationBusIdFromCache(subBus.getCcId().intValue());
+					    }
 					int varPoint = subBus.getCurrentVarLoadPointID().intValue();
 					int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
 					int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
