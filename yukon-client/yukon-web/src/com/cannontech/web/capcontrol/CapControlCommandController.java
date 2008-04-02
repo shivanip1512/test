@@ -169,7 +169,10 @@ public class CapControlCommandController extends MultiActionController {
 	        String reason = ServletRequestUtils.getStringParameter(request, "disableReason", defaultReason);
         	if( reason.equals("") || reason.equals(defaultReason)) reason = generateUpdateReason(cmdId, paoId, user.getUsername());
 
-        	insertComment(paoId, user.getUserID(), reason, cmdId);
+        	//Only add the comments on a Disable
+        	if(disableValue) {
+        		insertComment(paoId, user.getUserID(), reason, cmdId);
+        	}
             exec.execute(controlType, cmdId, paoId, null, operationalStateValue);
         }
         
@@ -178,7 +181,9 @@ public class CapControlCommandController extends MultiActionController {
 	        String reason = ServletRequestUtils.getStringParameter(request, "disableOVUVReason", defaultReason);
         	if (reason.equals(emptyString) || reason.equals(defaultReason)) reason = generateUpdateReason(cmdId, paoId, user.getUsername());
 	        
-        	insertComment(paoId, user.getUserID(), reason, cmdId);
+        	if(disableOVUVValue) {
+        		insertComment(paoId, user.getUserID(), reason, cmdId);
+        	}
             exec.execute(controlType, cmdId, paoId, null, operationalStateValue);
         }
         
