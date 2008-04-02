@@ -23,7 +23,7 @@
         </tr>
         <tr>
             <td colspan="2">
-                <cti:checkProperty property="CBCSettingsRole.CBC_ALLOW_OVUV">
+                
                     <div style="color: white;">
                         <input type="checkbox" id="disableCheckBox" onclick="toggleReason(this, 'disableReasonId');" <c:if test="${isDisabled}">checked</c:if> />
                         <input type="hidden" id="disableCheckBox_orig" value="${isDisabled}"/>
@@ -34,6 +34,7 @@
                         <textarea id="disableReason" style='width: 225px; vertical-align: bottom;' rows="2" disabled>${disableReason}</textarea> 
                     </div>
                     <br>
+                <cti:checkProperty property="CBCSettingsRole.CBC_ALLOW_OVUV">
                     <div style="color: white;"> 
                         <input type="checkbox" id="disableOVUVCheckBox" onclick="toggleReason(this, 'disableOVUVReasonId');" <c:if test="${isDisabledOVUV}">checked</c:if> />
                         <input type="hidden" id="disableOVUVCheckBox_orig" value="${isDisabledOVUV}"/>
