@@ -93,7 +93,7 @@
 				<% 
 				for (int i=1; i <= MAX_DAYS_CNT; i ++) {
 				    out.println ("<option value=\"" + i + "\""); 
-				    if (i == dayCnt)
+				    if (i == 0)
 				        out.println(" selected");
 				    out.println (">" + i + " Day (s) </option>");
 				}
