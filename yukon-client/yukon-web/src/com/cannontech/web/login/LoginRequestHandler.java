@@ -12,6 +12,8 @@ public interface LoginRequestHandler {
      * The LoginRequestHandler is responsible for determining a successful login based on 
      * a set of credentials found in the request.  If the LoginRequestHandler determines 
      * that the request is valid, the handler is responsible initializing the session.
+     * Returning false will cause the next LoginRequestHandler in the chain to be called.
+     * Throwing an Exception will cause the entire login request to be aborted.
      * @see com.cannontech.web.login.LoginService.createSession()
      * @param request
      * @param response

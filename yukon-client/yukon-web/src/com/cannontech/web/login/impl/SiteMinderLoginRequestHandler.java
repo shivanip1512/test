@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.core.authentication.service.impl.PasswordHasher;
+import com.cannontech.core.authentication.service.impl.SimpleMessageDigestHasher;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.login.AbstractLoginRequestHandler;
 
@@ -16,7 +17,7 @@ public class SiteMinderLoginRequestHandler extends AbstractLoginRequestHandler {
     private static final String HEADER_PROPERTY_KEY = "SITE_MINDER_HEADER";
     private static final String SECRET_PROPERTY_KEY = "SITE_MINDER_SECRET";
     
-    private PasswordHasher passwordHasher;
+    private SimpleMessageDigestHasher simpleHasher;
 
     @Override
     public boolean handleLoginRequest(HttpServletRequest request, HttpServletResponse response)
@@ -37,7 +38,7 @@ public class SiteMinderLoginRequestHandler extends AbstractLoginRequestHandler {
         if (secret.equals("")) return false;
 
         String input = premiseNumber + loginToken + secret;
-        String hash = passwordHasher.hashPassword(input);
+        String hash = simpleHasher.hash(input);
 
         if (!hash.equals(accountIdentifier)) return false;
 
@@ -48,8 +49,8 @@ public class SiteMinderLoginRequestHandler extends AbstractLoginRequestHandler {
         return true;
     }
     
-    public void setPasswordHasher(PasswordHasher passwordHasher) {
-        this.passwordHasher = passwordHasher;
+    public void setSimpleHasher(SimpleMessageDigestHasher simpleHasher) {
+        this.simpleHasher = simpleHasher;
     }
     
 }

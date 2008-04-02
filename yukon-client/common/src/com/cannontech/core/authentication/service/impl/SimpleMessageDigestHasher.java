@@ -3,18 +3,29 @@ package com.cannontech.core.authentication.service.impl;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-import com.cannontech.core.authentication.service.MessageDigestHasher;
+import com.cannontech.common.util.CtiUtilities;
 
-public class SimpleMessageDigestHasher extends MessageDigestHasher {
-
+public class SimpleMessageDigestHasher {
+    private final MessageDigest messageDigest;
+    
     public SimpleMessageDigestHasher(final String algorithm) throws NoSuchAlgorithmException {
-        super(algorithm);
+        messageDigest = MessageDigest.getInstance(algorithm);
     }
     
-    @Override
-    protected MessageDigest getMessageDigest() {
+    public final synchronized String hash(final String input) {
+        return hash(input, null);
+    }
+    
+    public final synchronized String hash(final String input, final byte[] salt) {
         messageDigest.reset();
-        return messageDigest;
+        if (salt != null) {
+            messageDigest.update(salt);
+        }
+        
+        byte[] bytes = input.getBytes();
+        byte[] raw = messageDigest.digest(bytes);
+        String result = CtiUtilities.toHexString(raw);
+        return result;
     }
 
 }

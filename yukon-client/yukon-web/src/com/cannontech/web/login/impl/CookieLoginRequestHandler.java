@@ -38,12 +38,12 @@ public class CookieLoginRequestHandler extends AbstractLoginRequestHandler {
                 }
                 
                 log.info("Remember Me login failed");
-                //cookie login failed, remove cookie.
-                ServletUtil.deleteAllCookies(request, response);
             } catch (GeneralSecurityException e) {
                 log.error("Unable to decrypt cookie value", e);
-                ServletUtil.deleteAllCookies(request, response);
             }
+
+            //cookie login failed, remove cookie.
+            ServletUtil.deleteAllCookies(request, response);
         }
 
         return false;

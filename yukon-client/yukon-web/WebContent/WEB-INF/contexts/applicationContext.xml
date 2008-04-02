@@ -735,7 +735,7 @@
     
     <bean id="siteMinderLoginRequestHandler" class="com.cannontech.web.login.impl.SiteMinderLoginRequestHandler"
           parent="abstractLoginRequestHandler">
-        <property name="passwordHasher" ref="simpleMD5Hasher"/>    
+        <property name="simpleHasher" ref="simpleMD5Hasher"/>    
     </bean>
     
     <bean id="loginCookieHelper" class="com.cannontech.web.login.impl.LoginCookieHelperImpl">

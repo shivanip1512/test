@@ -175,7 +175,7 @@ public class LoginFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
         context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
         userContextResolver = (YukonUserContextResolver) context.getBean("userContextResolver", YukonUserContextResolver.class);
-        loginRequestHandlers = (List) context.getBean("loginRequestHandlers", List.class);
+        loginRequestHandlers = (List<LoginRequestHandler>) context.getBean("loginRequestHandlers", List.class);
     }
 
     @Override
