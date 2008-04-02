@@ -126,7 +126,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         cbcQuery += "ccfeedersubassignment fs, ccfeederbanklist fb, capbank c where yp.paobjectid = c.controldeviceid and ypc.paobjectid = c.deviceid ";
         cbcQuery += "and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid and ypsb.paobjectid = fs.substationbusid ";
         cbcQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
-        cbcQuery += "and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo where type = 'CBC %' and disableflag = 'Y' ";
+        cbcQuery += "and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo where type like 'CBC %' and disableflag = 'Y' ";
         cbcQuery += "and yp.paobjectid = pInfo.paobjectid order by type ";
         
         if(type.equalsIgnoreCase("CBC")) {
