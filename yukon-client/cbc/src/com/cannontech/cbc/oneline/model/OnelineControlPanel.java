@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 
 import com.cannontech.cbc.oneline.OneLineParams;
-import com.cannontech.cbc.oneline.elements.DynamicLineElement;
 import com.cannontech.cbc.oneline.elements.SubDynamicImage;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
@@ -17,6 +16,7 @@ public class OnelineControlPanel {
     private static final Font LARGE_FONT = new java.awt.Font("arial",
                                                             java.awt.Font.BOLD,
                                                             20);
+    private static final int ControlPanelSize = 200;
     private OneLineDrawing drawing;
     private StaticImage backButton;
     private StaticImage regenerateDraw;
@@ -89,10 +89,10 @@ public class OnelineControlPanel {
 
     private void drawBackButton() {
         OnelineSub sub = drawing.getSub();
-        DynamicLineElement distributionLn = sub.getDistributionLn();
         SubDynamicImage transformerImg = sub.getTransformerImg();
         backButton.setX(transformerImg.getX());
-        backButton.setY(distributionLn.getPoint2().getY());
+        OneLineParams layoutParams = drawing.getLayoutParams();
+       	backButton.setY(layoutParams.getHeight() - ControlPanelSize);
         backButton.setLinkTo(layoutParams.getRedirectURL());
         LxGraph graph = drawing.getDrawing().getLxGraph();
         graph.add(backButton);

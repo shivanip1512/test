@@ -26,8 +26,8 @@ public class CapControlOnelineCanvas {
     private OneLineDrawing drawing;
     private LiteYukonUser user;
 
-    public CapControlOnelineCanvas() {
-    }
+//    public CapControlOnelineCanvas() {
+//    }
 
     public CapControlOnelineCanvas(Dimension d) {
         drawingHeight = (int) d.getHeight();
@@ -71,7 +71,15 @@ public class CapControlOnelineCanvas {
         return drawing;
     }
 
-    public void setDrawing(OneLineDrawing drawing) {
+    public int getDrawingHeight() {
+		return drawingHeight;
+	}
+
+	public int getDrawingWidth() {
+		return drawingWidth;
+	}
+
+	public void setDrawing(OneLineDrawing drawing) {
         this.drawing = drawing;
     }
 

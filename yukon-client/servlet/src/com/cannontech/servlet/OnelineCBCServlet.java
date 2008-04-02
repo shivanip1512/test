@@ -101,9 +101,7 @@ public class OnelineCBCServlet extends HttpServlet {
 
         SubBus msg = cache.getSubBus(currentSubId);
 
-        String absPath = req.getSession()
-        .getServletContext()
-        .getRealPath(CBCWebUtils.ONE_LINE_DIR);
+        String absPath = req.getSession().getServletContext().getRealPath(CBCWebUtils.ONE_LINE_DIR);
 
         String subName = msg.getCcName();
         String fileName = absPath + separator + subName;
@@ -114,7 +112,9 @@ public class OnelineCBCServlet extends HttpServlet {
 
         for (int count = 0; count < MAX_RETRY; count++) {
             try {
-                CapControlOnelineCanvas view = new CapControlOnelineCanvas();
+            	SubBus bus = cache.getSubBus(currentSubId);
+            	Dimension dim = OnelineUtil.getDrawingDimension(bus);
+                CapControlOnelineCanvas view = new CapControlOnelineCanvas(dim);
                 view.setUser(user);
                 Drawing d = view.createDrawing(msg, CBCWebUtils.ONE_LINE_DIR + htmlFile);
 

@@ -44,10 +44,10 @@ public class OnelineUtil {
     public static final int PXL_LARGE_FONT = 10;
     public static final int DEFAULT_HEIGHT = 800;
     public static final int DEFAULT_WIDTH = 1200;
-    @SuppressWarnings("cast")
-    private static final double ASPECT_RATIO = (double) DEFAULT_WIDTH / (double) DEFAULT_HEIGHT;
+
     //public static final int OFFSET_TO_RIGHT = 210;
-    public static final int PXLS_PER_FEEDER = 185;
+    public static final int PXLS_PER_FEEDER_X = 185;
+    public static final int PXLS_PER_FEEDER_Y = 185;
     public static final int PXLS_PER_CAPBANK = 130;
     public static final int PXLS_PER_CHAR = 7;
     public static final int SUB_ST_EN = 0;
@@ -157,44 +157,36 @@ public class OnelineUtil {
             }
         }
 
-        Dimension feederOptimized = optimizeForFeeders(ccFeeders.size());
-        Dimension capOptimized = optimizeForCaps(maxCapNum, maxCapFeederName, subBusMsg.getCcName());
-        int heght = (int) Math.max(feederOptimized.getHeight(),
-                                   capOptimized.getHeight());
-        int width = (int) Math.max(feederOptimized.getWidth(),
-                                   capOptimized.getWidth());
+        int heght = getFeederHeight(ccFeeders.size());
+        int width = getCapBankWidth(maxCapNum, maxCapFeederName, subBusMsg.getCcName());
+
         return new Dimension(width, heght);
 
     }
 
-    private static Dimension optimizeForCaps(int maxCapNum,
+    private static int getCapBankWidth(int maxCapNum,
             String maxCapFeederName, String subName) {
-
-        int height = DEFAULT_HEIGHT;
-        int width = DEFAULT_WIDTH;
+    	
         int fdrOffset = getFeederOffset(maxCapFeederName);
         int temp = ((DEFAULT_WIDTH - OnelineUtil.getInjLineLength(subName)) - (fdrOffset + (PXLS_PER_CAPBANK * (maxCapNum + 1))));
-        width = (temp < 0) ? DEFAULT_WIDTH + (temp * -1) : DEFAULT_WIDTH;
-        height = (int) ((width > DEFAULT_WIDTH) ? (width / ASPECT_RATIO)
-                : DEFAULT_HEIGHT);
-        return new Dimension(width, height);
+        int width = (temp < 0) ? DEFAULT_WIDTH + (temp * -1) : DEFAULT_WIDTH;
+        return width;
     }
 
     public static int getFeederOffset(String maxCapFeederName) {
-        int fdrOffset = (PXLS_PER_CHAR * maxCapFeederName.length() < PXLS_PER_CAPBANK) ? PXLS_PER_FEEDER
+        int fdrOffset = (PXLS_PER_CHAR * maxCapFeederName.length() < PXLS_PER_CAPBANK) ? PXLS_PER_FEEDER_X
                 : PXLS_PER_CHAR * maxCapFeederName.length();
         return fdrOffset;
     }
 
-    private static Dimension optimizeForFeeders(int numOfFeeders) {
-        int width = DEFAULT_WIDTH;
-        int height = DEFAULT_HEIGHT;
+    private static int getFeederHeight(int numOfFeeders) {
 
-        //if (numOfFeeders >= 7) {
-            height = numOfFeeders * PXLS_PER_FEEDER;
-            width = (int) (height * ASPECT_RATIO);
-        //}
-        return new Dimension(width, height);
+        int height = numOfFeeders * PXLS_PER_FEEDER_Y;
+
+        if (numOfFeeders < 4) {
+            height = 4 * PXLS_PER_FEEDER_Y;
+        }
+        return height;
     }
 
     public static StaticText createColoredTextElement(String sep,
@@ -236,7 +228,7 @@ public class OnelineUtil {
 
     public static String extractObjectIdFromString(String str) {
         String[] allStrings = StringUtils.split(str, "_");
-        if (allStrings.length == 2)
+        if (allStrings.length >= 2)
             return allStrings[1];
         return "ID_PLACEHOLDER";
     }
@@ -247,7 +239,6 @@ public class OnelineUtil {
     }
     
     public static String createBookmarkLink(int id) {
-        //String link = "/capcontrol/oneline/OnelineBookmarkServlet?itemid=" + id;
         String link = "/spring/capcontrol//onelineBookmark?itemid=" + id;
         return link;
     }
@@ -273,13 +264,13 @@ public class OnelineUtil {
             CapControlOnelineCanvas canvas) {
         int retries = 3;
         Drawing drawing = canvas.getDrawing().getDrawing();
-
+        Dimension d = new Dimension(canvas.getDrawingWidth(),canvas.getDrawingHeight());
         drawing.setFileName(dirAndFileExt);
         do {
             try {
                 writeJLX(dirAndFileExt, drawing);
                 writeSVG(dirAndFileExt, canvas);
-                writeHTML(dirAndFileExt, drawing);
+                writeHTML(dirAndFileExt, drawing, d);
                 String parent = new File(dirAndFileExt).getParent();
                 writeImages(drawing, parent);
                 break;
@@ -340,7 +331,7 @@ public class OnelineUtil {
         }
     }
 
-    private static void writeHTML(String dirAndFileExt, Drawing ccSubBusDrawing) {
+    private static void writeHTML(String dirAndFileExt, Drawing ccSubBusDrawing, Dimension d) {
         String htmlFileName = dirAndFileExt;
 
         if (htmlFileName.endsWith(".jlx")) {
@@ -356,7 +347,7 @@ public class OnelineUtil {
             HTMLOptions options = new HTMLOptions();
             options.setStaticHTML(false);
             gen.setGenOptions(options);
-            gen.generate(fw, ccSubBusDrawing);
+            gen.generate(fw, ccSubBusDrawing,d);
             fw.close();
         } catch (IOException e) {
             e.printStackTrace();

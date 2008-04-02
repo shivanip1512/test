@@ -14,11 +14,15 @@ public class CommandPopups {
     public static final String  FEEDER_COMMAND = "FeederCommand";
     public static final String  CAP_COMMAND = "CapCommand";
 
+    public static final String CAP_NAME = "CapBank";
+    
     public static final String  SUB_TAG = "SubTag";
     public static final String  FEEDER_TAG = "FeederTag";
     public static final String  CAP_TAG = "CapTag";
     public static final String CAP_INFO = "CapInfo";
     public static final String CAP_TMSTMP =  "CapPtTmstmp";
     public static final String VAR_CHANGE_POPUP = "varChangePopup";
+    public static final String BANK_MOVE_BACK = "MoveBankBack";
+    public static final String BANK_MOVE = "TempMoveBank";
 
 }

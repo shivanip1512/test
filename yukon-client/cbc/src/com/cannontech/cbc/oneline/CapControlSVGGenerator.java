@@ -88,6 +88,14 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
                 elem.setAttributeNS(null,
                                     "onclick",
                                     "openPopupWin (evt.getTarget(), \"" + CommandPopups.VAR_CHANGE_POPUP + "_" + paoID + "\")");
+            } else if (StringUtils.contains(comp.getName(), CommandPopups.BANK_MOVE_BACK)) {
+            	elem.setAttributeNS(null,
+                        "onclick",
+                        "openPopupWin (evt.getTarget(), \"" + CommandPopups.BANK_MOVE_BACK + "_" + paoID + "\")");
+            } else if (StringUtils.contains(comp.getName(), CommandPopups.BANK_MOVE)) {
+            	elem.setAttributeNS(null,
+                        "onclick",
+                        "openPopupWin (evt.getTarget(), \"" + CommandPopups.BANK_MOVE + "_" + paoID + "\")");
             }
 
         } else if (comp instanceof LxAbstractImage && getGenOptions().isScriptingEnabled() && !isCapBankImage(comp)) {

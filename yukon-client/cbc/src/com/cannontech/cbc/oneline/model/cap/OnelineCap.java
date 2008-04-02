@@ -102,15 +102,19 @@ public class OnelineCap extends OnelineObject {
         capBankName.setX(getStateImage().getX() + 20);
         capBankName.setY(getStateImage().getY() - 20);
         capBankName.setText(getStreamable().getCcName());
-        capBankName.setName(getName());
+
         
         if( !getStreamable().isBankMoved() ){
-            capBankName.setPaint(OnelineUtil.PURPLISH);
-            capBankName.setLinkTo("/capcontrol/standardPageWrapper.jsp?title=Temp CapBank Move&page=/capcontrol/tempmove.jsp&bankid=" + getStreamable().getCcId() + "&oneline=" + "true");
+            capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE);
+        	capBankName.setPaint(OnelineUtil.PURPLISH);
+        	capBankName.setLinkTo("javascript:void(0)");
+        	//capBankName.setLinkTo("/capcontrol/standardPageWrapper.jsp?title=Temp CapBank Move&page=/capcontrol/tempmove.jsp&bankid=" + getStreamable().getCcId() + "&oneline=" + "true");
         }
         else{//if moved
+            capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE_BACK);
             capBankName.setPaint(OnelineUtil.ORANGE);
-            capBankName.setLinkTo("/capcontrol/oneline/OnelineCBCServlet?paoID=" + getStreamable().getCcId() + "&cmdID=11&controlType=CAPBANK_TYPE");
+            //capBankName.setLinkTo("/spring/capcontrol/tier/popupmenu?menu=capBankTempMoveBack&id=" + getStreamable().getCcId());
+            capBankName.setLinkTo("javascript:void(0)");
         }
        
     }

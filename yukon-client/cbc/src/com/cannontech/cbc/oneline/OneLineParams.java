@@ -89,7 +89,11 @@ public class OneLineParams {
         return width;
     }
 
-    public void setWidth(int width) {
+    public boolean isSingleFeeder() {
+		return isSingleFeeder;
+	}
+
+	public void setWidth(int width) {
         this.width = width;
     }
 
