@@ -1,6 +1,6 @@
 package com.cannontech.loadcontrol;
 
-import static com.cannontech.common.util.CtiUtilities.*;
+import static com.cannontech.common.util.CtiUtilities.get1990GregCalendar;
 
 import java.awt.Color;
 import java.text.DecimalFormat;
@@ -431,20 +431,34 @@ public class LCUtils
 					
 			case ControlAreaTableModel.TIME_WINDOW:
             {
-			    String startString =
-			        getTimeString(lmCntrArea, 
-			                      lmCntrArea.getDefDailyStartTime(), 
-			                      lmCntrArea.getCurrentDailyStartTime(), 
-			                      userContext);
+			    String timeString = null;
+			    DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
+		        
+			    GregorianCalendar startDate = new GregorianCalendar();               
+			    GregorianCalendar stopDate = new GregorianCalendar();
 
-			    String stopString =
-			        getTimeString(lmCntrArea, 
-			                      lmCntrArea.getDefDailyStopTime(), 
-			                      lmCntrArea.getCurrentDailyStopTime(), 
-			                      userContext);
+			    startDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
+			    startDate.set(GregorianCalendar.MINUTE, 0);
+			    startDate.set(GregorianCalendar.SECOND, lmCntrArea.getDefDailyStartTime());
+			    stopDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
+			    stopDate.set(GregorianCalendar.MINUTE, 0);
+			    stopDate.set(GregorianCalendar.SECOND, lmCntrArea.getDefDailyStopTime());
+			    
+			    // returns the time displayed in the time window
+				if (lmCntrArea.getDefDailyStartTime() >= 0){
+				    timeString = dateFormattingService.formatDate(startDate.getTime(), DateFormatEnum.TIME, userContext);
+				} else {
+				    timeString = CtiUtilities.STRING_DASH_LINE;
+				}
+				timeString += " - ";
+                if (lmCntrArea.getDefDailyStartTime() >= 0){
+                    timeString += dateFormattingService.formatDate(stopDate.getTime(), DateFormatEnum.TIME, userContext);
+                } else {
+                    timeString += CtiUtilities.STRING_DASH_LINE;
+                }
                 
-                String result = startString + " - " + stopString;
-                return result; 
+                return timeString;
+
 			}
 			
 			case ControlAreaTableModel.PEAK_PROJECTION:
@@ -475,42 +489,6 @@ public class LCUtils
 	}
 
 
-	private static synchronized String getTimeString(LMControlArea row,
-                                                     Integer defSecs,
-                                                     Integer currSecs,
-                                                     YukonUserContext userContext) {
-        DateFormattingService dateFormattingService =
-            (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
-
-        String retStr = null;
-        
-        if (row == null || row.getDisableFlag().booleanValue()) {
-            retStr = CtiUtilities.STRING_DASH_LINE;
-        } else {
-            if (defSecs == null && currSecs == null) {
-                retStr = CtiUtilities.STRING_DASH_LINE;
-            } else {
-                int secondsAfterMidnight;
-
-                if (defSecs == currSecs || currSecs == null) {
-                    secondsAfterMidnight = defSecs;
-                } else {
-                    secondsAfterMidnight = currSecs;
-                }
-                Calendar systemCalendar = Calendar.getInstance();
-                systemCalendar.set(Calendar.HOUR_OF_DAY, 0);
-                systemCalendar.set(Calendar.MINUTE, 0);
-                systemCalendar.set(Calendar.SECOND, secondsAfterMidnight);
-                retStr =
-                    dateFormattingService.formatDate(systemCalendar.getTime(),
-                                                     DateFormattingService.DateFormatEnum.TIME,
-                                                     userContext);
-            }
-        }
-
-        return retStr;
-	}
-	
 	public static synchronized String getProgAvailChgStr( LMProgramBase prog )
 	{
 		switch( prog.getProgramStatus().intValue() )
