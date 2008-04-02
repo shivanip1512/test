@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/1/2008 10:13:47 AM                         */
+/* Created on:     4/2/2008 11:29:24 AM                         */
 /*==============================================================*/
 
 
@@ -9126,6 +9126,7 @@ insert into YukonRoleProperty values(-40195,-400,'Heading Questions','Questions'
 insert into YukonRoleProperty values(-40196,-400,'Heading Administration','Administration','Heading of the administration links');
 insert into YukonRoleProperty values(-40197,-400,'Contacts Access','false','Turns residential side contact access on or off.');
 insert into YukonRoleProperty values(-40198,-400,'Opt Out Today Only','false','Prevents residential side opt outs from being available for scheduling beyond the current day.');
+insert into YukonRoleProperty values(-40199,-400,'Sign Out Enabled','true','Allows end-users to see a sign-out link when accessing their account pages.'); 
 
 /* Capacitor Control role properties */
 insert into YukonRoleProperty values(-70000,-700,'Access','false','Sets accessibility to the CapControl module.');
