@@ -121,10 +121,6 @@
 			<list>
 				<!-- Command string to permission mappings  -->
 				<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
-					<property name="commandString" value="control*connect" />
-					<property name="permission" value="CONTROL_DISCONNECT_COMMAND" />
-				</bean>
-				<bean class="com.cannontech.core.authorization.support.CommandPermissionConverter$CommandPermissionMapping">
 					<property name="commandString" value="get" />
 					<property name="permission" value="READ_COMMAND" />
 				</bean>
@@ -349,18 +345,18 @@
 			    	</property>
 			    	<property name="permission" value="WRITE_COMMAND"/>
 			    </bean>
-			    <!-- Config to check if a user has permission for a CONTROL_DISCONNECT_COMMAND on any pao
-			    	 (not LM or cap control) based on their CONTROL_DISCONNECT_DEVICE role property -->
+			    <!-- Config to check if a user has permission for a CONTROL_COMMAND on any pao
+			    	 (not LM or cap control) based on their CONTROL_DEVICE role property -->
 			    <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
 			    	<property name="objectChecker" ref="otherPaoCheck" />
 			    	<property name="roleChecker">
 			    		<bean factory-bean="rolePropertyUserCheckerFactory" factory-method="createPropertyChecker">
 			    			<constructor-arg>
-			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.CONTROL_DISCONNECT_DEVICE"/>
+			    				<util:constant static-field="com.cannontech.roles.application.CommanderRole.CONTROL_DEVICE"/>
 			    			</constructor-arg>
 			    		</bean>
 			    	</property>
-			    	<property name="permission" value="CONTROL_DISCONNECT_COMMAND"/>
+			    	<property name="permission" value="CONTROL_COMMAND"/>
 			    </bean>
 
 			    <!-- Catch all for unknown commands.  If a command is not known, the EXECUTE_UNKNOWN_COMMAND

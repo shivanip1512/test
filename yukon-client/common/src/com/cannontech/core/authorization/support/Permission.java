@@ -8,7 +8,6 @@ public enum Permission {
     READ_COMMAND("read command", false), 
     WRITE_COMMAND("write command", false), 
     CONTROL_COMMAND("control command", false), 
-    CONTROL_DISCONNECT_COMMAND("control disconnect command", false), 
     OTHER_COMMAND("Unrecognized device command", false), 
     LM_VISIBLE("Load Management Visibility", false), 
     ALLOWED_COMMAND("Allowed Command", false),
