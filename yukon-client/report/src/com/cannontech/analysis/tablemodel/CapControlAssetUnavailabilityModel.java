@@ -15,17 +15,18 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 
 
-public class CapControlAssetAvailabilityModel extends BareDatedReportModelBase<CapControlAssetAvailabilityModel.ModelRow> implements CapControlFilterable {
+public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase<CapControlAssetUnavailabilityModel.ModelRow> implements CapControlFilterable {
     
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+    @SuppressWarnings("unused")
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     
-    public CapControlAssetAvailabilityModel() {
+    public CapControlAssetUnavailabilityModel() {
     }
     
     static public class ModelRow {
@@ -48,7 +49,7 @@ public class CapControlAssetAvailabilityModel extends BareDatedReportModelBase<C
     }
     
     public String getTitle() {
-        return "Cap Control Asset Availability Report";
+        return "Cap Control Asset Unvailability Report";
     }
 
     public int getRowCount() {
@@ -64,7 +65,7 @@ public class CapControlAssetAvailabilityModel extends BareDatedReportModelBase<C
                 new java.sql.Timestamp(getStartDate().getTime()), new java.sql.Timestamp(getStopDate().getTime())};
         jdbcOps.query(sql.toString(), dateRange, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
-                CapControlAssetAvailabilityModel.ModelRow row = new CapControlAssetAvailabilityModel.ModelRow();
+                CapControlAssetUnavailabilityModel.ModelRow row = new CapControlAssetUnavailabilityModel.ModelRow();
                 row.area = rs.getString("area");
                 row.substation = rs.getString("substation");
                 row.subbus = rs.getString("subbus");

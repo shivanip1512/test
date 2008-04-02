@@ -4,9 +4,9 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.cannontech.analysis.tablemodel.BareReportModel;
-import com.cannontech.analysis.tablemodel.CapControlAssetAvailabilityModel;
+import com.cannontech.analysis.tablemodel.CapControlAssetUnavailabilityModel;
 
-public class CapControlAssetAvailabilityReport extends SimpleYukonReportBase {
+public class CapControlAssetUnavailabilityReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("Area", "area", 100),
@@ -17,12 +17,12 @@ public class CapControlAssetAvailabilityReport extends SimpleYukonReportBase {
         new ColumnLayoutData("Feeder Count", "feedcount", 100)
     };
 
-    public CapControlAssetAvailabilityReport(BareReportModel bareModel) {
+    public CapControlAssetUnavailabilityReport(BareReportModel bareModel) {
         super(bareModel);
     }
     
-    public CapControlAssetAvailabilityReport() {
-        this(new CapControlAssetAvailabilityModel());
+    public CapControlAssetUnavailabilityReport() {
+        this(new CapControlAssetUnavailabilityModel());
     }
 
     @Override

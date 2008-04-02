@@ -8,15 +8,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.analysis.report.CapControlAssetAvailabilityReport;
+import com.cannontech.analysis.report.CapControlAssetUnavailabilityReport;
 import com.cannontech.analysis.report.YukonReportBase;
-import com.cannontech.analysis.tablemodel.CapControlAssetAvailabilityModel;
+import com.cannontech.analysis.tablemodel.CapControlAssetUnavailabilityModel;
 import com.cannontech.analysis.tablemodel.CapControlFilterable;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.util.ServletUtil;
 
-public class CapControlAssetAvailabilityController extends CapControlReportControllerBase {
+public class CapControlAssetUnavailabilityController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.CAPCONTROLSUBBUS,
@@ -27,10 +27,10 @@ public class CapControlAssetAvailabilityController extends CapControlReportContr
     private TimeZone timeZone = TimeZone.getDefault();
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     
-    public CapControlAssetAvailabilityController() {
+    public CapControlAssetUnavailabilityController() {
         super();
-        model = new CapControlAssetAvailabilityModel();
-        report = new CapControlAssetAvailabilityReport(model);
+        model = new CapControlAssetUnavailabilityModel();
+        report = new CapControlAssetUnavailabilityReport(model);
     }
 
     public String getHTMLOptionsTable() {
@@ -90,16 +90,16 @@ public class CapControlAssetAvailabilityController extends CapControlReportContr
         
         String param = request.getParameter(ReportModelBase.ATT_START_DATE);
         if( param != null) {
-            ((CapControlAssetAvailabilityModel)model).setStartDate(ServletUtil.parseDateStringLiberally(param, timeZone));
+            ((CapControlAssetUnavailabilityModel)model).setStartDate(ServletUtil.parseDateStringLiberally(param, timeZone));
         } else {
-            ((CapControlAssetAvailabilityModel)model).setStartDate(null);
+            ((CapControlAssetUnavailabilityModel)model).setStartDate(null);
         }
         
         param = request.getParameter(ReportModelBase.ATT_STOP_DATE);
         if( param != null) {
-            ((CapControlAssetAvailabilityModel)model).setStopDate(ServletUtil.parseDateStringLiberally(param, timeZone));
+            ((CapControlAssetUnavailabilityModel)model).setStopDate(ServletUtil.parseDateStringLiberally(param, timeZone));
         }else {
-            ((CapControlAssetAvailabilityModel)model).setStopDate(null);
+            ((CapControlAssetUnavailabilityModel)model).setStopDate(null);
         }
     }
 }
