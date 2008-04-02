@@ -57,6 +57,7 @@ public final class FileFormatTypes {
 
   	public static final int MVRS_KETCHIKAN = 30;
   	public static final int STANDARD = 31;
+  	public static final int NISC_TOU_KVARH_RATES_ONLY = 32;
   	
 	public static final String SEDC_STRING = "SEDC";
 	public static final String CADP_STRING = "CADP";
@@ -85,7 +86,7 @@ public final class FileFormatTypes {
 	public static final String SIMPLE_TOU_DEVICE_NAME_STRING  = "SIMPLE_TOU_DeviceName";
 	public static final String MVRS_KETCHIKAN_STRING = "MVRS Ketchikan";
 	public static final String STANDARD_STRING = "Standard";
-	
+	public static final String NISC_TOU_KVARH_RATES_ONLY_STRING = "NISC TOU (kVarH) Rates Only";
     private static final int[] defaultValidFormatIDs;
     private static final String[] defaultValidFormatTypes;
     

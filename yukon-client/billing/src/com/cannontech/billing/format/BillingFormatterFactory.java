@@ -86,6 +86,9 @@ public final class BillingFormatterFactory {
         case FileFormatTypes.STANDARD:
             return new StandardRecordFormatter();
             
+        case FileFormatTypes.NISC_TOU_KVARH_RATES_ONLY:
+            return new NISC_TOU_kVarH_RatesOnlyRecordFormatter();
+            
         case FileFormatTypes.WLT_40:
         case FileFormatTypes.MV_90:
         case FileFormatTypes.NCDC_HANDHELD:
