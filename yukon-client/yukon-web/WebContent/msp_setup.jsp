@@ -127,7 +127,9 @@
 					    	<select title="Select the Primary CIS vendor" name="mspPrimaryCIS">
 					        	<option selected value='0'>(none)</option>
 					      		<c:forEach var="mspVendorEntry" items="${multispeakBean.mspVendorList}">
-					        		<option <c:if test="${mspVendorEntry.vendorID == multispeakBean.primaryCIS}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> <c:out value="${mspVendorEntry.companyName}"/> </option>
+					        		<option <c:if test="${mspVendorEntry.vendorID == multispeakBean.primaryCIS}">selected</c:if> value='<c:out value="${mspVendorEntry.vendorID}"/>'> 
+					        			<c:out value="${mspVendorEntry.companyName}"/> <c:if test="${mspVendorEntry.appName != ''}">(<c:out value="${mspVendorEntry.appName}"/>)</c:if>
+					        		</option>
 						    	</c:forEach>
 					      	</select>
 						</tags:nameValue>
