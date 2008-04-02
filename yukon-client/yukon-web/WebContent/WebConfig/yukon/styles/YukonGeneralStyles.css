@@ -474,3 +474,10 @@ div.boxContainer .boxContainer_content {
 
 .simpleReportHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 16px; font-weight: bold; color: #000000}
 .simpleReportSubHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 13px; font-weight: bold; color: #000000}
+
+.notAuthorized {
+	color:red;
+	text-align:center;
+	font-size:14px;
+	font-weight:bold;
+}

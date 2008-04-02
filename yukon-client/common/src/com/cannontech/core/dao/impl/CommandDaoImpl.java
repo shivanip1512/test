@@ -1,11 +1,19 @@
 package com.cannontech.core.dao.impl;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
 
+import org.springframework.beans.factory.annotation.Required;
+
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.CommandDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -18,6 +26,7 @@ public final class CommandDaoImpl implements CommandDao {
 	public final char DEFAULT_VALUE_PROMPT = '?'; //the chars that follow the question mark(?), may be grouped by quotes(" or '), is the value 
 												  //that will be displayed on a prompt.  The returned prompted value will replace the ?string value.
     private IDatabaseCache databaseCache;
+    private PaoCommandAuthorizationService paoCommandAuthorizationService;
     
 	/**
 	 * PointFuncs constructor comment.
@@ -180,8 +189,27 @@ public final class CommandDaoImpl implements CommandDao {
 		}
 		return valueString;
 	}
+	
+	public List<LiteCommand> getAuthorizedCommands(Vector<LiteCommand> possibleCommands, LiteYukonUser user) {
+		
+        List<LiteCommand> authorizedCommands = new ArrayList<LiteCommand>();
+        for (LiteCommand command : possibleCommands) {
+        	if (paoCommandAuthorizationService.isAuthorized(user, command.getCommand())) {
+        		authorizedCommands.add(command);
+        	}
+        }
+        
+        return authorizedCommands;
+	}
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }
+
+    @Required
+	public void setPaoCommandAuthorizationService(PaoCommandAuthorizationService paoCommandAuthorizationService) {
+		this.paoCommandAuthorizationService = paoCommandAuthorizationService;
+	}
+
+  
 }

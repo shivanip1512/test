@@ -58,7 +58,6 @@
         <property name="moveInMoveOutEmailService" ref="moveInMoveOutEmailService" />
         <property name="meterDao" ref="meterDao" />
         <property name="dateFormattingService" ref="dateFormattingService" />
-        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>    
         
 </beans>

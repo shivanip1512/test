@@ -40,7 +40,7 @@
 			        </div>
 			    </c:when>
 			    <c:otherwise>
-			    	<div style="color:red;text-align:center;font-size:14px;font-weight:bold;">User is not authorized to perform Move Out</div>
+			    	<div class="notAuthorized">User is not authorized to perform Move Out</div>
 			    </c:otherwise>
 			</c:choose>
 			

@@ -1,9 +1,11 @@
 package com.cannontech.amr.moveInMoveOut.service;
 
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInForm;
 import com.cannontech.amr.moveInMoveOut.bean.MoveInResult;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutForm;
 import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface MoveInMoveOutService {
 
@@ -31,5 +33,12 @@ public interface MoveInMoveOutService {
      * @return
      */
     public MoveOutResult scheduleMoveOut(MoveOutForm moveOutFormObj);
+    
+    /**
+     * Determineif the user is authorized to execute a move in/move out related command.
+     * @param liteYukonUser
+     * @return
+     */
+    public boolean isAuthorized(LiteYukonUser liteYukonUser, Meter meter);
 
 }

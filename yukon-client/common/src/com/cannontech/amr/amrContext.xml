@@ -46,6 +46,7 @@
         <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
         <property name="meterDao" ref="meterDao" />
         <property name="nextValueHelper" ref="nextValueHelper"/>
+        <property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
 
     <!-- Moving JobDefinitions -->

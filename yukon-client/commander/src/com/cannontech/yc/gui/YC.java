@@ -706,8 +706,12 @@ public class YC extends Observable implements MessageListener
 
 
         } else if (getModelType() == DeviceGroupTreeFactory.LiteBaseModel.class) {
-            return this.isAllowCommand(command, user, new LiteYukonPAObject(-1));
+        	
+        	PaoCommandAuthorizationService service = (PaoCommandAuthorizationService) YukonSpringHook.getBean("paoCommandAuthorizationService");
+        	return service.isAuthorized(user, command) || getCommandMode() == YC.CGP_MODE;
+        	
         } else if (!PAOGroups.STRING_INVALID.equalsIgnoreCase(serialNumber)) {
+        	
             return this.isAllowCommand(command, user, "lmdevice");
         }
 

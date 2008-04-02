@@ -39,6 +39,7 @@
  </bean>
   <bean id="commandDao" class="com.cannontech.core.dao.impl.CommandDaoImpl" >
   	<property name="databaseCache" ref="databaseCache" />
+  	<property name="paoCommandAuthorizationService" ref="paoCommandAuthorizationService" />
   </bean>
   <bean id="contactDao" class="com.cannontech.core.dao.impl.ContactDaoImpl" >
   	<property name="yukonListDao" ref="yukonListDao"/>

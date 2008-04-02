@@ -47,6 +47,12 @@ public class PaoCommandAuthorizationServiceImpl implements PaoCommandAuthorizati
         return authorized;
     }
     
+    public boolean isAuthorized(LiteYukonUser user, String command) {
+        Permission permission = converter.getPermission(command);
+        boolean authorized = authorizationService.isAuthorized(user, permission, new LiteYukonPAObject(-1));
+        return authorized;
+    }
+    
     public void verifyAuthorized(LiteYukonUser user, String command, LiteYukonPAObject pao) throws PaoAuthorizationException {
         Permission permission = converter.getPermission(command);
         boolean authorized = authorizationService.isAuthorized(user, permission, pao);

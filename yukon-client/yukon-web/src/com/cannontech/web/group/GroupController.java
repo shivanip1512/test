@@ -21,6 +21,7 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -68,7 +69,7 @@ import com.cannontech.util.Validator;
 import com.cannontech.web.util.ExtTreeNode;
 
 @SuppressWarnings("unchecked")
-public class GroupController extends MultiActionController {
+public class GroupController extends MultiActionController implements InitializingBean {
 
     private Logger log = YukonLogManager.getLogger(GroupController.class);
 
@@ -88,7 +89,14 @@ public class GroupController extends MultiActionController {
     private MeterDao meterDao = null;
     
     private PaoCommandAuthorizationService commandAuthorizationService = null;
+    
+    // available meter commands
+    private Vector<LiteCommand> meterCommands;
 
+    public void afterPropertiesSet() {
+        this.meterCommands = commandDao.getAllCommandsByCategory(DeviceTypes.STRING_MCT_410IL[0]);
+    }
+    
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
@@ -701,7 +709,7 @@ public class GroupController extends MultiActionController {
         ModelAndView mav = new ModelAndView("groupProcessing.jsp");
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         
-        List<LiteCommand> commands = getAuthorizedCommands(user);
+        List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, user);
         mav.addObject("commands", commands);
 
         List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
@@ -753,7 +761,7 @@ public class GroupController extends MultiActionController {
         } else if (StringUtils.isBlank(command)) {
             error = true;
             mav.addObject("errorMsg", "You must enter a valid command");
-        } else if (!commandAuthorizationService.isAuthorized(user, command, new LiteYukonPAObject(-1))) {
+        } else if (!commandAuthorizationService.isAuthorized(user, command)) {
         	error = true;
             mav.addObject("errorMsg", "User is not authorized to execute this command.");
         }
@@ -762,7 +770,7 @@ public class GroupController extends MultiActionController {
         if (error) {
             mav.setViewName("groupProcessing.jsp");
 
-            List<LiteCommand> commands = getAuthorizedCommands(user);
+            List<LiteCommand> commands = commandDao.getAuthorizedCommands(meterCommands, user);
             mav.addObject("commands", commands);
 
             List<? extends DeviceGroup> groups = deviceGroupDao.getAllGroups();
@@ -819,19 +827,4 @@ public class GroupController extends MultiActionController {
 
         return true;
     }
-    
-    private List<LiteCommand> getAuthorizedCommands(LiteYukonUser user) {
-    	
-    	Vector<LiteCommand> commands = commandDao.getAllCommandsByCategory(DeviceTypes.STRING_MCT_410IL[0]);
-        
-        List<LiteCommand> authorizedCommands = new ArrayList<LiteCommand>();
-        for (LiteCommand command : commands) {
-        	if (commandAuthorizationService.isAuthorized(user, command.getCommand(), new LiteYukonPAObject(-1))) {
-        		authorizedCommands.add(command);
-        	}
-        }
-        
-        return authorizedCommands;
-    }
-
 }

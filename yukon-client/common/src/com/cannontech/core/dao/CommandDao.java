@@ -1,9 +1,11 @@
 package com.cannontech.core.dao;
 
+import java.util.List;
 import java.util.Vector;
 
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
+import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface CommandDao {
 
@@ -30,4 +32,10 @@ public interface CommandDao {
      */
     public String loadPromptValue(String valueString, java.awt.Component parent);
 
+    /**
+     * Get list of commands the user is authorized to execute. 
+     * @param user
+     * @return
+     */
+    public List<LiteCommand> getAuthorizedCommands(Vector<LiteCommand> possibleCommands, LiteYukonUser user);
 }

@@ -31,6 +31,8 @@ public interface PaoCommandAuthorizationService {
      * @return True if the user is authorized to execute the command on the YukonDevice
      */
     public boolean isAuthorized(LiteYukonUser user, String command, YukonDevice device);
+    
+    public boolean isAuthorized(LiteYukonUser user, String command);
 
     public void verifyAuthorized(LiteYukonUser user, String command, YukonDevice device) throws PaoAuthorizationException;
 }

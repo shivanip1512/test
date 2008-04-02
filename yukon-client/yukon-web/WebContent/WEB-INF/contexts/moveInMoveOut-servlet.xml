@@ -28,7 +28,6 @@
             ref="moveInMoveOutEmailService" />
         <property name="moveInMoveOutService"
             ref="moveInMoveOutService" />
-        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
 
 </beans>

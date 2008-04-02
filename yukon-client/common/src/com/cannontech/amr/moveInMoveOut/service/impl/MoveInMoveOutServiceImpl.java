@@ -30,6 +30,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -57,6 +58,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     private MeterDao meterDao;
     private SimpleJdbcOperations jdbcTemplate = null;
     private NextValueHelper nextValueHelper = null;
+    private PaoCommandAuthorizationService paoCommandAuthorizationService = null;
 
     public MoveInResult moveIn(MoveInForm moveInFormObj) {
 
@@ -347,6 +349,11 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         }
         return true;
     }
+    
+    public boolean isAuthorized(LiteYukonUser liteYukonUser, Meter meter) {
+    	
+    	return paoCommandAuthorizationService.isAuthorized(liteYukonUser, "getvalue lp peak", meter);
+    }
 
     @Required
     public void setDynamicDataSource(DynamicDataSource dynamicDataSource) {
@@ -411,4 +418,10 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
+
+    @Required
+	public void setPaoCommandAuthorizationService(
+			PaoCommandAuthorizationService paoCommandAuthorizationService) {
+		this.paoCommandAuthorizationService = paoCommandAuthorizationService;
+	}
 }
