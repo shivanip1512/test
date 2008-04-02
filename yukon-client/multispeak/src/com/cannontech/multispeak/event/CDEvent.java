@@ -75,7 +75,7 @@ public class CDEvent extends MultispeakEvent{
         this.resultMessage = resultMessage;
     }
     
-    public void setLoadActionCode(String string) {
+    private void setLoadActionCode(String string) {
         String resultString = string.toLowerCase();
         
         if( resultString.indexOf("unconfirmed disconnected") > -1)
@@ -90,7 +90,7 @@ public class CDEvent extends MultispeakEvent{
             setLoadActionCode(LoadActionCode.Unknown);
     }
     
-    public void setLoadActionCode(double pointValue) {
+    private void setLoadActionCode(double pointValue) {
         
         if( pointValue == 0)        // Confirmed Disconnected
             setLoadActionCode(LoadActionCode.Disconnect);
@@ -111,10 +111,8 @@ public class CDEvent extends MultispeakEvent{
         setResultMessage(returnMsg.getResultString());
 
         if( returnMsg.getStatus() == 0) {
-            
-            if(returnMsg.getResultString().length() > 0){
-                setLoadActionCode(returnMsg.getResultString());
-            } else if( returnMsg.getVector().size() > 0){
+
+            if( returnMsg.getVector().size() > 0){
                 for (int i = 0; i < returnMsg.getVector().size(); i++) {    //assuming only 1 in vector
                     Object o = returnMsg.getVector().elementAt(i);
                     if (o instanceof PointData)
@@ -126,7 +124,8 @@ public class CDEvent extends MultispeakEvent{
                         }
                     }
                 }
-                
+            } else if(returnMsg.getResultString().length() > 0){
+                setLoadActionCode(returnMsg.getResultString());
             }else //Communication failure of sorts
                 setLoadActionCode(LoadActionCode.Unknown);
         }
