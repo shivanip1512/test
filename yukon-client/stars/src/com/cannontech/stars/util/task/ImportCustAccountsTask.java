@@ -741,6 +741,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				// Closing the buffered reader closes all the i/o behind.
                 // In this case the inputStream is closed b/c the reader is being closed.
                 reader.close();
+                archive.close();
                 
 				if(!preScan){
 				numAcctTotal = custFieldsList.size();
@@ -1017,7 +1018,12 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				}
 				
 				errors += hwFileErrors;
+				
+				// Closing the buffered reader closes all the i/o behind.
+                // In this case the inputStream is closed b/c the reader is being closed.
                 reader.close();
+                archive.close();
+                
 				if(!preScan){
 				numHwTotal = hwFieldsList.size();
                     boolean isDeleted = hwFile.delete();

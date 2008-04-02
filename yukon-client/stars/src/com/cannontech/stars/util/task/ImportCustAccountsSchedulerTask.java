@@ -110,8 +110,10 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
         };
 
         SortedSet<String> sortedFileList = new TreeSet<String>(fileNameComparator);
+        if (fileList != null) {
         for (String fileName : fileList) {
             sortedFileList.add(fileName);
+            }
         }
         
         // Checks to see if any files where found in the wanted directory
