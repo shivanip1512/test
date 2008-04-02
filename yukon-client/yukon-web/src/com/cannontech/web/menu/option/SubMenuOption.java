@@ -1,10 +1,10 @@
 package com.cannontech.web.menu.option;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.menu.MenuBase;
 import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 
 /**
@@ -12,30 +12,22 @@ import com.cannontech.web.menu.option.producer.MenuOptionProducer;
  * additional options to choose from.
  */
 public class SubMenuOption extends BaseMenuOption implements MenuOptionProducer {
-    private List<MenuOptionProducer> subOptions = new ArrayList<MenuOptionProducer>();
+    private MenuBase menuBase = new MenuBase();
 
-    public SubMenuOption(YukonMessageSourceResolvable menuText) {
-        super(menuText);
+    public SubMenuOption(String id, YukonMessageSourceResolvable menuText) {
+        super(id, menuText);
+    }
+    
+    public SubMenuOption(String id, String menuTextKey) {
+        super(id, menuTextKey);
     }
 
     public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
-        List<MenuOption> menuOptions = expandProducers(subOptions, userContext);
+        List<MenuOption> menuOptions = menuBase.getMenuOptions(userContext);
         return menuOptions;
     }
 
     public void setSubOptions(List<MenuOptionProducer> subOptions) {
-        this.subOptions = subOptions;
+        this.menuBase = new MenuBase(subOptions);
     }
-
-    public static List<MenuOption> expandProducers(List<MenuOptionProducer> subOptions, YukonUserContext userContext) {
-        List<MenuOption> result = new ArrayList<MenuOption>();
-        
-        for (MenuOptionProducer menuOptionProducer : subOptions) {
-            List<MenuOption> menuOptions = menuOptionProducer.getMenuOptions(userContext);
-            result.addAll(menuOptions);
-        }
-        
-        return result;
-    }
-    
 }

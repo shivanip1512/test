@@ -280,7 +280,6 @@
           </links>
 	    </option>
   	</links>  
-    <search action="/spring/csr/search" method="get" fieldname="Quick Search"/>
   </module>
 
   <module name="consumer">
@@ -631,9 +630,6 @@
   <module name="operations">
     <skin name="standard"/>
     <css file="/WebConfig/yukon/styles/operationsStyles.css"/>
-    <links>
-        <dynamicOptions bean="trendingMenuOption"/>
-    </links>
   </module>
   
   <module name="userlm">

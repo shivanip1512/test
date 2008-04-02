@@ -12,7 +12,6 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 import org.springframework.core.io.Resource;
 
-import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.user.checker.AggregateUserChecker;
 import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
@@ -21,8 +20,8 @@ import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOptionAction;
 import com.cannontech.web.menu.option.SimpleMenuOptionLink;
 import com.cannontech.web.menu.option.SubMenuOption;
+import com.cannontech.web.menu.option.producer.DynamicMenuOptionProducer;
 import com.cannontech.web.menu.option.producer.MenuOptionProducer;
-import com.cannontech.web.menu.option.producer.MenuOptionProducerBase;
 import com.cannontech.web.menu.option.producer.MenuOptionProducerFactory;
 import com.cannontech.web.menu.option.producer.StaticMenuOptionProducer;
 
@@ -128,6 +127,8 @@ public class CommonModuleBuilder implements ModuleBuilder {
                     menuOptionProducer = processOptionElement(element, prefix);
                 } else if ("dynamicOptions".equals(element.getName())) {
                     menuOptionProducer = processDynamicOptionsElement(element, prefix);
+                } else {
+                    throw new RuntimeException("Unknown element found in the links element: " + element.getName());
                 }
                 
                 if (menuOptionProducer != null) {
@@ -140,7 +141,7 @@ public class CommonModuleBuilder implements ModuleBuilder {
 
     private MenuOptionProducer processDynamicOptionsElement(Element element, String prefix) {
         String beanName = element.getAttributeValue("bean");
-        MenuOptionProducerBase menuOptionProducer = menuOptionProducerFactory.createMenuOptions(beanName);
+        DynamicMenuOptionProducer menuOptionProducer = menuOptionProducerFactory.createMenuOptions(beanName);
         UserChecker checker = getCheckerForElement(element);
         
         menuOptionProducer.addUserChecker(checker);
@@ -160,19 +161,17 @@ public class CommonModuleBuilder implements ModuleBuilder {
         Element topLink = optionElement.getChild("link");
         Element subLinks = optionElement.getChild("links");
         
-        YukonMessageSourceResolvable menuText = new YukonMessageSourceResolvable(key);
-        
         if (topAction != null) {
-            SimpleMenuOptionAction actionMenuOption = new SimpleMenuOptionAction(menuText);
+            SimpleMenuOptionAction actionMenuOption = new SimpleMenuOptionAction(optionId, key);
             actionMenuOption.setScript(topAction.getTextTrim());
             menuOption = actionMenuOption;
         } else if (topLink != null) {
-            SimpleMenuOptionLink linkMenuOption = new SimpleMenuOptionLink(menuText);
+            SimpleMenuOptionLink linkMenuOption = new SimpleMenuOptionLink(optionId, key);
             linkMenuOption.setLinkUrl(topLink.getTextTrim());
             menuOption = linkMenuOption;
         } else if (subLinks != null) {
             List<MenuOptionProducer> subLinkOptions = processLinksElement(subLinks, key);
-            SubMenuOption subMenuOption = new SubMenuOption(menuText);
+            SubMenuOption subMenuOption = new SubMenuOption(optionId, key);
             subMenuOption.setSubOptions(subLinkOptions);
             menuOption = subMenuOption;
         }

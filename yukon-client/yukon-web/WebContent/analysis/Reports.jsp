@@ -1,5 +1,3 @@
-
-<html>
 <%@ page import="com.cannontech.amr.deviceread.model.DeviceReadJobLog" %>
 <%@ page import="java.util.Vector" %>
 <%@ page import="com.cannontech.analysis.tablemodel.ReportModelBase" %>

@@ -9,10 +9,14 @@ import com.cannontech.i18n.YukonMessageSourceResolvable;
  */
 public class SimpleMenuOptionAction extends SimpleMenuOption {
 
-    public SimpleMenuOptionAction(YukonMessageSourceResolvable menuText) {
-        super(menuText);
+    public SimpleMenuOptionAction(String id, YukonMessageSourceResolvable menuText) {
+        super(id, menuText);
     }
 
+    public SimpleMenuOptionAction(String id, String menuTextKey) {
+        super(id, menuTextKey);
+    }
+    
     private String script = "";
 
     public void setScript(String jsEventName) {

@@ -13,7 +13,7 @@ import com.cannontech.web.menu.option.SimpleMenuOptionLink;
 /**
  * Dynamic MenuOptionProducer for trends
  */
-public class TrendingMenuOptionProducer extends MenuOptionProducerBase {
+public class TrendingMenuOptionProducer extends DynamicMenuOptionProducer {
 
     private GraphDao graphDao;
 
@@ -36,12 +36,13 @@ public class TrendingMenuOptionProducer extends MenuOptionProducerBase {
             // Get graph name
             String name = definition.getName();
             YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.trending.name",
-                                                                                          name);
-
-            SimpleMenuOptionLink optionLink = new SimpleMenuOptionLink(resolvable);
-
+                                                                                       name);
             // Get graph id
             int id = definition.getLiteID();
+            String optionId = "graph_" + id;
+
+            SimpleMenuOptionLink optionLink = new SimpleMenuOptionLink(optionId, resolvable);
+
             optionLink.setLinkUrl("/user/ConsumerStat/stat/Metering.jsp?gdefid=" + id);
 
             optionList.add(optionLink);

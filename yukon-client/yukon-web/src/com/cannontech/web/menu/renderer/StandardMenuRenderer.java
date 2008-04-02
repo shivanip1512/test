@@ -19,6 +19,7 @@ import org.apache.ecs.html.Script;
 import org.apache.ecs.html.Select;
 import org.apache.ecs.html.Span;
 import org.springframework.context.MessageSourceResolvable;
+import org.springframework.context.NoSuchMessageException;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.DaoFactory;
@@ -27,14 +28,13 @@ import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.menu.CommonMenuException;
 import com.cannontech.web.menu.MenuBase;
 import com.cannontech.web.menu.MenuFeatureSet;
 import com.cannontech.web.menu.ModuleBase;
-import com.cannontech.web.menu.option.BaseMenuOption;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOption;
 import com.cannontech.web.menu.option.SubMenuOption;
-import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 
 /**
  * Outputs the HTML to display the menu for a given request and module.
@@ -133,18 +133,23 @@ public class StandardMenuRenderer implements MenuRenderer {
             }
             first = false;
             MenuOption option = topLevelOptionIterator.next();
-
             
-            A link = createLink(option, "yukon.web.menu.topMenuDefaultTitle");
-
+            A link;
             if (option instanceof SimpleMenuOption) {
+                link = createLink(option, "yukon.web.menu.simpleMenuDefaultTitle");
                 SimpleMenuOption simpleOption = (SimpleMenuOption) option;
                 link.setHref(buildUrl(simpleOption.getUrl()));
             } else if (option instanceof SubMenuOption) {
+                link = createLink(option, "yukon.web.menu.subMenuDefaultTitle");
                 subMenuParents.add((SubMenuOption) option);
-                // <a href="#" class="menuLink" onclick="menuShow('subMenu', 2); return false;">
+                // determine index in list of this option
+                int optionIndex = subMenuParents.size() - 1;
+                String jsId = generateIdForString(optionIndex);
+                
                 link.setHref("#");
-                link.setOnClick(e("ctiMenu.show(this, '" + generateIdForString(option.getMenuText().getCode()) + "'); return false;"));
+                link.setOnClick(e("ctiMenu.show(this, '" + jsId + "'); return false;"));
+            } else {
+                throw new CommonMenuException("Unknown MenuOption type encountered: " + option.getClass());
             }
             link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
             leftDiv.addElement(link);
@@ -153,16 +158,20 @@ public class StandardMenuRenderer implements MenuRenderer {
     }
 
     private A createLink(MenuOption option, String defaultKey) {
-
         A link = new A();
         MessageSourceResolvable message = option.getMenuText();
         String menuLabel = messageSource.getMessage(message);
         link.addElement(e(menuLabel));
         
-        // get default title
-        String title = messageSource.getMessage(defaultKey, menuLabel);
-        // check for custom title
-        // title = messageSource.getMessageWithDefault(linkKey + ".title", title);
+        String title;
+        try {
+            // check for custom title
+            MessageSourceResolvable tooltip = option.getMenuTooltip();
+            title = messageSource.getMessage(tooltip);
+        } catch (NoSuchMessageException e1) {
+            // get default title
+            title = messageSource.getMessage(defaultKey, menuLabel);
+        }
         
         link.setTitle(e(title));
         return link;
@@ -183,15 +192,19 @@ public class StandardMenuRenderer implements MenuRenderer {
     private Div buildSubMenus() {
         Div subDiv = new Div();
         subDiv.setPrettyPrint(true);
-        for (Iterator<SubMenuOption> iter = subMenuParents.iterator(); iter.hasNext();) {
-            SubMenuOption optionParent = iter.next();
+        // use old school loop to track index
+        for (int optionIndex = 0; optionIndex < subMenuParents.size(); ++optionIndex) {
+            SubMenuOption optionParent = subMenuParents.get(optionIndex);
 
             Div thisMenu = new Div();
-            thisMenu.setID(generateIdForString(optionParent.getMenuText().getCode()));
-            if(!isOptionSelected(optionParent, 0)){
+            String jsId = generateIdForString(optionIndex);
+            thisMenu.setID(jsId);
+            
+            if (!isOptionSelected(optionParent, 0)) {
                 thisMenu.setStyle("display: none;");
             }
-            Iterator<MenuOption> subLevelOptionIterator = optionParent.getMenuOptions(userContext).iterator();
+            Iterator<MenuOption> subLevelOptionIterator = optionParent.getMenuOptions(userContext)
+                                                                      .iterator();
             boolean first = true;
             while (subLevelOptionIterator.hasNext()) {
                 if (!first) {
@@ -202,15 +215,16 @@ public class StandardMenuRenderer implements MenuRenderer {
                 MenuOption option = subLevelOptionIterator.next();
                 if (option instanceof SimpleMenuOption) {
                     SimpleMenuOption simpleSubOption = (SimpleMenuOption) option;
-                    A link = createLink(simpleSubOption, "yukon.web.menu.subMenuDefaultTitle");
-                    if(isOptionSelected(simpleSubOption, 1)){
+                    A link = createLink(simpleSubOption,
+                                        "yukon.web.menu.simpleMenuDefaultTitle");
+                    if (isOptionSelected(simpleSubOption, 1)) {
                         link.setClass("selected");
                     }
                     link.setHref(buildUrl(simpleSubOption.getUrl()));
                     thisMenu.addElement(link);
                 } else {
                     // multiple menu levels aren't supported here
-                    throw new UnsupportedOperationException("StandardMenuRenderer only supports two level menus");
+                    throw new CommonMenuException("StandardMenuRenderer only supports two level menus");
                 }
             }
             subDiv.addElement(thisMenu);
@@ -270,7 +284,7 @@ public class StandardMenuRenderer implements MenuRenderer {
                                 optGroup.addElement(portalOption);
                             } else {
                                 // multiple menu levels aren't supported here
-                                throw new UnsupportedOperationException("StandardMenuRenderer quick links only support two level menus");
+                                throw new CommonMenuException("StandardMenuRenderer quick links only support two level menus");
                             }
                         }
                         select.addElement(optGroup);
@@ -351,9 +365,8 @@ public class StandardMenuRenderer implements MenuRenderer {
         return StringEscapeUtils.escapeHtml(ServletUtil.createSafeUrl(httpServletRequest, url));
     }
     
-    private String generateIdForString(String title) {
-        // strip out bad characters
-        return "stdmenu_" + title.replaceAll("[^a-zA-Z0-9]", "_");
+    private String generateIdForString(int index) {
+        return "stdmenu_" + index;
     }
     
     private boolean isOptionSelected(MenuOption option, int menuLevel){

@@ -1,10 +1,10 @@
 package com.cannontech.web.menu;
 
-public class CommonMenuException extends Exception {
-    CommonMenuException(String why, Throwable cause) {
+public class CommonMenuException extends RuntimeException {
+    public CommonMenuException(String why, Throwable cause) {
         super(why, cause);
     }
-    CommonMenuException(String why) {
+    public CommonMenuException(String why) {
         super(why);
     }
 

@@ -10,8 +10,12 @@ public class SimpleMenuOptionLink extends SimpleMenuOption {
 
     private String linkUrl = "";
 
-    public SimpleMenuOptionLink(YukonMessageSourceResolvable menuText) {
-        super(menuText);
+    public SimpleMenuOptionLink(String id, YukonMessageSourceResolvable menuText) {
+        super(id, menuText);
+    }
+    
+    public SimpleMenuOptionLink(String id, String menuTextKey) {
+        super(id, menuTextKey);
     }
 
     public String getUrl() {

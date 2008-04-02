@@ -6,7 +6,9 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.menu.option.MenuOption;
 
 /**
- * Interface used to produce menu options
+ * Interface used to produce menu options. This is used to return sub menus,
+ * to create dynamic menus, and for the class that holds onto the top level
+ * menus.
  */
 public interface MenuOptionProducer {
 

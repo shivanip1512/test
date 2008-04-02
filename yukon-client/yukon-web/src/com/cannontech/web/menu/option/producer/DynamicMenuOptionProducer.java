@@ -6,7 +6,7 @@ import com.cannontech.user.checker.UserChecker;
 /**
  * Abstract base class for menu option producers
  */
-public abstract class MenuOptionProducerBase implements MenuOptionProducer {
+public abstract class DynamicMenuOptionProducer implements MenuOptionProducer {
 
     private UserChecker userChecker = null;
     

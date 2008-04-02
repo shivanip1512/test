@@ -12,6 +12,6 @@ public interface MenuOptionProducerFactory {
      * @param menuOptionType - Type of menu option producer to create
      * @return The menu option producer for the type
      */
-    public MenuOptionProducerBase createMenuOptions(String menuOptionType);
+    public DynamicMenuOptionProducer createMenuOptions(String menuOptionType);
 
 }

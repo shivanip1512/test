@@ -17,7 +17,7 @@ import com.cannontech.web.menu.option.SubMenuOption;
 /**
  * Dynamic MenuOptionProducer for thermostats
  */
-public class ThermostatMenuOptionProducer extends MenuOptionProducerBase {
+public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
 
     private InventoryDao inventoryDao;
     private CustomerAccountDao customerAccountDao;
@@ -47,10 +47,9 @@ public class ThermostatMenuOptionProducer extends MenuOptionProducerBase {
             for (Thermostat thermostat : thermostats) {
                 String label = thermostat.getLabel();
                 YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.thermostat.name",
-                                                                                              label);
+                                                                                           label);
 
-                SubMenuOption option = new SubMenuOption(resolvable);
-                option.setId("thermostat_" + label);
+                SubMenuOption option = new SubMenuOption("thermostat_" + label, resolvable);
                 List<MenuOptionProducer> subOptions = createSubMenu(thermostat);
                 option.setSubOptions(subOptions);
                 optionList.add(option);
@@ -84,8 +83,8 @@ public class ThermostatMenuOptionProducer extends MenuOptionProducerBase {
     }
 
     private MenuOptionProducer createLink(String labelKey, String link) {
-        YukonMessageSourceResolvable menuText = new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.thermostat." + labelKey);
-        SimpleMenuOptionLink menuOption = new SimpleMenuOptionLink(menuText);
+        String menuTextKey = "yukon.web.menu.config.consumer.thermostat." + labelKey;
+        SimpleMenuOptionLink menuOption = new SimpleMenuOptionLink(labelKey, menuTextKey);
         menuOption.setLinkUrl(link);
         StaticMenuOptionProducer menuOptionProducer = new StaticMenuOptionProducer(menuOption, new NullUserChecker());
 
