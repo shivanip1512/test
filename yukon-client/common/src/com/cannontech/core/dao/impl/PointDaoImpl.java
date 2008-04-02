@@ -12,12 +12,14 @@ import java.util.Map;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
@@ -77,6 +79,7 @@ public final class PointDaoImpl implements PointDao {
     };
 
     private IDatabaseCache databaseCache;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
     private JdbcOperations jdbcOps;
     private NextValueHelper nextValueHelper;
     
@@ -173,32 +176,23 @@ public final class PointDaoImpl implements PointDao {
 
     public Map<Integer,List<LitePoint>> getLitePointsByPaObject(final List<Integer> paoIdList) {
         final Map<Integer,List<LitePoint>> map = new HashMap<Integer,List<LitePoint>>(paoIdList.size());
-        final List<String> queryList = new ArrayList<String>();
-        final List<Integer> tempPaoIdList = new ArrayList<Integer>(paoIdList);
+        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
         
-        int size = paoIdList.size();
-        int chunkSize = 1000;
-        for (int start = 0; start < size; start += chunkSize ) {
-            int nextToIndex = start + chunkSize;
-            int toIndex = (size < nextToIndex) ? size : nextToIndex;
-            List<Integer> subList = tempPaoIdList.subList(start, toIndex);
-            String sql = buildSqlForPaoIdList(subList);
-            queryList.add(sql);
-        }
-        
-        for (final String sql : queryList) {
-            this.jdbcOps.query(sql, new RowCallbackHandler() {
-                public void processRow(ResultSet rs) throws SQLException {
-                    LitePoint point = litePointRowMapper.mapRow(rs, rs.getRow());
-                    Integer key = point.getPaobjectID();
-                    List<LitePoint> pointList = map.get(key);
-                    if (pointList == null) {
-                        pointList = new ArrayList<LitePoint>();
-                        map.put(key, pointList);
-                    }
-                    pointList.add(point);
-                }
-            });
+        final List<LitePoint> resultList = template.query(new SqlGenerator<Integer>() {
+            @Override
+            public String generate(List<Integer> subList) {
+                return buildSqlForPaoIdList(subList);
+            }
+        }, paoIdList, litePointRowMapper);
+
+        for (final LitePoint point : resultList) {
+            Integer key = point.getPaobjectID();
+            List<LitePoint> pointList = map.get(key);
+            if (pointList == null) {
+                pointList = new ArrayList<LitePoint>();
+                map.put(key, pointList);
+            }
+            pointList.add(point);            
         }
         
         return map;
@@ -401,8 +395,9 @@ public final class PointDaoImpl implements PointDao {
         this.databaseCache = databaseCache;
     }
     
-    public void setJdbcOps(JdbcOperations jdbcOps) {
-        this.jdbcOps = jdbcOps;
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
+        this.jdbcOps = this.simpleJdbcTemplate.getJdbcOperations();
     }
     
     public void setNextValueHelper(NextValueHelper nextValueHelper) {

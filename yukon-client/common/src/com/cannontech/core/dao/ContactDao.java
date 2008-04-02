@@ -1,6 +1,7 @@
 package com.cannontech.core.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -16,6 +17,8 @@ public interface ContactDao {
      * @param contactID_ int
      */
     public LiteContact getContact(int contactID_);
+    
+    public Map<Integer, LiteContact> getContacts(List<Integer> contactIds);
 
     /**
      * Returns the LiteContactNotification of the specified category

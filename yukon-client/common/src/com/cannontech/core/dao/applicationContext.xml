@@ -110,7 +110,7 @@
   </bean>
   <bean id="pointDao" class="com.cannontech.core.dao.impl.PointDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/>      
-    <property name="jdbcOps" ref="jdbcTemplate"/>     
+    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>     
     <property name="nextValueHelper" ref="nextValueHelper"/>
   </bean>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" >

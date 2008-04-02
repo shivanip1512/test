@@ -6,6 +6,8 @@
  */
 package com.cannontech.analysis.data.stars;
 
+import com.cannontech.database.data.lite.LiteAddress;
+import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 
@@ -16,7 +18,7 @@ import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class WorkOrder {
-	
+	private AdditionalInformation additionalInformation;
 	private LiteWorkOrderBase liteWorkOrderBase = null;
 //	private ArrayList<LiteInventoryBase> liteInventories = null;
 	private LiteInventoryBase liteInventoryBase = null;
@@ -48,14 +50,53 @@ public class WorkOrder {
 	public void setLiteInventoryBase(LiteInventoryBase liteInventoryBase) {
 		this.liteInventoryBase = liteInventoryBase;
 	}
+	
+    public AdditionalInformation getAdditionalInformation() {
+        return additionalInformation;
+    }
 
-	/*public ArrayList<LiteInventoryBase> getLiteInventories() {
-		if( liteInventories == null)
-			liteInventories = new ArrayList<LiteInventoryBase>();
-		return liteInventories;
-	}
+    public void setAdditionalInformation(AdditionalInformation additionalInformation) {
+        this.additionalInformation = additionalInformation;
+    }
 
-	public void setLiteInventories(ArrayList<LiteInventoryBase> liteInventories) {
-		this.liteInventories = liteInventories;
-	}*/
+    public static class AdditionalInformation {
+        private LiteContact contact;
+        private LiteContact ecContact;
+        private LiteAddress address;
+        private LiteAddress ecAddress;
+        
+        public LiteContact getContact() {
+            return contact;
+        }
+        
+        public void setContact(LiteContact contact) {
+            this.contact = contact;
+        }
+        
+        public LiteContact getEcContact() {
+            return ecContact;
+        }
+        
+        public void setEcContact(LiteContact ecContact) {
+            this.ecContact = ecContact;
+        }
+        
+        public LiteAddress getAddress() {
+            return address;
+        }
+        
+        public void setAddress(LiteAddress address) {
+            this.address = address;
+        }
+        
+        public LiteAddress getEcAddress() {
+            return ecAddress;
+        }
+        
+        public void setEcAddress(LiteAddress ecAddress) {
+            this.ecAddress = ecAddress;
+        }
+        
+    }
+
 }

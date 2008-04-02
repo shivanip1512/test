@@ -13,8 +13,11 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -479,62 +482,60 @@ public class WorkOrderModel extends ReportModelBase {
 		//Reset all objects, new data being collected!
 //		setData(null);  //perform this in loadData(...)
 		
-		if (getEnergyCompanyID() == null) return;
-		
-		{
-			LiteStarsEnergyCompany ec = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID().intValue());
-			ArrayList<LiteWorkOrderBase> woList = new ArrayList<LiteWorkOrderBase>();
-			
-			if (getOrderID() != null) {
-				LiteWorkOrderBase liteOrder = ec.getWorkOrderBase( getOrderID().intValue(), true );
-				if (liteOrder != null) woList.add( liteOrder );
-			}
-			else if (getAccountID() != null) {
-				LiteStarsCustAccountInformation liteAcctInfo = ec.getCustAccountInformation( getAccountID().intValue(), true );
-				if (liteAcctInfo != null) {
-					for (int j = 0; j < liteAcctInfo.getServiceRequestHistory().size(); j++) {
-						Integer orderID = (Integer) liteAcctInfo.getServiceRequestHistory().get(j);
-						woList.add( ec.getWorkOrderBase(orderID.intValue(), true) );
-					}
-				}
-			}
-			else {
-                List<LiteWorkOrderBase> allWOs = ec.loadAllWorkOrders(true);
-				if( allWOs != null)
-					woList.addAll( allWOs );
-			}
-			
-			if (getServiceStatus() != null && getServiceStatus().intValue() > 0) {
-				Iterator it = woList.iterator();
-				while (it.hasNext()) {
-					LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) it.next();
-					if (liteOrder.getCurrentStateID() != getServiceStatus().intValue())
-						it.remove();
-				}
-			}
-			
-			if (getSearchColumn() != SEARCH_COL_NONE) {
-				Iterator it = woList.iterator();
-				while (it.hasNext()) {
-					LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) it.next();
-					
-					long timestamp = 0;
-					if (getSearchColumn() == SEARCH_COL_DATE_REPORTED)
-						timestamp = liteOrder.getDateReported();
-					else if (getSearchColumn() == SEARCH_COL_DATE_SCHEDULED)
-						timestamp = liteOrder.getDateScheduled();
-					else if (getSearchColumn() == SEARCH_COL_DATE_CLOSED)
-						timestamp = liteOrder.getDateCompleted();
-					
-					if (timestamp < getStartDate().getTime() || timestamp > getStopDate().getTime())
-						it.remove();
-				}
-			}
-			
-			loadData(ec, woList);
-		}
-		
-		Collections.sort( getData(), workOrderCmptor );
+	    if (getEnergyCompanyID() == null) return;
+
+	    LiteStarsEnergyCompany ec = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID().intValue());
+	    ArrayList<LiteWorkOrderBase> woList = new ArrayList<LiteWorkOrderBase>();
+
+	    if (getOrderID() != null) {
+	        LiteWorkOrderBase liteOrder = ec.getWorkOrderBase( getOrderID().intValue(), true );
+	        if (liteOrder != null) woList.add( liteOrder );
+	    }
+	    else if (getAccountID() != null) {
+	        LiteStarsCustAccountInformation liteAcctInfo = ec.getCustAccountInformation( getAccountID().intValue(), true );
+	        if (liteAcctInfo != null) {
+	            for (int j = 0; j < liteAcctInfo.getServiceRequestHistory().size(); j++) {
+	                Integer orderID = (Integer) liteAcctInfo.getServiceRequestHistory().get(j);
+	                woList.add( ec.getWorkOrderBase(orderID.intValue(), true) );
+	            }
+	        }
+	    }
+	    else {
+	        List<LiteWorkOrderBase> allWOs = ec.loadAllWorkOrders(true);
+	        if( allWOs != null)
+	            woList.addAll( allWOs );
+	    }
+
+	    if (getServiceStatus() != null && getServiceStatus().intValue() > 0) {
+	        Iterator it = woList.iterator();
+	        while (it.hasNext()) {
+	            LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) it.next();
+	            if (liteOrder.getCurrentStateID() != getServiceStatus().intValue())
+	                it.remove();
+	        }
+	    }
+
+	    if (getSearchColumn() != SEARCH_COL_NONE) {
+	        Iterator it = woList.iterator();
+	        while (it.hasNext()) {
+	            LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) it.next();
+
+	            long timestamp = 0;
+	            if (getSearchColumn() == SEARCH_COL_DATE_REPORTED)
+	                timestamp = liteOrder.getDateReported();
+	            else if (getSearchColumn() == SEARCH_COL_DATE_SCHEDULED)
+	                timestamp = liteOrder.getDateScheduled();
+	            else if (getSearchColumn() == SEARCH_COL_DATE_CLOSED)
+	                timestamp = liteOrder.getDateCompleted();
+
+	            if (timestamp < getStartDate().getTime() || timestamp > getStopDate().getTime())
+	                it.remove();
+	        }
+	    }
+
+	    loadData(ec, woList);
+
+	    Collections.sort( getData(), workOrderCmptor );
 	}
 	
 	public void loadData(LiteStarsEnergyCompany liteStarsEC, List<LiteWorkOrderBase> woList)
@@ -600,6 +601,89 @@ public class WorkOrderModel extends ReportModelBase {
 				}
 			}
 		}
+		
+		StarsDatabaseCache starsCache = StarsDatabaseCache.getInstance();
+		
+		final Set<Integer> contactIdSet = new HashSet<Integer>();
+		final Set<Integer> energyContactIdSet = new HashSet<Integer>();
+		final Set<Integer> addressIdSet = new HashSet<Integer>();
+
+		int ecContactId = liteStarsEC.getPrimaryContactID();
+		energyContactIdSet.add(ecContactId);
+
+		// create a shallow copy of the data Vector for iterating, there is a performance gain here...
+		List<Object> workOrderList = new ArrayList<Object>(getData());
+		
+		/* Round 1 - build up data collections of all the contact ID's and address ID's so
+		 *           we can hit the database only twice.
+		 */
+		for (final Object o : workOrderList) {
+		    if (!(o instanceof WorkOrder)) continue;
+		    LiteWorkOrderBase liteWorkOrder = ((WorkOrder) o).getLiteWorkOrderBase();;
+
+		    LiteStarsEnergyCompany liteStarsEnergyCompany = starsCache.getEnergyCompany(liteWorkOrder.getEnergyCompanyID());
+		    energyContactIdSet.add(liteStarsEnergyCompany.getPrimaryContactID());
+		    
+		    int accountId = liteWorkOrder.getAccountID();
+		    if (accountId > 0) {
+		        LiteStarsCustAccountInformation lAcctInfo = liteStarsEnergyCompany.getBriefCustAccountInfo(accountId, true );
+		        if (lAcctInfo != null) {
+		            int contactId = lAcctInfo.getCustomer().getPrimaryContactID();
+		            contactIdSet.add(contactId);
+
+		            int addressId = lAcctInfo.getAccountSite().getStreetAddressID();
+		            addressIdSet.add(addressId);
+		        }     
+		    }
+		}
+
+		final List<Integer> contactIdList = new ArrayList<Integer>(contactIdSet.size() + energyContactIdSet.size());
+		contactIdList.addAll(contactIdSet);
+		contactIdList.addAll(energyContactIdSet);
+
+		final Map<Integer, LiteContact> contactMap = DaoFactory.getContactDao().getContacts(contactIdList);
+		
+		for (final Integer contactId : energyContactIdSet) {
+		    LiteContact ecContact = contactMap.get(contactId);
+		    addressIdSet.add(ecContact.getAddressID());
+		}
+
+		final Map<Integer, LiteAddress> addressMap = DaoFactory.getAddressDao().getAddresses(new ArrayList<Integer>(addressIdSet));
+		
+		/* Round 2 - build AdditionalInformation objects and attach them to the WorkOrder
+		 *           when getAttribute() is called the WorkOrder will contain any it needs in memory. 
+		 */
+		for (final Object o : workOrderList) {
+		    if (!(o instanceof WorkOrder)) continue;
+		    WorkOrder workOrder = (WorkOrder) o;
+		    LiteWorkOrderBase liteWorkOrder = workOrder.getLiteWorkOrderBase();
+		    LiteStarsEnergyCompany liteStarsEnergyCompany = starsCache.getEnergyCompany(liteWorkOrder.getEnergyCompanyID());
+		    
+		    final WorkOrder.AdditionalInformation info = new WorkOrder.AdditionalInformation();
+		    
+		    LiteContact ecContact = contactMap.get(liteStarsEnergyCompany.getPrimaryContactID());
+		    info.setEcContact(ecContact);
+		    
+		    LiteAddress ecAddress = addressMap.get(ecContact.getAddressID());
+		    info.setEcAddress(ecAddress);
+
+		    int accountId = liteWorkOrder.getAccountID();
+		    if (accountId > 0) {
+		        LiteStarsCustAccountInformation lAcctInfo = liteStarsEnergyCompany.getBriefCustAccountInfo(accountId, true );
+		        if (lAcctInfo != null) {
+		            int addressId = lAcctInfo.getAccountSite().getStreetAddressID();
+		            LiteAddress address = addressMap.get(addressId);
+		            info.setAddress(address);
+
+		            int contactId = lAcctInfo.getCustomer().getPrimaryContactID();
+		            LiteContact contact = contactMap.get(contactId);
+		            info.setContact(contact);
+		        }
+		    }
+		    
+		    workOrder.setAdditionalInformation(info);
+		}
+		
         CTILogger.info("Loading of Data Objects (" + getData().size() + ")  took " + (new Date().getTime() - startTimer.getTime()*.001) + " secs.");
 	}
 
@@ -618,8 +702,8 @@ public class WorkOrderModel extends ReportModelBase {
 			LiteAddress liteAddress = null;
 			if (lOrder.getAccountID() > 0) {
 				lAcctInfo = ec.getBriefCustAccountInfo( lOrder.getAccountID(), true );
-				liteContact = DaoFactory.getContactDao().getContact( lAcctInfo.getCustomer().getPrimaryContactID() );
-				liteAddress = ec.getAddress( lAcctInfo.getAccountSite().getStreetAddressID() );
+				liteContact = wo.getAdditionalInformation().getContact();
+				liteAddress = wo.getAdditionalInformation().getAddress();
 			}
 			
 			LiteInventoryBase liteInvBase = wo.getLiteInventoryBase(); 
@@ -629,10 +713,10 @@ public class WorkOrderModel extends ReportModelBase {
 					return ec.getName();
 				case EC_INFO_COLUMN:
 					String returnStr = "WORK ORDER";
-					LiteContact lc_ec = DaoFactory.getContactDao().getContact( ec.getPrimaryContactID() );
+					LiteContact lc_ec = wo.getAdditionalInformation().getEcContact();
 					if( lc_ec != null)
 					{
-						LiteAddress lAddr = ec.getAddress( lc_ec.getAddressID() );
+					    LiteAddress lAddr = wo.getAdditionalInformation().getEcAddress();
 						if (lAddr != null) {
                             if (StarsUtils.forceNotNone(lAddr.getLocationAddress1()).length() > 0)
                                 returnStr += "\r\n" + StarsUtils.forceNotNone(lAddr.getLocationAddress1());
@@ -1017,4 +1101,5 @@ public class WorkOrderModel extends ReportModelBase {
 				setSearchColumn(SEARCH_COL_NONE);
 		}
 	}
+
 }

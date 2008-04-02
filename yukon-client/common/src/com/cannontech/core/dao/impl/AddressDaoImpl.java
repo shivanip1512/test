@@ -3,7 +3,9 @@ package com.cannontech.core.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -11,6 +13,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.incrementer.NextValueHelper;
@@ -93,6 +98,32 @@ public class AddressDaoImpl implements AddressDao {
     public LiteAddress getByAddressId(final int addressId) throws DataAccessException {
         LiteAddress address = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, addressId);
         return address;
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Map<Integer,LiteAddress> getAddresses(final List<Integer> addressIdList) {
+        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        
+        final List<LiteAddress> addressList = template.query(new SqlGenerator<Integer>() {
+            @Override
+            public String generate(List<Integer> subList) {
+                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+                sqlBuilder.append(selectAllSql);
+                sqlBuilder.append(" WHERE AddressID IN (");
+                sqlBuilder.append(SqlStatementBuilder.convertToSqlLikeList(subList));
+                sqlBuilder.append(")");
+                String sql = sqlBuilder.toString();
+                return sql;
+            }
+        }, addressIdList, rowMapper);
+        
+        final Map<Integer, LiteAddress> resultMap = new HashMap<Integer, LiteAddress>(addressIdList.size());
+        for (final LiteAddress address : addressList) {
+            Integer key = address.getAddressID();
+            resultMap.put(key, address);
+        }
+        
+        return resultMap;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

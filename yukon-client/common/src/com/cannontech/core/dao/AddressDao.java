@@ -1,6 +1,7 @@
 package com.cannontech.core.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 
@@ -15,6 +16,8 @@ public interface AddressDao {
     public boolean update(LiteAddress address);
     
     public LiteAddress getByAddressId(int addressId) throws DataAccessException;
+    
+    public Map<Integer,LiteAddress> getAddresses(List<Integer> addressIdList);
     
     public List<LiteAddress> getByCityName(String cityName);
     

@@ -5,16 +5,22 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -34,8 +40,7 @@ import com.cannontech.yukon.IDatabaseCache;
  * Creation date: (3/26/2001 9:40:33 AM)
  * @author: 
  */
-public final class ContactDaoImpl implements ContactDao 
-{
+public final class ContactDaoImpl implements ContactDao {
     private YukonListDao yukonListDao;
     private ContactNotificationDao contactNotificationDao;
     private YukonUserDao yukonUserDao;
@@ -43,6 +48,7 @@ public final class ContactDaoImpl implements ContactDao
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private final ParameterizedRowMapper<LiteContact> rowMapper = new LiteContactRowMapper();
 
     
 	/**
@@ -60,12 +66,37 @@ public final class ContactDaoImpl implements ContactDao
         sql.append(" WHERE ContactId = ?");
 
         LiteContact contact = simpleJdbcTemplate.queryForObject(sql.toString(),
-                                                                new LiteContactRowMapper(),
+                                                                rowMapper,
                                                                 contactId);
         this.loadNotifications(contact);
 
         return contact;
 
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Map<Integer, LiteContact> getContacts(List<Integer> contactIds) {
+        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+
+        final List<LiteContact> contactList = template.query(new SqlGenerator<Integer>() {
+            @Override
+            public String generate(List<Integer> subList) {
+                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+                sqlBuilder.append("SELECT * FROM Contact WHERE ContactID IN (");
+                sqlBuilder.append(SqlStatementBuilder.convertToSqlLikeList(subList));
+                sqlBuilder.append(")");
+                String sql = sqlBuilder.toString();
+                return sql;
+            }
+        }, contactIds, rowMapper);
+        
+        final Map<Integer, LiteContact> resultMap = new HashMap<Integer, LiteContact>(contactList.size());
+        for (final LiteContact contact : contactList) {
+            Integer key = contact.getContactID();
+            resultMap.put(key, contact);
+        }
+        
+        return resultMap;
     }
 
 	/* (non-Javadoc)
@@ -447,7 +478,7 @@ public final class ContactDaoImpl implements ContactDao
         sql.append(" AND ca.AccountId = ?");
 
         LiteContact contact = simpleJdbcTemplate.queryForObject(sql.toString(),
-                                                                new LiteContactRowMapper(),
+                                                                rowMapper,
                                                                 accountId);
         this.loadNotifications(contact);
 
@@ -465,7 +496,7 @@ public final class ContactDaoImpl implements ContactDao
         sql.append(" ORDER BY cac.Ordering");
 
         List<LiteContact> contactList = simpleJdbcTemplate.query(sql.toString(),
-                                                                 new LiteContactRowMapper(),
+                                                                 rowMapper,
                                                                  customerId);
 
         for (LiteContact contact : contactList) {
@@ -487,7 +518,7 @@ public final class ContactDaoImpl implements ContactDao
         sql.append(" ORDER BY cac.Ordering");
 
         List<LiteContact> contactList = simpleJdbcTemplate.query(sql.toString(),
-                                                                 new LiteContactRowMapper(),
+                                                                 rowMapper,
                                                                  accountId);
 
         for (LiteContact contact : contactList) {
