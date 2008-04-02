@@ -204,7 +204,8 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
     private JSpinner getMaxRuntimeSpinner() {
         if (maxRuntimeSpinner == null) {
-            maxRuntimeSpinner = createTimeSpinner(0, 24);
+            maxRuntimeSpinner = createTimeSpinner(4, 24);
+            maxRuntimeSpinner.setValue(new Date(0, 0, 0, 8, 0));
         }
         return maxRuntimeSpinner;
     }
@@ -415,7 +416,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
         c.gridx = 0;
         c.gridy = 6;
-        statEditorPanel.add(new JLabel("Restore Time"), c);
+        statEditorPanel.add(new JLabel("Ramp Out Time"), c);
 
         c.gridx = 1;
         c.gridy = 6;
@@ -435,7 +436,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
         c.gridx = 2;
         c.gridy = 7;
-        statEditorPanel.add(new JLabel("(0:00 - 24:00)"), c);
+        statEditorPanel.add(new JLabel("(4:00 - 24:00)"), c);
 
         c.gridx = 0;
         c.gridy = 8;
