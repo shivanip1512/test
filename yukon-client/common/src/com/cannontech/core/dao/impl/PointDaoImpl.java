@@ -90,7 +90,7 @@ public final class PointDaoImpl implements PointDao {
             
             return p;
         } catch (IncorrectResultSizeDataAccessException e) {
-            throw new NotFoundException("A point with id " + pointID + "cannot be found.");
+            throw new NotFoundException("A point with id " + pointID + " cannot be found.");
         }
     }
     
