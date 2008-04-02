@@ -104,7 +104,7 @@ for( int i = 0; i < items.length; i++ )
 		<% }  %>
 		<% if( CBCUtils.isController( item ) ) { %>
             <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
-                <a href="/editor/copyBase.jsf?itemid=<%=item.getItemID() %>&type=1>"><img src="/editor/images/page_copy.png" border="0" height="15" width="15"/></a>
+                <a href="/editor/copyBase.jsf?itemid=<%=item.getItemID() %>&type=1>"><img src="/editor/images/page_copy.gif" border="0" height="15" width="15"/></a>
 			</cti:checkProperty>
 		<% }%>
 				<%=item.toString()%></td>
