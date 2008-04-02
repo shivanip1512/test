@@ -2165,63 +2165,12 @@ insert into YukonRoleProperty values(-1702,-8, 'Customer Info Importer File Loca
 /* End YUK-5559 */
 
 /* Start YUK-5501 */
-insert into 
-	command 
-select 
-	min(CommandID) - 1
-	, 'getstatus freeze'
-	, 'Read the freeze timestamp, counter, and next freeze expected for demand and voltage.'
-	, 'MCT-410IL'
-from
-	Command;
-	
-insert into
-	DeviceTypeCommand
-select
-	min(DeviceCommandID) - 1
-	, (select min(CommandID) from Command)
-	, 'MCT-410CL'
-	, (select max(DisplayOrder) + 1 from DeviceTypeCommand where DeviceType = 'MCT-410CL')
-	, 'Y'
-	, -1
-from
-	DeviceTypeCommand;
+insert into command values(-140, 'getstatus freeze', 'Read the freeze timestamp, counter, and next freeze expected for demand and voltage.', 'MCT-410IL');
 
-insert into
-	DeviceTypeCommand
-select
-	min(DeviceCommandID) - 1
-	, (select min(CommandID) from Command)
-	, 'MCT-410FL'
-	, (select max(DisplayOrder) + 1 from DeviceTypeCommand where DeviceType = 'MCT-410FL')
-	, 'Y'
-	, -1
-from
-	DeviceTypeCommand;
-	
-insert into
-	DeviceTypeCommand
-select
-	min(DeviceCommandID) - 1
-	, (select min(CommandID) from Command)
-	, 'MCT-410GL'
-	, (select max(DisplayOrder) + 1 from DeviceTypeCommand where DeviceType = 'MCT-410GL')
-	, 'Y'
-	, -1
-from
-	DeviceTypeCommand;
-	
-insert into
-	DeviceTypeCommand
-select
-	min(DeviceCommandID) - 1
-	, (select min(CommandID) from Command)
-	, 'MCT-410IL'
-	, (select max(DisplayOrder) + 1 from DeviceTypeCommand where DeviceType = 'MCT-410IL')
-	, 'Y'
-	, -1
-from
-	DeviceTypeCommand;
+INSERT INTO DEVICETYPECOMMAND VALUES (-710, -140, 'MCT-410CL', 33, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-711, -140, 'MCT-410FL', 33, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-712, -140, 'MCT-410GL', 33, 'Y', -1);
+INSERT INTO DEVICETYPECOMMAND VALUES (-713, -140, 'MCT-410IL', 33, 'Y', -1); 
 /* End YUK-5501 */
 /******************************************************************************/
 /* Run the Stars Update if needed here */
