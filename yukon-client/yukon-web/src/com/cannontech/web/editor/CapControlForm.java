@@ -912,27 +912,44 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         currentInstance.addMessage("cti_db_update", facesMessage);
     }
     
+    public boolean checkStrategy(CapControlStrategy strat) {
+        CapControlStrategyModel stratModel = (CapControlStrategyModel)getCurrentStratModel();
+        boolean integratedControl = stratModel.getIntegrateFlag();
+        if(integratedControl) {
+            int integrationSeconds = strat.getIntegratePeriod();
+            int analysisSeconds = strat.getControlInterval();
+            if(integrationSeconds > analysisSeconds) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
 	public void update() throws SQLException {
-		// this message will be filled in by the super class
 		FacesMessage facesMsg = new FacesMessage();
+        facesMsg.setDetail(CBCExceptionMessages.DB_UPDATE_SUCCESS);
         Connection connection = getDbPersistent().getDbConnection();
 		try {
 			// update the CBCStrategy object if we are editing it
 			if (isEditingCBCStrategy() && (! (getDbPersistent() instanceof CapControlStrategy))) {
                 CapControlStrategy currentStrategy = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
-                updateDBObject(currentStrategy, facesMsg);
-                if(currentStrategy.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
-                    getStrategyTimeOfDay().setStrategyId(currentStrategy.getStrategyID());
-                    getStrategyTimeOfDay().add(connection);
+                boolean ok = checkStrategy(currentStrategy);
+                if(ok) {
+                    updateDBObject(currentStrategy, facesMsg);
+                    if(currentStrategy.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
+                        getStrategyTimeOfDay().setStrategyId(currentStrategy.getStrategyID());
+                        getStrategyTimeOfDay().add(connection);
+                    }
+    				// clear out the memory of any list of Strategies
+    				resetCurrentStratModel();
+                    resetStrategies();
+                    setEditingCBCStrategy(false);
+                }else {
+                    facesMsg.setDetail("ERROR: When using Integrate Control, the analysis interval must be greater than the integration interval.");
+                    facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 }
-				// clear out the memory of any list of Strategies
-				resetCurrentStratModel();
-                resetStrategies();
-                setEditingCBCStrategy(false);
 			}
 			// update the CBC object if we are editing it
-			String successfulUpdateMsg = CBCExceptionMessages.DB_UPDATE_SUCCESS;
-			facesMsg.setDetail(successfulUpdateMsg);
 			if (isEditingController()) {
                 try {
                     checkForErrors();
@@ -958,6 +975,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         			setDbPersistent( (YukonPAObject) DeviceTypesFuncs.changeCBCType(PAOGroups.getPAOTypeString( getCBControllerEditor().getDeviceType() ) , (ICapBankController)getDbPersistent()));
     			}
             }
+			
 			if ( getDbPersistent() instanceof CapControlSubBus) {
                 if (isDualSubBusEdited()) {
                     if (!checkIfDualBusHasValidPoint() && getEnableDualBus().booleanValue()) {
@@ -993,13 +1011,29 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             connection = CBCDBUtil.getConnection();
             dbPers.setDbConnection(connection);
             
-            
             if (dbPers instanceof CapControlStrategy) {
-                dbPers = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
-                setEditingCBCStrategy(false);
-            }
-            
-            if(dbPers instanceof CapControlSpecialArea) {
+                CapControlStrategy strategy = ((CapControlStrategyModel) getCurrentStratModel()).getStrategy();
+                boolean ok = checkStrategy(strategy);
+                if(ok) {
+                    setEditingCBCStrategy(false);
+                    updateDBObject(strategy, facesMsg);
+                    if(strategy.getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
+                        CCStrategyTimeOfDaySet ccStrategyTimeOfDay = getStrategyTimeOfDay();
+                        if(CapControlStrategy.todExists(ccStrategyTimeOfDay.getStrategyId())) {
+                            ccStrategyTimeOfDay.update(connection);
+                        }else {
+                            getStrategyTimeOfDay().setStrategyId(strategy.getStrategyID());
+                            getStrategyTimeOfDay().add(connection);
+                        }
+                    }else {
+                        CapControlStrategy.deleteTod(((CapControlStrategy)getDbPersistent()).getStrategyID());
+                        strategyTimeOfDay = new CCStrategyTimeOfDaySet();
+                    }
+                }else {
+                    facesMsg.setDetail("ERROR: When using Integrate Control, the analysis interval must be greater than the integration interval.");
+                    facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
+                }
+            }else if(dbPers instanceof CapControlSpecialArea) {
                 
                 if(dataModelOK) {
                     updateDBObject(dbPers, facesMsg);
@@ -1012,20 +1046,8 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             }else {
                 updateDBObject(dbPers, facesMsg);
             }
-            if(getDbPersistent() instanceof CapControlStrategy) {
-				if(((CapControlStrategy)dbPers).getControlMethod().equalsIgnoreCase(CapControlStrategy.CNTRL_TIME_OF_DAY)) {
-					CCStrategyTimeOfDaySet ccStrategyTimeOfDay = getStrategyTimeOfDay();
-					if(CapControlStrategy.todExists(ccStrategyTimeOfDay.getStrategyId())) {
-						ccStrategyTimeOfDay.update(connection);
-					}else {
-						getStrategyTimeOfDay().setStrategyId(((CapControlStrategy)dbPers).getStrategyID());
-						getStrategyTimeOfDay().add(connection);
-					}
-				}else {
-					CapControlStrategy.deleteTod(((CapControlStrategy)getDbPersistent()).getStrategyID());
-					strategyTimeOfDay = new CCStrategyTimeOfDaySet();
-				}
-            } else if(getDbPersistent() instanceof CapControlSubBus 
+            
+            if(getDbPersistent() instanceof CapControlSubBus 
             	|| getDbPersistent() instanceof CapControlArea
             	|| getDbPersistent() instanceof CapControlSpecialArea
             	|| getDbPersistent() instanceof CapControlFeeder){
