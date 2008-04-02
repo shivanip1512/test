@@ -8,7 +8,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.bind.ServletRequestUtils;
 
-import com.cannontech.core.authentication.service.impl.PasswordHasher;
 import com.cannontech.core.authentication.service.impl.SimpleMessageDigestHasher;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.web.login.AbstractLoginRequestHandler;
