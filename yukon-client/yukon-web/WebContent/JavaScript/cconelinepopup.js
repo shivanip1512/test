@@ -14,6 +14,8 @@ var ALL_POPUP_TYPES = {
 	childCapDBChange:"CapDBChange",
 	cbcPointTimestamp: "CapPtTmstmp",
     varChangePopup: "varChangePopup",
+    bankMoveBack: "MoveBankBack",
+    bankMove: "TempMoveBank",
     legend: "legend"
 };
 
@@ -178,6 +180,12 @@ function openPopupWin(elem, compositeIdType) {
 	}
 	else if (type == ALL_POPUP_TYPES.varChangePopup) {
         menuName ='varChangePopup';
+    }
+    else if (type == ALL_POPUP_TYPES.bankMoveBack) {
+    	menuName ='moveBankBackPopup';
+    }
+    else if (type == ALL_POPUP_TYPES.bankMove) {
+    	menuName ='moveBankPopup';
     }
     else if (type == ALL_POPUP_TYPES.legend) {
         var legendUrl = '/spring/capcontrol/oneline/legend';

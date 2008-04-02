@@ -428,6 +428,27 @@ public class OnelinePopupMenuController extends MultiActionController {
         return mav;
     }
     
+    public ModelAndView moveBankBackPopup(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final ModelAndView mav = new ModelAndView();
+        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        final String returnUrl = ServletRequestUtils.getRequiredStringParameter(request, "returnUrl"); 
+
+    	int cmdId = CapControlCommand.RETURN_BANK_TO_FEEDER;
+        
+        mav.addObject("paoId", id);
+        mav.addObject("cmdId", cmdId);
+        mav.addObject("returnUrl", returnUrl);
+        mav.setViewName("oneline/popupmenu/moveBankBackPopup");
+        return mav;
+    }
+    
+    public ModelAndView moveBankPopup(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final ModelAndView mav = new ModelAndView();
+        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");       
+        mav.addObject("paoId", id);
+        mav.setViewName("oneline/popupmenu/moveBankPopup");
+        return mav;
+    }
     public void setCapControlCache(CapControlCache capControlCache) {
         this.capControlCache = capControlCache;
     }
