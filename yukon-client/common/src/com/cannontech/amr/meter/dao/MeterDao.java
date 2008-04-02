@@ -13,6 +13,8 @@ public interface MeterDao extends StandardDaoOperations<Meter> {
     
     public Meter getForMeterNumber(String meterNumber);
     
+    public Meter getForPhysicalAddress(String address);
+
     public Meter getForPaoName(String paoName);
 
     public Meter getForYukonDevice(YukonDevice yukonDevice);

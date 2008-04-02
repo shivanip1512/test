@@ -46,7 +46,7 @@ public class MultispeakVendor
     public static final int CUSTOMER_PAONAME = 3;
     public static final int EA_LOCATION_PAONAME = 4;
 
-    public static String DEFAULT_PAONAME_STRING = "Device Name";
+    public static String DEFAULT_PAONAME_STRING = "Meter Number (Default)";
     public static String ACCOUNT_NUMBER_PAONAME_STRING = "Account Number";
     public static String SERVICE_LOCATION_PAONAME_STRING = "Service Location";
     public static String CUSTOMER_PAONAME_STRING = "Customer";

@@ -48,6 +48,7 @@ public class MeterDaoImpl implements MeterDao {
     String retrieveOneByIdSql = retrieveMeterSql + "where YukonPaObject.paObjectId = ? ";
     String retrieveOneByMeterNumberSql = retrieveMeterSql + "where DeviceMeterGroup.MeterNumber = ? ";
     String retrieveOneByPaoNameSql = retrieveMeterSql + "where YukonPaobject.PaoName = ? ";
+    String retrieveOneByPhysicalAddressSql = retrieveMeterSql + "where DeviceCarrierSettings.Address = ? ";
 
     public void delete(Meter object) {
         throw new UnsupportedOperationException("maybe someday...");
@@ -105,6 +106,17 @@ public class MeterDaoImpl implements MeterDao {
             return meter;
         } catch (DataAccessException e) {
             throw new NotFoundException("Unknown meter number " + meterNumber);
+        }
+    }
+    @Override
+    public Meter getForPhysicalAddress(String address) {
+        try {
+            Meter meter = simpleJdbcTemplate.queryForObject(retrieveOneByPhysicalAddressSql,
+                                                            meterRowMapper,
+                                                            address);
+            return meter;
+        } catch (DataAccessException e) {
+            throw new NotFoundException("Unknown physical address " + address);
         }
     }
 

@@ -104,7 +104,8 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
                                          "cancelUsageMonitoring",
                                          "initiateDisconnectedStatus",
                                          "cancelDisconnectedStatus",
-                                         "serviceLocationChangedNotification"};          
+                                         "serviceLocationChangedNotification",
+                                         "meterChangedNotification"};          
         return multispeakFuncs.getMethods(MultispeakDefines.MR_CB_STR , methods);
     }
     
@@ -334,7 +335,9 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
     @Override
     public ErrorObject[] meterChangedNotification(Meter[] changedMeters) throws java.rmi.RemoteException {
         init();
-        return null;
+        MultispeakVendor vendor = multispeakFuncs.getMultispeakVendorFromHeader();
+        ErrorObject[] errorObject = multispeak.changeMeterObject(vendor, changedMeters);
+        return errorObject;
     }
     
     @Override

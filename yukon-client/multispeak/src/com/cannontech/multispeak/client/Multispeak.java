@@ -570,7 +570,7 @@ public class Multispeak implements MessageListener {
                         String meterNo;
                         String mspAddress;
                         
-                        ErrorObject invalidMeterError = isValidMeter(mspMeter, mspVendor);
+                        ErrorObject invalidMeterError = isValidMeter(mspMeter, mspVendor, "meterAddNotification");
                         if( invalidMeterError == null) {
                             meterNo = mspMeter.getMeterNo().trim();
                             mspAddress = mspMeter.getNameplate().getTransponderID().trim();
@@ -888,6 +888,58 @@ public class Multispeak implements MessageListener {
         return toErrorObject(errorObjects);
     }
 
+    public ErrorObject[] changeMeterObject(final MultispeakVendor mspVendor, Meter[] changedMeters) throws RemoteException{
+        final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
+        final int paoAlias = multispeakFuncs.getPaoNameAlias();
+
+        for (final Meter mspMeter : changedMeters) {
+            try {
+                transactionTemplate.execute(new TransactionCallbackWithoutResult(){
+                    @Override
+                    protected void doInTransactionWithoutResult(TransactionStatus status){
+                        String mspAddress;
+                        
+                        ErrorObject invalidMeterError = isValidMeter(mspMeter, mspVendor, "meterChangedNotification");
+                        if( invalidMeterError == null) {
+                            mspAddress = mspMeter.getNameplate().getTransponderID().trim();
+                            try {
+                                com.cannontech.amr.meter.model.Meter meter = meterDao.getForPhysicalAddress(mspAddress);
+                                changeMeter(mspMeter, meter, mspVendor, paoAlias);
+                            } 
+                            catch (NotFoundException e) {
+                                ErrorObject err = mspObjectDao.getErrorObject(mspAddress, 
+                                                                              "Address: " + mspAddress + " - Was NOT found in Yukon.",
+                                                                              "Meter");
+                                errorObjects.add(err);              
+                                logMSPActivity("MeterChangedNotification", err.getErrorString(), mspVendor.getCompanyName());
+                            }
+                        } else {
+                            errorObjects.add(invalidMeterError);
+                        }
+                    };
+                });
+            }catch (RuntimeException ex) {
+                // Transactional code threw application exception -> rollback
+                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
+                                                                 "X Exception: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
+                                                                 "Meter");
+                errorObjects.add(err);
+                logMSPActivity("MeterChangedNotification", err.getErrorString(), mspVendor.getCompanyName());
+                ex.printStackTrace();
+            } catch (Error ex) {
+                // Transactional code threw error -> rollback
+                ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
+                                                                 "X Error: (MeterNo:" + mspMeter.getMeterNo() + ")-" + ex.getMessage(), 
+                                                                 "Meter");
+                errorObjects.add(err);
+                logMSPActivity("MeterChangedNotification", err.getErrorString(), mspVendor.getCompanyName());
+                ex.printStackTrace();
+            }
+        }//end for
+
+        return toErrorObject(errorObjects);
+    }
+
     public SystemLogHelper getSystemLogHelper() {
         if (_systemLogHelper == null)
             _systemLogHelper = new SystemLogHelper(PointTypes.SYS_PID_MULTISPEAK);
@@ -1020,7 +1072,6 @@ public class Multispeak implements MessageListener {
         if (!StringUtils.isBlank(newBilling)) {
 
             //Remove from all billing membership groups
-//            StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getSystemGroup(SystemGroupEnum.BILLING);
             DeviceGroup billingCycledeviceGroup = multispeakFuncs.getBillingCycleDeviceGroup();
             StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getStoredGroup(billingCycledeviceGroup);
             Set<StoredDeviceGroup> deviceGroups = deviceGroupMemberEditorDao.getGroupMembership(deviceGroupParent, meter);
@@ -1149,7 +1200,11 @@ public class Multispeak implements MessageListener {
 						StringUtils.isBlank(mspMeter.getUtilityInfo().getEaLoc().getName()))
                    return null;
                return mspMeter.getUtilityInfo().getEaLoc().getName();
-			}				
+			}
+            case MultispeakVendor.DEFAULT_PAONAME:
+            { // lookup by meter number
+				return mspMeter.getMeterNo();
+            }
 			default:
 				return defaultValue;
 		}
@@ -1311,7 +1366,7 @@ public class Multispeak implements MessageListener {
      * @param mspVendor
      * @return
      */
-    private ErrorObject isValidMeter(Meter mspMeter, MultispeakVendor mspVendor) {
+    private ErrorObject isValidMeter(Meter mspMeter, MultispeakVendor mspVendor, String method) {
 
         //Check for valid MeterNo 
         if ( StringUtils.isBlank(mspMeter.getMeterNo()) ) {
@@ -1319,7 +1374,7 @@ public class Multispeak implements MessageListener {
             ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
                                                              "Error: MeterNo is invalid (empty or null).  No updates were made.",
                                                              "Meter");
-            logMSPActivity("MeterAddNotification", err.getErrorString(), mspVendor.getCompanyName());
+            logMSPActivity(method, err.getErrorString(), mspVendor.getCompanyName());
             return err;
         }
 
@@ -1331,7 +1386,7 @@ public class Multispeak implements MessageListener {
             ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
                                                              "Error: MeterNumber(" + mspMeter.getMeterNo() + ") - TransponderID is invalid.  No updates were made.",
                                                              "Meter");
-            logMSPActivity("MeterAddNotification", err.getErrorString(), mspVendor.getCompanyName());
+            logMSPActivity(method, err.getErrorString(), mspVendor.getCompanyName());
             return err;
         }
         return null;
@@ -1383,6 +1438,57 @@ public class Multispeak implements MessageListener {
         logMSPActivity("MeterAddNotification",
                        "MeterNumber(" + meter.getMeterNumber()+ ") - Meter Enabled; " + logString,
                        mspVendor.getCompanyName());
+        //TODO Read the Meter.
+    }
+
+    private void changeMeter(Meter mspMeter, 
+            com.cannontech.amr.meter.model.Meter meter, 
+            MultispeakVendor mspVendor,
+            int paoAlias) {
+        
+        final String paoAliasStr = MultispeakVendor.paoNameAliasStrings[paoAlias];
+        boolean dbChange = false;
+        LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
+        YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
+        DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
+            
+        String paoNameLog = "";
+        String meterNumberLog = "";
+        String currentPaoName = meter.getName();
+        String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName);
+        
+        if( newPaoName == null) {
+            paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAliasStr + ") No Change - MSP " + paoAliasStr + " is empty.";
+        } else if (currentPaoName.equalsIgnoreCase(newPaoName)) {
+            paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAliasStr + ") No change in PaoName.";
+        } else {
+            yukonPaobject.setPAOName(newPaoName);
+            dbChange = true;
+            paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAliasStr + ") PaoName Changed(OLD:" + currentPaoName + " NEW:" + newPaoName + ").";
+        }
+
+        String currentMeterNumber = meter.getMeterNumber();
+        String newMeterNumber = mspMeter.getMeterNo();
+        
+        if (currentMeterNumber.equalsIgnoreCase(newMeterNumber)) {
+            meterNumberLog = "Address (" + meter.getAddress() + ") No change in MeterNumber.";
+        } else {
+            deviceMeterGroup.setMeterNumber(newMeterNumber);
+            dbChange = true;
+            meterNumberLog = "Address (" + meter.getAddress() + ") MeterNumber Changed(OLD:" + currentMeterNumber + " NEW:" + newMeterNumber + ").";
+        }
+
+        //Update the meter
+        if(dbChange) {
+            dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
+        }
+        logMSPActivity("MeterChangedNotification",
+                       paoNameLog,
+                       mspVendor.getCompanyName());
+        logMSPActivity("MeterChangedNotification",
+                       meterNumberLog,
+                       mspVendor.getCompanyName());
+
         //TODO Read the Meter.
     }
 }
