@@ -360,9 +360,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     BOOL isBusReadyToStartVerification();
     BOOL isBusVerificationAlreadyStarted();
     BOOL isVerificationPastMaxConfirmTime(const CtiTime& currentDateTime);
-    BOOL capBankVerificationDone(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     BOOL areThereMoreCapBanksToVerify(CtiMultiMsg_vec& ccEvents);
-    //CtiCCSubstationBus& checkForAndProvideNeededVerificationControl();
     CtiCCSubstationBus& startVerificationOnCapBank(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages);
     BOOL isVerificationAlreadyControlled();
     CtiCCSubstationBus& analyzeVerificationByFeeder(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, CtiMultiMsg_vec& capMessages);
@@ -377,6 +375,8 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setCurrentVerificationCapBankId(LONG capBankId);
     CtiCCSubstationBus& setCurrentVerificationCapBankState(LONG status);
 
+    CtiCCSubstationBus& checkAndUpdateRecentlyControlledFlag();
+
     CtiCCSubstationBus& addAllSubPointsToMsg(CtiCommandMsg *pointAddMsg);
     CtiCCSubstationBus& verifyControlledStatusFlags();
     LONG getNextTODStartTime();
@@ -387,12 +387,11 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     void setVerificationStrategy(int verificationStrategy);
     int getVerificationStrategy(void) const;
     string getVerificationString();
-    //const string& getVerificationCommand();
-    //CtiCCSubstationBus& setVerificationCommand(string verCommand);
     void setCapBankInactivityTime(LONG capBankToVerifyInactivityTime);
     LONG getCapBankInactivityTime(void) const;
 
     BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
+    BOOL capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     BOOL isDataOldAndFallBackNecessary();
 
     BOOL isDirty() const;

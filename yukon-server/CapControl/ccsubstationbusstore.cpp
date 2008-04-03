@@ -2846,6 +2846,12 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             //**********************************************************************
         }
     }
+    CtiHolidayManager::getInstance().refresh();
+    if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
+    {
+        setValid(FALSE);
+    }
+
 }
 
 /*---------------------------------------------------------------------------

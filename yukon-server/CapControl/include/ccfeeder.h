@@ -363,7 +363,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
                              DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl, 
                              DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, 
                              DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue,
-                             const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
+                             const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, 
+                             const CtiRegression& regC,  BOOL usePhaseData, BOOL useTotalizedControl);
 
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
     BOOL attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime);
@@ -391,11 +392,19 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     std::list <LONG>* getPointIds() {return &_pointIds;};
 
-    BOOL isVerificationAlreadyControlled(long minConfirmPercent, long quality, double oldVarValue, double newVarValue);
+    BOOL isVerificationAlreadyControlled(long minConfirmPercent, long quality, DOUBLE varAValueBeforeControl, 
+                             DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl, 
+                             DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, double oldVarValue, double newVarValue);
+    
+
+
     BOOL areThereMoreCapBanksToVerify();
     CtiCCFeeder& getNextCapBankToVerify();
 
-    BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, LONG failurePercent, DOUBLE varValueBeforeControl, DOUBLE currentVarLoadPointValue, LONG currentVarPointQuality);
+    BOOL capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, LONG minConfirmPercent, 
+                                         LONG failurePercent, DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue);
+    BOOL capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
+                                                 LONG minConfirmPercent, LONG failPercent);
     CtiCCFeeder& addAllFeederPointsToMsg(CtiCommandMsg *pointAddMsg);
     CtiCCCapBank* getMonitorPointParentBank(CtiCCMonitorPoint* point);
 

@@ -278,7 +278,10 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                     CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
 
                     CtiCCExecutorFactory f;
-                    CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
+
+                    CtiCCCommand* cmdMsg = new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId());
+                    cmdMsg->setUser(_subVerificationMsg->getUser());
+                    CtiCCExecutor* executor = f.createExecutor(cmdMsg);
                     executor->Execute();
                     delete executor;
 
@@ -313,11 +316,6 @@ void CtiCCSubstationVerificationExecutor::EnableSubstationBusVerification()
                         LONG stationId, areaId, spAreaId;
                         store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
                         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlEnableVerification, currentSubstationBus->getEventSequence(), 1, text, "cap control"));
-
-                        /*CtiCCExecutorFactory f;
-                        CtiCCExecutor* executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::DISABLE_SUBSTATION_BUS, currentSubstationBus->getPAOId()));
-                        executor->Execute();
-                        */
                     }
                 }
             }
@@ -1496,7 +1494,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                                     (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
                                      action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                                 {
-                                    actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                                    CtiCCCommand* actionMsg = new CtiCCCommand(action, currentCapBank->getControlDeviceId());
+                                    actionMsg->setUser(_command->getUser());
+                                    actionMulti->insert(actionMsg);
+
                                 }
                             }
                             modifiedSubsList.push_back(currentSubstationBus);
@@ -1576,7 +1577,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                                         (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
                                          action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                                     {
-                                        actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                                        CtiCCCommand* actionMsg = new CtiCCCommand(action, currentCapBank->getControlDeviceId());
+                                        actionMsg->setUser(_command->getUser());
+                                        actionMulti->insert(actionMsg);
+
                                     }  
                        
                                 }
@@ -1673,7 +1677,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                                             (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
                                              action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                                         {
-                                            actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                                            CtiCCCommand* actionMsg = new CtiCCCommand(action, currentCapBank->getControlDeviceId());
+                                            actionMsg->setUser(_command->getUser());
+                                            actionMulti->insert(actionMsg);
                                         }
                                     }
                                 }
@@ -1764,7 +1770,10 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                                                 (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
                                                  action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                                             {
-                                                actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                                                CtiCCCommand* actionMsg = new CtiCCCommand(action, currentCapBank->getControlDeviceId());
+                                                actionMsg->setUser(_command->getUser());
+                                                actionMulti->insert(actionMsg);
+
                                             }
                                         }
                                     }
@@ -1857,7 +1866,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                                                         (action  == CtiCCCommand::ENABLE_OVUV || action  == CtiCCCommand::DISABLE_OVUV ||
                                                          action  == CtiCCCommand::SCAN_2WAY_DEVICE) ) 
                                                     {
-                                                        actionMulti->insert(new CtiCCCommand(action, currentCapBank->getControlDeviceId()));
+                                                        CtiCCCommand* actionMsg = new CtiCCCommand(action, currentCapBank->getControlDeviceId());
+                                                        actionMsg->setUser(_command->getUser());
+                                                        actionMulti->insert(actionMsg);
                                                     }
                                                 }
                                             }
@@ -2099,7 +2110,11 @@ void CtiCCCommandExecutor::OpenCapBank()
 
 
                             BOOL confirmImmediately = FALSE;
-                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod) )
+                            {
+                                confirmImmediately = TRUE;
+                            }
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                             {
                                 if( savedFeederRecentlyControlledFlag ||
                                     ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
@@ -2376,7 +2391,11 @@ void CtiCCCommandExecutor::CloseCapBank()
 
 
                             BOOL confirmImmediately = FALSE;
-                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod) )
+                            {
+                                confirmImmediately = TRUE;
+                            }
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                             {
                                 if( savedFeederRecentlyControlledFlag ||
                                     ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
@@ -2409,6 +2428,7 @@ void CtiCCCommandExecutor::CloseCapBank()
                                 {
                                     confirmImmediately = TRUE;
                                 }
+                                
                             }  
                             else
                             {
@@ -2961,7 +2981,9 @@ void CtiCCCommandExecutor::AutoEnableOvUvByArea()
                                     currentCapBank->getReEnableOvUvFlag()  ) 
                                 {
                                     currentCapBank->setReEnableOvUvFlag(FALSE);
-                                    actionMulti->insert(new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId()));
+                                    CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId());
+                                    actionMsg->setUser(_command->getUser());
+                                    actionMulti->insert(actionMsg);
                                 }
                             }
                             
@@ -3156,7 +3178,9 @@ void CtiCCCommandExecutor::AutoDisableOvUvByArea()
                                     !currentCapBank->getOvUvDisabledFlag()  ) 
                                 {
                                     currentCapBank->setReEnableOvUvFlag(TRUE);
-                                    actionMulti->insert(new CtiCCCommand(CtiCCCommand::DISABLE_OVUV, currentCapBank->getControlDeviceId()));
+                                    CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId());
+                                    actionMsg->setUser(_command->getUser());
+                                    actionMulti->insert(actionMsg);
                                 }
                             }
                             
@@ -3326,7 +3350,9 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
                                 !currentCapBank->getOvUvDisabledFlag()  ) 
                             {
                                 currentCapBank->setReEnableOvUvFlag(TRUE);
-                                actionMulti->insert(new CtiCCCommand(CtiCCCommand::DISABLE_OVUV, currentCapBank->getControlDeviceId()));
+                                CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::DISABLE_OVUV, currentCapBank->getControlDeviceId());
+                                actionMsg->setUser(_command->getUser());
+                                actionMulti->insert(actionMsg);
                             }
                         }
                         else
@@ -3335,7 +3361,9 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubstation(BOOL disableFlag)
                                 currentCapBank->getReEnableOvUvFlag()  ) 
                             {
                                 currentCapBank->setReEnableOvUvFlag(FALSE);
-                                actionMulti->insert(new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId()));
+                                CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId());
+                                actionMsg->setUser(_command->getUser());
+                                actionMulti->insert(actionMsg);
                             }
 
                         }
@@ -3459,7 +3487,9 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
                             !currentCapBank->getOvUvDisabledFlag()  ) 
                         {
                             currentCapBank->setReEnableOvUvFlag(TRUE);
-                            actionMulti->insert(new CtiCCCommand(CtiCCCommand::DISABLE_OVUV, currentCapBank->getControlDeviceId()));
+                            CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::DISABLE_OVUV, currentCapBank->getControlDeviceId());
+                            actionMsg->setUser(_command->getUser());
+                            actionMulti->insert(actionMsg);
                         }
                     }
                     else
@@ -3468,7 +3498,9 @@ void CtiCCCommandExecutor::AutoControlOvUvBySubBus(BOOL disableFlag)
                             currentCapBank->getReEnableOvUvFlag()  ) 
                         {
                             currentCapBank->setReEnableOvUvFlag(FALSE);
-                            actionMulti->insert(new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId()));
+                            CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::ENABLE_OVUV, currentCapBank->getControlDeviceId());
+                            actionMsg->setUser(_command->getUser());
+                            actionMulti->insert(actionMsg);
                         }
             
                     }
@@ -3567,7 +3599,9 @@ void CtiCCCommandExecutor::EnableSystem()
     executor->Execute();
     delete executor;
 
-    executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 1));
+    CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 1);
+    actionMsg->setUser(_command->getUser());
+    executor = f.createExecutor(actionMsg);
     executor->Execute();
     delete executor;
 }
@@ -3623,7 +3657,10 @@ void CtiCCCommandExecutor::DisableSystem()
     CtiCCExecutor*executor = f.createExecutor(new CtiCCGeoAreasMsg(ccAreas)); 
     executor->Execute();
     delete executor;
-    executor = f.createExecutor(new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 0));
+
+    CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::SYSTEM_STATUS, 0);
+    actionMsg->setUser(_command->getUser());
+    executor = f.createExecutor(actionMsg);
     executor->Execute();
     delete executor;
 
@@ -3798,7 +3835,12 @@ void CtiCCCommandExecutor::Flip7010Device()
 
 
                             BOOL confirmImmediately = FALSE;
-                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
+
+                            if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod) )
+                            {
+                                confirmImmediately = TRUE;
+                            }
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::IndividualFeederControlMethod) )
                             {
                                 if( savedFeederRecentlyControlledFlag ||
                                     ((savedFeederLastOperationTime.seconds()+2) >= currentFeeder->getLastOperationTime().seconds()) )
@@ -4176,6 +4218,8 @@ void CtiCCCommandExecutor::ConfirmSub()
                                 dout << CtiTime() << " - Could not create Porter Request Message in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
 
+                            doConfirmImmediately(currentSubstationBus, pointChanges, ccEvents, controlID);
+
 
                         }
 
@@ -4250,8 +4294,10 @@ void CtiCCCommandExecutor::ConfirmArea()
                         if (!currentSubstationBus->getVerificationFlag() && currentSubstationBus->getStrategyId() > 0)
                         {
                             if (!currentSubstationBus->getDisableFlag() && !station->getDisableFlag())
-                            {    
-                                confirmMulti->insert(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPAOId()));
+                            {   
+                                CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPAOId());
+                                actionMsg->setUser(_command->getUser());
+                                confirmMulti->insert(actionMsg);
                             }
                         }
                     }
@@ -4315,7 +4361,9 @@ void CtiCCCommandExecutor::ConfirmArea()
                             {
                                 if (!currentSubstationBus->getDisableFlag() && !station->getDisableFlag())
                                 {    
-                                    confirmMulti->insert(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPAOId()));
+                                    CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPAOId());
+                                    actionMsg->setUser(_command->getUser());
+                                    confirmMulti->insert(actionMsg);
                                 }
                             }
                         }
@@ -4369,7 +4417,9 @@ void CtiCCCommandExecutor::ConfirmArea()
                         {
                             if (!currentSubstationBus->getDisableFlag())
                             {    
-                                confirmMulti->insert(new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPAOId()));
+                                CtiCCCommand* actionMsg = new CtiCCCommand(CtiCCCommand::CONFIRM_SUB, currentSubstationBus->getPAOId());
+                                actionMsg->setUser(_command->getUser());
+                                confirmMulti->insert(actionMsg);
                             }
                         }
                     }
@@ -4551,6 +4601,10 @@ void CtiCCCommandExecutor::ConfirmOpen()
 
                             BOOL confirmImmediately = FALSE;
                             if( savedControlStatus == CtiCCCapBank::Open )
+                            {
+                                confirmImmediately = TRUE;
+                            }
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod) )
                             {
                                 confirmImmediately = TRUE;
                             }
@@ -4835,6 +4889,10 @@ void CtiCCCommandExecutor::ConfirmClose()
 
                             BOOL confirmImmediately = FALSE;
                             if( savedControlStatus == CtiCCCapBank::Close )
+                            {
+                                confirmImmediately = TRUE;
+                            }
+                            else if( !stringCompareIgnoreCase(currentSubstationBus->getControlMethod(), CtiCCSubstationBus::TimeOfDayMethod) )
                             {
                                 confirmImmediately = TRUE;
                             }
