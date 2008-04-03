@@ -324,7 +324,7 @@ private void showContScenWindow( final int panelMode )
 	d.setModal(true);
 	d.setContentPane(panel);
 	d.pack();
-	d.setSize( 640, 320 );
+	d.setSize( 900, 400 );
 	d.setLocationRelativeTo(this);
 
 	if( allProgs.values().size() > 0 )
