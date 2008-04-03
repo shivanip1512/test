@@ -49,9 +49,10 @@ public class CBCDisplay {
     public static final int CB_DAILY_TOTAL_OP_COLUMN = 8;
     public static final int CB_SHORT_TIME_STAMP_COLUMN = 9;
     public static final int CB_STATUS_POPUP = 10;
-    public static final int CB_WARNING_IMAGE = 11;
-    public static final int CB_WARNING_POPUP = 12;
-    public static final int CB_DAILY_MAX_TOTAL_OP_COLUMN = 13;
+    public static final int CB_WARNING_IMAGE_COLOR = 11;
+    public static final int CB_WARNING_IMAGE_TEXT = 12;
+    public static final int CB_WARNING_POPUP = 13;
+    public static final int CB_DAILY_MAX_TOTAL_OP_COLUMN = 14;
 
     // Column numbers for the Feeder display
     public static final int FDR_NAME_COLUMN = 0;
@@ -236,11 +237,24 @@ public class CBCDisplay {
             return controllerName;
         }
 
-        case CB_WARNING_IMAGE:{
-            if (capBank.getMaxDailyOperationHitFlag() || capBank.getOvuvSituationFlag())
-                return "true";
-
-            return "false";
+        case CB_WARNING_IMAGE_COLOR:{
+            String color = "Green";
+            if (capBank.getMaxDailyOperationHitFlag() || capBank.getOvuvSituationFlag()) {
+                color = "Yellow";
+            } else {
+                color = "Green";
+            }
+            
+            return color;
+        }
+            
+        case CB_WARNING_IMAGE_TEXT:{
+            String text = "Remote";
+            
+            if(capBank.getLocalControlFlag()) {
+                text = "Local";
+            }
+            return text;
         }
 
         case CB_WARNING_POPUP:{
