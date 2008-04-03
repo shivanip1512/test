@@ -11,16 +11,18 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.ChartValue;
-import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.chart.model.ConverterType;
+import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.chart.service.ChartService;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 
 public class ChartController extends MultiActionController {
 
@@ -47,6 +49,8 @@ public class ChartController extends MultiActionController {
     public ModelAndView chart(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+    	
         // setup mav with the appropriate jsp, depending on grapth style: LINE
         // or COLUMN (decided in trend.tag)
         String amChartsProduct = ServletRequestUtils.getStringParameter(request,
@@ -91,9 +95,10 @@ public class ChartController extends MultiActionController {
         ConverterType converterType = ConverterType.valueOf(converterTypeString);
 
         // Generate x-axis data
-        List<ChartValue> xAxisData = chartService.getXAxisData(startDate,
+        List<ChartValue<Date>> xAxisData = chartService.getXAxisData(startDate,
                                                                endDate,
-                                                               chartInterval);
+                                                               chartInterval,
+                                                               userContext);
         mav.addObject("xAxisValues", xAxisData);
 
         // Generate graph data
@@ -124,8 +129,15 @@ public class ChartController extends MultiActionController {
         ConverterType converterType = ConverterType.valueOf(converterTypeString);
 
         // Get Point's unit of measure and then get the units for the graph
-        int pointId = ServletRequestUtils.getIntParameter(request, "pointId");
-        LitePoint point = pointDao.getLitePoint(pointId);
+        String pointIds = ServletRequestUtils.getStringParameter(request, "pointIds");
+        
+        String[] idStrings = pointIds.split(",");
+        int[] ids = new int[idStrings.length];
+        for (int i = 0; i < idStrings.length; i++) {
+            ids[i] = Integer.valueOf(idStrings[i]);
+        }
+        
+        LitePoint point = pointDao.getLitePoint(ids[0]);
         LiteUnitMeasure unitMeasure = unitMeasureDao.getLiteUnitMeasure(point.getUofmID());
         String units = converterType.getUnits(unitMeasure);
         mav.addObject("units", units);
@@ -155,11 +167,11 @@ public class ChartController extends MultiActionController {
         chartInterval = chartPeriod.getChartUnit(startDate, endDate);
 
         // Generate x-axis data
-        List<ChartValue> xAxisData = chartService.getXAxisData(startDate,
+        int xAxisDataCount = chartService.getXAxisDataCount(startDate,
                                                                endDate,
                                                                chartInterval);
 
-        int gridFrequency = (int) (xAxisData.size() / (float) 4);
+        int gridFrequency = (int) (xAxisDataCount / (float) 4);
         if (gridFrequency < 1) {
             gridFrequency = 1;
         }

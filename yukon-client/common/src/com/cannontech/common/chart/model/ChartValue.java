@@ -1,14 +1,12 @@
 package com.cannontech.common.chart.model;
 
-import java.text.Format;
 
 public class ChartValue<T> {
     private long id = 0;
     private T value = null;
+    private String formattedValue = null;
     private String description = null;
     private long time = 0;
-
-    private Format format = null;
 
     public ChartValue() {
     }
@@ -42,16 +40,8 @@ public class ChartValue<T> {
         this.description = description;
     }
 
-    public Format getFormat() {
-        return format;
-    }
-
-    public void setFormat(Format format) {
-        this.format = format;
-    }
-
     public String getFormattedValue() {
-        return format.format(value);
+        return this.formattedValue;
     }
 
     public long getTime() {
@@ -61,5 +51,9 @@ public class ChartValue<T> {
     public void setTime(long time) {
         this.time = time;
     }
+
+	public void setFormattedValue(String formattedValue) {
+		this.formattedValue = formattedValue;
+	}
 
 }

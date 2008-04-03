@@ -5,9 +5,10 @@ import java.util.List;
 
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
-import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.ConverterType;
+import com.cannontech.common.chart.model.Graph;
 import com.cannontech.common.chart.model.GraphType;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Service used to get information for a chart
@@ -32,6 +33,16 @@ public interface ChartService {
      * @param interval - Interval between tick marks
      * @return A list of x-axis values
      */
-    public List<ChartValue> getXAxisData(Date startDate, Date stopDate, ChartInterval unit);
+    public List<ChartValue<Date>> getXAxisData(Date startDate, Date stopDate, ChartInterval unit, YukonUserContext userContext);
+    
+    /**
+     * Method to get the number of x-axis values only. Does not create list of actual CharValues.
+     * Does much less work than the getXAxisData method if all you are interested in is the count.
+     * @param startDate
+     * @param stopDate
+     * @param interval
+     * @return
+     */
+    public int getXAxisDataCount(Date startDate, Date stopDate, ChartInterval interval);
 
 }

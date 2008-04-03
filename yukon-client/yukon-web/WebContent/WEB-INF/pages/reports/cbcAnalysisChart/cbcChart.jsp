@@ -26,17 +26,17 @@
 			Tabular Data: 
 			<cti:simpleReportLinkFromNameTag 
 				parameterAttributes="${targetReportInfo[targetId]}"
-				definitionName="${definitionName}"
+				definitionName="${targetReportInfo[targetId].definitionName}"
 				viewType="htmlView">HTML</cti:simpleReportLinkFromNameTag>
 			|
 			<cti:simpleReportLinkFromNameTag 
 				parameterAttributes="${targetReportInfo[targetId]}"
-				definitionName="${definitionName}"
+				definitionName="${targetReportInfo[targetId].definitionName}"
 				viewType="csvView">CSV</cti:simpleReportLinkFromNameTag>
 			|
 			<cti:simpleReportLinkFromNameTag 
 				parameterAttributes="${targetReportInfo[targetId]}"
-				definitionName="${definitionName}"
+				definitionName="${targetReportInfo[targetId].definitionName}"
 				viewType="pdfView">PDF</cti:simpleReportLinkFromNameTag>
 											
 		</div>

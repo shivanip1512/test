@@ -18,14 +18,14 @@
 			                                       
 		      axis="${graph.YAxis}"                           
 		      title="${graph.seriesTitle}"                     
-		      color="#009933"                                  		  
+		      color="${graph.color.rgb}"                                  		  
 		      color_hover="#E77471"                             
 		      line_alpha=""                               
 		      line_width=""                                                                  
 		      fill_alpha=""                               
 		      fill_color=""                               
-		      balloon_color="FFCC00"                         
-		      balloon_alpha="45"                         
+		      balloon_color="${graph.color.rgb}"                         
+		      balloon_alpha="25"                         
 		      balloon_text_color="#000000"  
 		      bullet="round"                                       
 		                                                              

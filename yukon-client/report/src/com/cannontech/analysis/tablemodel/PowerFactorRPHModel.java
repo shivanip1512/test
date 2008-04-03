@@ -10,12 +10,15 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.yukon.cbc.Feeder;
+import com.cannontech.yukon.cbc.SubBus;
 
 public class PowerFactorRPHModel extends BareReportModelBase<PowerFactorRPHModel.ModelRow> implements ReportModelMetaInfo {
     
@@ -23,15 +26,16 @@ public class PowerFactorRPHModel extends BareReportModelBase<PowerFactorRPHModel
     private RawPointHistoryDao rphDao;
     private PaoDao paoDao;
     private DateFormattingService dateFormattingService;
+    private CapControlCache capControlCache = null;
     
     // inputs
     int targetId;
-    int powerFactorPointId;
-    int estimatedPowerFactorPointId;
     Long startDate;
     Long stopDate;
 
     // member variables
+    int powerFactorPointId;
+    int estimatedPowerFactorPointId;
     private static String title = "Power Factor Report";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     
@@ -49,6 +53,17 @@ public class PowerFactorRPHModel extends BareReportModelBase<PowerFactorRPHModel
         
         Date stopDateDate = new Date();
         stopDateDate.setTime(stopDate);
+        
+        if(capControlCache.isSubBus(targetId)) {
+    		SubBus subBus = capControlCache.getSubBus(targetId);
+    		powerFactorPointId = subBus.getPowerFactorPointId();
+    		estimatedPowerFactorPointId = subBus.getEstimatedPowerFactorPointId();
+    	}
+    	else if(capControlCache.isFeeder(targetId)) {
+    		Feeder feeder = capControlCache.getFeeder(targetId);
+    		powerFactorPointId = feeder.getPowerFactorPointID();		
+    		estimatedPowerFactorPointId = feeder.getEstimatedPowerFactorPointID();
+    	}
         
         // gather point data
         List<PointValueHolder> powerFactorPvh = rphDao.getPointData(powerFactorPointId, startDateDate, stopDateDate);
@@ -154,6 +169,11 @@ public class PowerFactorRPHModel extends BareReportModelBase<PowerFactorRPHModel
         this.paoDao = paoDao;
     }
     
+    @Required
+	public void setCapControlCache(CapControlCache capControlCache) {
+		this.capControlCache = capControlCache;
+	}
+    
     // INPUT SETTER-GETTERS
     public int getTargetId() {
 		return targetId;
@@ -163,22 +183,6 @@ public class PowerFactorRPHModel extends BareReportModelBase<PowerFactorRPHModel
 		this.targetId = targetId;
 	}
     
-    public int getPowerFactorPointId() {
-		return powerFactorPointId;
-	}
-
-	public void setPowerFactorPointId(int powerFactorPointId) {
-		this.powerFactorPointId = powerFactorPointId;
-	}
-
-	public int getEstimatedPowerFactorPointId() {
-		return estimatedPowerFactorPointId;
-	}
-
-	public void setEstimatedPowerFactorPointId(int estimatedPowerFactorPointId) {
-		this.estimatedPowerFactorPointId = estimatedPowerFactorPointId;
-	}
-	
     public Long getStartDate() {
         return startDate;
     }

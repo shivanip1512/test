@@ -11,6 +11,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.dao.FeederDao;
+import com.cannontech.cbc.dao.SubstationBusDao;
+import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
@@ -19,30 +22,36 @@ import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.cbc.SubBus;
 
-public class KVarWattRPHModel extends BareReportModelBase<KVarWattRPHModel.ModelRow> implements ReportModelMetaInfo {
+public class KVarPhaseWattRPHModel extends BareReportModelBase<KVarPhaseWattRPHModel.ModelRow> implements ReportModelMetaInfo {
     
     // dependencies
     private RawPointHistoryDao rphDao;
     private PaoDao paoDao;
     private DateFormattingService dateFormattingService;
     private CapControlCache capControlCache = null;
-    
+    private SubstationBusDao substationBusDao = null;
+	private FeederDao feederDao = null;
+	
     // inputs
     int targetId;
     Long startDate;
     Long stopDate;
 
     // member variables
-    int currentVarLoadPointId;
+    int phaseAPointId;
+    int phaseBPointId;
+    int phaseCPointId;
     int estimatedVarLoadPointId;
     int currentWattLoadPointId;
-    private static String title = "kVar / Watt Report";
+    private static String title = "kVar Phase / Watt Report";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     
     
     static public class ModelRow {
         public Date pointDataTimeStamp;
-        public PointValueHolder currentVarLoad;
+        public PointValueHolder phaseA;
+        public PointValueHolder phaseB;
+        public PointValueHolder phaseC;
         public PointValueHolder estimatedVarLoad;
         public PointValueHolder currentWattLoad;
     }
@@ -57,39 +66,85 @@ public class KVarWattRPHModel extends BareReportModelBase<KVarWattRPHModel.Model
         
         if(capControlCache.isSubBus(targetId)) {
         	SubBus subBus_cache = capControlCache.getSubBus(targetId);
-        	currentVarLoadPointId = subBus_cache.getCurrentVarLoadPointID();
+        	SubstationBus subBus_dao = substationBusDao.getById(targetId);
+        	
+        	phaseAPointId = subBus_cache.getCurrentVarLoadPointID();
+        	phaseBPointId = subBus_dao.getPhaseb();
+        	phaseCPointId = subBus_dao.getPhasec();
         	estimatedVarLoadPointId = subBus_cache.getEstimatedVarLoadPointID();
         	currentWattLoadPointId = subBus_cache.getCurrentWattLoadPointID();
         }
         else if(capControlCache.isFeeder(targetId)) {
         	com.cannontech.yukon.cbc.Feeder feeder_cache = capControlCache.getFeeder(targetId);
-        	currentVarLoadPointId = feeder_cache.getCurrentVarLoadPointID();
+        	com.cannontech.cbc.model.Feeder feeder_dao = feederDao.getById(targetId);
+        	
+        	phaseAPointId = feeder_cache.getCurrentVarLoadPointID();
+        	phaseBPointId = feeder_dao.getPhaseb();
+        	phaseCPointId = feeder_dao.getPhasec();
         	estimatedVarLoadPointId = feeder_cache.getEstimatedVarLoadPointID();
         	currentWattLoadPointId = feeder_cache.getCurrentWattLoadPointID();
         }
         
         // gather point data
-        List<PointValueHolder> currVarLoadPvh = rphDao.getPointData(currentVarLoadPointId, startDateDate, stopDateDate);
+        List<PointValueHolder> phaseAPvh = rphDao.getPointData(phaseAPointId, startDateDate, stopDateDate);
+        List<PointValueHolder> phaseBPvh = rphDao.getPointData(phaseBPointId, startDateDate, stopDateDate);
+        List<PointValueHolder> phaseCPvh = rphDao.getPointData(phaseCPointId, startDateDate, stopDateDate);
         List<PointValueHolder> estVarLoadPvh = rphDao.getPointData(estimatedVarLoadPointId, startDateDate, stopDateDate);
         List<PointValueHolder> currWattLoadPvh = rphDao.getPointData(currentWattLoadPointId, startDateDate, stopDateDate);
         
-        Map<Date, PointValueHolder> currVarLoadDateMap = new HashMap<Date, PointValueHolder>();
+        Map<Date, PointValueHolder> phaseADateMap = new HashMap<Date, PointValueHolder>();
+        Map<Date, PointValueHolder> phaseBDateMap = new HashMap<Date, PointValueHolder>();
+        Map<Date, PointValueHolder> phaseCDateMap = new HashMap<Date, PointValueHolder>();
         Map<Date, PointValueHolder> estVarLoadDateMap = new HashMap<Date, PointValueHolder>();
         Map<Date, PointValueHolder> currWattLoadDateMap = new HashMap<Date, PointValueHolder>();
         
         // make list of all point date stamps, sort them
         // make maps key'd by date for each point
         List<Date> allDates = new ArrayList<Date>();
-        for(PointValueHolder pvh : currVarLoadPvh) {
+        for(PointValueHolder pvh : phaseAPvh) {
         	Date dateTime = pvh.getPointDataTimeStamp();
         	
-        	if(!currVarLoadDateMap.containsKey(dateTime)) {
-        		currVarLoadDateMap.put(dateTime, pvh);
+        	if(!phaseADateMap.containsKey(dateTime)) {
+        		phaseADateMap.put(dateTime, pvh);
         	}
         	else {
-        		PointValueHolder maxPvh = currVarLoadDateMap.get(dateTime);
+        		PointValueHolder maxPvh = phaseADateMap.get(dateTime);
         		if(pvh.getValue() > maxPvh.getValue()) {
-        			currVarLoadDateMap.put(dateTime, pvh);
+        			phaseADateMap.put(dateTime, pvh);
+        		}
+        	}
+        	
+        	if(!allDates.contains(dateTime)) {
+        		allDates.add(dateTime);
+        	}
+        }
+        for(PointValueHolder pvh : phaseBPvh) {
+        	Date dateTime = pvh.getPointDataTimeStamp();
+        	
+        	if(!phaseBDateMap.containsKey(dateTime)) {
+        		phaseBDateMap.put(dateTime, pvh);
+        	}
+        	else {
+        		PointValueHolder maxPvh = phaseBDateMap.get(dateTime);
+        		if(pvh.getValue() > maxPvh.getValue()) {
+        			phaseBDateMap.put(dateTime, pvh);
+        		}
+        	}
+        	
+        	if(!allDates.contains(dateTime)) {
+        		allDates.add(dateTime);
+        	}
+        }
+        for(PointValueHolder pvh : phaseCPvh) {
+        	Date dateTime = pvh.getPointDataTimeStamp();
+        	
+        	if(!phaseCDateMap.containsKey(dateTime)) {
+        		phaseCDateMap.put(dateTime, pvh);
+        	}
+        	else {
+        		PointValueHolder maxPvh = phaseCDateMap.get(dateTime);
+        		if(pvh.getValue() > maxPvh.getValue()) {
+        			phaseCDateMap.put(dateTime, pvh);
         		}
         	}
         	
@@ -136,9 +191,11 @@ public class KVarWattRPHModel extends BareReportModelBase<KVarWattRPHModel.Model
         
         // add data rows for each date
         for(Date d : allDates) {
-        	KVarWattRPHModel.ModelRow row = new KVarWattRPHModel.ModelRow();
+        	KVarPhaseWattRPHModel.ModelRow row = new KVarPhaseWattRPHModel.ModelRow();
             row.pointDataTimeStamp = d;
-            row.currentVarLoad = currVarLoadDateMap.get(d);
+            row.phaseA = phaseADateMap.get(d);
+            row.phaseB = phaseBDateMap.get(d);
+            row.phaseC = phaseCDateMap.get(d);
             row.estimatedVarLoad = estVarLoadDateMap.get(d);
             row.currentWattLoad = currWattLoadDateMap.get(d);
             data.add(row);
@@ -197,6 +254,16 @@ public class KVarWattRPHModel extends BareReportModelBase<KVarWattRPHModel.Model
 		this.capControlCache = capControlCache;
 	}
 	
+    @Required
+    public void setSubstationBusDao(SubstationBusDao substationBusDao) {
+		this.substationBusDao = substationBusDao;
+	}
+
+    @Required
+	public void setFeederDao(FeederDao feederDao) {
+		this.feederDao = feederDao;
+	}
+	
     public void setStartDate(Long startDate) {
         this.startDate = startDate;
     }
@@ -220,5 +287,4 @@ public class KVarWattRPHModel extends BareReportModelBase<KVarWattRPHModel.Model
 	public void setTargetId(int targetId) {
 		this.targetId = targetId;
 	}
-
 }

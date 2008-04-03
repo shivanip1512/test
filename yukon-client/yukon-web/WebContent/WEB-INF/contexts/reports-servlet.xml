@@ -17,6 +17,9 @@
     
     <bean name="/cbcAnalysisChart/*" class="com.cannontech.web.reports.CBCAnalysisChartController">
         <property name="pointDao" ref="pointDao"/>
+        <property name="substationBusDao" ref="substationBusDao"/>
+        <property name="feederDao" ref="feederDao"/>
+        <property name="capControlCache" ref="capControlCache"/>
     </bean>
     
 </beans>

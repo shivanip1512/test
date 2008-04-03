@@ -1,10 +1,10 @@
 package com.cannontech.common.chart.model;
 
-import java.text.Format;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 
 /**
  * Enum of which represents the x-axis time interval between tick marks on the
@@ -49,7 +49,6 @@ public enum ChartInterval {
 
             return new Date(cal.getTimeInMillis());
         }
-
     },
     DAY_MIDNIGHT {
         public void increment(Calendar cal) {
@@ -79,7 +78,6 @@ public enum ChartInterval {
 
             return cal.getTime();
         }
-
     },
     HOUR {
         public Date increment(Date date) {
@@ -105,7 +103,6 @@ public enum ChartInterval {
 
             return new Date(cal.getTimeInMillis());
         }
-
     },
     MINUTE {
         public Date increment(Date date) {
@@ -129,6 +126,11 @@ public enum ChartInterval {
             cal.set(Calendar.MILLISECOND, 0);
 
             return new Date(cal.getTimeInMillis());
+        }
+        
+        @Override
+        public DateFormatEnum getFormat() {
+            return DateFormatEnum.DATEHM;
         }
 
     },
@@ -154,6 +156,11 @@ public enum ChartInterval {
             cal.set(Calendar.SECOND, i - (i % 15));
 
             return cal.getTime();
+        }
+        
+        @Override
+        public DateFormatEnum getFormat() {
+            return DateFormatEnum.BOTH;
         }
 
     }, 
@@ -202,6 +209,11 @@ public enum ChartInterval {
 
             return cal.getTime();
         }
+        
+        @Override
+        public DateFormatEnum getFormat() {
+            return DateFormatEnum.DATEHM;
+        }
 
     };
 
@@ -238,7 +250,7 @@ public enum ChartInterval {
      * Method to get the date formatter for this interval
      * @return Date formatter
      */
-    public Format getFormat() {
-        return new SimpleDateFormat("MM/dd/yyyy");
+    public DateFormatEnum getFormat() {
+        return DateFormatEnum.DATE;
     }
 }

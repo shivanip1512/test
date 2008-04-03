@@ -9,6 +9,7 @@ public class Graph {
     private String yAxis = "left";
     private List<?> chartData = null;
     private NumberFormat format = null;
+    private ChartColorsEnum color = null;
 
     public String getSeriesTitle() {
         return seriesTitle;
@@ -41,5 +42,13 @@ public class Graph {
     public void setFormat(NumberFormat format) {
         this.format = format;
     }
+
+	public ChartColorsEnum getColor() {
+		return color;
+	}
+
+	public void setColor(ChartColorsEnum color) {
+		this.color = color;
+	}
 
 }

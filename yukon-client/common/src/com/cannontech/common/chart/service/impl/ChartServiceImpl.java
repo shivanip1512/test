@@ -1,7 +1,6 @@
 package com.cannontech.common.chart.service.impl;
 
 import java.text.DecimalFormat;
-import java.text.Format;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +10,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Required;
+
+import com.cannontech.common.chart.model.ChartColorsEnum;
 import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
@@ -22,9 +24,12 @@ import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dao.RawPointHistoryDao;
 import com.cannontech.core.dao.UnitMeasureDao;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LitePointUnit;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * Implementation of the ChartService
@@ -35,29 +40,42 @@ public class ChartServiceImpl implements ChartService {
     private PointDao pointDao = null;
     private UnitMeasureDao unitMeasureDao = null;
     private SimpleDateFormat timeFormat = new SimpleDateFormat("MM/dd/yyyy hh:mm:ss.SSS a");
-
+    private DateFormattingService dateFormattingService = null;
+    
+    @Required
     public void setRphDao(RawPointHistoryDao rphDao) {
         this.rphDao = rphDao;
     }
 
+    @Required
     public void setPointDao(PointDao pointDao) {
         this.pointDao = pointDao;
     }
 
+    @Required
     public void setUnitMeasureDao(UnitMeasureDao unitMeasureDao) {
         this.unitMeasureDao = unitMeasureDao;
     }
+    
+    @Required
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+		this.dateFormattingService = dateFormattingService;
+	}
 
     public List<Graph> getGraphs(int[] pointIds, Date startDate, Date stopDate, ChartInterval unit,
                                  GraphType graphType, ConverterType converterType) {
 
         List<Graph> graphList = new ArrayList<Graph>();
 
+        int colorIdx = 0;
+        ChartColorsEnum[] colors = ChartColorsEnum.values();
+        
         for (int pointId : pointIds) {
 
             // Get the point data for the time period
             List<PointValueHolder> pointData = rphDao.getPointData(pointId, startDate, stopDate);
-
+            LitePoint lPoint = pointDao.getLitePoint(pointId);
+            
             // Set up the formatting based on the point unit
             LitePointUnit pointUnit = pointDao.getPointUnit(pointId);
             NumberFormat pointValueFormat = new DecimalFormat();
@@ -77,8 +95,8 @@ public class ChartServiceImpl implements ChartService {
                 chartValue.setId(data.getPointDataTimeStamp().getTime());
                 chartValue.setTime(data.getPointDataTimeStamp().getTime());
                 chartValue.setValue(data.getValue());
-                chartValue.setDescription(units + "\n" + timeFormat.format(data.getPointDataTimeStamp()));
-                chartValue.setFormat(pointValueFormat);
+                chartValue.setDescription(units + "\n" + timeFormat.format(data.getPointDataTimeStamp()) + "\n" + lPoint.getPointName());
+                chartValue.setFormattedValue(pointValueFormat.format(data.getValue()));
 
                 chartData.add(chartValue);
             }
@@ -90,34 +108,42 @@ public class ChartServiceImpl implements ChartService {
             ChartDataConverter converter = converterType.getDataConverter();
             axisChartData = converter.convertValues(axisChartData, unit);
 
-            // Get the lite point for the point name
-            LitePoint lPoint = pointDao.getLitePoint(pointId);
-
+            // graph
             Graph graph = new Graph();
             graph.setChartData(axisChartData);
             graph.setSeriesTitle(lPoint.getPointName());
             graph.setFormat(pointValueFormat);
-            graphList.add(graph);
+            
+            graph.setColor(colors[colorIdx]);
+            colorIdx++;
+            if (colorIdx == colors.length) {
+            	colorIdx = 0;
+            }
+            
+            // don't include zero-data graphs if there are more than one graph - amCharts chokes.
+            if (pointIds.length == 1 || chartData.size() > 0) {
+            	graphList.add(graph);
+            }
         }
 
         return graphList;
 
     }
 
-    public List<ChartValue> getXAxisData(Date startDate, Date stopDate, ChartInterval interval) {
+    public List<ChartValue<Date>> getXAxisData(Date startDate, Date stopDate, ChartInterval interval, YukonUserContext userContext) {
 
         Date currDate = interval.roundDownToIntervalUnit(startDate);
         Calendar currCal = Calendar.getInstance();
         currCal.setTime(currDate);
         
-        List<ChartValue> xAxisData = new ArrayList<ChartValue>();
-        Format format = interval.getFormat();
+        List<ChartValue<Date>> xAxisData = new ArrayList<ChartValue<Date>>();
+        DateFormatEnum format = interval.getFormat();
         while (stopDate.compareTo(currCal.getTime()) >= 0) {
 
             ChartValue<Date> chartValue = new ChartValue<Date>();
             chartValue.setId(currCal.getTimeInMillis());
             chartValue.setValue(currCal.getTime());
-            chartValue.setFormat(format);
+            chartValue.setFormattedValue(dateFormattingService.formatDate(currCal.getTime(), format, userContext));
 
             xAxisData.add(chartValue);
 
@@ -125,6 +151,21 @@ public class ChartServiceImpl implements ChartService {
         }
 
         return xAxisData;
+    }
+    
+    public int getXAxisDataCount(Date startDate, Date stopDate, ChartInterval interval) {
+
+        Date currDate = interval.roundDownToIntervalUnit(startDate);
+        Calendar currCal = Calendar.getInstance();
+        currCal.setTime(currDate);
+        
+        int count = 0;
+        while (stopDate.compareTo(currCal.getTime()) >= 0) {
+            count++;
+            interval.increment(currCal);
+        }
+
+        return count;
     }
 
     /**

@@ -2,6 +2,7 @@ package com.cannontech.web.reports;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -19,17 +20,22 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.cbc.cache.CapControlCache;
+import com.cannontech.cbc.dao.FeederDao;
+import com.cannontech.cbc.dao.SubstationBusDao;
+import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.web.CBCWebUtils;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.core.dao.PointDao;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 
 public class CBCAnalysisChartController extends MultiActionController  {
     
 	private PointDao pointDao = null;
-	private CapControlCache capControlCache = YukonSpringHook.getBean("cbcCache", CapControlCache.class);
+	private CapControlCache capControlCache = null;
+	private SubstationBusDao substationBusDao = null;
+	private FeederDao feederDao = null;
+	
 	
     public ModelAndView cbcChart(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	
@@ -65,83 +71,122 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	
     	// INIT MAPS
     	// ------------------------------------------------------------------------------------------------------
-    	Map<Integer, List<Integer>> targetPointIdsForGraph = new LinkedHashMap<Integer, List<Integer>>();
     	Map<Integer, String> targetNames = new LinkedHashMap<Integer, String>();
     	Map<Integer, Map<String, Object>> targetReportInfo = new LinkedHashMap<Integer, Map<String, Object>>();
-    	
+    	Map<Integer, Map<String, List<Integer>>> groupedPointIdsByTarget = new LinkedHashMap<Integer, Map<String, List<Integer>>>();
     	
     	// GATHER POINTS PER TARGET
     	// ------------------------------------------------------------------------------------------------------
     	for(int targetId : targetIds) {
     		
+    		// START REPORT INFO
+    		Map<String, Object> reportInfo = new HashMap<String, Object>();
+    		String definitionName = "";
+    		reportInfo.put("targetId", targetId);
+    		reportInfo.put("startDate", startDateMillis);
+    		reportInfo.put("stopDate", endDateMillis);
+    		
     		// TARGET NAME
     		targetNames.put(targetId, capControlCache.getCapControlPAO(targetId).toString());
     		
     		// ALL POINTS FOR TARGET
-    		Map<String, Integer> allPointsForTarget = new LinkedHashMap<String, Integer>();
+    		Map<String, List<Integer>> labledPointIds = new LinkedHashMap<String, List<Integer>>();
     		
     		// VAR-WATTS POINT IDS
     		if(analysisType.equalsIgnoreCase(CBCWebUtils.TYPE_VARWATTS)){
     			
     			if(capControlCache.isSubBus(targetId)) {
-    	    		SubBus subBus = capControlCache.getSubBus(targetId);
-    	    		allPointsForTarget.put("currentVarLoadPointId", subBus.getCurrentVarLoadPointID());      
-    	    		allPointsForTarget.put("estimatedVarLoadPointId", subBus.getEstimatedVarLoadPointID());
-    	    		allPointsForTarget.put("currentWattLoadPointId", subBus.getCurrentWattLoadPointID());
+    				
+    	    		SubBus subBus_cache = capControlCache.getSubBus(targetId);
+    	    		SubstationBus subBus_dao = substationBusDao.getById(targetId);
+    	    		
+    	    		if (subBus_dao.getUsephasedata() == 'Y') {
+    	    			
+    	    			definitionName = "kVarPhaseWattRPHDefinition";
+    	    			
+    	    			List<Integer> phaseIds = new ArrayList<Integer>();
+        	    		phaseIds.add(subBus_dao.getCurrentVarLoadPointId());
+        	    		phaseIds.add(subBus_dao.getPhaseb());
+        	    		phaseIds.add(subBus_dao.getPhasec());
+    	    			labledPointIds.put("phaseIds", phaseIds);
+    	    			
+    	    			labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(subBus_cache.getEstimatedVarLoadPointID()));
+        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(subBus_cache.getCurrentWattLoadPointID()));
+    	    		}
+    	    		else {
+    	    			
+    	    			definitionName = "kVarWattRPHDefinition";
+    	    			
+    	    			labledPointIds.put("currentVarLoadPointId", Collections.singletonList(subBus_cache.getCurrentVarLoadPointID()));      
+        	    		labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(subBus_cache.getEstimatedVarLoadPointID()));
+        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(subBus_cache.getCurrentWattLoadPointID()));
+    	    		}
+    	    		
     	    	}
     	    	else if(capControlCache.isFeeder(targetId)) {
-    	    		Feeder feeder = capControlCache.getFeeder(targetId);
-    	    		allPointsForTarget.put("currentVarLoadPointId", feeder.getCurrentVarLoadPointID());      
-    	    		allPointsForTarget.put("estimatedVarLoadPointId", feeder.getEstimatedVarLoadPointID());
-    	    		allPointsForTarget.put("currentWattLoadPointId", feeder.getCurrentWattLoadPointID());
+    	    		
+    	    		com.cannontech.yukon.cbc.Feeder feeder_cache = capControlCache.getFeeder(targetId);
+    	    		com.cannontech.cbc.model.Feeder feeder_dao = feederDao.getById(targetId);
+    	    		
+    	    		if (feeder_dao.getUsePhaseData() == 'Y') {
+    	    			
+    	    			definitionName = "kVarPhaseWattRPHDefinition";
+    	    			
+    	    			List<Integer> phaseIds = new ArrayList<Integer>();
+        	    		phaseIds.add(feeder_dao.getCurrentVarLoadPointId());
+        	    		phaseIds.add(feeder_dao.getPhaseb());
+        	    		phaseIds.add(feeder_dao.getPhasec());
+    	    			labledPointIds.put("phaseIds", phaseIds);
+    	    			
+    	    			labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(feeder_cache.getEstimatedVarLoadPointID()));
+        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(feeder_cache.getCurrentWattLoadPointID()));
+    	    		}
+    	    		else {
+    	    			
+    	    			definitionName = "kVarWattRPHDefinition";
+    	    			
+    	    			labledPointIds.put("currentVarLoadPointId", Collections.singletonList(feeder_cache.getCurrentVarLoadPointID()));      
+        	    		labledPointIds.put("estimatedVarLoadPointId", Collections.singletonList(feeder_cache.getEstimatedVarLoadPointID()));
+        	    		labledPointIds.put("currentWattLoadPointId", Collections.singletonList(feeder_cache.getCurrentWattLoadPointID()));
+    	    		}
     	    	}
     		}
     		
     		// POWER FACTOR POINT IDS
     		else if(analysisType.equalsIgnoreCase(CBCWebUtils.TYPE_PF)){
     			
+    			definitionName = "powerFactorRPHDefinition";
+    			
     			if(capControlCache.isSubBus(targetId)) {
     	    		SubBus subBus = capControlCache.getSubBus(targetId);
-    	    		allPointsForTarget.put("powerFactorPointId", subBus.getPowerFactorPointId());
-    	    		allPointsForTarget.put("estimatedPowerFactorPointId", subBus.getEstimatedPowerFactorPointId());
+    	    		labledPointIds.put("powerFactorPointId", Collections.singletonList(subBus.getPowerFactorPointId()));
+    	    		labledPointIds.put("estimatedPowerFactorPointId", Collections.singletonList(subBus.getEstimatedPowerFactorPointId()));
     	    	}
     	    	else if(capControlCache.isFeeder(targetId)) {
     	    		Feeder feeder = capControlCache.getFeeder(targetId);
-    	    		allPointsForTarget.put("powerFactorPointId", feeder.getPowerFactorPointID());		
-    	    		allPointsForTarget.put("estimatedPowerFactorPointId", feeder.getEstimatedPowerFactorPointID());
+    	    		labledPointIds.put("powerFactorPointId", Collections.singletonList(feeder.getPowerFactorPointID()));		
+    	    		labledPointIds.put("estimatedPowerFactorPointId", Collections.singletonList(feeder.getEstimatedPowerFactorPointID()));
     	    	}
     		}
     		
-    		// POINT IDS TO GRAPH
-    		List<Integer> pointIdsForGraph = new ArrayList<Integer>();
-    		for(String pointKey : allPointsForTarget.keySet()) {
-    			Integer pt = allPointsForTarget.get(pointKey);
-    			if(pt > 0) {
-    				pointIdsForGraph.add(pt);
+    		// weed out zeros
+    		for (String labelKey : labledPointIds.keySet()) {
+    			List<Integer> okPointIds = new ArrayList<Integer>();
+    			for (Integer pointId : labledPointIds.get(labelKey)) {
+    				if (pointId > 0) {
+    					okPointIds.add(pointId);
+    				}
     			}
+    			labledPointIds.put(labelKey, okPointIds);
     		}
     		
-    		// ADD KEEPERS, OTHERWISE NULL
-    		targetPointIdsForGraph.put(targetId, null);
-    		if(pointIdsForGraph.size() > 0) {
-    			targetPointIdsForGraph.put(targetId, pointIdsForGraph);
-    		}
+    		// groupedPointIdsByTarget
+    		groupedPointIdsByTarget.put(targetId, labledPointIds);
     		
-    		// REPORT INFO
-    		Map<String, Object> reportInfo = new HashMap<String, Object>();
     		
-    		reportInfo.put("targetId", targetId);
-    		reportInfo.put("targetId", targetId);
-    		reportInfo.put("startDate", startDateMillis);
-    		reportInfo.put("stopDate", endDateMillis);
-    		
-    		for(String pointKey : allPointsForTarget.keySet()) {
-    			Integer pt = allPointsForTarget.get(pointKey);
-    			reportInfo.put(pointKey, pt);
-    		}
-    		
+    		// FINISH REPORT INFO
+    		reportInfo.put("definitionName", definitionName);
     		targetReportInfo.put(targetId, reportInfo);
-    		
     	}
     	
     	
@@ -158,37 +203,42 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	// ------------------------------------------------------------------------------------------------------
     	Map<Integer, List<Map<String, Object>>> targetGraphs = new LinkedHashMap<Integer, List<Map<String, Object>>>();
     	
-    	for(Integer targetId : targetPointIdsForGraph.keySet()) {
+    	for(Integer targetId : groupedPointIdsByTarget.keySet()) {
     	
-    		String targetName = targetNames.get(targetId);
-    		List<Integer> pointIdsListForTarget = targetPointIdsForGraph.get(targetId);
+    		List<Map<String, Object>> graphMapsForTarget = new ArrayList<Map<String, Object>>(); 
     		
-    		if(pointIdsListForTarget != null) {
+    		Map<String, List<Integer>> pointIdsListForTarget = groupedPointIdsByTarget.get(targetId);
+    		for (String groupLabel : pointIdsListForTarget.keySet()) {
+    			
+    			if (pointIdsListForTarget.get(groupLabel).size() > 0) {
+
+    				Map<String, Object> graph = new HashMap<String, Object>();
+    				graph.put("targetName", targetNames.get(targetId));
+    				if (pointIdsListForTarget.get(groupLabel).size() > 1) {
+    	    			graph.put("pointName", "Phase Var Data");
+    	    		}
+    	    		else {
+    	    			graph.put("pointName", pointDao.getPointName(pointIdsListForTarget.get(groupLabel).get(0)));
+    	    		}
+    	    		graph.put("pointIds", StringUtils.join(pointIdsListForTarget.get(groupLabel), ","));
+    	    		graph.put("period", chartPeriod);
+    	    		graph.put("converterType", "RAW");
+    	    		graph.put("graphType", "LINE");
+    	    		graph.put("startDateMillis", startDateMillis);
+    	    		graph.put("endDateMillis", endDateMillis);
+    	    		
+    	    		graphMapsForTarget.add(graph);
+    			}
+    			
+    			
+    		}
     		
-	    		List<Map<String, Object>> graphs = new ArrayList<Map<String, Object>>(); 
-	    		
-		    	for(Integer id : pointIdsListForTarget) {
-		    		
-		    		Map<String, Object> graph = new HashMap<String, Object>();
-		    		graph.put("targetName", targetName);
-		    		graph.put("pointName", pointDao.getPointName(id));
-		    		graph.put("pointIds", id);
-		    		graph.put("period", chartPeriod);
-		    		graph.put("converterType", "RAW");
-		    		graph.put("graphType", "LINE");
-		    		graph.put("startDateMillis", startDateMillis);
-		    		graph.put("endDateMillis", endDateMillis);
-		    		
-		    		graphs.add(graph);
-		    	}
-		    	
-		    	targetGraphs.put(targetId, graphs);
-		    	
+    		if (graphMapsForTarget.size() > 0) {
+    			targetGraphs.put(targetId, graphMapsForTarget);
     		}
     		else {
     			targetGraphs.put(targetId, null);
     		}
-		    	
     	}
     	
     	
@@ -205,12 +255,6 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	mav.addObject("module", "capcontrol");
     	mav.addObject("showMenu", "false");
     	
-    	if(analysisType.equalsIgnoreCase(CBCWebUtils.TYPE_VARWATTS)){
-    		mav.addObject("definitionName", "kVarWattRPHDefinition");
-		}
-		else if(analysisType.equalsIgnoreCase(CBCWebUtils.TYPE_PF)){
-			mav.addObject("definitionName", "powerFactorRPHDefinition");
-		}
     	
     	mav.addObject("targetIds", targetIds);
     	mav.addObject("targetNames", targetNames);
@@ -223,5 +267,20 @@ public class CBCAnalysisChartController extends MultiActionController  {
     @Required
 	public void setPointDao(PointDao pointDao) {
 		this.pointDao = pointDao;
+	}
+
+    @Required
+	public void setSubstationBusDao(SubstationBusDao substationBusDao) {
+		this.substationBusDao = substationBusDao;
+	}
+
+    @Required
+	public void setFeederDao(FeederDao feederDao) {
+		this.feederDao = feederDao;
+	}
+
+    @Required
+	public void setCapControlCache(CapControlCache capControlCache) {
+		this.capControlCache = capControlCache;
 	}
 }

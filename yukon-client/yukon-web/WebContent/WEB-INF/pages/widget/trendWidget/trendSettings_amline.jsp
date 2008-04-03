@@ -163,7 +163,7 @@
     <x_balloon_text_color></x_balloon_text_color>             <!-- [text_color] (hex color code) -->
     <y_balloon_text_size></y_balloon_text_size>               <!-- [text_color] (hex color code) -->  
     <y_balloon_on_off>false</y_balloon_on_off>                 <!-- [true] (true / false) whether it is possible to turn on/off y balloon by clicking on graphs or legend. Works only if indicator is enabled -->            
-    <one_y_balloon></one_y_balloon>                           <!-- [false] (true / false) if you set it to true, only one y balloon will be visible at a time -->             
+    <one_y_balloon>true</one_y_balloon>                           <!-- [false] (true / false) if you set it to true, only one y balloon will be visible at a time -->             
   </indicator>
     
   <legend>                                                    <!-- LEGEND -->

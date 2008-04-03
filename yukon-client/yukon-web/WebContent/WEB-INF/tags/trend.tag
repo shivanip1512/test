@@ -23,7 +23,7 @@
 	<c:param name="amChartsProduct" value="${amChartsProduct}" />
 	<c:param name="title" value="${title}" />
 	<c:param name="converterType" value="${converterType}" />
-	<c:param name="pointId" value="${pointIds}" />
+	<c:param name="pointIds" value="${pointIds}" />
 	
 	<!-- require in order to determine a good frequency setting because bar charts do not have ability to do this themselves -->
 	<c:param name="startDate" value="${startDate}" />
