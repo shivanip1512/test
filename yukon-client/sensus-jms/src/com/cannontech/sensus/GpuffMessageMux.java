@@ -56,11 +56,11 @@ public class GpuffMessageMux {
 
 									Formatter hexFormatter = new Formatter();
 									for( int i=0; i < pkt.getLength(); i++) {
-										hexFormatter.format(" %02x", (0x000000ff & (int)(pkt.getData()[i])));
+										hexFormatter.format(" %02X", (0x000000ff & (int)(pkt.getData()[i])));
 									}
 									report += hexFormatter.out().toString();
 																		
-									System.out.print(report + "\n");
+									// System.out.print(report + "\n");
 									log.info(report);
 									
 									// loop over outgoing sockets and send
@@ -104,31 +104,35 @@ public class GpuffMessageMux {
 
 		return packet;		
 	}
+	
 	public void writePacket(byte[] writebuf, int writeLen) {
 
 		Formatter hexFormatter = new Formatter();
 		for( int i=0; i < writeLen; i++) {
-			hexFormatter.format(" %02x", (0x000000ff & (int)writebuf[i]));
+			hexFormatter.format(" %02X", (0x000000ff & (int)writebuf[i]));
 		}
 
+		String clientList = "UDP send [" + writeLen + "] bytes to: ";		
         for (URL itr : udpTargetAddressSet) {
 			try {
 				// send request
 				InetAddress address = InetAddress.getByName(itr.getHost());
 				DatagramPacket packet = new DatagramPacket(writebuf, writeLen, address, itr.getPort());
 
+				clientList += packet.getAddress()+ ":" + packet.getPort() + ", ";
 				String report = "UDP packet     send: " + packet.getAddress()+ ":" + 
 				packet.getPort() + " ["+ packet.getLength() + "] bytes." + hexFormatter.out().toString();				
 								
-				System.out.print(report + "\n");
-				log.info(report);				
+				// System.out.print(report + "\n");
+				log.debug(report);				
 				outSocket.send(packet);				
 			} catch (IOException e) {
 				System.out.print(e);
 				log.warn("caught IOException in writePacket", e);
 				cleanupSockets();
 			}
-		}		
+		}
+        log.info(clientList);
 	}
 	
 	public void setUdpTargetAddressSet(Set<URL> udpTargetAddressSet) {
