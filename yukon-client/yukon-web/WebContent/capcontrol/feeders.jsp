@@ -619,7 +619,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				</td>
 
                 <td>
-                    <capTags:warningImg paoId="${thisCapBankId}" type="CAPBANK"/>
+                    <capTags:capBankWarningImg paoId="${thisCapBankId}" type="CAPBANK"/>
                 </td>
 
 				<td>

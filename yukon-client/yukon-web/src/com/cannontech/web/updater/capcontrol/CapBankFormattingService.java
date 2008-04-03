@@ -8,8 +8,9 @@ public class CapBankFormattingService extends AbstractFormattingService<CapBankD
 
     @Override
     protected String getWarningFlag(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
-        String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_WARNING_IMAGE);
-        return value;
+        String color = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_WARNING_IMAGE_COLOR);
+        String text = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_WARNING_IMAGE_TEXT);
+        return color + text;
     }
     
     @Override

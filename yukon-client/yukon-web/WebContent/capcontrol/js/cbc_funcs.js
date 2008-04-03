@@ -126,6 +126,39 @@ function updateWarningImage(id) {
     }
 }
 
+function updateCapBankWarningImage(id) {
+    return function(data) {
+        var yellowSpan = $(id + '_yellow');
+        var greenSpan = $(id + '_green');
+        var yellowLocalSpan = $(id + '_yellow_local');
+        var greenLocalSpan = $(id + '_green_local');
+        
+        var icon = data.value;
+        
+        if (icon == 'GreenRemote') {
+            yellowSpan.hide();
+            yellowLocalSpan.hide();
+            greenLocalSpan.hide();
+            greenSpan.show();
+        } else if (icon == 'GreenLocal'){
+            yellowSpan.hide();
+            yellowLocalSpan.hide();
+            greenLocalSpan.show();
+            greenSpan.hide();
+        } else if (icon == 'YellowRemote'){
+            yellowSpan.show();
+            yellowLocalSpan.hide();
+            greenLocalSpan.hide();
+            greenSpan.hide();
+        } else if (icon == 'YellowLocal'){
+            yellowSpan.hide();
+            yellowLocalSpan.show();
+            greenLocalSpan.hide();
+            greenSpan.hide();
+        }
+    }
+}
+
 function updateVerificationImage(spanId) {
     return function(data) {
         var isVerification = eval(data.value);
