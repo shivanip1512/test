@@ -110,7 +110,7 @@ public class AddressDaoImpl implements AddressDao {
                 SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
                 sqlBuilder.append(selectAllSql);
                 sqlBuilder.append(" WHERE AddressID IN (");
-                sqlBuilder.append(SqlStatementBuilder.convertToSqlLikeList(subList));
+                sqlBuilder.append(subList);
                 sqlBuilder.append(")");
                 String sql = sqlBuilder.toString();
                 return sql;

@@ -5,10 +5,8 @@ import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
@@ -17,10 +15,7 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlGenerator;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.capcontrol.CapBank;
@@ -172,39 +167,6 @@ public final class PointDaoImpl implements PointDao {
         List<LitePoint> points = 
             jdbcOps.query(sql, new Object[] { paObjectId }, PointDaoImpl.litePointRowMapper);
         return points;
-    }
-
-    public Map<Integer,List<LitePoint>> getLitePointsByPaObject(final List<Integer> paoIdList) {
-        final Map<Integer,List<LitePoint>> map = new HashMap<Integer,List<LitePoint>>(paoIdList.size());
-        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
-        
-        final List<LitePoint> resultList = template.query(new SqlGenerator<Integer>() {
-            @Override
-            public String generate(List<Integer> subList) {
-                return buildSqlForPaoIdList(subList);
-            }
-        }, paoIdList, litePointRowMapper);
-
-        for (final LitePoint point : resultList) {
-            Integer key = point.getPaobjectID();
-            List<LitePoint> pointList = map.get(key);
-            if (pointList == null) {
-                pointList = new ArrayList<LitePoint>();
-                map.put(key, pointList);
-            }
-            pointList.add(point);            
-        }
-        
-        return map;
-    }
-
-    private String buildSqlForPaoIdList(List<Integer> subList) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append(litePointSql);
-        sb.append("WHERE PaObjectId IN (");
-        sb.append(SqlStatementBuilder.convertToSqlLikeList(subList));
-        sb.append(")");
-        return sb.toString();
     }
     
     /* (non-Javadoc)

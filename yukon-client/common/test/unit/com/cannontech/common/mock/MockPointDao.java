@@ -144,11 +144,6 @@ public class MockPointDao implements PointDao {
 		return null;
 	}
 
-    public Map<Integer, List<LitePoint>> getLitePointsByPaObject(List<Integer> paoIdList) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
     @Override
     public List<LitePoint> getLitePointIdByDeviceId_PointType(int deviceId,
             int pointType) throws NotFoundException {

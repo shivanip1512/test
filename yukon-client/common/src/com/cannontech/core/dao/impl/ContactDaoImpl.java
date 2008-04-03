@@ -83,7 +83,7 @@ public final class ContactDaoImpl implements ContactDao {
             public String generate(List<Integer> subList) {
                 SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
                 sqlBuilder.append("SELECT * FROM Contact WHERE ContactID IN (");
-                sqlBuilder.append(SqlStatementBuilder.convertToSqlLikeList(subList));
+                sqlBuilder.append(subList);
                 sqlBuilder.append(")");
                 String sql = sqlBuilder.toString();
                 return sql;

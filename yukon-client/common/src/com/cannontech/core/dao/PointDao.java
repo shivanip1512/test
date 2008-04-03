@@ -2,7 +2,6 @@ package com.cannontech.core.dao;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import com.cannontech.database.data.capcontrol.CapBank;
 import com.cannontech.database.data.lite.LitePoint;
@@ -66,8 +65,6 @@ public interface PointDao {
      * @return
      */
     public List<LitePoint> getLitePointsByPaObjectId(int paObjectId);
-    
-    public Map<Integer,List<LitePoint>> getLitePointsByPaObject(List<Integer> paoIdList);
     
     /**
      * This method was created in VisualAge.
