@@ -12,7 +12,7 @@ public class CtiNavObject
 	private String currentPage;
 	private String previousPage;
 
-	private String moduleExitPage;
+	private String moduleExitPage = null;
 	private String moduleRedirectPage;
 	private String moduleLabel;
 	private String preservedAddress;

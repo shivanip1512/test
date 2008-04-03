@@ -17,7 +17,7 @@
 
 <%@include file="cbc_inc.jspf"%>
 	
-<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
 <script type="text/javascript" language="JavaScript">
     Event.observe(window, 'load', checkPageExpire);

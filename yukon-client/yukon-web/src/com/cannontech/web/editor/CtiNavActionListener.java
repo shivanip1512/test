@@ -46,6 +46,10 @@ public class CtiNavActionListener implements ActionListener {
 					ctiNav.setModuleExitPage( null );
 				}
 
+			    if( "".equalsIgnoreCase(red) ) {
+					red = "/capcontrol/subareas.jsp";
+				}
+			    
 				if (red.equalsIgnoreCase(ctiNav.getModuleExitPage()) && ctiNav.getPreservedAddress() != null) {
                     //This is here for when we are switching in and out of JSF pages, 
 				    // it preserves the return point since it will fall off of our 2 page history in CtiNav

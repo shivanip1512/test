@@ -1,3 +1,6 @@
+
+
+
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
@@ -5,7 +8,13 @@
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
 
+<%@ page import="com.cannontech.web.editor.CapControlForm" %>
 
+<%
+//This is needed because this was handled in the CBCSerlvet before entering faces pages.
+//Since the servlet bypass, this static method will need to be called entering any faces page.
+	CapControlForm.setupFacesNavigation();
+%>
 <script type="text/javascript">
 <!--
     var submitAllowed = true;
@@ -72,7 +81,7 @@
                             <h:outputText value="Next Run Time" title="The next time this scheduled is to run" />
                         </f:facet>
                         <h:outputText value="#{paoSched.nextRunTime}" rendered="#{paoSched.nextRunTime.time > selLists.startOfTime}" >
-                            <f:convertDateTime pattern="MM-dd-yyyy kk:mm:ss" />
+                            <f:convertDateTime pattern="#{selLists.dateTime}" />
                         </h:outputText>
                         <h:outputText value="---" rendered="#{paoSched.nextRunTime.time <= selLists.startOfTime}" />
                    </h:column>
@@ -82,7 +91,7 @@
                             <h:outputText value="Last Run Time" title="The last time this scheduled ran" />
                         </f:facet>
                         <h:outputText value="#{paoSched.lastRunTime}" rendered="#{paoSched.lastRunTime.time > selLists.startOfTime}" >
-                            <f:convertDateTime pattern="MM-dd-yyyy kk:mm:ss" />
+                            <f:convertDateTime pattern="#{selLists.dateTime}" />
                         </h:outputText>
                         <h:outputText value="---" rendered="#{paoSched.lastRunTime.time <= selLists.startOfTime}" />
                    </h:column>

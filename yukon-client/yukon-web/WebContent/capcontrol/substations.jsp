@@ -13,7 +13,7 @@
 
 <%@include file="cbc_inc.jspf"%>
 
-<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value="<%=request.getRequestURL().toString()%>"/>
+<jsp:setProperty name="CtiNavObject" property="moduleExitPage" value=""/>
 
 <!-- necessary DIV element for the OverLIB popup library -->
 <div id="overDiv" style="position:absolute; visibility:hidden; z-index:1000;"></div>

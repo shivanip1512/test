@@ -593,9 +593,34 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			((CapControlSubBus) getDbPersistent()).getCapControlSubstationBus().setCurrentVoltLoadPointID(new Integer(val));
         }
 	}
+	
+	public static void setupFacesNavigation() {
+		/* Start hack */
+		
+		//This is needed because this was handled in the CBCSerlvet before entering faces pages.
+		//Since the servlet bypass, this static method will need to be called entering any faces page.
+		FacesContext context = FacesContext.getCurrentInstance();
+		HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
+		CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
+		if (navObject.getModuleExitPage() == null || "".equalsIgnoreCase(navObject.getModuleExitPage())) {
+			navObject.setModuleExitPage(navObject.getCurrentPage());
+			//Hack to preserve an address that will normally fall off our 2 page history.
+			navObject.setPreservedAddress(navObject.getPreviousPage());
+			
+			HttpServletRequest request = (HttpServletRequest)context.getExternalContext().getRequest();
 
+	        String url = request.getRequestURL().toString();
+	        String urlParams = request.getQueryString();
+	        String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
+			
+			navObject.setNavigation(navUrl);			
+			navObject.clearHistory();
+		}
+		/* End hack */
+	}
+	
 	public void initItem(int id, int type) {
-
+		
 		DBPersistent dbObj = null;
         
 		switch (type) {
@@ -2193,7 +2218,6 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
         int elemID = Integer.parseInt( paramMap.get("stratID") );
         HttpSession session = (HttpSession) context.getExternalContext().getSession(false);
         CtiNavObject navObject = (CtiNavObject) session.getAttribute("CtiNavObject");
-        navObject.getHistory().push(navObject.getCurrentPage());
         HttpServletRequest req = (HttpServletRequest)context.getExternalContext().getRequest();
         String currentPage = req.getRequestURL().toString();
         navObject.setPreviousPage(currentPage);

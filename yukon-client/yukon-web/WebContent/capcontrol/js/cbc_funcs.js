@@ -541,6 +541,7 @@ function getUrlType( selElems, type ) {
 //Posts to the correct URL with the checked item
 // for editing
 // -------------------------------------------
+//DEPRECATED
 function editorPost()
 {
     var elemAreas = document.getElementsByName('cti_chkbxAreas');	
@@ -573,6 +574,7 @@ function editorPost()
 //Posts to the correct URL with the checked item
 // for editing
 // -------------------------------------------
+//DEPRECATED
 function deletePost()
 {
     var elemAreas = document.getElementsByName('cti_chkbxAreas');
