@@ -59,14 +59,14 @@ function validateInput()
 		return false;
 	}
 	
-		//Check for a colon so as to prevent accidental control starts or incorrect control times
-	if( document.cmdForm.startTime1 != null && !document.cmdForm.startTime1.disabled && document.cmdForm.startTime1.value.indexOf(":") < 0) {
+	//Check for a colon so as to prevent accidental control starts or incorrect control times
+	if( document.cmdForm.startTime1 != null && !document.cmdForm.startTime1.disabled && document.cmdForm.startTime1.value.indexOf(":") != 2) {
 		alert('Unable to determine a valid start time.  Start time should be in the form HH:mm.');
 		return false;
 	}
 	
 	//Check for a colon so as to prevent accidental control stops or incorrect control times
-	if( document.cmdForm.stopTime1 != null && !document.cmdForm.stopTime1.disabled && document.cmdForm.stopTime1.value.indexOf(":") < 0) {
+	if( document.cmdForm.stopTime1 != null && !document.cmdForm.stopTime1.disabled && document.cmdForm.stopTime1.value.indexOf(":") != 2) {
 		alert('Unable to determine a valid stop time.  Stop time should be in the form HH:mm.');
 		return false;
 	}
