@@ -71,8 +71,8 @@
 <entry key="yukon.web.menu.portal.administration.deviceConfiguration">Device Configuration</entry>
 
 <!--  -->
-<entry key="yukon.web.menu.topMenuDefaultTitle">Display Sub Menu for {0}</entry>
-<entry key="yukon.web.menu.subMenuDefaultTitle">Goto {0}</entry>
+<entry key="yukon.web.menu.subMenuDefaultTitle">Display Menu for {0}</entry>
+<entry key="yukon.web.menu.simpleMenuDefaultTitle">Goto {0}</entry>
 
 <!-- Any of the following menu items can be suffixed with a ".title" to set the tooltip.
      If the tooltip isn't specifically set, the yukon.web.menu.topMenuDefaultTitle or
