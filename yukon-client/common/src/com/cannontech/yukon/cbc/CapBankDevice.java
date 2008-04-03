@@ -54,6 +54,7 @@ public class CapBankDevice extends StreamableCapObject
     private String beforeVars = new String();
     private String afterVars = new String();
     private String percentChange = new String();
+    private Boolean localControlFlag = Boolean.FALSE;
 
 
 	public Boolean getMaxDailyOperationHitFlag() {
@@ -68,6 +69,14 @@ public class CapBankDevice extends StreamableCapObject
     public void setOvuvSituationFlag(Boolean ovuvSituationFlag) {
         this.ovuvSituationFlag = ovuvSituationFlag;
     }
+    
+    public Boolean getLocalControlFlag() {
+        return localControlFlag;
+    }
+    public void setLocalControlFlag(Boolean localControlFlag) {
+        this.localControlFlag = localControlFlag;
+    }
+    
     public Boolean getOvUVDisabled() {
         //here to fake the return
         //boolean retVal = ((Math.random() * 100) > 50) ?  true : false; 
@@ -535,7 +544,7 @@ public class CapBankDevice extends StreamableCapObject
 	
 	public String getControlStatusQualityString(){
 		String retVal = "";
-		switch ((int)getControlStatusQuality())
+		switch (getControlStatusQuality())
 		{
 			case CapControlConst.CC_PARTIAL_QUAL:{
 				retVal = "-P";

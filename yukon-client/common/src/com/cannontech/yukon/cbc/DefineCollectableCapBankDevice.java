@@ -29,7 +29,7 @@ public Object create(com.roguewave.vsj.VirtualInputStream vstr) throws java.io.I
  * getCxxClassId method comment.
  */
 public int getCxxClassId() {
-	return this.CTI_CCCAPBANK_ID;
+	return DefineCollectableCapBankDevice.CTI_CCCAPBANK_ID;
 }
 /**
  * getCxxStringId method comment.
@@ -40,7 +40,7 @@ public String getCxxStringId() {
 /**
  * getJavaClass method comment.
  */
-public Class getJavaClass() {
+public Class<CapBankDevice> getJavaClass() {
 	return CapBankDevice.class;
 }
 /**
@@ -68,7 +68,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setMapLocationID((String) vstr.restoreObject( SimpleMappings.CString ) );
 	capBank.setRecloseDelay( new Integer( (int)vstr.extractUnsignedInt() ) );
 	
-	capBank.setControlOrder( new Float((float)vstr.extractFloat() ) );
+	capBank.setControlOrder( new Float(vstr.extractFloat() ) );
 	
 	capBank.setStatusPointID( new Integer( (int)vstr.extractUnsignedInt() ) );
 	capBank.setControlStatus( new Integer( (int)vstr.extractUnsignedInt() ) );
@@ -82,8 +82,8 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
 	capBank.setIgnoreFlag(new Boolean( (int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
 	capBank.setIgnoreReason(new Integer( (int) vstr.extractUnsignedInt() ) );
 	capBank.setOvUVDisabled(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
-    capBank.setTripOrder( new Float((float)vstr.extractFloat() ) );
-    capBank.setCloseOrder( new Float((float)vstr.extractFloat() ) );
+    capBank.setTripOrder( new Float(vstr.extractFloat() ) );
+    capBank.setCloseOrder( new Float(vstr.extractFloat() ) );
     capBank.setControlDeviceType( (String) vstr.restoreObject( SimpleMappings.CString ) );
     capBank.setBeforeVars( (String) vstr.restoreObject( SimpleMappings.CString ) );
     capBank.setAfterVars( (String) vstr.restoreObject( SimpleMappings.CString ) );
@@ -91,6 +91,7 @@ public void restoreGuts(Object obj, com.roguewave.vsj.VirtualInputStream vstr, c
     capBank.setMaxDailyOperationHitFlag(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
     capBank.setOvuvSituationFlag(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
     capBank.setControlStatusQuality( new Integer( (int)vstr.extractUnsignedInt() ) );
+    capBank.setLocalControlFlag(new Boolean ((int)vstr.extractUnsignedInt() == 1) ? new Boolean(true) : new Boolean(false) );
 	
 }
 /**
@@ -145,6 +146,6 @@ public void saveGuts(Object obj, com.roguewave.vsj.VirtualOutputStream vstr, com
     vstr.insertUnsignedInt( (capBank.getMaxDailyOperationHitFlag() == true)?1:0);
     vstr.insertUnsignedInt( (capBank.getOvuvSituationFlag() == true)?1:0);
     vstr.insertUnsignedInt( capBank.getControlStatusQuality().intValue() );
-	
+    vstr.insertUnsignedInt( (capBank.getLocalControlFlag() == true)?1:0);
 }
 }
