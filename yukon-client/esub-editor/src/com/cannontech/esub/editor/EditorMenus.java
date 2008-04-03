@@ -237,8 +237,8 @@ private void initialize(EditorActions actions) {
 //	editMenu.add(new JSeparator());	
 	popupMenu.add(toFrontPopupItem);
 	popupMenu.add(toBackPopupItem);
-	
-	
+	popupMenu.add(changeDevicePopupItem);
+		
 	// Add cut copy paste here
 
 	JMenu viewMenu = new JMenu("View");
