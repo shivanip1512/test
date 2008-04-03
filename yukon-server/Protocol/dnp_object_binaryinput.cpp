@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_cbc.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/01/24 20:07:24 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/04/03 15:25:17 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -397,6 +397,8 @@ CtiPointDataMsg *BinaryInputChange::getPoint( const TimeCTO *cto ) const
             tmpMsg->setTags(TAG_POINT_DATA_TIMESTAMP_VALID);
             tmpMsg->setTime(seconds);
             tmpMsg->setMillis(milliseconds);
+
+            break;
         }
 
         default:
