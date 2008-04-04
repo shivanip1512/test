@@ -4,9 +4,9 @@
   <parameter name="sendMultiRefs" value="true"/>
   <parameter name="disablePrettyXML" value="true"/>
   <parameter name="adminPassword" value="admin"/>
-  <parameter name="attachments.Directory" value="C:\eclipsedev\branch_4_1\yukon-web\WebContent\WEB-INF\attachments"/>
+  <parameter name="attachments.Directory" value="./attachments"/>
   <parameter name="dotNetSoapEncFix" value="true"/>
-  <parameter name="enableNamespacePrefixOptimization" value="false"/>
+  <parameter name="enableNamespacePrefixOptimization" value="true"/>
   <parameter name="sendXMLDeclaration" value="true"/>
   <parameter name="attachments.implementation" value="org.apache.axis.attachments.AttachmentsImpl"/>
   <parameter name="sendXsiTypes" value="true"/>
@@ -20,10 +20,22 @@
    </handler>
   </requestFlow>
  </globalConfiguration>
+ <handler name="soapmonitor" type="java:org.apache.axis.handlers.SOAPMonitorHandler">
+  <parameter name="wsdlURL" value="/axis/SOAPMonitorService-impl.wsdl"/>
+  <parameter name="serviceName" value="SOAPMonitorService"/>
+  <parameter name="namespace" value="http://tempuri.org/wsdl/2001/12/SOAPMonitorService-impl.wsdl"/>
+  <parameter name="portName" value="Demo"/>
+ </handler>
  <handler name="URLMapper" type="java:org.apache.axis.handlers.http.URLMapper"/>
  <handler name="LocalResponder" type="java:org.apache.axis.transport.local.LocalResponder"/>
  <handler name="Authenticate" type="java:org.apache.axis.handlers.SimpleAuthenticationHandler"/>
  <service name="MR_OASoap" provider="java:RPC" style="wrapped" use="literal">
+  <requestFlow>
+   <handler type="soapmonitor"/>
+  </requestFlow>
+  <responseFlow>
+   <handler type="soapmonitor"/>
+  </responseFlow>
   <operation name="pingURL" qname="ns974:PingURL" returnItemQName="ns974:errorObject" returnQName="ns974:PingURLResult" returnType="ns974:ArrayOfErrorObject" soapAction="http://www.multispeak.org/Version_3.0/PingURL" xmlns:ns974="http://www.multispeak.org/Version_3.0"/>
   <operation name="getMethods" qname="ns975:GetMethods" returnItemQName="ns975:string" returnQName="ns975:GetMethodsResult" returnType="ns975:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetMethods" xmlns:ns975="http://www.multispeak.org/Version_3.0"/>
   <operation name="getDomainNames" qname="ns976:GetDomainNames" returnItemQName="ns976:string" returnQName="ns976:GetDomainNamesResult" returnType="ns976:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetDomainNames" xmlns:ns976="http://www.multispeak.org/Version_3.0"/>
@@ -462,6 +474,12 @@
   <arrayMapping innerType="ns1395:laborComponent" languageSpecificType="java:com.cannontech.multispeak.deploy.service.LaborComponent[]" qname="ns1395:ArrayOfLaborComponent" xmlns:ns1395="http://www.multispeak.org/Version_3.0"/>
  </service>
  <service name="OD_OASoap" provider="java:RPC" style="wrapped" use="literal">
+  <requestFlow>
+   <handler type="soapmonitor"/>
+  </requestFlow>
+  <responseFlow>
+   <handler type="soapmonitor"/>
+  </responseFlow>
   <operation name="pingURL" qname="ns1396:PingURL" returnItemQName="ns1396:errorObject" returnQName="ns1396:PingURLResult" returnType="ns1396:ArrayOfErrorObject" soapAction="http://www.multispeak.org/Version_3.0/PingURL" xmlns:ns1396="http://www.multispeak.org/Version_3.0"/>
   <operation name="getMethods" qname="ns1397:GetMethods" returnItemQName="ns1397:string" returnQName="ns1397:GetMethodsResult" returnType="ns1397:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetMethods" xmlns:ns1397="http://www.multispeak.org/Version_3.0"/>
   <operation name="getDomainNames" qname="ns1398:GetDomainNames" returnItemQName="ns1398:string" returnQName="ns1398:GetDomainNamesResult" returnType="ns1398:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetDomainNames" xmlns:ns1398="http://www.multispeak.org/Version_3.0"/>
@@ -972,6 +990,12 @@
   <namespace>http://xml.apache.org/axis/wsdd/</namespace>
  </service>
  <service name="MR_CBSoap" provider="java:RPC" style="wrapped" use="literal">
+  <requestFlow>
+   <handler type="soapmonitor"/>
+  </requestFlow>
+  <responseFlow>
+   <handler type="soapmonitor"/>
+  </responseFlow>
   <operation name="pingURL" qname="ns2270:PingURL" returnItemQName="ns2270:errorObject" returnQName="ns2270:PingURLResult" returnType="ns2270:ArrayOfErrorObject" soapAction="http://www.multispeak.org/Version_3.0/PingURL" xmlns:ns2270="http://www.multispeak.org/Version_3.0"/>
   <operation name="getMethods" qname="ns2271:GetMethods" returnItemQName="ns2271:string" returnQName="ns2271:GetMethodsResult" returnType="ns2271:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetMethods" xmlns:ns2271="http://www.multispeak.org/Version_3.0"/>
   <operation name="getDomainNames" qname="ns2272:GetDomainNames" returnItemQName="ns2272:string" returnQName="ns2272:GetDomainNamesResult" returnType="ns2272:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetDomainNames" xmlns:ns2272="http://www.multispeak.org/Version_3.0"/>
@@ -1602,6 +1626,12 @@
   <arrayMapping innerType="ns2790:meter" languageSpecificType="java:com.cannontech.multispeak.deploy.service.Meter[]" qname="ns2790:ArrayOfMeter" xmlns:ns2790="http://www.multispeak.org/Version_3.0"/>
  </service>
  <service name="MR_EASoap" provider="java:RPC" style="wrapped" use="literal">
+  <requestFlow>
+   <handler type="soapmonitor"/>
+  </requestFlow>
+  <responseFlow>
+   <handler type="soapmonitor"/>
+  </responseFlow>
   <operation name="pingURL" qname="ns2791:PingURL" returnItemQName="ns2791:errorObject" returnQName="ns2791:PingURLResult" returnType="ns2791:ArrayOfErrorObject" soapAction="http://www.multispeak.org/Version_3.0/PingURL" xmlns:ns2791="http://www.multispeak.org/Version_3.0"/>
   <operation name="getMethods" qname="ns2792:GetMethods" returnItemQName="ns2792:string" returnQName="ns2792:GetMethodsResult" returnType="ns2792:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetMethods" xmlns:ns2792="http://www.multispeak.org/Version_3.0"/>
   <operation name="getDomainNames" qname="ns2793:GetDomainNames" returnItemQName="ns2793:string" returnQName="ns2793:GetDomainNamesResult" returnType="ns2793:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetDomainNames" xmlns:ns2793="http://www.multispeak.org/Version_3.0"/>
@@ -2162,6 +2192,12 @@
   <parameter name="className" value="org.apache.axis.Version"/>
  </service>
  <service name="CD_CBSoap" provider="java:RPC" style="wrapped" use="literal">
+  <requestFlow>
+   <handler type="soapmonitor"/>
+  </requestFlow>
+  <responseFlow>
+   <handler type="soapmonitor"/>
+  </responseFlow>
   <operation name="pingURL" qname="ns3706:PingURL" returnItemQName="ns3706:errorObject" returnQName="ns3706:PingURLResult" returnType="ns3706:ArrayOfErrorObject" soapAction="http://www.multispeak.org/Version_3.0/PingURL" xmlns:ns3706="http://www.multispeak.org/Version_3.0"/>
   <operation name="getMethods" qname="ns3707:GetMethods" returnItemQName="ns3707:string" returnQName="ns3707:GetMethodsResult" returnType="ns3707:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetMethods" xmlns:ns3707="http://www.multispeak.org/Version_3.0"/>
   <operation name="getDomainNames" qname="ns3708:GetDomainNames" returnItemQName="ns3708:string" returnQName="ns3708:GetDomainNamesResult" returnType="ns3708:ArrayOfString" soapAction="http://www.multispeak.org/Version_3.0/GetDomainNames" xmlns:ns3708="http://www.multispeak.org/Version_3.0"/>
