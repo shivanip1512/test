@@ -352,8 +352,12 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					position = "customer file line #" + lineNo;
 					
 					if (lineNo == 1) {
-						if (line.startsWith( COL_NAME_LABEL )) {
-							String[] labels = StarsUtils.splitString( line.substring(COL_NAME_LABEL.length()), "," );
+                        if (line.startsWith( COL_NAME_LABEL ) || line.startsWith( CUST_COLUMNS[0] )) {
+                            String[] labels;
+                            if(line.startsWith( COL_NAME_LABEL ))
+                                labels = StarsUtils.splitString( line.substring(COL_NAME_LABEL.length()), "," );
+                            else
+                                labels = StarsUtils.splitString( line, "," );
 							numCustCol = labels.length;
 							
 							for (int i = 0; i < labels.length; i++) {
@@ -788,8 +792,12 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 					position = "hardware file line #" + lineNo;
 					
 					if (lineNo == 1) {
-						if (line.startsWith( COL_NAME_LABEL )) {
-							String[] labels = StarsUtils.splitString( line.substring(COL_NAME_LABEL.length()), "," );
+                        if (line.startsWith( COL_NAME_LABEL ) || line.startsWith( CUST_COLUMNS[0] )) {
+                            String[] labels;
+                            if(line.startsWith( COL_NAME_LABEL ))
+                                labels = StarsUtils.splitString( line.substring(COL_NAME_LABEL.length()), "," );
+                            else
+                                labels = StarsUtils.splitString( line, "," );
 							numHwCol = labels.length;
 							
 							for (int i = 0; i < labels.length; i++) {
