@@ -61,9 +61,9 @@ public class WorkOrder {
 
     public static class AdditionalInformation {
         private LiteContact contact;
-        private LiteContact ecContact;
+        private LiteContact energyCompanyContact;
         private LiteAddress address;
-        private LiteAddress ecAddress;
+        private LiteAddress energyCompanyAddress;
         
         public LiteContact getContact() {
             return contact;
@@ -73,12 +73,12 @@ public class WorkOrder {
             this.contact = contact;
         }
         
-        public LiteContact getEcContact() {
-            return ecContact;
+        public LiteContact getEnergyCompanyContact() {
+            return energyCompanyContact;
         }
         
-        public void setEcContact(LiteContact ecContact) {
-            this.ecContact = ecContact;
+        public void setEnergyCompanyContact(LiteContact energyCompanyContact) {
+            this.energyCompanyContact = energyCompanyContact;
         }
         
         public LiteAddress getAddress() {
@@ -89,12 +89,12 @@ public class WorkOrder {
             this.address = address;
         }
         
-        public LiteAddress getEcAddress() {
-            return ecAddress;
+        public LiteAddress getEnergyCompanyAddress() {
+            return energyCompanyAddress;
         }
         
-        public void setEcAddress(LiteAddress ecAddress) {
-            this.ecAddress = ecAddress;
+        public void setEnergyCompanyAddress(LiteAddress energyCompanyAddress) {
+            this.energyCompanyAddress = energyCompanyAddress;
         }
         
     }

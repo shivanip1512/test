@@ -661,11 +661,11 @@ public class WorkOrderModel extends ReportModelBase {
 		    
 		    final WorkOrder.AdditionalInformation info = new WorkOrder.AdditionalInformation();
 		    
-		    LiteContact ecContact = contactMap.get(liteStarsEnergyCompany.getPrimaryContactID());
-		    info.setEcContact(ecContact);
+		    LiteContact energyCompanyConact = contactMap.get(liteStarsEnergyCompany.getPrimaryContactID());
+		    info.setEnergyCompanyContact(energyCompanyConact);
 		    
-		    LiteAddress ecAddress = addressMap.get(ecContact.getAddressID());
-		    info.setEcAddress(ecAddress);
+		    LiteAddress energyCompanyAddress = addressMap.get(energyCompanyConact.getAddressID());
+		    info.setEnergyCompanyAddress(energyCompanyAddress);
 
 		    int accountId = liteWorkOrder.getAccountID();
 		    if (accountId > 0) {
@@ -713,10 +713,10 @@ public class WorkOrderModel extends ReportModelBase {
 					return ec.getName();
 				case EC_INFO_COLUMN:
 					String returnStr = "WORK ORDER";
-					LiteContact lc_ec = wo.getAdditionalInformation().getEcContact();
+					LiteContact lc_ec = wo.getAdditionalInformation().getEnergyCompanyContact();
 					if( lc_ec != null)
 					{
-					    LiteAddress lAddr = wo.getAdditionalInformation().getEcAddress();
+					    LiteAddress lAddr = wo.getAdditionalInformation().getEnergyCompanyAddress();
 						if (lAddr != null) {
                             if (StarsUtils.forceNotNone(lAddr.getLocationAddress1()).length() > 0)
                                 returnStr += "\r\n" + StarsUtils.forceNotNone(lAddr.getLocationAddress1());
