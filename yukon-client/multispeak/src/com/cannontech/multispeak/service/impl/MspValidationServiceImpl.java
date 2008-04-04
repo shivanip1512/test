@@ -50,8 +50,8 @@ public class MspValidationServiceImpl implements MspValidationService {
         try {
             meter = meterDao.getForMeterNumber(meterNumber);
         }catch (NotFoundException e){
-            CTILogger.info("MeterNumber (" + meterNumber + ") NOT found, returning false." );
-            throw new RemoteException("MeterNumber (" + meterNumber + ") NOT found, returning false." );
+            CTILogger.info("Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.");
+            throw new RemoteException( "Meter Number: (" + meterNumber + ") - Was NOT found in Yukon.");
         }
         return meter;
     }

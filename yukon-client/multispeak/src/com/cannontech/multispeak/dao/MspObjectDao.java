@@ -55,4 +55,13 @@ public interface MspObjectDao {
      * @return
      */
     public ErrorObject getErrorObject(String objectID, String errorMessage, String nounType);
+
+    /**
+     * Creates a new (MSP) ErrorObject 
+     * @param objectID The Multispeak objectID
+     * @param nounType The object type
+     * @param notFoundObjectType The objectID type
+     * @return
+     */
+    public ErrorObject getNotFoundErrorObject(String objectID, String nounType, String notFoundObjectType );
 }

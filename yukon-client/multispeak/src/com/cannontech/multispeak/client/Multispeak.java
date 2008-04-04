@@ -315,12 +315,9 @@ public class Multispeak implements MessageListener {
 				writePilRequest(meter, "ping", id, 13); 
 
 			} catch (NotFoundException e) {
-
-				ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                       "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
-                       "Meter");
-        	   errorObjects.add(err);              
-           }
+			    ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter");
+			    errorObjects.add(err);              
+			}
 		}
     		
 		return toErrorObject(errorObjects);
@@ -362,9 +359,7 @@ public class Multispeak implements MessageListener {
  	        } 
             catch (NotFoundException e) {
  	               
-            	ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                        "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
-                        "Meter");
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter");
             	errorObjects.add(err);            
             }
         }
@@ -428,9 +423,7 @@ public class Multispeak implements MessageListener {
         } 
         catch (NotFoundException e) {
                
-            ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                    "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
-                    "Meter");
+            ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter");
             errorObjects.add(err);
         }
         
@@ -484,9 +477,7 @@ public class Multispeak implements MessageListener {
             } 
             catch (NotFoundException e) {
  	               
-                ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
-						 "MeterNumber (" + meterNumber + ") - Invalid Yukon MeterNumber.",
-                        "Meter");
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter");
                 errorObjects.add(err);
             }
         }
@@ -782,9 +773,7 @@ public class Multispeak implements MessageListener {
             } 
             catch (NotFoundException e) {
  	               
-            	ErrorObject err = mspObjectDao.getErrorObject(meterNo, 
-                        "Error: MeterNumber(" + meterNo + ") - Meter was NOT found in Yukon. No updates were made.",
-                        "Meter");
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNo, "MeterNumber", "Meter");
 				errorObjects.add(err);
 				logMSPActivity("MeterRemoveNotification", err.getErrorString(), mspVendor.getCompanyName());              
             } 
@@ -842,10 +831,8 @@ public class Multispeak implements MessageListener {
                                 updateBillingCyle(billingCycle, meter, "ServiceLocationChangedNotification", mspVendor);
                                
                             } catch (NotFoundException e) {
-                                CTILogger.debug(e);
-                                ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(), 
-                                                                                 "ServiceLocation(" + mspServiceLocation.getObjectID() + ") - ServiceLocation was NOT found in Yukon.", 
-                                                                                 "ServiceLocation");
+                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspServiceLocation.getObjectID(),
+                                                                                      "ServiceLocation", "ServiceLocation");
                                 errorObjects.add(err);
                                 logMSPActivity("ServiceLocationChangedNotification",
                                                paoAliasStr + "(" + newPaoName + ") - was NOT found for Device Name in Yukon",
@@ -907,9 +894,7 @@ public class Multispeak implements MessageListener {
                                 changeMeter(mspMeter, meter, mspVendor, paoAlias);
                             } 
                             catch (NotFoundException e) {
-                                ErrorObject err = mspObjectDao.getErrorObject(mspAddress, 
-                                                                              "Address: " + mspAddress + " - Was NOT found in Yukon.",
-                                                                              "Meter");
+                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspAddress, "Address", "Meter");
                                 errorObjects.add(err);              
                                 logMSPActivity("MeterChangedNotification", err.getErrorString(), mspVendor.getCompanyName());
                             }
@@ -1129,10 +1114,7 @@ public class Multispeak implements MessageListener {
                 addToGroup(meter, systemGroup, logActionStr, mspVendor);
             } 
             catch (NotFoundException e) {
-                   
-                ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                                                              "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
-                                                              "Meter");
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter");
                 errorObjects.add(err);              
             }
         }
@@ -1150,9 +1132,7 @@ public class Multispeak implements MessageListener {
                 removeFromGroup(meter, systemGroup, logActionStr, mspVendor);
             } 
             catch (NotFoundException e) {
-                ErrorObject err = mspObjectDao.getErrorObject(meterNumber,
-                                                              "MeterNumber: " + meterNumber + " - Was NOT found in Yukon.",
-                                                                 "Meter");
+                ErrorObject err = mspObjectDao.getNotFoundErrorObject(meterNumber, "MeterNumber", "Meter");
                 errorObjects.add(err);
             }
         }
@@ -1329,8 +1309,8 @@ public class Multispeak implements MessageListener {
             meterDao.getForPaoName(templateName);
         } catch (NotFoundException e) {
             ErrorObject err = mspObjectDao.getErrorObject(meterNumber, 
-                                                             "Error: MeterNumber(" + meterNumber + ")- AMRMeterType(" + templateName + ") not found in Yukon. Meter was NOT added.",
-                                                             "Meter");
+                                                          "Error: MeterNumber(" + meterNumber + ")- AMRMeterType(" + templateName + ") NOT found in Yukon.",
+                                                          "Meter");
             logMSPActivity("MeterAddNotification", err.getErrorString(), mspVendor.getCompanyName());
             return err;
         }

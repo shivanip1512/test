@@ -25,10 +25,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         Customer mspCustomer = new Customer();
         try {    
             CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
-//            long start = System.currentTimeMillis();
-//            CTILogger.debug("Begin call to getCustomerByMeterNo for Meter:" + meterNumber);
             mspCustomer = port.getCustomerByMeterNo(meterNumber);
-//            CTILogger.debug("End call to getCustomerByMeterNo for Meter:" + meterNumber + "  (took " + (System.currentTimeMillis() - start) + " millis)");
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
             CTILogger.error("TargetService: " + endpointURL + " - getCustomerByMeterNo(" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
@@ -46,10 +43,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         try {
             CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
-//            long start = System.currentTimeMillis();
-//            CTILogger.debug("Begin call to getServiceLocationByMeterNo for Meter:" + meterNumber);
             mspServiceLocation =  port.getServiceLocationByMeterNo(meterNumber);
-//            CTILogger.debug("End call to getServiceLocationByMeterNo for Meter:" + meterNumber + "  (took " + (System.currentTimeMillis() - start) + " millis)");
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
             CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
@@ -67,4 +61,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
         err.setNounType(nounType);
         return err;
     }
+   
+    public ErrorObject getNotFoundErrorObject(String objectID, String nounType, String notFoundObjectType ) {
+        ErrorObject err = getErrorObject(objectID, 
+                                         notFoundObjectType + ": " + objectID + " - Was NOT found in Yukon.",
+                                         nounType);
+        return err;
+    }    
 }
