@@ -87,6 +87,12 @@
 			$('moveGroupForm').submit();
 			
 		}
+        
+        function copyContentsToGroup(copyContentsToGroup) {
+        
+            $('copyContentsToGroupName').value = copyContentsToGroup;
+            $('copyContentsToGroupForm').submit();
+        }
 		
 		function showDevices() {
 			
@@ -136,8 +142,8 @@
             </c:set>
             
             <div style="font-size:9px;text-align:right;padding-left:2px;padding-bottom:5px;">
-                <a href="javascript:void(0);" onclick="toggleExpand(true);"><cti:msg key="yukon.web.deviceGroups.editor.groupTree.expandAllText"/></a> | 
-                <a href="javascript:void(0);" onclick="toggleExpand(false);"><cti:msg key="yukon.web.deviceGroups.editor.groupTree.collapseAllText"/></a>
+                <a href="javascript:void(0);" onclick="toggleExpand(true);"><cti:msg key="yukon.web.deviceGroups.editor.groupsContainer.groupTree.expandAllText"/></a> | 
+                <a href="javascript:void(0);" onclick="toggleExpand(false);"><cti:msg key="yukon.web.deviceGroups.editor.groupsContainer.groupTree.collapseAllText"/></a>
             </div>
             
             
@@ -221,12 +227,30 @@
                                     <input type="hidden" id="parentGroupName" name="parentGroupName">
                                 </form>
                             </div>
-                            </div>
+                            
 						</c:when>
 						<c:otherwise>
-							<span><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.cannotEditGroupText"/></span>
+							<%-- <span><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.cannotEditGroupText"/></span> --%>
 						</c:otherwise>
+                        
 					</c:choose>
+                    
+                    <%-- COPY CONTENTS --%>
+                    <div>
+                    <a title="<cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.copyContentsToGroupLinkTitle"/>" href="javascript:showGroupPopup('copyContentsToGroupDiv');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.copyContentsToGroupText"/></a>
+                    <div id="copyContentsToGroupDiv" class="popUpDiv" style="width: 310px; display: none; background-color: white; border: 1px solid black;padding: 10px 10px;">
+                        
+                        <div style="width: 100%; text-align: right;margin-bottom: 10px;">
+                            <a href="javascript:showGroupPopup('copyContentsToGroupDiv');"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.copyContentsToGroupCancelText"/></a>
+                        </div>
+                        <form id="copyContentsToGroupForm" action="/spring/group/copyContentsToGroup">
+                            <cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.selectGroupToCopyContentsToText"/>:
+                            <tags:groupSelect groupList="${copyToGroups}" onSelect="copyContentsToGroup"/>
+                            
+                            <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
+                            <input type="hidden" id="copyContentsToGroupName" name="copyContentsToGroupName">
+                        </form>
+                    </div>
 					
                     <%-- ADD GROUPS --%>
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addGroupsLabel"/></h4>

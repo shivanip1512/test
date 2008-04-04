@@ -50,6 +50,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.AnyDeviceGroupPredicate;
+import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.MapQueue;
@@ -77,6 +78,7 @@ public class GroupController extends MultiActionController implements Initializi
     private DeviceGroupProviderDao deviceGroupDao = null;
     private DeviceGroupEditorDao deviceGroupEditorDao = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
+    private CopyDeviceGroupService copyDeviceGroupService = null;
 
     private CommandDao commandDao = null;
     private GroupCommandExecutor groupCommandExecutor = null;
@@ -97,42 +99,58 @@ public class GroupController extends MultiActionController implements Initializi
         this.meterCommands = commandDao.getAllCommandsByCategory(DeviceTypes.STRING_MCT_410IL[0]);
     }
     
+    @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
     }
 
+    @Required
     public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
         this.deviceGroupDao = deviceGroupDao;
     }
 
+    @Required
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
     }
 
+    @Required
     public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
         this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
     }
     
+    @Required
+    public void setCopyDeviceGroupService(
+            CopyDeviceGroupService copyDeviceGroupService) {
+        this.copyDeviceGroupService = copyDeviceGroupService;
+    }
+    
+    @Required
     public void setCommandDao(CommandDao commandDao) {
         this.commandDao = commandDao;
     }
 
+    @Required
     public void setGroupCommandExecutor(GroupCommandExecutor groupCommandExecutor) {
         this.groupCommandExecutor = groupCommandExecutor;
     }
 
+    @Required
     public void setBulkProcessor(BulkProcessor bulkProcessor) {
         this.bulkProcessor = bulkProcessor;
     }
 
+    @Required
     public void setObjectMapperFactory(ObjectMapperFactory objectMapperFactory) {
         this.objectMapperFactory = objectMapperFactory;
     }
 
+    @Required
     public void setProcessorFactory(ProcessorFactory processorFactory) {
         this.processorFactory = processorFactory;
     }
 
+    @Required
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
@@ -167,16 +185,22 @@ public class GroupController extends MultiActionController implements Initializi
         mav.addObject("group", group);
         mav.addObject("selectedGroup", StringEscapeUtils.escapeHtml(group.getFullName()));
         
+        // all groups
+        List<DeviceGroup> groups = deviceGroupDao.getAllGroups();
 
+        // move to groups
         // Create a list of groups the current group could move to excluding the
         // current group itself, any descendant groups of the current group and
         // any groups that are not modifiable
-        List<DeviceGroup> groups = deviceGroupDao.getAllGroups();
         List<DeviceGroup> moveGroups = getMoveGroups(groups, group);
-        MapQueue<DeviceGroup, DeviceGroup> childList = getChildList(groups);
-        
         mav.addObject("moveGroups", moveGroups);
+        
+        // copy to groups
+        List<DeviceGroup> copyToGroups = getCopyToGroups(groups, group);
+        mav.addObject("copyToGroups", copyToGroups);
 
+        // sub groups (child groups)
+        MapQueue<DeviceGroup, DeviceGroup> childList = getChildList(groups);
         List<DeviceGroup> childGroups = childList.get(group);
         mav.addObject("subGroups", childGroups);
 
@@ -214,6 +238,15 @@ public class GroupController extends MultiActionController implements Initializi
         return childList;
     }
     
+    /**
+     * Narrow list of all groups to those that are eligible to have the current group moved to.
+     * Can't move to self.
+     * Can't move to a decendant.
+     * Can't move to parent.
+     * @param groups All available groups
+     * @param group The current group (the one to be moved)
+     * @return
+     */
     private List<DeviceGroup> getMoveGroups(List<DeviceGroup> groups, DeviceGroup group) {
         
         List<DeviceGroup> moveGroups = new ArrayList<DeviceGroup>();
@@ -227,6 +260,22 @@ public class GroupController extends MultiActionController implements Initializi
         }
         
         return moveGroups;
+    }
+    
+    private List<DeviceGroup> getCopyToGroups(List<DeviceGroup> allGroups, DeviceGroup fromGroup) {
+        
+        List<DeviceGroup> okCopyToGroups = new ArrayList<DeviceGroup>();
+        
+        for (DeviceGroup possibleCopyToGroup : allGroups) {
+            if (possibleCopyToGroup.isModifiable() 
+                && !possibleCopyToGroup.equals(fromGroup) 
+                && !possibleCopyToGroup.isDescendantOf(fromGroup)
+                ) {
+                
+                okCopyToGroups.add(possibleCopyToGroup);
+            }
+        }
+        return okCopyToGroups; 
     }
     
     public static ExtTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName, DeviceGroup selectedDeviceGroup) throws Exception{
@@ -368,9 +417,13 @@ public class GroupController extends MultiActionController implements Initializi
             }
 
             try {
-                deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
+                StoredDeviceGroup newGroup = deviceGroupEditorDao.addGroup((StoredDeviceGroup) group,
                                               DeviceGroupType.STATIC,
                                               childGroupName);
+                
+                
+                
+                mav.addObject("groupName", newGroup.getFullName());
             } catch (DuplicateException e) {
                 mav.addObject("errorMessage", e.getMessage());
                 return mav;
@@ -642,7 +695,41 @@ public class GroupController extends MultiActionController implements Initializi
 
         return mav;
     }
-
+    
+    public ModelAndView copyContentsToGroup(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        ModelAndView mav = new ModelAndView("redirect:/spring/group/home");
+        
+        // names
+        String groupName = ServletRequestUtils.getStringParameter(request, "groupName");
+        String copyContentsToGroupName = ServletRequestUtils.getStringParameter(request, "copyContentsToGroupName");
+        
+        // get our group and move to group
+        DeviceGroup fromGroup = deviceGroupService.resolveGroupName(groupName);
+        StoredDeviceGroup toParentGroup = deviceGroupEditorDao.getStoredGroup(copyContentsToGroupName, false);
+        
+        // ui should prevent invalid groups from being selected, but double check before doing copy
+        if (toParentGroup.isModifiable() 
+            && !toParentGroup.equals(fromGroup) 
+            && !toParentGroup.isDescendantOf(fromGroup)
+            ) {
+            
+            // make copies of contents (devices and child groups and their devices) to parent group
+            copyDeviceGroupService.copyGroupAndDevicesToGroup(fromGroup, toParentGroup);
+        
+            // take you to newly created copied group on return
+            mav.addObject("groupName", toParentGroup.getFullName());
+            
+        }
+        else {
+            
+            mav.addObject("errorMessage", "Cannot copy devices to group: " + toParentGroup.getFullName());
+            mav.addObject("groupName", groupName);
+        }
+        
+        return mav;
+    }
+    
     public ModelAndView removeGroup(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
