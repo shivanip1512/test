@@ -124,7 +124,7 @@ public class WorkOrderModel extends ReportModelBase {
 	public final static String CONSUMPTION_TYPE_STRING = "Customer Type";
 	public final static String PHONE_HOME_STRING = "Home Phone";
 	public final static String PHONE_WORK_STRING = "Work Phone";
-	public final static String PHONE_CONTACT_STRING = "Contact Phone";
+	public final static String PHONE_CONTACT_STRING = "Call Back Phone";
     public final static String PRESENCE_REQUIRED_STRING = "Presence Required";
 	public final static String ADDRESS1_STRING = "Address";
 	public final static String ADDRESS2_STRING = "Address ";
