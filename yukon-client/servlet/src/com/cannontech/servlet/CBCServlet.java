@@ -481,8 +481,10 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
             capBank.getCcId().toString(),
             cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_STATUS_COLUMN).toString(),
             optParams );
-        xmlMsgs[indx].setWarning(cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE).toString());
-
+        String warningColor = (String)cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE_COLOR);
+        String warningText = (String)cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE_TEXT);
+        
+        xmlMsgs[indx].setWarning(warningColor + warningText);
         return true;
     }
     
