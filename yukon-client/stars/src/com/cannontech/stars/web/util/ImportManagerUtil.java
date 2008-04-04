@@ -652,8 +652,7 @@ public class ImportManagerUtil {
             boolean found = false;
             for(int i = 0; i < updateAccount.getPrimaryContact().getContactNotificationCount(); i++)
             {
-                if(existingNotif.getNotificationCategoryID() == updateAccount.getPrimaryContact().getContactNotification(i).getNotifCatID() 
-                        && existingNotif.getNotification().compareTo(updateAccount.getPrimaryContact().getContactNotification(i).getNotification()) == 0)
+                if(existingNotif.getNotificationCategoryID() == updateAccount.getPrimaryContact().getContactNotification(i).getNotifCatID())
                 {
                     found = true;
                     break;
