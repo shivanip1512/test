@@ -46,7 +46,7 @@ public class UpdateOperatorLoginController extends StarsAdminActionController {
 
             LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser( userID );
             LiteYukonGroup loginGroup = this.authDao.getGroup( operGroupID );
-            StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany );
+            StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany, false );
 
             session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Operator login updated successfully" );
         }

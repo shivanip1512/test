@@ -17,9 +17,11 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
@@ -29,6 +31,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
+import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ImportProblem;
@@ -142,6 +145,8 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
     private static final int COL_APP_RELAY_NUMBER = hw_col++;
     private static final int COL_OPTION_PARAMS = hw_col++;
     private static final int COL_DEVICE_LABEL = hw_col++;
+    
+    private static final String UNENROLL_CASE = "UNENROLL";
     
 	LiteStarsEnergyCompany energyCompany = null;
 	File custFile = null;
@@ -647,7 +652,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							    (!applianceNameList.contains(appFields[ImportManagerUtil.IDX_APP_TYPE]))) {
 							    custFileErrors++;
 							    String[] value = (String[]) custLines.get(lineNoKey);
-							    value[1] = "[line: " + lineNo + " error: Application Type was supplied, but doesn't exist]";
+							    value[1] = "[line: " + lineNo + " error: Appliance Type was supplied, but doesn't exist]";
 							    custLines.put(lineNoKey, value);
 							    addToLog(lineNoKey, value, importLog);
 		                        continue;
@@ -933,7 +938,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
                             (!applianceNameList.contains(appFields[ImportManagerUtil.IDX_APP_TYPE]))) {
 						    hwFileErrors++;
                             String[] value = (String[]) custLines.get(lineNoKey);
-                            value[1] = "[line: " + lineNo + " error: Application Type was supplied, but doesn't exist]";
+                            value[1] = "[line: " + lineNo + " error: Appliance Type was supplied, but doesn't exist]";
                             custLines.put(lineNoKey, value);
                             addToLog(lineNoKey, value, importLog);
                             continue;
@@ -1221,12 +1226,36 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	
 	private int[][] getEnrolledProgram(String[] fields, LiteStarsEnergyCompany energyCompany) throws WebClientException {
         List<LiteLMProgramWebPublishing> programs = energyCompany.getAllPrograms();
-		
+        boolean matchedProg = false;
+        
+        if(UNENROLL_CASE.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
+            return new int[0][0];
+        }
+        
 		synchronized (programs) {
 			for (int i = 0; i < programs.size(); i++) {
 				LiteLMProgramWebPublishing liteProg = programs.get(i);
-				String progName = StarsUtils.getPublishedProgramName( liteProg );
-
+                String progName = CtiUtilities.STRING_NONE;
+                
+                if (liteProg.getDeviceID() > 0) {
+                    try {
+                        progName = DaoFactory.getPaoDao().getYukonPAOName( liteProg.getDeviceID() );
+                        matchedProg = progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] );
+                    }
+                    catch(NotFoundException e) {
+                        CTILogger.error(e.getMessage(), e);
+                    }
+                }
+                
+                if(!matchedProg) {
+                    LiteWebConfiguration liteConfig = StarsDatabaseCache.getInstance().getWebConfiguration( liteProg.getWebSettingsID() );
+                    if (liteConfig != null) {
+                        String[] dispNames = StarsUtils.splitString( liteConfig.getAlternateDisplayName(), "," );
+                        if (dispNames.length > 0 && dispNames[0].length() > 0)
+                            progName = dispNames[0];
+                    }
+                }
+                
 				if (progName.equalsIgnoreCase( fields[ImportManagerUtil.IDX_PROGRAM_NAME] )) {
 					int[] suProg = new int[4];
 					suProg[0] = liteProg.getProgramID();
@@ -1319,17 +1348,17 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			if (liteAcctInfo == null) {
 			    if (automatedImport) {
 			        try {
-				liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem );
+				liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem, automatedImport );
 			        } catch (WebClientException wce) {
 			            importLog.println(wce.getMessage());
 			        }
 			    } else {
-			        liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem );
+			        liteAcctInfo = ImportManagerUtil.newCustomerAccount( custFields, energyCompany, false, problem, automatedImport );
 			    }
 				numAcctAdded++;
 			}
 			else if (!insertSpecified) {
-				ImportManagerUtil.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, problem );
+				ImportManagerUtil.updateCustomerAccount( custFields, liteAcctInfo, energyCompany, problem, automatedImport );
 				numAcctUpdated++;
 			}
 			
@@ -1344,6 +1373,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	private void programSignUp(int[][] programs, String[] appFields, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany) throws Exception
 	{
+        //it's a forced UNENROLL!
+	    boolean forcedUnenroll = programs.length < 1;
+        
         int relay = 0;
         boolean relayNotFound = true;
         ArrayList currentProgramIDs = new ArrayList(liteAcctInfo.getAppliances().size());
@@ -1359,12 +1391,12 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);
              if(liteApp.getInventoryID() == liteInv.getInventoryID())
              {
-                 if (liteApp.getProgramID() == programs[0][0] && (liteApp.getLoadNumber() == relay))
+                 if (!forcedUnenroll && liteApp.getProgramID() == programs[0][0] && (liteApp.getLoadNumber() == relay))
                  {
                     return;
                  }
                  
-                 if(liteApp.getLoadNumber() == relay && !seasonalLoad)
+                 if(!forcedUnenroll && liteApp.getLoadNumber() == relay && !seasonalLoad)
                  {
                      relayNotFound = false;
                  }
@@ -1383,7 +1415,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
          *--We only add a new enrollment and appliance on the same relay when the seasonal load
          *flag is set.
          */
-        if((relayNotFound && relay > -1) || seasonalLoad)
+        if(!forcedUnenroll && ((relayNotFound && relay > -1) || seasonalLoad))
         {
             int[] newEnrollment = programs[0];
             programs = new int[currentProgramIDs.size() + 1][];
@@ -1400,13 +1432,13 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         }
 
         LiteYukonUser currentUser = ((YukonUserDao)YukonSpringHook.getBean("yukonUserDao")).getLiteYukonUser(userID);
-        ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, currentUser );
+        ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, currentUser, automatedImport );
 		
 		if (appFields != null && appFields[ImportManagerUtil.IDX_APP_TYPE].trim().length() > 0) {
 			int appID = -1;
 			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-				if (liteApp.getProgramID() == programs[0][0]) {
+				if (!forcedUnenroll && liteApp.getProgramID() == programs[0][0]) {
 					appID = liteApp.getApplianceID();
 					break;
 				}
@@ -1440,7 +1472,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         // Gets base Directory
         File baseDir = null;
         if (baseDirRoleValue.trim().length() > 0) {
-            baseDir = new File(baseDirRoleValue, ecName);
+            baseDir = new File(baseDirRoleValue);
         } else {
             baseDir = new File(ServerUtils.getStarsTempDir() + fs + ecName);
             if (!baseDir.exists()) {

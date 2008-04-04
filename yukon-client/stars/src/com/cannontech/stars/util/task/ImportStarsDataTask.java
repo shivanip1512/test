@@ -207,7 +207,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					// To save database lookup time, only check for constraint for
 					// the first import entry, then assume there won't be any problem
 					ImportProblem problem = new ImportProblem();
-					LiteStarsCustAccountInformation liteAcctInfo = ImportManagerUtil.newCustomerAccount(fields, energyCompany, first, problem);
+					LiteStarsCustAccountInformation liteAcctInfo = ImportManagerUtil.newCustomerAccount(fields, energyCompany, first, problem, false);
 					if (problem.getProblem() != null) {
 						importLog.println( "WARNING at " + position + ": " + problem.getProblem() );
 						if (++numWarnings > WARNING_NUM_LIMIT)
@@ -322,7 +322,7 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 						if (progList.size() > 0) {
 							int[][] programs = new int[ progList.size() ][];
 							progList.toArray( programs );
-							ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, null );
+							ImportManagerUtil.programSignUp( programs, liteAcctInfo, liteInv, energyCompany, null, false );
 							
 							int[] appIDs = new int[3];
 							for (int i = 0; i < programs.length; i++) {

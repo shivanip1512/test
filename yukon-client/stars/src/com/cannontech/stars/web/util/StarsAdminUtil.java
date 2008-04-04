@@ -1310,7 +1310,7 @@ public class StarsAdminUtil {
 	}
 	
 	public static void updateLogin(LiteYukonUser liteUser, String username, String password, String status,
-		LiteYukonGroup loginGroup, LiteStarsEnergyCompany energyCompany) throws Exception
+		LiteYukonGroup loginGroup, LiteStarsEnergyCompany energyCompany, boolean authTypeChange) throws Exception
 	{
 		if (!liteUser.getUsername().equalsIgnoreCase(username) && DaoFactory.getYukonUserDao().getLiteYukonUser(username) != null)
 			throw new WebClientException( "Username '" + username + "' already exists" );
@@ -1329,6 +1329,12 @@ public class StarsAdminUtil {
 		
 		StarsLiteFactory.setYukonUser( dbUser, liteUser );
 		dbUser.setUsername( username );
+        
+        if(authTypeChange) {
+            liteUser.setAuthType(AuthType.NONE);
+            dbUser.setAuthType(AuthType.NONE);
+        }
+        
 		if (status != null) dbUser.setStatus( status );
 		
 		boolean groupChanged = false;

@@ -30,6 +30,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.roles.operator.ConsumerInfoRole;
+import com.cannontech.roles.yukon.ConfigurationRole;
+import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -44,8 +48,10 @@ import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.UpdateApplianceAction;
 import com.cannontech.stars.web.action.UpdateCustAccountAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareAction;
+import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.UpdateLoginAction;
 import com.cannontech.stars.web.action.UpdateResidenceInfoAction;
+import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.ACType;
 import com.cannontech.stars.xml.serialize.AirConditioner;
@@ -103,6 +109,7 @@ import com.cannontech.stars.xml.serialize.StarsCustAccount;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInv;
+import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
@@ -607,7 +614,7 @@ public class ImportManagerUtil {
 	}
 	
 	public static LiteStarsCustAccountInformation newCustomerAccount(String[] fields,
-		LiteStarsEnergyCompany energyCompany, boolean checkConstraint, ImportProblem problem) throws Exception
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint, ImportProblem problem, boolean automatedImport) throws Exception
 	{
 		// Build the request message
 		StarsNewCustomerAccount newAccount = new StarsNewCustomerAccount();
@@ -619,11 +626,11 @@ public class ImportManagerUtil {
 		if (fields[IDX_USERNAME].trim().length() > 0)
 			newAccount.setStarsUpdateLogin( createStarsUpdateLogin(fields, energyCompany) );
 		
-		return NewCustAccountAction.newCustomerAccount(newAccount, energyCompany, checkConstraint);
+		return NewCustAccountAction.newCustomerAccount(newAccount, energyCompany, checkConstraint, isValidLocationForImport(energyCompany, automatedImport));
 	}
 	
 	public static void updateCustomerAccount(String[] fields, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany,
-		ImportProblem problem) throws Exception
+		ImportProblem problem, boolean automatedImport) throws Exception
 	{
 	    StarsUpdateCustomerAccount updateAccount = new StarsUpdateCustomerAccount();
 	    setStarsCustAccount( updateAccount, fields, energyCompany, problem );
@@ -666,7 +673,7 @@ public class ImportManagerUtil {
 		int loginID = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() ).getLoginID();
 		if (loginID == UserUtils.USER_DEFAULT_ID && fields[IDX_USERNAME].trim().length() > 0) {
 			StarsUpdateLogin login = createStarsUpdateLogin( fields, energyCompany );
-			UpdateLoginAction.updateLogin( login, liteAcctInfo, energyCompany );
+			UpdateLoginAction.updateLogin( login, liteAcctInfo, energyCompany, isValidLocationForImport(energyCompany, automatedImport) );
 		}
 		
 		// Delete the stars object from cache, so the user will see a fresh new copy
@@ -911,12 +918,13 @@ public class ImportManagerUtil {
 	
 	/**
 	 * @param programs Array of (ProgramID, ApplianceCategoryID, GroupID, LoadNumber).
-	 * The ApplianceCategoryID, GroupID, and LoadNumber are optional, set them to -1 if you don't want to privide the value.
+	 * The ApplianceCategoryID, GroupID, and LoadNumber are optional, set them to -1 if you don't want to provide the value.
 	 * @param liteInv The hardware the programs are attached to
 	 * @param currentUser TODO
+	 * @param automatedImport TODO
 	 */
 	public static void programSignUp(int[][] programs, LiteStarsCustAccountInformation liteAcctInfo,
-		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser) throws Exception
+		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser, boolean automatedImport) throws Exception
 	{
 		// Build request message
 		StarsSULMPrograms suPrograms = new StarsSULMPrograms();
@@ -935,10 +943,36 @@ public class ImportManagerUtil {
 		StarsProgramSignUp progSignUp = new StarsProgramSignUp();
 		progSignUp.setStarsSULMPrograms( suPrograms );
 	    
-	    ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, currentUser );
+        ArrayList hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, currentUser );
+        
+        /*TODO: revisit this post-BGE short-term.  This should never make it past the 4.0 branch!*/
+        if(isValidLocationForImport(energyCompany, automatedImport)) {
+            //Send out the config/disable command
+            for (int i = 0; i < hwsToConfig.size(); i++) {
+                LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToConfig.get(i);
+                boolean toConfig = UpdateLMHardwareConfigAction.isToConfig( liteHw, liteAcctInfo );
+                
+                if (toConfig) {
+                    // Send the reenable command if hardware status is unavailable,
+                    // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
+                        YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
+                        Thread.sleep(3000);
+                }
+                else {
+                    // Send disable command to hardware
+                    YukonSwitchCommandAction.sendDisableCommand( energyCompany, liteHw, null );
+                }
+            }
+        }
+        
 		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	
+    public static boolean isValidLocationForImport(LiteStarsEnergyCompany energyCompany, boolean automatedTask) {
+        String locationCheckString = DaoFactory.getRoleDao().getGlobalPropertyValue(ConfigurationRole.CUSTOMER_INFO_IMPORTER_FILE_LOCATION);
+        return (automatedTask && locationCheckString != null && locationCheckString.length() > 3);
+    }
+
 	public static int getApplianceCategoryID(LiteStarsEnergyCompany energyCompany, String appType) {
         List<LiteApplianceCategory> appCats = energyCompany.getAllApplianceCategories();
 		for (int i = 0; i < appCats.size(); i++) {

@@ -372,7 +372,7 @@ public class NewCustAccountAction implements ActionBase {
 	}
 	
 	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount,
-		LiteStarsEnergyCompany energyCompany, boolean checkConstraint) throws WebClientException
+		LiteStarsEnergyCompany energyCompany, boolean checkConstraint, boolean authTypeChanged) throws WebClientException
 	{
 		try {
 			StarsCustomerAccount starsAccount = newAccount.getStarsCustomerAccount();
@@ -394,7 +394,7 @@ public class NewCustAccountAction implements ActionBase {
 			/* Create yukon user */
 			int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
 			if (updateLogin != null)
-				userID = UpdateLoginAction.createLogin( updateLogin, null, energyCompany ).getUserID();
+				userID = UpdateLoginAction.createLogin( updateLogin, null, energyCompany, authTypeChanged ).getUserID();
         	
 			/* Create contacts */
 			com.cannontech.database.data.customer.Contact primContact = new com.cannontech.database.data.customer.Contact();
@@ -532,7 +532,7 @@ public class NewCustAccountAction implements ActionBase {
 	public static LiteStarsCustAccountInformation newCustomerAccount(StarsNewCustomerAccount newAccount, LiteStarsEnergyCompany energyCompany)
 		throws WebClientException
 	{
-		return newCustomerAccount(newAccount, energyCompany, true);
+		return newCustomerAccount(newAccount, energyCompany, true, false);
 	}
 
 }

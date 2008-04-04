@@ -96,7 +96,7 @@ public class UpdateLoginAction implements ActionBase {
 					session.getAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO );
             
 			try {
-				updateLogin( updateLogin, liteAcctInfo, energyCompany );
+				updateLogin( updateLogin, liteAcctInfo, energyCompany, false );
 			}
 			catch (WebClientException e) {
 				respOper.setStarsFailure( StarsFactory.newStarsFailure(
@@ -174,7 +174,7 @@ public class UpdateLoginAction implements ActionBase {
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany)
+	public static LiteYukonUser createLogin(StarsUpdateLogin login, LiteContact liteContact, LiteStarsEnergyCompany energyCompany, boolean authTypeChange)
 		throws TransactionException
 	{
 	    String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
@@ -190,7 +190,10 @@ public class UpdateLoginAction implements ActionBase {
 		}
         
 		dbUser.setUsername( login.getUsername() );
-        dbUser.setAuthType(defaultAuthType);
+        if(authTypeChange)
+            dbUser.setAuthType(AuthType.NONE);
+        else
+            dbUser.setAuthType(defaultAuthType);
 		if (login.getStatus() != null)
 			dbUser.setStatus( StarsMsgUtils.getUserStatus(login.getStatus()) );
 		else
@@ -203,13 +206,13 @@ public class UpdateLoginAction implements ActionBase {
 				dbUser.getUsername(),
 				dbUser.getStatus()
 				);
-        liteUser.setAuthType(defaultAuthType);
+        liteUser.setAuthType(dbUser.getAuthType());
 
 		ServerUtils.handleDBChange( liteUser, com.cannontech.message.dispatch.message.DBChangeMsg.CHANGE_TYPE_ADD );
         
         ServerUtils.handleDBChange( liteUser, DBChangeMsg.CHANGE_TYPE_ADD );
         
-        if (authenticationService.supportsPasswordSet(defaultAuthType)) {
+        if (authenticationService.supportsPasswordSet(defaultAuthType) && !authTypeChange) {
             authenticationService.setPassword(liteUser, login.getPassword());
         }
         
@@ -242,7 +245,7 @@ public class UpdateLoginAction implements ActionBase {
 		ServerUtils.handleDBChange( DaoFactory.getYukonUserDao().getLiteYukonUser(userID), DBChangeMsg.CHANGE_TYPE_DELETE );
 	}
 	
-	public static void updateLogin(StarsUpdateLogin updateLogin, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany)
+	public static void updateLogin(StarsUpdateLogin updateLogin, LiteStarsCustAccountInformation liteAcctInfo, LiteStarsEnergyCompany energyCompany, boolean authTypeChanged)
 		throws Exception
 	{
 		LiteContact liteContact = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
@@ -264,7 +267,7 @@ public class UpdateLoginAction implements ActionBase {
 			if (DaoFactory.getYukonUserDao().getLiteYukonUser(username) != null)
 				throw new WebClientException( "Username '" + username + "' already exists" );
 			
-			LiteYukonUser liteUser = createLogin( updateLogin, liteContact, energyCompany );
+			createLogin( updateLogin, liteContact, energyCompany, authTypeChanged );
 		}
 		else if (username.length() == 0) {
 			// Remove customer login
@@ -284,7 +287,7 @@ public class UpdateLoginAction implements ActionBase {
 				loginGroup = DaoFactory.getAuthDao().getGroup( updateLogin.getGroupID() );
 			
 			LiteYukonUser liteUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
-			StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany );
+			StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany, authTypeChanged );
 		}
 	}
 	
@@ -330,7 +333,7 @@ public class UpdateLoginAction implements ActionBase {
 			}
 			updateLogin.setPassword( new String(password) );
             
-			updateLogin( updateLogin, liteAcctInfo, energyCompany );
+			updateLogin( updateLogin, liteAcctInfo, energyCompany, false );
 			String confirmMsg = "User login has been updated successfully. The new password is \"" + updateLogin.getPassword() + "\".";
 			
 			// Try to send new password to customer by email

@@ -506,11 +506,11 @@ public class YukonSwitchCommandAction implements ActionBase {
                      * for automated STARS sends.
                      */
                     YukonUserDao yukonUserDao = DaoFactory.getYukonUserDao();
-                    LiteYukonUser user = yukonUserDao.getLiteYukonUser(UserUtils.USER_ADMIN_ID);
+                    LiteYukonUser adminUser = yukonUserDao.getLiteYukonUser(UserUtils.USER_ADMIN_ID);
                     
                     try {
 						for (int i = 0; i < cfgCmds.length; i++)
-							ServerUtils.sendSerialCommand( cfgCmds[i], routeID2, user );
+							ServerUtils.sendSerialCommand( cfgCmds[i], routeID2, adminUser );
 					}
 					catch (WebClientException e) {}
 					CTILogger.info( "*** Config command sent ***" );
