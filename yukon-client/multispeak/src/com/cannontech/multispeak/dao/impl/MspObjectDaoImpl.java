@@ -62,7 +62,7 @@ public class MspObjectDaoImpl implements MspObjectDao {
         return err;
     }
    
-    public ErrorObject getNotFoundErrorObject(String objectID, String nounType, String notFoundObjectType ) {
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType ) {
         ErrorObject err = getErrorObject(objectID, 
                                          notFoundObjectType + ": " + objectID + " - Was NOT found in Yukon.",
                                          nounType);

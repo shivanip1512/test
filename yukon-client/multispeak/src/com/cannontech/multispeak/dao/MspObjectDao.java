@@ -63,5 +63,5 @@ public interface MspObjectDao {
      * @param notFoundObjectType The objectID type
      * @return
      */
-    public ErrorObject getNotFoundErrorObject(String objectID, String nounType, String notFoundObjectType );
+    public ErrorObject getNotFoundErrorObject(String objectID, String notFoundObjectType, String nounType);
 }

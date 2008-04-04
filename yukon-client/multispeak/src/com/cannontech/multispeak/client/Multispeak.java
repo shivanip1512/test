@@ -894,9 +894,9 @@ public class Multispeak implements MessageListener {
                                 changeMeter(mspMeter, meter, mspVendor, paoAlias);
                             } 
                             catch (NotFoundException e) {
-                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspAddress, "Address", "Meter");
+                                ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspMeter.getMeterNo(), "MeterNumber", "Meter");
                                 errorObjects.add(err);              
-                                logMSPActivity("MeterChangedNotification", err.getErrorString(), mspVendor.getCompanyName());
+                                logMSPActivity("MeterChangedNotification", "Address: " + mspAddress + " - Was NOT found in Yukon.", mspVendor.getCompanyName());
                             }
                         } else {
                             errorObjects.add(invalidMeterError);
