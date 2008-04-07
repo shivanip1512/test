@@ -22,7 +22,7 @@ public class EA_MRLocator extends org.apache.axis.client.Service implements com.
     }
 
     // Use to get a proxy class for EA_MRSoap12
-    private java.lang.String EA_MRSoap12_address = "http://www.multispeak.org/interface/30p/4_EA_MR.asmx";
+    private java.lang.String EA_MRSoap12_address = "http://www.multispeak.org/interface/30q/4_EA_MR.asmx";
 
     public java.lang.String getEA_MRSoap12Address() {
         return EA_MRSoap12_address;
@@ -67,7 +67,7 @@ public class EA_MRLocator extends org.apache.axis.client.Service implements com.
 
 
     // Use to get a proxy class for EA_MRSoap
-    private java.lang.String EA_MRSoap_address = "http://www.multispeak.org/interface/30p/4_EA_MR.asmx";
+    private java.lang.String EA_MRSoap_address = "http://www.multispeak.org/interface/30q/4_EA_MR.asmx";
 
     public java.lang.String getEA_MRSoapAddress() {
         return EA_MRSoap_address;

@@ -16,6 +16,10 @@ public abstract class MspDevice  extends com.cannontech.multispeak.deploy.servic
 
     private java.lang.String facilityID;
 
+    private java.lang.String manufacturer;
+
+    private java.lang.String serialNumber;
+
     public MspDevice() {
     }
 
@@ -31,7 +35,9 @@ public abstract class MspDevice  extends com.cannontech.multispeak.deploy.servic
            java.lang.String deviceClass,
            java.util.Calendar inServiceDate,
            java.util.Calendar outServiceDate,
-           java.lang.String facilityID) {
+           java.lang.String facilityID,
+           java.lang.String manufacturer,
+           java.lang.String serialNumber) {
         super(
             objectID,
             verb,
@@ -45,6 +51,8 @@ public abstract class MspDevice  extends com.cannontech.multispeak.deploy.servic
         this.inServiceDate = inServiceDate;
         this.outServiceDate = outServiceDate;
         this.facilityID = facilityID;
+        this.manufacturer = manufacturer;
+        this.serialNumber = serialNumber;
     }
 
 
@@ -127,6 +135,46 @@ public abstract class MspDevice  extends com.cannontech.multispeak.deploy.servic
         this.facilityID = facilityID;
     }
 
+
+    /**
+     * Gets the manufacturer value for this MspDevice.
+     * 
+     * @return manufacturer
+     */
+    public java.lang.String getManufacturer() {
+        return manufacturer;
+    }
+
+
+    /**
+     * Sets the manufacturer value for this MspDevice.
+     * 
+     * @param manufacturer
+     */
+    public void setManufacturer(java.lang.String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+
+    /**
+     * Gets the serialNumber value for this MspDevice.
+     * 
+     * @return serialNumber
+     */
+    public java.lang.String getSerialNumber() {
+        return serialNumber;
+    }
+
+
+    /**
+     * Sets the serialNumber value for this MspDevice.
+     * 
+     * @param serialNumber
+     */
+    public void setSerialNumber(java.lang.String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MspDevice)) return false;
@@ -150,7 +198,13 @@ public abstract class MspDevice  extends com.cannontech.multispeak.deploy.servic
               this.outServiceDate.equals(other.getOutServiceDate()))) &&
             ((this.facilityID==null && other.getFacilityID()==null) || 
              (this.facilityID!=null &&
-              this.facilityID.equals(other.getFacilityID())));
+              this.facilityID.equals(other.getFacilityID()))) &&
+            ((this.manufacturer==null && other.getManufacturer()==null) || 
+             (this.manufacturer!=null &&
+              this.manufacturer.equals(other.getManufacturer()))) &&
+            ((this.serialNumber==null && other.getSerialNumber()==null) || 
+             (this.serialNumber!=null &&
+              this.serialNumber.equals(other.getSerialNumber())));
         __equalsCalc = null;
         return _equals;
     }
@@ -173,6 +227,12 @@ public abstract class MspDevice  extends com.cannontech.multispeak.deploy.servic
         }
         if (getFacilityID() != null) {
             _hashCode += getFacilityID().hashCode();
+        }
+        if (getManufacturer() != null) {
+            _hashCode += getManufacturer().hashCode();
+        }
+        if (getSerialNumber() != null) {
+            _hashCode += getSerialNumber().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -208,6 +268,20 @@ public abstract class MspDevice  extends com.cannontech.multispeak.deploy.servic
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("facilityID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "facilityID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("manufacturer");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "manufacturer"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("serialNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serialNumber"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

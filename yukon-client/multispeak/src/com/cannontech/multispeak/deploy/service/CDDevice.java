@@ -1,5 +1,5 @@
 /**
- * LoadDisconnectDevice.java
+ * CDDevice.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Dec 28, 2007 (09:53:13 CST) WSDL2Java emitter.
@@ -7,17 +7,19 @@
 
 package com.cannontech.multispeak.deploy.service;
 
-public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.service.MspDevice  implements java.io.Serializable {
+public class CDDevice  extends com.cannontech.multispeak.deploy.service.MspDevice  implements java.io.Serializable {
+    private java.lang.String meterBaseID;
+
     private java.lang.Float ratedVoltage;
 
     private java.lang.Float ratedCurrent;
 
     private com.cannontech.multispeak.deploy.service.Module[] moduleList;
 
-    public LoadDisconnectDevice() {
+    public CDDevice() {
     }
 
-    public LoadDisconnectDevice(
+    public CDDevice(
            java.lang.String objectID,
            com.cannontech.multispeak.deploy.service.Action verb,
            java.lang.String errorString,
@@ -30,6 +32,9 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
            java.util.Calendar inServiceDate,
            java.util.Calendar outServiceDate,
            java.lang.String facilityID,
+           java.lang.String manufacturer,
+           java.lang.String serialNumber,
+           java.lang.String meterBaseID,
            java.lang.Float ratedVoltage,
            java.lang.Float ratedCurrent,
            com.cannontech.multispeak.deploy.service.Module[] moduleList) {
@@ -45,7 +50,10 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
             deviceClass,
             inServiceDate,
             outServiceDate,
-            facilityID);
+            facilityID,
+            manufacturer,
+            serialNumber);
+        this.meterBaseID = meterBaseID;
         this.ratedVoltage = ratedVoltage;
         this.ratedCurrent = ratedCurrent;
         this.moduleList = moduleList;
@@ -53,7 +61,27 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
 
 
     /**
-     * Gets the ratedVoltage value for this LoadDisconnectDevice.
+     * Gets the meterBaseID value for this CDDevice.
+     * 
+     * @return meterBaseID
+     */
+    public java.lang.String getMeterBaseID() {
+        return meterBaseID;
+    }
+
+
+    /**
+     * Sets the meterBaseID value for this CDDevice.
+     * 
+     * @param meterBaseID
+     */
+    public void setMeterBaseID(java.lang.String meterBaseID) {
+        this.meterBaseID = meterBaseID;
+    }
+
+
+    /**
+     * Gets the ratedVoltage value for this CDDevice.
      * 
      * @return ratedVoltage
      */
@@ -63,7 +91,7 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
 
 
     /**
-     * Sets the ratedVoltage value for this LoadDisconnectDevice.
+     * Sets the ratedVoltage value for this CDDevice.
      * 
      * @param ratedVoltage
      */
@@ -73,7 +101,7 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
 
 
     /**
-     * Gets the ratedCurrent value for this LoadDisconnectDevice.
+     * Gets the ratedCurrent value for this CDDevice.
      * 
      * @return ratedCurrent
      */
@@ -83,7 +111,7 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
 
 
     /**
-     * Sets the ratedCurrent value for this LoadDisconnectDevice.
+     * Sets the ratedCurrent value for this CDDevice.
      * 
      * @param ratedCurrent
      */
@@ -93,7 +121,7 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
 
 
     /**
-     * Gets the moduleList value for this LoadDisconnectDevice.
+     * Gets the moduleList value for this CDDevice.
      * 
      * @return moduleList
      */
@@ -103,7 +131,7 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
 
 
     /**
-     * Sets the moduleList value for this LoadDisconnectDevice.
+     * Sets the moduleList value for this CDDevice.
      * 
      * @param moduleList
      */
@@ -113,8 +141,8 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof LoadDisconnectDevice)) return false;
-        LoadDisconnectDevice other = (LoadDisconnectDevice) obj;
+        if (!(obj instanceof CDDevice)) return false;
+        CDDevice other = (CDDevice) obj;
         if (obj == null) return false;
         if (this == obj) return true;
         if (__equalsCalc != null) {
@@ -123,6 +151,9 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
         __equalsCalc = obj;
         boolean _equals;
         _equals = super.equals(obj) && 
+            ((this.meterBaseID==null && other.getMeterBaseID()==null) || 
+             (this.meterBaseID!=null &&
+              this.meterBaseID.equals(other.getMeterBaseID()))) &&
             ((this.ratedVoltage==null && other.getRatedVoltage()==null) || 
              (this.ratedVoltage!=null &&
               this.ratedVoltage.equals(other.getRatedVoltage()))) &&
@@ -143,6 +174,9 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
         }
         __hashCodeCalc = true;
         int _hashCode = super.hashCode();
+        if (getMeterBaseID() != null) {
+            _hashCode += getMeterBaseID().hashCode();
+        }
         if (getRatedVoltage() != null) {
             _hashCode += getRatedVoltage().hashCode();
         }
@@ -166,11 +200,18 @@ public class LoadDisconnectDevice  extends com.cannontech.multispeak.deploy.serv
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(LoadDisconnectDevice.class, true);
+        new org.apache.axis.description.TypeDesc(CDDevice.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadDisconnectDevice"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CDDevice"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("meterBaseID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterBaseID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("ratedVoltage");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ratedVoltage"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));

@@ -28,9 +28,9 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
 
     private com.cannontech.multispeak.deploy.service.Module[] receivedModules;
 
-    private com.cannontech.multispeak.deploy.service.LoadControlDevice[] receivedLoadControlDevices;
+    private com.cannontech.multispeak.deploy.service.LoadManagementDevice[] receivedLoadManagementDevices;
 
-    private com.cannontech.multispeak.deploy.service.LoadDisconnectDevice[] receivedLoadDisconnectDevices;
+    private com.cannontech.multispeak.deploy.service.CDDevice[] receivedCDDevices;
 
     public EndDeviceShipment() {
     }
@@ -54,8 +54,8 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
            com.cannontech.multispeak.deploy.service.EndDeviceShipmentTransponderIDRange transponderIDRange,
            com.cannontech.multispeak.deploy.service.ReceivedElectricMeter[] receivedMeters,
            com.cannontech.multispeak.deploy.service.Module[] receivedModules,
-           com.cannontech.multispeak.deploy.service.LoadControlDevice[] receivedLoadControlDevices,
-           com.cannontech.multispeak.deploy.service.LoadDisconnectDevice[] receivedLoadDisconnectDevices) {
+           com.cannontech.multispeak.deploy.service.LoadManagementDevice[] receivedLoadManagementDevices,
+           com.cannontech.multispeak.deploy.service.CDDevice[] receivedCDDevices) {
         super(
             objectID,
             verb,
@@ -75,8 +75,8 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
         this.transponderIDRange = transponderIDRange;
         this.receivedMeters = receivedMeters;
         this.receivedModules = receivedModules;
-        this.receivedLoadControlDevices = receivedLoadControlDevices;
-        this.receivedLoadDisconnectDevices = receivedLoadDisconnectDevices;
+        this.receivedLoadManagementDevices = receivedLoadManagementDevices;
+        this.receivedCDDevices = receivedCDDevices;
     }
 
 
@@ -281,42 +281,42 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
 
 
     /**
-     * Gets the receivedLoadControlDevices value for this EndDeviceShipment.
+     * Gets the receivedLoadManagementDevices value for this EndDeviceShipment.
      * 
-     * @return receivedLoadControlDevices
+     * @return receivedLoadManagementDevices
      */
-    public com.cannontech.multispeak.deploy.service.LoadControlDevice[] getReceivedLoadControlDevices() {
-        return receivedLoadControlDevices;
+    public com.cannontech.multispeak.deploy.service.LoadManagementDevice[] getReceivedLoadManagementDevices() {
+        return receivedLoadManagementDevices;
     }
 
 
     /**
-     * Sets the receivedLoadControlDevices value for this EndDeviceShipment.
+     * Sets the receivedLoadManagementDevices value for this EndDeviceShipment.
      * 
-     * @param receivedLoadControlDevices
+     * @param receivedLoadManagementDevices
      */
-    public void setReceivedLoadControlDevices(com.cannontech.multispeak.deploy.service.LoadControlDevice[] receivedLoadControlDevices) {
-        this.receivedLoadControlDevices = receivedLoadControlDevices;
+    public void setReceivedLoadManagementDevices(com.cannontech.multispeak.deploy.service.LoadManagementDevice[] receivedLoadManagementDevices) {
+        this.receivedLoadManagementDevices = receivedLoadManagementDevices;
     }
 
 
     /**
-     * Gets the receivedLoadDisconnectDevices value for this EndDeviceShipment.
+     * Gets the receivedCDDevices value for this EndDeviceShipment.
      * 
-     * @return receivedLoadDisconnectDevices
+     * @return receivedCDDevices
      */
-    public com.cannontech.multispeak.deploy.service.LoadDisconnectDevice[] getReceivedLoadDisconnectDevices() {
-        return receivedLoadDisconnectDevices;
+    public com.cannontech.multispeak.deploy.service.CDDevice[] getReceivedCDDevices() {
+        return receivedCDDevices;
     }
 
 
     /**
-     * Sets the receivedLoadDisconnectDevices value for this EndDeviceShipment.
+     * Sets the receivedCDDevices value for this EndDeviceShipment.
      * 
-     * @param receivedLoadDisconnectDevices
+     * @param receivedCDDevices
      */
-    public void setReceivedLoadDisconnectDevices(com.cannontech.multispeak.deploy.service.LoadDisconnectDevice[] receivedLoadDisconnectDevices) {
-        this.receivedLoadDisconnectDevices = receivedLoadDisconnectDevices;
+    public void setReceivedCDDevices(com.cannontech.multispeak.deploy.service.CDDevice[] receivedCDDevices) {
+        this.receivedCDDevices = receivedCDDevices;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -361,12 +361,12 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
             ((this.receivedModules==null && other.getReceivedModules()==null) || 
              (this.receivedModules!=null &&
               java.util.Arrays.equals(this.receivedModules, other.getReceivedModules()))) &&
-            ((this.receivedLoadControlDevices==null && other.getReceivedLoadControlDevices()==null) || 
-             (this.receivedLoadControlDevices!=null &&
-              java.util.Arrays.equals(this.receivedLoadControlDevices, other.getReceivedLoadControlDevices()))) &&
-            ((this.receivedLoadDisconnectDevices==null && other.getReceivedLoadDisconnectDevices()==null) || 
-             (this.receivedLoadDisconnectDevices!=null &&
-              java.util.Arrays.equals(this.receivedLoadDisconnectDevices, other.getReceivedLoadDisconnectDevices())));
+            ((this.receivedLoadManagementDevices==null && other.getReceivedLoadManagementDevices()==null) || 
+             (this.receivedLoadManagementDevices!=null &&
+              java.util.Arrays.equals(this.receivedLoadManagementDevices, other.getReceivedLoadManagementDevices()))) &&
+            ((this.receivedCDDevices==null && other.getReceivedCDDevices()==null) || 
+             (this.receivedCDDevices!=null &&
+              java.util.Arrays.equals(this.receivedCDDevices, other.getReceivedCDDevices())));
         __equalsCalc = null;
         return _equals;
     }
@@ -424,22 +424,22 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
                 }
             }
         }
-        if (getReceivedLoadControlDevices() != null) {
+        if (getReceivedLoadManagementDevices() != null) {
             for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getReceivedLoadControlDevices());
+                 i<java.lang.reflect.Array.getLength(getReceivedLoadManagementDevices());
                  i++) {
-                java.lang.Object obj = java.lang.reflect.Array.get(getReceivedLoadControlDevices(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getReceivedLoadManagementDevices(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
                 }
             }
         }
-        if (getReceivedLoadDisconnectDevices() != null) {
+        if (getReceivedCDDevices() != null) {
             for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getReceivedLoadDisconnectDevices());
+                 i<java.lang.reflect.Array.getLength(getReceivedCDDevices());
                  i++) {
-                java.lang.Object obj = java.lang.reflect.Array.get(getReceivedLoadDisconnectDevices(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getReceivedCDDevices(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -529,20 +529,20 @@ public class EndDeviceShipment  extends com.cannontech.multispeak.deploy.service
         elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "module"));
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("receivedLoadControlDevices");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "receivedLoadControlDevices"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadControlDevice"));
+        elemField.setFieldName("receivedLoadManagementDevices");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "receivedLoadManagementDevices"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadManagementDevice"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
-        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadControlDevice"));
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadManagementlDevice"));
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("receivedLoadDisconnectDevices");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "receivedLoadDisconnectDevices"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadDisconnectDevice"));
+        elemField.setFieldName("receivedCDDevices");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "receivedCDDevices"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CDDevice"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
-        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "loadDisconnectDevice"));
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "CDDevice"));
         typeDesc.addFieldDesc(elemField);
     }
 

@@ -26,11 +26,15 @@ public class ElectricMeter  extends com.cannontech.multispeak.deploy.service.Msp
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            java.lang.String meterNo,
            java.lang.String manufacturer,
+           java.lang.String catalogNumber,
            java.lang.String serialNumber,
+           java.lang.String metrologyFirmwareVersion,
+           java.lang.String metrologyFirmwareRevision,
            java.lang.String meterType,
            java.lang.String AMRDeviceType,
            java.lang.String AMRVendor,
            java.lang.String transponderID,
+           com.cannontech.multispeak.deploy.service.Module[] moduleList,
            com.cannontech.multispeak.deploy.service.ElectricNameplate electricNameplate,
            com.cannontech.multispeak.deploy.service.UtilityInfo utilityInfo) {
         super(
@@ -44,11 +48,15 @@ public class ElectricMeter  extends com.cannontech.multispeak.deploy.service.Msp
             extensionsList,
             meterNo,
             manufacturer,
+            catalogNumber,
             serialNumber,
+            metrologyFirmwareVersion,
+            metrologyFirmwareRevision,
             meterType,
             AMRDeviceType,
             AMRVendor,
-            transponderID);
+            transponderID,
+            moduleList);
         this.electricNameplate = electricNameplate;
         this.utilityInfo = utilityInfo;
     }

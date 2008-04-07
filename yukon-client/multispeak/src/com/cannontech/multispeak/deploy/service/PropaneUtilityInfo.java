@@ -1,5 +1,5 @@
 /**
- * MultiUtilitylocationAccountsAccount.java
+ * PropaneUtilityInfo.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Dec 28, 2007 (09:53:13 CST) WSDL2Java emitter.
@@ -7,8 +7,10 @@
 
 package com.cannontech.multispeak.deploy.service;
 
-public class MultiUtilitylocationAccountsAccount  implements java.io.Serializable {
-    private java.lang.String serviceType;
+public class PropaneUtilityInfo  implements java.io.Serializable {
+    private java.lang.String owner;
+
+    private java.lang.String district;
 
     private java.lang.String serviceLocationID;
 
@@ -16,43 +18,69 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
 
     private java.lang.String customerID;
 
-    public MultiUtilitylocationAccountsAccount() {
+    private com.cannontech.multispeak.deploy.service.PointType mapLocation;
+
+    public PropaneUtilityInfo() {
     }
 
-    public MultiUtilitylocationAccountsAccount(
-           java.lang.String serviceType,
+    public PropaneUtilityInfo(
+           java.lang.String owner,
+           java.lang.String district,
            java.lang.String serviceLocationID,
            java.lang.String accountNumber,
-           java.lang.String customerID) {
-           this.serviceType = serviceType;
+           java.lang.String customerID,
+           com.cannontech.multispeak.deploy.service.PointType mapLocation) {
+           this.owner = owner;
+           this.district = district;
            this.serviceLocationID = serviceLocationID;
            this.accountNumber = accountNumber;
            this.customerID = customerID;
+           this.mapLocation = mapLocation;
     }
 
 
     /**
-     * Gets the serviceType value for this MultiUtilitylocationAccountsAccount.
+     * Gets the owner value for this PropaneUtilityInfo.
      * 
-     * @return serviceType
+     * @return owner
      */
-    public java.lang.String getServiceType() {
-        return serviceType;
+    public java.lang.String getOwner() {
+        return owner;
     }
 
 
     /**
-     * Sets the serviceType value for this MultiUtilitylocationAccountsAccount.
+     * Sets the owner value for this PropaneUtilityInfo.
      * 
-     * @param serviceType
+     * @param owner
      */
-    public void setServiceType(java.lang.String serviceType) {
-        this.serviceType = serviceType;
+    public void setOwner(java.lang.String owner) {
+        this.owner = owner;
     }
 
 
     /**
-     * Gets the serviceLocationID value for this MultiUtilitylocationAccountsAccount.
+     * Gets the district value for this PropaneUtilityInfo.
+     * 
+     * @return district
+     */
+    public java.lang.String getDistrict() {
+        return district;
+    }
+
+
+    /**
+     * Sets the district value for this PropaneUtilityInfo.
+     * 
+     * @param district
+     */
+    public void setDistrict(java.lang.String district) {
+        this.district = district;
+    }
+
+
+    /**
+     * Gets the serviceLocationID value for this PropaneUtilityInfo.
      * 
      * @return serviceLocationID
      */
@@ -62,7 +90,7 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
 
 
     /**
-     * Sets the serviceLocationID value for this MultiUtilitylocationAccountsAccount.
+     * Sets the serviceLocationID value for this PropaneUtilityInfo.
      * 
      * @param serviceLocationID
      */
@@ -72,7 +100,7 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
 
 
     /**
-     * Gets the accountNumber value for this MultiUtilitylocationAccountsAccount.
+     * Gets the accountNumber value for this PropaneUtilityInfo.
      * 
      * @return accountNumber
      */
@@ -82,7 +110,7 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
 
 
     /**
-     * Sets the accountNumber value for this MultiUtilitylocationAccountsAccount.
+     * Sets the accountNumber value for this PropaneUtilityInfo.
      * 
      * @param accountNumber
      */
@@ -92,7 +120,7 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
 
 
     /**
-     * Gets the customerID value for this MultiUtilitylocationAccountsAccount.
+     * Gets the customerID value for this PropaneUtilityInfo.
      * 
      * @return customerID
      */
@@ -102,7 +130,7 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
 
 
     /**
-     * Sets the customerID value for this MultiUtilitylocationAccountsAccount.
+     * Sets the customerID value for this PropaneUtilityInfo.
      * 
      * @param customerID
      */
@@ -110,10 +138,30 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
         this.customerID = customerID;
     }
 
+
+    /**
+     * Gets the mapLocation value for this PropaneUtilityInfo.
+     * 
+     * @return mapLocation
+     */
+    public com.cannontech.multispeak.deploy.service.PointType getMapLocation() {
+        return mapLocation;
+    }
+
+
+    /**
+     * Sets the mapLocation value for this PropaneUtilityInfo.
+     * 
+     * @param mapLocation
+     */
+    public void setMapLocation(com.cannontech.multispeak.deploy.service.PointType mapLocation) {
+        this.mapLocation = mapLocation;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof MultiUtilitylocationAccountsAccount)) return false;
-        MultiUtilitylocationAccountsAccount other = (MultiUtilitylocationAccountsAccount) obj;
+        if (!(obj instanceof PropaneUtilityInfo)) return false;
+        PropaneUtilityInfo other = (PropaneUtilityInfo) obj;
         if (obj == null) return false;
         if (this == obj) return true;
         if (__equalsCalc != null) {
@@ -122,9 +170,12 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
         __equalsCalc = obj;
         boolean _equals;
         _equals = true && 
-            ((this.serviceType==null && other.getServiceType()==null) || 
-             (this.serviceType!=null &&
-              this.serviceType.equals(other.getServiceType()))) &&
+            ((this.owner==null && other.getOwner()==null) || 
+             (this.owner!=null &&
+              this.owner.equals(other.getOwner()))) &&
+            ((this.district==null && other.getDistrict()==null) || 
+             (this.district!=null &&
+              this.district.equals(other.getDistrict()))) &&
             ((this.serviceLocationID==null && other.getServiceLocationID()==null) || 
              (this.serviceLocationID!=null &&
               this.serviceLocationID.equals(other.getServiceLocationID()))) &&
@@ -133,7 +184,10 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
               this.accountNumber.equals(other.getAccountNumber()))) &&
             ((this.customerID==null && other.getCustomerID()==null) || 
              (this.customerID!=null &&
-              this.customerID.equals(other.getCustomerID())));
+              this.customerID.equals(other.getCustomerID()))) &&
+            ((this.mapLocation==null && other.getMapLocation()==null) || 
+             (this.mapLocation!=null &&
+              this.mapLocation.equals(other.getMapLocation())));
         __equalsCalc = null;
         return _equals;
     }
@@ -145,8 +199,11 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
         }
         __hashCodeCalc = true;
         int _hashCode = 1;
-        if (getServiceType() != null) {
-            _hashCode += getServiceType().hashCode();
+        if (getOwner() != null) {
+            _hashCode += getOwner().hashCode();
+        }
+        if (getDistrict() != null) {
+            _hashCode += getDistrict().hashCode();
         }
         if (getServiceLocationID() != null) {
             _hashCode += getServiceLocationID().hashCode();
@@ -157,19 +214,29 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
         if (getCustomerID() != null) {
             _hashCode += getCustomerID().hashCode();
         }
+        if (getMapLocation() != null) {
+            _hashCode += getMapLocation().hashCode();
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(MultiUtilitylocationAccountsAccount.class, true);
+        new org.apache.axis.description.TypeDesc(PropaneUtilityInfo.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">>multiUtilitylocation>accounts>account"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "propaneUtilityInfo"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("serviceType");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ServiceType"));
+        elemField.setFieldName("owner");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "owner"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("district");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "district"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
@@ -192,6 +259,13 @@ public class MultiUtilitylocationAccountsAccount  implements java.io.Serializabl
         elemField.setFieldName("customerID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customerID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("mapLocation");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mapLocation"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "PointType"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

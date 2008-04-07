@@ -14,6 +14,8 @@ import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
 import com.cannontech.multispeak.dao.MspMeterDao;
+import com.cannontech.multispeak.deploy.service.CDDevice;
+import com.cannontech.multispeak.deploy.service.CDDeviceExchange;
 import com.cannontech.multispeak.deploy.service.CD_CBSoap_PortType;
 import com.cannontech.multispeak.deploy.service.ConnectDisconnectEvent;
 import com.cannontech.multispeak.deploy.service.Customer;
@@ -150,6 +152,31 @@ public class CD_CBImpl implements CD_CBSoap_PortType
     @Override
     public ErrorObject[] customerChangedNotification(Customer[] changedCustomers)
             throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] CDDeviceAddNotification(CDDevice[] addedCDDs) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] CDDeviceChangedNotification(CDDevice[] changedCDDs) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] CDDeviceExchangeNotification(CDDeviceExchange[] CDDChangeout) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] CDDeviceRemoveNotification(CDDevice[] removedCDDs) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] CDDeviceRetireNotification(CDDevice[] retiredCDDs) throws RemoteException {
         init();
         return null;
     }

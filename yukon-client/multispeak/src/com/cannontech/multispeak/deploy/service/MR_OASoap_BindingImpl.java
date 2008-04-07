@@ -15,13 +15,12 @@ import com.cannontech.spring.YukonSpringHook;
 public class MR_OASoap_BindingImpl implements com.cannontech.multispeak.deploy.service.MR_OASoap_PortType{
     private MR_OASoap_PortType mr_oa = (MR_OAImpl)YukonSpringHook.getBean("mr_oa");
 
-    public ErrorObject[] customersAffectedByOutageNotification(
-            CustomersAffectedByOutage[] newOutages) throws RemoteException {
+    public ErrorObject[] customersAffectedByOutageNotification(CustomersAffectedByOutage[] newOutages)
+            throws RemoteException {
         return mr_oa.customersAffectedByOutageNotification(newOutages);
     }
 
-    public DomainMember[] getDomainMembers(String domainName)
-            throws RemoteException {
+    public DomainMember[] getDomainMembers(String domainName) throws RemoteException {
         return mr_oa.getDomainMembers(domainName);
     }
 
@@ -33,8 +32,7 @@ public class MR_OASoap_BindingImpl implements com.cannontech.multispeak.deploy.s
         return mr_oa.getMethods();
     }
 
-    public ErrorObject[] meterConnectivityNotification(
-            MeterConnectivity[] newConnectivity) throws RemoteException {
+    public ErrorObject[] meterConnectivityNotification(MeterConnectivity[] newConnectivity) throws RemoteException {
         return mr_oa.meterConnectivityNotification(newConnectivity);
     }
 

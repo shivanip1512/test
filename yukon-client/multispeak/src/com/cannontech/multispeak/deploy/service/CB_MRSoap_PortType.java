@@ -532,4 +532,18 @@ public interface CB_MRSoap_PortType extends java.rmi.Remote {
      * CB returns information about failed transactions in an array of errorObjects.(Optional)
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] meterExchangeNotification(com.cannontech.multispeak.deploy.service.MeterExchange[] meterChangeout) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CB that in-home display(s) have been installed.
+     * CB returns information about failed transactions using an array of
+     * errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] inHomeDisplayInstalledNotification(com.cannontech.multispeak.deploy.service.InHomeDisplay[] installedIHDs) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CB that in-home displays(s) have been deployed
+     * or exchanged.  CB returns information about failed transactions in
+     * an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] inHomeDisplayExchangeNotification(com.cannontech.multispeak.deploy.service.InHomeDisplayExchange[] IHDChangeout) throws java.rmi.RemoteException;
 }

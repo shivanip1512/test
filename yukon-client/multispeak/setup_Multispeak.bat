@@ -1,6 +1,6 @@
 set endpoint=http://localhost:8080/soap/AdminService
 set MSP_PACKAGE=com.cannontech.multispeak.deploy.service
-set MSP_URL=--timeout -1 http://www.multispeak.org/interface/30p/
+set MSP_URL=--timeout -1 http://www.multispeak.org/interface/30q/
 set MSP_DEPLOY_FILE=com\cannontech\multispeak\deploy\service\deploy.wsdd
 set AXIS_LIB=C:\eclipsedev\branch_4_1\third-party\
 set AXISCLASSPATH=%AXIS_LIB%\axis.jar;%AXIS_LIB%\commons-discovery.jar;%AXIS_LIB%\commons-logging-1.1.jar;%AXIS_LIB%\jaxrpc.jar;%AXIS_LIB%\saaj.jar;%AXIS_LIB%\log4j-1.2.14.jar;C:\axis1_2\lib\xml-apis.jar;C:\axis1_2\lib\xercesImpl.jar;%AXIS_LIB%\wsdl4j.jar;%AXIS_LIB%\mail.jar;%AXIS_LIB%\activation.jar;

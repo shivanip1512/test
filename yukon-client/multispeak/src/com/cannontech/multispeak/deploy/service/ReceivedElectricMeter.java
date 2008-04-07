@@ -10,16 +10,6 @@ package com.cannontech.multispeak.deploy.service;
 public class ReceivedElectricMeter  extends com.cannontech.multispeak.deploy.service.MspMeter  implements java.io.Serializable {
     private com.cannontech.multispeak.deploy.service.ElectricNameplate electricNameplate;
 
-    private java.lang.String metrologyFirmwareVersion;
-
-    private java.lang.String metrologyFirmwareRevision;
-
-    private java.lang.String transponderFirmwareVersion;
-
-    private java.lang.String catalogNumber;
-
-    private com.cannontech.multispeak.deploy.service.Module[] moduleList;
-
     public ReceivedElectricMeter() {
     }
 
@@ -34,17 +24,16 @@ public class ReceivedElectricMeter  extends com.cannontech.multispeak.deploy.ser
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            java.lang.String meterNo,
            java.lang.String manufacturer,
+           java.lang.String catalogNumber,
            java.lang.String serialNumber,
+           java.lang.String metrologyFirmwareVersion,
+           java.lang.String metrologyFirmwareRevision,
            java.lang.String meterType,
            java.lang.String AMRDeviceType,
            java.lang.String AMRVendor,
            java.lang.String transponderID,
-           com.cannontech.multispeak.deploy.service.ElectricNameplate electricNameplate,
-           java.lang.String metrologyFirmwareVersion,
-           java.lang.String metrologyFirmwareRevision,
-           java.lang.String transponderFirmwareVersion,
-           java.lang.String catalogNumber,
-           com.cannontech.multispeak.deploy.service.Module[] moduleList) {
+           com.cannontech.multispeak.deploy.service.Module[] moduleList,
+           com.cannontech.multispeak.deploy.service.ElectricNameplate electricNameplate) {
         super(
             objectID,
             verb,
@@ -56,17 +45,16 @@ public class ReceivedElectricMeter  extends com.cannontech.multispeak.deploy.ser
             extensionsList,
             meterNo,
             manufacturer,
+            catalogNumber,
             serialNumber,
+            metrologyFirmwareVersion,
+            metrologyFirmwareRevision,
             meterType,
             AMRDeviceType,
             AMRVendor,
-            transponderID);
+            transponderID,
+            moduleList);
         this.electricNameplate = electricNameplate;
-        this.metrologyFirmwareVersion = metrologyFirmwareVersion;
-        this.metrologyFirmwareRevision = metrologyFirmwareRevision;
-        this.transponderFirmwareVersion = transponderFirmwareVersion;
-        this.catalogNumber = catalogNumber;
-        this.moduleList = moduleList;
     }
 
 
@@ -89,106 +77,6 @@ public class ReceivedElectricMeter  extends com.cannontech.multispeak.deploy.ser
         this.electricNameplate = electricNameplate;
     }
 
-
-    /**
-     * Gets the metrologyFirmwareVersion value for this ReceivedElectricMeter.
-     * 
-     * @return metrologyFirmwareVersion
-     */
-    public java.lang.String getMetrologyFirmwareVersion() {
-        return metrologyFirmwareVersion;
-    }
-
-
-    /**
-     * Sets the metrologyFirmwareVersion value for this ReceivedElectricMeter.
-     * 
-     * @param metrologyFirmwareVersion
-     */
-    public void setMetrologyFirmwareVersion(java.lang.String metrologyFirmwareVersion) {
-        this.metrologyFirmwareVersion = metrologyFirmwareVersion;
-    }
-
-
-    /**
-     * Gets the metrologyFirmwareRevision value for this ReceivedElectricMeter.
-     * 
-     * @return metrologyFirmwareRevision
-     */
-    public java.lang.String getMetrologyFirmwareRevision() {
-        return metrologyFirmwareRevision;
-    }
-
-
-    /**
-     * Sets the metrologyFirmwareRevision value for this ReceivedElectricMeter.
-     * 
-     * @param metrologyFirmwareRevision
-     */
-    public void setMetrologyFirmwareRevision(java.lang.String metrologyFirmwareRevision) {
-        this.metrologyFirmwareRevision = metrologyFirmwareRevision;
-    }
-
-
-    /**
-     * Gets the transponderFirmwareVersion value for this ReceivedElectricMeter.
-     * 
-     * @return transponderFirmwareVersion
-     */
-    public java.lang.String getTransponderFirmwareVersion() {
-        return transponderFirmwareVersion;
-    }
-
-
-    /**
-     * Sets the transponderFirmwareVersion value for this ReceivedElectricMeter.
-     * 
-     * @param transponderFirmwareVersion
-     */
-    public void setTransponderFirmwareVersion(java.lang.String transponderFirmwareVersion) {
-        this.transponderFirmwareVersion = transponderFirmwareVersion;
-    }
-
-
-    /**
-     * Gets the catalogNumber value for this ReceivedElectricMeter.
-     * 
-     * @return catalogNumber
-     */
-    public java.lang.String getCatalogNumber() {
-        return catalogNumber;
-    }
-
-
-    /**
-     * Sets the catalogNumber value for this ReceivedElectricMeter.
-     * 
-     * @param catalogNumber
-     */
-    public void setCatalogNumber(java.lang.String catalogNumber) {
-        this.catalogNumber = catalogNumber;
-    }
-
-
-    /**
-     * Gets the moduleList value for this ReceivedElectricMeter.
-     * 
-     * @return moduleList
-     */
-    public com.cannontech.multispeak.deploy.service.Module[] getModuleList() {
-        return moduleList;
-    }
-
-
-    /**
-     * Sets the moduleList value for this ReceivedElectricMeter.
-     * 
-     * @param moduleList
-     */
-    public void setModuleList(com.cannontech.multispeak.deploy.service.Module[] moduleList) {
-        this.moduleList = moduleList;
-    }
-
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof ReceivedElectricMeter)) return false;
@@ -203,22 +91,7 @@ public class ReceivedElectricMeter  extends com.cannontech.multispeak.deploy.ser
         _equals = super.equals(obj) && 
             ((this.electricNameplate==null && other.getElectricNameplate()==null) || 
              (this.electricNameplate!=null &&
-              this.electricNameplate.equals(other.getElectricNameplate()))) &&
-            ((this.metrologyFirmwareVersion==null && other.getMetrologyFirmwareVersion()==null) || 
-             (this.metrologyFirmwareVersion!=null &&
-              this.metrologyFirmwareVersion.equals(other.getMetrologyFirmwareVersion()))) &&
-            ((this.metrologyFirmwareRevision==null && other.getMetrologyFirmwareRevision()==null) || 
-             (this.metrologyFirmwareRevision!=null &&
-              this.metrologyFirmwareRevision.equals(other.getMetrologyFirmwareRevision()))) &&
-            ((this.transponderFirmwareVersion==null && other.getTransponderFirmwareVersion()==null) || 
-             (this.transponderFirmwareVersion!=null &&
-              this.transponderFirmwareVersion.equals(other.getTransponderFirmwareVersion()))) &&
-            ((this.catalogNumber==null && other.getCatalogNumber()==null) || 
-             (this.catalogNumber!=null &&
-              this.catalogNumber.equals(other.getCatalogNumber()))) &&
-            ((this.moduleList==null && other.getModuleList()==null) || 
-             (this.moduleList!=null &&
-              java.util.Arrays.equals(this.moduleList, other.getModuleList())));
+              this.electricNameplate.equals(other.getElectricNameplate())));
         __equalsCalc = null;
         return _equals;
     }
@@ -232,29 +105,6 @@ public class ReceivedElectricMeter  extends com.cannontech.multispeak.deploy.ser
         int _hashCode = super.hashCode();
         if (getElectricNameplate() != null) {
             _hashCode += getElectricNameplate().hashCode();
-        }
-        if (getMetrologyFirmwareVersion() != null) {
-            _hashCode += getMetrologyFirmwareVersion().hashCode();
-        }
-        if (getMetrologyFirmwareRevision() != null) {
-            _hashCode += getMetrologyFirmwareRevision().hashCode();
-        }
-        if (getTransponderFirmwareVersion() != null) {
-            _hashCode += getTransponderFirmwareVersion().hashCode();
-        }
-        if (getCatalogNumber() != null) {
-            _hashCode += getCatalogNumber().hashCode();
-        }
-        if (getModuleList() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getModuleList());
-                 i++) {
-                java.lang.Object obj = java.lang.reflect.Array.get(getModuleList(), i);
-                if (obj != null &&
-                    !obj.getClass().isArray()) {
-                    _hashCode += obj.hashCode();
-                }
-            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -272,42 +122,6 @@ public class ReceivedElectricMeter  extends com.cannontech.multispeak.deploy.ser
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "electricNameplate"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("metrologyFirmwareVersion");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "metrologyFirmwareVersion"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("metrologyFirmwareRevision");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "metrologyFirmwareRevision"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("transponderFirmwareVersion");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "transponderFirmwareVersion"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("catalogNumber");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "catalogNumber"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("moduleList");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "moduleList"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "module"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "module"));
         typeDesc.addFieldDesc(elemField);
     }
 

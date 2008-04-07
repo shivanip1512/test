@@ -24,17 +24,16 @@ public class TestedElectricMeter  extends com.cannontech.multispeak.deploy.servi
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            java.lang.String meterNo,
            java.lang.String manufacturer,
+           java.lang.String catalogNumber,
            java.lang.String serialNumber,
+           java.lang.String metrologyFirmwareVersion,
+           java.lang.String metrologyFirmwareRevision,
            java.lang.String meterType,
            java.lang.String AMRDeviceType,
            java.lang.String AMRVendor,
            java.lang.String transponderID,
-           com.cannontech.multispeak.deploy.service.ElectricNameplate electricNameplate,
-           java.lang.String metrologyFirmwareVersion,
-           java.lang.String metrologyFirmwareRevision,
-           java.lang.String transponderFirmwareVersion,
-           java.lang.String catalogNumber,
            com.cannontech.multispeak.deploy.service.Module[] moduleList,
+           com.cannontech.multispeak.deploy.service.ElectricNameplate electricNameplate,
            com.cannontech.multispeak.deploy.service.MeterTest[] meterTestList) {
         super(
             objectID,
@@ -47,17 +46,16 @@ public class TestedElectricMeter  extends com.cannontech.multispeak.deploy.servi
             extensionsList,
             meterNo,
             manufacturer,
+            catalogNumber,
             serialNumber,
+            metrologyFirmwareVersion,
+            metrologyFirmwareRevision,
             meterType,
             AMRDeviceType,
             AMRVendor,
             transponderID,
-            electricNameplate,
-            metrologyFirmwareVersion,
-            metrologyFirmwareRevision,
-            transponderFirmwareVersion,
-            catalogNumber,
-            moduleList);
+            moduleList,
+            electricNameplate);
         this.meterTestList = meterTestList;
     }
 

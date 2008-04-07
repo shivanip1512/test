@@ -22,11 +22,15 @@ public class OutageEventType implements java.io.Serializable {
     public static final java.lang.String _Restoration = "Restoration";
     public static final java.lang.String _NoResponse = "NoResponse";
     public static final java.lang.String _Inferred = "Inferred";
+    public static final java.lang.String _PowerOn = "PowerOn";
+    public static final java.lang.String _PowerOff = "PowerOff";
     public static final OutageEventType Instantaneous = new OutageEventType(_Instantaneous);
     public static final OutageEventType Outage = new OutageEventType(_Outage);
     public static final OutageEventType Restoration = new OutageEventType(_Restoration);
     public static final OutageEventType NoResponse = new OutageEventType(_NoResponse);
     public static final OutageEventType Inferred = new OutageEventType(_Inferred);
+    public static final OutageEventType PowerOn = new OutageEventType(_PowerOn);
+    public static final OutageEventType PowerOff = new OutageEventType(_PowerOff);
     public java.lang.String getValue() { return _value_;}
     public static OutageEventType fromValue(java.lang.String value)
           throws java.lang.IllegalArgumentException {

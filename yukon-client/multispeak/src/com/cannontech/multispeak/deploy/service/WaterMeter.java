@@ -10,6 +10,8 @@ package com.cannontech.multispeak.deploy.service;
 public class WaterMeter  extends com.cannontech.multispeak.deploy.service.MspMeter  implements java.io.Serializable {
     private com.cannontech.multispeak.deploy.service.WaterNameplate waterNameplate;
 
+    private com.cannontech.multispeak.deploy.service.WaterUtilityInfo waterUtilityInfo;
+
     public WaterMeter() {
     }
 
@@ -24,12 +26,17 @@ public class WaterMeter  extends com.cannontech.multispeak.deploy.service.MspMet
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            java.lang.String meterNo,
            java.lang.String manufacturer,
+           java.lang.String catalogNumber,
            java.lang.String serialNumber,
+           java.lang.String metrologyFirmwareVersion,
+           java.lang.String metrologyFirmwareRevision,
            java.lang.String meterType,
            java.lang.String AMRDeviceType,
            java.lang.String AMRVendor,
            java.lang.String transponderID,
-           com.cannontech.multispeak.deploy.service.WaterNameplate waterNameplate) {
+           com.cannontech.multispeak.deploy.service.Module[] moduleList,
+           com.cannontech.multispeak.deploy.service.WaterNameplate waterNameplate,
+           com.cannontech.multispeak.deploy.service.WaterUtilityInfo waterUtilityInfo) {
         super(
             objectID,
             verb,
@@ -41,12 +48,17 @@ public class WaterMeter  extends com.cannontech.multispeak.deploy.service.MspMet
             extensionsList,
             meterNo,
             manufacturer,
+            catalogNumber,
             serialNumber,
+            metrologyFirmwareVersion,
+            metrologyFirmwareRevision,
             meterType,
             AMRDeviceType,
             AMRVendor,
-            transponderID);
+            transponderID,
+            moduleList);
         this.waterNameplate = waterNameplate;
+        this.waterUtilityInfo = waterUtilityInfo;
     }
 
 
@@ -69,6 +81,26 @@ public class WaterMeter  extends com.cannontech.multispeak.deploy.service.MspMet
         this.waterNameplate = waterNameplate;
     }
 
+
+    /**
+     * Gets the waterUtilityInfo value for this WaterMeter.
+     * 
+     * @return waterUtilityInfo
+     */
+    public com.cannontech.multispeak.deploy.service.WaterUtilityInfo getWaterUtilityInfo() {
+        return waterUtilityInfo;
+    }
+
+
+    /**
+     * Sets the waterUtilityInfo value for this WaterMeter.
+     * 
+     * @param waterUtilityInfo
+     */
+    public void setWaterUtilityInfo(com.cannontech.multispeak.deploy.service.WaterUtilityInfo waterUtilityInfo) {
+        this.waterUtilityInfo = waterUtilityInfo;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof WaterMeter)) return false;
@@ -83,7 +115,10 @@ public class WaterMeter  extends com.cannontech.multispeak.deploy.service.MspMet
         _equals = super.equals(obj) && 
             ((this.waterNameplate==null && other.getWaterNameplate()==null) || 
              (this.waterNameplate!=null &&
-              this.waterNameplate.equals(other.getWaterNameplate())));
+              this.waterNameplate.equals(other.getWaterNameplate()))) &&
+            ((this.waterUtilityInfo==null && other.getWaterUtilityInfo()==null) || 
+             (this.waterUtilityInfo!=null &&
+              this.waterUtilityInfo.equals(other.getWaterUtilityInfo())));
         __equalsCalc = null;
         return _equals;
     }
@@ -97,6 +132,9 @@ public class WaterMeter  extends com.cannontech.multispeak.deploy.service.MspMet
         int _hashCode = super.hashCode();
         if (getWaterNameplate() != null) {
             _hashCode += getWaterNameplate().hashCode();
+        }
+        if (getWaterUtilityInfo() != null) {
+            _hashCode += getWaterUtilityInfo().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -112,6 +150,13 @@ public class WaterMeter  extends com.cannontech.multispeak.deploy.service.MspMet
         elemField.setFieldName("waterNameplate");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "waterNameplate"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "waterNameplate"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("waterUtilityInfo");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "waterUtilityInfo"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "waterUtilityInfo"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

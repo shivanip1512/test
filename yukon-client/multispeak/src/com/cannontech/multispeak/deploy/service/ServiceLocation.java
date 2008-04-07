@@ -99,9 +99,9 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
+           java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
-           java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.String custID,
@@ -156,9 +156,9 @@ public class ServiceLocation  extends com.cannontech.multispeak.deploy.service.M
             graphicSymbol,
             annotationList,
             fromNodeID,
+            sectionID,
             parentSectionID,
             toNodeID,
-            sectionID,
             phaseCode,
             load);
         this.custID = custID;

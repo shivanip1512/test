@@ -14,11 +14,11 @@ public abstract class MspConnectivityPoint  extends com.cannontech.multispeak.de
 
     private com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID;
 
+    private java.lang.String sectionID;
+
     private com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID;
 
     private com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID;
-
-    private java.lang.String sectionID;
 
     public MspConnectivityPoint() {
     }
@@ -39,9 +39,9 @@ public abstract class MspConnectivityPoint  extends com.cannontech.multispeak.de
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
+           java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
-           java.lang.String sectionID) {
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID) {
         super(
             objectID,
             verb,
@@ -58,9 +58,9 @@ public abstract class MspConnectivityPoint  extends com.cannontech.multispeak.de
         this.graphicSymbol = graphicSymbol;
         this.annotationList = annotationList;
         this.fromNodeID = fromNodeID;
+        this.sectionID = sectionID;
         this.parentSectionID = parentSectionID;
         this.toNodeID = toNodeID;
-        this.sectionID = sectionID;
     }
 
 
@@ -141,6 +141,26 @@ public abstract class MspConnectivityPoint  extends com.cannontech.multispeak.de
 
 
     /**
+     * Gets the sectionID value for this MspConnectivityPoint.
+     * 
+     * @return sectionID
+     */
+    public java.lang.String getSectionID() {
+        return sectionID;
+    }
+
+
+    /**
+     * Sets the sectionID value for this MspConnectivityPoint.
+     * 
+     * @param sectionID
+     */
+    public void setSectionID(java.lang.String sectionID) {
+        this.sectionID = sectionID;
+    }
+
+
+    /**
      * Gets the parentSectionID value for this MspConnectivityPoint.
      * 
      * @return parentSectionID
@@ -179,26 +199,6 @@ public abstract class MspConnectivityPoint  extends com.cannontech.multispeak.de
         this.toNodeID = toNodeID;
     }
 
-
-    /**
-     * Gets the sectionID value for this MspConnectivityPoint.
-     * 
-     * @return sectionID
-     */
-    public java.lang.String getSectionID() {
-        return sectionID;
-    }
-
-
-    /**
-     * Sets the sectionID value for this MspConnectivityPoint.
-     * 
-     * @param sectionID
-     */
-    public void setSectionID(java.lang.String sectionID) {
-        this.sectionID = sectionID;
-    }
-
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MspConnectivityPoint)) return false;
@@ -220,15 +220,15 @@ public abstract class MspConnectivityPoint  extends com.cannontech.multispeak.de
             ((this.fromNodeID==null && other.getFromNodeID()==null) || 
              (this.fromNodeID!=null &&
               this.fromNodeID.equals(other.getFromNodeID()))) &&
+            ((this.sectionID==null && other.getSectionID()==null) || 
+             (this.sectionID!=null &&
+              this.sectionID.equals(other.getSectionID()))) &&
             ((this.parentSectionID==null && other.getParentSectionID()==null) || 
              (this.parentSectionID!=null &&
               this.parentSectionID.equals(other.getParentSectionID()))) &&
             ((this.toNodeID==null && other.getToNodeID()==null) || 
              (this.toNodeID!=null &&
-              this.toNodeID.equals(other.getToNodeID()))) &&
-            ((this.sectionID==null && other.getSectionID()==null) || 
-             (this.sectionID!=null &&
-              this.sectionID.equals(other.getSectionID())));
+              this.toNodeID.equals(other.getToNodeID())));
         __equalsCalc = null;
         return _equals;
     }
@@ -265,14 +265,14 @@ public abstract class MspConnectivityPoint  extends com.cannontech.multispeak.de
         if (getFromNodeID() != null) {
             _hashCode += getFromNodeID().hashCode();
         }
+        if (getSectionID() != null) {
+            _hashCode += getSectionID().hashCode();
+        }
         if (getParentSectionID() != null) {
             _hashCode += getParentSectionID().hashCode();
         }
         if (getToNodeID() != null) {
             _hashCode += getToNodeID().hashCode();
-        }
-        if (getSectionID() != null) {
-            _hashCode += getSectionID().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -308,6 +308,13 @@ public abstract class MspConnectivityPoint  extends com.cannontech.multispeak.de
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("sectionID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "sectionID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("parentSectionID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "parentSectionID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "objectRef"));
@@ -318,13 +325,6 @@ public abstract class MspConnectivityPoint  extends com.cannontech.multispeak.de
         elemField.setFieldName("toNodeID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "toNodeID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "nodeIdentifier"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("sectionID");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "sectionID"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

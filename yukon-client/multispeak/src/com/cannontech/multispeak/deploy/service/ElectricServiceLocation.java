@@ -10,11 +10,11 @@ package com.cannontech.multispeak.deploy.service;
 public class ElectricServiceLocation  extends com.cannontech.multispeak.deploy.service.MspServiceLocation  implements java.io.Serializable {
     private com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID;
 
-    private com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID;
-
     private java.lang.String sectionID;
 
     private com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID;
+
+    private com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID;
 
     private com.cannontech.multispeak.deploy.service.PowerStatus outageStatus;
 
@@ -73,9 +73,9 @@ public class ElectricServiceLocation  extends com.cannontech.multispeak.deploy.s
            java.lang.String woNumber,
            java.lang.String soNumber,
            com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
-           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
+           com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
            com.cannontech.multispeak.deploy.service.PowerStatus outageStatus,
            java.lang.String specialNeeds,
            java.lang.String loadMgmt,
@@ -124,9 +124,9 @@ public class ElectricServiceLocation  extends com.cannontech.multispeak.deploy.s
             woNumber,
             soNumber);
         this.parentSectionID = parentSectionID;
-        this.toNodeID = toNodeID;
         this.sectionID = sectionID;
         this.fromNodeID = fromNodeID;
+        this.toNodeID = toNodeID;
         this.outageStatus = outageStatus;
         this.specialNeeds = specialNeeds;
         this.loadMgmt = loadMgmt;
@@ -153,26 +153,6 @@ public class ElectricServiceLocation  extends com.cannontech.multispeak.deploy.s
      */
     public void setParentSectionID(com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID) {
         this.parentSectionID = parentSectionID;
-    }
-
-
-    /**
-     * Gets the toNodeID value for this ElectricServiceLocation.
-     * 
-     * @return toNodeID
-     */
-    public com.cannontech.multispeak.deploy.service.NodeIdentifier getToNodeID() {
-        return toNodeID;
-    }
-
-
-    /**
-     * Sets the toNodeID value for this ElectricServiceLocation.
-     * 
-     * @param toNodeID
-     */
-    public void setToNodeID(com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID) {
-        this.toNodeID = toNodeID;
     }
 
 
@@ -213,6 +193,26 @@ public class ElectricServiceLocation  extends com.cannontech.multispeak.deploy.s
      */
     public void setFromNodeID(com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID) {
         this.fromNodeID = fromNodeID;
+    }
+
+
+    /**
+     * Gets the toNodeID value for this ElectricServiceLocation.
+     * 
+     * @return toNodeID
+     */
+    public com.cannontech.multispeak.deploy.service.NodeIdentifier getToNodeID() {
+        return toNodeID;
+    }
+
+
+    /**
+     * Sets the toNodeID value for this ElectricServiceLocation.
+     * 
+     * @param toNodeID
+     */
+    public void setToNodeID(com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID) {
+        this.toNodeID = toNodeID;
     }
 
 
@@ -350,15 +350,15 @@ public class ElectricServiceLocation  extends com.cannontech.multispeak.deploy.s
             ((this.parentSectionID==null && other.getParentSectionID()==null) || 
              (this.parentSectionID!=null &&
               this.parentSectionID.equals(other.getParentSectionID()))) &&
-            ((this.toNodeID==null && other.getToNodeID()==null) || 
-             (this.toNodeID!=null &&
-              this.toNodeID.equals(other.getToNodeID()))) &&
             ((this.sectionID==null && other.getSectionID()==null) || 
              (this.sectionID!=null &&
               this.sectionID.equals(other.getSectionID()))) &&
             ((this.fromNodeID==null && other.getFromNodeID()==null) || 
              (this.fromNodeID!=null &&
               this.fromNodeID.equals(other.getFromNodeID()))) &&
+            ((this.toNodeID==null && other.getToNodeID()==null) || 
+             (this.toNodeID!=null &&
+              this.toNodeID.equals(other.getToNodeID()))) &&
             ((this.outageStatus==null && other.getOutageStatus()==null) || 
              (this.outageStatus!=null &&
               this.outageStatus.equals(other.getOutageStatus()))) &&
@@ -391,14 +391,14 @@ public class ElectricServiceLocation  extends com.cannontech.multispeak.deploy.s
         if (getParentSectionID() != null) {
             _hashCode += getParentSectionID().hashCode();
         }
-        if (getToNodeID() != null) {
-            _hashCode += getToNodeID().hashCode();
-        }
         if (getSectionID() != null) {
             _hashCode += getSectionID().hashCode();
         }
         if (getFromNodeID() != null) {
             _hashCode += getFromNodeID().hashCode();
+        }
+        if (getToNodeID() != null) {
+            _hashCode += getToNodeID().hashCode();
         }
         if (getOutageStatus() != null) {
             _hashCode += getOutageStatus().hashCode();
@@ -436,13 +436,6 @@ public class ElectricServiceLocation  extends com.cannontech.multispeak.deploy.s
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("toNodeID");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "toNodeID"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "nodeIdentifier"));
-        elemField.setMinOccurs(0);
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("sectionID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "sectionID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
@@ -452,6 +445,13 @@ public class ElectricServiceLocation  extends com.cannontech.multispeak.deploy.s
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("fromNodeID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "fromNodeID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "nodeIdentifier"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("toNodeID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "toNodeID"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "nodeIdentifier"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);

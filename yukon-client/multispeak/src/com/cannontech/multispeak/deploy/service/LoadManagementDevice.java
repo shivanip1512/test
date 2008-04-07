@@ -24,6 +24,14 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
 
     private java.lang.String meterNo;
 
+    private com.cannontech.multispeak.deploy.service.Module[] moduleList;
+
+    private java.math.BigInteger numberOfRelays;
+
+    private java.lang.Float ratedVoltage;
+
+    private java.lang.Float ratedCurrent;
+
     public LoadManagementDevice() {
     }
 
@@ -47,7 +55,11 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
            com.cannontech.multispeak.deploy.service.DeviceStatus status,
            java.lang.Float powerLimit,
            java.lang.String meterID,
-           java.lang.String meterNo) {
+           java.lang.String meterNo,
+           com.cannontech.multispeak.deploy.service.Module[] moduleList,
+           java.math.BigInteger numberOfRelays,
+           java.lang.Float ratedVoltage,
+           java.lang.Float ratedCurrent) {
         super(
             objectID,
             verb,
@@ -69,6 +81,10 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
         this.powerLimit = powerLimit;
         this.meterID = meterID;
         this.meterNo = meterNo;
+        this.moduleList = moduleList;
+        this.numberOfRelays = numberOfRelays;
+        this.ratedVoltage = ratedVoltage;
+        this.ratedCurrent = ratedCurrent;
     }
 
 
@@ -231,6 +247,86 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
         this.meterNo = meterNo;
     }
 
+
+    /**
+     * Gets the moduleList value for this LoadManagementDevice.
+     * 
+     * @return moduleList
+     */
+    public com.cannontech.multispeak.deploy.service.Module[] getModuleList() {
+        return moduleList;
+    }
+
+
+    /**
+     * Sets the moduleList value for this LoadManagementDevice.
+     * 
+     * @param moduleList
+     */
+    public void setModuleList(com.cannontech.multispeak.deploy.service.Module[] moduleList) {
+        this.moduleList = moduleList;
+    }
+
+
+    /**
+     * Gets the numberOfRelays value for this LoadManagementDevice.
+     * 
+     * @return numberOfRelays
+     */
+    public java.math.BigInteger getNumberOfRelays() {
+        return numberOfRelays;
+    }
+
+
+    /**
+     * Sets the numberOfRelays value for this LoadManagementDevice.
+     * 
+     * @param numberOfRelays
+     */
+    public void setNumberOfRelays(java.math.BigInteger numberOfRelays) {
+        this.numberOfRelays = numberOfRelays;
+    }
+
+
+    /**
+     * Gets the ratedVoltage value for this LoadManagementDevice.
+     * 
+     * @return ratedVoltage
+     */
+    public java.lang.Float getRatedVoltage() {
+        return ratedVoltage;
+    }
+
+
+    /**
+     * Sets the ratedVoltage value for this LoadManagementDevice.
+     * 
+     * @param ratedVoltage
+     */
+    public void setRatedVoltage(java.lang.Float ratedVoltage) {
+        this.ratedVoltage = ratedVoltage;
+    }
+
+
+    /**
+     * Gets the ratedCurrent value for this LoadManagementDevice.
+     * 
+     * @return ratedCurrent
+     */
+    public java.lang.Float getRatedCurrent() {
+        return ratedCurrent;
+    }
+
+
+    /**
+     * Sets the ratedCurrent value for this LoadManagementDevice.
+     * 
+     * @param ratedCurrent
+     */
+    public void setRatedCurrent(java.lang.Float ratedCurrent) {
+        this.ratedCurrent = ratedCurrent;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof LoadManagementDevice)) return false;
@@ -266,7 +362,19 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
               this.meterID.equals(other.getMeterID()))) &&
             ((this.meterNo==null && other.getMeterNo()==null) || 
              (this.meterNo!=null &&
-              this.meterNo.equals(other.getMeterNo())));
+              this.meterNo.equals(other.getMeterNo()))) &&
+            ((this.moduleList==null && other.getModuleList()==null) || 
+             (this.moduleList!=null &&
+              java.util.Arrays.equals(this.moduleList, other.getModuleList()))) &&
+            ((this.numberOfRelays==null && other.getNumberOfRelays()==null) || 
+             (this.numberOfRelays!=null &&
+              this.numberOfRelays.equals(other.getNumberOfRelays()))) &&
+            ((this.ratedVoltage==null && other.getRatedVoltage()==null) || 
+             (this.ratedVoltage!=null &&
+              this.ratedVoltage.equals(other.getRatedVoltage()))) &&
+            ((this.ratedCurrent==null && other.getRatedCurrent()==null) || 
+             (this.ratedCurrent!=null &&
+              this.ratedCurrent.equals(other.getRatedCurrent())));
         __equalsCalc = null;
         return _equals;
     }
@@ -301,6 +409,26 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
         }
         if (getMeterNo() != null) {
             _hashCode += getMeterNo().hashCode();
+        }
+        if (getModuleList() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getModuleList());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getModuleList(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
+        }
+        if (getNumberOfRelays() != null) {
+            _hashCode += getNumberOfRelays().hashCode();
+        }
+        if (getRatedVoltage() != null) {
+            _hashCode += getRatedVoltage().hashCode();
+        }
+        if (getRatedCurrent() != null) {
+            _hashCode += getRatedCurrent().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -365,6 +493,35 @@ public class LoadManagementDevice  extends com.cannontech.multispeak.deploy.serv
         elemField.setFieldName("meterNo");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("moduleList");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "moduleList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "module"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "module"));
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("numberOfRelays");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "numberOfRelays"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "integer"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("ratedVoltage");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ratedVoltage"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("ratedCurrent");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ratedCurrent"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "float"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

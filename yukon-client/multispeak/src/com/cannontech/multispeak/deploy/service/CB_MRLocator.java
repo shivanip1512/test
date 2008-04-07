@@ -22,7 +22,7 @@ public class CB_MRLocator extends org.apache.axis.client.Service implements com.
     }
 
     // Use to get a proxy class for CB_MRSoap
-    private java.lang.String CB_MRSoap_address = "http://www.multispeak.org/interface/30p/2A_CB_MR.asmx";
+    private java.lang.String CB_MRSoap_address = "http://www.multispeak.org/interface/30q/2A_CB_MR.asmx";
 
     public java.lang.String getCB_MRSoapAddress() {
         return CB_MRSoap_address;
@@ -67,7 +67,7 @@ public class CB_MRLocator extends org.apache.axis.client.Service implements com.
 
 
     // Use to get a proxy class for CB_MRSoap12
-    private java.lang.String CB_MRSoap12_address = "http://www.multispeak.org/interface/30p/2A_CB_MR.asmx";
+    private java.lang.String CB_MRSoap12_address = "http://www.multispeak.org/interface/30q/2A_CB_MR.asmx";
 
     public java.lang.String getCB_MRSoap12Address() {
         return CB_MRSoap12_address;

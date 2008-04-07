@@ -10,6 +10,8 @@ package com.cannontech.multispeak.deploy.service;
 public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPointObject  implements java.io.Serializable {
     private java.lang.String meterID;
 
+    private java.lang.String meterNo;
+
     private java.lang.String servLoc;
 
     private java.lang.String premiseID;
@@ -21,6 +23,8 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
     private com.cannontech.multispeak.deploy.service.BaseType baseType;
 
     private com.cannontech.multispeak.deploy.service.InstrumentTransformers instrumentTransformers;
+
+    private com.cannontech.multispeak.deploy.service.MeterBaseDeviceList deviceList;
 
     public MeterBase() {
     }
@@ -39,12 +43,14 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
            java.lang.Float rotation,
            java.lang.String facilityID,
            java.lang.String meterID,
+           java.lang.String meterNo,
            java.lang.String servLoc,
            java.lang.String premiseID,
            java.lang.String form,
            java.lang.String _class,
            com.cannontech.multispeak.deploy.service.BaseType baseType,
-           com.cannontech.multispeak.deploy.service.InstrumentTransformers instrumentTransformers) {
+           com.cannontech.multispeak.deploy.service.InstrumentTransformers instrumentTransformers,
+           com.cannontech.multispeak.deploy.service.MeterBaseDeviceList deviceList) {
         super(
             objectID,
             verb,
@@ -59,12 +65,14 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
             rotation,
             facilityID);
         this.meterID = meterID;
+        this.meterNo = meterNo;
         this.servLoc = servLoc;
         this.premiseID = premiseID;
         this.form = form;
         this._class = _class;
         this.baseType = baseType;
         this.instrumentTransformers = instrumentTransformers;
+        this.deviceList = deviceList;
     }
 
 
@@ -85,6 +93,26 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
      */
     public void setMeterID(java.lang.String meterID) {
         this.meterID = meterID;
+    }
+
+
+    /**
+     * Gets the meterNo value for this MeterBase.
+     * 
+     * @return meterNo
+     */
+    public java.lang.String getMeterNo() {
+        return meterNo;
+    }
+
+
+    /**
+     * Sets the meterNo value for this MeterBase.
+     * 
+     * @param meterNo
+     */
+    public void setMeterNo(java.lang.String meterNo) {
+        this.meterNo = meterNo;
     }
 
 
@@ -207,6 +235,26 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
         this.instrumentTransformers = instrumentTransformers;
     }
 
+
+    /**
+     * Gets the deviceList value for this MeterBase.
+     * 
+     * @return deviceList
+     */
+    public com.cannontech.multispeak.deploy.service.MeterBaseDeviceList getDeviceList() {
+        return deviceList;
+    }
+
+
+    /**
+     * Sets the deviceList value for this MeterBase.
+     * 
+     * @param deviceList
+     */
+    public void setDeviceList(com.cannontech.multispeak.deploy.service.MeterBaseDeviceList deviceList) {
+        this.deviceList = deviceList;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MeterBase)) return false;
@@ -222,6 +270,9 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
             ((this.meterID==null && other.getMeterID()==null) || 
              (this.meterID!=null &&
               this.meterID.equals(other.getMeterID()))) &&
+            ((this.meterNo==null && other.getMeterNo()==null) || 
+             (this.meterNo!=null &&
+              this.meterNo.equals(other.getMeterNo()))) &&
             ((this.servLoc==null && other.getServLoc()==null) || 
              (this.servLoc!=null &&
               this.servLoc.equals(other.getServLoc()))) &&
@@ -239,7 +290,10 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
               this.baseType.equals(other.getBaseType()))) &&
             ((this.instrumentTransformers==null && other.getInstrumentTransformers()==null) || 
              (this.instrumentTransformers!=null &&
-              this.instrumentTransformers.equals(other.getInstrumentTransformers())));
+              this.instrumentTransformers.equals(other.getInstrumentTransformers()))) &&
+            ((this.deviceList==null && other.getDeviceList()==null) || 
+             (this.deviceList!=null &&
+              this.deviceList.equals(other.getDeviceList())));
         __equalsCalc = null;
         return _equals;
     }
@@ -253,6 +307,9 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
         int _hashCode = super.hashCode();
         if (getMeterID() != null) {
             _hashCode += getMeterID().hashCode();
+        }
+        if (getMeterNo() != null) {
+            _hashCode += getMeterNo().hashCode();
         }
         if (getServLoc() != null) {
             _hashCode += getServLoc().hashCode();
@@ -272,6 +329,9 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
         if (getInstrumentTransformers() != null) {
             _hashCode += getInstrumentTransformers().hashCode();
         }
+        if (getDeviceList() != null) {
+            _hashCode += getDeviceList().hashCode();
+        }
         __hashCodeCalc = false;
         return _hashCode;
     }
@@ -285,6 +345,13 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("meterID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("meterNo");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "meterNo"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
@@ -328,6 +395,13 @@ public class MeterBase  extends com.cannontech.multispeak.deploy.service.MspPoin
         elemField.setFieldName("instrumentTransformers");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "instrumentTransformers"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "instrumentTransformers"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("deviceList");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "deviceList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">meterBase>deviceList"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

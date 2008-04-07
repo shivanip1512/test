@@ -10,6 +10,8 @@ package com.cannontech.multispeak.deploy.service;
 public class PropaneMeter  extends com.cannontech.multispeak.deploy.service.MspMeter  implements java.io.Serializable {
     private com.cannontech.multispeak.deploy.service.PropaneNameplate propaneNameplate;
 
+    private com.cannontech.multispeak.deploy.service.PropaneUtilityInfo propaneUtilityInfo;
+
     public PropaneMeter() {
     }
 
@@ -24,12 +26,17 @@ public class PropaneMeter  extends com.cannontech.multispeak.deploy.service.MspM
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            java.lang.String meterNo,
            java.lang.String manufacturer,
+           java.lang.String catalogNumber,
            java.lang.String serialNumber,
+           java.lang.String metrologyFirmwareVersion,
+           java.lang.String metrologyFirmwareRevision,
            java.lang.String meterType,
            java.lang.String AMRDeviceType,
            java.lang.String AMRVendor,
            java.lang.String transponderID,
-           com.cannontech.multispeak.deploy.service.PropaneNameplate propaneNameplate) {
+           com.cannontech.multispeak.deploy.service.Module[] moduleList,
+           com.cannontech.multispeak.deploy.service.PropaneNameplate propaneNameplate,
+           com.cannontech.multispeak.deploy.service.PropaneUtilityInfo propaneUtilityInfo) {
         super(
             objectID,
             verb,
@@ -41,12 +48,17 @@ public class PropaneMeter  extends com.cannontech.multispeak.deploy.service.MspM
             extensionsList,
             meterNo,
             manufacturer,
+            catalogNumber,
             serialNumber,
+            metrologyFirmwareVersion,
+            metrologyFirmwareRevision,
             meterType,
             AMRDeviceType,
             AMRVendor,
-            transponderID);
+            transponderID,
+            moduleList);
         this.propaneNameplate = propaneNameplate;
+        this.propaneUtilityInfo = propaneUtilityInfo;
     }
 
 
@@ -69,6 +81,26 @@ public class PropaneMeter  extends com.cannontech.multispeak.deploy.service.MspM
         this.propaneNameplate = propaneNameplate;
     }
 
+
+    /**
+     * Gets the propaneUtilityInfo value for this PropaneMeter.
+     * 
+     * @return propaneUtilityInfo
+     */
+    public com.cannontech.multispeak.deploy.service.PropaneUtilityInfo getPropaneUtilityInfo() {
+        return propaneUtilityInfo;
+    }
+
+
+    /**
+     * Sets the propaneUtilityInfo value for this PropaneMeter.
+     * 
+     * @param propaneUtilityInfo
+     */
+    public void setPropaneUtilityInfo(com.cannontech.multispeak.deploy.service.PropaneUtilityInfo propaneUtilityInfo) {
+        this.propaneUtilityInfo = propaneUtilityInfo;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof PropaneMeter)) return false;
@@ -83,7 +115,10 @@ public class PropaneMeter  extends com.cannontech.multispeak.deploy.service.MspM
         _equals = super.equals(obj) && 
             ((this.propaneNameplate==null && other.getPropaneNameplate()==null) || 
              (this.propaneNameplate!=null &&
-              this.propaneNameplate.equals(other.getPropaneNameplate())));
+              this.propaneNameplate.equals(other.getPropaneNameplate()))) &&
+            ((this.propaneUtilityInfo==null && other.getPropaneUtilityInfo()==null) || 
+             (this.propaneUtilityInfo!=null &&
+              this.propaneUtilityInfo.equals(other.getPropaneUtilityInfo())));
         __equalsCalc = null;
         return _equals;
     }
@@ -97,6 +132,9 @@ public class PropaneMeter  extends com.cannontech.multispeak.deploy.service.MspM
         int _hashCode = super.hashCode();
         if (getPropaneNameplate() != null) {
             _hashCode += getPropaneNameplate().hashCode();
+        }
+        if (getPropaneUtilityInfo() != null) {
+            _hashCode += getPropaneUtilityInfo().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -112,6 +150,13 @@ public class PropaneMeter  extends com.cannontech.multispeak.deploy.service.MspM
         elemField.setFieldName("propaneNameplate");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "propaneNameplate"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "propaneNameplate"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("propaneUtilityInfo");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "propaneUtilityInfo"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "propaneUtilityInfo"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

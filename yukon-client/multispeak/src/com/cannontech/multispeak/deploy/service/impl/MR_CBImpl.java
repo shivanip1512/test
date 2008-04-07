@@ -33,6 +33,8 @@ import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.EventCode;
 import com.cannontech.multispeak.deploy.service.FormattedBlock;
 import com.cannontech.multispeak.deploy.service.HistoryLog;
+import com.cannontech.multispeak.deploy.service.InHomeDisplay;
+import com.cannontech.multispeak.deploy.service.InHomeDisplayExchange;
 import com.cannontech.multispeak.deploy.service.MR_CBSoap_PortType;
 import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.MeterExchange;
@@ -419,5 +421,41 @@ public class MR_CBImpl implements MR_CBSoap_PortType{
         init();
         return null;
     }
-
+    @Override
+    public FormattedBlock[] getReadingByMeterNumberFormattedBlock(String meterNumber, Calendar billingDate,
+            int whLookBack, int lookBack, int lookForward, String lastReceived) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public FormattedBlock[] getReadingsByDateFormattedBlock(Calendar billingDate, int whLookBack, int lookBack,
+            int lookForward, String lastReceived) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] inHomeDisplayAddNotification(InHomeDisplay[] addedIHDs) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] inHomeDisplayChangedNotification(InHomeDisplay[] changedIHDs) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] inHomeDisplayExchangeNotification(InHomeDisplayExchange[] IHDChangeout) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] inHomeDisplayRemoveNotification(InHomeDisplay[] removedIHDs) throws RemoteException {
+        init();
+        return null;
+    }
+    @Override
+    public ErrorObject[] inHomeDisplayRetireNotification(InHomeDisplay[] retiredIHDs) throws RemoteException {
+        init();
+        return null;
+    }
 }

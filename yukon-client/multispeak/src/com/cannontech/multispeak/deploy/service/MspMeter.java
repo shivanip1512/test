@@ -12,7 +12,13 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
 
     private java.lang.String manufacturer;
 
+    private java.lang.String catalogNumber;
+
     private java.lang.String serialNumber;
+
+    private java.lang.String metrologyFirmwareVersion;
+
+    private java.lang.String metrologyFirmwareRevision;
 
     private java.lang.String meterType;
 
@@ -21,6 +27,8 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
     private java.lang.String AMRVendor;
 
     private java.lang.String transponderID;
+
+    private com.cannontech.multispeak.deploy.service.Module[] moduleList;
 
     public MspMeter() {
     }
@@ -36,11 +44,15 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
            com.cannontech.multispeak.deploy.service.ExtensionsItem[] extensionsList,
            java.lang.String meterNo,
            java.lang.String manufacturer,
+           java.lang.String catalogNumber,
            java.lang.String serialNumber,
+           java.lang.String metrologyFirmwareVersion,
+           java.lang.String metrologyFirmwareRevision,
            java.lang.String meterType,
            java.lang.String AMRDeviceType,
            java.lang.String AMRVendor,
-           java.lang.String transponderID) {
+           java.lang.String transponderID,
+           com.cannontech.multispeak.deploy.service.Module[] moduleList) {
         super(
             objectID,
             verb,
@@ -52,11 +64,15 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
             extensionsList);
         this.meterNo = meterNo;
         this.manufacturer = manufacturer;
+        this.catalogNumber = catalogNumber;
         this.serialNumber = serialNumber;
+        this.metrologyFirmwareVersion = metrologyFirmwareVersion;
+        this.metrologyFirmwareRevision = metrologyFirmwareRevision;
         this.meterType = meterType;
         this.AMRDeviceType = AMRDeviceType;
         this.AMRVendor = AMRVendor;
         this.transponderID = transponderID;
+        this.moduleList = moduleList;
     }
 
 
@@ -101,6 +117,26 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
 
 
     /**
+     * Gets the catalogNumber value for this MspMeter.
+     * 
+     * @return catalogNumber
+     */
+    public java.lang.String getCatalogNumber() {
+        return catalogNumber;
+    }
+
+
+    /**
+     * Sets the catalogNumber value for this MspMeter.
+     * 
+     * @param catalogNumber
+     */
+    public void setCatalogNumber(java.lang.String catalogNumber) {
+        this.catalogNumber = catalogNumber;
+    }
+
+
+    /**
      * Gets the serialNumber value for this MspMeter.
      * 
      * @return serialNumber
@@ -117,6 +153,46 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
      */
     public void setSerialNumber(java.lang.String serialNumber) {
         this.serialNumber = serialNumber;
+    }
+
+
+    /**
+     * Gets the metrologyFirmwareVersion value for this MspMeter.
+     * 
+     * @return metrologyFirmwareVersion
+     */
+    public java.lang.String getMetrologyFirmwareVersion() {
+        return metrologyFirmwareVersion;
+    }
+
+
+    /**
+     * Sets the metrologyFirmwareVersion value for this MspMeter.
+     * 
+     * @param metrologyFirmwareVersion
+     */
+    public void setMetrologyFirmwareVersion(java.lang.String metrologyFirmwareVersion) {
+        this.metrologyFirmwareVersion = metrologyFirmwareVersion;
+    }
+
+
+    /**
+     * Gets the metrologyFirmwareRevision value for this MspMeter.
+     * 
+     * @return metrologyFirmwareRevision
+     */
+    public java.lang.String getMetrologyFirmwareRevision() {
+        return metrologyFirmwareRevision;
+    }
+
+
+    /**
+     * Sets the metrologyFirmwareRevision value for this MspMeter.
+     * 
+     * @param metrologyFirmwareRevision
+     */
+    public void setMetrologyFirmwareRevision(java.lang.String metrologyFirmwareRevision) {
+        this.metrologyFirmwareRevision = metrologyFirmwareRevision;
     }
 
 
@@ -199,6 +275,26 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
         this.transponderID = transponderID;
     }
 
+
+    /**
+     * Gets the moduleList value for this MspMeter.
+     * 
+     * @return moduleList
+     */
+    public com.cannontech.multispeak.deploy.service.Module[] getModuleList() {
+        return moduleList;
+    }
+
+
+    /**
+     * Sets the moduleList value for this MspMeter.
+     * 
+     * @param moduleList
+     */
+    public void setModuleList(com.cannontech.multispeak.deploy.service.Module[] moduleList) {
+        this.moduleList = moduleList;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof MspMeter)) return false;
@@ -217,9 +313,18 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
             ((this.manufacturer==null && other.getManufacturer()==null) || 
              (this.manufacturer!=null &&
               this.manufacturer.equals(other.getManufacturer()))) &&
+            ((this.catalogNumber==null && other.getCatalogNumber()==null) || 
+             (this.catalogNumber!=null &&
+              this.catalogNumber.equals(other.getCatalogNumber()))) &&
             ((this.serialNumber==null && other.getSerialNumber()==null) || 
              (this.serialNumber!=null &&
               this.serialNumber.equals(other.getSerialNumber()))) &&
+            ((this.metrologyFirmwareVersion==null && other.getMetrologyFirmwareVersion()==null) || 
+             (this.metrologyFirmwareVersion!=null &&
+              this.metrologyFirmwareVersion.equals(other.getMetrologyFirmwareVersion()))) &&
+            ((this.metrologyFirmwareRevision==null && other.getMetrologyFirmwareRevision()==null) || 
+             (this.metrologyFirmwareRevision!=null &&
+              this.metrologyFirmwareRevision.equals(other.getMetrologyFirmwareRevision()))) &&
             ((this.meterType==null && other.getMeterType()==null) || 
              (this.meterType!=null &&
               this.meterType.equals(other.getMeterType()))) &&
@@ -231,7 +336,10 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
               this.AMRVendor.equals(other.getAMRVendor()))) &&
             ((this.transponderID==null && other.getTransponderID()==null) || 
              (this.transponderID!=null &&
-              this.transponderID.equals(other.getTransponderID())));
+              this.transponderID.equals(other.getTransponderID()))) &&
+            ((this.moduleList==null && other.getModuleList()==null) || 
+             (this.moduleList!=null &&
+              java.util.Arrays.equals(this.moduleList, other.getModuleList())));
         __equalsCalc = null;
         return _equals;
     }
@@ -249,8 +357,17 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
         if (getManufacturer() != null) {
             _hashCode += getManufacturer().hashCode();
         }
+        if (getCatalogNumber() != null) {
+            _hashCode += getCatalogNumber().hashCode();
+        }
         if (getSerialNumber() != null) {
             _hashCode += getSerialNumber().hashCode();
+        }
+        if (getMetrologyFirmwareVersion() != null) {
+            _hashCode += getMetrologyFirmwareVersion().hashCode();
+        }
+        if (getMetrologyFirmwareRevision() != null) {
+            _hashCode += getMetrologyFirmwareRevision().hashCode();
         }
         if (getMeterType() != null) {
             _hashCode += getMeterType().hashCode();
@@ -263,6 +380,17 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
         }
         if (getTransponderID() != null) {
             _hashCode += getTransponderID().hashCode();
+        }
+        if (getModuleList() != null) {
+            for (int i=0;
+                 i<java.lang.reflect.Array.getLength(getModuleList());
+                 i++) {
+                java.lang.Object obj = java.lang.reflect.Array.get(getModuleList(), i);
+                if (obj != null &&
+                    !obj.getClass().isArray()) {
+                    _hashCode += obj.hashCode();
+                }
+            }
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -289,8 +417,29 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("catalogNumber");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "catalogNumber"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("serialNumber");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serialNumber"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("metrologyFirmwareVersion");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "metrologyFirmwareVersion"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("metrologyFirmwareRevision");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "metrologyFirmwareRevision"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
@@ -322,6 +471,14 @@ public abstract class MspMeter  extends com.cannontech.multispeak.deploy.service
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("moduleList");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "moduleList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "module"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "module"));
         typeDesc.addFieldDesc(elemField);
     }
 

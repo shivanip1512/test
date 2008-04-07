@@ -1,5 +1,5 @@
 /**
- * PremiseMultiUtilityLocationMutliUtilityLocationItem.java
+ * PremiseService.java
  *
  * This file was auto-generated from WSDL
  * by the Apache Axis 1.4 Dec 28, 2007 (09:53:13 CST) WSDL2Java emitter.
@@ -7,113 +7,113 @@
 
 package com.cannontech.multispeak.deploy.service;
 
-public class PremiseMultiUtilityLocationMutliUtilityLocationItem  implements java.io.Serializable {
-    private java.lang.Object serviceType;
+public class PremiseService  implements java.io.Serializable {
+    private java.lang.String serviceType;
 
-    private java.lang.Object serviceID;
+    private java.lang.String serviceLocationID;
 
-    private java.lang.Object accountNumber;
+    private java.lang.String accountNumber;
 
-    private java.lang.Object customerID;
+    private java.lang.String customerID;
 
-    public PremiseMultiUtilityLocationMutliUtilityLocationItem() {
+    public PremiseService() {
     }
 
-    public PremiseMultiUtilityLocationMutliUtilityLocationItem(
-           java.lang.Object serviceType,
-           java.lang.Object serviceID,
-           java.lang.Object accountNumber,
-           java.lang.Object customerID) {
+    public PremiseService(
+           java.lang.String serviceType,
+           java.lang.String serviceLocationID,
+           java.lang.String accountNumber,
+           java.lang.String customerID) {
            this.serviceType = serviceType;
-           this.serviceID = serviceID;
+           this.serviceLocationID = serviceLocationID;
            this.accountNumber = accountNumber;
            this.customerID = customerID;
     }
 
 
     /**
-     * Gets the serviceType value for this PremiseMultiUtilityLocationMutliUtilityLocationItem.
+     * Gets the serviceType value for this PremiseService.
      * 
      * @return serviceType
      */
-    public java.lang.Object getServiceType() {
+    public java.lang.String getServiceType() {
         return serviceType;
     }
 
 
     /**
-     * Sets the serviceType value for this PremiseMultiUtilityLocationMutliUtilityLocationItem.
+     * Sets the serviceType value for this PremiseService.
      * 
      * @param serviceType
      */
-    public void setServiceType(java.lang.Object serviceType) {
+    public void setServiceType(java.lang.String serviceType) {
         this.serviceType = serviceType;
     }
 
 
     /**
-     * Gets the serviceID value for this PremiseMultiUtilityLocationMutliUtilityLocationItem.
+     * Gets the serviceLocationID value for this PremiseService.
      * 
-     * @return serviceID
+     * @return serviceLocationID
      */
-    public java.lang.Object getServiceID() {
-        return serviceID;
+    public java.lang.String getServiceLocationID() {
+        return serviceLocationID;
     }
 
 
     /**
-     * Sets the serviceID value for this PremiseMultiUtilityLocationMutliUtilityLocationItem.
+     * Sets the serviceLocationID value for this PremiseService.
      * 
-     * @param serviceID
+     * @param serviceLocationID
      */
-    public void setServiceID(java.lang.Object serviceID) {
-        this.serviceID = serviceID;
+    public void setServiceLocationID(java.lang.String serviceLocationID) {
+        this.serviceLocationID = serviceLocationID;
     }
 
 
     /**
-     * Gets the accountNumber value for this PremiseMultiUtilityLocationMutliUtilityLocationItem.
+     * Gets the accountNumber value for this PremiseService.
      * 
      * @return accountNumber
      */
-    public java.lang.Object getAccountNumber() {
+    public java.lang.String getAccountNumber() {
         return accountNumber;
     }
 
 
     /**
-     * Sets the accountNumber value for this PremiseMultiUtilityLocationMutliUtilityLocationItem.
+     * Sets the accountNumber value for this PremiseService.
      * 
      * @param accountNumber
      */
-    public void setAccountNumber(java.lang.Object accountNumber) {
+    public void setAccountNumber(java.lang.String accountNumber) {
         this.accountNumber = accountNumber;
     }
 
 
     /**
-     * Gets the customerID value for this PremiseMultiUtilityLocationMutliUtilityLocationItem.
+     * Gets the customerID value for this PremiseService.
      * 
      * @return customerID
      */
-    public java.lang.Object getCustomerID() {
+    public java.lang.String getCustomerID() {
         return customerID;
     }
 
 
     /**
-     * Sets the customerID value for this PremiseMultiUtilityLocationMutliUtilityLocationItem.
+     * Sets the customerID value for this PremiseService.
      * 
      * @param customerID
      */
-    public void setCustomerID(java.lang.Object customerID) {
+    public void setCustomerID(java.lang.String customerID) {
         this.customerID = customerID;
     }
 
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
-        if (!(obj instanceof PremiseMultiUtilityLocationMutliUtilityLocationItem)) return false;
-        PremiseMultiUtilityLocationMutliUtilityLocationItem other = (PremiseMultiUtilityLocationMutliUtilityLocationItem) obj;
+        if (!(obj instanceof PremiseService)) return false;
+        PremiseService other = (PremiseService) obj;
         if (obj == null) return false;
         if (this == obj) return true;
         if (__equalsCalc != null) {
@@ -125,9 +125,9 @@ public class PremiseMultiUtilityLocationMutliUtilityLocationItem  implements jav
             ((this.serviceType==null && other.getServiceType()==null) || 
              (this.serviceType!=null &&
               this.serviceType.equals(other.getServiceType()))) &&
-            ((this.serviceID==null && other.getServiceID()==null) || 
-             (this.serviceID!=null &&
-              this.serviceID.equals(other.getServiceID()))) &&
+            ((this.serviceLocationID==null && other.getServiceLocationID()==null) || 
+             (this.serviceLocationID!=null &&
+              this.serviceLocationID.equals(other.getServiceLocationID()))) &&
             ((this.accountNumber==null && other.getAccountNumber()==null) || 
              (this.accountNumber!=null &&
               this.accountNumber.equals(other.getAccountNumber()))) &&
@@ -148,8 +148,8 @@ public class PremiseMultiUtilityLocationMutliUtilityLocationItem  implements jav
         if (getServiceType() != null) {
             _hashCode += getServiceType().hashCode();
         }
-        if (getServiceID() != null) {
-            _hashCode += getServiceID().hashCode();
+        if (getServiceLocationID() != null) {
+            _hashCode += getServiceLocationID().hashCode();
         }
         if (getAccountNumber() != null) {
             _hashCode += getAccountNumber().hashCode();
@@ -163,35 +163,35 @@ public class PremiseMultiUtilityLocationMutliUtilityLocationItem  implements jav
 
     // Type metadata
     private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(PremiseMultiUtilityLocationMutliUtilityLocationItem.class, true);
+        new org.apache.axis.description.TypeDesc(PremiseService.class, true);
 
     static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">>premise>multiUtilityLocation>mutliUtilityLocationItem"));
+        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premiseService"));
         org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("serviceType");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceType"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "anyType"));
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "ServiceType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("serviceID");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceID"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "anyType"));
+        elemField.setFieldName("serviceLocationID");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "serviceLocationID"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("accountNumber");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "accountNumber"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "anyType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("customerID");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "customerID"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "anyType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);

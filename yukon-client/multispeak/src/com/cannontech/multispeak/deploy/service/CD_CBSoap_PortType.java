@@ -105,4 +105,39 @@ public interface CD_CBSoap_PortType extends java.rmi.Remote {
      * using an array of errorObjects.(Recommended)
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] meterChangedNotification(com.cannontech.multispeak.deploy.service.Meter[] changedMeters) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CD to add the associated connect/disconnect
+     * device(s). CD returns information about failed transactions using
+     * an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceAddNotification(com.cannontech.multispeak.deploy.service.CDDevice[] addedCDDs) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CD of a change in connect/disconnect device(s).
+     * CD returns information about failed transactions using an array of
+     * errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceChangedNotification(com.cannontech.multispeak.deploy.service.CDDevice[] changedCDDs) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CD that connect/disconnect device(s) have
+     * been deployed or exchanged.  CD returns information about failed transactions
+     * in an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceExchangeNotification(com.cannontech.multispeak.deploy.service.CDDeviceExchange[] CDDChangeout) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CD to remove the associated connect/disconnect
+     * device(s).  CD returns information about failed transactions using
+     * an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceRemoveNotification(com.cannontech.multispeak.deploy.service.CDDevice[] removedCDDs) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CD that the associated connect/disconnect
+     * devices(s)have been retired from the system.  CD returns information
+     * about failed transactions using an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceRetireNotification(com.cannontech.multispeak.deploy.service.CDDevice[] retiredCDDs) throws java.rmi.RemoteException;
 }

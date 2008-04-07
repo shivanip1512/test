@@ -22,7 +22,7 @@ public class MR_OALocator extends org.apache.axis.client.Service implements com.
     }
 
     // Use to get a proxy class for MR_OASoap12
-    private java.lang.String MR_OASoap12_address = "http://www.multispeak.org/interface/30p/27_MR_OA.asmx";
+    private java.lang.String MR_OASoap12_address = "http://www.multispeak.org/interface/30q/27_MR_OA.asmx";
 
     public java.lang.String getMR_OASoap12Address() {
         return MR_OASoap12_address;
@@ -67,7 +67,7 @@ public class MR_OALocator extends org.apache.axis.client.Service implements com.
 
 
     // Use to get a proxy class for MR_OASoap
-    private java.lang.String MR_OASoap_address = "http://www.multispeak.org/interface/30p/27_MR_OA.asmx";
+    private java.lang.String MR_OASoap_address = "http://www.multispeak.org/interface/30q/27_MR_OA.asmx";
 
     public java.lang.String getMR_OASoapAddress() {
         return MR_OASoap_address;

@@ -116,6 +116,51 @@ public interface MR_CBSoap_PortType extends java.rmi.Remote {
     public com.cannontech.multispeak.deploy.service.FormattedBlock[] getReadingsByBillingCycle(java.lang.String billingCycle, java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) throws java.rmi.RemoteException;
 
     /**
+     * Returns reading data for a given meter and billing date.  Reading(s)are
+     * returned in the form of an array of formattedBlocks.  The calling
+     * parameters include: (i) meterNumber - the meter number for which readings
+     * are to be returned, (ii)billing date - the end date of the billing
+     * cycle, (iii) kWhLookBack - the number of days before the billing date
+     * for which the CB will accept valid kWh readings (if zero then the
+     * reading is only acceptable on the billing date), (iv) kWLookBack-
+     * the number of days before the billing date for which the CB will accept
+     * valid kW readings (if zero then the reading is only acceptable on
+     * the billing date), (v) kWLookForward - the number of days to accept
+     * demand readings beyond the billing date to be used in this billing
+     * period (if zero then must use demand occurring only through the billing
+     * date) (vi) lastReceived is included so that large sets of data can
+     * be returned in manageable blocks.  lastReceived should carry an empty
+     * string the first time in a session that this method is invoked.  When
+     * multiple calls to this method are required to obtain all of the data,
+     * the lastReceived should carry the objectID of the last data instance
+     * received (that is to say the lastSent data instance) in subsequent
+     * calls.
+     */
+    public com.cannontech.multispeak.deploy.service.FormattedBlock[] getReadingByMeterNumberFormattedBlock(java.lang.String meterNumber, java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) throws java.rmi.RemoteException;
+
+    /**
+     * Returns reading data for all billing cycles given a billing
+     * date.  Reading(s) are returned in the form of an array of formattedBlocks.
+     * The calling parameters include: (i) billing date - the end date of
+     * the billing cycle, (ii) kWhLookBack - the number of days before the
+     * billing date for which the CB will accept valid kWh readings (if zero
+     * then the reading is only acceptable on the billing date), (iii) kWLookBack-
+     * the number of days before the billing date for which the CB will accept
+     * valid kW readings (if zero then the reading is only acceptable on
+     * the billing date), (iv) kWLookForward - the number of days to accept
+     * demand readings beyond the billing date to be used in this billing
+     * period (if zero then must use demand occurring only through the billing
+     * date) and (v) lastReceived is included so that large sets of data
+     * can be returned in manageable blocks.  lastReceived should carry an
+     * empty string the first time in a session that this method is invoked.
+     * When multiple calls to this method are required to obtain all of the
+     * data, the lastReceived should carry the objectID of the last data
+     * instance received (that is to say the lastSent data instance) in subsequent
+     * calls.
+     */
+    public com.cannontech.multispeak.deploy.service.FormattedBlock[] getReadingsByDateFormattedBlock(java.util.Calendar billingDate, int kWhLookBack, int kWLookBack, int kWLookForward, java.lang.String lastReceived) throws java.rmi.RemoteException;
+
+    /**
      * Returns History Log Data for a given MeterNo and Date Range.(Recommended)
      */
     public com.cannontech.multispeak.deploy.service.HistoryLog[] getHistoryLogByMeterNo(java.lang.String meterNo, java.util.Calendar startDate, java.util.Calendar endDate) throws java.rmi.RemoteException;
@@ -287,8 +332,8 @@ public interface MR_CBSoap_PortType extends java.rmi.Remote {
 
     /**
      * CB Notifies MR that the associated Meter(s)have been retired
-     * from the system; their history records should be deleted.  MR returns
-     * information about failed transactions using an array of errorObjects.(Recommended)
+     * from the system.  MR returns information about failed transactions
+     * using an array of errorObjects.(Recommended)
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] meterRetireNotification(com.cannontech.multispeak.deploy.service.Meter[] retiredMeters) throws java.rmi.RemoteException;
 
@@ -303,4 +348,38 @@ public interface MR_CBSoap_PortType extends java.rmi.Remote {
      * MR returns information about failed transactions in an array of errorObjects.(Optional)
      */
     public com.cannontech.multispeak.deploy.service.ErrorObject[] meterExchangeNotification(com.cannontech.multispeak.deploy.service.MeterExchange[] meterChangeout) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies MR to add the associated in-home display(s).MR
+     * returns information about failed transactions using an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] inHomeDisplayAddNotification(com.cannontech.multispeak.deploy.service.InHomeDisplay[] addedIHDs) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies MR of a change in the in-home display(s)by
+     * sending the changed inHomeDisplay object.  MR returns information
+     * about failed transactions using an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] inHomeDisplayChangedNotification(com.cannontech.multispeak.deploy.service.InHomeDisplay[] changedIHDs) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies MR that in-home displays(s) have been deployed
+     * or exchanged.  MR returns information about failed transactions in
+     * an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] inHomeDisplayExchangeNotification(com.cannontech.multispeak.deploy.service.InHomeDisplayExchange[] IHDChangeout) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies MR to remove the associated in-home displays(s).
+     * MR returns information about failed transactions using an array of
+     * errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] inHomeDisplayRemoveNotification(com.cannontech.multispeak.deploy.service.InHomeDisplay[] removedIHDs) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies MR that the associated in-home display(s)have
+     * been retired from the system.  MR returns information about failed
+     * transactions using an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] inHomeDisplayRetireNotification(com.cannontech.multispeak.deploy.service.InHomeDisplay[] retiredIHDs) throws java.rmi.RemoteException;
 }

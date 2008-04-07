@@ -33,9 +33,9 @@ public abstract class MspSwitchingBank  extends com.cannontech.multispeak.deploy
            com.cannontech.multispeak.deploy.service.GraphicSymbol[] graphicSymbol,
            com.cannontech.multispeak.deploy.service.GenericAnnotationFeature[] annotationList,
            com.cannontech.multispeak.deploy.service.NodeIdentifier fromNodeID,
+           java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.ObjectRef parentSectionID,
            com.cannontech.multispeak.deploy.service.NodeIdentifier toNodeID,
-           java.lang.String sectionID,
            com.cannontech.multispeak.deploy.service.PhaseCd phaseCode,
            com.cannontech.multispeak.deploy.service.MspLoadGroup load,
            java.lang.Boolean isGanged,
@@ -57,9 +57,9 @@ public abstract class MspSwitchingBank  extends com.cannontech.multispeak.deploy
             graphicSymbol,
             annotationList,
             fromNodeID,
+            sectionID,
             parentSectionID,
             toNodeID,
-            sectionID,
             phaseCode,
             load);
         this.isGanged = isGanged;

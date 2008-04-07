@@ -233,4 +233,26 @@ public interface CB_CDSoap_PortType extends java.rmi.Remote {
      * in a SOAPFault.(Recommended)
      */
     public void CDStateChangedNotification(java.lang.String meterNo, com.cannontech.multispeak.deploy.service.LoadActionCode stateChange, java.lang.String transactionID) throws java.rmi.RemoteException;
+
+    /**
+     * CD notifies CB of state change(s) for connect/disconnect device(s).
+     * The transactionID calling parameter can be used to link this action
+     * with an InitiateConectDisconnect call.  If this transaction fails,
+     * CB returns information about the failure in an array of errorObject(s).(Recommended)
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDStatesChangedNotification(com.cannontech.multispeak.deploy.service.CDStateChange[] stateChanges, java.lang.String transactionID) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CB that connect/disconnect device(s) have
+     * been installed. CB returns information about failed transactions using
+     * an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceInstalledNotification(com.cannontech.multispeak.deploy.service.CDDevice[] installedCDDs) throws java.rmi.RemoteException;
+
+    /**
+     * Publisher notifies CB that connect/disconnect device(s) have
+     * been deployed or exchanged.  CB returns information about failed transactions
+     * in an array of errorObjects.
+     */
+    public com.cannontech.multispeak.deploy.service.ErrorObject[] CDDeviceExchangeNotification(com.cannontech.multispeak.deploy.service.CDDeviceExchange[] CDDChangeout) throws java.rmi.RemoteException;
 }

@@ -16,7 +16,7 @@ public class Premise  extends com.cannontech.multispeak.deploy.service.MspPointO
 
     private java.lang.String parcelID;
 
-    private com.cannontech.multispeak.deploy.service.PremiseMultiUtilityLocationMutliUtilityLocationItem[] multiUtilityLocation;
+    private com.cannontech.multispeak.deploy.service.PremiseService[] premiseServiceList;
 
     public Premise() {
     }
@@ -38,7 +38,7 @@ public class Premise  extends com.cannontech.multispeak.deploy.service.MspPointO
            java.lang.String[] serviceLocationList,
            java.lang.String owner,
            java.lang.String parcelID,
-           com.cannontech.multispeak.deploy.service.PremiseMultiUtilityLocationMutliUtilityLocationItem[] multiUtilityLocation) {
+           com.cannontech.multispeak.deploy.service.PremiseService[] premiseServiceList) {
         super(
             objectID,
             verb,
@@ -56,7 +56,7 @@ public class Premise  extends com.cannontech.multispeak.deploy.service.MspPointO
         this.serviceLocationList = serviceLocationList;
         this.owner = owner;
         this.parcelID = parcelID;
-        this.multiUtilityLocation = multiUtilityLocation;
+        this.premiseServiceList = premiseServiceList;
     }
 
 
@@ -141,22 +141,22 @@ public class Premise  extends com.cannontech.multispeak.deploy.service.MspPointO
 
 
     /**
-     * Gets the multiUtilityLocation value for this Premise.
+     * Gets the premiseServiceList value for this Premise.
      * 
-     * @return multiUtilityLocation
+     * @return premiseServiceList
      */
-    public com.cannontech.multispeak.deploy.service.PremiseMultiUtilityLocationMutliUtilityLocationItem[] getMultiUtilityLocation() {
-        return multiUtilityLocation;
+    public com.cannontech.multispeak.deploy.service.PremiseService[] getPremiseServiceList() {
+        return premiseServiceList;
     }
 
 
     /**
-     * Sets the multiUtilityLocation value for this Premise.
+     * Sets the premiseServiceList value for this Premise.
      * 
-     * @param multiUtilityLocation
+     * @param premiseServiceList
      */
-    public void setMultiUtilityLocation(com.cannontech.multispeak.deploy.service.PremiseMultiUtilityLocationMutliUtilityLocationItem[] multiUtilityLocation) {
-        this.multiUtilityLocation = multiUtilityLocation;
+    public void setPremiseServiceList(com.cannontech.multispeak.deploy.service.PremiseService[] premiseServiceList) {
+        this.premiseServiceList = premiseServiceList;
     }
 
     private java.lang.Object __equalsCalc = null;
@@ -183,9 +183,9 @@ public class Premise  extends com.cannontech.multispeak.deploy.service.MspPointO
             ((this.parcelID==null && other.getParcelID()==null) || 
              (this.parcelID!=null &&
               this.parcelID.equals(other.getParcelID()))) &&
-            ((this.multiUtilityLocation==null && other.getMultiUtilityLocation()==null) || 
-             (this.multiUtilityLocation!=null &&
-              java.util.Arrays.equals(this.multiUtilityLocation, other.getMultiUtilityLocation())));
+            ((this.premiseServiceList==null && other.getPremiseServiceList()==null) || 
+             (this.premiseServiceList!=null &&
+              java.util.Arrays.equals(this.premiseServiceList, other.getPremiseServiceList())));
         __equalsCalc = null;
         return _equals;
     }
@@ -217,11 +217,11 @@ public class Premise  extends com.cannontech.multispeak.deploy.service.MspPointO
         if (getParcelID() != null) {
             _hashCode += getParcelID().hashCode();
         }
-        if (getMultiUtilityLocation() != null) {
+        if (getPremiseServiceList() != null) {
             for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getMultiUtilityLocation());
+                 i<java.lang.reflect.Array.getLength(getPremiseServiceList());
                  i++) {
-                java.lang.Object obj = java.lang.reflect.Array.get(getMultiUtilityLocation(), i);
+                java.lang.Object obj = java.lang.reflect.Array.get(getPremiseServiceList(), i);
                 if (obj != null &&
                     !obj.getClass().isArray()) {
                     _hashCode += obj.hashCode();
@@ -268,12 +268,12 @@ public class Premise  extends com.cannontech.multispeak.deploy.service.MspPointO
         elemField.setNillable(false);
         typeDesc.addFieldDesc(elemField);
         elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("multiUtilityLocation");
-        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "multiUtilityLocation"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", ">>premise>multiUtilityLocation>mutliUtilityLocationItem"));
+        elemField.setFieldName("premiseServiceList");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premiseServiceList"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premiseService"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
-        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "mutliUtilityLocationItem"));
+        elemField.setItemQName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "premiseService"));
         typeDesc.addFieldDesc(elemField);
     }
 

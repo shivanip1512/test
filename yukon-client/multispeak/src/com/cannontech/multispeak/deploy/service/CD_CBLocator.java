@@ -22,7 +22,7 @@ public class CD_CBLocator extends org.apache.axis.client.Service implements com.
     }
 
     // Use to get a proxy class for CD_CBSoap
-    private java.lang.String CD_CBSoap_address = "http://www.multispeak.org/interface/30p/2B_CD_CB.asmx";
+    private java.lang.String CD_CBSoap_address = "http://www.multispeak.org/interface/30q/2B_CD_CB.asmx";
 
     public java.lang.String getCD_CBSoapAddress() {
         return CD_CBSoap_address;
@@ -67,7 +67,7 @@ public class CD_CBLocator extends org.apache.axis.client.Service implements com.
 
 
     // Use to get a proxy class for CD_CBSoap12
-    private java.lang.String CD_CBSoap12_address = "http://www.multispeak.org/interface/30p/2B_CD_CB.asmx";
+    private java.lang.String CD_CBSoap12_address = "http://www.multispeak.org/interface/30q/2B_CD_CB.asmx";
 
     public java.lang.String getCD_CBSoap12Address() {
         return CD_CBSoap12_address;

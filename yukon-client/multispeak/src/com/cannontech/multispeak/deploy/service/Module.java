@@ -12,6 +12,8 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
 
     private java.lang.String moduleType;
 
+    private java.lang.String firmwareVersion;
+
     public Module() {
     }
 
@@ -28,8 +30,11 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
            java.util.Calendar inServiceDate,
            java.util.Calendar outServiceDate,
            java.lang.String facilityID,
+           java.lang.String manufacturer,
+           java.lang.String serialNumber,
            java.lang.String description,
-           java.lang.String moduleType) {
+           java.lang.String moduleType,
+           java.lang.String firmwareVersion) {
         super(
             objectID,
             verb,
@@ -42,9 +47,12 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
             deviceClass,
             inServiceDate,
             outServiceDate,
-            facilityID);
+            facilityID,
+            manufacturer,
+            serialNumber);
         this.description = description;
         this.moduleType = moduleType;
+        this.firmwareVersion = firmwareVersion;
     }
 
 
@@ -87,6 +95,26 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
         this.moduleType = moduleType;
     }
 
+
+    /**
+     * Gets the firmwareVersion value for this Module.
+     * 
+     * @return firmwareVersion
+     */
+    public java.lang.String getFirmwareVersion() {
+        return firmwareVersion;
+    }
+
+
+    /**
+     * Sets the firmwareVersion value for this Module.
+     * 
+     * @param firmwareVersion
+     */
+    public void setFirmwareVersion(java.lang.String firmwareVersion) {
+        this.firmwareVersion = firmwareVersion;
+    }
+
     private java.lang.Object __equalsCalc = null;
     public synchronized boolean equals(java.lang.Object obj) {
         if (!(obj instanceof Module)) return false;
@@ -104,7 +132,10 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
               this.description.equals(other.getDescription()))) &&
             ((this.moduleType==null && other.getModuleType()==null) || 
              (this.moduleType!=null &&
-              this.moduleType.equals(other.getModuleType())));
+              this.moduleType.equals(other.getModuleType()))) &&
+            ((this.firmwareVersion==null && other.getFirmwareVersion()==null) || 
+             (this.firmwareVersion!=null &&
+              this.firmwareVersion.equals(other.getFirmwareVersion())));
         __equalsCalc = null;
         return _equals;
     }
@@ -121,6 +152,9 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
         }
         if (getModuleType() != null) {
             _hashCode += getModuleType().hashCode();
+        }
+        if (getFirmwareVersion() != null) {
+            _hashCode += getFirmwareVersion().hashCode();
         }
         __hashCodeCalc = false;
         return _hashCode;
@@ -142,6 +176,13 @@ public class Module  extends com.cannontech.multispeak.deploy.service.MspDevice 
         elemField = new org.apache.axis.description.ElementDesc();
         elemField.setFieldName("moduleType");
         elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "moduleType"));
+        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
+        elemField.setMinOccurs(0);
+        elemField.setNillable(false);
+        typeDesc.addFieldDesc(elemField);
+        elemField = new org.apache.axis.description.ElementDesc();
+        elemField.setFieldName("firmwareVersion");
+        elemField.setXmlName(new javax.xml.namespace.QName("http://www.multispeak.org/Version_3.0", "firmwareVersion"));
         elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
         elemField.setMinOccurs(0);
         elemField.setNillable(false);
