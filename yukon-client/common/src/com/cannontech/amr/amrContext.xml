@@ -8,8 +8,6 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-    <tx:annotation-driven/>
-    
     <bean id="moveInMoveOutEmailService"
         class="com.cannontech.amr.moveInMoveOut.service.impl.MoveInMoveOutEmailServiceImpl">
         <property name="dateFormattingService"

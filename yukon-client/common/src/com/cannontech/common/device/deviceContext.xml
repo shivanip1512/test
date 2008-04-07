@@ -9,8 +9,6 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 	
-	<tx:annotation-driven />
-	
 	<bean id="commandRequestExecutor" class="com.cannontech.common.device.commands.impl.CommandRequestExecutorImpl">
         <property name="porterConnection" ref="porterConnection" />
         <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator" />

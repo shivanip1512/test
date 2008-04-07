@@ -12,6 +12,7 @@
 	
 	<tx:annotation-driven />
     <context:annotation-config/>
+    <aop:aspectj-autoproxy/>
     
     <!--  
        The following is the "main" datasource that should be used for new code

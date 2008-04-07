@@ -9,8 +9,6 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-	<tx:annotation-driven/>
-
 	<bean id="deviceConfigurationDao" class="com.cannontech.common.device.config.dao.DeviceConfigurationDaoImpl">
 		<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
 		<property name="nextValueHelper" ref="nextValueHelper" />

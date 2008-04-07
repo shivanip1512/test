@@ -8,8 +8,6 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-    <tx:annotation-driven/>
-	
   <bean id="seasonScheduleDao" class="com.cannontech.core.dao.impl.SeasonScheduleDaoImpl">
       <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
   </bean>

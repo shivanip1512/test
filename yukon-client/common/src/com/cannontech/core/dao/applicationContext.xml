@@ -13,8 +13,6 @@
     package.
   </description>
 
-  <tx:annotation-driven />
-
   <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl" >
   	<property name="databaseCache" ref="databaseCache"/>
   </bean>

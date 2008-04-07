@@ -7,15 +7,10 @@
        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.0.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
-
-    <!-- The need for a "-server" version of this file could be removed if GroupCommandExecutorImpl
-         was rewritten to not have a dependency on emailService. -->
-	<bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl" lazy-init="true">
-		<property name="emailService" ref="emailService"/>
-		<property name="commandRequestExecutor" ref="commandRequestExecutor" />
-		<property name="meterDao" ref="meterDao" />
-		<property name="executor" ref="globalScheduledExecutor" />
-		<property name="pointFormattingService" ref="pointFormattingService" />
-	</bean>
+	
+	<tx:annotation-driven />
+    <context:annotation-config/>
+    <aop:aspectj-autoproxy/>
     
+
 </beans>

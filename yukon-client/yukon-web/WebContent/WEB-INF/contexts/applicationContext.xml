@@ -12,6 +12,7 @@
 	
 	<tx:annotation-driven />
     <context:annotation-config/>
+    <aop:aspectj-autoproxy/>
 
     
     <bean id="themeResolver" class="com.cannontech.web.i18n.YukonGroupThemeResolver">

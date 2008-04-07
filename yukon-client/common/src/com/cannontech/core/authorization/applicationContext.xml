@@ -11,10 +11,6 @@
        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
     <description>Yukon Authorization Services</description>
 
-    <tx:annotation-driven/>
-
-    
-    
     <!-- Authorization Services -->
     <!-- Pao command authorization service - authorizes commands on paos -->	
 	<bean id="paoCommandAuthorizationService" class="com.cannontech.core.authorization.service.impl.PaoCommandAuthorizationServiceImpl">
