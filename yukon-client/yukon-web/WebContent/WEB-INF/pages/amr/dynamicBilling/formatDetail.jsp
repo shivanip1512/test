@@ -257,7 +257,7 @@
 						<td>year, the digits showed</td>
 					</tr>
 					<tr>
-						<td>M;MM;MMM;MMM</td>
+						<td>M;MM;MMM;MMMM</td>
 						<td>7;07;Jul;July</td>
 						<td>Month in number and word</td>
 					</tr>
