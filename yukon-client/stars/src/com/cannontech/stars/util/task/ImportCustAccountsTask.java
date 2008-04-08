@@ -1109,35 +1109,27 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		String msg = "";
 		if (status == STATUS_FINISHED) 
         {
-			if (custFile != null)
 				msg += numAcctImported + " customer accounts imported successfully" +
 					" (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)";
-			if (hwFile != null) 
-            {
 				if (msg.length() > 0) msg += LINE_SEPARATOR;
 				msg += numHwImported + " hardware imported successfully" +
 					" (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
-			}
             if(firstFinishedPass)
                 ActivityLogger.logEvent( userID, ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, msg );
             firstFinishedPass = false;
 		}
 		else {
-			if (custFile != null) {
 				if (numAcctTotal == 0)
 					msg += numAcctImported + " customer accounts imported";
 				else
 					msg += numAcctImported + " of " + numAcctTotal + " customer accounts imported";
 				msg += " (" + numAcctAdded + " added, " + numAcctUpdated + " updated, " + numAcctRemoved + " removed)";
-			}
-			if (hwFile != null) {
 				if (msg.length() > 0) msg += LINE_SEPARATOR;
 				if (numHwTotal == 0)
 					msg += numHwImported + " hardware imported successfully";
 				else
 					msg += numHwImported + " of " + numHwTotal + " hardware imported";
 				msg += " (" + numHwAdded + " added, " + numHwUpdated + " updated, " + numHwRemoved + " removed)";
-			}
 		}
         
 		return msg;
