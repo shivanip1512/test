@@ -1815,10 +1815,8 @@ private void initialize() {
         
 		if( showMulti )
 		{
-			for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
-			    getJComboBoxGear().addItem( "Gear " + (i+1) ); //all gear nums start at 1
-                                
-			//Do any column specific initialization here               
+
+		    //Do any column specific initialization here               
             javax.swing.table.TableColumn gearColumn = 
                     getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
         
@@ -1836,11 +1834,10 @@ private void initialize() {
                         combModel.addElement( 
                                 progGear.getDirectGearVector().get(j) );
 
-                        if( progGear.getCurrentGearNumber().intValue() == rows[i].getGearNum() )
-                            combModel.setSelectedItem(
-                                    progGear.getDirectGearVector().get(j) );
+                        if( j == rows[i].getGearNum()-1 ) {
+                            combModel.setSelectedItem(progGear.getDirectGearVector().get(j) );
+                        }
                     }
-                    
                     models[i] = combModel;
                 }
 
