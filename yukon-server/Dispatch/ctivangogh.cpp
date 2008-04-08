@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.181 $
-* DATE         :  $Date: 2008/02/22 23:47:07 $
+* REVISION     :  $Revision: 1.182 $
+* DATE         :  $Date: 2008/04/08 14:29:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1287,6 +1287,7 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
 
                 CtiServerExclusion pmguard(_server_exclusion);
                 int payload_status = CtiServerResponseMsg::OK;
+                string payload_string;
 
                 for(i = 0; i < Cmd->getOpArgList().size(); i++ )
                 {
@@ -1319,13 +1320,14 @@ int  CtiVanGogh::commandMsgHandler(CtiCommandMsg *Cmd)
                     else
                     {
                         payload_status = CtiServerResponseMsg::ERR;
+                        payload_string = "Point id (" + CtiNumStr(pid) + ") not found";
                     }
                 }
 
                 CtiServer::ptr_type sptrCM = mConnectionTable.find((long)Cmd->getConnectionHandle());
 
                 if(sptrCM && pMulti)
-                    sptrCM->WriteConnQue(pMulti, 0, true, payload_status);
+                    sptrCM->WriteConnQue(pMulti, 0, true, payload_status, payload_string);
                 else delete
                     pMulti;
 
@@ -3003,15 +3005,15 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
         pMulti->setMessagePriority(15);
         map<LONG, CtiPointWPtr> pointMap = PointMgr.getRegistrationMap(CM->hash(*CM.get()));
         CtiPointSPtr TempPoint;
-        
+
         for( map<LONG, CtiPointWPtr>::iterator iter = pointMap.begin(); iter != pointMap.end(); iter++ )
         {
             TempPoint = iter->second.lock();
-        
+
             if( TempPoint )
             {
                 CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)TempPoint->getDynamic();
-        
+
                 if(pDyn != NULL)
                 {
                     CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
@@ -3039,7 +3041,7 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
                     }
                 }
             }
-        
+
             /*
              *  Block the MOA into 1000 element multis.
              */
@@ -8264,7 +8266,7 @@ void CtiVanGogh::loadStalePointMaps(int pointID)
                         StalePointTimeData tempData;
                         CtiTime tempTime;
                         _pointUpdatedTime.insert(make_pair(tempPoint->getPointID(), tempTime));
-                        
+
                         tempTime += alarmSeconds;
                         tempData.time = tempTime;
                         tempData.pointID = tempPoint->getPointID();
