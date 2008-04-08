@@ -80,7 +80,7 @@ public enum ReportTypes {
     CAP_CONTROL_VAR_CHANGE("Var Change Report", CapControlVarChangeController.class, ReportGroup.CAP_CONTROL,
             "Report showing change in var values."),
     CAP_CONTROL_ASSET_UNAVAILABILITY("Asset Unavailability Report", CapControlAssetUnavailabilityController.class, ReportGroup.CAP_CONTROL,
-            "Report showing asset unavailability."),
+            "Report showing number of times capbanks were not available for correction when needed."),
     CAP_CONTROL_TIME_CONTROLLED_CAPBANKS("Time Controlled Cap Banks Report", TimeControlledCapBanksController.class, ReportGroup.CAP_CONTROL,
             "Report showing all time controlled capbanks."),
     VAR_IMBALANCE_ON_EXECUTION("Var Imbalance on Execution Report", VarImbalanceOnExecutionController.class, ReportGroup.CAP_CONTROL,
