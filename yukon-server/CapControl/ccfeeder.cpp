@@ -3373,14 +3373,10 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Rate of Change Value: " << varValueBC << endl;
                         }
+                    }
+                    // is estimated within Percent of currentVar?
+                    change = currentVarLoadPointValue - varValueBC;
 
-                        // is estimated within Percent of currentVar?
-                        change = currentVarLoadPointValue - varValueBC;
-                    }
-                    else
-                    {
-                        change = currentVarLoadPointValue - varValueBeforeControl;
-                    }
                     if( _RATE_OF_CHANGE && !reg.depthMet() )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3437,7 +3433,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     }
                     text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue,ratio);
 
-                    currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
 
@@ -3453,7 +3449,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                     text += ", OpenQuestionable";
 
-                    currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                     currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
@@ -3475,13 +3471,9 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Rate of Change Value: " << varValueBC << endl;
                         }
-                        // is estimated within Percent of currentVar?
-                        change = varValueBC - currentVarLoadPointValue;
                     }
-                    else
-                    {
-                        change = varValueBeforeControl - currentVarLoadPointValue;
-                    }
+                    change = varValueBC - currentVarLoadPointValue;
+
                     if( _RATE_OF_CHANGE && !reg.depthMet() )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3539,7 +3531,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
 
                     text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue, ratio);
 
-                    currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                 }
@@ -3554,7 +3546,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                     text += ", CloseQuestionable";
 
-                    currentCapBank->setBeforeVarsString(createVarText(varValueBeforeControl, 1.0));
+                    currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                     currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
@@ -3595,7 +3587,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 store->getFeederParentInfo(this, spAreaId, areaId, stationId);  
                 ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capBankStateUpdate, 
                                                         getEventSequence(), currentCapBank->getControlStatus(), text, "cap control", 
-                                                        varValueBeforeControl, currentVarLoadPointValue, change, currentCapBank->getIpAddress(), 
+                                                        varValueBC, currentVarLoadPointValue, change, currentCapBank->getIpAddress(), 
                                                         actionId, stateInfo,  varAValue, varBValue, varCValue));
                 
             }
@@ -3690,17 +3682,11 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                             dout << time << "                   Phase B: " << varValueBbc << endl;
                             dout << time << "                   Phase C: " << varValueCbc << endl;
                         }
-                        changeA = varAValue - (varValueAbc);
-                        changeB = varBValue - (varValueBbc);
-                        changeC = varCValue - (varValueCbc);
+                    }
+                    changeA = varAValue - (varValueAbc);
+                    changeB = varBValue - (varValueBbc);
+                    changeC = varCValue - (varValueCbc);
 
-                    }
-                    else
-                    {
-                        changeA = varAValue - varAValueBeforeControl;
-                        changeB = varBValue - varBValueBeforeControl;
-                        changeC = varCValue - varCValueBeforeControl;
-                    }
                     if( _RATE_OF_CHANGE && (!regA.depthMet() || !regB.depthMet() || !regC.depthMet()) )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3760,7 +3746,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
-                    currentCapBank->setBeforeVarsString(createPhaseVarText(varAValueBeforeControl, varBValueBeforeControl, varCValueBeforeControl,1.0));
+                    currentCapBank->setBeforeVarsString(createPhaseVarText(varValueAbc, varValueBbc, varValueCbc,1.0));
                     currentCapBank->setAfterVarsString(createPhaseVarText(varAValue, varBValue, varCValue,1.0));
                     currentCapBank->setPercentChangeString(createPhaseRatioText(ratioA, ratioB, ratioC,100.0));
                 }
@@ -3799,18 +3785,11 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                             dout << time << "                   Phase B: " << varValueBbc << endl;
                             dout << time << "                   Phase C: " << varValueCbc << endl;
                         }
-
-                        changeA = (varValueAbc) - varAValue;
-                        changeB = (varValueBbc) - varBValue;
-                        changeC = (varValueCbc) - varCValue;
-
                     }
-                    else
-                    {
-                        changeA = varAValueBeforeControl - varAValue;
-                        changeB = varBValueBeforeControl - varBValue;
-                        changeC = varCValueBeforeControl - varCValue;
-                    }
+                    changeA = (varValueAbc) - varAValue;
+                    changeB = (varValueBbc) - varBValue;
+                    changeC = (varValueCbc) - varCValue;
+
                     if( _RATE_OF_CHANGE && (!regA.depthMet() || !regB.depthMet() || !regC.depthMet()) )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3869,7 +3848,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
-                    currentCapBank->setBeforeVarsString(createPhaseVarText(varAValueBeforeControl, varBValueBeforeControl, varCValueBeforeControl,1.0));
+                    currentCapBank->setBeforeVarsString(createPhaseVarText(varValueAbc, varValueBbc, varValueCbc,1.0));
                     currentCapBank->setAfterVarsString(createPhaseVarText(varAValue, varBValue, varCValue,1.0));
                     currentCapBank->setPercentChangeString(createPhaseRatioText(ratioA, ratioB, ratioC,100.0));
                 }
@@ -3920,7 +3899,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                 store->getFeederParentInfo(this, spAreaId, areaId, stationId);  
                 ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, getParentId(), getPAOId(), capBankStateUpdate, 
                                                         getEventSequence(), currentCapBank->getControlStatus(), text, "cap control", 
-                                                        varAValue+varBValue+varCValue, varAValue+varBValue+varCValue, changeA+changeB+changeC, currentCapBank->getIpAddress(), actionId, stateInfo,
+                                                        varValueAbc+varValueBbc+varValueCbc, varAValue+varBValue+varCValue, changeA+changeB+changeC, currentCapBank->getIpAddress(), actionId, stateInfo,
                                                         varAValue, varBValue, varCValue));
                 
             }
