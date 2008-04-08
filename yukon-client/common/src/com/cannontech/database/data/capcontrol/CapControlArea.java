@@ -48,7 +48,7 @@ public class CapControlArea extends CapControlYukonPAOBase implements EditorPane
 
         // Delete from all dynamic objects
         delete("DynamicCCArea", "AreaID", getAreaID());
-
+        delete("CapControlComment", "paoID", getAreaID());
         getCapControlArea().delete();
         super.delete();
     }

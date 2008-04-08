@@ -62,6 +62,7 @@ public class CapControlFeeder extends CapControlYukonPAOBase implements com.cann
 
         //Delete from all dynamic Feeder cap control tables here
         delete("DynamicCCFeeder", "FeederID", getCapControlPAOID() );
+        delete("CapControlComment", "paoID", getCapControlPAOID());
         deleteAllPoints();
 
         getCapControlFeeder().delete();

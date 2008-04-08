@@ -47,7 +47,7 @@ public class CapControlSpecialArea extends CapControlYukonPAOBase implements Edi
         CCSubSpecialAreaAssignment.deleteSubs(getAreaID(), null, getDbConnection());
         // Delete from all dynamic objects
         delete("DynamicCCSpecialArea", "AreaID", getAreaID());
-
+        delete("CapControlComment", "paoID", getAreaID());
         getCapControlSpecialArea().delete();
         super.delete();
     }

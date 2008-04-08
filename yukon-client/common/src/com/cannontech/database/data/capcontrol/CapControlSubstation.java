@@ -44,7 +44,7 @@ public class CapControlSubstation extends CapControlYukonPAOBase implements Edit
         CCSubstationSubBusList.deleteCCSubBusFromSubstationList(getSubstationID(), null, getDbConnection());
         // Delete from all dynamic objects
         delete("DynamicCCSubstation", "substationID", getSubstationID());
-        
+        delete("CapControlComment", "paoID", getSubstationID());
         getCapControlSubstation().delete();
         super.delete();
     }

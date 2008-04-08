@@ -56,6 +56,7 @@ public class CapControlSubBus extends CapControlYukonPAOBase implements EditorPa
         //Delete from all dynamic SubBus cap control tables here
         delete("DynamicCCSubstationBus", "SubstationBusID", getCapControlPAOID() );
         delete("ccsubstationsubbuslist", "SubstationBusID", getCapControlPAOID() );
+        delete("CapControlComment", "paoID", getCapControlPAOID());
         //delete all the points that belog to this sub
         //there should be a constraint on pointid in point table
         deleteAllPoints();
