@@ -64,7 +64,7 @@
 <entry key="yukon.web.menu.portal.administration.deleteEnergyCompany">Delete Energy Company</entry>
 <entry key="yukon.web.menu.portal.administration.viewBatchCommands">View Batch Commands</entry>
 <entry key="yukon.web.menu.portal.administration.viewScheduledOptOutEvents">View Scheduled Opt Out Events</entry>
-<entry key="yukon.web.menu.portal.administration.multispeakSetup">Multispeak Setup</entry>
+<entry key="yukon.web.menu.portal.administration.multispeakSetup">MultiSpeak Setup</entry>
 <entry key="yukon.web.menu.portal.administration.userGroupEditor">User/Group Editor</entry>
 <entry key="yukon.web.menu.portal.administration.viewLogs">View Logs</entry>
 <entry key="yukon.web.menu.portal.administration.manageIndexes">Manage Indexes</entry>

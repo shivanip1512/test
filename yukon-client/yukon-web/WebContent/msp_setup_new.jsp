@@ -16,7 +16,7 @@
 	<cti:standardMenu menuSelection="multispeak|interfaces"/>
 	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-	    <cti:crumbLink url="/msp_setup.jsp" title="Multispeak"  />
+	    <cti:crumbLink url="/msp_setup.jsp" title="MultiSpeak"  />
 	    &gt; Create Interface
 	</cti:breadCrumbs>
 
