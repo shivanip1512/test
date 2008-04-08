@@ -1,4 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
+
 <c:url var="url" value="/spring/stars/hardware/deviceactivation" />
 
 <html>
@@ -41,9 +43,7 @@
                             Address:
                         </td>
                         <td valign="top" style="text-align: left">
-                            <c:if test='${not empty address}'>
-                                ${address}
-                            </c:if>
+                            <ct:formattedAddress address="${address}"/>
                         </td>        
                     </tr>    
                     <tr>

@@ -2,11 +2,9 @@ package com.cannontech.stars.dr.account.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
-import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -93,54 +91,46 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public CustomerAccount getById(final int accountId) throws DataAccessException {
+    public CustomerAccount getById(final int accountId) {
         CustomerAccount account = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, accountId);
         return account;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public CustomerAccount getByAccountNumber(final String accountNumber) throws DataAccessException {
+    public CustomerAccount getByAccountNumber(final String accountNumber) {
         CustomerAccount account = simpleJdbcTemplate.queryForObject(selectByAccountNumberSql, rowMapper, accountNumber);
         return account;
     }
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public List<CustomerAccount> getByUser(final LiteYukonUser user) throws DataAccessException {
+    public List<CustomerAccount> getByUser(final LiteYukonUser user) {
         Validate.notNull(user, "user parameter cannot be null.");
         
-        final StringBuilder sb = new StringBuilder(selectSql);
-        sb.append(",Customer,Contact,YukonUser");
-        sb.append(" WHERE CustomerAccount.CustomerId = Customer.CustomerId"); 
-        sb.append(" AND Customer.PrimaryContactId = Contact.ContactId");
-        sb.append(" AND YukonUser.UserId = Contact.LoginId");
-        sb.append(" AND YukonUser.UserId = ? ");
-        sb.append(" ORDER BY CustomerAccount.AccountId");
+        final StringBuilder sb = new StringBuilder();
+        sb.append("SELECT AccountId,AccountSiteId,AccountNumber,CustomerAccount.CustomerId,BillingAddressId,AccountNotes ");
+        sb.append("FROM CustomerAccount,Customer,Contact,YukonUser ");
+        sb.append("WHERE CustomerAccount.CustomerId = Customer.CustomerId "); 
+        sb.append("AND Customer.PrimaryContactId = Contact.ContactId ");
+        sb.append("AND YukonUser.UserId = Contact.LoginId ");
+        sb.append("AND YukonUser.UserId = ? ");
+        sb.append("ORDER BY CustomerAccount.AccountId");
         
         String sql = sb.toString();
         List<CustomerAccount> list = simpleJdbcTemplate.query(sql, rowMapper, user.getUserID());
         return list;
     }
     
-    
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccount> getAll() {
-        try {
-            List<CustomerAccount> list = simpleJdbcTemplate.query(selectSql, rowMapper, new Object[]{});
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<CustomerAccount> list = simpleJdbcTemplate.query(selectSql, rowMapper, new Object[]{});
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByEC(final int ecId) {
-        try {
-            List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(selectAllUsefulAccountInfoFromECSql, specialAccountInfoRowMapper, ecId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(selectAllUsefulAccountInfoFromECSql, specialAccountInfoRowMapper, ecId);
+        return list;
     }
 
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {

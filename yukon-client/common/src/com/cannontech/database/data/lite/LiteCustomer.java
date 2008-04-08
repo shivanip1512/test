@@ -111,7 +111,7 @@ public class LiteCustomer extends LiteBase {
         java.sql.Connection conn = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias());
+            conn = PoolManager.getYukonConnection();
             
             String sql = "SELECT ca.ContactID " + 
                          " FROM CustomerAdditionalContact ca, " + Customer.TABLE_NAME + " c " +
@@ -142,7 +142,7 @@ public class LiteCustomer extends LiteBase {
         java.sql.Connection conn = null;
         ResultSet rset = null;
         try {
-            conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias());
+            conn = PoolManager.getYukonConnection();
 
             String sql = "SELECT acct.AccountID, map.EnergyCompanyID " +
                          " FROM CustomerAccount acct, ECToAccountMapping map " +

@@ -57,6 +57,8 @@
 
     <bean id="starsProgramDao" class="com.cannontech.stars.dr.program.dao.impl.ProgramDaoImpl"/>
 
+    <bean id="scheduledOptOutDao" class="com.cannontech.stars.dr.optout.dao.impl.ScheduledOptOutDaoImpl"/>
+
     <bean id="applianceAndProgramDao"
         class="com.cannontech.stars.dr.account.dao.impl.ApplianceAndProgramDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
@@ -101,6 +103,8 @@
     </bean>
     
     <bean id="starsCacheService" class="com.cannontech.stars.core.service.impl.StarsCacheServiceImpl"/>
+    
+    <bean id="controlHistoryDao" class="com.cannontech.stars.dr.controlhistory.dao.impl.ControlHistoryDaoImpl"/>
     
     <!-- Import Customer Accounts/Hardware Import Job -->    
     <bean id="importCustAccountsSchedulerJob"

@@ -36,7 +36,7 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
     private AddressDao addressDao;
     
     private String accountNumber;
-    private boolean isAccountNumberSet;
+    private boolean isAccountNumberSet = false;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -49,26 +49,18 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         LiteCustomer customer = customerDao.getLiteCustomer(account.getCustomerId());
         LiteContact contact = contactDao.getContact(customer.getPrimaryContactID());
         
-        Div mainDiv = new Div();
+        final Div mainDiv = new Div();
+        mainDiv.addAttribute("class", "customerAccount");
         
-        Div accountNumberDiv = new Div();
-        String accountNumberLabel = messageSource.getMessage("yukon.dr.consumer.accountNumberLabel");
-        accountNumberDiv.addElement(accountNumberLabel + account.getAccountNumber());
-        mainDiv.addElement(accountNumberDiv);
+        addAccountNumberDiv(mainDiv, account, messageSource);
         
-        Div fullNameDiv = new Div();
-        fullNameDiv.addElement(contact.getContFirstName() + " " + contact.getContLastName());
-        mainDiv.addElement(fullNameDiv);
+        addNameDiv(mainDiv, contact);
 
-        Div companyNameDiv = getCompanyNameDiv(account.getCustomerId());
-        if (companyNameDiv != null) mainDiv.addElement(companyNameDiv); 
+        addCompanyNameDiv(mainDiv, account.getCustomerId());
         
-        Div addressDiv = new Div();
-        addressDiv.addElement(address.toHTMLString());
-        mainDiv.addElement(addressDiv);
+        addAddressDiv(mainDiv, address);
         
-        Div phoneNumberDiv = getPhoneNumberDiv(contact);
-        if (phoneNumberDiv != null) mainDiv.addElement(phoneNumberDiv);
+        addPhoneNumberDiv(mainDiv, contact);
         
         String output = mainDiv.toString();
         
@@ -76,27 +68,48 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         out.write(output);
     }
     
-    private Div getCompanyNameDiv(int customerId) {
-        LiteCICustomer customer = customerDao.getLiteCICustomer(customerId);
-        if (customer == null) return null;
-        
-        String companyName = customer.getCompanyName();
-        
-        Div companyNameDiv = new Div();
-        companyNameDiv.addElement(companyName);
-        return companyNameDiv;
+    private void addAccountNumberDiv(final Div mainDiv, final CustomerAccount account, 
+            final MessageSourceAccessor messageSource) {
+        Div accountNumberDiv = new Div();
+        accountNumberDiv.addAttribute("class", "accountNumber");
+        String accountNumberLabel = messageSource.getMessage("yukon.dr.consumer.accountNumberLabel", account.getAccountNumber());
+        accountNumberDiv.addElement(accountNumberLabel);
+        mainDiv.addElement(accountNumberDiv);    
     }
     
-    private Div getPhoneNumberDiv(LiteContact contact) {
+    private void addNameDiv(final Div mainDiv, final LiteContact contact) {
+        Div fullNameDiv = new Div();
+        fullNameDiv.addElement(contact.getContFirstName() + " " + contact.getContLastName());
+        mainDiv.addElement(fullNameDiv);    
+    }
+    
+    private void addAddressDiv(final Div mainDiv, final LiteAddress address) {
+        Div addressDiv = new Div();
+        String formattedAddressString = address.toFormattedString();
+        formattedAddressString = formattedAddressString.replaceAll("\\n", "<br>");
+        addressDiv.addElement(formattedAddressString);
+        mainDiv.addElement(addressDiv);    
+    }
+    
+    private void addCompanyNameDiv(final Div mainDiv, final int customerId) {
+        LiteCICustomer customer = customerDao.getLiteCICustomer(customerId);
+        if (customer == null) return;
+
+        Div companyNameDiv = new Div();
+        companyNameDiv.addElement(customer.getCompanyName());
+        mainDiv.addElement(companyNameDiv);
+    }
+    
+    private void addPhoneNumberDiv(final Div mainDiv, final LiteContact contact) {
         LiteContactNotification contactNotification = 
             contactDao.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
-        if (contactNotification == null) return null;
+        if (contactNotification == null) return;
         
         String phoneNumber = PhoneNumber.format(contactNotification.getNotification());
         
         Div phoneNumberDiv = new Div();
         phoneNumberDiv.addElement(phoneNumber);
-        return phoneNumberDiv;
+        mainDiv.addElement(phoneNumberDiv);
     }
     
     public void setAccountNumber(final String accountNumber) {

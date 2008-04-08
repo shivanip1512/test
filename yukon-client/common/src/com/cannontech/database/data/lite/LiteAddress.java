@@ -145,13 +145,13 @@ public class LiteAddress extends LiteBase {
 	}
 	
 	/**
-	 * @return a HTML formated String of this LiteAddress
+	 * @return a formated String of this LiteAddress
 	 */
-	public String toHTMLString() {
+	public String toFormattedString() {
 	    final StringBuilder sb = new StringBuilder();
 
-	    if (notEmpty(locationAddress1)) sb.append(locationAddress1 + "<br>");
-	    if (notEmpty(locationAddress2)) sb.append(locationAddress2 + "<br>");
+	    if (notEmpty(locationAddress1)) sb.append(locationAddress1 + "\n");
+	    if (notEmpty(locationAddress2)) sb.append(locationAddress2 + "\n");
 	    if (notEmpty(cityName)) sb.append(cityName + ", ");
 	    if (notEmpty(stateCode)) sb.append(stateCode + " ");
 	    if (notEmpty(zipCode)) sb.append(zipCode);

@@ -2,6 +2,10 @@ h3 {
     text-align: center;   
 }
 
+div.customerAccount div.accountNumber {
+	font-weight: bold;
+}	
+
 table.contentTable {
     width: 85%;
 }
@@ -10,6 +14,7 @@ table.contentTable .leftColumn {
     width: 80%;
     vertical-align: top;
     padding-left: 2em;
+    padding-right: 2em;
 }
 
 table.contentTable .rightColumn {
@@ -46,4 +51,17 @@ table.contactTable td {
 
 table.contactTable td div {
 	margin-top: .5em;
+}
+
+table.enrolledPrograms tr td.logo {
+	border-right: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.logoBordered {
+    border-right: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.bordered {
+	border-bottom: 1px solid #ccc;
 }

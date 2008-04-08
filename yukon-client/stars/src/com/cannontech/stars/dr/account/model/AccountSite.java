@@ -70,16 +70,6 @@ public class AccountSite {
         final int prime = 31;
         int result = 1;
         result = prime * result + accountSiteId;
-        result = prime * result + ((custAtHome == null) ? 0
-                : custAtHome.hashCode());
-        result = prime * result + ((customerStatus == null) ? 0
-                : customerStatus.hashCode());
-        result = prime * result + ((propertyNotes == null) ? 0
-                : propertyNotes.hashCode());
-        result = prime * result + siteInformationId;
-        result = prime * result + ((siteNumber == null) ? 0
-                : siteNumber.hashCode());
-        result = prime * result + streetAddressId;
         return result;
     }
 
@@ -93,30 +83,6 @@ public class AccountSite {
             return false;
         final AccountSite other = (AccountSite) obj;
         if (accountSiteId != other.accountSiteId)
-            return false;
-        if (custAtHome == null) {
-            if (other.custAtHome != null)
-                return false;
-        } else if (!custAtHome.equals(other.custAtHome))
-            return false;
-        if (customerStatus == null) {
-            if (other.customerStatus != null)
-                return false;
-        } else if (!customerStatus.equals(other.customerStatus))
-            return false;
-        if (propertyNotes == null) {
-            if (other.propertyNotes != null)
-                return false;
-        } else if (!propertyNotes.equals(other.propertyNotes))
-            return false;
-        if (siteInformationId != other.siteInformationId)
-            return false;
-        if (siteNumber == null) {
-            if (other.siteNumber != null)
-                return false;
-        } else if (!siteNumber.equals(other.siteNumber))
-            return false;
-        if (streetAddressId != other.streetAddressId)
             return false;
         return true;
     }

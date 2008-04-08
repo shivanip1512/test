@@ -67,7 +67,7 @@ public class DeviceActivationController extends MultiActionController {
 
         ModelAndView mav = new ModelAndView();
         mav.addObject("contact", (!emptyContactName) ? contact : null);
-        mav.addObject("address", (!emptyAddress) ? address.toHTMLString() : null);
+        mav.addObject("address", (!emptyAddress) ? address : null);
         mav.addObject("accountNumber", accountNumber);
         mav.addObject("serialNumber", serialNumber);
         mav.setViewName("hardware/deviceactivation/Confirmation.jsp");

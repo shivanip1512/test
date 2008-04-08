@@ -2,10 +2,7 @@
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
     
-    <entry key="yukon.dr.consumer.accountNumberLabel">Account #</entry>
-    
-    <entry key="yukon.dr.program.displayname.AC">AC</entry>
-    <entry key="yukon.dr.program.displayname.WH">WH</entry>
+    <entry key="yukon.dr.consumer.accountNumberLabel">Account #{0}</entry>
     
     <!--  Contact Notification types -->
     <entry key="yukon.dr.consumer.contact.(none)">(notification type)</entry>
@@ -22,12 +19,17 @@
     <entry key="yukon.dr.consumer.contact.VoicePIN">Voice PIN</entry>
     
     <!--  general.jsp -->
-    <entry key="yukon.dr.consumer.general.title">Welcome To Energy Company Services!</entry>
+    <entry key="yukon.dr.consumer.general.header">Welcome To Energy Company Services!</entry>
     <entry key="yukon.dr.consumer.general.description">Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!</entry>
     <entry key="yukon.dr.consumer.general.description2">This site is designed to help manage your programs on-line from anywhere with access to a Web browser.</entry>
+    <entry key="yukon.dr.consumer.general.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.general.programs">Your Enrolled Programs</entry>
     <entry key="yukon.dr.consumer.general.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
-
+    <entry key="yukon.dr.consumer.general.chanceOfControl.LIKELY">- Chance of control is likely.</entry>
+    <entry key="yukon.dr.consumer.general.chanceOfControl.UNLIKELY">- Chance of control is unlikely.</entry>
+    <entry key="yukon.dr.consumer.general.scheduledoptout.forMessage">You have an opt out event scheduled for {0}.</entry>
+    <entry key="yukon.dr.consumer.general.scheduledoptout.fromMessage">You have an opt out event scheduled from {0} to {1}.</entry>
+    
     <!--  contacts.jsp -->
     <entry key="yukon.dr.consumer.contacts.header">Account - Contacts</entry>
     <entry key="yukon.dr.consumer.contacts.primaryContact">Contact (Primary)</entry>

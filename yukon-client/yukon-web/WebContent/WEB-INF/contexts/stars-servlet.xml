@@ -100,4 +100,6 @@
 		</property>
 	</bean>
 
+    <bean id="displayableProgramDao" class="com.cannontech.web.stars.dr.consumer.display.DisplayableProgramDaoImpl"/>
+
 </beans>

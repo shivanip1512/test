@@ -44,17 +44,16 @@ public class ApplianceDaoImpl implements ApplianceDao {
                                                              YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
                                                              applianceId);
         
-        String enumTextValue = getEnumTextValue(textValue);
-        ApplianceType type = ApplianceType.valueOf(enumTextValue);
+        ApplianceType type = getApplianceTypeEnumFromTextValue(textValue);
         return type;
     }
     
-    private String getEnumTextValue(final String textValue) {
+    private ApplianceType getApplianceTypeEnumFromTextValue(final String textValue) {
         String result = textValue;
         result = result.replaceAll("[(|)]", "");
         result = result.replaceAll("\\s+", "_");
         result = result.toUpperCase();
-        return result;
+        return ApplianceType.valueOf(result);
     }
 
     @Override

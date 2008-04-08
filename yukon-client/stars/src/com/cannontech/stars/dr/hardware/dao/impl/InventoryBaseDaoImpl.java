@@ -3,7 +3,9 @@ package com.cannontech.stars.dr.hardware.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -11,6 +13,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
+import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
@@ -107,6 +112,32 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     public InventoryBase getById(final int inventoryId) throws DataAccessException {
         InventoryBase inventoryBase = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, inventoryId);
         return inventoryBase;
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Map<Integer, InventoryBase> getByIds(List<Integer> inventoryIdList) {
+        ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        
+        List<InventoryBase> list = template.query(new SqlGenerator<Integer>() {
+            @Override
+            public String generate(List<Integer> subList) {
+                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+                sqlBuilder.append(selectAllSql);
+                sqlBuilder.append("WHERE InventoryID IN (");
+                sqlBuilder.append(subList);
+                sqlBuilder.append(")");
+                sqlBuilder.append("ORDER BY InventoryID");
+                String sql = sqlBuilder.toString();
+                return sql;
+            }
+        }, inventoryIdList, rowMapper);
+        
+        final Map<Integer, InventoryBase> resultMap = new HashMap<Integer, InventoryBase>(list.size());
+        for (final InventoryBase inventoryBase : list) {
+            Integer key = inventoryBase.getInventoryId();
+            resultMap.put(key, inventoryBase);
+        }
+        return resultMap;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

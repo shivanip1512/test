@@ -27,36 +27,26 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
 
 @Controller
-public class ContactController {
-
-    private CustomerAccountDao customerAccountDao;
+public class ContactController extends AbstractConsumerController {
     private ContactDao contactDao;
     private CustomerDao customerDao;
     private YukonListDao yukonListDao;
 
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String view(HttpServletRequest request, ModelMap map) {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteYukonUser user = userContext.getYukonUser();
-
-        // Only get contacts for the first account for the user
-        List<CustomerAccount> accountList = customerAccountDao.getByUser(user);
-        CustomerAccount account = accountList.get(0);
-        map.addAttribute("account", account);
-
         // Get the primary contact
-        int accountId = account.getAccountId();
-        LiteContact contact = contactDao.getPrimaryContactForAccount(accountId);
+        CustomerAccount customerAccount = getCustomerAccount(request);
+        int customerAccountId = customerAccount.getAccountId();
+        LiteContact contact = contactDao.getPrimaryContactForAccount(customerAccountId);
         map.addAttribute("primaryContact", contact);
 
         // Get a list of additional contacts
-        List<LiteContact> additionalContacts = contactDao.getAdditionalContactsForAccount(accountId);
+        List<LiteContact> additionalContacts = contactDao.getAdditionalContactsForAccount(customerAccountId);
         map.addAttribute("additionalContacts", additionalContacts);
 
         // Get the YukonSelectionList for the contact notification types
@@ -251,11 +241,6 @@ public class ContactController {
         }
 
         return returnMap;
-    }
-
-    @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
     }
 
     @Autowired

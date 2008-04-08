@@ -3,10 +3,9 @@ package com.cannontech.stars.dr.program.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -17,19 +16,21 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.dr.program.model.ChanceOfControl;
 import com.cannontech.stars.dr.program.model.Program;
 
 public class ProgramDaoImpl implements ProgramDao {
     private static final String selectSql;
-    private final Comparator<Program> programComparator = createProgramComparator();
     private final ParameterizedRowMapper<Program> rowMapper = createRowMapper();
+    private final ParameterizedRowMapper<Integer> groupIdRowMapper = createGroupIdRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
     static {
-        selectSql = "SELECT ProgramID,ProgramOrder,ywc.Description,AlternateDisplayName,PAOName,ChanceOfControlID,ApplianceCategoryID,LogoLocation " +
-                    "FROM LMProgramWebPublishing pwp, YukonWebConfiguration ywc, YukonPAObject ypo " + 
+        selectSql = "SELECT ProgramID,ProgramOrder,ywc.Description,AlternateDisplayName,PAOName,yle.EntryText as ChanceOfControl,ApplianceCategoryID,LogoLocation " +
+                    "FROM LMProgramWebPublishing pwp, YukonWebConfiguration ywc, YukonPAObject ypo, YukonListEntry yle " +
                     "WHERE pwp.WebsettingsID = ywc.ConfigurationID " +
-                    "AND ypo.PAObjectID = pwp.DeviceID";
+                    "AND ypo.PAObjectID = pwp.DeviceID " +
+                    "AND yle.EntryID = pwp.ChanceOfControlID";
     }
     
     @Override
@@ -47,16 +48,28 @@ public class ProgramDaoImpl implements ProgramDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Program> getByProgramIds(final List<Integer> programIdList) {
-        final StringBuilder sb = new StringBuilder();
+        final SqlStatementBuilder sb = new SqlStatementBuilder();
         sb.append(selectSql);
         sb.append(" AND pwp.ProgramID IN (");
-        sb.append(SqlStatementBuilder.convertToSqlLikeList(programIdList));
+        sb.append(programIdList);
         sb.append(")");
+        sb.append(" ORDER BY ProgramOrder");
         
         String sql = sb.toString();
         List<Program> programList = simpleJdbcTemplate.query(sql, rowMapper);
-        Collections.sort(programList, programComparator);
         return programList;
+    }
+    
+    @Override
+    @SuppressWarnings("unchecked")
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Integer> getGroupIdsByProgramId(final int programId) {
+        String sql = "SELECT lmpdg.LMGroupDeviceId " +
+                     "FROM YukonPAObject yp, LMProgramWebPublishing lmwp, YukonWebConfiguration ywc, LMProgramDirectGroup lmpdg " + 
+                     "WHERE yp.PAObjectId = lmwp.DeviceId AND lmwp.WebSettingsId = ywc.ConfigurationId AND lmwp.DeviceId = lmpdg.DeviceId " +
+                     "AND lmwp.ProgramID = ?";
+        List<Integer> groupIdList = simpleJdbcTemplate.query(sql, groupIdRowMapper, programId);
+        return groupIdList;
     }
     
     private ParameterizedRowMapper<Program> createRowMapper() {
@@ -65,7 +78,11 @@ public class ProgramDaoImpl implements ProgramDao {
             public Program mapRow(ResultSet rs, int rowNum) throws SQLException {
                 final Program program = new Program();
                 program.setProgramId(rs.getInt("ProgramID"));
-                program.setChanceOfControlId(rs.getInt("ChanceOfControlID"));
+                
+                String chanceOfControlString = rs.getString("ChanceOfControl");
+                ChanceOfControl chanceOfControl = ChanceOfControl.valueOfName(chanceOfControlString);
+                program.setChanceOfControl(chanceOfControl);
+                
                 program.setDescription(rs.getString("Description"));
                 program.setProgramOrder(rs.getInt("ProgramOrder"));
                 
@@ -81,13 +98,23 @@ public class ProgramDaoImpl implements ProgramDao {
         return mapper;
     }
     
+    private ParameterizedRowMapper<Integer> createGroupIdRowMapper() {
+        final ParameterizedRowMapper<Integer> mapper = new ParameterizedRowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                Integer groupId = rs.getInt("LMGroupDeviceId");
+                return groupId;
+            }
+        };
+        return mapper;
+    }
+    
     private String getProgramName(final ResultSet rs) throws SQLException {
         String programName;
         String paoName = rs.getString("PAOName");
         
         String alternateDisplayName = rs.getString("AlternateDisplayName");
-        boolean alternateDisplayNameIsNull = rs.wasNull();
-        if (alternateDisplayNameIsNull) {
+        if (alternateDisplayName == null) {
             programName = paoName;
         } else {
             String[] split = alternateDisplayName.split(",");
@@ -106,10 +133,9 @@ public class ProgramDaoImpl implements ProgramDao {
      */
     private String getLogoLocation(final ResultSet rs) throws SQLException {
         String logoLocation = rs.getString("LogoLocation");
-        boolean isNull = rs.wasNull();
+       
         boolean isEmpty = isEmptyString(logoLocation);
-        
-        if (!(isNull || isEmpty)) return logoLocation;
+        if (!isEmpty) return logoLocation;
         
         int applianceCategoryId = rs.getInt("ApplianceCategoryID");
         
@@ -125,26 +151,14 @@ public class ProgramDaoImpl implements ProgramDao {
     }
     
     /**
-     * Checks for empty Strings "", empty database varchars "(none)",
+     * Checks for null or empty Strings "", empty database varchars "(none)",
      * and empty csv varchars stored in STARS ",,"
      */
     private boolean isEmptyString(final String value) {
-        if (value.equals("") || value.equals(CtiUtilities.STRING_NONE)) return true;
+        if (StringUtils.isEmpty(value)) return true;
+        if (value.equals(CtiUtilities.STRING_NONE)) return true;
         if (value.matches("^,+$")) return true;
         return false;
-    }
-    
-    private static Comparator<Program> createProgramComparator() {
-        final Comparator<Program> comparator = new Comparator<Program>() {
-            @Override
-            public int compare(Program o1, Program o2) {
-                Integer order1 = o1.getProgramOrder();
-                Integer order2 = o2.getProgramOrder();
-                int result = order1.compareTo(order2);
-                return result;
-            }
-        };
-        return comparator;
     }
     
     @Autowired

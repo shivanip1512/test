@@ -11,8 +11,8 @@ public class Program {
     private String programName;
     private int programOrder;
     private String description;
-    private int chanceOfControlId;
     private String logoLocation;
+    private ChanceOfControl chanceOfControl;
     
     public Program() {
         
@@ -34,14 +34,6 @@ public class Program {
         this.programName = programName;
     }
     
-    public int getChanceOfControlId() {
-        return chanceOfControlId;
-    }
-    
-    public void setChanceOfControlId(int chanceOfControlId) {
-        this.chanceOfControlId = chanceOfControlId;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -66,14 +58,17 @@ public class Program {
         this.logoLocation = logoLocation;
     }
     
+    public ChanceOfControl getChanceOfControl() {
+        return chanceOfControl;
+    }
+
+    public void setChanceOfControl(ChanceOfControl chanceOfControl) {
+        this.chanceOfControl = chanceOfControl;
+    }
+    
     public MessageSourceResolvable getDisplayName() {
         String code = MessageCodeGenerator.generateCode(PROGAM_PREFIX, programName);
-        MessageSourceResolvable messageSourceResolvable = 
-            YukonMessageSourceResolvable.createDefault(programName);
-        //TODO the YMSR should be for the simple situations
-        //TODO A. variable args must be used carefully with overloaded methods
-        //TODO B. this would be a nice use of multiple keys
-        
+        MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createDefault(code, programName);
         return messageSourceResolvable;
     }
     

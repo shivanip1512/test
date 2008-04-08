@@ -1,8 +1,7 @@
 package com.cannontech.stars.dr.hardware.dao;
 
 import java.util.List;
-
-import org.springframework.dao.DataAccessException;
+import java.util.Map;
 
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 
@@ -14,7 +13,9 @@ public interface InventoryBaseDao {
     
     public boolean update(InventoryBase inventoryBase);
     
-    public InventoryBase getById(int inventoryId) throws DataAccessException;
+    public InventoryBase getById(int inventoryId);
+    
+    public Map<Integer, InventoryBase> getByIds(List<Integer> inventoryIdList);
     
     public List<InventoryBase> getByAccountId(int accountId);
     

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <entry key="yukon.dr.program.displayname.chanceOfControl.NONE">(none)</entry>
+    <entry key="yukon.dr.program.displayname.chanceOfControl.LIKELY">Likely</entry>
+    <entry key="yukon.dr.program.displayname.chanceOfControl.UNLIKELY">Unlikely</entry>
+    
+    <entry key="yukon.dr.program.displayname.controlHistoryStatus.NOT_ENROLLED">Not Enrolled</entry>
+    <entry key="yukon.dr.program.displayname.controlHistoryStatus.OPTED_OUT">Opted Out</entry>
+    <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_TODAY">Controlled today</entry>
+    <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_CURRENT">Currently controlling</entry>
+    <entry key="yukon.dr.program.displayname.controlHistoryStatus.CONTROLLED_NONE">You have not been controlled today</entry>
+    
+</properties>    

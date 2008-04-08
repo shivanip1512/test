@@ -11,4 +11,6 @@ public interface ProgramDao {
     
     public List<Program> getByProgramIds(List<Integer> programIdList);
     
+    public List<Integer> getGroupIdsByProgramId(int programId);
+    
 }
