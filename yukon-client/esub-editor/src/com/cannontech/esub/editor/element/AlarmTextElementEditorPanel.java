@@ -25,6 +25,7 @@ import com.cannontech.common.gui.tree.CheckNode;
 import com.cannontech.common.gui.tree.CheckNodeSelectionListener;
 import com.cannontech.common.gui.tree.CheckRenderer;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -814,7 +815,14 @@ public void setValue(Object o) {
     for( int i = 0; i < pointids.length; i++ )
     {
         // Find the device for this point and load the device's tree node.
-        int deviceId = DaoFactory.getPointDao().getLitePoint(pointids[i]).getPaobjectID();
+        int deviceId;
+        try {
+            deviceId = DaoFactory.getPointDao().getLitePoint(pointids[i]).getPaobjectID();
+        }catch(NotFoundException nfe ) {
+            // skip points that don't exist
+            continue;
+        }
+        
         CheckNode currentDeviceNode = (CheckNode) getDeviceJTreeModel().getDevicebyID(deviceId);
         // Only load children if not already loaded
         if(currentDeviceNode != null) {

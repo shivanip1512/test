@@ -165,7 +165,7 @@ class DispatchProxy {
         ServerResponseMsg resp = serverRequest.makeServerRequest(dispatchConnection,cmd);
         if(resp.getStatus() == ServerResponseMsg.STATUS_ERROR) {
             log.error("Dispatch returned the following message: " + resp.getMessage());
-            throw new DynamicDataAccessException("Dispatch returned error status in response: " + resp.getStatusStr());
+            throw new DynamicDataAccessException(resp.getStatusStr() + ": " + resp.getMessage());
         }        
         // returns multi of signals??
         return resp.getPayload();
