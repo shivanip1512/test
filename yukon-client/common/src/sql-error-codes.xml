@@ -18,14 +18,17 @@
         <property name="databaseProductName">
             <value>DB2*</value>
         </property>
+        <property name="useSqlStateForTranslation">
+            <value>true</value>
+        </property>
         <property name="badSqlGrammarCodes">
-            <value>-007,-029,-097,-104,-109,-115,-128,-199,-204,-206,-301,-408,-441,-491</value>
+            <value>-204,-206,-301,-408</value>
         </property>
         <property name="dataAccessResourceFailureCodes">
-            <value>-904,-971</value>
+            <value>-904</value>
         </property>
         <property name="dataIntegrityViolationCodes">
-            <value>-407,-530,-531,-532,-543,-544,-545,-603,-667,-803</value>
+            <value>-803</value>
         </property>
         <property name="deadlockLoserCodes">
             <value>-911,-913</value>
@@ -96,6 +99,9 @@
     </bean>
 
     <bean id="MS-SQL" class="org.springframework.jdbc.support.SQLErrorCodes">
+    <property name="useSqlStateForTranslation">
+      <value>false</value>
+    </property>
         <property name="databaseProductName">
             <value>Microsoft SQL Server</value>
         </property>
@@ -121,7 +127,7 @@
             <value>1</value>
         </property>
         <property name="dataIntegrityViolationCodes">
-            <value>630,839,840,893,1062,1169,1215,1216,1217,1451,1452,1557</value>
+            <value>1062,1169,1215,1216,1217,1451,1452,1557</value>
         </property>
         <property name="cannotAcquireLockCodes">
             <value>1205</value>
@@ -147,9 +153,6 @@
         <property name="cannotAcquireLockCodes">
             <value>54</value>
         </property>
-        <property name="cannotSerializeTransactionCodes">
-            <value>8177</value>
-        </property>
         <property name="deadlockLoserCodes">
             <value>60</value>
         </property>
@@ -160,7 +163,7 @@
             <value>true</value>
         </property>
         <property name="badSqlGrammarCodes">
-            <value>03000,42000,42601,42602,42622,42804,42P01</value>
+            <value>03000,42000,42601,42602,42622,42804</value>
         </property>
         <property name="dataAccessResourceFailureCodes">
             <value>53000,53100,53200,53300</value>
