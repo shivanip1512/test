@@ -68,9 +68,9 @@ import com.cannontech.database.model.EditableTextModel;
 import com.cannontech.database.model.EditableVersacomModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.ModelFactory;
+import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.application.CommanderRole;
-import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.yc.MessageType;
 import com.cannontech.yc.gui.menu.YCCommandMenu;
@@ -189,13 +189,12 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	 */
 	private void about()
 	{
-		javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_GIF));
-		javax.swing.JOptionPane.showMessageDialog(popupFrame,
-		"Version : " + com.cannontech.common.version.VersionTools.getYUKON_VERSION() + "\n" + 
-        "Version Details : " + com.cannontech.common.version.VersionTools.getYukonDetails() + "\n" +
-        "Copyright (C) 1999-2003 Cannon Technologies.",
-		"About Yukon Commander",javax.swing.JOptionPane.INFORMATION_MESSAGE);
+	    java.awt.Frame f = (JFrame)CtiUtilities.getParentFrame(YukonCommander.this.getContentPane() );
+	    AboutDialog aboutDialog = new AboutDialog( f, "About Commander", true );
+
+	    aboutDialog.setLocationRelativeTo( f );
+	    aboutDialog.setValue(null);
+	    aboutDialog.show();
 	}
 	
 	/**
