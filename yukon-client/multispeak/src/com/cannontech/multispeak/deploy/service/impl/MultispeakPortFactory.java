@@ -52,8 +52,8 @@ public class MultispeakPortFactory {
         CB_MRSoap_PortType port = null;
         try {
             port = service.getCB_MRSoap();
-            ((CB_MRSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((CB_MRSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((CB_MRSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((CB_MRSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((CB_MRSoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((CB_MRSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
@@ -78,8 +78,8 @@ public class MultispeakPortFactory {
         MR_CBSoap_PortType port = null;
         try {
             port = service.getMR_CBSoap();
-            ((MR_CBSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((MR_CBSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((MR_CBSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((MR_CBSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((MR_CBSoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((MR_CBSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
@@ -104,8 +104,8 @@ public class MultispeakPortFactory {
         CB_CDSoap_PortType port = null; 
         try {
             port = service.getCB_CDSoap();
-            ((CB_CDSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((CB_CDSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((CB_CDSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((CB_CDSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((CB_CDSoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((CB_CDSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
@@ -129,8 +129,8 @@ public class MultispeakPortFactory {
         CD_CBSoap_PortType port = null;
         try {
             port = service.getCD_CBSoap();
-            ((CD_CBSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((CD_CBSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((CD_CBSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((CD_CBSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((CD_CBSoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((CD_CBSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
@@ -154,8 +154,8 @@ public class MultispeakPortFactory {
         OA_ODSoap_PortType port = null;
         try { 
             port = service.getOA_ODSoap();
-            ((OA_ODSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((OA_ODSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((OA_ODSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((OA_ODSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((OA_ODSoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((OA_ODSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
@@ -179,8 +179,8 @@ public class MultispeakPortFactory {
         OD_OASoap_PortType port = null;
         try {
             port = service.getOD_OASoap();
-            ((OD_OASoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((OD_OASoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((OD_OASoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((OD_OASoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((OD_OASoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((OD_OASoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
@@ -204,8 +204,8 @@ public class MultispeakPortFactory {
         MR_EASoap_PortType port = null;
         try {
             port = service.getMR_EASoap();
-            ((MR_EASoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((MR_EASoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((MR_EASoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((MR_EASoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((MR_EASoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((MR_EASoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
@@ -230,8 +230,8 @@ public class MultispeakPortFactory {
         EA_MRSoap_PortType port = null;
         try {
             port = service.getEA_MRSoap();
-            ((EA_MRSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((EA_MRSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((EA_MRSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((EA_MRSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((EA_MRSoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((EA_MRSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
@@ -255,8 +255,8 @@ public class MultispeakPortFactory {
         
         try {
             port = service.getMR_OASoap();
-            ((MR_OASoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((MR_OASoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((MR_OASoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((MR_OASoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((MR_OASoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((MR_OASoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
@@ -280,8 +280,8 @@ public class MultispeakPortFactory {
         OA_MRSoap_PortType port = null;  
         try {
             port = service.getOA_MRSoap();
-            ((OA_MRSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
-            ((OA_MRSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
+//            ((OA_MRSoap_BindingStub)port).setUsername(mspVendor.getOutUserName());
+//            ((OA_MRSoap_BindingStub)port).setPassword(mspVendor.getOutPassword());
             ((OA_MRSoap_BindingStub)port).setHeader(mspVendor.getHeader());
             ((OA_MRSoap_BindingStub)port).setTimeout(new Long(mspVendor.getRequestMessageTimeout()).intValue());
         } catch (ServiceException e) {
