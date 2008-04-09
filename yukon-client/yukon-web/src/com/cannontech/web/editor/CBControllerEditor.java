@@ -230,19 +230,20 @@ public class CBControllerEditor implements ICBControllerModel {
     /* (non-Javadoc)
      * @see com.cannontech.web.editor.ICBControllerEditor#getPointList()
      */
+    @SuppressWarnings("unchecked")
     public TreeNode getPointList() {
         if (pointList == null) {
 	    	pointList = new TreeNodeBase("root", "Points", false);
-	        TreeNode points = new TreeNodeBase("pointtype", "analog", false);
-	        TreeNode status = new TreeNodeBase("pointtype", "status", false);
-	        TreeNode accum = new TreeNodeBase("pointtype","accumulator", false);
+	        TreeNode analog = new TreeNodeBase("pointtype", "Analog", false);
+	        TreeNode status = new TreeNodeBase("pointtype", "Status", false);
+	        TreeNode accum = new TreeNodeBase("pointtype","Accumulator", false);
 	        if (deviceCBC != null) {
                 int deviceId = deviceCBC.getPAObjectID();
                 List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
 		
-		        TreeSet statusSet = new TreeSet();
-		        TreeSet analogSet = new TreeSet();
-		        TreeSet accumSet = new TreeSet();
+		        TreeSet<LitePoint> statusSet = new TreeSet<LitePoint>();
+		        TreeSet<LitePoint> analogSet = new TreeSet<LitePoint>();
+		        TreeSet<LitePoint> accumSet = new TreeSet<LitePoint>();
 
                 for (LitePoint litePoint : litePoints) {
 		            int pointType = litePoint.getPointType();
@@ -255,12 +256,12 @@ public class CBControllerEditor implements ICBControllerModel {
 		            }
 		        }
 		
-		        points = JSFTreeUtils.createTreeFromPointList(analogSet, points);
+		        analog = JSFTreeUtils.createTreeFromPointList(analogSet, analog);
 		        status = JSFTreeUtils.createTreeFromPointList(statusSet, status);
 		        accum = JSFTreeUtils.createTreeFromPointList(accumSet, accum);
 		        
 		        pointList.getChildren().add(status);
-		        pointList.getChildren().add(points);
+		        pointList.getChildren().add(analog);
 		        pointList.getChildren().add(accum);
 		        
 		        //make sure we are will be grouping the nodes that have a lot of points attached to them

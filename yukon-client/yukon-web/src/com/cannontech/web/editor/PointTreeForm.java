@@ -86,9 +86,9 @@ public class PointTreeForm {
     public TreeNode getPointList() {
         if (pointList == null) {
             pointList = new TreeNodeBase("root", "Points", false);
-            TreeNode points = new TreeNodeBase("pointtype", "analog", false);
-            TreeNode status = new TreeNodeBase("pointtype", "status", false);
-            TreeNode accum = new TreeNodeBase("pointtype","accumulator", false);
+            TreeNode analog = new TreeNodeBase("pointtype", "Analog", false);
+            TreeNode status = new TreeNodeBase("pointtype", "Status", false);
+            TreeNode accum = new TreeNodeBase("pointtype","Accumulator", false);
             if (device != null) {
                 int deviceId = device.getPAObjectID();
                 List<LitePoint> litePoints = DaoFactory.getPointDao().getLitePointsByPaObjectId(deviceId);
@@ -108,12 +108,12 @@ public class PointTreeForm {
                     }
                 }
         
-                points = JSFTreeUtils.createTreeFromPointList(analogSet, points);
+                analog = JSFTreeUtils.createTreeFromPointList(analogSet, analog);
                 status = JSFTreeUtils.createTreeFromPointList(statusSet, status);
                 accum = JSFTreeUtils.createTreeFromPointList(accumSet, accum);
                 
                 pointList.getChildren().add(status);
-                pointList.getChildren().add(points);
+                pointList.getChildren().add(analog);
                 pointList.getChildren().add(accum);
                 
                 JSFTreeUtils.splitTree(pointList, 100, "sublevels");
