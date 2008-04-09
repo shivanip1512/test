@@ -284,7 +284,7 @@ public class ProgramOptOutAction implements ActionBase {
             	StarsLMProgramHistory progHist = StarsLiteFactory.createStarsLMProgramHistory( liteAcctInfo, energyCompany );
             	resp.setStarsLMProgramHistory( progHist );
             	
-		        if (StarsUtils.isOperator( user ))
+		        if (StarsUtils.isOperator( user.getYukonUser() ))
 			        resp.setDescription( ServletUtil.capitalize(energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_NOUN)) + " command has been sent out successfully." );
 			    else
 			        resp.setDescription( "Your programs have been " + energyCompany.getEnergyCompanySetting(ConsumerInfoRole.WEB_TEXT_OPT_OUT_PAST) + "." );
@@ -438,7 +438,7 @@ public class ProgramOptOutAction implements ActionBase {
 		LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
 		
 		String ruleStr = null;
-		if (StarsUtils.isOperator( user ))
+		if (StarsUtils.isOperator( user.getYukonUser() ))
 			ruleStr = DaoFactory.getAuthDao().getRolePropertyValue(user.getYukonUser(), ConsumerInfoRole.OPT_OUT_RULES);
 		else
 			ruleStr = DaoFactory.getAuthDao().getRolePropertyValue(user.getYukonUser(), ResidentialCustomerRole.OPT_OUT_RULES);

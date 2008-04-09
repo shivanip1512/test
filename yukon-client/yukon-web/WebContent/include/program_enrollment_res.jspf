@@ -5,7 +5,7 @@
  * hasPrevStep: boolean
  * needMoreInfo: boolean
  */
-	boolean isOperator = StarsUtils.isOperator(user);
+	boolean isOperator = StarsUtils.isOperator(user.getYukonUser());
 	String inWizardStr = (inWizard)? "&Wizard=true" : "";
 %>
 

@@ -140,7 +140,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				
 				if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {
 					String errorMsg = null;
-					if (StarsUtils.isOperator( user )) {
+					if (StarsUtils.isOperator( user.getYukonUser() )) {
 						errorMsg = (invIDs.length == 1)?
 								"The thermostat is currently out of service. Schedule is not sent." :
 								"The thermostat '" + liteHw.getManufacturerSerialNumber() + "' is currently out of service. Schedule is not sent.";
@@ -154,7 +154,7 @@ public class UpdateThermostatScheduleAction implements ActionBase {
 				}
     			
 				if (liteHw.getManufacturerSerialNumber().trim().length() == 0) {
-					String errorMsg = StarsUtils.isOperator( user )?
+					String errorMsg = StarsUtils.isOperator( user.getYukonUser() )?
 							"The serial # of the thermostat cannot be empty. Schedule is not sent." :
 							"Cannot send schedule to the thermostat. Please contact your utility company to report this problem.";
 					

@@ -2905,7 +2905,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     /* The following methods are only used when SOAPClient exists locally */
     
     public synchronized StarsEnergyCompanySettings getStarsEnergyCompanySettings(StarsYukonUser user) {
-        if (StarsUtils.isOperator(user)) {
+        if (StarsUtils.isOperator(user.getYukonUser())) {
             if (starsOperECSettings == null) {
                 starsOperECSettings = new StarsEnergyCompanySettings();
                 starsOperECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
@@ -2921,7 +2921,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             
             return starsOperECSettings;
         }
-        else if (StarsUtils.isResidentialCustomer(user)) {
+        else if (StarsUtils.isResidentialCustomer(user.getYukonUser())) {
             if (starsCustECSettings == null) {
                 starsCustECSettings = new StarsEnergyCompanySettings();
                 starsCustECSettings.setEnergyCompanyID( user.getEnergyCompanyID() );
@@ -3000,7 +3000,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public synchronized StarsCustomerSelectionLists getStarsCustomerSelectionLists(StarsYukonUser starsUser) {
-        if (StarsUtils.isOperator( starsUser )) {
+        if (StarsUtils.isOperator( starsUser.getYukonUser() )) {
             if (starsOperSelLists == null) {
                 starsOperSelLists = new StarsCustomerSelectionLists();
                 updateOperSelectionLists();
@@ -3008,7 +3008,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             
             return starsOperSelLists;
         }
-        else if (StarsUtils.isResidentialCustomer( starsUser )) {
+        else if (StarsUtils.isResidentialCustomer( starsUser.getYukonUser() )) {
             if (starsCustSelLists == null) {
                 starsCustSelLists = new StarsCustomerSelectionLists();
                 updateCustSelectionLists();

@@ -642,13 +642,13 @@ public class ServletUtils {
 		String faqLink = null;
 		
 		if (user.getEnergyCompanyID() == energyCompany.getLiteID()) {
-			if (StarsUtils.isOperator(user))
+			if (StarsUtils.isOperator(user.getYukonUser()))
 				faqLink = DaoFactory.getAuthDao().getRolePropertyValue( user.getYukonUser(), ConsumerInfoRole.WEB_LINK_FAQ );
 			else
 				faqLink = DaoFactory.getAuthDao().getRolePropertyValue( user.getYukonUser(), ResidentialCustomerRole.WEB_LINK_FAQ );
 		}
 		else {
-			if (StarsUtils.isOperator(user)) {
+			if (StarsUtils.isOperator(user.getYukonUser())) {
 				LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
 				if (operGroups.length > 0)
 					faqLink = DaoFactory.getAuthDao().getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );

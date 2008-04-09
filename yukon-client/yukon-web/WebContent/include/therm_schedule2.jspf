@@ -7,7 +7,7 @@
  * allTherm: boolean
  * thermNoStr: String
  */
-	boolean isOperator = StarsUtils.isOperator(user);
+	boolean isOperator = StarsUtils.isOperator(user.getYukonUser());
 	boolean isRecommended = (invID < 0);
 
 	String thermType = request.getParameter("type");

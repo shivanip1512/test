@@ -222,8 +222,8 @@ public class ProgramSignUpAction implements ActionBase {
 						// Send the reenable command if hardware status is unavailable,
 						// whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
 						if (!useHardwareAddressing
-							&& (StarsUtils.isOperator(user) && DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
-								|| StarsUtils.isResidentialCustomer(user) && DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION))) {
+							&& (StarsUtils.isOperator(user.getYukonUser()) && DaoFactory.getAuthDao().checkRoleProperty( user.getYukonUser(), ConsumerInfoRole.AUTOMATIC_CONFIGURATION )
+								|| StarsUtils.isResidentialCustomer(user.getYukonUser()) && DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.AUTOMATIC_CONFIGURATION))) {
 							YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
                         }
 						else if (liteHw.getDeviceStatus() == YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL) {

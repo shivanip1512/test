@@ -11,7 +11,7 @@
  * thermNoStr: String
  * accountInfo: StarsCustAccountInformation
  */
-	boolean isOperator = StarsUtils.isOperator(user);
+	boolean isOperator = StarsUtils.isOperator(user.getYukonUser());
 	
 	int setpoint = 72;
 	int coolSetpoint = 72;

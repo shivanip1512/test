@@ -134,7 +134,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 					return SOAPUtil.buildSOAPMessage( respOper );
 				}
 				
-				if (StarsUtils.isOperator(user)) {
+				if (StarsUtils.isOperator(user.getYukonUser())) {
 					try {
 						updateInventory( updateHw, liteInv, energyCompany );
 					}
@@ -282,8 +282,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			int installEntryID = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_INSTALL).getEntryID();
 			
 			List<LiteLMHardwareEvent> hwHist = hardwareEventDao.getByInventoryId(liteInv.getLiteID());
-			for (int i = hwHist.size() - 1; i >= 0; i--) {
-				LiteLMHardwareEvent liteEvent = hwHist.get(i);
+			for (LiteLMHardwareEvent liteEvent : hwHist) {
 				
 				if (liteEvent.getActionID() == installEntryID) {
 					if (updateHw.getInstallDate() != null &&
@@ -408,7 +407,7 @@ public class UpdateLMHardwareAction implements ActionBase {
 			}
 			
 			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			if (StarsUtils.isOperator( user ))
+			if (StarsUtils.isOperator( user.getYukonUser() ))
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware information updated successfully" );
 			else
 				session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Thermostat name updated successfully" );

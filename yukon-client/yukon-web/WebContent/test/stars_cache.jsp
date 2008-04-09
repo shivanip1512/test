@@ -8,7 +8,7 @@
 <%@ page import="com.cannontech.stars.xml.serialize.*" %>
 <%
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
-	if (!StarsUtils.isOperator(user)) {
+	if (!StarsUtils.isOperator(user.getYukonUser())) {
 		response.sendRedirect(request.getContextPath() + "/login.jsp");
 		return;
 	}

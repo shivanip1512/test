@@ -31,6 +31,7 @@ import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
@@ -40,6 +41,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * @author yao
@@ -303,13 +305,13 @@ public class StarsUtils {
 	    };
 	    return comp;
 	}
-
-	public static boolean isOperator(StarsYukonUser user) {
-		return !isResidentialCustomer(user) &&
-				DaoFactory.getEnergyCompanyDao().getEnergyCompany( user.getYukonUser() ) != null;
+	
+	public static boolean isOperator(LiteYukonUser user) {
+	    return !isResidentialCustomer(user) &&
+	    DaoFactory.getEnergyCompanyDao().getEnergyCompany(user) != null;
 	}
 
-	public static boolean isResidentialCustomer(StarsYukonUser user) {
-		return DaoFactory.getAuthDao().getRole(user.getYukonUser(), ResidentialCustomerRole.ROLEID) != null;
+	public static boolean isResidentialCustomer(LiteYukonUser user) {
+		return DaoFactory.getAuthDao().checkRole(user, ResidentialCustomerRole.ROLEID);
 	}
 }

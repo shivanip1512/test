@@ -68,14 +68,14 @@ public class StarsYukonUser {
 	}
 	
 	private void init() throws InstantiationException {
-		if (StarsUtils.isOperator(this)) {
+		if (StarsUtils.isOperator(this.getYukonUser())) {
 			LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany( getYukonUser() );
 			if (energyCompany == null)
 				throw new InstantiationException( "Cannot find the energy company for user id = " + getYukonUser().getUserID() );
 			
 			energyCompanyID = energyCompany.getEnergyCompanyID();
 		}
-		else if (StarsUtils.isResidentialCustomer(this)) {
+		else if (StarsUtils.isResidentialCustomer(this.getYukonUser())) {
 			LiteContact liteContact = DaoFactory.getYukonUserDao().getLiteContact( getUserID() );
 			if (liteContact == null)
 				throw new InstantiationException( "Cannot find contact information for user id = " + getYukonUser().getUserID() );

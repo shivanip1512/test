@@ -1,7 +1,7 @@
 <%
 	int[] invIDs = (int[]) session.getAttribute(ServletUtils.ATT_THERMOSTAT_INVENTORY_IDS);
 	
-	boolean isOperator = StarsUtils.isOperator(user);
+	boolean isOperator = StarsUtils.isOperator(user.getYukonUser());
 	String scheduleLabel = (isOperator)? DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_SCHED) :
 			DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_SCHED);
 	String manualLabel = (isOperator)? DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LABEL_THERM_MANUAL) :
