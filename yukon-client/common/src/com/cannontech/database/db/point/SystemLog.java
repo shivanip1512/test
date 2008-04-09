@@ -1,6 +1,5 @@
 package com.cannontech.database.db.point;
 
-import java.sql.Timestamp;
 import java.util.Date;
 
 import com.cannontech.database.data.point.SystemLogData;
@@ -334,5 +333,10 @@ public Date getTimestamp() {
 }
 public String getUser() {
     return userName;
+}
+
+@Override
+public Long getPointId() {
+    return new Long(getPointID());
 }
 }

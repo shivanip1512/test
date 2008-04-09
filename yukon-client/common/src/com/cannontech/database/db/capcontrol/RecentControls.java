@@ -11,4 +11,6 @@ public interface RecentControls {
     public String getEvent();
 
     public String getUser();
+    
+    public Long getPointId();
 }
