@@ -84,7 +84,13 @@ public class RouteGroupProvider extends DeviceGroupProviderBase {
     public Set<DeviceGroup> getGroupMembership(DeviceGroup base, YukonDevice device) {
         
         LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
-        LiteYukonPAObject routePao = paoDao.getLiteYukonPAO(devicePao.getRouteID());
+        
+        int routeId = devicePao.getRouteID();
+        if (routeId <= 0) {
+            return Collections.emptySet();
+        }
+        
+        LiteYukonPAObject routePao = paoDao.getLiteYukonPAO(routeId);
         
         RouteDeviceGroup routeGroup = new RouteDeviceGroup();
         routeGroup.routeId = routePao.getLiteID();
