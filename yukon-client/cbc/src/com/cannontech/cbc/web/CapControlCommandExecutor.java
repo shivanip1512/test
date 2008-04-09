@@ -249,7 +249,7 @@ public class CapControlCommandExecutor
 	            break;
 	        }
 	        case CapControlCommand.FLIP_7010_CAPBANK : {
-	            executeCapBankCmdByCmdId(paoId, cmdId, operationalState);
+	            executeCapBankDefault(paoId, cmdId, operationalState);
                 break;
             }
 	        default: {
