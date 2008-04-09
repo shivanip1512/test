@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.75 $
-* DATE         :  $Date: 2008/03/31 20:41:48 $
+* REVISION     :  $Revision: 1.76 $
+* DATE         :  $Date: 2008/04/09 19:49:54 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3546,7 +3546,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                                         ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                result_string += "Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(getExpectedFreezeParity()).toString() + "), last recorded freeze sent at " + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + "\n";
+                result_string += "Invalid freeze parity (" + CtiNumStr(pi_kwh.freeze_bit).toString() + ") != (" + CtiNumStr(getExpectedFreezeParity()).toString() + "), last recorded freeze sent at " + getLastFreezeTimestamp().asString() + "\n";
                 status = ErrorInvalidFrozenReadingParity;
 
                 pi_kwh.description = "Invalid freeze parity";
@@ -3555,7 +3555,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
             }
             else
             {
-                kwh_time  = CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp));
+                kwh_time  = getLastFreezeTimestamp();
                 kwh_time -= kwh_time.seconds() % 60;
             }
 
@@ -3584,12 +3584,11 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                 pi_kw.quality = InvalidQuality;
                 pi_kw.value = 0;
             }
-            else if( hasDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)
-                     && getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp) < kw_time.seconds() )
+            else if( getLastFreezeTimestamp() < kw_time.seconds() )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is after KW freeze time \"" << CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)) << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - KW peak time \"" << kw_time << "\" is after KW freeze time \"" << getLastFreezeTimestamp() << ", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 //  defer to the kWh errors
@@ -3598,7 +3597,7 @@ INT CtiDeviceMCT4xx::decodeGetValuePeakDemand(INMESS *InMessage, CtiTime &TimeNo
                     status = ErrorInvalidFrozenPeakTimestamp;
                 }
 
-                result_string += "Peak timestamp after freeze  (" + kw_time.asString() + ") > (" + CtiTime(getDynamicInfo(CtiTableDynamicPaoInfo::Key_DemandFreezeTimestamp)).asString() + ")\n";
+                result_string += "Peak timestamp after freeze  (" + kw_time.asString() + ") > (" + getLastFreezeTimestamp().asString() + ")\n";
 
                 pi_kw.description = "Invalid peak timestamp";
                 pi_kw.quality = InvalidQuality;

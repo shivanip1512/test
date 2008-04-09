@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2008/03/14 23:32:56 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2008/04/09 19:49:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,6 +64,9 @@ const string CtiTableDynamicPaoInfo::_key_mct_under_voltage_threshold   = "mct u
 const string CtiTableDynamicPaoInfo::_key_mct_demand_interval           = "mct demand interval";
 const string CtiTableDynamicPaoInfo::_key_mct_voltage_profile_interval  = "mct voltage profile interval";
 const string CtiTableDynamicPaoInfo::_key_mct_voltage_demand_interval   = "mct voltage demand interval";
+
+const string CtiTableDynamicPaoInfo::_key_mct_scheduled_freeze_day              = "mct scheduled freeze day";
+const string CtiTableDynamicPaoInfo::_key_mct_scheduled_freeze_config_timestamp = "mct scheduled freeze config timestamp";
 
 const string CtiTableDynamicPaoInfo::_key_mct_day_table                 = "mct day table";
 const string CtiTableDynamicPaoInfo::_key_mct_day_schedule_1            = "mct day schedule 1";
@@ -184,6 +187,8 @@ CtiTableDynamicPaoInfo::key_map_t CtiTableDynamicPaoInfo::init_key_map()
     retval.insert(make_pair(Key_MCT_DemandInterval,             &_key_mct_demand_interval));
     retval.insert(make_pair(Key_MCT_VoltageLPInterval,          &_key_mct_voltage_profile_interval));
     retval.insert(make_pair(Key_MCT_VoltageDemandInterval,      &_key_mct_voltage_demand_interval));
+    retval.insert(make_pair(Key_MCT_ScheduledFreezeDay,             &_key_mct_scheduled_freeze_day));
+    retval.insert(make_pair(Key_MCT_ScheduledFreezeConfigTimestamp, &_key_mct_scheduled_freeze_config_timestamp));
     retval.insert(make_pair(Key_MCT_DayTable,                   &_key_mct_day_table));
     retval.insert(make_pair(Key_MCT_DaySchedule1,               &_key_mct_day_schedule_1));
     retval.insert(make_pair(Key_MCT_DaySchedule2,               &_key_mct_day_schedule_2));

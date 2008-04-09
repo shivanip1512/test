@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_base.h-arc  $
-* REVISION     :  $Revision: 1.66 $
-* DATE         :  $Date: 2007/11/12 17:05:39 $
+* REVISION     :  $Revision: 1.67 $
+* DATE         :  $Date: 2008/04/09 19:49:54 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -251,12 +251,14 @@ public:
     bool setDynamicInfo(Keys k, const long          &value);
     bool setDynamicInfo(Keys k, const unsigned long &value);
     bool setDynamicInfo(Keys k, const double        &value);
+    bool setDynamicInfo(Keys k, const CtiTime       &value);
     bool getDynamicInfo(Keys k, string        &destination) const;
     bool getDynamicInfo(Keys k, int           &destination) const;
     bool getDynamicInfo(Keys k, unsigned int  &destination) const;
     bool getDynamicInfo(Keys k, long          &destination) const;
     bool getDynamicInfo(Keys k, unsigned long &destination) const;
     bool getDynamicInfo(Keys k, double        &destination) const;
+    bool getDynamicInfo(Keys k, CtiTime       &destination) const;
     //  note - this returns the value as a long for convenience - the name may need to be changed to prevent confusion if it arises
     long getDynamicInfo(Keys k) const;
 

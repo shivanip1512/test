@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/03/14 23:32:56 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/04/09 19:49:53 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,8 @@ public:
         Key_MCT_DemandInterval,
         Key_MCT_VoltageLPInterval,
         Key_MCT_VoltageDemandInterval,
+        Key_MCT_ScheduledFreezeDay,
+        Key_MCT_ScheduledFreezeConfigTimestamp,
         Key_MCT_DayTable,
         Key_MCT_DaySchedule1,
         Key_MCT_DaySchedule2,
@@ -199,6 +201,9 @@ protected:
     static const string _key_mct_demand_interval;
     static const string _key_mct_voltage_profile_interval;
     static const string _key_mct_voltage_demand_interval;
+
+    static const string _key_mct_scheduled_freeze_day;
+    static const string _key_mct_scheduled_freeze_config_timestamp;
 
     static const string _key_mct_day_table;
     static const string _key_mct_day_schedule_1;

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.155 $
-* DATE         :  $Date: 2008/03/14 23:37:59 $
+* REVISION     :  $Revision: 1.156 $
+* DATE         :  $Date: 2008/04/09 19:49:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -93,6 +93,8 @@ CtiDeviceMCT410::DynamicPaoAddressing_t CtiDeviceMCT410::initDynPaoAddressing()
 //  these cannot be properly decoded by the dynamicPaoAddressing code
 //    addressSet.insert(DynamicPaoAddressing(Memory_SSpecPos,                 Memory_SSpecLen,                Keys::Key_MCT_SSpec));
 //    addressSet.insert(DynamicPaoAddressing(Memory_RevisionPos,              Memory_RevisionLen,             Keys::Key_MCT_SSpecRevision));
+//
+//    addressSet.insert(DynamicPaoAddressing(Memory_DayOfScheduledFreezePos,  Memory_DayOfScheduledFreezeLen, Keys::Key_MCT_ScheduledFreezeDay));
 
     addressSet.insert(DynamicPaoAddressing(Memory_OptionsPos,               Memory_OptionsLen,              Keys::Key_MCT_Options));
     addressSet.insert(DynamicPaoAddressing(Memory_ConfigurationPos,         Memory_ConfigurationLen,        Keys::Key_MCT_Configuration));
@@ -495,6 +497,7 @@ CtiDeviceMCT410::CommandSet CtiDeviceMCT410::initCommandStore()
     cs.insert(CommandStore(Emetcon::GetConfig_TSync,            Emetcon::IO_Read,           Memory_LastTSyncPos,            Memory_LastTSyncLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Time,             Emetcon::IO_Read,           Memory_TimeZoneOffsetPos,       Memory_TimeZoneOffsetLen
                                                                                                                             + Memory_RTCLen));
+    cs.insert(CommandStore(Emetcon::PutConfig_FreezeDay,        Emetcon::IO_Write,          Memory_DayOfScheduledFreezePos, Memory_DayOfScheduledFreezeLen));
     cs.insert(CommandStore(Emetcon::PutConfig_TimeZoneOffset,   Emetcon::IO_Write,          Memory_TimeZoneOffsetPos,       Memory_TimeZoneOffsetLen));
     cs.insert(CommandStore(Emetcon::PutConfig_Intervals,        Emetcon::IO_Function_Write, FuncWrite_IntervalsPos,         FuncWrite_IntervalsLen));
     cs.insert(CommandStore(Emetcon::GetConfig_Intervals,        Emetcon::IO_Read,           Memory_IntervalsPos,            Memory_IntervalsLen));
@@ -978,6 +981,8 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         case Emetcon::GetConfig_Model:              status = decodeGetConfigModel(InMessage, TimeNow, vgList, retList, outList);        break;
 
+        case Emetcon::GetConfig_Freeze:             status = decodeGetConfigFreeze(InMessage, TimeNow, vgList, retList, outList);       break;
+
         case Emetcon::GetConfig_Multiplier:
         case Emetcon::GetConfig_CentronParameters:  status = decodeGetConfigCentron(InMessage, TimeNow, vgList, retList, outList);      break;
 
@@ -1347,12 +1352,10 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
     }
     else if( parse.isKeyValid("outage_threshold") )
     {
-        int threshold;
-
         function = Emetcon::PutConfig_OutageThreshold;
         found    = getOperation(function, OutMessage->Buffer.BSt);
 
-        threshold = parse.getiValue("outage_threshold");
+        int threshold = parse.getiValue("outage_threshold");
 
         if( threshold && (threshold < 15 ||
                           threshold > 60) )
@@ -1368,6 +1371,30 @@ INT CtiDeviceMCT410::executePutConfig( CtiRequestMsg              *pReq,
             OutMessage->Sequence = function;
 
             OutMessage->Buffer.BSt.Message[0] = threshold;
+        }
+    }
+    else if( parse.isKeyValid("freeze_day") )
+    {
+        int threshold;
+
+        function = Emetcon::PutConfig_FreezeDay;
+        found    = getOperation(function, OutMessage->Buffer.BSt);
+
+        int freeze_day = parse.getiValue("freeze_day");
+
+        if( freeze_day > 255 || freeze_day < 0 )
+        {
+            found = false;
+            nRet  = NoMethod;
+
+            returnErrorMessage(NoMethod, OutMessage, retList,
+                               "Invalid day of scheduled freeze (" + CtiNumStr(freeze_day) + ") for device \"" + getName() + "\", not sending");
+        }
+        else
+        {
+            OutMessage->Sequence = function;
+
+            OutMessage->Buffer.BSt.Message[0] = freeze_day;
         }
     }
     else
@@ -1890,6 +1917,16 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
 
             OutMessage->Sequence = Emetcon::GetConfig_CentronParameters;
         }
+    }
+    else if( parse.isKeyValid("freeze") )
+    {
+        found = true;
+
+        OutMessage->Buffer.BSt.Function = Memory_DayOfScheduledFreezePos;
+        OutMessage->Buffer.BSt.Length   = Memory_DayOfScheduledFreezeLen;
+        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
+
+        OutMessage->Sequence = Emetcon::GetConfig_Freeze;
     }
     else
     {
@@ -2517,12 +2554,12 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                             pi.quality = InvalidQuality;
                             pi.value = 0;
 
-                            ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp)).asString());
+                            ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp().asString());
                             status = ErrorInvalidFrozenReadingParity;
                         }
                         else
                         {
-                            pointTime  = CtiTime(getDynamicInfo(Keys::Key_DemandFreezeTimestamp));
+                            pointTime  = getLastFreezeTimestamp();
                             pointTime -= pointTime.seconds() % 60;
                         }
                     }
@@ -3795,6 +3832,57 @@ INT CtiDeviceMCT410::decodeGetConfigThresholds(INMESS *InMessage, CtiTime &TimeN
         else
         {
             resultString += getName() + " / Outage threshold: disabled\n";
+        }
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+INT CtiDeviceMCT410::decodeGetConfigFreeze(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt   = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        string resultString;
+        unsigned day = DSt->Message[0];
+
+        if( day > 31 )
+        {
+            resultString  = getName() + " / Scheduled day of freeze: (last day of month)\n";
+        }
+        else if( day )
+        {
+            resultString  = getName() + " / Scheduled day of freeze: " + CtiNumStr(day) + string("\n");
+        }
+        else
+        {
+            resultString  = getName() + " / Scheduled day of freeze: (disabled)\n";
+        }
+
+        if( getDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay) != day )
+        {
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeDay, day);
+            setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_ScheduledFreezeConfigTimestamp, CtiTime::now());
         }
 
         if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)

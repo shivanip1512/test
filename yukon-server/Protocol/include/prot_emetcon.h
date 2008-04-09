@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_emetcon.h-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2008/03/14 23:33:55 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2008/04/09 19:49:53 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -154,7 +154,7 @@ public:
         GetConfig_TOU,
         GetConfig_Holiday,
         GetConfig_CentronParameters,  //  not ideal - hopefully we can manage the InMessage->Sequence better for very specialized
-                                      //    commands like this one, i don't like this being a big mess of non-general commands
+        GetConfig_Freeze,             //    commands like this one, i don't like this being a big mess of non-general commands
 
         // PutConfig commands
         PutConfig_Install,
@@ -195,6 +195,7 @@ public:
         PutConfig_TOU,  //  this may need to be removed in light of the new config install commands
         PutConfig_TOUEnable,
         PutConfig_TOUDisable,
+        PutConfig_FreezeDay,
 
         PutConfig_ARMC,
         PutConfig_ARML,

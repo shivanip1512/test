@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2008/03/31 20:41:48 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2008/04/09 19:49:54 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,29 +97,32 @@ protected:
 
     enum MemoryMap
     {
-        Memory_OptionsPos         = 0x02,
-        Memory_OptionsLen         =    1,
+        Memory_OptionsPos              = 0x02,
+        Memory_OptionsLen              =    1,
 
-        Memory_ConfigurationPos   = 0x03,
-        Memory_ConfigurationLen   =    1,
+        Memory_ConfigurationPos        = 0x03,
+        Memory_ConfigurationLen        =    1,
 
-        Memory_TOUDayTablePos     = 0x50,
-        Memory_TOUDayTableLen     =    2,
+        Memory_DayOfScheduledFreezePos = 0x4f,
+        Memory_DayOfScheduledFreezeLen =    1,
 
-        Memory_TOUDailySched1Pos  = 0x52,
-        Memory_TOUDailySched1Len  =    7,
+        Memory_TOUDayTablePos          = 0x50,
+        Memory_TOUDayTableLen          =    2,
 
-        Memory_TOUDailySched2Pos  = 0x59,
-        Memory_TOUDailySched2Len  =    7,
+        Memory_TOUDailySched1Pos       = 0x52,
+        Memory_TOUDailySched1Len       =    7,
 
-        Memory_TOUDailySched3Pos  = 0x60,
-        Memory_TOUDailySched3Len  =    7,
+        Memory_TOUDailySched2Pos       = 0x59,
+        Memory_TOUDailySched2Len       =    7,
 
-        Memory_TOUDailySched4Pos  = 0x67,
-        Memory_TOUDailySched4Len  =    7,
+        Memory_TOUDailySched3Pos       = 0x60,
+        Memory_TOUDailySched3Len       =    7,
 
-        Memory_TOUDefaultRatePos  = 0x6e,
-        Memory_TOUDefaultRateLen  =    1,
+        Memory_TOUDailySched4Pos       = 0x67,
+        Memory_TOUDailySched4Len       =    7,
+
+        Memory_TOUDefaultRatePos       = 0x6e,
+        Memory_TOUDefaultRateLen       =    1,
     };
 
     enum Functions

@@ -1465,6 +1465,10 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             _cmd["options"] = CtiParseValue( "TRUE" );
         }
+        if(CmdStr.contains(" freeze"))
+        {
+            _cmd["freeze"] = CtiParseValue( "TRUE" );
+        }
         if(CmdStr.contains(" tou"))
         {
             _cmd["tou"] = CtiParseValue( "TRUE" );
@@ -2071,6 +2075,8 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
     static const boost::regex  re_loadlimit("load limit " + str_floatnum + " " + str_num);
     static const boost::regex  re_cycle("cycle " + str_num + " " + str_num);
 
+    static const boost::regex  re_freeze_day("freeze day " + str_num);
+
     static const boost::regex  re_holiday("holiday " + str_num + "( " + str_date + ")+");
     static const boost::regex  re_channel("channel " + str_num + " (ied|2-wire|3-wire|none)( input " + str_num + ")?( multiplier " + str_floatnum + ")?");
 
@@ -2409,6 +2415,18 @@ void  CtiCommandParser::doParsePutConfigEmetcon(const string &_CmdStr)
                 {
                     _cmd["channel_multiplier"] = atof(cmdtok().data());
                 }
+            }
+        }
+        if(CmdStr.contains(" freeze"))
+        {
+            if(!(token = CmdStr.match(re_freeze_day)).empty())
+            {
+                CtiTokenizer cmdtok(token);
+
+                cmdtok();  //  go past "freeze"
+                cmdtok();  //  go past "day"
+
+                _cmd["freeze_day"] = atoi(cmdtok().data());
             }
         }
         if(CmdStr.contains(" timezone"))

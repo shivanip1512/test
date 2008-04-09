@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2007/11/12 17:05:32 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2008/04/09 19:49:53 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -809,6 +809,10 @@ bool CtiDeviceBase::setDynamicInfo(Keys k, const double &value)
 {
     return setInfo(_paoInfo, getID(), k, value);
 }
+bool CtiDeviceBase::setDynamicInfo(Keys k, const CtiTime &value)
+{
+    return setInfo(_paoInfo, getID(), k, value.seconds());
+}
 
 //  helper function for overloads
 template <class T>
@@ -832,6 +836,16 @@ bool CtiDeviceBase::getDynamicInfo(Keys k,           int &destination) const    
 bool CtiDeviceBase::getDynamicInfo(Keys k,          long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
 bool CtiDeviceBase::getDynamicInfo(Keys k, unsigned long &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
 bool CtiDeviceBase::getDynamicInfo(Keys k,        double &destination) const    {   return getInfo(_paoInfo, getID(), k, destination);  }
+bool CtiDeviceBase::getDynamicInfo(Keys k,       CtiTime &destination) const
+{
+    ctitime_t seconds;
+
+    bool retval = getInfo(_paoInfo, getID(), k, seconds);
+
+    destination = seconds;
+
+    return retval;
+}
 
 long CtiDeviceBase::getDynamicInfo(Keys k) const
 {
