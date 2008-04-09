@@ -416,14 +416,14 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
                     CCEventLog row = new CCEventLog(); 
                     row.setLogId (new Long ( rs.getBigDecimal(1).longValue() ));
                     row.setPointId(new Long ( rs.getBigDecimal(2).longValue() ));
-                    row.setDateTime((( rs.getTimestamp(3))));
+                    row.setDateTime( rs.getTimestamp(3));
                     row.setSubId(new Long ( rs.getBigDecimal(4).longValue() ));
                     row.setFeederId(new Long ( rs.getBigDecimal(5).longValue() ));
                     row.setEventType(new Integer ( rs.getBigDecimal(6).intValue() ));
                     row.setSeqId(new Long ( rs.getBigDecimal(7).longValue() ));
                     row.setValue(new Long ( rs.getBigDecimal(8).longValue() ));
-                    row.setText(( rs.getString(9)));
-                    row.setUserName(( rs.getString(10)));
+                    row.setText( rs.getString(9));
+                    row.setUserName( rs.getString(10));
                     return row;                     
                 }
             });

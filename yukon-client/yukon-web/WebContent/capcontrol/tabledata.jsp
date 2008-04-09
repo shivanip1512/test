@@ -2,6 +2,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%@ page import="com.cannontech.core.dao.DaoFactory"%>
+<%@ page import="com.cannontech.core.service.DateFormattingService"%>
+<%@ page import="com.cannontech.core.service.DateFormattingService.DateFormatEnum"%>
 <%@ page import="com.cannontech.yukon.cbc.StreamableCapObject"%>
 <%@ page import="com.cannontech.yukon.cbc.Feeder"%>
 <%@ page import="com.cannontech.yukon.cbc.SubBus"%>
@@ -33,7 +35,7 @@
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 	PointDao pointDao = (PointDao)YukonSpringHook.getBean("pointDao");
 	PaoDao paoDao = (PaoDao)YukonSpringHook.getBean("paoDao");
-	
+	DateFormattingService dateFormattingService = (DateFormattingService)YukonSpringHook.getBean("dateFormattingService");
 	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
 	String returnURL = nav.getPreviousPage();
 	
@@ -154,7 +156,7 @@ while(paoIDs.hasMoreElements()){
 	RecentControls event = (RecentControls)logData.get(paoID).get(j);
 %>
 			<tr class="<%=css%>">
-				<td><%=Formatters.DATETIME.format(event.getTimestamp())%></td>
+				<td><%=dateFormattingService.formatDate(event.getTimestamp(),DateFormatEnum.BOTH,user)%></td>
 				<% if (event.getPointId() == null || event.getPointId() <= 0) {%>
                 <td>----</td>
                 <%}else {%>
