@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.99 $
-* DATE         :  $Date: 2007/12/10 19:44:12 $
+* REVISION     :  $Revision: 1.100 $
+* DATE         :  $Date: 2008/04/09 19:54:47 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1374,7 +1374,7 @@ int CtiPILServer::getDeviceGroupMembers( string groupname, vector<long> &paoids 
         deviceGroup_child = db.table("DeviceGroup");
 
         selector.where(deviceGroup_parent["devicegroupid"] == deviceGroup_child["parentdevicegroupid"] &&
-                       deviceGroup_child["groupname"] == group_taxonomy.back().c_str() && selector.where());
+                       rwdbLower(deviceGroup_child["groupname"]) == group_taxonomy.back().c_str() && selector.where());
 
         group_taxonomy.pop_back();
 
