@@ -248,6 +248,10 @@ public class CapControlCommandExecutor
 	            executeCapBankDefault(paoId, cmdId, operationalState);
 	            break;
 	        }
+	        case CapControlCommand.FLIP_7010_CAPBANK : {
+	            executeCapBankCmdByCmdId(paoId, cmdId, operationalState);
+                break;
+            }
 	        default: {
 	        	throw new UnsupportedOperationException("Cap Bank Command, " + cmdId + ", not supported." );
 	        }
