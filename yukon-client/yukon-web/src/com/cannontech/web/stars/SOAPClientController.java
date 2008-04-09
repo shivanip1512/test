@@ -117,7 +117,7 @@ public class SOAPClientController implements Controller {
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REDIRECT, destURL );
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, errorURL );
             destURL = errorURL = request.getContextPath() +
-                    (StarsUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
+                    (StarsUtils.isOperator(user.getYukonUser())? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
             
             Integer delay = null;
             try {
