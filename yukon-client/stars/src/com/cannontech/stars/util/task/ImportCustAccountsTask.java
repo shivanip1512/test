@@ -1065,14 +1065,6 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				status = STATUS_ERROR;
 
 				errorMsg = e.getMessage();
-				/*
-				if (position != null)
-					errorMsg = "An error occured at " + position;
-				else
-					errorMsg = "The Import process failed";
-				if (e instanceof WebClientException)
-					errorMsg += ": " + e.getMessage();
-				 */
 			}
 
             ActivityLogger.logEvent( userID, ActivityLogActions.IMPORT_CUSTOMER_ACCOUNT_ACTION, errorMsg );
@@ -1089,19 +1081,17 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			importLog.close();
 
 			try {
-				if (!StringUtils.isBlank(email) && status == STATUS_ERROR) {
+				if (!StringUtils.isBlank(email)) {
 					sendImportLog( logFile, email, energyCompany );
-			}
+				}
 			} catch (Exception e) {
 				status = STATUS_ERROR;
 				if (errorMsg != null)
 					errorMsg += LINE_SEPARATOR + "Failed to send the import log by email";
 				else
 					errorMsg = "Failed to send the import log by email";
-			}
-		}
-		//}
-
+		    }
+	    }
 	}
 	
 	private String getImportProgress() 
