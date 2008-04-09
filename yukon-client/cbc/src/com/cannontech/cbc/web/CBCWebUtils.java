@@ -389,73 +389,46 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
 		return retLog;
 	}
 	
-	public static List getCCEventsForPAO (Long _paoId_, String type, CapControlCache theCache, int prevDaysCount) {
-	    String sqlStmt ="SELECT * FROM " + CCEventLog.TABLE_NAME + " WHERE"; 
-	    List<RecentControls> ccEvents = new ArrayList<RecentControls>();
-	    long startTS = ServletUtil.getDate(- prevDaysCount).getTime();
-	    java.sql.Timestamp timestamp = new java.sql.Timestamp( startTS );
-			    
-	    if (type.equalsIgnoreCase("CCFEEDER") || type.equalsIgnoreCase("CCSUBBUS")) {
-		    if (type.equalsIgnoreCase("CCFEEDER")){
-		    	sqlStmt += " FeederId = ?";
-		    }	    	
-		    else if (type.equalsIgnoreCase("CCSUBBUS")){
-		    	sqlStmt += " SubId = ?";
-		    }
-		    sqlStmt += " AND DateTime >= ? ";
-		    
-		    sqlStmt += " ORDER BY " + CCEventLog.COLUMNS [CCEventLog.COL_DATETIME] + " DESC";
-		    JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-		    
-		    ccEvents = yukonTemplate.query(sqlStmt, new Object[] {_paoId_, timestamp}, new int[] {Types.BIGINT, Types.TIMESTAMP},
-		    		new RowMapper() {
-		    			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-		    				CCEventLog row = new CCEventLog(); 
-		    				row.setLogId (new Long ( rs.getBigDecimal(1).longValue() ));
-		    				row.setPointId(new Long ( rs.getBigDecimal(2).longValue() ));
-		    				row.setDateTime((( rs.getTimestamp(3))));
-		    				row.setSubId(new Long ( rs.getBigDecimal(4).longValue() ));
-		    				row.setFeederId(new Long ( rs.getBigDecimal(5).longValue() ));
-		    				row.setEventType(new Integer ( rs.getBigDecimal(6).intValue() ));
-		    				row.setSeqId(new Long ( rs.getBigDecimal(7).longValue() ));
-		    				row.setValue(new Long ( rs.getBigDecimal(8).longValue() ));
-		    				row.setText(( rs.getString(9)));
-		    				row.setUserName(( rs.getString(10)));
-		    				return row;        				
-		    			}
-		    		});
-	    }
-	    else if (type.equalsIgnoreCase("CAP BANK")){
-	    	sqlStmt = "SELECT * FROM " + SystemLog.TABLE_NAME + " WHERE PointId = ? ";
-	    	sqlStmt += " AND DateTime >= ?";
-	    	sqlStmt += " ORDER BY " + SystemLog.COLUMNS[SystemLog.COL_DATETIME]+ " DESC";
-	    	Integer statusPtId = getStatusPointFromPaoId(_paoId_, theCache);  		
-			if (statusPtId != null && statusPtId.intValue() >= 0) {
-				JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();  
-			
-				ccEvents = yukonTemplate.query(sqlStmt, new Object[] {statusPtId, timestamp}, new int[] {Types.INTEGER, Types.TIMESTAMP},
-			    		new RowMapper() {
-			    			public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
-			    				SystemLog row = new SystemLog();
-			    				row.setLogID(new Integer (rs.getBigDecimal(1).intValue()));
-			    				row.setPointID(new Integer (rs.getBigDecimal(2).intValue()));
-			    				row.setDateTime((( rs.getTimestamp(3))));			    				
-			    				row.setSoe_tag(new Integer(rs.getBigDecimal(4).intValue()));
-			    				row.setType(new Integer (rs.getBigDecimal(5).intValue()));
-			    				row.setPriority(new Integer(rs.getBigDecimal(6).intValue()));
-			    				row.setAction((rs.getString(7)));
-			    				row.setDescription(rs.getString(8));
-			    				row.setUserName(rs.getString(9));
-			    				rs.getBigDecimal(10).intValue();
-			    				return row;        				
-			    			}
-			    		});
-			}
-					
-	    	}
-	    	
-	    
-	    return ccEvents;  	
+	@SuppressWarnings("unchecked")
+    public static List getCCEventsForPAO (Long _paoId_, String type, CapControlCache theCache, int prevDaysCount) {
+        String sqlStmt ="SELECT * FROM " + CCEventLog.TABLE_NAME + " WHERE"; 
+        List<RecentControls> ccEvents = new ArrayList<RecentControls>();
+        long startTS = ServletUtil.getDate(- prevDaysCount).getTime();
+        java.sql.Timestamp timestamp = new java.sql.Timestamp( startTS );
+                
+        if (type.equalsIgnoreCase("CCFEEDER")){
+            sqlStmt += " FeederId = ?";
+        }           
+        else if (type.equalsIgnoreCase("CCSUBBUS")){
+            sqlStmt += " SubId = ?";
+        }else if(type.equalsIgnoreCase("CAP BANK")) {
+            sqlStmt += " PointId = ?";
+            _paoId_ = new Long( getStatusPointFromPaoId(_paoId_, theCache));
+        }
+        sqlStmt += " AND DateTime >= ? ";
+        
+        sqlStmt += " ORDER BY " + CCEventLog.COLUMNS [CCEventLog.COL_DATETIME] + " DESC";
+        JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
+        
+        ccEvents = yukonTemplate.query(sqlStmt, new Object[] {_paoId_, timestamp}, new int[] {Types.BIGINT, Types.TIMESTAMP},
+            new RowMapper() {
+                public CCEventLog mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    CCEventLog row = new CCEventLog(); 
+                    row.setLogId (new Long ( rs.getBigDecimal(1).longValue() ));
+                    row.setPointId(new Long ( rs.getBigDecimal(2).longValue() ));
+                    row.setDateTime((( rs.getTimestamp(3))));
+                    row.setSubId(new Long ( rs.getBigDecimal(4).longValue() ));
+                    row.setFeederId(new Long ( rs.getBigDecimal(5).longValue() ));
+                    row.setEventType(new Integer ( rs.getBigDecimal(6).intValue() ));
+                    row.setSeqId(new Long ( rs.getBigDecimal(7).longValue() ));
+                    row.setValue(new Long ( rs.getBigDecimal(8).longValue() ));
+                    row.setText(( rs.getString(9)));
+                    row.setUserName(( rs.getString(10)));
+                    return row;                     
+                }
+            });
+        
+        return ccEvents;  	
 	}
 
 	/**

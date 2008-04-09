@@ -185,9 +185,8 @@ while(paoIDs.hasMoreElements()){
 		</table>
 		</div>
 		</form>
-
-
 	</cti:titledContainer>
+	<br/>
 	<% }
 
 }
