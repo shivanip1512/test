@@ -240,8 +240,7 @@ public class LiteInventoryBase extends LiteBase {
 			isSA = hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA205 || hwConfigType == InventoryUtils.HW_CONFIG_TYPE_SA305;
 		}
 		
-		for (int i = invHist.size() - 1; i >= 0; i--) {
-			LiteLMHardwareEvent liteEvent = invHist.get(i);
+		for (LiteLMHardwareEvent liteEvent : invHist) {
 			YukonListEntry entry = DaoFactory.getYukonListDao().getYukonListEntry( liteEvent.getActionID() );
 			
 			if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_COMPLETED

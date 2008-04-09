@@ -3,6 +3,8 @@
  */
 package com.cannontech.clientutils;
 
+import java.util.Vector;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -92,7 +94,7 @@ public class ActivityLogger {
 							customerID = liteCust.getCustomerID();
 						}
 						
-						java.util.Vector acctIDs = liteCust.getAccountIDs();
+						Vector<Integer> acctIDs = liteCust.getAccountIDs();
 						if (acctIDs.size() > 0) {
 							// This customer has residential information
 							if(energyCompanyID == -1)

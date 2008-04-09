@@ -1379,7 +1379,7 @@ public class StarsAdminUtil {
 	public static List<YukonSelectionList> getSelectionListsInUse(LiteStarsEnergyCompany energyCompany, StarsYukonUser user) {
 		List<YukonSelectionList> userLists = new ArrayList<YukonSelectionList>();
 		
-		if (StarsUtils.isOperator( user )) {
+		if (StarsUtils.isOperator( user.getYukonUser() )) {
 			Map<String,YukonSelectionList> listMap = new TreeMap<String,YukonSelectionList>();
 			listMap.put( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
 				energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE) );
@@ -1567,7 +1567,7 @@ public class StarsAdminUtil {
 			while (it.hasNext())
 				userLists.add( it.next() );
 		}
-		else if (StarsUtils.isResidentialCustomer( user )) {
+		else if (StarsUtils.isResidentialCustomer( user.getYukonUser() )) {
 			userLists.add( energyCompany.getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_CHANCE_OF_CONTROL) );
 			
 			if (DaoFactory.getAuthDao().checkRoleProperty(user.getYukonUser(), ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT)) {

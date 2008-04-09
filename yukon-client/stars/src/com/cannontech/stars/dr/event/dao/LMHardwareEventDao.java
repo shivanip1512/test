@@ -10,6 +10,11 @@ public interface LMHardwareEventDao {
 
     LiteLMHardwareEvent getById(int id) throws DataRetrievalFailureException;
     
+    /**
+     * Method to get all hardware events by inventory id (sorted newest to oldest)
+     * @param inventoryId - Id of inventory to get events for 
+     * @return Sorted events
+     */
     List<LiteLMHardwareEvent> getByInventoryId(int inventoryId);
     
 }

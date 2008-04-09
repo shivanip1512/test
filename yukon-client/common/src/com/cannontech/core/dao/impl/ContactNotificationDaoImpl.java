@@ -186,7 +186,7 @@ public final class ContactNotificationDaoImpl implements ContactNotificationDao
 
         StringBuilder sql = new StringBuilder("SELECT *");
         sql.append(" FROM ContactNotification");
-        sql.append(" WHERE ContactId =  ?");
+        sql.append(" WHERE ContactId = ?");
         sql.append(" ORDER BY Ordering");
 
         List<LiteContactNotification> notificationList = simpleJdbcTemplate.query(sql.toString(),

@@ -11,13 +11,13 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 
 public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     private static final String selectAllSql;
     private static final String selectAndSql;
+    private static final String selectOrderSql;
     private static final String selectByIdSql;
     private static final String selecyByInventoryIdSql;
     private static final ParameterizedRowMapper<LiteLMHardwareEvent> rowMapper;
@@ -29,9 +29,11 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
         
         selectAndSql = " AND map.EventID = ce.EventID AND ce.EventID = he.EventID";
         
+        selectOrderSql = " ORDER BY EventDateTime DESC";
+        
         selectByIdSql = selectAllSql + " WHERE ce.EventID = ?" + selectAndSql;
         
-        selecyByInventoryIdSql = selectAllSql + " WHERE InventoryID = ?" + selectAndSql;
+        selecyByInventoryIdSql = selectAllSql + " WHERE InventoryID = ?" + selectAndSql + selectOrderSql;
         
         rowMapper = createRowMapper();
     }
@@ -46,13 +48,12 @@ public class LMHardwareEventDaoImpl implements LMHardwareEventDao {
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<LiteLMHardwareEvent> getByInventoryId(final int inventoryId) {
-        try {
-            List<LiteLMHardwareEvent> list = simpleJdbcTemplate.query(selecyByInventoryIdSql, rowMapper, inventoryId);
-            return list;
-        } catch (DataRetrievalFailureException e) {
-            CTILogger.error(e);
-            return Collections.emptyList();
-        }
+
+        List<LiteLMHardwareEvent> eventList = Collections.emptyList();
+        eventList = simpleJdbcTemplate.query(selecyByInventoryIdSql,
+                                        rowMapper,
+                                        inventoryId);
+        return eventList;
     }
 
     private static ParameterizedRowMapper<LiteLMHardwareEvent> createRowMapper() {
