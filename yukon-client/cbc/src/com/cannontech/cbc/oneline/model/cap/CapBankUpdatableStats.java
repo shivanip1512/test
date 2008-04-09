@@ -72,7 +72,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
         propColumnMap.put(CBCOnelineSettingsRole.CAP_OPCNT,
                           CBCDisplay.CB_OP_COUNT_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_DAILY_TOTAL_OPCNT,
-                CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN);
+                CBCDisplay.CB_DAILY_TOTAL_OP_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT,
                 CBCDisplay.CB_DAILY_MAX_TOTAL_OP_COLUMN);
         propColumnMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, CBCDisplay.CB_CONTROLLER);
