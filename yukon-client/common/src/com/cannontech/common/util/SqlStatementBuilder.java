@@ -24,7 +24,7 @@ public class SqlStatementBuilder {
         return this;
     }
     
-    public SqlStatementBuilder appendList(Collection array) {
+    public SqlStatementBuilder appendList(Collection<?> array) {
         statement.append(convertToSqlLikeList(array));
         appendSpace();
         return this;
@@ -65,9 +65,10 @@ public class SqlStatementBuilder {
                 appendList((Object[]) object);
             } else if (object instanceof Collection) {
                 // is this the right assumption?
-                appendList((Collection)object);            
+                appendList((Collection<?>)object);            
             } else {
-                statement.append(object.toString());
+                // Trim off any leading or trailing space and then add a space to the end
+                statement.append(object.toString().trim());
                 appendSpace();
             }
         }
@@ -79,7 +80,7 @@ public class SqlStatementBuilder {
     }
     
     
-    public static String convertToSqlLikeList(Collection ids) {
+    public static String convertToSqlLikeList(Collection<?> ids) {
         String groupIdStr;
         if (!ids.isEmpty()) {
             groupIdStr = StringUtils.join(ids.iterator(), ",");
