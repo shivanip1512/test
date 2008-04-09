@@ -14,6 +14,8 @@
 <%@ page import="com.cannontech.util.ServletUtil"%>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory"%>
 <%@ page import="com.cannontech.common.constants.LoginController"%>
+<%@ page import="com.cannontech.servlet.YukonUserContextUtils"%>
+<%@ page import="com.cannontech.user.YukonUserContext"%>
 
 <jsp:directive.page
 	import="com.cannontech.database.db.capcontrol.RecentControls" />
@@ -31,6 +33,7 @@
 
 	<%
 	FilterCacheFactory cacheFactory = YukonSpringHook.getBean("filterCacheFactory", FilterCacheFactory.class);
+	YukonUserContext context = YukonUserContextUtils.getYukonUserContext(request);
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
 	PointDao pointDao = (PointDao)YukonSpringHook.getBean("pointDao");
@@ -156,7 +159,7 @@ while(paoIDs.hasMoreElements()){
 	RecentControls event = (RecentControls)logData.get(paoID).get(j);
 %>
 			<tr class="<%=css%>">
-				<td><%=dateFormattingService.formatDate(event.getTimestamp(),DateFormatEnum.BOTH,user)%></td>
+				<td><%=dateFormattingService.formatDate(event.getTimestamp(),DateFormatEnum.BOTH,context)%></td>
 				<% if (event.getPointId() == null || event.getPointId() <= 0) {%>
                 <td>----</td>
                 <%}else {%>
