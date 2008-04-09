@@ -209,7 +209,7 @@
 							id="CtlEditPointTree"
 							value="#{capControlForm.CBControllerEditor.pointList}" var="node"
 							showRootNode="false" varNodeToggler="t" preserveToggle="true"
-							clientSideToggle="false" showLines="false">
+							clientSideToggle="true" showLines="false">
 	
 							<f:facet name="root">
 								<x:panelGroup>
@@ -235,7 +235,7 @@
 							<f:facet name="points">
 								<x:panelGroup>
 									<x:commandLink id="ptLink" value="#{node.description}"
-										actionListener="#{capControlForm.CBControllerEditor.pointClick}">
+										actionListener="#{capControlForm.cBControllerEditor.pointClick}">
 										<f:param name="ptID" value="#{node.identifier}" />
 									</x:commandLink>
 								</x:panelGroup>

@@ -35,7 +35,7 @@
                             <x:tree2 id="SubstationBusEditPointTree"
                                 value="#{capControlForm.pointTreeForm.pointList}" var="node"
                                 showRootNode="false" varNodeToggler="t" preserveToggle="true"
-                                clientSideToggle="false" showLines="false">
+                                clientSideToggle="true" showLines="false">
 
                                 <f:facet name="root">
                                     <x:panelGroup>
