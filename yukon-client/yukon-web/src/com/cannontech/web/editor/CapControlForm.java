@@ -1023,7 +1023,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             if (getDataModel() != null) {
                 if(dbPers instanceof CapControlSpecialArea) {
                     duplicates = checkEnableSpecialArea((CapControlSpecialArea)dbPers);
-                    if(duplicates != null && !duplicates.isEmpty()) {
+                    if(!duplicates.isEmpty()) {
                         dataModelOK = false;
                     }else {
                         getDataModel().updateDataModel();
