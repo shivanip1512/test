@@ -34,7 +34,7 @@ public class SubTagView extends LxAbstractView implements TagView {
         Point2D startPoint = OnelineUtil.getStartPoint(img);
         StaticText label = OnelineUtil.createTextElement(strLabel,
                                                          startPoint,
-                                                         null,
+                                                         new Integer(15),
                                                          new Integer(-20));
 
         label.setFont(OnelineUtil.LARGE_FONT);
