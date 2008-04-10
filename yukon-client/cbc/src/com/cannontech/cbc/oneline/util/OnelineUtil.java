@@ -62,18 +62,18 @@ public class OnelineUtil {
     public static final double CAP_IMG_WIDTH = 20;
     public static final int SUB_IMG_HEIGHT = 60;
 
-    public static final String IMG_YUKON_LOGO_WHITE = "2001-YukonLogoWhite.gif";
-    public static final String IMG_CAP_CONTROL_LOGO = "2006-CapControlLogo.gif";
-    public static final String IMG_BACKBUTTON = "4005-arrow.gif";
-    public static final String IMG_EDITOR = "4006-edit.gif";
-    public static final String IMG_QUESTION = "4007-question.gif";
-    public static final String IMG_PTTIMESTAMP = "4008-magnifier.gif";
-    public static final String IMG_REGENERATE = "4010-regenerate.gif";
+    public static final String IMG_YUKON_LOGO_WHITE = "YukonLogoWhite.gif";
+    public static final String IMG_CAP_CONTROL_LOGO = "CapControlLogo.gif";
+    public static final String IMG_BACKBUTTON = "arrow.gif";
+    public static final String IMG_EDITOR = "edit.gif";
+    public static final String IMG_QUESTION = "question.gif";
+    public static final String IMG_PTTIMESTAMP = "magnifier.gif";
+    public static final String IMG_REGENERATE = "regenerate.gif";
     
-    public static final String IMG_WARNING_YELLOW = "4014-WarningYellow.gif";
-    public static final String IMG_WARNING_YELLOW_L = "4013-WarningYellowLocal.gif";
-    public static final String IMG_WARNING_GREEN = "4012-WarningGreen.gif";
-    public static final String IMG_WARNING_GREEN_L = "4014-WarningGreenLocal.gif";
+    public static final String IMG_WARNING_YELLOW = "WarningYellow.gif";
+    public static final String IMG_WARNING_YELLOW_L = "WarningYellowLocal.gif";
+    public static final String IMG_WARNING_GREEN = "WarningGreen.gif";
+    public static final String IMG_WARNING_GREEN_L = "WarningGreenLocal.gif";
     
 
     public static final String ONELN_STATE_GROUP = "1LNSUBSTATE";
