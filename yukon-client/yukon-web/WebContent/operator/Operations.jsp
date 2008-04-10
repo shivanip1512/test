@@ -48,10 +48,11 @@
 <cti:checkRole role="ConsumerInfoRole.ROLEID">
 
 	<tags:operationSection sectionName="Consumer Account Information" sectionImageName="ConsumerLogo">
-		<tags:sectionLink>
-        	<a href="Consumer/New.jsp?Init=true<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">&amp;Wizard=true</cti:checkProperty>">New Account</a>
-        </tags:sectionLink>
-
+		<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">
+			<tags:sectionLink>
+	        	<a href="Consumer/New.jsp?Init=true<cti:checkProperty property="ConsumerInfoRole.NEW_ACCOUNT_WIZARD">&amp;Wizard=true</cti:checkProperty>">New Account</a>
+	        </tags:sectionLink>
+		</cti:checkProperty>
 		<c:set var="importID" scope="page">
 			<cti:getProperty property="ConsumerInfoRole.IMPORT_CUSTOMER_ACCOUNT"/>
 		</c:set>
