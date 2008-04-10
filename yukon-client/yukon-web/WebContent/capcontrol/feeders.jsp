@@ -671,15 +671,17 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                 
                 <td>
                     <a href="javascript:void(0);"
-                    <% if (capBank.isBankMoved()) { %>
-	                    class="warning" 
-	                    <%=popupEvent%>="getCapBankTempMoveBack('${thisCapBankId}');" 
-                    <% } else { %>
-                        onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
-                        onmouseout="nd();"
-                        onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)',
-                            'tempmove.jsp?bankid=<%=capBank.getCcId()%>', 500, 710, onGreyBoxClose);"
-                    <% } %>
+                    <% if (hasControl) { %>
+	                    <% if (capBank.isBankMoved()) { %>
+		                    class="warning" 
+		                    <%=popupEvent%>="getCapBankTempMoveBack('${thisCapBankId}');" 
+	                    <% } else { %>
+	                        onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
+	                        onmouseout="nd();"
+	                        onclick="return GB_show('CapBank Temp Move Target (Pick feeder by clicking on name)',
+	                            'tempmove.jsp?bankid=<%=capBank.getCcId()%>', 500, 710, onGreyBoxClose);"
+	                    <% } %>
+	                <% } %>
                     	>
                             <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_PARENT"/>
                     	</a>                    
