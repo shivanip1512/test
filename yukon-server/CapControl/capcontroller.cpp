@@ -2183,7 +2183,8 @@ void CtiCapController::pointDataMsgBySpecialArea( long pointID, double value, un
                 {
                    // if( timestamp > currentSpArea->getLastControlPointUpdateTime() )
                     {
-                        if (currentSpArea->getVoltReductionControlValue() != value)
+                        if (currentSpArea->getVoltReductionControlValue() != value &&
+                            !currentSpArea->getDisableFlag())
                         {
                             currentSpArea->setVoltReductionControlValue(value);
                             if (_AUTO_VOLT_REDUCTION)
@@ -2629,15 +2630,36 @@ void CtiCapController::pointDataMsgBySubBus( long pointID, double value, unsigne
 
                     if( currentSubstationBus->getEstimatedPowerFactorPointId()  == pointID )
                     {
+                        if (currentSubstationBus->getEstimatedPowerFactorValue() != value)
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedPowerFactorPointId(),value,NormalQuality,AnalogPointType));
+                        }
                         currentSubstationBus->setEstimatedPowerFactorValue(value);
                     }
                     if( currentSubstationBus->getEstimatedVarLoadPointId()  == pointID )
                     {
+                        if (currentSubstationBus->getEstimatedVarLoadPointValue() != value)
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),value,NormalQuality,AnalogPointType));
+                        }
                         currentSubstationBus->setEstimatedVarLoadPointValue(value);
                     }
                     if( currentSubstationBus->getPowerFactorPointId()  == pointID)
                     {
+                        if (currentSubstationBus->getPowerFactorValue() != value)
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getPowerFactorPointId(),value,NormalQuality,AnalogPointType));
+                        }
                         currentSubstationBus->setPowerFactorValue(value);
+                    }
+                    if( currentSubstationBus->getDailyOperationsAnalogPointId()  == pointID)
+                    {
+                        if (currentSubstationBus->getCurrentDailyOperations() != value)
+                        {
+                            sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getDailyOperationsAnalogPointId(),value,NormalQuality,AnalogPointType));
+                            currentSubstationBus->setBusUpdatedFlag(TRUE);
+                        }
+                        currentSubstationBus->setCurrentDailyOperations(value);
                     }
                     
                     //do nothing
@@ -2865,7 +2887,56 @@ void CtiCapController::pointDataMsgByFeeder( long pointID, double value, unsigne
                             }
                             currentFeeder->setCurrentVoltPointQuality(quality);
                         }
-                    }                        
+                    }
+                    else if ( currentFeeder->getEstimatedPowerFactorPointId()  == pointID|| 
+                          currentFeeder->getEstimatedVarLoadPointId()  == pointID||
+                          currentFeeder->getDailyOperationsAnalogPointId()  == pointID||
+                          currentFeeder->getPowerFactorPointId() == pointID ) 
+                    {
+                        if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - Optional POINT data message received for: " << pointID << " on SUB: " << currentSubstationBus->getPAOName() << endl;
+                        }
+                 
+                        if(  currentFeeder->getEstimatedPowerFactorPointId()  == pointID )
+                        {
+                            if (currentFeeder->getEstimatedPowerFactorValue() != value)
+                            {
+                                sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedPowerFactorPointId(),value,NormalQuality,AnalogPointType));
+                            }
+                            currentFeeder->setEstimatedPowerFactorValue(value);
+                        }
+                        if(  currentFeeder->getEstimatedVarLoadPointId()  == pointID )
+                        {
+                            if (currentFeeder->getEstimatedVarLoadPointValue() != value)
+                            {
+                                sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getEstimatedVarLoadPointId(),value,NormalQuality,AnalogPointType));
+                            }
+                            currentFeeder->setEstimatedVarLoadPointValue(value);
+                        }
+                        if(  currentFeeder->getPowerFactorPointId()  == pointID)
+                        {
+                             if (currentFeeder->getPowerFactorValue() != value)
+                             {
+                                 sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getPowerFactorPointId(),value,NormalQuality,AnalogPointType));
+                             }
+                             currentFeeder->setPowerFactorValue(value);
+                        }
+                        if(  currentFeeder->getDailyOperationsAnalogPointId()  == pointID)
+                        {
+                            if (currentFeeder->getCurrentDailyOperations() != value)
+                            {
+                                sendMessageToDispatch(new CtiPointDataMsg(currentFeeder->getDailyOperationsAnalogPointId(),value,NormalQuality,AnalogPointType));
+                                currentSubstationBus->setBusUpdatedFlag(TRUE);
+                            }
+                            currentFeeder->setCurrentDailyOperations(value);
+                        }
+
+                        
+                        //do nothing
+                    }
+
                     if ((currentFeeder->getPhaseBId() == pointID ||
                          currentFeeder->getPhaseCId() == pointID ) &&
                          currentFeeder->getUsePhaseData())
@@ -3036,6 +3107,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 {
                                     if (currentCapBank->getTotalOperations() > 0)
                                         currentCapBank->setTotalOperations( currentCapBank->getTotalOperations() - 1);
+                                    if (currentCapBank->getCurrentDailyOperations() > 0)
+                                        currentCapBank->setCurrentDailyOperations( currentCapBank->getCurrentDailyOperations() - 1);
                                     getDispatchConnection()->WriteConnQue(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Command Refused, Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                     ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, opCount adjustment", "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
                                 }
@@ -3055,7 +3128,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 {
                                     currentCapBank->setReportedCBCStateTime(timestamp);
 
-                                    if (!currentFeeder->getRecentlyControlledFlag() && !currentSubstationBus->getRecentlyControlledFlag() &&
+                                    if ((!currentFeeder->getRecentlyControlledFlag() && !currentSubstationBus->getRecentlyControlledFlag() &&
+                                         !currentCapBank->getControlRecentlySentFlag() ) &&
                                         ( currentCapBank->getControlStatus() != CtiCCCapBank::OpenQuestionable &&
                                           currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail &&
                                           currentCapBank->getControlStatus() != CtiCCCapBank::CloseQuestionable &&

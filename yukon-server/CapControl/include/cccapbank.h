@@ -124,6 +124,7 @@ public:
     LONG getControlStatusQuality() const;
     BOOL getReEnableOvUvFlag() const;
     BOOL getLocalControlFlag() const;
+    BOOL getControlRecentlySentFlag() const;
 
     BOOL getOvUvSituationFlag() const;
     LONG getUDPPort() const;
@@ -200,7 +201,8 @@ public:
     CtiCCCapBank& setControlStatusQuality(CtiCCControlStatusQaulity quality);
     CtiCCCapBank& setReEnableOvUvFlag(BOOL flag);
     CtiCCCapBank& setLocalControlFlag(BOOL localControlFlag);
-    
+    CtiCCCapBank& setControlRecentlySentFlag(BOOL flag);
+
     CtiCCCapBank& setOvUvSituationFlag(BOOL ovUvSituationFlag);
     CtiCCCapBank& setUDPPort(LONG value);
     CtiCCCapBank& setIpAddress(ULONG value);
@@ -341,6 +343,7 @@ private:
     BOOL _ovuvSituationFlag;
     BOOL _reEnableOvUvFlag;
     BOOL _localControlFlag;
+    BOOL _controlRecentlySentFlag;
     
     CtiCCTwoWayPoints *_twoWayPoints;
     string _ipAddress;
@@ -355,7 +358,7 @@ private:
     string _sPercentChange;
     LONG _controlStatusQuality;
 
-
+    
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
     

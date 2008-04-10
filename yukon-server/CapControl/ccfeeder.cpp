@@ -2157,7 +2157,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarRequest(CtiCCCapBank* capBank, CtiM
     //capBank->setControlStatus(CtiCCCapBank::OpenPending);
 
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::OpenPending, capBank);
+    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::OpenPending, 
+                                                                       capBank, TRUE);
     capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
     _currentdailyoperations++;
@@ -2260,7 +2261,8 @@ CtiRequestMsg* CtiCCFeeder::createIncreaseVarVerificationRequest(CtiCCCapBank* c
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     //capBank->setControlStatus(CtiCCCapBank::OpenPending);
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::OpenPending, capBank);
+    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::OpenPending, 
+                                                                       capBank, TRUE);
     capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
     _currentdailyoperations++;
@@ -2350,7 +2352,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     //capBank->setControlStatus(CtiCCCapBank::ClosePending);
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, capBank);
+    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, 
+                                                                       capBank, TRUE);
     capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
     _currentdailyoperations++;
@@ -2442,7 +2445,8 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarRequest(CtiCCCapBank* capBank, CtiM
     setLastCapBankControlledDeviceId(capBank->getPAOId());
     //capBank->setControlStatus(CtiCCCapBank::ClosePending);
     CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
-    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, capBank);
+    store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, 
+                                                                       capBank, TRUE);
     capBank->setControlStatusQuality(CC_Normal);
     figureEstimatedVarLoadPointValue();
     _currentdailyoperations++;
@@ -2550,13 +2554,15 @@ CtiRequestMsg* CtiCCFeeder::createForcedVarRequest(CtiCCCapBank* capBank, CtiMul
         action == CtiCCCapBank::CloseFail )
     {
         //capBank->setControlStatus(CtiCCCapBank::Close);
-        store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Close, capBank);
+        store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Close, 
+                                                                       capBank, TRUE);
         textInfo += "Close sent, ";
         textInfo += typeOfControl;
     }
     else
     {
-        store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Open, capBank);
+        store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Open, 
+                                                                       capBank, TRUE);
         //capBank->setControlStatus(CtiCCCapBank::Open);
         textInfo += "Open sent, ";
         textInfo += typeOfControl;
@@ -3373,10 +3379,14 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Rate of Change Value: " << varValueBC << endl;
                         }
-                    }
-                    // is estimated within Percent of currentVar?
-                    change = currentVarLoadPointValue - varValueBC;
 
+                        // is estimated within Percent of currentVar?
+                        change = currentVarLoadPointValue - varValueBC;
+                    }
+                    else
+                    {
+                        change = currentVarLoadPointValue - varValueBC;
+                    }
                     if( _RATE_OF_CHANGE && !reg.depthMet() )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3471,9 +3481,13 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Rate of Change Value: " << varValueBC << endl;
                         }
+                        // is estimated within Percent of currentVar?
+                        change = varValueBC - currentVarLoadPointValue;
                     }
-                    change = varValueBC - currentVarLoadPointValue;
-
+                    else
+                    {
+                        change = varValueBC - currentVarLoadPointValue;
+                    }
                     if( _RATE_OF_CHANGE && !reg.depthMet() )
                     {
                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3683,9 +3697,9 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                             dout << time << "                   Phase C: " << varValueCbc << endl;
                         }
                     }
-                    changeA = varAValue - (varValueAbc);
-                    changeB = varBValue - (varValueBbc);
-                    changeC = varCValue - (varValueCbc);
+                    changeA = varAValue - varValueAbc;
+                    changeB = varBValue - varValueBbc;
+                    changeC = varCValue - varValueCbc;
 
                     if( _RATE_OF_CHANGE && (!regA.depthMet() || !regB.depthMet() || !regC.depthMet()) )
                     {
@@ -3815,8 +3829,8 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                         if( (ratioA < failurePercent*.01 && ratioB < failurePercent*.01 && ratioC < failurePercent*.01) && 
                              failurePercent != 0 && minConfirmPercent != 0 )
                         {
-                            //currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
-                            store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::CloseFail, currentCapBank);
+                            store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::CloseFail, 
+                                                                       currentCapBank, FALSE);
                             if (currentCapBank->getControlStatusQuality() != CC_CommFail)
                                 currentCapBank->setControlStatusQuality(CC_Fail);
                         }
@@ -3902,7 +3916,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                                                         varValueAbc+varValueBbc+varValueCbc, varAValue+varBValue+varCValue, changeA+changeB+changeC, currentCapBank->getIpAddress(), actionId, stateInfo,
                                                         varAValue, varBValue, varCValue));
                 
-            }
+            }   
             else
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3994,7 +4008,9 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                             {
                                currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
                                setCurrentVerificationCapBankState(CtiCCCapBank::Open);
-                               store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, currentCapBank);
+                               store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, 
+                                                                       currentCapBank, FALSE);
+
                                assumedWrongFlag = TRUE;
                                change = 0 - change;
                             }
@@ -4357,7 +4373,9 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                         {
                            currentCapBank->setAssumedOrigVerificationState(CtiCCCapBank::Open);
                            setCurrentVerificationCapBankState(CtiCCCapBank::Open);
-                           store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, currentCapBank);
+                           store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, 
+                                                                       currentCapBank, FALSE);
+
                            assumedWrongFlag = TRUE;
                            changeA = 0 - changeA;
                            changeB = 0 - changeB; 

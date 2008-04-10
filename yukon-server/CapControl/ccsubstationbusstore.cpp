@@ -2840,6 +2840,8 @@ void CtiCCSubstationBusStore::resetDailyOperations()
                 }*/
                 currentCapBank->setCurrentDailyOperations(0);
                 currentCapBank->setMaxDailyOpsHitFlag(FALSE);
+                currentCapBank->setRetryCloseFailedFlag(FALSE);
+                currentCapBank->setRetryOpenFailedFlag(FALSE);
             }
             //**********************************************************************
             //The operation count on a cap bank is actually a total not a daily, doh
@@ -10510,13 +10512,15 @@ long CtiCCSubstationBusStore::isKVARAvailable( long kvarNeeded )
 
     Sets the control status of the capbank
 ---------------------------------------------------------------------------*/
-void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap)
+void CtiCCSubstationBusStore::setControlStatusAndIncrementOpCount(CtiMultiMsg_vec& pointChanges, LONG status, CtiCCCapBank* cap, 
+                                                                  BOOL controlRecentlySentFlag)
 {
 
     if (cap == NULL)
         return;
 
     cap->setControlStatus(status);
+    cap->setControlRecentlySentFlag(controlRecentlySentFlag);
 
     CtiCCFeederPtr feeder = findFeederByPAObjectID(cap->getParentId());
     if (feeder == NULL)

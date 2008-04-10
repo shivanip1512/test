@@ -655,7 +655,11 @@ bool CtiPAOScheduleManager::getEventsBySchedId(long id, std::list<CtiPAOEvent*> 
         {
             if ((*iter)->getScheduleId() == id)
             {
-                events.push_back(*iter);
+                CtiPAOEvent* thisEvent = new CtiPAOEvent((*iter)->getEventId(),
+                                                         (*iter)->getScheduleId(),
+                                                         (*iter)->getPAOId(),
+                                                         (*iter)->getEventCommand());
+                events.push_back(thisEvent);
                 retVal = true;
             }
             iter++;

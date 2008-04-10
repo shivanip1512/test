@@ -199,6 +199,9 @@ CtiCCSpecial& CtiCCSpecial::operator=(const CtiCCSpecial& right)
 
         _operationStats = right._operationStats;  
         _confirmationStats = right._confirmationStats;
+
+       _dirty = right._dirty;
+       _insertDynamicDataFlag = right._insertDynamicDataFlag;
     }
     return *this;
 }
@@ -291,6 +294,7 @@ void CtiCCSpecial::restore(RWDBReader& rdr)
 
     setVoltReductionControlValue(FALSE);
 
+    _dirty = TRUE;
     _insertDynamicDataFlag = TRUE;
 
 }
@@ -818,6 +822,8 @@ CtiCCSpecial& CtiCCSpecial::setVoltReductionControlPointId(LONG pointId)
 ---------------------------------------------------------------------------*/
 CtiCCSpecial& CtiCCSpecial::setVoltReductionControlValue(BOOL flag)
 {
+    if (_voltReductionControlValue != flag)
+        _dirty = TRUE;
     _voltReductionControlValue = flag;
     return *this;
 }
@@ -830,6 +836,9 @@ CtiCCSpecial& CtiCCSpecial::setVoltReductionControlValue(BOOL flag)
 ---------------------------------------------------------------------------*/
 CtiCCSpecial& CtiCCSpecial::setOvUvDisabledFlag(BOOL flag)
 {
+    if (_ovUvDisabledFlag != flag)
+        _dirty = TRUE;
+
     _ovUvDisabledFlag = flag;
     return *this;
 }
