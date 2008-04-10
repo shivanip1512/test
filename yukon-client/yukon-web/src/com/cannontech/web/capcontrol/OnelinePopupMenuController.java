@@ -2,6 +2,7 @@ package com.cannontech.web.capcontrol;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +19,7 @@ import com.cannontech.capcontrol.CapBankOperationalState;
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.cbc.dao.CommentAction;
 import com.cannontech.cbc.service.CapControlCommentService;
+import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.clientutils.CTILogger;
@@ -441,7 +443,28 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.setViewName("oneline/popupmenu/moveBankBackPopup");
         return mav;
     }
-    
+
+    public ModelAndView warningInfoPopop(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final ModelAndView mav = new ModelAndView();
+        final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");
+        
+        List<String> infoList;
+        
+        /* Handle each type for the warning popup. */
+        if( capControlCache.isCapBank(id) ) {
+        	infoList = capbankWarning(id);
+        } else if(capControlCache.isFeeder(id)) {
+        	infoList = feederWarning(id);
+        } else {//subbus
+        	infoList = subBusWarning(id);
+        }
+        
+        mav.addObject("infoList", infoList);
+        
+        mav.setViewName("oneline/popupmenu/warningInfoPopup");
+        return mav;
+    }
+
     public ModelAndView moveBankPopup(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         final Integer id = ServletRequestUtils.getRequiredIntParameter(request, "id");       
@@ -449,6 +472,56 @@ public class OnelinePopupMenuController extends MultiActionController {
         mav.setViewName("oneline/popupmenu/moveBankPopup");
         return mav;
     }
+
+    private List<String> subBusWarning(int id) {
+        final SubBus sub = capControlCache.getSubBus(id);
+        
+        boolean likeDay = sub.getLikeDayControlFlag();
+        boolean voltR = sub.getVoltReductionFlag();
+        
+        List<String> infoList = new ArrayList<String>();
+
+        if (likeDay) {
+        	infoList.add(CBCDisplay.WARNING_LIKE_DAY);
+        }
+        if (voltR) {
+        	infoList.add(CBCDisplay.WARNING_VOLT_REDUCTION);
+        }
+
+        return infoList;
+    }
+    
+    private List<String> feederWarning(int id) {
+        final Feeder feeder = capControlCache.getFeeder(id);
+        
+        boolean likeDay = feeder.getLikeDayControlFlag();
+        
+        List<String> infoList = new ArrayList<String>();
+
+        if (likeDay) {
+        	infoList.add(CBCDisplay.WARNING_LIKE_DAY);
+        }
+
+        return infoList;
+    }
+    
+    private List<String> capbankWarning(int id) {
+        final CapBankDevice cap = capControlCache.getCapBankDevice(id);
+        
+        boolean ovuv = cap.getOvuvSituationFlag();
+        boolean maxOp = cap.getMaxDailyOperationHitFlag();
+        
+        List<String> infoList = new ArrayList<String>();
+
+        if (maxOp) {
+        	infoList.add(CBCDisplay.WARNING_MAX_DAILY_OPS);
+        }
+        if (ovuv) {
+        	infoList.add(CBCDisplay.WARNING_OVUV_SITUATION);
+        }
+        return infoList;
+    }
+    
     public void setCapControlCache(CapControlCache capControlCache) {
         this.capControlCache = capControlCache;
     }
