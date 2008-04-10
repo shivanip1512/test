@@ -656,6 +656,8 @@ public final class CBCUtils {
             case PAOGroups.CBC_7024:
             case PAOGroups.CBC_EXPRESSCOM:
             case PAOGroups.CAPBANKCONTROLLER:
+            case PAOGroups.CBC_DNP:
+            case PAOGroups.CBC_FP_2800:
                 return true;
         default:
             return false;
