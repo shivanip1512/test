@@ -677,6 +677,10 @@
       </ul>
     </troubleshooting>
 </error>
+<error code="0">
+	<category>N/A</category> 
+    <description>Successful Read</description>
+</error>
 <error code="*">
 	<category>N/A</category> 
     <description>Troubleshooting tips for this error code are not available at this time</description>
