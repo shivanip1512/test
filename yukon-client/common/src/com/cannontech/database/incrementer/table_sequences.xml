@@ -115,5 +115,8 @@
       <sequence name="Contact">
         <table name="Contact" identitycolumn="ContactID" initsequence="true"/>
       </sequence>
+      <sequence name="LMStatManualEvent">
+        <table name="LMCustomerEventBase" identitycolumn="EventID" initsequence="true"/>
+      </sequence>
   </sequencetable>
 </sequencetables>

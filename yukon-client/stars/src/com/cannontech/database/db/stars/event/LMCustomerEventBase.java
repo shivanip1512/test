@@ -2,6 +2,8 @@ package com.cannontech.database.db.stars.event;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * <p>Title: LMCustomerEventBase.java</p>
@@ -21,6 +23,8 @@ public class LMCustomerEventBase extends DBPersistent {
     private java.util.Date eventDateTime = new java.util.Date(0);
     private String notes = "";
     private String authorizedBy = "";
+    
+    private static NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
 
     public static final String[] SETTER_COLUMNS = {
         "EventTypeID", "ActionID", "EventDateTime", "Notes", "AuthorizedBy"
@@ -40,8 +44,10 @@ public class LMCustomerEventBase extends DBPersistent {
     }
 
     public void add() throws java.sql.SQLException {
-    	if (getEventID() == null)
-    		setEventID( getNextEventID() );
+    	if (getEventID() == null) {
+            int nextEventId = nextValueHelper.getNextValue(TABLE_NAME);
+            setEventID( nextEventId );
+        }
     		
         Object[] addValues = {
             getEventID(), getEventTypeID(), getActionID(), getEventDateTime(),
@@ -77,33 +83,6 @@ public class LMCustomerEventBase extends DBPersistent {
             throw new Error(getClass() + " - Incorrect number of results retrieved");
     }
 
-    public final Integer getNextEventID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextEventID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_EVENT_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextEventID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextEventID );
-    }
-    
     public static LMCustomerEventBase[] getAllCustomerEvents(int eventTypeID, int actionID) {
     	String sql = "SELECT * FROM " + TABLE_NAME + " WHERE EventTypeID = " + String.valueOf(eventTypeID)
     			   + " AND ActionID = " + String.valueOf(actionID);

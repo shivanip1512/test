@@ -21,7 +21,7 @@ public abstract class AbstractConsumerController {
     protected CustomerAccountDao customerAccountDao;
     protected ApplianceDao applianceDao;
     protected ProgramDao programDao;
-    protected InventoryBaseDao inventoryDao;
+    protected InventoryBaseDao inventoryBaseDao;
     protected DisplayableProgramDao displayableProgramDao;
     
     @ModelAttribute("customerAccount")
@@ -50,8 +50,8 @@ public abstract class AbstractConsumerController {
     }
 
     @Autowired
-    public void setInventoryDao(InventoryBaseDao inventoryDao) {
-        this.inventoryDao = inventoryDao;
+    public void setInventoryBaseDao(InventoryBaseDao inventoryDao) {
+        this.inventoryBaseDao = inventoryDao;
     }
 
     @Autowired

@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -131,6 +132,21 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     public List<CustomerAccountWithNames> getAllAccountsWithNamesByEC(final int ecId) {
         List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(selectAllUsefulAccountInfoFromECSql, specialAccountInfoRowMapper, ecId);
         return list;
+    }
+    
+
+    @Override
+    public CustomerAccount getAccountByInventoryId(int inventoryId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ca.*");
+        sql.append("FROM CustomerAccount ca, InventoryBase ib");
+        sql.append("WHERE ca.AccountId = ib.AccountId"); 
+        sql.append("AND ib.InventoryId = ?");
+        
+        CustomerAccount account = simpleJdbcTemplate.queryForObject(sql.toString(), rowMapper, inventoryId);
+        
+        return account;
     }
 
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {

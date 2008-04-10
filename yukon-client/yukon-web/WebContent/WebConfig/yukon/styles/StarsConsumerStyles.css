@@ -65,3 +65,26 @@ table.enrolledPrograms tr td.logoBordered {
 table.enrolledPrograms tr td.bordered {
 	border-bottom: 1px solid #ccc;
 }
+
+.temperature {
+    text-align: center;
+    font-size: 2em;
+    width: 2em;
+}
+
+.clickable {
+    cursor: pointer;    
+}
+
+.subItem {
+    font-size: 12px;
+}
+
+td.arrow {
+    width: 20px;
+    height: 12px;    
+}
+
+div.message {
+    text-align: center;    
+}

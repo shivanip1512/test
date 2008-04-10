@@ -423,7 +423,7 @@ div.triangleContainer .triangleContainer_titleBar .controls {
     cursor: pointer;
 }
 
-div.boxContainer .boxContainer_titleBar { 
+div.boxContainer .boxContainer_titleBar, table.boxContainer td.boxContainer_titleBar { 
 	background-color: #F7F7F7;
 	border: 1px solid #BBBBBB;
 	padding: .25em .5em; 
@@ -462,6 +462,15 @@ div.boxContainer .boxContainer_content {
 	border-left: 1px solid #BBBBBB;
 	border-right: 1px solid #BBBBBB;
 	border-bottom: 1px solid #BBBBBB;
+}
+
+table.boxContainer {
+    border: 1px solid #BBBBBB; 
+    border-collapse: collapse;
+}
+
+table.boxContainer td.boxContainer_content {
+    padding: 10px 10px;
 }
 
 .widgetColumns td.widgetColumnCell .titledContainerOverride {

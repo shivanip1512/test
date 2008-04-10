@@ -1,0 +1,225 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
+
+<cti:standardPage module="consumer" title="Consumer Energy Services">
+    <cti:standardMenu/>
+    
+    <cti:includeScript link="/JavaScript/manualThermostat.js" />
+    
+    <cti:msg var="degreesCelsius" key="yukon.dr.consumer.thermostat.degreesCelsius" />
+    <cti:msg var="degreesFahrenheit" key="yukon.dr.consumer.thermostat.degreesFahrenheit" />
+    
+    <table class="contentTable">
+        <tr>
+            <td class="leftColumn">
+                <h3>
+                    <cti:msg key="yukon.dr.consumer.thermostat.header" /><br>
+                    ${thermostat.label} 
+                </h3>
+                
+                
+                <br><br>
+                <div style="font-size: 11px;">
+                    <cti:msg key="yukon.dr.consumer.thermostat.instructionText" />
+                </div>
+                
+                <br>
+                
+                <c:set var="runProgram" value="${event.runProgram}" />
+                
+                <table cellspacing="0" cellpadding="0">
+                    <tr>
+                        <td>
+                            <!-- Thermostat settings table -->
+                            <table class="boxContainer" cellspacing="0" cellpadding="0">
+                                <tr>
+                                    <td class="boxContainer_titleBar">
+                                        <table style="width: 100%" cellspacing="0" cellpadding="0">
+                                            <tr>
+                                                <td style="white-space: nowrap;">
+                                                    <form action="/spring/stars/consumer/thermostat/saveLabel" method="post">
+                                                        <input name="thermostatId" type="hidden" value="${thermostat.id}" />
+                                                        <span id="editName" style="display: none;">
+                                                            <input id="thermostatLabel" name="displayLabel" type="text" value="${thermostat.label}" />
+                                                            <cti:msg var="saveText" key="yukon.dr.consumer.thermostat.save" />
+                                                            <input type="submit" value="${saveText}" />
+                                                        </span> 
+                                                        <span id="thermostatName">
+                                                            ${thermostat.label}
+                                                        </span>
+                                                        <span style="font-size: 11px;"><a href="javascript:editName()"><cti:msg key="yukon.dr.consumer.thermostat.edit" /></a></span>
+                                                        
+                                                    </form>
+                                                <td style="text-align: right; padding-left: 2em;">
+                                                    <span style="text-align: right;">
+                                                        <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
+                                                        <input name="runProgram" type="submit" value="${runProgramText}" />
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                        
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="boxContainer_content">
+                                        <form action="/spring/stars/consumer/thermostat/manual" method="post" >
+                                            <input name="thermostatId" type="hidden" value="${thermostat.id}" />
+                                            <table width="100%" cellpadding="0" cellspacing="0">
+                                                <tr>
+                                                    <td colspan="4" style="padding-bottom: .5em; font-size: .75em;">
+                                                        <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
+                                                        <cti:msg var="manualSettingsText" key="yukon.dr.consumer.thermostat.manualSettings" />
+                                                        <cti:formatDate value="${event.date}" type="BOTH" /> - ${(runProgram)? runProgramText : manualSettingsText}
+                                                    </td>
+                                                </tr>
+                                                <tr> 
+                                                    <td style="text-align: center;"> 
+                                                        <c:set var="tempStyle" value="" />
+                                                        <c:if test="${event.modeString == 'COOL'}">
+                                                            <c:set var="tempStyle" value="color: blue;" />
+                                                        </c:if>
+                                                        <c:if test="${event.modeString == 'HEAT' || event.modeString == 'EMERGENCY_HEAT'}">
+                                                            <c:set var="tempStyle" value="color: red;" />
+                                                        </c:if>
+                                                        
+                                                        <input id="temperature" type="text" name="temperature" style="${tempStyle}" maxlength="2" class="temperature" value="${(runProgram)? '' : event.previousTemperature}" onblur="validateTemp()" <c:if test="${event.modeString == 'OFF'}">disabled="disabled"</c:if>>
+                                                        <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="F">
+                                                        <div style="font-size: 11px;">
+                                                            <a id="celsiusLink" href="javascript:setTempUnits('C');">${degreesCelsius}</a><span id="celsiusSpan" style="display: none;">${degreesCelsius}</span> | 
+                                                            <a id="fahrenheitLink" style="display: none;" href="javascript:setTempUnits('F');">${degreesFahrenheit}</a><span id="fahrenheitSpan">${degreesFahrenheit}</span>
+                                                        </div>
+                                                    </td>
+                                                    <td style="padding-left: 5px; vertical-align: middle;"> 
+                                                        <div class="clickable" onclick="changeTemp(1)"><cti:msg key="yukon.dr.consumer.thermostat.incrementTemp" /></div>
+                                                        <div class="clickable" onclick="changeTemp(-1)"><cti:msg key="yukon.dr.consumer.thermostat.decrementTemp" /></div>
+                                                    </td>
+                                                    
+                                                    <!-- Thermostat Modes -->
+                                                    <td style="vertical-align: top; padding-left: 20px;">
+                                                        <cti:theme var="arrow" key="yukon.dr.consumer.thermostat.arrow" default="/WebConfig/yukon/Icons/triangle-right.gif" url="true"/>
+                                                        
+                                                        <c:set var="eventMode" value="${(runProgram)? '' : event.modeString}" />
+                                                        <table width="100%" cellpadding="0" cellspacing="0">
+                                                            <tr>
+                                                                <td colspan="2" style="font-weight: bold;">
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.mode" />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="arrow"><img id="coolArrow" src="${arrow}" <c:if test="${eventMode != 'COOL'}">style="display: none;" </c:if>>&nbsp;</td>
+                                                                <td class="clickable subItem" onClick="setMode('COOL')">
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.COOL" />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="arrow"><img id="heatArrow" src="${arrow}" <c:if test="${eventMode != 'HEAT'}">style="display: none;"</c:if>>&nbsp;</td>
+                                                                <td class="clickable subItem" onClick="setMode('HEAT')">
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.HEAT" />
+                                                                </td>
+                                                            </tr>
+                                                            <!-- Heat pump has an extra mode setting -->
+                                                            <c:choose>
+                                                                <c:when test="${thermostat.type == 'EXPRESSSTAT_HEAT_PUMP'}">
+                                                                    <tr>
+                                                                        <td class="arrow"><img id="emHeatArrow" src="${arrow}" <c:if test="${eventMode != 'EMERGENCY_HEAT'}">style="display: none;" </c:if>>&nbsp;</td>
+                                                                        <td class="clickable subItem" onClick="setMode('EMERGENCY_HEAT')">
+                                                                            <cti:msg key="yukon.dr.consumer.thermostat.EMERGENCY_HEAT" />
+                                                                        </td>
+                                                                    </tr>
+                                                                </c:when>
+                                                                <c:otherwise>
+                                                                    <!-- place holder for javascript -->
+                                                                    <tr><td><span id="emHeatArrow"></span></td></tr>
+                                                                </c:otherwise>
+                                                            </c:choose>
+                                                            <tr>
+                                                                <td class="arrow"><img id="offArrow" src="${arrow}" <c:if test="${eventMode != 'OFF'}">style="display: none;" </c:if>>&nbsp;</td>
+                                                                <td class="clickable subItem" onClick="setMode('OFF')">
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.OFF" />
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        <input id="mode" type="hidden" name="mode" value="${eventMode}">
+                                                    </td>
+                                                    
+                                                    <!-- Thermostat Fan states -->
+                                                    <td style="vertical-align: top; padding-left: 20px;">
+                                                        
+                                                        <c:set var="eventFanState" value="${(runProgram)? '' : event.fanStateString}" />
+                                                        <table width="100%" cellpadding="0" cellspacing="0">
+                                                            <tr>
+                                                                <td style="font-weight: bold;" colspan="2">
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.fan" />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="arrow"><img id="autoArrow" src="${arrow}" <c:if test="${eventFanState != 'AUTO'}">style="display: none;" </c:if>></td>
+                                                                <td class="clickable subItem" onClick="setFan('autoArrow', 'AUTO')">
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.AUTO" />
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="arrow"><img id="onArrow" src="${arrow}" <c:if test="${eventFanState != 'ON'}">style="display: none;" </c:if>></td>
+                                                                <td class="clickable subItem" onClick="setFan('onArrow', 'ON')">
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.ON" />
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                        <input id="fan" type="hidden" name="fan" value="${eventFanState}">
+                                                    </td>
+                                                </tr>
+                                                <tr> 
+                                                    <td colspan="4" class="subItem">
+                                                        <input type="checkbox" name="hold" <c:if test="${(not runProgram) && event.holdTemperature}">checked</c:if> />
+                                                        <cti:msg key="yukon.dr.consumer.thermostat.hold" />
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="4" style="text-align: center; padding-bottom: 5px;">
+                                                        <cti:msg var="saveText" key="yukon.dr.consumer.thermostat.submit" />
+                                                        <input type="submit" value="${saveText}" />
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </form>
+                                        
+                                        
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="font-size: 11px; padding-left: 2em;">
+            
+                            <ol>
+                                <li>
+                                    <cti:msg key="yukon.dr.consumer.thermostat.step1" />
+                                </li>
+                                <li>
+                                    <cti:msg key="yukon.dr.consumer.thermostat.step2" />
+                                </li>
+                                <li>
+                                    <cti:msg key="yukon.dr.consumer.thermostat.step3" />
+                                </li>
+                            </ol>
+                            <cti:msg key="yukon.dr.consumer.thermostat.or" /><br><br>
+                            <div style="padding-left: 20px;">
+                                <cti:msg key="yukon.dr.consumer.thermostat.alternateStep" />
+                            </div>
+                            
+                        </td>
+                    </tr>
+                </table>     
+                        
+            </td>
+            <td class="rightColumn">
+                <div id="rightDiv">
+                    <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}"/>
+                </div>
+            </td>
+        </tr>
+    </table>
+
+</cti:standardPage>

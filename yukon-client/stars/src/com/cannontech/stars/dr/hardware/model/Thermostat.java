@@ -10,6 +10,10 @@ public class Thermostat {
     private Integer id;
     private String serialNumber;
     private String deviceLabel;
+    private HardwareType type;
+    private InventoryCategory category;
+    private int routeId;
+    private HardwareStatus status;
 
     public Integer getId() {
         return id;
@@ -35,6 +39,38 @@ public class Thermostat {
         this.deviceLabel = deviceLabel;
     }
 
+    public HardwareType getType() {
+        return type;
+    }
+
+    public void setType(HardwareType type) {
+        this.type = type;
+    }
+
+    public InventoryCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(InventoryCategory category) {
+        this.category = category;
+    }
+
+    public int getRouteId() {
+        return routeId;
+    }
+
+    public void setRouteId(int routeId) {
+        this.routeId = routeId;
+    }
+
+    public HardwareStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(HardwareStatus status) {
+        this.status = status;
+    }
+
     /**
      * Method to get the thermostat label which is the device label or the
      * serial number
@@ -47,6 +83,22 @@ public class Thermostat {
         }
 
         return serialNumber;
+    }
+
+    /**
+     * Method used to determine if this is a two-way device
+     * @return True if is two-way
+     */
+    public boolean isTwoWay() {
+        return category == InventoryCategory.TWO_WAY_RECEIVER && type == HardwareType.ENERGYPRO;
+    }
+
+    /**
+     * Method used to determine if this device is available
+     * @return
+     */
+    public boolean isAvailable() {
+        return status != HardwareStatus.UNAVAILABLE;
     }
 
 }

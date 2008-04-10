@@ -41,8 +41,7 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         // Get all thermostats for each of the user's accounts
         List<CustomerAccount> accounts = customerAccountDao.getByUser(userContext.getYukonUser());
         for (CustomerAccount account : accounts) {
-            int accountId = account.getAccountId();
-            List<Thermostat> thermostats = inventoryDao.getThermostatsByAccount(accountId);
+            List<Thermostat> thermostats = inventoryDao.getThermostatsByAccount(account);
 
             for (Thermostat thermostat : thermostats) {
                 String label = thermostat.getLabel();
@@ -63,16 +62,13 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         List<MenuOptionProducer> producerList = new ArrayList<MenuOptionProducer>(4);
 
         MenuOptionProducer producer;
-        // Create change label menu option
-        producer = createLink("changeLabel", "/user/ConsumerStat/stat/NewLabel.jsp?Item=0");
-        producerList.add(producer);
-
+        
         // Create schedule menu option
         producer = createLink("schedule", "/user/ConsumerStat/stat/ThermSchedule.jsp?Item=0");
         producerList.add(producer);
 
         // Create schedule menu option
-        producer = createLink("manual", "/user/ConsumerStat/stat/Thermostat.jsp?Item=0");
+        producer = createLink("manual", "/spring/stars/consumer/thermostat/view?thermostatId=" + thermostat.getId());
         producerList.add(producer);
 
         // Create schedule menu option

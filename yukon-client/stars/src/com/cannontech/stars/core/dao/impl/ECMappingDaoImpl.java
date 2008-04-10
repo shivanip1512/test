@@ -19,6 +19,14 @@ public class ECMappingDaoImpl implements ECMappingDao {
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         return energyCompany;
     }
+    
+    @Override
+    public LiteStarsEnergyCompany getInventoryEC(int inventoryId) {
+        String sql = "SELECT EnergyCompanyID FROM ECToInventoryMapping WHERE InventoryID = ?";
+        int energyCompanyId = simpleJdbcTemplate.queryForInt(sql, inventoryId);
+        LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
+        return energyCompany;
+    }
 
     @Autowired
     public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
