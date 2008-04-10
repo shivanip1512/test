@@ -69,8 +69,19 @@
     boolean showFlip = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
     if (popupEvent == null) popupEvent = "onmouseover";
     
-    Integer areaId = substation.getParentID();
-	List<SubBus> subBuses = capControlCache.getSubBusesBySubStation(substation);
+	String specialParam = ServletRequestUtils.getStringParameter(request, "specialArea", "false");
+	boolean special = false;
+	if("true".equalsIgnoreCase(specialParam)) {
+		special = true;
+	}
+	Integer areaId;
+    if(!special) {
+    	areaId = substation.getParentID();
+    } else {
+    	areaId = substation.getSpecialAreaId();
+    }
+	
+    List<SubBus> subBuses = capControlCache.getSubBusesBySubStation(substation);
     Collections.sort(subBuses, CBCUtils.SUB_DISPLAY_COMPARATOR);
 	List<Feeder> feeders = capControlCache.getFeedersBySubStation(substation);
 	List<CapBankDevice> capBanks = capControlCache.getCapBanksBySubStation(substation);
@@ -79,8 +90,7 @@
 	int lastAccessed = (lastStr == null) ? -1:Integer.parseInt(lastStr);
 	
 	boolean hasControl = CBCWebUtils.hasControlRights(session);
-	boolean special = capControlCache.isSpecialCBCArea(areaId);
-	
+
 	
 %>
 
@@ -94,12 +104,15 @@
 <% if (special){ %>
   	<cti:crumbLink url="subareas.jsp" title="Home" />
   	<cti:crumbLink url="specialSubAreas.jsp" title="Special Substation Areas" />
+    <cti:crumbLink url="substations.jsp?id=${areaId}" title="Substations" />
+    <cti:crumbLink url="feeders.jsp?id=${subStationId}&specialArea=true" title="Feeders" />
 <% } else{ %>
 	<cti:crumbLink url="subareas.jsp" title="Home" />
 	<cti:crumbLink url="subareas.jsp" title="Substation Areas" />
-<% } %>
     <cti:crumbLink url="substations.jsp?id=${areaId}" title="Substations" />
-    <cti:crumbLink url="feeders.jsp?id=${subStationId}" title="Feeders" />
+    <cti:crumbLink url="feeders.jsp?id=${subStationId}" title="Feeders" />	
+<% } %>
+
 </cti:breadCrumbs>
 
 <script type="text/javascript">

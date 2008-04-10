@@ -89,7 +89,8 @@ if (areaSubs.size() > 0) {
 	          
 <form id="subForm" action="feeders.jsp" method="post">
 <input type="hidden" name="<%=CCSessionInfo.STR_SUBID%>" />
-       
+<input type="hidden" name="specialArea" />
+
 	<table id="subHeaderTable" width="100%" cellspacing="0" cellpadding="0" >
 	  <tr class="columnHeader lAlign">              
 	    <td>
@@ -126,11 +127,19 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
                             <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
                         </a>
                     </cti:checkProperty>
-				    <a href="javascript:postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', ${thisSubStationId});" 
+				    <%if(special) { %>
+				    <a href="javascript:postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', ${thisSubStationId},'specialArea','true');" 
                        class="<%=css%>" 
                        id="anc_${thisSubStationId}">
 				        <%=substation.getCcName()%>
 				    </a>
+				    <% } else {%>
+				    <a href="javascript:postMany('subForm', '<%=CCSessionInfo.STR_SUBID%>', ${thisSubStationId},'specialArea','false');" 
+                       class="<%=css%>" 
+                       id="anc_${thisSubStationId}">
+				        <%=substation.getCcName()%>
+				    </a>
+				    <% } %>
 				    <% if (substation.getSpecialAreaEnabled()){
 				        String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId()); %>
 					   <font color="red">SA <%=spcAreaName%></font>
