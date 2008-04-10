@@ -157,7 +157,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
     private Integer holidayStrategyId = -1000;
     private CCStrategyTimeOfDaySet strategyTimeOfDay = null;
     
-    private CapControlCache cache = (CapControlCache)YukonSpringHook.getBean("capControlCache");
+    private static CapControlCache cache = (CapControlCache)YukonSpringHook.getBean("capControlCache");
     private static CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
     private static FeederDao feederDao = YukonSpringHook.getBean("feederDao",FeederDao.class);
     private static SubstationBusDao substationBusDao = YukonSpringHook.getBean("substationBusDao", SubstationBusDao.class);
