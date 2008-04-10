@@ -151,7 +151,9 @@ function revealLog() {
                                 <td width="120" class="MainText"><%= deviceType %></td>
                                 <td width="80" rowspan="2"> 
 <%  if (invChecking) { %>
-                                  <input type="button" name="Change" value="Change" onclick="changeSerialNo()">
+                                  <cti:checkProperty property="ConsumerInfoRole.ALLOW_ACCOUNT_EDITING">
+                                  	<input type="button" name="Change" value="Change" onclick="changeSerialNo()">
+                                  </cti:checkProperty>
 <%  } %>
                                 </td>
                               </tr>
