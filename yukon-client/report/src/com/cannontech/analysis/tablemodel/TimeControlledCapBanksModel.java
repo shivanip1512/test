@@ -169,7 +169,6 @@ public class TimeControlledCapBanksModel extends BareReportModelBase<TimeControl
             sql.append(result);
         }
         
-        sql.append(";");
         return sql;
     }
 

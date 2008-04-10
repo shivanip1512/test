@@ -140,7 +140,6 @@ public class CBCSpecialAreaAssignmentModel extends BareReportModelBase<CBCSpecia
             sql.append("order by cbc ");
         }
         
-        sql.append(";");
         return sql;
     }
 

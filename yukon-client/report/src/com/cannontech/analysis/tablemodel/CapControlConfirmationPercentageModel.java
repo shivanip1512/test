@@ -164,7 +164,6 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
             sql.append(result);
         }
         sql.append(" order by s.CBCName ");
-        sql.append(";");
         return sql;
     }
 

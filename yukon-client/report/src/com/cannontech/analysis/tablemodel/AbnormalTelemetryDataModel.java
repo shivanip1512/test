@@ -394,8 +394,7 @@ public class AbnormalTelemetryDataModel extends BareReportModelBase<AbnormalTele
         sql.append("where ");
         sql.append("p.pointid > 0 ");
         sql.append("and df.currentwattpointquality <> 5 ");
-        
-        sql.append(";");
+
         return sql;
     }
     

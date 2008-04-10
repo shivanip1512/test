@@ -144,7 +144,6 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
             sql.append(" where ");
             sql.append(result);
         }
-        sql.append(";");
         return sql;
     }
 

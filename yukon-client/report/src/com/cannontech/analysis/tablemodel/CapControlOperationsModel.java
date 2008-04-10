@@ -174,7 +174,6 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
             sql.append(result);
         }
         
-        sql.append(";");
         return sql;
     }
     

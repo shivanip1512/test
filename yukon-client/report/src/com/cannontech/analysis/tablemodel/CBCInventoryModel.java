@@ -161,7 +161,6 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
             sql.append(result);
         }
         
-        sql.append(";");
         return sql;
     }
 

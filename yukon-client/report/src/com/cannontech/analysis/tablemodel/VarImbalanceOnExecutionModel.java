@@ -189,7 +189,6 @@ public class VarImbalanceOnExecutionModel extends BareReportModelBase<VarImbalan
         
         sql.append("order by cAction.datetime desc ");
         
-        sql.append(";");
         return sql;
     }
 

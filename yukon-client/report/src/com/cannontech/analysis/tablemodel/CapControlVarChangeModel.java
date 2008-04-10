@@ -155,7 +155,6 @@ public class CapControlVarChangeModel extends BareDatedReportModelBase<CapContro
             sql.append(result);
         }
         
-        sql.append(";");
         return sql;
     }
 

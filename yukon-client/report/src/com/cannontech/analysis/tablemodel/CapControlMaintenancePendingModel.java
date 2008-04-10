@@ -130,7 +130,6 @@ public class CapControlMaintenancePendingModel extends BareReportModelBase<CapCo
             sql.append(result);
         }
         
-        sql.append(";");
         return sql;
     }
 

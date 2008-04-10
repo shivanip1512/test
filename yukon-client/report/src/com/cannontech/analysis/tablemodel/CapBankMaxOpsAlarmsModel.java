@@ -69,8 +69,11 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
                 row.feederName = rs.getString("feederName");
                 row.capBankName = rs.getString("capBankName");
                 row.maxDailyOps = rs.getString("maxDailyOps");
-                
-                data.add(row);
+                String additionalFlags = rs.getString("maxOpHitFlag");
+                String maxOpDisableFlag = rs.getString("maxopDisable");
+                if(additionalFlags.charAt(6) == 'Y' || maxOpDisableFlag.equalsIgnoreCase("Y")) {
+                    data.add(row);
+                }
             }
         });
         
@@ -79,8 +82,8 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     
     public StringBuffer buildSQLStatement() {
         StringBuffer sql = new StringBuffer ("select yp4.paoname Area,  yp3.paoname Substation, yp2.paoname subBus, ");
-        sql.append("yp1.paoname feederName, yp.paoname capBankName, c.maxdailyops, c.maxopDisable, ");
-        sql.append("substring(dcb.additionalflags, 7, 1) maxOpHitFlag ");
+        sql.append("yp1.paoname feederName, yp.paoname capBankName, c.maxdailyops, c.maxopDisable maxopDisable, ");
+        sql.append("dcb.additionalflags maxOpHitFlag ");
         sql.append("from yukonpaobject yp, ");
         sql.append("yukonpaobject yp1, ");
         sql.append("yukonpaobject yp2, ");
@@ -103,7 +106,7 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
         sql.append("and yp1.paobjectid = fb.feederid ");
         sql.append("and c.deviceid = fb.deviceid ");
         sql.append("and yp.paobjectid = c.deviceid ");
-        sql.append("and c.maxdailyops > 0 and (substring(dcb.additionalflags, 7, 1) = 'Y' or c.maxopdisable = 'Y') ");
+        sql.append("and c.maxdailyops > 0 ");
         
         String result = null;
         
@@ -139,7 +142,6 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
             sql.append(result);
         }
         
-        sql.append(";");
         return sql;
     }
 

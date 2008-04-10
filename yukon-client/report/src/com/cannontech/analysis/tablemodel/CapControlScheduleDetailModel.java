@@ -142,7 +142,6 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
             sql.append("order by interval ");
         }
         
-        sql.append(";");
         return sql;
     }
 

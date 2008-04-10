@@ -148,7 +148,6 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
             sql.append(result);
         }
         
-        sql.append(";");
         return sql;
     }
 

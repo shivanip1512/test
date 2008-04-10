@@ -142,7 +142,6 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
             sql.append(result);
         }
         
-        sql.append(";");
         return sql;
     }
 

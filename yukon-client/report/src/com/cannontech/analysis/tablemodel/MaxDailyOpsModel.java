@@ -151,7 +151,6 @@ public class MaxDailyOpsModel extends ReportModelBase {
                       
             
         }
-        sql.append(";");
         return sql;
     }
     

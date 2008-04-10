@@ -160,7 +160,6 @@ public class CapControlStateComparisonModel extends BareReportModelBase<CapContr
             sql.append(" where ");
             sql.append(result);
         }
-        sql.append(";");
         return sql;
     }
 
