@@ -207,11 +207,31 @@ public class GroupController extends MultiActionController implements Initializi
         Boolean showDevices = ServletRequestUtils.getBooleanParameter(request, "showDevices", false);
         mav.addObject("showDevices", showDevices);
         
-        List<YukonDevice> deviceList = deviceGroupDao.getChildDevices(group);
-        List<Integer> deviceIdList = new MappingList<YukonDevice, Integer>(deviceList, new YukonDeviceToIdMapper());
-        mav.addObject("deviceIdsInGroup", StringUtils.join(deviceIdList, ","));
-
-        mav.addObject("deviceCount", deviceIdList.size());
+        List<? extends YukonDevice> deviceList = null;
+        // check the size of the group
+        final int maxToShowImmediately = 10;
+        int childDeviceCount = deviceGroupDao.getChildDeviceCount(group);
+        mav.addObject("deviceCount", childDeviceCount);
+        
+        boolean groupModifiable = group.isModifiable() && group.getParent() != null;
+        mav.addObject("groupModifiable", groupModifiable);
+        
+        boolean showImmediately = childDeviceCount < maxToShowImmediately;
+        mav.addObject("showImmediately", showImmediately);
+        
+        if (showImmediately) {
+            deviceList = meterDao.getChildMetersByGroup(group);
+            mav.addObject("deviceList", deviceList);
+        }
+                
+        if (groupModifiable) {
+            if (deviceList == null) {
+                // it might have been loaded in the showImmediately block, if not we can load a slimmer version
+                deviceList = deviceGroupDao.getChildDevices(group);
+            }
+            List<Integer> deviceIdList = new MappingList<YukonDevice, Integer>(deviceList, new YukonDeviceToIdMapper());
+            mav.addObject("deviceIdsInGroup", StringUtils.join(deviceIdList, ","));
+        }
         
         // Ext tree JSON
         DeviceGroup selectedDeviceGroup = group;

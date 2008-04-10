@@ -277,7 +277,7 @@
 					<h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addDevicesLabel"/></h4>
 		
 					<c:choose>
-						<c:when test="${group.modifiable and group.parent != null}">
+						<c:when test="${groupModifiable}">
 							
                             <%-- BY SELECTING DEVICE --%>
                             <div>
@@ -286,6 +286,7 @@
 									<input type="hidden" name="showDevices" value="true" />
 									<input type="hidden" id="deviceToAdd" name="deviceId" />
 								</form>
+                                <%-- "deviceIdsInGroup" will only be set when "groupModifiable" is true --%>
 								<cti:multiPaoPicker pickerId="devicePickerId" paoIdField="deviceToAdd" constraint="com.cannontech.common.search.criteria.MeterCriteria" finalTriggerAction="addDevice" selectionLinkName="Add Devices to Group" excludeIds="${deviceIdsInGroup}"><span title="Click to select devices to add">Select Devices</span></cti:multiPaoPicker>
 							</div>
 				            
@@ -371,7 +372,7 @@
 										</td>
 										<td style="border: none; width: 15px;text-align: center;">
 											<c:choose>
-												<c:when test="${group.modifiable && subGroup.editable}">
+												<c:when test="${groupModifiable}">
 										
 													<cti:uniqueIdentifier prefix="subGroup_" var="subId"/>
 													<form style="display: inline;" id="${subId}removeSubGroupForm" action="/spring/group/removeGroup" method="post">
@@ -401,7 +402,7 @@
                     <%-- MEMBER DEVICES --%>
 					<div id="deviceMembers">
 						<c:choose>
-							<c:when test="${deviceCount > 15 && (showDevices == false )}">
+							<c:when test="${not showImmediately && (showDevices == false )}">
 								<table style="width: 95%;" >
 									<tr>
 										<td>
@@ -414,7 +415,7 @@
 								</table>
 							</c:when>
 							<c:otherwise>
-                                <jsp:include page="/spring/group/getDevicesForGroup">
+                                <jsp:include page="deviceMembers.jsp">
                                     <jsp:param name="groupName" value="${group.fullName}"/>
                                 </jsp:include>
 							</c:otherwise>
