@@ -49,6 +49,7 @@ function updateHTML(xml) {
     	updateSub(xml);
 	    updateFeeders(xml);
 	    updateCaps(xml);
+	    updateWarningImages(xml);
     }   
 }
 
@@ -105,6 +106,17 @@ function updateCaps(xml) {
 	updateVisibleText("CapStat", xml);
 	updateVisibleText("CapTag", xml);
 
+}
+
+function updateWarningImages(xml) {
+	var images = document.getElementsByTagName("image");
+	for (var i = 0; i < images.length; i++) {
+		image = images.item(i);
+		idAttr = image.getAttribute("id");
+		if (idAttr.split("_")[0] == "WarningPopup") {
+			update_Image(idAttr, xml);
+		}
+	}
 }
 
 function updateVisibleText(prefix, xml) {

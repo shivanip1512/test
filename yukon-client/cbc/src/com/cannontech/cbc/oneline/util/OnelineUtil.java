@@ -69,7 +69,11 @@ public class OnelineUtil {
     public static final String IMG_QUESTION = "question.gif";
     public static final String IMG_PTTIMESTAMP = "magnifier.gif";
     public static final String IMG_REGENERATE = "regenerate.gif";
-
+    
+    public static final String IMG_WARNING_YELLOW = "Yellow.gif";
+    public static final String IMG_WARNING_YELLOW_L = "YellowLocal.gif";
+    public static final String IMG_WARNING_GREEN = "Green.gif";
+    public static final String IMG_WARNING_GREEN_L = "GreenLocal.gif";
     
 
     public static final String ONELN_STATE_GROUP = "1LNSUBSTATE";

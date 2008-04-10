@@ -44,11 +44,11 @@ public class CapBankTagView extends LxAbstractView implements TagView {
     public void addTagInfo() {
 
         String strLabel = getTagString();
-        LxComponent img = getStateImage();
+        LxComponent img = getWarningImageStatic();
         Point2D startPoint = OnelineUtil.getStartPoint(img);
         StaticText label = OnelineUtil.createTextElement(strLabel,
                                                          startPoint,
-                                                         new Integer (25),
+                                                         new Integer (15),
                                                          null);
 
         label.setFont(OnelineUtil.LARGE_FONT);
@@ -78,6 +78,9 @@ public class CapBankTagView extends LxAbstractView implements TagView {
         return parent.getStateImage();
     }
 
+    public LxComponent getWarningImageStatic() {
+    	return parent.getWarningStaticImage();
+    }
     public String getTagString() {
         String tagString = "T:";
         if (capBank.getCcDisableFlag()) {

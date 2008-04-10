@@ -95,7 +95,7 @@ public class OneLineDrawing {
     }
 
     public void addNavigationPanel() {
-        controlPanel = new OnelineControlPanel ();
+        controlPanel = new OnelineControlPanel();
         controlPanel.setLayoutParams(layoutParams);
         controlPanel.addDrawing (this);
     }

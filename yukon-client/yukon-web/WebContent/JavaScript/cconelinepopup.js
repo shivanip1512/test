@@ -16,6 +16,7 @@ var ALL_POPUP_TYPES = {
     varChangePopup: "varChangePopup",
     bankMoveBack: "MoveBankBack",
     bankMove: "TempMoveBank",
+    warningPopup: "WarningPopup",
     legend: "legend"
 };
 
@@ -186,6 +187,9 @@ function openPopupWin(elem, compositeIdType) {
     }
     else if (type == ALL_POPUP_TYPES.bankMove) {
     	menuName ='moveBankPopup';
+    }
+    else if (type == ALL_POPUP_TYPES.warningPopup) {
+    	menuName = 'warningInfoPopop';
     }
     else if (type == ALL_POPUP_TYPES.legend) {
         var legendUrl = '/spring/capcontrol/oneline/legend';

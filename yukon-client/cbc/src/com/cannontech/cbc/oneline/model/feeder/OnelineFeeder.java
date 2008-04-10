@@ -2,7 +2,9 @@ package com.cannontech.cbc.oneline.model.feeder;
 
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.geom.Point2D;
 
+import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
 import com.cannontech.cbc.oneline.model.OnelineObject;
 import com.cannontech.cbc.oneline.model.TagView;
@@ -11,9 +13,11 @@ import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
+import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxArrowElement;
@@ -40,7 +44,8 @@ public class OnelineFeeder extends OnelineObject {
     UpdatableTextList tag = new UpdatableTextList();
     private StaticImage editorImage;
     private StaticImage infoImage;
-
+	private StaticImage warningImageStatic;
+	private Feeder feeder;
     
     public OnelineFeeder(SubBus subBus) {
         this.subBus = subBus;
@@ -53,7 +58,7 @@ public class OnelineFeeder extends OnelineObject {
         int numOfFdr = subBus.getCcFeeders().size();
         currFdrIdx = drawing.getFeeders().size();
         
-        Feeder feeder = subBus.getCcFeeders().get(currFdrIdx);
+        feeder = subBus.getCcFeeders().get(currFdrIdx);
         
         double refYBelow = getRefLnBelow().getPoint1().getY();
         double refYAbove = getRefLnAbove().getPoint1().getY();
@@ -69,10 +74,12 @@ public class OnelineFeeder extends OnelineObject {
 
         initEditorImage();
         initInformationImage();
+        initWarningStaticImage();
         
         LxGraph graph = drawing.getDrawing().getLxGraph();
         graph.add(feederLn);
         graph.add(editorImage);
+        graph.add(warningImageStatic);
         
         UpdatableStats stats = new FeederUpdatableStats(graph, this);
         TagView tagView = new FeederTagView(graph, this, feeder);
@@ -101,6 +108,35 @@ public class OnelineFeeder extends OnelineObject {
     
     }
 
+    private void initWarningStaticImage() {
+        warningImageStatic = new StaticImage();
+        
+        StaticText nameTxt = getFeederName();
+        Point2D startPoint = OnelineUtil.getStartPoint(nameTxt);
+        double xImgYPos = startPoint.getY() - 15;
+        double imgXPos = startPoint.getX() - 2;
+        
+        /* Choose which warning image to use */
+        CBCDisplay cbcDisplay = new CBCDisplay(user);
+
+        String color = (String) cbcDisplay.getFeederValueAt(feeder, CBCDisplay.FDR_WARNING_IMAGE);
+
+        String image;
+        if( color.equalsIgnoreCase("true")) {
+    		image = OnelineUtil.IMG_WARNING_YELLOW;
+        } else {
+    		image = OnelineUtil.IMG_WARNING_GREEN;
+        }
+        /* */
+        
+        warningImageStatic.setYukonImage(image);
+        
+        warningImageStatic.setX(imgXPos);
+        warningImageStatic.setName(CommandPopups.WARNING_IMAGE + "_" + getCurrentFeederIdFromMessage());
+        warningImageStatic.setCenterY(xImgYPos);
+        warningImageStatic.setLinkTo("javascript:void(0)");
+    }
+    
     private LineElement createFeederLn(double fdrYCoord, double currFdrX) {
         if (feederLn == null) {
             feederLn = new DynamicLineElement(this, new DynamicLineState());

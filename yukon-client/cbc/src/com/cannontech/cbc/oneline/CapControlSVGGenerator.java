@@ -133,6 +133,11 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
             String id = OnelineUtil.extractObjectIdFromString(str);
             addDynamicAttributes(elem, CommandPopups.CAP_COMMAND + "_" + id);
         }
+        if (isWarningImage(comp) && getGenOptions().isScriptingEnabled()) {
+        	String str = comp.getName();
+            String id = OnelineUtil.extractObjectIdFromString(str);
+        	addDynamicAttributes(elem,CommandPopups.WARNING_IMAGE + "_" + id);
+        }
         if (isCapBankInfoImage(comp) && getGenOptions().isScriptingEnabled()) {
             String str = comp.getName();
             String id = OnelineUtil.extractObjectIdFromString(str);
@@ -162,7 +167,13 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
         }
         return false;
     }
-
+    private boolean isWarningImage(LxComponent comp) {
+        if ((comp instanceof StaticImage) && StringUtils.contains(comp.getName(),
+                                                                 CommandPopups.WARNING_IMAGE)) {
+            return true;
+        }
+        return false;
+    }
     private void addDynamicAttributes(Element elem, String typeString) {
         elem.setAttributeNS(null,
                             "onclick",

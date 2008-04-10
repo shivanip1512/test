@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.geom.Point2D;
 
+import com.cannontech.cbc.oneline.CommandPopups;
 import com.cannontech.cbc.oneline.OneLineParams;
 import com.cannontech.cbc.oneline.elements.DynamicLineElement;
 import com.cannontech.cbc.oneline.elements.SubDynamicImage;
@@ -14,11 +15,13 @@ import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.states.SubImgState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
+import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.yukon.cbc.SubBus;
+import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 
@@ -29,6 +32,7 @@ public class OnelineSub extends OnelineObject {
     private DynamicLineElement injectionLine;
     private DynamicLineElement distributionLn;
     private StaticImage editorImage;
+	private StaticImage warningImageStatic;
 
     public OnelineSub(SubBus subBus) {
         this.subBus = subBus;
@@ -54,8 +58,11 @@ public class OnelineSub extends OnelineObject {
         graph.add(getInjectionLine());
         graph.add(getDistributionLn());
         initEditorImage();
+        initWarningStaticImage();
+        
         graph.add(editorImage);
-
+        graph.add(warningImageStatic);
+        
         UpdatableStats stats = new SubUpdatableStats(graph, this, getSubBus());
         TagView tagView = new SubTagView(graph, this, getSubBus());
 
@@ -72,7 +79,34 @@ public class OnelineSub extends OnelineObject {
         editorImage.setY(getInjectionLine().getPoint1().getY() - 25);
             
     }
+    
+    private void initWarningStaticImage() {
+        warningImageStatic = new StaticImage();
 
+        SubDynamicImage subImage = getTransformerImg();
+        Point2D startPoint = OnelineUtil.getStartPoint(subImage);
+        double xImgYPos = startPoint.getY() - 15;
+        double imgXPos = startPoint.getX() -2;
+        
+        /* Choose which warning image to use */
+        CBCDisplay cbcDisplay = new CBCDisplay(user);
+
+        String color = (String) cbcDisplay.getSubBusValueAt(subBus, CBCDisplay.SUB_WARNING_IMAGE);
+
+        String image;
+        if( color.equalsIgnoreCase("true")) {
+    		image = OnelineUtil.IMG_WARNING_YELLOW;
+        } else {
+    		image = OnelineUtil.IMG_WARNING_GREEN;
+        }
+        /* */
+        
+        warningImageStatic.setYukonImage(image);
+        warningImageStatic.setX(imgXPos);
+        warningImageStatic.setName(CommandPopups.WARNING_IMAGE + "_" + paoId);
+        warningImageStatic.setCenterY(xImgYPos);
+        warningImageStatic.setLinkTo("javascript:void(0)");
+    }
     public LineElement getInjectionLine() {
         if (injectionLine == null) {
             injectionLine = new DynamicLineElement(this, new DynamicLineState());

@@ -106,6 +106,11 @@ public class CBCDisplay {
 
     public static final int AREA_POWER_FACTOR_COLUMN = 0;
 
+    public static final String WARNING_LIKE_DAY = "Operating in like-day history control.";
+    public static final String WARNING_VOLT_REDUCTION = "Volt Reduction is active.";
+    public static final String WARNING_MAX_DAILY_OPS = "Max Daily Operations";
+    public static final String WARNING_OVUV_SITUATION = "OVUV Situation";
+    
     // The color schemes - based on the schedule status
     private static final Color[] _DEFAULT_COLORS = {
         // Enabled subbus (Green like color)
@@ -261,10 +266,10 @@ public class CBCDisplay {
             String warningText = "Alerts:";
 
             if (capBank.getMaxDailyOperationHitFlag())
-                warningText += " Max Daily Operations" ;
+                warningText += " " + WARNING_MAX_DAILY_OPS ;
 
             if (capBank.getOvuvSituationFlag())
-                warningText += " OVUV Situation" ;
+                warningText += " " + WARNING_OVUV_SITUATION ;
 
             return warningText;
         }
@@ -522,12 +527,12 @@ public class CBCDisplay {
         case SUB_WARNING_POPUP: {
             String warningMessage = "";
             if( subBus.getLikeDayControlFlag()) {
-                warningMessage += "Operating in like-day history control.";
+                warningMessage += WARNING_LIKE_DAY;
             } 
             
             if ( subBus.getVoltReductionFlag() ) {
                 if(subBus.getLikeDayControlFlag()) warningMessage +="<br>";
-                warningMessage += "Volt Reduction is active.";
+                warningMessage += WARNING_VOLT_REDUCTION;
             }
             return warningMessage;
         }
@@ -786,7 +791,7 @@ public class CBCDisplay {
         }
 
         case FDR_WARNING_POPUP: {
-            return "Operating in like-day history control.";
+            return WARNING_LIKE_DAY;
         }
 
         case FDR_WARNING_IMAGE:{

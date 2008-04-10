@@ -8,6 +8,7 @@ import com.cannontech.cbc.oneline.model.feeder.OnelineFeeder;
 import com.cannontech.cbc.oneline.model.sub.OnelineSub;
 import com.cannontech.cbc.oneline.states.DynamicLineState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
+import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.cbc.util.CBCUtils;
@@ -34,6 +35,7 @@ public class OnelineCap extends OnelineObject {
     private DynamicLineElement connectorLn;
     private StaticImage editorImage;
     private StaticImage infoImage;
+    private StaticImage warningImageStatic;
     private StaticText capBankName;
     private StaticImage tmStmpImage;
 
@@ -58,6 +60,7 @@ public class OnelineCap extends OnelineObject {
 
         initConnector(xImgYPos, imgXPos);
         initStateImage(xImgYPos, imgXPos);
+        initWarningStaticImage(xImgYPos,imgXPos);
         initEditorImage();
         initInformationImage();
         
@@ -69,6 +72,7 @@ public class OnelineCap extends OnelineObject {
         graph.add(stateImage);
         graph.add(connectorLn);
         graph.add(editorImage);
+        graph.add(warningImageStatic);
         graph.add(infoImage);
         graph.add(capBankName);
         
@@ -83,8 +87,6 @@ public class OnelineCap extends OnelineObject {
         capStats.draw();
         tagView.draw();
     }
-
-
 
     private void initPointTimestampsImage() {
         tmStmpImage = new StaticImage();
@@ -108,18 +110,14 @@ public class OnelineCap extends OnelineObject {
             capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE);
         	capBankName.setPaint(OnelineUtil.PURPLISH);
         	capBankName.setLinkTo("javascript:void(0)");
-        	//capBankName.setLinkTo("/capcontrol/standardPageWrapper.jsp?title=Temp CapBank Move&page=/capcontrol/tempmove.jsp&bankid=" + getStreamable().getCcId() + "&oneline=" + "true");
         }
         else{//if moved
             capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE_BACK);
             capBankName.setPaint(OnelineUtil.ORANGE);
-            //capBankName.setLinkTo("/spring/capcontrol/tier/popupmenu?menu=capBankTempMoveBack&id=" + getStreamable().getCcId());
             capBankName.setLinkTo("javascript:void(0)");
         }
        
     }
-
-
 
     private void initConnector(double xImgYPos, double imgXPos) {
         OnelineFeeder f = getParentFeeder();
@@ -128,8 +126,6 @@ public class OnelineCap extends OnelineObject {
         connectorLn.setPoint2(imgXPos + 10, xImgYPos + 30);
         connectorLn.setName(f.getName());
     }
-
-
 
     private void initStateImage(double xImgYPos, double imgXPos) {
         stateImage = new StateImage();
@@ -141,7 +137,40 @@ public class OnelineCap extends OnelineObject {
         stateImage.setCenterY(xImgYPos + 30);
         stateImage.setLinkTo("javascript:void(0)");
     }
-
+    
+    private void initWarningStaticImage(double xImgYPos, double imgXPos) {
+        warningImageStatic = new StaticImage();
+        
+        CapBankDevice capBank = getCurrentCapFromMessage();
+        
+        /* Choose which warning image to use */
+        CBCDisplay cbcDisplay = new CBCDisplay(user);
+        String type = (String) cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE_TEXT);
+        String color = (String) cbcDisplay.getCapBankValueAt(capBank, CBCDisplay.CB_WARNING_IMAGE_COLOR);
+        String image;
+        if( color.equalsIgnoreCase("Yellow")) {
+        	if( type.equalsIgnoreCase("Local")) {
+        		image = OnelineUtil.IMG_WARNING_YELLOW_L;
+        	} else {
+        		image = OnelineUtil.IMG_WARNING_YELLOW;
+        	}
+        } else {
+        	if( type.equalsIgnoreCase("Local")) {
+        		image = OnelineUtil.IMG_WARNING_GREEN_L;
+        	} else {
+        		image = OnelineUtil.IMG_WARNING_GREEN;
+        	}
+        }
+        /* */
+        
+        warningImageStatic.setYukonImage(image);
+        
+        warningImageStatic.setX(imgXPos+20);
+        warningImageStatic.setName(CommandPopups.WARNING_IMAGE + "_" + getCurrentCapIdFromMessage());
+        warningImageStatic.setCenterY(xImgYPos + 40);
+        warningImageStatic.setLinkTo("javascript:void(0)");
+    }
+    
     private void initInformationImage() {
         infoImage = new StaticImage();
         infoImage.setYukonImage(OnelineUtil.IMG_QUESTION);
@@ -179,24 +208,28 @@ public class OnelineCap extends OnelineObject {
         }
         return false;
     }
+    
     public boolean isFixed() {
         if (getCurrentCapBankState().equalsIgnoreCase(CapBank.FIXED_OPSTATE)) {
             return true;
         }
         return false;
     }
+    
     public boolean isSwitched() {
         if (getCurrentCapBankState().equalsIgnoreCase(CapBank.SWITCHED_OPSTATE)) {
             return true;
         }
         return false;
     }
+    
     public boolean isUninstalled() {
         if (getCurrentCapBankState().equalsIgnoreCase(CapBank.UNINSTALLED_OPSTATE)) {
             return true;
         }
         return false;
     }
+
     private String getCurrentCapBankState() {
         String state = getStreamable().getOperationalState();
         return state;
@@ -267,9 +300,12 @@ public class OnelineCap extends OnelineObject {
     public LxComponent getStateImage() {
         return stateImage;
     }
-
+    
+    public LxComponent getWarningStaticImage() {
+        return warningImageStatic;
+    }
+    
     public UpdatableTextList getTagInfo() {
         return tagInfo;
     }
-
 }
