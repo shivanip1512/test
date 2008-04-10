@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2008/01/28 16:44:47 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/04/10 21:04:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -58,7 +58,7 @@ public:
 
     CtiSignalManager& operator=(const CtiSignalManager& aRef);
 
-    CtiSignalManager& addSignal(const CtiSignalMsg &sig, bool dontMarkDirty = false);                   // The manager adds an active and unacknowledged alarm on this condition for this point.
+    CtiSignalManager& addSignal(const CtiSignalMsg &sig, bool markDirty = true);                   // The manager adds an active and unacknowledged alarm on this condition for this point.
 
     CtiSignalMsg* setAlarmActive(long pointid, int alarm_condition, bool active = true);
     CtiSignalMsg* setAlarmAcknowledged(long pointid, int alarm_condition, bool acked = true);

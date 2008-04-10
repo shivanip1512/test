@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.182 $
-* DATE         :  $Date: 2008/04/08 14:29:04 $
+* REVISION     :  $Revision: 1.183 $
+* DATE         :  $Date: 2008/04/10 21:04:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3185,7 +3185,7 @@ INT CtiVanGogh::loadPendingSignals()
             sig.setLogType(dynAlarm.getLogType());   // FIX FIX FIX CGP ... think about these two lines.
             // sig.setLogType( AlarmCategoryLogType );
 
-            _signalManager.addSignal( sig, true );
+            _signalManager.addSignal( sig, false );
         }
     }
 

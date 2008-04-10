@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.2 $
-* DATE         :  $Date: 2008/01/28 16:44:47 $
+* REVISION     :  $Revision: 1.3 $
+* DATE         :  $Date: 2008/04/10 21:04:49 $
 *
 * Copyright (c) 2008 Cannon Technologies All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -46,7 +46,7 @@ BOOST_AUTO_UNIT_TEST(test_signalmanager_signal_add)
     testMessage2.setSignalCategory(SignalAlarm0); // Also common
     testMessage1.setTags(TAG_ACTIVE_CONDITION);
     testMessage2.setTags(TAG_ACTIVE_CONDITION);
-    manager.addSignal(testMessage1, true); //dont mark dirty is true
+    manager.addSignal(testMessage1, false); //mark dirty is false
     BOOST_CHECK(!manager.empty());
     BOOST_CHECK(!manager.dirty());
     BOOST_CHECK_EQUAL(manager.entries(), 1);

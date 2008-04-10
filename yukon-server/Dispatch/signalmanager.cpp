@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/01/28 16:44:47 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/04/10 21:04:49 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -83,7 +83,7 @@ CtiSignalManager& CtiSignalManager::operator=(const CtiSignalManager& aRef)
     return *this;
 }
 
-CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool dontMarkDirty) 
+CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool markDirty/*=true*/) 
 {
     try
     {
@@ -104,7 +104,7 @@ CtiSignalManager& CtiSignalManager::addSignal(const CtiSignalMsg &sig, bool dont
             {
                 if(sig.getSignalCategory() >= SignalEvent)
                 {
-                    if( !dontMarkDirty )
+                    if( markDirty )
                     {
                         setDirty(true, sig.getId());
                     }
