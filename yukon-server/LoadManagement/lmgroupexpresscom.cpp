@@ -283,23 +283,23 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointRequestMsg(string settings, L
     string controlString("control xcom setpoint ");
 
     std::transform(settings.begin(), settings.end(), settings.begin(), tolower);
-    if( settings.length() > 0 && settings[(size_t)0]=='D' )
+    if( settings.length() > 0 && settings[(size_t)0]=='d' )
     {
         controlString += "delta ";
     }
-    if( settings.length() > 1 && settings[(size_t)1]=='C' )
+    if( settings.length() > 1 && settings[(size_t)1]=='c' )
     {
         controlString += "celsius ";
     }
-    if( settings.length() > 3 && settings[(size_t)2]=='H' && settings[(size_t)3]=='I' )
+    if( settings.length() > 3 && settings[(size_t)2]=='h' && settings[(size_t)3]=='i' )
     {
         controlString += "mode both ";
     }
-    if( settings.length() > 2 && settings[(size_t)2]=='H' )
+    if( settings.length() > 2 && settings[(size_t)2]=='h' )
     {
         controlString += "mode heat ";
     }
-    if( settings.length() > 3 && settings[(size_t)3]=='I' )
+    if( settings.length() > 3 && settings[(size_t)3]=='i' )
     {
         controlString += "mode cool ";
     }
@@ -427,12 +427,9 @@ CtiRequestMsg* CtiLMGroupExpresscom::createSetPointSimpleMsg(string settings, LO
         retFlag = false;
     }
     string controlString("control xcom setpoint ");
+    controlString += "delta "; //Simple setpoint is always in delta format. This should really be the default!!!!!
 
     std::transform(settings.begin(), settings.end(), settings.begin(), tolower);
-    if( settings.length() > 0 && settings[(size_t)0]=='d' )
-    {
-        controlString += "delta ";
-    }
     if( settings.length() > 1 && settings[(size_t)1]=='c' )
     {
         controlString += "celsius ";
