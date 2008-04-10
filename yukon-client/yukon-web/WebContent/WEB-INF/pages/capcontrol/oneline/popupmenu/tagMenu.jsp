@@ -61,6 +61,14 @@
                         <span style="color: gray; margin-right: 0.2cm;">Reason :</span>
                         <textarea id="operationalStateReason" style='width: 225px; vertical-align: bottom;' rows="2" disabled>${operationalStateReason}</textarea>
                     </div>
+                    <c:if test="${isIgnoreFlag}">
+	                    <br>
+	                    <div>
+	                    	<span style="color: red; margin-right: 0.1cm;">Command Refused: </span>
+	                    	<span style="color: red; margin-left: 0.1cm;">${refusedReason}</span>
+	                    </div>
+	                    <br>
+                    </c:if>
                 </c:if>
                     
                 <a href="${commentsUrl}?paoID=${paoId}&returnURL=${returnUrl}" style="color: white; font-weight: bold;" >Comments</a>

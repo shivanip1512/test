@@ -209,6 +209,12 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         mav.addObject("isCapBank", true);
         mav.addObject("controlType", type);
+        
+        if (capBank.isIgnoreFlag()) {
+        	mav.addObject("isIgnoreFlag",true);
+        	mav.addObject("refusedReason",CapBankDevice.getIgnoreReason( capBank.getIgnoreReason()));
+        }
+        
         mav.setViewName("oneline/popupmenu/tagMenu");
         return mav;
     }
