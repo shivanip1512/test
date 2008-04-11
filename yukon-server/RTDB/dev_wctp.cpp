@@ -859,6 +859,11 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &
             xfer.setInTimeout(gConfigParms.getValueAsULong("WCTP_READ_TIMEOUT", 1));                   // Works in conjunction with gConfigParms.getValueAsULong("WCTP_LOOP_TIMEOUT", 5)
             timeEllapsed++;
 
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(slog);
+                slog << CtiTime() << " " <<  getName() << ": " << _outMessage->Request.CommandStr << endl;
+            }
+
             setCurrentState( StateScanDecode1 );
             break;
         }
@@ -1143,11 +1148,6 @@ INT CtiDeviceWctpTerminal::decodeResponse(CtiXfer  &xfer, INT commReturnValue, l
                         }
                         CtiVerificationWork *work = CTIDBG_new CtiVerificationWork(CtiVerificationBase::Protocol_SNPP, *_outMessage, _outMessage->Request.CommandStr, reinterpret_cast<char *>(_outMessage->Buffer.OutMessage), seconds(700));//11.6 minutes
                         _verification_objects.push(work);
-
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(slog);
-                            slog << CtiTime() << " " <<  getName() << ": " << _outMessage->Request.CommandStr << endl;
-                        }
 
                         setCurrentState( StateScanComplete );
                         break;

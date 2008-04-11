@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.216 $
-* DATE         :  $Date: 2008/03/07 17:40:29 $
+* REVISION     :  $Revision: 1.217 $
+* DATE         :  $Date: 2008/04/11 15:47:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1842,6 +1842,12 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 IED->decreaseHandshakesRemaining();
                             }
+                        }
+
+                        if( Port->isSimulated() )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(slog);
+                            slog << CtiTime() << " " <<  IED->getName() << ": " << OutMessage->Request.CommandStr << endl;
                         }
 
                         IED->freeDataBins();
