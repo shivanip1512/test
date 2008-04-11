@@ -45,7 +45,7 @@
 	int MAX_DAYS_CNT = 7;	
 	String type = ParamUtil.getString(request, "type", "");
 	String[] strPaoids = ParamUtil.getStrings(request, "value");
-	int dayCnt = ParamUtil.getInteger(request, "dayCnt", 7);
+	int dayCnt = ParamUtil.getInteger(request, "dayCnt", 1);
 	
 	Hashtable<Long, List>  logData = new Hashtable<Long, List>();
 	String[] titles = new String[ strPaoids.length ];
@@ -103,7 +103,7 @@
 				<% 
 				for (int i=1; i <= MAX_DAYS_CNT; i ++) {
 				    out.println ("<option value=\"" + i + "\""); 
-				    if (i == 0)
+				    if (i == dayCnt)
 				        out.println(" selected");
 				    out.println (">" + i + " Day (s) </option>");
 				}
