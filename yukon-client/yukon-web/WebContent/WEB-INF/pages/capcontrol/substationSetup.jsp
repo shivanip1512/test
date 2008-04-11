@@ -75,7 +75,7 @@
 	                <f:param name="parentId" value="#{capControlForm.pointTreeForm.pao.PAObjectID}" />
 	            </x:commandLink>
 	
-	            <x:outputText> | </x:outputText>    
+	            <x:outputText value=" | " />    
 	    
 	            <x:commandLink id="deletePtLnk" value="Delete Point" actionListener="#{capControlForm.pointTreeForm.deletePointClick}"/>
 	    
