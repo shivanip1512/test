@@ -18,7 +18,7 @@ public class CapBankAdditionalServlet extends AbstractController {
 
     protected ModelAndView handleRequestInternal(HttpServletRequest request,
             HttpServletResponse response) throws Exception {
-        ModelAndView mav = new ModelAndView("cbcAddInfoPopup");
+        ModelAndView mav = new ModelAndView("capBankAddInfoPopup");
         int paoID = ServletRequestUtils.getRequiredIntParameter(request,
                                                                 "paoID");
         LiteYukonPAObject lite = DaoFactory.getPaoDao().getLiteYukonPAO(paoID);
