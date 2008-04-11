@@ -60,8 +60,13 @@ table.enrolledPrograms tr td.bordered {
     cursor: pointer;    
 }
 
+.plainText {
+    font-size: 12px;
+}
+
 .subItem {
     font-size: 12px;
+    white-space: nowrap;
 }
 
 td.arrow {

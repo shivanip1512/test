@@ -1,6 +1,5 @@
 package com.cannontech.stars.dr.thermostat.service.impl;
 
-import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +15,7 @@ import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.ManualEventDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
+import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.stars.util.ServerUtils;
@@ -49,8 +49,9 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
 
     @Override
-    public String executeManualEvent(YukonUserContext userContext,
-            CustomerAccount account, ThermostatManualEvent event) {
+    public ThermostatManualEventResult executeManualEvent(
+            CustomerAccount account, ThermostatManualEvent event,
+            YukonUserContext userContext) {
 
         Integer thermostatId = event.getThermostatId();
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
@@ -59,11 +60,11 @@ public class ThermostatServiceImpl implements ThermostatService {
         // Make sure the device is available
         if (!thermostat.isAvailable()) {
 
-            String error;
+            ThermostatManualEventResult error;
             if (StarsUtils.isOperator(yukonUser)) {
-                error = "operatorUnavailableError";
+                error = ThermostatManualEventResult.OPERATOR_UNAVAILABLE_ERROR;
             } else {
-                error = "consumerManualError";
+                error = ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
             }
             return error;
 
@@ -77,8 +78,8 @@ public class ThermostatServiceImpl implements ThermostatService {
         try {
             ServerUtils.sendSerialCommand(command, routeID, yukonUser);
         } catch (WebClientException e) {
-            logger.log(Level.ERROR, "Thermostat manual event failed.", e);
-            return "consumerManualError";
+            logger.error("Thermostat manual event failed.", e);
+            return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
         }
 
         // Save event
@@ -91,7 +92,7 @@ public class ThermostatServiceImpl implements ThermostatService {
                                     account.getAccountId(),
                                     account.getCustomerId());
 
-        return "consumerManualSuccess";
+        return ThermostatManualEventResult.CONSUMER_MANUAL_SUCCESS;
 
     }
 

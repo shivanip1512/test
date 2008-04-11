@@ -28,13 +28,13 @@
             if(!tempField.disabled) {
                 // field is enabled - set to default
             
-                var celsius = $F('temperatureUnit') == 'C';
+                var unit = $F('temperatureUnit');
                 if(amount > 0) {
                     // User clicked the up button - set to low temp
-                    tempField.value = (celsius)? convertTemp(tempLowerLimit, 'F') : tempLowerLimit;
+                    tempField.value = getConvertedTemp(tempLowerLimit, unit);
                 } else {
                     // User clicked the down button - set to high temp
-                    tempField.value = (celsius)? convertTemp(tempUpperLimit, 'F') : tempUpperLimit;
+                    tempField.value = getConvertedTemp(tempUpperLimit, unit);
                 }
                 validateTemp();
             }
@@ -63,10 +63,7 @@
         }
         
         // Convert current temp to fahrenheit if needed for validation
-        var fTemp = currentTemp;
-        if('F' != currentTempUnit) {
-            fTemp = convertTemp(fTemp, currentTempUnit);
-        }
+        var fTemp = getFahrenheitTemp(currentTemp, currentTempUnit);
         
         if(fTemp < tempLowerLimit) {
             fTemp = tempLowerLimit; 
@@ -75,9 +72,7 @@
         }
         
         // Convert current temp to celsius if needed
-        if('F' != currentTempUnit) {
-            fTemp = convertTemp(fTemp, 'F');
-        }
+        fTemp = getConvertedTemp(fTemp, currentTempUnit);
         
         tempField.value = fTemp;
     }

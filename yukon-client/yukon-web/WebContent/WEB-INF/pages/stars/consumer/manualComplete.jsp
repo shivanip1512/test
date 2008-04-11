@@ -6,8 +6,6 @@
 <cti:standardPage module="consumer" title="Consumer Energy Services">
 <cti:standardMenu/>
 
-<cti:includeScript link="/JavaScript/temp_conversion.js" />
-
 <table class="contentTable">
     <tr>
         <td class="leftColumn">
@@ -16,7 +14,7 @@
             </h3>
             
             <div class="message">
-                <cti:msg key="yukon.dr.consumer.manualComplete.${message}" arguments="${thermostat.label}" />
+                <cti:msg key="${message.displayKey}" arguments="${thermostat.label}" />
                 <c:url var="viewUrl" value="/spring/stars/consumer/thermostat/view">
                     <c:param name="thermostatId" value="${thermostat.id}" />
                 </c:url>

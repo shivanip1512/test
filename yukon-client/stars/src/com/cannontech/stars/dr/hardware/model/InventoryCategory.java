@@ -6,10 +6,10 @@ import com.cannontech.common.constants.YukonListEntryTypes;
  * Enum which represents load management inventory categories
  */
 public enum InventoryCategory {
-    ONE_WAY_RECEIVER(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC), TWO_WAY_RECEIVER(
-            YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC), MCT(
-            YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT), NON_YUKON_METER(
-            YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
+    ONE_WAY_RECEIVER(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_ONEWAYREC), 
+    TWO_WAY_RECEIVER(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_TWOWAYREC), 
+    MCT(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_MCT), 
+    NON_YUKON_METER(YukonListEntryTypes.YUK_DEF_ID_INV_CAT_NON_YUKON_METER);
 
     private int definitionId;
 

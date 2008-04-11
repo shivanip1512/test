@@ -6,15 +6,15 @@ import com.cannontech.common.constants.YukonListEntryTypes;
  * Enum which represents load management hardware status
  */
 public enum HardwareStatus {
-    AVAILABLE(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL), TEMP_UNAVAILABLE(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL), UNAVAILABLE(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL), ORDERED(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_ORDERED), SHIPPED(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_SHIPPED), RECEIVED(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_RECEIVED), ISSUED(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_ISSUED), INSTALLED(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_INSTALLED), REMOVED(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_REMOVED);
+    AVAILABLE(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_AVAIL), 
+    TEMP_UNAVAILABLE(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_TEMP_UNAVAIL), 
+    UNAVAILABLE(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_UNAVAIL), 
+    ORDERED(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_ORDERED), 
+    SHIPPED(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_SHIPPED), 
+    RECEIVED(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_RECEIVED), 
+    ISSUED(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_ISSUED), 
+    INSTALLED(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_INSTALLED), 
+    REMOVED(YukonListEntryTypes.YUK_DEF_ID_DEV_STAT_REMOVED);
 
     private int definitionId;
 

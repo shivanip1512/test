@@ -6,17 +6,17 @@ import com.cannontech.common.constants.YukonListEntryTypes;
  * Enum which represents thermostat modes
  */
 public enum ThermostatMode {
-    DEFAULT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT, "default"), COOL(
-            YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL, "cool"), HEAT(
-            YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT, "heat"), OFF(
-            YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF, "off"), AUTO(
-            YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_AUTO, "auto"), EMERGENCY_HEAT(
-            YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT,
+    DEFAULT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT, "default"), 
+    COOL(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL, "cool"), 
+    HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT, "heat"), 
+    OFF(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_OFF, "off"), 
+    AUTO(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_AUTO, "auto"), 
+    EMERGENCY_HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_EMERGENCY_HEAT,
             "emergencyheat");
 
     // this key prefix can be found in the following file:
-    // com.cannontech.yukon.common.device.bulk.bulkAction.xml
-    private final static String keyPrefix = "yukon.dr.consumer.thermostat.";
+    // com.cannontech.yukon.dr.consumer.xml
+    private final static String keyPrefix = "yukon.dr.consumer.thermostat.mode.";
 
     private int definitionId;
     private String commandString;

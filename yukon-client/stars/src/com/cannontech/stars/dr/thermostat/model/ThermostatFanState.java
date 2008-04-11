@@ -6,13 +6,13 @@ import com.cannontech.common.constants.YukonListEntryTypes;
  * Enum which represents thermostat fan modes
  */
 public enum ThermostatFanState {
-    DEFAULT(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT, "default"), AUTO(
-            YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO, "auto"), ON(
-            YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_ON, "on");
+    DEFAULT(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT, "default"), 
+    AUTO(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO, "auto"), 
+    ON(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_ON, "on");
 
     // this key prefix can be found in the following file:
     // com.cannontech.yukon.common.device.bulk.bulkAction.xml
-    private final static String keyPrefix = "yukon.dr.consumer.thermostat.";
+    private final static String keyPrefix = "yukon.dr.consumer.thermostat.fan.";
 
     private int definitionId;
     private String commandString;

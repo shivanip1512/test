@@ -10,6 +10,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -18,6 +19,7 @@ import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.ManualEventDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
+import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
@@ -67,7 +69,7 @@ public class ThermostatController extends AbstractConsumerController {
                                                                false);
         int temperature = ServletRequestUtils.getIntParameter(request,
                                                               "temperature",
-                                                              72);
+                                                              ThermostatManualEvent.DEFAULT_TEMPERATURE);
 
         // See if the run program button was clicked
         String runProgramButtonClicked = ServletRequestUtils.getStringParameter(request,
@@ -77,7 +79,9 @@ public class ThermostatController extends AbstractConsumerController {
 
         // Convert to fahrenheit temperature
         if ("c".equalsIgnoreCase(temperatureUnit)) {
-            temperature = Math.round((temperature * 1.8f) + 32);
+            temperature = (int) CtiUtilities.convertTemperature(temperature,
+                                                                CtiUtilities.CELSIUS_CHARACTER,
+                                                                CtiUtilities.FAHRENHEIT_CHARACTER);
         }
 
         // Build up manual event from submitted params
@@ -102,10 +106,10 @@ public class ThermostatController extends AbstractConsumerController {
         CustomerAccount account = getCustomerAccount(request);
 
         // Execute manual event and get result
-        String message = thermostatService.executeManualEvent(userContext,
-                                                              account,
-                                                              event);
-        map.addAttribute("message", message);
+        ThermostatManualEventResult message = thermostatService.executeManualEvent(account,
+                                                                                   event,
+                                                                                   userContext);
+        map.addAttribute("message", message.toString());
 
         map.addAttribute("thermostatId", thermostatId);
 
@@ -115,8 +119,9 @@ public class ThermostatController extends AbstractConsumerController {
     @RequestMapping(value = "/consumer/manualComplete", method = RequestMethod.GET)
     public String manualComplete(ModelMap map, int thermostatId, String message) {
 
-        map.addAttribute("message", message);
-        
+        ThermostatManualEventResult resultMessage = ThermostatManualEventResult.valueOf(message);
+        map.addAttribute("message", resultMessage);
+
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
         map.addAttribute("thermostat", thermostat);
 

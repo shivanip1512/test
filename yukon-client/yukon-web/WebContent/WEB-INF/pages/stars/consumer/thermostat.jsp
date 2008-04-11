@@ -6,6 +6,7 @@
 <cti:standardPage module="consumer" title="Consumer Energy Services">
     <cti:standardMenu/>
     
+    <cti:includeScript link="/JavaScript/temp_conversion.js" />
     <cti:includeScript link="/JavaScript/manualThermostat.js" />
     
     <cti:msg var="degreesCelsius" key="yukon.dr.consumer.thermostat.degreesCelsius" />
@@ -21,7 +22,7 @@
                 
                 
                 <br><br>
-                <div style="font-size: 11px;">
+                <div class="plainText">
                     <cti:msg key="yukon.dr.consumer.thermostat.instructionText" />
                 </div>
                 
@@ -53,8 +54,11 @@
                                                         
                                                     </form>
                                                 <td style="text-align: right; padding: 0em 1em 0em 2em;">
-                                                    <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
-                                                    <input name="runProgram" type="submit" value="${runProgramText}" />
+                                                    <form action="/spring/stars/consumer/thermostat/manual" method="post" >
+                                                        <input name="thermostatId" type="hidden" value="${thermostat.id}" />
+                                                        <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
+                                                        <input name="runProgram" type="submit" value="${runProgramText}" />
+                                                    </form>
                                                 </td>
                                             </tr>
                                         </table>
@@ -109,13 +113,13 @@
                                                             <tr>
                                                                 <td class="arrow"><img id="coolArrow" src="${arrow}" <c:if test="${eventMode != 'COOL'}">style="display: none;" </c:if>>&nbsp;</td>
                                                                 <td class="clickable subItem" onClick="setMode('COOL')">
-                                                                    <cti:msg key="yukon.dr.consumer.thermostat.COOL" />
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.mode.COOL" />
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td class="arrow"><img id="heatArrow" src="${arrow}" <c:if test="${eventMode != 'HEAT'}">style="display: none;"</c:if>>&nbsp;</td>
                                                                 <td class="clickable subItem" onClick="setMode('HEAT')">
-                                                                    <cti:msg key="yukon.dr.consumer.thermostat.HEAT" />
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.mode.HEAT" />
                                                                 </td>
                                                             </tr>
                                                             <!-- Heat pump has an extra mode setting -->
@@ -124,7 +128,7 @@
                                                                     <tr>
                                                                         <td class="arrow"><img id="emHeatArrow" src="${arrow}" <c:if test="${eventMode != 'EMERGENCY_HEAT'}">style="display: none;" </c:if>>&nbsp;</td>
                                                                         <td class="clickable subItem" onClick="setMode('EMERGENCY_HEAT')">
-                                                                            <cti:msg key="yukon.dr.consumer.thermostat.EMERGENCY_HEAT" />
+                                                                            <cti:msg key="yukon.dr.consumer.thermostat.mode.EMERGENCY_HEAT" />
                                                                         </td>
                                                                     </tr>
                                                                 </c:when>
@@ -136,7 +140,7 @@
                                                             <tr>
                                                                 <td class="arrow"><img id="offArrow" src="${arrow}" <c:if test="${eventMode != 'OFF'}">style="display: none;" </c:if>>&nbsp;</td>
                                                                 <td class="clickable subItem" onClick="setMode('OFF')">
-                                                                    <cti:msg key="yukon.dr.consumer.thermostat.OFF" />
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.mode.OFF" />
                                                                 </td>
                                                             </tr>
                                                         </table>
@@ -156,13 +160,13 @@
                                                             <tr>
                                                                 <td class="arrow"><img id="autoArrow" src="${arrow}" <c:if test="${eventFanState != 'AUTO'}">style="display: none;" </c:if>></td>
                                                                 <td class="clickable subItem" onClick="setFan('autoArrow', 'AUTO')">
-                                                                    <cti:msg key="yukon.dr.consumer.thermostat.AUTO" />
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.fan.AUTO" />
                                                                 </td>
                                                             </tr>
                                                             <tr>
                                                                 <td class="arrow"><img id="onArrow" src="${arrow}" <c:if test="${eventFanState != 'ON'}">style="display: none;" </c:if>></td>
                                                                 <td class="clickable subItem" onClick="setFan('onArrow', 'ON')">
-                                                                    <cti:msg key="yukon.dr.consumer.thermostat.ON" />
+                                                                    <cti:msg key="yukon.dr.consumer.thermostat.fan.ON" />
                                                                 </td>
                                                             </tr>
                                                         </table>

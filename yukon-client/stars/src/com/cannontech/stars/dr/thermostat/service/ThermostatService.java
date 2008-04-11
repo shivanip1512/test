@@ -2,6 +2,7 @@ package com.cannontech.stars.dr.thermostat.service;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
+import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -16,7 +17,8 @@ public interface ThermostatService {
      * @param event - Manual event to be performed
      * @return Status of manual event execution
      */
-    public String executeManualEvent(YukonUserContext userContext,
-            CustomerAccount account, ThermostatManualEvent event);
+    public ThermostatManualEventResult executeManualEvent(
+            CustomerAccount account, ThermostatManualEvent event,
+            YukonUserContext userContext);
 
 }

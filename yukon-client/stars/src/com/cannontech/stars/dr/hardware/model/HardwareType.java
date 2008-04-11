@@ -6,20 +6,20 @@ import com.cannontech.common.constants.YukonListEntryTypes;
  * Enum which represents load management hardware types
  */
 public enum HardwareType {
-    EXPRESSSTAT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT), MCT(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT), COMMERCIAL_EXPRESSSTAT(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT), LCR_5000_EXPRESSCOM(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM), LCR_5000_VERSACOM(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM), LCR_4000(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000), LCR_3000(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000), LCR_2000(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000), LCR_1000(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000), SA_205(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205), SA_305(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305), SA_SIMPLE(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE), EXPRESSSTAT_HEAT_PUMP(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP), ENERGYPRO(
-            YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO);
+    EXPRESSSTAT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT), 
+    MCT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT), 
+    COMMERCIAL_EXPRESSSTAT(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT), 
+    LCR_5000_EXPRESSCOM(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_XCOM), 
+    LCR_5000_VERSACOM(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM), 
+    LCR_4000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_4000), 
+    LCR_3000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_3000), 
+    LCR_2000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_2000), 
+    LCR_1000(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_LCR_1000), 
+    SA_205(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA205), 
+    SA_305(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305), 
+    SA_SIMPLE(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE), 
+    EXPRESSSTAT_HEAT_PUMP(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP), 
+    ENERGYPRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO);
 
     private int definitionId;
 
