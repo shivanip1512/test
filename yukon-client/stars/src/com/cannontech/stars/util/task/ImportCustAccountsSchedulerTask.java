@@ -9,6 +9,7 @@ import java.util.TreeSet;
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.jobs.support.YukonTask;
@@ -29,29 +30,26 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
             try {
                 startTask();
             } catch (TimeoutException e) {
-                e.printStackTrace();
+                logger.error(e);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e);
+            } catch (NotFoundException e){
+                logger.error(e);
             }
     }
     
     private void startTask() throws TimeoutException, InterruptedException{
         logger.info("Starting cust account task.");
-        int timeoutCounterMax = 15*60*60; // 15 mins
-        int timeoutCounter = 0;
-        while(true){
-            if (StarsDatabaseCache.allCacheLoaded.get() == true) {
-                break;
-            }
-            Thread.sleep(1000);
-            if (timeoutCounterMax < timeoutCounter) {
-                throw new TimeoutException();
-            }
-            timeoutCounter++;
+        
+        StarsDatabaseCache starsDbCacheInstance = StarsDatabaseCache.getInstance();
+        starsDbCacheInstance.blockUntilLoaded();
+        LiteStarsEnergyCompany liteStarsEnergyCompany = null;
+        if(energyCompanyID != null){
+            liteStarsEnergyCompany = starsDbCacheInstance.getEnergyCompany(energyCompanyID);
+        } else {
+            throw new NotFoundException("energyCompanyID was not found during the import customer process");
         }
-        
-        LiteStarsEnergyCompany liteStarsEnergyCompany = StarsDatabaseCache.getInstance().getEnergyCompany(energyCompanyID);
-        
+            
         final String fs = System.getProperty( "file.separator" );
         File baseDir = ImportCustAccountsTask.getBaseDir(liteStarsEnergyCompany);
         File importInputDir = null;
@@ -123,19 +121,6 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
                 int userId = userContext.getYukonUser().getLiteID();
                 ImportCustAccountsTask importCustAccountsTask = new ImportCustAccountsTask(liteStarsEnergyCompany, custFile, null, email, false, userId, true);
                 importCustAccountsTask.run();
-                
-                // This while loop forces the tread to finish in order to start another thread.
-                timeoutCounter = 0;
-                while (true) {
-                    if (importCustAccountsTask.getStatus() != ImportCustAccountsTask.STATUS_RUNNING) {
-                        break;
-                    }
-                    Thread.sleep(1000);
-                    timeoutCounter++;
-                    if (timeoutCounterMax < timeoutCounter) {
-                        throw new TimeoutException();
-                    }
-                }
             }
         }
     }

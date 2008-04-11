@@ -11,6 +11,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.cannontech.clientutils.CTILogger;
@@ -64,7 +65,7 @@ import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
  */
 public class StarsDatabaseCache implements DBChangeLiteListener {
 	
-    public static final AtomicBoolean allCacheLoaded = new AtomicBoolean(false);
+    private CountDownLatch loadedLatch = new CountDownLatch(1);
     
 	public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
@@ -86,6 +87,22 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
     
     public StarsDatabaseCache() {
         
+    }
+
+    /**
+     * Checks to see if the cache is fully loaded.
+     * @return
+     */
+    public boolean isLoaded() {
+        if (loadedLatch.getCount() == 0){
+            return true;
+        } else {
+            return false;
+        }
+    }
+    
+    public void blockUntilLoaded() throws InterruptedException {
+        loadedLatch.await();
     }
     
     public void setAsyncDynamicDataSource(final AsyncDynamicDataSource dataSource) {
@@ -124,9 +141,8 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
                         company.loadAllWorkOrders( true );
                     }
                 }
-                // Sets an atomic boolean so other threads can see if 
-                // StarsDatabaseCache is still loading
-                StarsDatabaseCache.allCacheLoaded.set(true);
+                
+                loadedLatch.countDown();
             }
         });
         initThrd.start();
