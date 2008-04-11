@@ -201,7 +201,6 @@ String css = "tableCell";
                 
                 <tr class="altTableCell" id="tr_substation_${thisSubStationId}">
                     <td id="anc_${thisSubStationId}">
-		                <input type="checkbox" name="cti_chkbxSubStation" value="${thisSubStationId}"></input>
 		                <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
 	                        <a class="editImg" href="/editor/cbcBase.jsf?type=2&itemid=<%=substation.getCcId()%>&ignoreBookmark=true">
 	                            <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
