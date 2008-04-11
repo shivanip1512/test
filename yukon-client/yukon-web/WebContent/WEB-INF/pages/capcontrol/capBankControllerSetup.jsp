@@ -235,7 +235,7 @@
 							<f:facet name="points">
 								<x:panelGroup>
 									<x:commandLink id="ptLink" value="#{node.description}"
-										actionListener="#{capControlForm.cBControllerEditor.pointClick}">
+										actionListener="#{capControlForm.CBControllerEditor.pointClick}">
 										<f:param name="ptID" value="#{node.identifier}" />
 									</x:commandLink>
 								</x:panelGroup>
