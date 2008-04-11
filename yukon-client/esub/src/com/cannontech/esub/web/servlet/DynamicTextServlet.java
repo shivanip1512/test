@@ -52,8 +52,9 @@ public class DynamicTextServlet extends HttpServlet {
 		try{
             int id = Integer.parseInt(idStr);
     		int dattrib = Integer.parseInt(displayAttribStr);
-            Writer writer = resp.getWriter();       
-            writer.write(UpdateUtil.getDynamicTextString(id, dattrib));
+            Writer writer = resp.getWriter();     
+            String text = UpdateUtil.getDynamicTextString(id, dattrib);
+            writer.write(text);
             writer.flush();
             }
         catch (NumberFormatException nfe) {

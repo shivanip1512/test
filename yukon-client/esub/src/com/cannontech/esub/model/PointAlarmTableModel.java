@@ -11,8 +11,10 @@ import java.util.Set;
 
 import javax.swing.table.AbstractTableModel;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.message.dispatch.message.Signal;
@@ -116,18 +118,24 @@ public class PointAlarmTableModel extends AbstractTableModel {
     	        return;
             }
     		int pointID = s.getPointID();
-    		LitePoint point = DaoFactory.getPointDao().getLitePoint(pointID);
-    		
-    		int devID = point.getPaobjectID();
-    		LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
-    		
-    		ArrayList row = new ArrayList(NUM_COLUMNS);
-    		row.add(s.getTimeStamp());
-    		row.add(device.getPaoName());
-    		row.add(point.getPointName());
-    		row.add(s.getDescription());	
-    		//row.add(s.getUserName());
-    		_rows.add(row);
+    		LitePoint point = null;
+    		try {
+    		    point = DaoFactory.getPointDao().getLitePoint(pointID);
+    		}catch(NotFoundException nfe) {
+    		    // this point may have been deleted.
+    		    CTILogger.error("The point (pointId:"+ pointID + ") for this AlarmTable might have been deleted!", nfe);
+    		}
+    		if(point != null) {
+        		int devID = point.getPaobjectID();
+        		LiteYukonPAObject device = DaoFactory.getPaoDao().getLiteYukonPAO(devID);
+        		
+        		ArrayList row = new ArrayList(NUM_COLUMNS);
+        		row.add(s.getTimeStamp());
+        		row.add(device.getPaoName());
+        		row.add(point.getPointName());
+        		row.add(s.getDescription());	
+        		_rows.add(row);
+    		}
 	    }
 	}
 	

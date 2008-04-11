@@ -14,6 +14,8 @@ import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.gui.util.SimpleLabel;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.esub.editor.Util;
 import com.cannontech.esub.element.LineElement;
@@ -550,7 +552,16 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 getColorButton().setEnabled(false);
                 getColorButton().setBackground(java.awt.Color.LIGHT_GRAY);
                 getColorLabel().setBackground(java.awt.Color.LIGHT_GRAY);
-                getColorPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getColorPointID()));
+                
+                LitePoint litePoint = null;
+                try {
+                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getColorPointID());
+                }catch(NotFoundException nfe) {
+                    CTILogger.error("The color point (pointId:"+ lineElement.getColorPointID() + ") for this line might have been deleted!", nfe);
+                }
+                if(litePoint != null) {
+                    getColorPointPanel().getPointSelectionPanel().selectPoint(litePoint);
+                }
             }
             
             if(lineElement.getThicknessPointID() < 0) {
@@ -560,7 +571,16 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 getThicknessPointCheckBox().setSelected(true);
                 getThicknessPointButton().setEnabled(true);
                 getThicknessSlider().setEnabled(false);
-                getThicknessPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getThicknessPointID()));
+                
+                LitePoint litePoint = null;
+                try {
+                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getThicknessPointID());
+                }catch(NotFoundException nfe) {
+                    CTILogger.error("The thickness point (pointId:"+ lineElement.getThicknessPointID() + ") for this line might have been deleted!", nfe);
+                }
+                if(litePoint != null) {
+                    getThicknessPointPanel().getPointSelectionPanel().selectPoint(litePoint);
+                }
             }
             
             if(lineElement.getArrowPointID() < 0) {
@@ -570,7 +590,16 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 getArrowPointCheckBox().setSelected(true);
                 getArrowPointButton().setEnabled(true);
                 getArrowComboBox().setEnabled(false);
-                getArrowPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getArrowPointID()));
+                
+                LitePoint litePoint = null;
+                try {
+                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getArrowPointID());
+                }catch(NotFoundException nfe) {
+                    CTILogger.error("The arrow point (pointId:"+ lineElement.getArrowPointID() + ") for this line might have been deleted!", nfe);
+                }
+                if(litePoint != null) {
+                    getArrowPointPanel().getPointSelectionPanel().selectPoint(litePoint);
+                }
             }
             
             if(lineElement.getOpacityPointID() < 0) {
@@ -580,7 +609,16 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 getOpacityPointCheckBox().setSelected(true);
                 getOpacityPointButton().setEnabled(true);
                 getOpacitySlider().setEnabled(false);
-                getOpacityPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getOpacityPointID()));
+                
+                LitePoint litePoint = null;
+                try {
+                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getOpacityPointID());
+                }catch(NotFoundException nfe) {
+                    CTILogger.error("The opacity point (pointId:"+ lineElement.getOpacityPointID() + ") for this line might have been deleted!", nfe);
+                }
+                if(litePoint != null) {
+                    getOpacityPointPanel().getPointSelectionPanel().selectPoint(litePoint);
+                }
             }
             
             if(lineElement.getBlinkPointID() < 0) {
@@ -590,7 +628,16 @@ public class LineElementEditorPanel extends com.cannontech.common.gui.util.DataI
                 getBlinkPointCheckBox().setSelected(true);
                 getBlinkPointButton().setEnabled(true);
                 getBlinkCheckBox().setEnabled(false);
-                getBlinkPointPanel().getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(lineElement.getBlinkPointID()));
+                
+                LitePoint litePoint = null;
+                try {
+                    litePoint = DaoFactory.getPointDao().getLitePoint(lineElement.getBlinkPointID());
+                }catch(NotFoundException nfe) {
+                    CTILogger.error("The blink point (pointId:"+ lineElement.getBlinkPointID() + ") for this line might have been deleted!", nfe);
+                }
+                if(litePoint != null) {
+                    getBlinkPointPanel().getPointSelectionPanel().selectPoint(litePoint);
+                }
             }
         }else {
             // this is a newly created line so reset all the point driven components.

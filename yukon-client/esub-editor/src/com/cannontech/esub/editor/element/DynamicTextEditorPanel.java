@@ -22,6 +22,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.PointAttributes;
 import com.cannontech.esub.editor.Util;
@@ -988,9 +989,17 @@ public void setValue(Object o) {
         getColorPointLabel().setEnabled(true);
         getColorButton().setEnabled(false);
         getColorButton().setBackground(java.awt.Color.LIGHT_GRAY);
-        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getColorPointID());
-        getTextColorPointPanel().getPointSelectionPanel().selectPoint(litePoint);
-        getColorPointLabel().setText(litePoint.getPointName());
+        LitePoint litePoint = null;
+        try {
+            litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getColorPointID());
+        }catch(NotFoundException nfe) {
+            CTILogger.error("The color point (pointId:"+ dynamicText.getColorPointID() + ") for this DynamicText might have been deleted!", nfe);
+        }
+        if(litePoint != null) {
+            getTextColorPointPanel().getPointSelectionPanel().selectPoint(litePoint);
+            getColorPointLabel().setText(litePoint.getPointName());
+        }
+        
         getColorPointLabel().setForeground(Color.black);
     }
     
@@ -1008,9 +1017,18 @@ public void setValue(Object o) {
         getBlinkPointButton().setEnabled(true);
         getBlinkPointLabel().setEnabled(true);
         getBlinkCheckBox().setEnabled(false);
-        LitePoint litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getBlinkPointID());
-        getBlinkPointPanel().getPointSelectionPanel().selectPoint(litePoint);
-        getBlinkPointLabel().setText(litePoint.getPointName());
+        
+        LitePoint litePoint = null;
+        try {
+            litePoint = DaoFactory.getPointDao().getLitePoint(dynamicText.getBlinkPointID());
+        }catch(NotFoundException nfe) {
+            CTILogger.error("The blink point (pointId:"+ dynamicText.getBlinkPointID() + ") for this DynamicText might have been deleted!", nfe);
+        }
+        if(litePoint != null) {
+            getBlinkPointPanel().getPointSelectionPanel().selectPoint(litePoint);
+            getBlinkPointLabel().setText(litePoint.getPointName());
+        }
+        
         getBlinkPointLabel().setForeground(Color.black);
     }
 }

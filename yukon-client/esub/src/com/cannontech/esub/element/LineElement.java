@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -111,24 +113,30 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
     @SuppressWarnings("unchecked")
     public List getColors() {
         List lineColors = new ArrayList(6);
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(getColorPointID());
+        LitePoint point = null;
+        try {
+            point = DaoFactory.getPointDao().getLitePoint(getColorPointID());
+        }catch(NotFoundException nfe) {
+            // this point may have been deleted.
+            CTILogger.error("The point (pointId:"+ getColorPointID() + ") for this line might have been deleted!", nfe);
+        }
         if(point == null) {
             lineColors.add(getLineColor());
-            return lineColors;
-        }
+        }else {
         
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-        List states = lsg.getStatesList();
-        for(int i = 0; i < states.size(); i++) {
-            Color colorObj = (Color) customColorMap.get(new Integer(i));
-            Color color; 
-            if(colorObj != null) {
-                color = colorObj;
-            } 
-            else {
-                color = (Color) oldColorMap.get(((LiteState) states.get(i)).getFgColor());
+            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            List states = lsg.getStatesList();
+            for(int i = 0; i < states.size(); i++) {
+                Color colorObj = (Color) customColorMap.get(new Integer(i));
+                Color color; 
+                if(colorObj != null) {
+                    color = colorObj;
+                } 
+                else {
+                    color = (Color) oldColorMap.get(((LiteState) states.get(i)).getFgColor());
+                }
+                lineColors.add(color);
             }
-            lineColors.add(color);
         }
         return lineColors;
     }
@@ -136,24 +144,32 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
     @SuppressWarnings("unchecked")
     public List getWidths() {
         List lineWidths = new ArrayList(6);
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(getThicknessPointID());
-        if(point == null) {
-            lineWidths.add(new Float(getLineThickness()));
-            return lineWidths;
+        
+        LitePoint point = null;
+        try {
+            point = DaoFactory.getPointDao().getLitePoint(getThicknessPointID());
+        }catch(NotFoundException nfe) {
+            // this point may have been deleted.
+            CTILogger.error("The point (pointId:"+ getThicknessPointID() + ") for this line might have been deleted!", nfe);
         }
         
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-        List states = lsg.getStatesList();
-        for(int i = 0; i < states.size(); i++) {
-            Float widthObj = (Float) customThicknessMap.get(new Integer(i));
-            Float width; 
-            if(widthObj != null) {
-                width = widthObj;
-            } 
-            else {
-                width = new Float(1.0f);
+        if(point == null) {
+            lineWidths.add(new Float(getLineThickness()));
+        }else {
+        
+            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            List states = lsg.getStatesList();
+            for(int i = 0; i < states.size(); i++) {
+                Float widthObj = (Float) customThicknessMap.get(new Integer(i));
+                Float width; 
+                if(widthObj != null) {
+                    width = widthObj;
+                } 
+                else {
+                    width = new Float(1.0f);
+                }
+                lineWidths.add(width);
             }
-            lineWidths.add(width);
         }
         return lineWidths;
     }
@@ -161,53 +177,71 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
     @SuppressWarnings("unchecked")
     public List getArrows() {
         List lineArrows = new ArrayList(6);
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(getArrowPointID());
+        
+        LitePoint point = null;
+        try {
+            point = DaoFactory.getPointDao().getLitePoint(getArrowPointID());
+        }catch(NotFoundException nfe) {
+            // this point may have been deleted.
+            CTILogger.error("The point (pointId:"+ getArrowPointID() + ") for this line might have been deleted!", nfe);
+        }
+        
         if(point == null) {
             return lineArrows;
-        }
-        int originalArrowInt = getLineArrow();
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-        List states = lsg.getStatesList();
-        for(int i = 0; i < states.size(); i++) {
-            Integer arrowObj = (Integer) customArrowMap.get(new Integer(i));
-            Integer arrow; 
-            if(arrowObj != null) {
-                arrow = arrowObj;
-            } 
-            else {
-                arrow = new Integer(0);
+        }else {
+            int originalArrowInt = getLineArrow();
+            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            List states = lsg.getStatesList();
+            for(int i = 0; i < states.size(); i++) {
+                Integer arrowObj = (Integer) customArrowMap.get(new Integer(i));
+                Integer arrow; 
+                if(arrowObj != null) {
+                    arrow = arrowObj;
+                } 
+                else {
+                    arrow = new Integer(0);
+                }
+                setLineArrow(arrow.intValue());
+                Shape[] s = getShape();
+                String dString = BaseSVGGenerator.getPathString(s, getCenterX(), getCenterY());
+    
+                lineArrows.add(dString);
             }
-            setLineArrow(arrow.intValue());
-            Shape[] s = getShape();
-            String dString = BaseSVGGenerator.getPathString(s, getCenterX(), getCenterY());
-
-            lineArrows.add(dString);
+            setLineArrow(originalArrowInt);
         }
-        setLineArrow(originalArrowInt);
         return lineArrows;
     }
     
     @SuppressWarnings("unchecked")
     public List getOpacities() {
         List lineOpacities = new ArrayList(6);
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(getOpacityPointID());
+        
+        LitePoint point = null;
+        try {
+            point = DaoFactory.getPointDao().getLitePoint(getOpacityPointID());
+        }catch(NotFoundException nfe) {
+            // this point may have been deleted.
+            CTILogger.error("The point (pointId:"+ getOpacityPointID() + ") for this line might have been deleted!", nfe);
+        }
+        
         if(point == null) {
             lineOpacities.add(new Float(getTransparency()));
             return lineOpacities;
-        }
+        }else {
         
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-        List states = lsg.getStatesList();
-        for(int i = 0; i < states.size(); i++) {
-            Float opacityObj = (Float) customOpacityMap.get(new Integer(i));
-            Float opacity; 
-            if(opacityObj != null) {
-                opacity = opacityObj;
-            } 
-            else {
-                opacity = new Float(1.0f);
+            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            List states = lsg.getStatesList();
+            for(int i = 0; i < states.size(); i++) {
+                Float opacityObj = (Float) customOpacityMap.get(new Integer(i));
+                Float opacity; 
+                if(opacityObj != null) {
+                    opacity = opacityObj;
+                } 
+                else {
+                    opacity = new Float(1.0f);
+                }
+                lineOpacities.add(opacity);
             }
-            lineOpacities.add(opacity);
         }
         return lineOpacities;
     }
@@ -215,23 +249,32 @@ public class LineElement extends LxAbstractLine implements DrawingElement {
     @SuppressWarnings("unchecked")
     public List getBlinks() {
         List lineBlinks = new ArrayList(6);
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(getBlinkPointID());
-        if(point == null) {
-            return lineBlinks;
+        
+        LitePoint point = null;
+        try {
+            point = DaoFactory.getPointDao().getLitePoint(getBlinkPointID());
+        }catch(NotFoundException nfe) {
+            // this point may have been deleted.
+            CTILogger.error("The point (pointId:"+ getBlinkPointID() + ") for this line might have been deleted!", nfe);
         }
         
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-        List states = lsg.getStatesList();
-        for(int i = 0; i < states.size(); i++) {
-            Integer blinkObj = (Integer)customBlinkMap.get(new Integer(i));
-            Integer blink; 
-            if(blinkObj != null) {
-                blink =blinkObj;
-            } 
-            else {
-                blink = new Integer(0);
+        if(point == null) {
+            return lineBlinks;
+        }else {
+        
+            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            List states = lsg.getStatesList();
+            for(int i = 0; i < states.size(); i++) {
+                Integer blinkObj = (Integer)customBlinkMap.get(new Integer(i));
+                Integer blink; 
+                if(blinkObj != null) {
+                    blink =blinkObj;
+                } 
+                else {
+                    blink = new Integer(0);
+                }
+                lineBlinks.add(blink);
             }
-            lineBlinks.add(blink);
         }
         return lineBlinks;
     }

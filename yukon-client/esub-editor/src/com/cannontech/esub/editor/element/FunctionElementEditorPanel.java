@@ -8,7 +8,9 @@ import javax.swing.JLabel;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.esub.element.FunctionElement;
 //import com.cannontech.esub.element.FunctionElement;
@@ -183,7 +185,7 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
     
     public Object getValue(Object o) {
         
-        ArrayList argList = new ArrayList();
+        ArrayList<String> argList = new ArrayList<String>();
         String functionName = getFunctionComboBox().getSelectedItem().toString();
         argList.add(functionName);
         String rawState = String.valueOf(getRawStateComboBox().getSelectedIndex());
@@ -213,23 +215,27 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
         
         // hardcoded till we get new functions
         getPointSelectionPanel().refresh();
-        ArrayList argList = functionElement.getArgList();
+        ArrayList<String> argList = functionElement.getArgList();
         if(argList != null ) {
             
-            try {
-                functionName = (String)argList.get(0);
-                pointID = new Integer((String)argList.get(1)).intValue();
-                rawState = (String)argList.get(2);
-                
-                if( pointID != -1 && functionName != null && rawState != null)
-                {
-                    getFunctionComboBox().setSelectedItem(functionName);
-                    getRawStateComboBox().setSelectedIndex(new Integer(rawState).intValue());
-                    getPointSelectionPanel().selectPoint(DaoFactory.getPointDao().getLitePoint(pointID));
+            functionName = argList.get(0);
+            pointID = new Integer(argList.get(1)).intValue();
+            rawState = argList.get(2);
+            
+            if( pointID != -1 && functionName != null && rawState != null)
+            {
+                getFunctionComboBox().setSelectedItem(functionName);
+                getRawStateComboBox().setSelectedIndex(new Integer(rawState).intValue());
+                LitePoint litePoint = null;
+                try {
+                    DaoFactory.getPointDao().getLitePoint(pointID);
+                }catch(NotFoundException nfe) {
+                    CTILogger.error("The point (pointId:"+ pointID + ") for this Function might have been deleted!", nfe);
                 }
-            } catch (Exception e) {
-                
-            } 
+                if(litePoint != null) {
+                    getPointSelectionPanel().selectPoint(litePoint);
+                }
+            }
         }
     }
     

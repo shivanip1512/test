@@ -241,15 +241,15 @@ function blinkBlinker(node){
 	if(isBlinking == "yes"){
 		var displayState = node.getAttribute('displayState');
 		if ( displayState == "none" ) {
-			node.getStyle().setProperty('display', 'inline');
-			node.setAttribute('displayState', 'inline');
+			//node.getStyle().setProperty('display', 'inline');
+			//node.setAttribute('displayState', 'inline');
 		}else {
-			node.getStyle().setProperty('display', 'none');
-			node.setAttribute('displayState', 'none');
+			//node.getStyle().setProperty('display', 'none');
+			//node.setAttribute('displayState', 'none');
 		}
 	}else{
-		node.getStyle().setProperty('display', 'inline');
-		node.setAttribute('displayState', 'inline');
+		//node.getStyle().setProperty('display', 'inline');
+		//node.setAttribute('displayState', 'inline');
 	}
 }
 
@@ -281,7 +281,6 @@ function updateBlinker(node){
 }// end updateAllBlinkers
 
 function updateNode(node) {
-
 	if (node.getAttribute('colorid')) {
 
 		var colorPointID = node.getAttribute('colorid');
@@ -294,7 +293,6 @@ function updateNode(node) {
     if (node.getAttribute('currentstateid')) {
     	
 	    var currentStatePointID = node.getAttribute('currentstateid');
-	    //alert("csi " + node.getAttribute('currentstateid'));
 	    if(currentStatePointID > 0){
 	        url = '/servlet/DynamicTextServlet' + '?' + 'id=' + currentStatePointID + '&dattrib=4096';
 	        getCtiURL(url, tfn);
@@ -407,7 +405,9 @@ function updateLine(node) {
         if(obj.content){
             var value = obj.content;
             var arrow = node.getAttribute('d'+trim(value));
-            node.setAttributeNS(null, "d", arrow);
+            if(arrow != null && arrow.length > 0){
+                node.setAttributeNS(null, "d", arrow);
+            }
         }
     }
     function ofn(obj) {
@@ -417,7 +417,7 @@ function updateLine(node) {
             node.getStyle().setProperty('opacity',opacity);
         }
     }
-} //end updateImage
+}
 
 /* update a single alarm text element */
 function updateAlarmText(node) {

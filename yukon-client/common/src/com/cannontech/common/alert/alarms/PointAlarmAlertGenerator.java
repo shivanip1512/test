@@ -20,6 +20,8 @@ import com.cannontech.message.dispatch.message.Signal;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
 import com.cannontech.user.checker.UserChecker;
+import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.clientutils.CTILogger;
 
 public class PointAlarmAlertGenerator implements SignalListener {
     private AlertService alertService;
@@ -41,23 +43,30 @@ public class PointAlarmAlertGenerator implements SignalListener {
         
         ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.alarm");
         
-        LitePoint litePoint = pointDao.getLitePoint(signal.getPointID());
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
+        LitePoint litePoint = null;
+        try {
+            litePoint = pointDao.getLitePoint(signal.getPointID());
+        }catch (NotFoundException nfe) {
+            CTILogger.error("The point (pointId:"+ signal.getPointID() + ") for this Alarm might have been deleted!", nfe);
+        }
+        if(litePoint != null) {
+        	LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(litePoint.getPaobjectID());
         
-        resolvableTemplate.addData("paoName", liteYukonPAO.getPaoName());
-        resolvableTemplate.addData("pointName", litePoint.getPointName());
-        // the getAlarmConditionText method really sucks!
-        resolvableTemplate.addData("alarmText", AlarmUtils.getAlarmConditionText(signal.getCondition(), litePoint));
+        	resolvableTemplate.addData("paoName", liteYukonPAO.getPaoName());
+        	resolvableTemplate.addData("pointName", litePoint.getPointName());
+        	// the getAlarmConditionText method really sucks!
+        	resolvableTemplate.addData("alarmText", AlarmUtils.getAlarmConditionText(signal.getCondition(), litePoint));
         
-        AlarmAlert alarmAlert = new AlarmAlert(signal.getTimeStamp(), resolvableTemplate);
-        alarmAlert.setPointId(signal.getPointID());
-        alarmAlert.setCondition(signal.getCondition());
-        boolean isUnacknowledgedAlarm = TagUtils.isAlarmUnacked(signal.getTags());
-        alarmAlert.setUnacknowledgedAlarm(isUnacknowledgedAlarm);
-        UserChecker userChecker = userCheckerFactory.createPropertyChecker(WebClientRole.VIEW_ALARMS_AS_ALERTS);
-        alarmAlert.setUserChecker(userChecker);
+        	AlarmAlert alarmAlert = new AlarmAlert(signal.getTimeStamp(), resolvableTemplate);
+        	alarmAlert.setPointId(signal.getPointID());
+        	alarmAlert.setCondition(signal.getCondition());
+        	boolean isUnacknowledgedAlarm = TagUtils.isAlarmUnacked(signal.getTags());
+        	alarmAlert.setUnacknowledgedAlarm(isUnacknowledgedAlarm);
+        	UserChecker userChecker = userCheckerFactory.createPropertyChecker(WebClientRole.VIEW_ALARMS_AS_ALERTS);
+        	alarmAlert.setUserChecker(userChecker);
         
-        alertService.add(alarmAlert);
+        	alertService.add(alarmAlert);
+        }
     }
     
     public void setAlertService(AlertService alertService) {

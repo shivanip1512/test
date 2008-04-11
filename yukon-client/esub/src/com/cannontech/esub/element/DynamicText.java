@@ -44,7 +44,7 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
     private LitePoint controlPoint;
 	private int displayAttribs = 0x00;
     private Color color = DEFAULT_COLOR;
-    private String text = "";
+    private String text = "DynamicText";
     private int blink = 0;
 	private transient Drawing drawing = null;
 	private String linkTo = null;
@@ -277,10 +277,16 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
      * @param newPointID int
      */
     public void setControlPointId(int newPointId)  {
-        LitePoint lp = DaoFactory.getPointDao().getLitePoint( newPointId ); 
+        try {
+        LitePoint lp = DaoFactory.getPointDao().getLitePoint( newPointId );
         if(lp != null) {
             controlPoint = lp;
         }
+        }catch(NotFoundException nfe) {
+            // this point must have been deleted
+            CTILogger.error("The control point (pointId:"+ newPointId + ") for DynamicText: " + getText() + " might have been deleted!", nfe);
+        }
+        
     }
 
 	/**
@@ -352,48 +358,64 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
     
     public List getColors() {
         List<Paint> textColors = new ArrayList<Paint>(6);
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(getColorPointID());
-        if(point == null) {
-            textColors.add(getPaint());
-            return textColors;
+        
+        LitePoint point = null;
+        try {
+            point = DaoFactory.getPointDao().getLitePoint(getColorPointID());
+        }catch(NotFoundException nfe) {
+            // this point may have been deleted.
+            CTILogger.error("The point (pointId:"+ getColorPointID() + ") for this DynamicText might have been deleted!", nfe);
         }
         
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-        List states = lsg.getStatesList();
-        for(int i = 0; i < states.size(); i++) {
-            Color colorObj = (Color) customColorMap.get(new Integer(i));
-            Color color; 
-            if(colorObj != null) {
-                color = colorObj;
-            } 
-            else {
-                color = oldColorMap.get(((LiteState) states.get(i)).getFgColor());
+        if(point == null) {
+            textColors.add(getPaint());
+        }else {
+        
+            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            List states = lsg.getStatesList();
+            for(int i = 0; i < states.size(); i++) {
+                Color colorObj = (Color) customColorMap.get(new Integer(i));
+                Color color; 
+                if(colorObj != null) {
+                    color = colorObj;
+                } 
+                else {
+                    color = oldColorMap.get(((LiteState) states.get(i)).getFgColor());
+                }
+                textColors.add(color);
             }
-            textColors.add(color);
         }
         return textColors;
     }
     
     public List getTextStrings() {
         List<String> textStrings = new ArrayList<String>(6);
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(getPointId());
-        if(point == null) {
-            textStrings.add(getText());
-            return textStrings;
+        
+        LitePoint point = null;
+        try {
+            point = DaoFactory.getPointDao().getLitePoint(getPointId());
+        }catch(NotFoundException nfe) {
+            // this point may have been deleted.
+            CTILogger.error("The point (pointId:"+ getPointId() + ") for this DynamicText might have been deleted!", nfe);
         }
         
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-        List states = lsg.getStatesList();
-        for(int i = 0; i < states.size(); i++) {
-            String textObj = (String) customTextMap.get(new Integer(i));
-            String text;
-            if(textObj != null) {
-                text = textObj;
-            } 
-            else {
-                text = ((LiteState) states.get(i)).getStateText();
+        if(point == null) {
+            textStrings.add(getText());
+        }else {
+        
+            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            List states = lsg.getStatesList();
+            for(int i = 0; i < states.size(); i++) {
+                String textObj = (String) customTextMap.get(new Integer(i));
+                String text;
+                if(textObj != null) {
+                    text = textObj;
+                } 
+                else {
+                    text = ((LiteState) states.get(i)).getStateText();
+                }
+                textStrings.add(text);
             }
-            textStrings.add(text);
         }
         return textStrings;
     }
@@ -525,23 +547,32 @@ public class DynamicText extends LxAbstractText implements DrawingElement, Seria
     
     public List getBlinks() {
         List<Integer> textBlinks = new ArrayList<Integer>(6);
-        LitePoint point = DaoFactory.getPointDao().getLitePoint(getBlinkPointID());
-        if(point == null) {
-            return textBlinks;
+        
+        LitePoint point = null;
+        try {
+            point = DaoFactory.getPointDao().getLitePoint(getBlinkPointID());
+        }catch(NotFoundException nfe) {
+            // this point may have been deleted.
+            CTILogger.error("The point (pointId:"+ getBlinkPointID() + ") for this DynamicText might have been deleted!", nfe);
         }
         
-        LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
-        List states = lsg.getStatesList();
-        for(int i = 0; i < states.size(); i++) {
-            Integer blinkObj = (Integer)customBlinkMap.get(new Integer(i));
-            Integer blink; 
-            if(blinkObj != null) {
-                blink =blinkObj;
-            } 
-            else {
-                blink = new Integer(0);
+        if(point == null) {
+            return textBlinks;
+        }else {
+        
+            LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(point.getStateGroupID());
+            List states = lsg.getStatesList();
+            for(int i = 0; i < states.size(); i++) {
+                Integer blinkObj = (Integer)customBlinkMap.get(new Integer(i));
+                Integer blink; 
+                if(blinkObj != null) {
+                    blink =blinkObj;
+                } 
+                else {
+                    blink = new Integer(0);
+                }
+                textBlinks.add(blink);
             }
-            textBlinks.add(blink);
         }
         return textBlinks;
     }

@@ -28,7 +28,7 @@ public class FunctionElement extends LxAbstractImage implements DrawingElement{
     private Properties props = new Properties();
     private int version = CURRENT_VERSION; 
     private Integer functionID = 0;
-    private ArrayList argList = new ArrayList();
+    private ArrayList<String> argList = new ArrayList<String>();
     private static final String CONTROL_BY_POINT = "submitControl(";
     
     private static ImageIcon icon = null;
@@ -171,12 +171,12 @@ public synchronized void saveAsJLX(OutputStream out) throws IOException
         return functionID;
     }
     
-    public void setArgList(ArrayList list)
+    public void setArgList(ArrayList<String> list)
     {
         argList = list;
     }
     
-    public ArrayList getArgList()
+    public ArrayList<String> getArgList()
     {
         return argList;
     }

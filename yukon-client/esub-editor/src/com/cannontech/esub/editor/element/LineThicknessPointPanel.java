@@ -26,6 +26,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.gui.util.TitleBorder;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteStateGroup;
@@ -383,10 +384,14 @@ public void setValue(Object o)
 
     // Set selected point 
     int lpid = lineElement.getThicknessPointID();
-    LitePoint lp = DaoFactory.getPointDao().getLitePoint(lpid);
-    if( lp != null )
-    {  // this is usually not null since the default pointid is 7 ?
-        getPointSelectionPanel().selectPoint(lp);
+    LitePoint litePoint = null;
+    try {
+        litePoint = DaoFactory.getPointDao().getLitePoint(lpid);
+    }catch(NotFoundException nfe) {
+        CTILogger.error("The thickness point (pointId:"+ lineElement.getThicknessPointID() + ") for this line might have been deleted!", nfe);
+    }
+    if(litePoint != null) {
+        getPointSelectionPanel().selectPoint(litePoint);
     }
 }
 /**

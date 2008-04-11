@@ -4,8 +4,10 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.TimerTask;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointService;
 import com.cannontech.core.dynamic.PointValueHolder;
@@ -128,7 +130,13 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
         int arrowPoint = le.getArrowPointID();
         int opacityPoint = le.getOpacityPointID();
         if (colorPoint > 0) {
-            LitePoint liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
+            LitePoint liteColorPoint = null;
+            try {
+                liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
+            }catch(NotFoundException nfe) {
+                //this point may have been deleted
+                CTILogger.error("The Color point (pointId:"+ colorPoint + ") might have been deleted!", nfe);
+            }
 
             if (liteColorPoint != null) {
                 if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -161,7 +169,14 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             }
         }
         if (thicknessPoint > 0) {
-            LitePoint liteThicknessPoint = DaoFactory.getPointDao().getLitePoint(thicknessPoint);
+            
+            LitePoint liteThicknessPoint = null;
+            try {
+                liteThicknessPoint = DaoFactory.getPointDao().getLitePoint(thicknessPoint);
+            }catch(NotFoundException nfe) {
+                //this point may have been deleted
+                CTILogger.error("The Thickness point (pointId:"+ thicknessPoint + ") might have been deleted!", nfe);
+            }
 
             if (liteThicknessPoint != null) {
                 if (liteThicknessPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -192,7 +207,14 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             }
         }
         if (arrowPoint > 0) {
-            LitePoint liteArrowPoint = DaoFactory.getPointDao().getLitePoint(arrowPoint);
+            
+            LitePoint liteArrowPoint = null;
+            try {
+                liteArrowPoint = DaoFactory.getPointDao().getLitePoint(arrowPoint);
+            }catch(NotFoundException nfe) {
+                //this point may have been deleted
+                CTILogger.error("The arrow point (pointId:"+ arrowPoint + ") might have been deleted!", nfe);
+            }
 
             if (liteArrowPoint != null) {
                 if (liteArrowPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -223,7 +245,13 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
             }
         }
         if (opacityPoint > 0) {
-            LitePoint liteOpacityPoint = DaoFactory.getPointDao().getLitePoint(opacityPoint);
+            LitePoint liteOpacityPoint = null;
+            try {
+                liteOpacityPoint = DaoFactory.getPointDao().getLitePoint(opacityPoint);
+            }catch(NotFoundException nfe) {
+                //this point may have been deleted
+                CTILogger.error("The opacity point (pointId:"+ opacityPoint + ") might have been deleted!", nfe);
+            }
 
             if (liteOpacityPoint != null) {
                 if (liteOpacityPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -369,7 +397,13 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 textPoint = pointID;
             }
             if (colorPoint > 0) {
-                LitePoint liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
+                LitePoint liteColorPoint = null;
+                try {
+                    liteColorPoint = DaoFactory.getPointDao().getLitePoint(colorPoint);
+                }catch(NotFoundException nfe) {
+                    //this point may have been deleted
+                    CTILogger.error("The Color point (pointId:"+ colorPoint + ") might have been deleted!", nfe);
+                }
 
                 if (liteColorPoint != null) {
                     if (liteColorPoint.getPointType() == PointTypes.ANALOG_POINT 
@@ -400,7 +434,14 @@ public class ESubDrawingUpdater extends TimerTask implements DrawingUpdater {
                 }
             }
             if (textPoint > 0) {
-                LitePoint liteTextPoint = DaoFactory.getPointDao().getLitePoint(textPoint);
+                
+                LitePoint liteTextPoint = null;
+                try {
+                    liteTextPoint = DaoFactory.getPointDao().getLitePoint(textPoint);
+                }catch(NotFoundException nfe) {
+                    //this point may have been deleted
+                    CTILogger.error("The text point (pointId:"+ textPoint + ") might have been deleted!", nfe);
+                }
 
                 if (liteTextPoint != null) {
                     if (liteTextPoint.getPointType() == PointTypes.ANALOG_POINT 
