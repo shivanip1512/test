@@ -52,11 +52,9 @@
                                                         <span style="font-size: 11px;"><a href="javascript:editName()"><cti:msg key="yukon.dr.consumer.thermostat.edit" /></a></span>
                                                         
                                                     </form>
-                                                <td style="text-align: right; padding-left: 2em;">
-                                                    <span style="text-align: right;">
-                                                        <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
-                                                        <input name="runProgram" type="submit" value="${runProgramText}" />
-                                                    </span>
+                                                <td style="text-align: right; padding: 0em 1em 0em 2em;">
+                                                    <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
+                                                    <input name="runProgram" type="submit" value="${runProgramText}" />
                                                 </td>
                                             </tr>
                                         </table>

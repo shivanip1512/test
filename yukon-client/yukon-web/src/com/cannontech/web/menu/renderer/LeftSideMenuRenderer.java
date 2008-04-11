@@ -88,7 +88,6 @@ public class LeftSideMenuRenderer implements MenuRenderer {
     private Div buildMenu(MenuBase menuBase) {
 
         Div menuDiv = new Div();
-        menuDiv.setClass("leftMenu");
 
         List<Element> menuOptions = this.generateMenuOptions(menuBase, 1);
 

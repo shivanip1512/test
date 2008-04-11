@@ -20,6 +20,7 @@
 .leftMenu {
     background-color: #0066CC;
     padding-bottom: .3em;
+    vertical-align: top;
 }
 
 .leftMenu .menuOption2 a:link {
@@ -56,5 +57,20 @@
 	color: #FFFFFF;
 	font-style: normal;
 	padding: .3em .3em .3em 1.7em;
+}
+
+table.contentTable {
+    width: 100%;
+}
+
+table.contentTable .leftColumn {
+    width: 80%;
+    vertical-align: top;
+    padding-right: 20px;
+}
+
+table.contentTable .rightColumn {
+    width: 20%;
+    vertical-align: top;
 }
 

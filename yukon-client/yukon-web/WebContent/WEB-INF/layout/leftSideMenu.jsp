@@ -38,25 +38,29 @@
 		    <div class="stdhdr_clear"></div>
 		</div>
 
-        <div class="leftMenuHeader">
-            <a href="/servlet/LoginController?ACTION=LOGOUT"><cti:msg key="yukon.web.menu.logout" /></a>
-        </div>
-        <div style="float: left;">
-	        <cti:outputContent writable="${menuRenderer}"/>
-        </div>
-		<div id="Content">
-            <cti:outputContent writable="${bodyContent}"/>
-        </div>
-        <div style="clear: both;" />
-
-
-
-		                       		
-		
-		<div id="CopyRight">
-			<cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>
-			<cti:msg key="yukon.web.layout.standard.copyright"/>
-		</div>
+        <table cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+                <td colspan="2" class="leftMenuHeader">
+                    <a href="/servlet/LoginController?ACTION=LOGOUT"><cti:msg key="yukon.web.menu.logout" /></a>
+                </td>
+            </tr>
+            <tr>
+                <td class="leftMenu">
+                    <cti:outputContent writable="${menuRenderer}"/>
+                </td>
+                <td id="Content">
+                    <cti:outputContent writable="${bodyContent}"/>
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+            		<div id="CopyRight">
+            			<cti:msg key="yukon.web.layout.standard.yukonVersion" arguments="${yukonVersion}"/>
+            			<cti:msg key="yukon.web.layout.standard.copyright"/>
+            		</div>
+                </td>
+            </tr>
+        </table>
 	
 	</body>
 </html>

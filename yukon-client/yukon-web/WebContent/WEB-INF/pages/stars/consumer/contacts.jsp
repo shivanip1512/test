@@ -25,9 +25,7 @@
         
         </td>
         <td class="rightColumn">
-            <div id="rightDiv">
-                <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}"/>
-            </div>
+            <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}"/>
         </td>
     </tr>
 </table>

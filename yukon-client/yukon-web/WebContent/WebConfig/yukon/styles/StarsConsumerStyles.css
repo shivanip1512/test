@@ -6,22 +6,6 @@ div.customerAccount div.accountNumber {
 	font-weight: bold;
 }	
 
-table.contentTable {
-    width: 85%;
-}
-
-table.contentTable .leftColumn {
-    width: 80%;
-    vertical-align: top;
-    padding-left: 2em;
-    padding-right: 2em;
-}
-
-table.contentTable .rightColumn {
-    width: 20%;
-    vertical-align: top;
-}
-
 table.contactTable {
     width: 100%;    
 }
