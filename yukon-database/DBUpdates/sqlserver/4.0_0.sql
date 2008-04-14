@@ -819,10 +819,10 @@ if exists (select 1
 go
 
 create table JOBPROPERTY (
-   JobPropertyID          numeric              not null,
+   JobPropertyID        numeric              not null,
    JobID                int                  not null,
-   name                 text                 not null,
-   value                text                 not null,
+   name                 varchar(25)          not null,
+   value                varchar(100)         not null,
    constraint PK_JOBPROPERTY primary key (JobPropertyID)
 );
 go
@@ -862,7 +862,7 @@ go
 
 create table JOBSCHEDULEDREPEATING (
    JobID                int                  not null,
-   CronString           text                 not null,
+   CronString           varchar(25)          not null,
    constraint PK_JobScheduledRepeating primary key (JobID)
 );
 go
@@ -2176,6 +2176,28 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-713, -140, 'MCT-410IL', 33, 'Y', -1);
 /* Start YUK-5643 */
 insert into YukonRoleProperty values(-40199,-400,'Sign Out Enabled','true','Allows end-users to see a sign-out link when accessing their account pages.'); 
 /* End YUK-5643 */
+
+/* Start YUK-5663 */ 
+ALTER TABLE JOBSCHEDULEDREPEATING ALTER COLUMN CronString VARCHAR(25) not null; 
+
+ALTER TABLE JOBPROPERTY ALTER COLUMN name VARCHAR(25) not null; 
+
+ALTER TABLE JOBPROPERTY ALTER COLUMN value VARCHAR(100) not null; 
+/* End YUK-5663 */
+
+/* Start YUK-5673 */
+INSERT INTO Command VALUES(-141, 'putconfig emetcon freeze ?''Day of month (0-31)''', 'Set meter to freeze on X day of month (use 0 for disable).', 'MCT-410IL'); 
+INSERT INTO Command VALUES(-142, 'getconfig freeze', 'Read freeze config from meter and enable scheduled freeze procesing in Yukon.', 'MCT-410IL'); 
+
+INSERT INTO DeviceTypeCommand VALUES (-714, -141, 'MCT-410CL', 34, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-715, -141, 'MCT-410FL', 34, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-716, -141, 'MCT-410GL', 34, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-717, -141, 'MCT-410IL', 34, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-718, -142, 'MCT-410CL', 35, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-719, -142, 'MCT-410FL', 35, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-720, -142, 'MCT-410GL', 35, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-721, -142, 'MCT-410IL', 35, 'N', -1); 
+/* End YUK-5673 */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

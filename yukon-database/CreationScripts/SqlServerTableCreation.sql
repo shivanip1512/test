@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/2/2008 11:30:43 AM                         */
+/* Created on:     4/14/2008 2:59:22 PM                         */
 /*==============================================================*/
 
 
@@ -3480,7 +3480,8 @@ insert into billingfileformats values(-23, 'Big Rivers Elec Coop',1);
 insert into billingfileformats values(-24, 'INCODE (Extended TOU)',1);
 insert into billingfileformats values(-25, 'Itron Register Readings Export',1);
 insert into billingfileformats values(-26, 'SIMPLE_TOU_DeviceName',1);
-insert into billingfileformats values( 31, 'STANDARD',1); 
+insert into billingfileformats values( 31, 'STANDARD',1);
+insert into billingfileformats values(-32, 'NISC TOU (kVarH) Rates Only',1); 
 
 /*==============================================================*/
 /* Table: CALCBASE                                              */
@@ -4519,6 +4520,8 @@ insert into command values(-139, 'getvalue peak channel 3', 'Read Peak (Channel 
 
 insert into command values(-140, 'getstatus freeze', 'Read the freeze timestamp, counter, and next freeze expected for demand and voltage.', 'MCT-410IL'); 
 
+insert into command values(-141, 'putconfig emetcon freeze ?''Day of month (0-31)''', 'Set meter to freeze on X day of month (use 0 for disable).', 'MCT-410IL'); 
+insert into command values(-142, 'getconfig freeze', 'Read freeze config from meter and enable scheduled freeze procesing in Yukon.', 'MCT-410IL'); 
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -6660,6 +6663,15 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-711, -140, 'MCT-410FL', 33, 'Y', -1);
 INSERT INTO DEVICETYPECOMMAND VALUES (-712, -140, 'MCT-410GL', 33, 'Y', -1); 
 INSERT INTO DEVICETYPECOMMAND VALUES (-713, -140, 'MCT-410IL', 33, 'Y', -1); 
 
+INSERT INTO DeviceTypeCommand VALUES (-714, -141, 'MCT-410CL', 34, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-715, -141, 'MCT-410FL', 34, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-716, -141, 'MCT-410GL', 34, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-717, -141, 'MCT-410IL', 34, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-718, -142, 'MCT-410CL', 35, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-719, -142, 'MCT-410FL', 35, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-720, -142, 'MCT-410GL', 35, 'N', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-721, -142, 'MCT-410IL', 35, 'N', -1); 
+
 
 /*==============================================================*/
 /* Index: Indx_DevTypeCmd_GroupID                               */
@@ -7728,8 +7740,8 @@ go
 create table JOBPROPERTY (
    JobPropertyID        numeric              not null,
    JobID                int                  not null,
-   name                 text                 not null,
-   value                text                 not null,
+   name                 varchar(25)          not null,
+   value                varchar(100)         not null,
    constraint PK_JOBPROPERTY primary key (JobPropertyID)
 )
 go
@@ -7749,7 +7761,7 @@ go
 /*==============================================================*/
 create table JOBSCHEDULEDREPEATING (
    JobID                int                  not null,
-   CronString           text                 not null,
+   CronString           varchar(25)          not null,
    constraint PK_JobScheduledRepeating primary key (JobID)
 )
 go
