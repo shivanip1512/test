@@ -23,6 +23,7 @@ import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.device.Repeater902;
+import com.cannontech.database.data.device.Repeater921;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.multi.SmartMultiDBPersistent;
 import com.cannontech.database.data.point.PointBase;
@@ -459,7 +460,11 @@ public Object getValue(Object val)
 			//special case, we must add ADDRESS_OFFSET to every address for Repeater900
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( 
                   new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET) );
-		}		
+		}else if( val instanceof Repeater921 ) {
+            //special case, we must add ADDRESS_OFFSET to every address for Repeater921
+            ((CarrierBase)device).getDeviceCarrierSettings().setAddress( 
+                  new Integer(address.intValue() + Repeater921.ADDRESS_OFFSET) );
+        }
 		else
 			((CarrierBase)device).getDeviceCarrierSettings().setAddress( address );
 	}

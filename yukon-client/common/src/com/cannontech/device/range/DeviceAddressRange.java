@@ -42,6 +42,9 @@ public class DeviceAddressRange
    	private static final RangeBase RANGE_REPEATER900 = 
         new RangeBase( 464, 4302, DeviceTypes.REPEATER);
 
+    private static final RangeBase RANGE_REPEATER921 = 
+        new RangeBase( 464, 4302, DeviceTypes.REPEATER_921);
+
    	private static final RangeBase RANGE_REPEATER902 = 
    		new RangeBase( 800450, 809900, DeviceTypes.REPEATER_902);
 

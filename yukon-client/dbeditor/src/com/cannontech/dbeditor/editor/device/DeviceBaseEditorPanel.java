@@ -28,6 +28,7 @@ import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RTM;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
+import com.cannontech.database.data.device.Repeater921;
 import com.cannontech.database.data.device.SNPPTerminal;
 import com.cannontech.database.data.device.Schlumberger;
 import com.cannontech.database.data.device.Series5Base;
@@ -1676,8 +1677,10 @@ public Object getValue(Object val)
 				{
 					((CarrierBase) val).getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + Repeater900.ADDRESS_OFFSET) );
 				}
-				else
-				{
+				else if( devType == DeviceTypes.REPEATER_921 ) {//val instanceof Repeater921
+                    ((CarrierBase) val).getDeviceCarrierSettings().setAddress( new Integer(address.intValue() + Repeater921.ADDRESS_OFFSET) );
+                }
+				else {
 					((CarrierBase) val).getDeviceCarrierSettings().setAddress( address );
 				}
 			}
@@ -2163,6 +2166,8 @@ private void setCarrierBaseValue( CarrierBase cBase )
 
 	if( cBase instanceof Repeater900)
 		address = new Integer( address.intValue() - Repeater900.ADDRESS_OFFSET );
+	else if( cBase instanceof Repeater921)
+        address = new Integer( address.intValue() - Repeater921.ADDRESS_OFFSET );
       
    if( cBase instanceof com.cannontech.database.data.device.MCT_Broadcast )
       getPhysicalAddressLabel().setText("Lead Address:");

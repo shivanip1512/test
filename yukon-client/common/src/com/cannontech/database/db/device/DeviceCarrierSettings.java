@@ -95,7 +95,7 @@ public void initialize( Integer deviceID, Integer address ) {
 
         JdbcOperations ops = JdbcTemplateHelper.getYukonTemplate();
         
-        // Special case for repeater 900 - has an address offset
+        // Special case for repeater 900 and Repeater 921 - has an address offset
         int address900 = address + Repeater900.ADDRESS_OFFSET;
 
         String sql = "select y.paoname from " + YukonPAObject.TABLE_NAME + " y, " + TABLE_NAME

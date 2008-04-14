@@ -23,6 +23,7 @@ import com.cannontech.database.data.device.RTCBase;
 import com.cannontech.database.data.device.RemoteBase;
 import com.cannontech.database.data.device.Repeater900;
 import com.cannontech.database.data.device.Repeater902;
+import com.cannontech.database.data.device.Repeater921;
 import com.cannontech.database.data.device.Series5Base;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.db.DBPersistent;
@@ -553,6 +554,8 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
 				 Integer addressHolder = new Integer(getAddressTextField().getText());
 				 if(val instanceof Repeater900)
 				  	addressHolder = new Integer(addressHolder.intValue() + Repeater900.ADDRESS_OFFSET);
+				 else if(val instanceof Repeater921)
+                     addressHolder = new Integer(addressHolder.intValue() + Repeater921.ADDRESS_OFFSET);
 				 ((CarrierBase) val).getDeviceCarrierSettings().setAddress(addressHolder);
 				 
 				if( DeviceTypesFuncs.isMCT(getDeviceType()) )
@@ -905,6 +908,8 @@ private javax.swing.JTextField getJTextFieldPhoneNumber() {
       	 addressHolder = new Integer(((CarrierBase)val).getDeviceCarrierSettings().getAddress().toString());
          if(val instanceof Repeater900)
          	addressHolder = new Integer(addressHolder.intValue() - Repeater900.ADDRESS_OFFSET);
+         else if(val instanceof Repeater921)
+             addressHolder = new Integer(addressHolder.intValue() - Repeater921.ADDRESS_OFFSET);
          getAddressTextField().setText( addressHolder.toString() );
       }
       if( val instanceof IDLCBase )
