@@ -121,7 +121,7 @@
                <value>classpath:com/cannontech/yukon/web/menuLabels</value>
                <value>classpath:com/cannontech/yukon/web/standardLayout</value>
                <value>classpath:com/cannontech/yukon/web/input</value>
-               <value>classpath:com/cannontech/yukon/common/device/bulk/bulk</value>
+               <value>classpath:com/cannontech/yukon/common/device/bulk</value>
                <value>classpath:com/cannontech/yukon/web/deviceGroups</value>
                <value>classpath:com/cannontech/yukon/dr/consumer</value>
                <value>classpath:com/cannontech/yukon/dr/program</value>
