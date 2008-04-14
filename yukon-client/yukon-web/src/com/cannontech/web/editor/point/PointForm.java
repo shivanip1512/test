@@ -80,6 +80,8 @@ public class PointForm extends DBEditorForm
     
     //status point specific editor
     private PointStatusEntry pointStatusEntry = null;
+    
+    private StaleData staleData = null;
 
     private PointWizardModel wizData = null;
 
@@ -320,17 +322,8 @@ public class PointForm extends DBEditorForm
             (PointBase)LiteFactory.createDBPersistent( DaoFactory.getPointDao().getLitePoint(id) );
         setDbPersistent( pointDB );
         
-//      try {
-//          PointBase pointDB = PointFactory.retrievePoint(
-//                  new Integer(PointFuncs.getLitePoint(id).getPointID()) );
-//
-//          setDbPersistent( pointDB );
-//      }
-//      catch( SQLException sql ) {
-//          CTILogger.error("Unable to retrieve YukonPAObject", sql );
-//      }
-
         initItem();
+        getStaleData();
     }
 
 
@@ -362,6 +355,8 @@ public class PointForm extends DBEditorForm
         pointLimitEntry = null;
         pointFDREntry = null;
         pointStatusEntry = null;
+        
+        staleData = null;
 
         initItem();
     }
@@ -645,6 +640,7 @@ public class PointForm extends DBEditorForm
         try {
             checkForErrors();
             updateDBObject( getDbPersistent(), facesMsg );
+            updateStaleData();
             facesMsg.setDetail( "Database update was SUCCESSFULL" );
         }
         catch( TransactionException te ) {
@@ -662,7 +658,9 @@ public class PointForm extends DBEditorForm
 
     }
 
-
+    private void updateStaleData() {
+        getStaleData().update();
+    }
 
     /**
      * method that will set archiving for the status point to 'none' or 'on_change'
@@ -694,6 +692,18 @@ public class PointForm extends DBEditorForm
         }
 
         return pointLimitEntry;
+    }
+    
+    /**
+     * @return
+     */
+    public StaleData getStaleData() {
+        
+        if( staleData == null ) {
+            staleData = new StaleData( getPointBase() );
+        }
+
+        return staleData;
     }
 
     /**
@@ -751,7 +761,7 @@ public class PointForm extends DBEditorForm
             }
         }
     }
-
+    
     public PointWizardModel getWizData() {
         if (wizData == null)
             return new PointWizardModel();

@@ -5,55 +5,79 @@
 
 <f:subview id="ptAnalogEditor" rendered="#{ptEditorForm.visibleTabs['PointAnalog']}" >
 
-	<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridColumn, gridColumn" >
+	<h:panelGrid id="body" columns="2" styleClass="gridLayout" columnClasses="gridCell, gridCell" >
 	
 		<h:column>
 		
 			<x:htmlTag value="fieldset" styleClass="fieldSet">
+                <x:htmlTag value="legend"><x:outputText value="Physical Setup"/></x:htmlTag>
 			
-                <f:verbatim><legend>Physical Setup</legend></f:verbatim>
-		
-				<x:htmlTag value="br" />
-				
-				<x:outputLabel for="Point_Offset" value="Point Offset: " title="The physical offset value within the current device or parent this point belongs to" />
-				
-				<x:inputText id="Point_Offset" value="#{ptEditorForm.pointBase.point.pointOffset}"
-					required="true" maxlength="8" styleClass="char8Label" >
-						<f:validateLongRange minimum="0" maximum="99999999" />
-				</x:inputText>
-				
-		        <x:outputText id="Point_Offset_Zero" value="(0 = No offset set)" />
-		
-				<x:htmlTag value="br" />
-				
-				<x:outputLabel for="Deadband" value="Deadband: " title="The amount the value of this point must deviate before the point is read and updated" />
-				
-				<x:inputText id="Deadband" value="#{ptEditorForm.pointBase.pointAnalog.deadband}"
-					required="true" maxlength="8" styleClass="char8Label" >
-						<f:validateDoubleRange minimum="-1" maximum="99999999" />
-				</x:inputText>
-		        
-		        <x:outputText id="Deadband_Zero" value="(0 = No deadband set)" />
-		
-				<x:htmlTag value="br" />
-				
-				<x:outputLabel for="Multiplier" value="Multiplier: " title="A value that is always applied to the raw reading of this point" />
-				
-				<x:inputText id="Multiplier" value="#{ptEditorForm.pointBase.pointAnalog.multiplier}"
-					required="true" maxlength="16" styleClass="char16Label" >
-						<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
-				</x:inputText>
-		
-				<x:htmlTag value="br" />
-				
-				<x:outputLabel for="Data_Offset" value="Data Offset: " title="A value that is added to the raw reading when making calculations" />
-				
-				<x:inputText id="Data_Offset" value="#{ptEditorForm.pointBase.pointAnalog.dataOffset}"
-					required="true" maxlength="16" styleClass="char16Label" >
-						<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
-				</x:inputText>
+                <x:panelGrid columns="2">
+					<x:outputLabel for="Point_Offset" value="Point Offset: " title="The physical offset value within the current device or parent this point belongs to" />
+					
+					<x:panelGroup>
+						<x:inputText id="Point_Offset" value="#{ptEditorForm.pointBase.point.pointOffset}"
+							required="true" maxlength="8" styleClass="char8Label" >
+								<f:validateLongRange minimum="0" maximum="99999999" />
+						</x:inputText>
+						
+				        <x:outputText id="Point_Offset_Zero" value="(0 = No offset set)" />
+			        
+			        </x:panelGroup>
+			
+					<x:outputLabel for="Deadband" value="Deadband: " title="The amount the value of this point must deviate before the point is read and updated" />
+					
+					<x:panelGroup>
+						<x:inputText id="Deadband" value="#{ptEditorForm.pointBase.pointAnalog.deadband}"
+							required="true" maxlength="8" styleClass="char8Label" >
+								<f:validateDoubleRange minimum="-1" maximum="99999999" />
+						</x:inputText>
+				        
+				        <x:outputText id="Deadband_Zero" value="(0 = No deadband set)" />
+	                </x:panelGroup>
+	                
+					<x:outputLabel for="Multiplier" value="Multiplier: " title="A value that is always applied to the raw reading of this point" />
+					
+					<x:inputText id="Multiplier" value="#{ptEditorForm.pointBase.pointAnalog.multiplier}"
+						required="true" maxlength="16" styleClass="char16Label" >
+							<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+					</x:inputText>
+			
+					<x:outputLabel for="Data_Offset" value="Data Offset: " title="A value that is added to the raw reading when making calculations" />
+					
+					<x:inputText id="Data_Offset" value="#{ptEditorForm.pointBase.pointAnalog.dataOffset}"
+						required="true" maxlength="16" styleClass="char16Label" >
+							<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+					</x:inputText>
+				</x:panelGrid>
 		
 			</x:htmlTag>
+			
+			<x:htmlTag value="br"/>
+			
+			<x:htmlTag value="fieldset" styleClass="fieldSet">
+                <x:htmlTag value="legend"><x:outputText value="Stale Data"/></x:htmlTag>
+                
+                <h:selectBooleanCheckbox id="enableStaleData" onclick="submit();"
+                            valueChangeListener="#{ptEditorForm.staleData.enableClick}"
+                            value="#{ptEditorForm.staleData.enabled}"
+                            immediate="true" />
+                            
+                <x:outputLabel for="enableStaleData" value="Enable" title="The first limit that can be set for this point, used to determine if an alarm condition is active" />
+                
+                <x:htmlTag value="br"/>
+                <x:panelGrid columns="2">
+                    <x:outputLabel for="staleDataTime" value="Time in Minutes:"/>
+                    <x:inputText id="staleDataTime" value="#{ptEditorForm.staleData.time}" disabled="#{!ptEditorForm.staleData.enabled}">
+                        <f:validateLongRange minimum="0" maximum="99999999" />
+                    </x:inputText>
+                    
+                    <x:outputLabel for="staleDataUpdateStyle" value="Update Style:"/>
+                    <x:selectOneMenu id="staleDataUpdateStyle" value="#{ptEditorForm.staleData.updateStyle}" disabled="#{!ptEditorForm.staleData.enabled}">
+			            <f:selectItems value="#{ptEditorForm.staleData.updateStyles}"/>
+			        </x:selectOneMenu>
+                </x:panelGrid>
+            </x:htmlTag>
 			
 		</h:column>
 	
@@ -61,7 +85,7 @@
 	    
 	        <x:htmlTag value="fieldset" styleClass="fieldSet">
 	        
-		        <f:verbatim><legend>Limits</legend></f:verbatim>
+		        <x:htmlTag value="legend"><x:outputText value="Limits"/></x:htmlTag>
 	            
 		        <h:panelGrid id="limitGrid" columns="2" styleClass="gridLayout" columnClasses="gridColumn, gridColumn" >
 		            
@@ -74,43 +98,42 @@
 						
 						<x:outputLabel for="Limit_One" value="Limit 1" title="The first limit that can be set for this point, used to determine if an alarm condition is active" />
 				
-						<x:htmlTag value="br" />
+                        <x:panelGrid columns="2">
+							<x:outputLabel for="Limit_One_High" value="High: " title="The upper value for this limit (used for an alarming condition)"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
+								
+							<x:inputText id="Limit_One_High"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
+								value="#{ptEditorForm.pointBase.limitOne.highLimit}" 
+								required="true" maxlength="16" styleClass="char16Label" >
+                                <f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+							</x:inputText>
+					
+							<x:outputLabel for="Limit_One_Low" value="Low: " title="The lower value for this limit (used for an alarming condition)"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
+								
+							<x:inputText id="Limit_One_Low"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
+								value="#{ptEditorForm.pointBase.limitOne.lowLimit}" 
+								required="true" maxlength="16" styleClass="char16Label" >
+                                <f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+							</x:inputText>
+					
+							<x:outputLabel for="Limit_One_Duration" value="Duration: " title="The number of seconds the limit must be violated before an alarm is generated"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
+								
+	                        <x:panelGroup>
+								<x:inputText id="Limit_One_Duration"
+									rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
+									value="#{ptEditorForm.pointBase.limitOne.limitDuration}" 
+									required="true" maxlength="8" styleClass="char8Label" >
+                                    <f:validateLongRange minimum="0" maximum="99999999" />
+								</x:inputText>
+								
+								<x:outputText id="Limit_One_Secs" value="secs." rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
+							</x:panelGroup>
 						
-						<x:outputLabel for="Limit_One_High" value="High: " title="The upper value for this limit (used for an alarming condition)"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
-							
-						<x:inputText id="Limit_One_High"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
-							value="#{ptEditorForm.pointBase.limitOne.highLimit}" 
-							required="true" maxlength="16" styleClass="char16Label" >
-								<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
-						</x:inputText>
-				
-						<x:htmlTag value="br" />
-						
-						<x:outputLabel for="Limit_One_Low" value="Low: " title="The lower value for this limit (used for an alarming condition)"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
-							
-						<x:inputText id="Limit_One_Low"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
-							value="#{ptEditorForm.pointBase.limitOne.lowLimit}" 
-							required="true" maxlength="16" styleClass="char16Label" >
-								<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
-						</x:inputText>
-				
-						<x:htmlTag value="br" />
-						
-						<x:outputLabel for="Limit_One_Duration" value="Duration: " title="The number of seconds the limit must be violated before an alarm is generated"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
-							
-						<x:inputText id="Limit_One_Duration"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}"
-							value="#{ptEditorForm.pointBase.limitOne.limitDuration}" 
-							required="true" maxlength="8" styleClass="char8Label" >
-								<f:validateLongRange minimum="0" maximum="99999999" />
-						</x:inputText>
-						
-						<x:outputText id="Limit_One_Secs" value="secs." rendered="#{ptEditorForm.pointLimitEntry.editingLimitOne}" />
+						</x:panelGrid>
 		        
 		            </h:column>
 		
@@ -123,82 +146,83 @@
 							
 						<x:outputLabel for="Limit_Two" value="Limit 2" title="The second limit that can be set for this point, used to determine if an alarm condition is active" />
 				
-						<x:htmlTag value="br" />
+						<x:panelGrid columns="2">
 						
-						<x:outputLabel for="Limit_Two_High" value="High2: " title="The upper value for this limit (used for an alarming condition)"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
-							
-						<x:inputText id="Limit_Two_High"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
-							value="#{ptEditorForm.pointBase.limitTwo.highLimit}" 
-							required="true" maxlength="16" styleClass="char16Label" >
-								<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
-						</x:inputText>
-				
-						<x:htmlTag value="br" />
-						
-						<x:outputLabel for="Limit_Two_Low" value="Low2: " title="The lower value for this limit (used for an alarming condition)"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
-							
-						<x:inputText id="Limit_Two_Low"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
-							value="#{ptEditorForm.pointBase.limitTwo.lowLimit}" 
-							required="true" maxlength="16" styleClass="char16Label" >
-								<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
-						</x:inputText>
-				
-						<x:htmlTag value="br" />
-						
-						<x:outputLabel for="Limit_Two_Duration" value="Duration2: " title="The number of seconds the limit must be violated before an alarm is generated"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
-							
-						<x:inputText id="Limit_Two_Duration"
-							rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
-							value="#{ptEditorForm.pointBase.limitTwo.limitDuration}" 
-							required="true" maxlength="8" styleClass="char8Label" >
-								<f:validateLongRange minimum="0" maximum="99999999" />
-						</x:inputText>
-						
-						<x:outputText id="Limit_Two_Secs" value="secs." rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
+							<x:outputLabel for="Limit_Two_High" value="High2: " title="The upper value for this limit (used for an alarming condition)"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
+								
+							<x:inputText id="Limit_Two_High"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
+								value="#{ptEditorForm.pointBase.limitTwo.highLimit}" 
+								required="true" maxlength="16" styleClass="char16Label" >
+									<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+							</x:inputText>
+					
+							<x:outputLabel for="Limit_Two_Low" value="Low2: " title="The lower value for this limit (used for an alarming condition)"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
+								
+							<x:inputText id="Limit_Two_Low"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
+								value="#{ptEditorForm.pointBase.limitTwo.lowLimit}" 
+								required="true" maxlength="16" styleClass="char16Label" >
+									<f:validateDoubleRange minimum="-99999999" maximum="99999999" />
+							</x:inputText>
+					
+							<x:outputLabel for="Limit_Two_Duration" value="Duration2: " title="The number of seconds the limit must be violated before an alarm is generated"
+								rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
+	                        
+	                        <x:panelGroup>
+								<x:inputText id="Limit_Two_Duration"
+									rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}"
+									value="#{ptEditorForm.pointBase.limitTwo.limitDuration}" 
+									required="true" maxlength="8" styleClass="char8Label" >
+										<f:validateLongRange minimum="0" maximum="99999999" />
+								</x:inputText>
+								
+								<x:outputText id="Limit_Two_Secs" value="secs." rendered="#{ptEditorForm.pointLimitEntry.editingLimitTwo}" />
+							</x:panelGroup>
+						</x:panelGrid>
 						
 					</h:column>
 		
 		        </h:panelGrid>
 			
-		        <x:htmlTag value="br" />
-		        <x:htmlTag value="br" />
-		        
-		        <h:selectBooleanCheckbox id="Reasonability_High" onclick="submit();"
-				  valueChangeListener="#{ptEditorForm.pointLimitEntry.showReasonabilityLimit}"
-				  value="#{ptEditorForm.pointLimitEntry.highReasonabilityValid}" />
+		        <x:panelGrid columns="2">
+			        <x:panelGroup>
+				        <h:selectBooleanCheckbox id="Reasonability_High" onclick="submit();"
+						  valueChangeListener="#{ptEditorForm.pointLimitEntry.showReasonabilityLimit}"
+						  value="#{ptEditorForm.pointLimitEntry.highReasonabilityValid}" />
+						  
+				        <x:outputLabel for="Reasonability_High" value="High Reasonability: " title="All readings exceeding this value are ignored." />
+			        
+			        </x:panelGroup>
+			        
+			        <x:inputText id="Reasonability_High_Limit"
+					  value="#{ptEditorForm.pointBase.pointUnit.highReasonabilityLimit}"
+					  rendered="#{ptEditorForm.pointLimitEntry.highReasonabilityValid}"
+					  maxlength="16" styleClass="char16Label" />
+					  
+			        <x:inputText id="Reasonability_High_None" readonly="true" disabled="true"
+					  value="(no limit set)" maxlength="16" styleClass="char16Label"
+					  rendered="#{!ptEditorForm.pointLimitEntry.highReasonabilityValid}" />
+	                
+	                <x:panelGroup>
+				        <h:selectBooleanCheckbox id="Reasonability_Low" onclick="submit();"
+						  valueChangeListener="#{ptEditorForm.pointLimitEntry.showReasonabilityLimit}"
+						  value="#{ptEditorForm.pointLimitEntry.lowReasonabilityValid}" />
+						  
+				        <x:outputLabel for="Reasonability_Low" value="Low Reasonability: " title="All readings less than this value are ignored." />
+			        </x:panelGroup>
+			        <x:inputText id="Reasonability_Low_Limit"
+					  value="#{ptEditorForm.pointBase.pointUnit.lowReasonabilityLimit}"
+					  rendered="#{ptEditorForm.pointLimitEntry.lowReasonabilityValid}"
+					  maxlength="16" styleClass="char16Label" />
+					  
+			        <x:inputText id="Reasonability_Low_None" readonly="true" disabled="true"
+					  value="(no limit set)" maxlength="16" styleClass="char16Label"
+					  rendered="#{!ptEditorForm.pointLimitEntry.lowReasonabilityValid}" />
 				  
-		        <x:outputLabel for="Reasonability_High" value="High Reasonability: " title="All readings exceeding this value are ignored" />
-		        
-		        <x:inputText id="Reasonability_High_Limit"
-				  value="#{ptEditorForm.pointBase.pointUnit.highReasonabilityLimit}"
-				  rendered="#{ptEditorForm.pointLimitEntry.highReasonabilityValid}"
-				  maxlength="16" styleClass="char16Label" />
-				  
-		        <x:inputText id="Reasonability_High_None" readonly="true" disabled="true"
-				  value="(no limit set)" maxlength="16" styleClass="char16Label"
-				  rendered="#{!ptEditorForm.pointLimitEntry.highReasonabilityValid}" />
-		
-		        <x:htmlTag value="br" />
-		        
-		        <h:selectBooleanCheckbox id="Reasonability_Low" onclick="submit();"
-				  valueChangeListener="#{ptEditorForm.pointLimitEntry.showReasonabilityLimit}"
-				  value="#{ptEditorForm.pointLimitEntry.lowReasonabilityValid}" />
-				  
-		        <x:outputLabel for="Reasonability_Low" value="Low Reasonability: " title="All readings less than this value are ignored" />
-		        
-		        <x:inputText id="Reasonability_Low_Limit"
-				  value="#{ptEditorForm.pointBase.pointUnit.lowReasonabilityLimit}"
-				  rendered="#{ptEditorForm.pointLimitEntry.lowReasonabilityValid}"
-				  maxlength="16" styleClass="char16Label" />
-				  
-		        <x:inputText id="Reasonability_Low_None" readonly="true" disabled="true"
-				  value="(no limit set)" maxlength="16" styleClass="char16Label"
-				  rendered="#{!ptEditorForm.pointLimitEntry.lowReasonabilityValid}" />
+                </x:panelGrid>
 	
 	        </x:htmlTag>
 	        
