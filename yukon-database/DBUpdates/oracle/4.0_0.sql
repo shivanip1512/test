@@ -782,7 +782,7 @@ create table JOBSTATUS  (
    StartTime            DATE                            not null,
    StopTime             DATE,
    JobState             VARCHAR2(50),
-   message              CLOB,
+   Message              VARCHAR2(100),
    constraint PK_JOBSTATUS primary key (JobStatusID)
 );
 
@@ -2059,14 +2059,6 @@ INSERT INTO DEVICETYPECOMMAND VALUES (-713, -140, 'MCT-410IL', 33, 'Y', -1);
 /* Start YUK-5643 */
 insert into YukonRoleProperty values(-40199,-400,'Sign Out Enabled','true','Allows end-users to see a sign-out link when accessing their account pages.'); 
 /* End YUK-5643 */
-
-/* Start YUK-5663 */ 
-ALTER TABLE JOBSCHEDULEDREPEATING MODIFY CronString VARCHAR2(25) not null; 
-
-ALTER TABLE JOBPROPERTY MODIFY name VARCHAR2(25) not null; 
-
-ALTER TABLE JOBPROPERTY MODIFY value VARCHAR2(100) not null; 
-/* End YUK-5663 */ 
 
 /* Start YUK-5673 */
 INSERT INTO Command VALUES(-141, 'putconfig emetcon freeze ?''Day of month (0-31)''', 'Set meter to freeze on X day of month (use 0 for disable).', 'MCT-410IL'); 

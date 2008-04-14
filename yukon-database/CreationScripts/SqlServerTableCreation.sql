@@ -7775,7 +7775,7 @@ create table JOBSTATUS (
    StartTime            datetime             not null,
    StopTime             datetime             null,
    JobState             varchar(50)          null,
-   message              text                 null,
+   Message              varchar(100)         null,
    constraint PK_JOBSTATUS primary key (JobStatusID)
 )
 go

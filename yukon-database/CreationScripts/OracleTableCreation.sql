@@ -5296,7 +5296,7 @@ create table JOBSTATUS  (
    StartTime            DATE                            not null,
    StopTime             DATE,
    JobState             VARCHAR2(50),
-   message              CLOB,
+   Message              VARCHAR2(100),
    constraint PK_JOBSTATUS primary key (JobStatusID)
 );
 
