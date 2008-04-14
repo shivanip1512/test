@@ -427,12 +427,10 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
     CHAR     *bptr       = (CHAR*)buf;
     INT      nReason = 0;
 
-
     *BytesWritten = 0;
 
-    CtiTime  now;
-    CtiTime  then(now + TimeOut);
-    int     wbLoops = 0;        //  number of "would block" loops
+    CtiTime  now, then(CtiTime::now() + TimeOut);
+    int      wbLoops = 0;        //  number of "would block" loops
 
     try
     {
@@ -441,27 +439,43 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
             do
             {
                 nReason = 0;
+
                 BytesSent = send(sockt, bptr, len, 0);
 
                 if(BytesSent == SOCKET_ERROR)
                 {
                     nReason = CTIGetLastError();
 
-                    if(nReason != WSAEWOULDBLOCK)
+                    if(nReason == WSAEWOULDBLOCK)
+                    {
+                        int sec_remaining = then.seconds() - now.seconds();
+
+                        if( wbLoops++ )  //  gripe every 5 seconds
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " Outbound nexus to " << Name << " is full, will wait up to " << sec_remaining << " seconds to retry. " << endl;
+                        }
+
+                        struct timeval tv;
+
+                        tv.tv_sec  = std::min(5, sec_remaining);
+                        tv.tv_usec = 0;
+
+                        fd_set writefds;
+
+                        //  initialize the FD set
+                        FD_ZERO(&writefds);
+                        FD_SET(sockt, &writefds);
+
+                        //  block for tv until there's something to read
+                        select(0, NULL, &writefds, NULL, &tv);
+                    }
+                    else
                     {
                         CTINexusReportError(__FILE__, __LINE__, nReason);
                         CTINexusClose();
 
                         break; // the do - while(len > 0)
-                    }
-                    else
-                    {
-                        if( !(++wbLoops % 10) )  //  gripe every 5 seconds
-                        {
-                            CtiLockGuard<CtiLogger> doubt_guard(dout);
-                            dout << CtiTime() << " Outbound nexus to " << Name << " is full, will wait up to " << TimeOut << " seconds and retry. " << endl;
-                        }
-                        Sleep(500);
                     }
 
                     BytesSent = 0;   // Keep from screwing up the buffers!
@@ -478,7 +492,7 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
                     dout << "**** Nexus Write > 10000 bytes. **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                now = now.now();
+                now = CtiTime::now();
 
             } while( (nReason == WSAEWOULDBLOCK && now < then) && len > 0);
 
@@ -511,112 +525,99 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
 
 INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
 {
-    INT      BytesRead   = 0;
-    ULONG    BytesAvail  = 0;
-    CHAR     *bptr       = (CHAR*)buf;
-    INT      nReturn     = 0;
-    LONG     nLoops      = 0;
+    INT retval = NoError;
+
+    struct timeval tv = {0, 100000};  //  100 ms
+    fd_set readfds;
 
     try
     {
-        if(TimeOut > 0L)
+        //  READANY waits until the timeout occurs or until any data is read
+        //  READEXACTLY waits until an exact amount of data is read or until the timeout occurs
+
+        CtiHighPerfTimer elapsed("CtiNexus read timeout");
+
+        while( !retval && (read_buffer.size() < len) && (NexusState != CTINEXUS_STATE_NULL) && (sockt != INVALID_SOCKET) )
         {
-            do
+            int socket_status;
+            unsigned long bytes_read = 0, bytes_available = 0;
+
+            if( TimeOut )
             {
-                if(NexusState == CTINEXUS_STATE_NULL || sockt == INVALID_SOCKET)
+                if( TimeOut > 0 )   elapsed.reset();
+
+                //  initialize the FD set
+                FD_ZERO(&readfds);
+                FD_SET(sockt, &readfds);
+
+                //  block for tv until there's something to read
+                int data_available = select(0, &readfds, NULL, NULL, &tv);
+
+                if( TimeOut > 0 )   TimeOut -= std::min(elapsed.delta(), TimeOut);
+
+                if( data_available == SOCKET_ERROR )
                 {
-                    // This guy is broken!
-                    break; // the do loop
+                    socket_status = SOCKET_ERROR;
                 }
-
-                nReturn = ioctlsocket(sockt, FIONREAD, &BytesAvail);
-
-                if(nReturn == SOCKET_ERROR)
+                else if( data_available > 0 )
                 {
-                    INT Error = CTIGetLastError();
-                    CTINexusReportError(__FILE__, __LINE__, Error );
-                    return(-Error);
-                }
-                else if( (BytesAvail                 && (NexusFlags & CTINEXUS_FLAG_READANY))       ||
-                         (BytesAvail >= (ULONG)len   && (NexusFlags & CTINEXUS_FLAG_READEXACTLY)) )
-                {
-                    break;
-                }
-
-                Sleep(50L);
-            } while(++nLoops < TimeOut * 20);
-
-            if(NexusState != CTINEXUS_STATE_NULL && nLoops >= TimeOut * 20)
-            {
-                if(
-                  ((NexusFlags & CTINEXUS_FLAG_READEXACTLY) && BytesAvail < (ULONG)len)          ||
-                  ((NexusFlags & CTINEXUS_FLAG_READANY)     && BytesAvail == 0)
-                  )
-                {
-                    return(-ERR_CTINEXUS_READTIMEOUT);
+                    socket_status = ioctlsocket(sockt, FIONREAD, &bytes_available);
                 }
             }
-        }
-        else if(TimeOut < 0L)
-        {
-            for(;NexusState != CTINEXUS_STATE_NULL;)
+            else
             {
-                nReturn = ioctlsocket(sockt, FIONREAD, &BytesAvail);
-
-                if(nReturn == SOCKET_ERROR)
-                {
-                    INT Error = CTIGetLastError();
-                    CTINexusReportError(__FILE__, __LINE__, Error );
-                    return(-Error);
-                }
-                else if( (BytesAvail                 && (NexusFlags & CTINEXUS_FLAG_READANY))       ||
-                         (BytesAvail >= (ULONG)len   && (NexusFlags & CTINEXUS_FLAG_READEXACTLY)) )
-                {
-                    break;
-                }
-                else
-                {
-                    try
-                    {
-                        rwServiceCancellation();
-                    }
-                    catch(RWCancellation &c)
-                    {
-                        // dout << "Caught a cancellation in the nexus read" << endl;
-                        CTINexusClose();
-                        break;
-                    }
-
-                    Sleep(100L); //Sleep(50L);
-                }
+                socket_status = ioctlsocket(sockt, FIONREAD, &bytes_available);
             }
-        }
 
-        /*
-         *  data is there, or we don't care about the any TimeOut value!
-         */
-        if(NexusState != CTINEXUS_STATE_NULL)
-        {
-            do
+            if( socket_status == SOCKET_ERROR )
             {
-                BytesRead = recv(sockt, bptr, len, 0);
+                INT Error = CTIGetLastError();
+                CTINexusReportError(__FILE__, __LINE__, Error );
 
-                if(BytesRead == SOCKET_ERROR)
+                retval = -Error;
+            }
+            else if( bytes_available > 0 )
+            {
+                if( bytes_available > 4096 )  bytes_available = 4096;
+
+                //  ensure current buffer is large enough to fit the bytes available
+                unsigned insert_position = read_buffer.size();
+                read_buffer.insert(read_buffer.end(), bytes_available, 0);
+
+                bytes_read = recv(sockt, read_buffer.begin() + insert_position, bytes_available, 0);
+
+                if( bytes_read == SOCKET_ERROR)
                 {
+                    bytes_read = 0;
+
                     CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
-                    return(ErrorNexusRead);
+
+                    retval = ErrorNexusRead;
                 }
 
-                *BRead += BytesRead;
-
-                if((NexusFlags & CTINEXUS_FLAG_READANY))
+                if( bytes_read < bytes_available )
                 {
-                    break;
+                    read_buffer.erase(read_buffer.begin() + insert_position + bytes_read, read_buffer.end());
                 }
+            }
 
-                bptr += BytesRead;
-                len -= BytesRead;
-            } while(len > 0);
+            if( TimeOut )
+            {
+                try
+                {
+                    rwServiceCancellation();
+                }
+                catch(RWCancellation &c)
+                {
+                    // dout << "Caught a cancellation in the nexus read" << endl;
+                    CTINexusClose();  //  this will cause us to exit the main loop
+                    retval = -ERR_CTINEXUS_CANCELLATION;
+                }
+            }
+            else if( (NexusFlags & CTINEXUS_FLAG_READEXACTLY) && (read_buffer.size() < len) )
+            {
+                retval = -ERR_CTINEXUS_READTIMEOUT;
+            }
         }
     }
     catch(...)
@@ -625,8 +626,17 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
         dout << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
+    if( !read_buffer.empty() && ((read_buffer.size() >= len) || (NexusFlags & CTINEXUS_FLAG_READANY)) )
+    {
+        unsigned long to_copy = std::min(len, static_cast<unsigned long>(read_buffer.size()));
 
-    return(0);
+        memcpy(buf, read_buffer.begin(), to_copy);
+        read_buffer.erase(read_buffer.begin(), read_buffer.begin() + to_copy);
+
+        *BRead += to_copy;
+    }
+
+    return retval;
 }
 
 INT CTINEXUS::CTINexusPeek(VOID *buf, ULONG len, PULONG BRead)

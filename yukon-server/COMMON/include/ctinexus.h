@@ -10,8 +10,15 @@
 #include "netports.h"
 #include "cticonnect.h"
 
+#include <vector>
+
 class IM_EX_CTIBASE CTINEXUS : public CtiConnect
 {
+private:
+
+    typedef std::vector<char> buffer_t;
+    buffer_t read_buffer;
+
 public:
    ULONG          NexusType;        // What is this connection??
    CHAR           Name[64];         // Text Description of connection
@@ -20,7 +27,7 @@ public:
    LPHOSTENT      lpHostEntry;
 
    ULONG          NexusState;
-   ULONG          NexusFlags;
+   ULONG          NexusFlags;       // set ONLY by CTINexusOpen
 
    CTINEXUS() :
       sockt(INVALID_SOCKET),
@@ -28,7 +35,7 @@ public:
       NexusState(CTINEXUS_STATE_NULL)
    {}
 
-   ~CTINEXUS() 
+   ~CTINEXUS()
    {}
 
    INT CTINexusCreate       (SHORT nPort);
