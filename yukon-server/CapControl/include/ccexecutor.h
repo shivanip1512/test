@@ -98,6 +98,8 @@ private:
     void AutoDisableOvUvByArea();
     void AutoControlOvUvBySubstation(BOOL disableFlag);
     void AutoControlOvUvBySubBus(BOOL disableFlag);
+    bool checkForCommandRefusal(CtiCCFeeder* feeder);
+
     CtiCCCommand* _command;
 };
 

@@ -43,7 +43,7 @@ class CtiTime;
 
 #define CTICCSUBSTATION_ID          524
 #define CTICCSUBSTATION_MSG_ID      525
-
+#define CTICCSERVERRESPONSE_ID      526
 
 
 

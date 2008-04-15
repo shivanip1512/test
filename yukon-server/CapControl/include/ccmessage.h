@@ -530,5 +530,38 @@ public:
     void saveGuts( RWvostream&) const;
 };
 
+class CtiCCServerResponse : public CtiCCMessage
+{
+RWDECLARE_COLLECTABLE( CtiCCServerResponse )
+
+public:
+
+    enum 
+    {
+        UNDEFINED = -1,
+        COMMAND_REFUSED = 1
+    };
+
+    CtiCCServerResponse(long responseType, string response);
+    CtiCCServerResponse(const CtiCCServerResponse& commandMsg);
+    
+    virtual ~CtiCCServerResponse();
+
+    string getResponse() const;
+    long getResponseType() const;
+
+    void restoreGuts(RWvistream&);
+    void saveGuts(RWvostream&) const;
+
+    CtiCCServerResponse& operator=(const CtiCCServerResponse& right);
+
+    virtual CtiMessage* replicateMessage() const;
+private:
+    
+    CtiCCServerResponse() { }; //provided for polymorphic persitence only
+    long responseType;
+    string response;
+};
+
 #endif
 

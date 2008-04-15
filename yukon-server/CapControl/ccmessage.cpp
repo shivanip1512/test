@@ -1276,5 +1276,96 @@ CtiPAOScheduleMsg& CtiPAOScheduleMsg::operator=(const CtiPAOScheduleMsg& right)
     return *this;
 }
 
+/*===========================================================================
+    CtiCCServerResponse
+===========================================================================*/
+
+RWDEFINE_COLLECTABLE( CtiCCServerResponse, CTICCSERVERRESPONSE_ID ) 
+
+/*---------------------------------------------------------------------------
+    Constructors
+---------------------------------------------------------------------------*/
+
+CtiCCServerResponse::CtiCCServerResponse(long type, string res) :
+    CtiCCMessage( string("CtiCCServerResponse" + type) )
+{
+    response = res;
+    responseType = type;
+}                                           
+
+CtiCCServerResponse::CtiCCServerResponse(const CtiCCServerResponse& commandMsg)
+{
+    operator=( commandMsg );
+}                                           
+
+/*---------------------------------------------------------------------------
+    Destructor
+---------------------------------------------------------------------------*/
+CtiCCServerResponse::~CtiCCServerResponse()
+{
+}
+
+long CtiCCServerResponse::getResponseType() const
+{
+    return responseType;
+}
+
+/*---------------------------------------------------------------------------
+    Id
+    
+    Returns the id of the object that is associated with command.
+---------------------------------------------------------------------------*/
+string CtiCCServerResponse::getResponse() const
+{
+    return response;
+}
+    
+/*-------------------------------------------------------------------------
+    restoreGuts
+    
+    Restores the state of self from the given RWvistream
+---------------------------------------------------------------------------*/
+void CtiCCServerResponse::restoreGuts(RWvistream& strm)
+{
+    CtiCCMessage::restoreGuts(strm);
+    strm >> responseType
+         >> response;
+ 
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    saveGuts
+    
+    Saves the state of self into the given RWvostream
+---------------------------------------------------------------------------*/
+void CtiCCServerResponse::saveGuts(RWvostream& strm) const
+{
+    CtiCCMessage::saveGuts(strm);
+
+    strm << responseType
+         << response;
+
+    return;
+}
+
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiCCServerResponse& CtiCCServerResponse::operator=(const CtiCCServerResponse& right)
+{
+    if( this != &right )
+    {
+        response = right.response;
+        responseType = right.responseType;
+    }
+
+    return *this;
+}
+
+CtiMessage* CtiCCServerResponse::replicateMessage() const
+{
+    return new CtiCCServerResponse(*this);
+}
 
 
