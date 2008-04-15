@@ -1,15 +1,11 @@
 package com.cannontech.common.alert.alarms;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.common.util.SimpleTemplateProcessor;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;

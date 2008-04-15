@@ -27,6 +27,13 @@
         <property name="paoDao" ref="paoDao"/>
         <property name="userCheckerFactory" ref="rolePropertyUserCheckerFactory"/>
     </bean>   
+    
+    <bean id="capControlServerResponseAlertGenerator" class="com.cannontech.common.alert.serverResponse.capcontrol.CapControlServerResponseAlertGenerator"
+          init-method="initialize">
+        <property name="defCapControlConn" ref="cbcConnection"/>
+        <property name="alertService" ref="alertService"/>
+        <property name="userCheckerFactory" ref="rolePropertyUserCheckerFactory"/>
+    </bean>
        
     <bean id="alarmAlertClearHandler" class="com.cannontech.common.alert.alarms.AlarmAlertClearHandler">
         <property name="dispatchConnection" ref="dispatchConnection"/>
