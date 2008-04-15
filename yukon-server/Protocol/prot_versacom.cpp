@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2007/11/29 15:08:28 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2008/04/15 21:56:02 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1744,7 +1744,9 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
                 removeLastVStruct();
         }
 
-        if( isConfig63Valid(sn) && (sec || cls || div) )
+        if( isConfig63Valid(sn) && ((iNum = parse.getiValue("section")) != INT_MIN) && 
+            ((iNum = parse.getiValue("class")) != INT_MIN) &&
+            ((iNum = parse.getiValue("division")) != INT_MIN) )
         {
             primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
