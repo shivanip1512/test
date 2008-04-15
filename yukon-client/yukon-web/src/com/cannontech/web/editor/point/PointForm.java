@@ -323,6 +323,7 @@ public class PointForm extends DBEditorForm
         setDbPersistent( pointDB );
         
         initItem();
+        staleData = null;
         getStaleData();
     }
 

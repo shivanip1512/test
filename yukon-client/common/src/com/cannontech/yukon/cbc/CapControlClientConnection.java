@@ -9,6 +9,7 @@ import com.cannontech.common.util.MessageEvent;
 import com.cannontech.common.util.MessageEventListener;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.message.capcontrol.DefineCollectableCapControlServerResponse;
 import com.cannontech.message.util.ClientConnection;
 import com.cannontech.roles.yukon.SystemRole;
 import com.roguewave.vsj.CollectableStreamer;
@@ -49,7 +50,8 @@ public class CapControlClientConnection extends ClientConnection
 		new DefineCollectableCBCTempMoveCapBank(),
 		new DefineCollectableVerifySub(),
 		new DefineCollectableSubStation(),
-		new DefineCollectableCBCSubStations()
+		new DefineCollectableCBCSubStations(),
+		new DefineCollectableCapControlServerResponse()
 	};
 	
 	/**

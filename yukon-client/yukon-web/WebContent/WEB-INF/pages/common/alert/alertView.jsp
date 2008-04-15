@@ -14,7 +14,7 @@
       <tbody>
         <c:forEach var="alert" items="${alerts}">
             <tr id="alertTableRow_${alert.id}">
-                <td width="10%">${alert.type}</td>
+                <td width="20%">${alert.type.value}</td>
                 <td><cti:formatTemplate message="${alert.message}" /></td>
                 <td><cti:formatDate type="BOTH" value="${alert.date}"/></td>
                 <td>

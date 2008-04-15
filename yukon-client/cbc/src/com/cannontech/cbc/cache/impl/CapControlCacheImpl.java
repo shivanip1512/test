@@ -867,29 +867,18 @@ public class CapControlCacheImpl implements MessageListener, CapControlCache {
      */
     public synchronized void messageReceived( MessageEvent e ) {
         Message in = e.getMessage();
-        if( in instanceof CCSubstationBuses )
-        {
-            handleSubBuses( (CCSubstationBuses)in );
-        }
-        else if( in instanceof CCSubStations )
-        {
-        	handleSubStations( (CCSubStations)in );
-        }        
-        else if( in instanceof CCSubSpecialAreas )
-        {
-            handleSpecialAreaList( (CCSubSpecialAreas)in );
-        }
-        else if( in instanceof CCSubAreas ) 
-        {
-            handleAreaList( (CCSubAreas)in );
-        }
-        else if( in instanceof CapControlCommand ) 
-        {
-            handleCBCCommand( (CapControlCommand)in );
-        }
-    
+        if (in instanceof CCSubstationBuses) {
+            handleSubBuses((CCSubstationBuses) in);
+        } else if (in instanceof CCSubStations) {
+            handleSubStations((CCSubStations) in);
+        } else if (in instanceof CCSubSpecialAreas) {
+            handleSpecialAreaList((CCSubSpecialAreas) in);
+        } else if (in instanceof CCSubAreas) {
+            handleAreaList((CCSubAreas) in);
+        } else if (in instanceof CapControlCommand) {
+            handleCBCCommand((CapControlCommand) in);
+        } 
     }
-    
     
     public synchronized CCArea getCBCArea(int id) throws NotFoundException {
         CCArea area = cbcAreaMap.get(id);
