@@ -614,9 +614,17 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
                     retval = -ERR_CTINEXUS_CANCELLATION;
                 }
             }
-            else if( (NexusFlags & CTINEXUS_FLAG_READEXACTLY) && (read_buffer.size() < len) )
+            else if( read_buffer.size() < len )
             {
-                retval = -ERR_CTINEXUS_READTIMEOUT;
+                if( NexusFlags & CTINEXUS_FLAG_READEXACTLY )
+                {
+                    retval = -ERR_CTINEXUS_READTIMEOUT;
+                }
+                else // if( NexusFlags & CTINEXUS_FLAG_READANY )
+                {
+                    //  READANY - exit without setting an error code
+                    len = read_buffer.size();
+                }
             }
         }
     }
