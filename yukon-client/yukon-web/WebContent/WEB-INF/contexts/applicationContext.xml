@@ -227,64 +227,6 @@
         </property>
     </bean>
     
-    <bean id="profilePeriodTrendWidget"
-     class="com.cannontech.web.widget.ProfilePeriodTrendWidget">
-     <property name="title" value="Profile Period"/>
-        <property name="identityPath" value="common/deviceIdentity.jsp" />
-        <property name="inputs">
-           <set>
-              <ref local="widgetInput.deviceId"/>
-           </set>
-        </property>
-        <property name="peakReportService" ref="peakReportService" />
-        <property name="dateFormattingService" ref="dateFormattingService"/>
-        <property name="meterDao" ref="meterDao"/>
-        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
-        <property name="attributeService" ref="attributeService" />
-        
-        <property name="deviceDao" ref="deviceDao" />
-        <property name="supportedAttributeGraphSet">
-            <set>
-                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
-                    <property name="attribute" value="USAGE"/>
-                    <property name="graphType" value="COLUMN"/>
-                    <property name="converterType" value="NORMALIZED_DELTA"/>
-                    <property name="label" value="Usage (Normalized)"/>
-                    <property name="description">
-                        <value>
-                         <![CDATA[The <b>Normalized Usage</b> graph is a normalized view of the usage data.<br><br>  Each
-                         point on the graph is generated using the following formula: (reading - 
-                         previousReading) / (days between readings)]]>
-                        </value>
-                    </property>
-                       
-                </bean>
-                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
-                    <property name="attribute" value="DEMAND"/>
-                    <property name="graphType" value="LINE"/>
-                    <property name="converterType" value="RAW"/>
-                    <property name="label" value="Demand"/>
-                    <property name="description">
-                        <value>
-                         <![CDATA[Graph of raw Demand data.]]>
-                        </value>
-                    </property>
-                </bean>
-                <bean class="com.cannontech.common.chart.model.AttributeGraphType">
-                    <property name="attribute" value="LOAD_PROFILE"/>
-                    <property name="graphType" value="LINE"/>
-                    <property name="converterType" value="RAW"/>
-                    <property name="label" value="Load Profile"/>
-                    <property name="description">
-                        <value>
-                         <![CDATA[Graph of raw Load Profile data.]]>
-                        </value>
-                    </property>
-                </bean>
-        	</set>
-        </property>
-    </bean>
-    
     <bean id="miniTdcWidget"
     	class="com.cannontech.web.widget.MiniTdcWidget">
     	<property name="title" value="Mini TDC"/>
@@ -312,7 +254,7 @@
               <ref local="widgetInput.deviceId"/>
            </set>
         </property>
-        <property name="loadProfileService" ref="longLoadProfileService" />
+        <property name="loadProfileService" ref="loadProfileService" />
         <property name="emailService" ref="emailService"/>
         <property name="paoDao" ref="paoDao"/>
         <property name="deviceDao" ref="deviceDao"/>
@@ -325,6 +267,20 @@
         <property name="contactDao" ref="contactDao"/>
         <property name="simpleReportService" ref="simpleReportService"/>
         <property name="toggleProfilingService" ref="toggleProfilingService"/>
+        
+    </bean>
+    
+    <bean id="pendingProfilesWidget"
+     class="com.cannontech.web.widget.PendingProfilesWidget">
+     <property name="title" value="Pending Profile Collections"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="loadProfileService" ref="loadProfileService" />
+        <property name="paoDao" ref="paoDao"/>
         
     </bean>
     

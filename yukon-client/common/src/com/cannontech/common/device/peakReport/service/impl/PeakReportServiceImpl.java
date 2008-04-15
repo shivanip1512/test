@@ -138,6 +138,10 @@ public class PeakReportServiceImpl implements PeakReportService {
         return peakResult;
     }
     
+    public void deleteArchivedPeakReport(int deviceId, PeakReportRunType runType) {
+        
+        peakReportDao.deleteReport(deviceId, runType);
+    }
     
     private void parseResultString(PeakReportResult peakResult, String resultString, int interval){
         

@@ -42,11 +42,10 @@ public class PeakReportDaoImpl implements PeakReportDao {
     public void saveResult(PeakReportResult peakResult) {
 
         // Delete any existing rows
-        String sql = "DELETE FROM PeakReport WHERE deviceId = ? AND runType = ?";
-        jdbcTemplate.update(sql, peakResult.getDeviceId(), peakResult.getRunType().toString().toUpperCase());
+        this.deleteReport(peakResult.getDeviceId(), peakResult.getRunType());
 
         // Insert new rows
-        sql = "INSERT INTO PeakReport (resultId, deviceId, channel, peakType, runType, runDate, resultString) VALUES (?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO PeakReport (resultId, deviceId, channel, peakType, runType, runDate, resultString) VALUES (?,?,?,?,?,?,?)";
             
         int nextValue = nextValueHelper.getNextValue("PeakReport");
         
@@ -60,6 +59,13 @@ public class PeakReportDaoImpl implements PeakReportDao {
                             peakResult.getResultString());
     }
 
+    public void deleteReport(int deviceId, PeakReportRunType runType) {
+        
+        // Delete any existing rows
+        String sql = "DELETE FROM PeakReport WHERE deviceId = ? AND runType = ?";
+        jdbcTemplate.update(sql, deviceId, runType.toString().toUpperCase());
+    }
+    
     /**
      * Helper class which maps a result set row into a PeakReportResult
      */

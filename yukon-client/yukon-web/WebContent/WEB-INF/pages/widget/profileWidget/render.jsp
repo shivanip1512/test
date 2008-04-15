@@ -7,7 +7,6 @@
 
 <script type="text/javascript"> 
 
-	var progressUpdaters = new Array();
     var scanningUpdater = null;
     
     function toggleChanPopup(popupDivName) {
@@ -82,17 +81,14 @@
 				<input id="email" name="email" type="text" value="${email}" size="25" style="height:16px;">
 			</td>
 	  	    <td class="last" align="right">
-				<tags:widgetActionUpdate hide="${!isReadable}" method="initiateLoadProfile" label="Start" labelBusy="Start" container="${widgetParameters.widgetId}_results"/>
+				<tags:widgetActionRefresh hide="${!isReadable}" method="initiateLoadProfile" label="Start" labelBusy="Start"/>
 			</td>
 		</tr>
 		
+        </tr>
 	</table>
 	<br/>
 	
-	<%--RESULTS--%>
-	<div id="${widgetParameters.widgetId}_results">
-	    <c:url var="ongoingProfilesUrl" value="/WEB-INF/pages/widget/profileWidget/ongoingProfiles.jsp" />
-	    <jsp:include page="${ongoingProfilesUrl}" />
-	</div>
 	
+
 </c:if>

@@ -20,7 +20,7 @@
   <hide_bullets_count></hide_bullets_count>                   <!-- [] (Number) if there are more then hideBulletsCount points on the screen, bullets can be hidden, to avoid mess. Leave empty, or 0 to show bullets all the time. This rule doesn't influence if custom bullet is defined near y value, in data file -->  
   <redraw>false</redraw>                                      <!-- [false] (true / false) if your chart's width or height is set in percents, and redraw is set to true, the chart will be redrawn then screen size changes -->
                                                               <!-- this function is beta, be careful. Legend, buttons labels will not be repositioned if you set your x and y values for these objects -->
-  <reload_data_interval>1</reload_data_interval>              <!-- [0] (Number) how often data should be reloaded (time in seconds) If you are using this feature I strongly recommend to turn off zoom function (set <zoomable>false</zoomable>) -->
+  <reload_data_interval>${reloadInterval}</reload_data_interval>              <!-- [0] (Number) how often data should be reloaded (time in seconds) If you are using this feature I strongly recommend to turn off zoom function (set <zoomable>false</zoomable>) -->
   <add_time_stamp>false</add_time_stamp>                      <!-- [false] (true / false) if true, a unique number will be added every time flash loads data. Mainly this feature is useful if you set reload _data_interval >0 -->
  
   
@@ -102,9 +102,9 @@
     <y_left>                                                  <!-- y left axis -->
       <enabled>true</enabled>                                 <!-- [true] (true / false) -->    
       <rotate></rotate>                                       <!-- [0] (0 - 90) angle of rotation. If you want to rotate by degree from 1 to 89, you must have font.swf file in fonts folder -->
-      <min>0</min>                                             <!-- [] (Number) minimum value of this axis. If empty, this value will be calculated automatically. -->
-      <max></max>                                             <!-- [] (Number) maximum value of this axis. If empty, this value will be calculated automatically -->
-      <strict_min_max></strict_min_max>                       <!-- [false] (true / false) by default, if your values are bigger then defined max (or smaller then defined min), max and min is changed so that all the chart would fit to chart area. If you don't want this, set this option to false. -->
+      <min>${yMin}</min>                                            <!-- [] (Number) minimum value of this axis. If empty, this value will be calculated automatically. -->
+      <max>${yMax}</max>                                      <!-- [] (Number) maximum value of this axis. If empty, this value will be calculated automatically -->
+      <strict_min_max>${strictYMinMax}</strict_min_max>        <!-- [false] (true / false) by default, if your values are bigger then defined max (or smaller then defined min), max and min is changed so that all the chart would fit to chart area. If you don't want this, set this option to false. -->
       <frequency>1</frequency>                                <!-- [1] (Number) how often values should be placed, 1 - near every gridline, 2 - near every second gridline... -->
       <skip_first>true</skip_first>                           <!-- [true] (true / false) to skip or not first value -->
       <skip_last>false</skip_last>                            <!-- [false] (true / false) to skip or not last value -->

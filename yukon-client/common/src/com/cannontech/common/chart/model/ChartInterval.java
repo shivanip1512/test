@@ -215,6 +215,38 @@ public enum ChartInterval {
             return DateFormatEnum.DATEHM;
         }
 
+    },
+    
+    FIFTEENMINUTE {
+        public Date increment(Date date) {
+            long time = date.getTime();
+            time += (15 * 60 * 1000);
+
+            return new Date(time);
+        }
+        
+        public void increment(Calendar cal) {
+            cal.add(Calendar.MINUTE, 15);
+        }
+
+        public Date roundDownToIntervalUnit(Date date) {
+
+            Calendar cal = new GregorianCalendar();
+            cal.setTime(date);
+
+            cal.set(Calendar.MILLISECOND, 0);
+            cal.set(Calendar.SECOND, 0);
+            int i = cal.get(Calendar.MINUTE);
+            cal.set(Calendar.MINUTE, i - (i % 15));
+
+            return cal.getTime();
+        }
+        
+        @Override
+        public DateFormatEnum getFormat() {
+            return DateFormatEnum.DATEHM;
+        }
+
     };
 
     /**

@@ -12,7 +12,16 @@
     	<cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
     	<cti:crumbLink url="/spring/csr/search" title="Device Selection" />
         <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}">Device Detail</cti:crumbLink>
-        <cti:crumbLink url="/spring/csr/highBill?deviceId=${deviceId}">High Bill Complaint</cti:crumbLink>
+        
+        <c:url var="hbcUrl" value="/spring/csr/highBill/view">
+            <c:param name="deviceId" value="${deviceId}"/>
+            <c:param name="analyze" value="${analyze}"/>
+            <c:param name="getReportStartDate" value="${getReportStartDate}"/>
+            <c:param name="getReportStopDate" value="${getReportStopDate}"/>
+            <c:param name="chartRange" value="${chartRange}"/>
+        </c:url>
+        
+        <cti:crumbLink url="${hbcUrl}">High Bill Complaint</cti:crumbLink>
         <cti:crumbLink>${reportTitle}</cti:crumbLink>
     </cti:breadCrumbs>
 

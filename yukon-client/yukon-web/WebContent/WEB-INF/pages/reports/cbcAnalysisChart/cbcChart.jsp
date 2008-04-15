@@ -60,7 +60,7 @@
 									pointIds="${graph.pointIds}" 
 									startDate="${graph.startDateMillis}" 
 									endDate="${graph.endDateMillis}" 
-									period="${graph.period}" 
+									interval="${graph.interval}" 
 									converterType="${graph.converterType}" 
 									graphType="${graph.graphType}">
 						</tags:trend>

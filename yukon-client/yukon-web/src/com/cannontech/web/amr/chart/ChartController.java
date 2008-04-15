@@ -12,7 +12,6 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.chart.model.ChartInterval;
-import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.ChartValue;
 import com.cannontech.common.chart.model.ConverterType;
 import com.cannontech.common.chart.model.GraphType;
@@ -66,8 +65,8 @@ public class ChartController extends MultiActionController {
         }
 
         // Get period
-        String period = ServletRequestUtils.getRequiredStringParameter(request,
-                                                                       "period");
+        String interval = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                       "interval");
 
         // startDate, endDate
         String endDateParam = ServletRequestUtils.getRequiredStringParameter(request,
@@ -78,9 +77,7 @@ public class ChartController extends MultiActionController {
                                                                                "startDate");
         Date startDate = new Date(Long.valueOf(startDateParam));
 
-        ChartPeriod chartPeriod = ChartPeriod.valueOf(period);
-        ChartInterval chartInterval = chartPeriod.getChartUnit(startDate,
-                                                               endDate);
+        ChartInterval chartInterval = ChartInterval.valueOf(interval);
 
         // Get graph type from request
         String graphTypeString = ServletRequestUtils.getStringParameter(request,
@@ -147,13 +144,15 @@ public class ChartController extends MultiActionController {
         mav.addObject("trendTitle", title);
 
         // Get period
-        String period = ServletRequestUtils.getRequiredStringParameter(request,
-                                                                       "period");
+        String interval = ServletRequestUtils.getRequiredStringParameter(request,
+                                                                       "interval");
 
+        
+        
         // startDate, endDate
         Date startDate = null;
         Date endDate = null;
-        ChartInterval chartInterval = null;
+        ChartInterval chartInterval = ChartInterval.valueOf(interval);
 
         String endDateParam = ServletRequestUtils.getRequiredStringParameter(request,
                                                                              "endDate");
@@ -163,8 +162,6 @@ public class ChartController extends MultiActionController {
                                                                                "startDate");
         startDate = new Date(Long.valueOf(startDateParam));
 
-        ChartPeriod chartPeriod = ChartPeriod.valueOf(period);
-        chartInterval = chartPeriod.getChartUnit(startDate, endDate);
 
         // Generate x-axis data
         int xAxisDataCount = chartService.getXAxisDataCount(startDate,
@@ -177,7 +174,19 @@ public class ChartController extends MultiActionController {
         }
 
         mav.addObject("gridFrequency", gridFrequency);
-
+        
+        // pass along any yMin/yMax/yMin
+        Double yMin = ServletRequestUtils.getDoubleParameter(request, "yMin");
+        Double yMax = ServletRequestUtils.getDoubleParameter(request, "yMax");
+        if (yMin != null && yMax != null) {
+            mav.addObject("yMin", (double)yMin);
+            mav.addObject("yMax", (double)yMax);
+            mav.addObject("strictYMinMax", true);
+        }
+        
+        int reloadInterval = ServletRequestUtils.getIntParameter(request, "reloadInterval", 0);
+        mav.addObject("reloadInterval", reloadInterval);
+        
         return mav;
     }
 

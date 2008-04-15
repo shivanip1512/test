@@ -3,6 +3,7 @@ package com.cannontech.core.service.impl;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,6 +14,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.math.RandomUtils;
+import org.apache.commons.lang.time.DateUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
@@ -24,7 +26,7 @@ import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.service.ActivityLoggerService;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.LongLoadProfileService;
+import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -41,13 +43,13 @@ import com.cannontech.message.util.MessageListener;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.yukon.BasicServerConnection;
 
-public class LongLoadProfileServiceImpl implements LongLoadProfileService {
+public class LoadProfileServiceImpl implements LoadProfileService {
     private BasicServerConnection porterConnection;
     private PorterQueueDataService queueDataService;
     private DBPersistentDao dbPersistentDao;
     private DateFormattingService dateFormattingService = null;
     private ActivityLoggerService activityLoggerService = null;
-    Logger log = YukonLogManager.getLogger(LongLoadProfileServiceImpl.class);
+    Logger log = YukonLogManager.getLogger(LoadProfileServiceImpl.class);
     private ScheduledExecutor executor;
     
     private Map<Long, Integer> outstandingCancelRequestIds = new HashMap<Long, Integer>();
@@ -60,7 +62,7 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     private Map<Long, String> lastReturnMsgs = new HashMap<Long, String>();
     
     private Set<Long> recentlyReceivedRequestIds = new HashSet<Long>();
-    private Map<Long, LongLoadProfileService.CompletionCallback> currentRequestIds = new HashMap<Long, LongLoadProfileService.CompletionCallback>();
+    private Map<Long, LoadProfileService.CompletionCallback> currentRequestIds = new HashMap<Long, LoadProfileService.CompletionCallback>();
     private MapQueue<Integer,ProfileRequestInfo> pendingDeviceRequests = new MapQueue<Integer,ProfileRequestInfo>();
     private Map<Integer,ProfileRequestInfo> currentDeviceRequests = new HashMap<Integer,ProfileRequestInfo>();
 
@@ -76,7 +78,7 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
         });
     }
     
-    public synchronized void initiateLongLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LongLoadProfileService.CompletionCallback runner, YukonUserContext userContext) {
+    public synchronized void initiateLoadProfile(LiteYukonPAObject device, int channel, Date start, Date stop, LoadProfileService.CompletionCallback runner, YukonUserContext userContext) {
         Validate.isTrue(channel <= 4, "channel must be less than or equal to 4");
         Validate.isTrue(channel > 0, "channel must be greater than 0");
         Validate.isTrue(DeviceTypesFuncs.isLoadProfile4Channel(device.getType()), "Device must support 4 channel load profile (DeviceTypesFuncs.isLoadProfile4Channel)");
@@ -291,7 +293,7 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
                 
                 int deviceId = returnMsg.getDeviceID();
                 
-                final LongLoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
+                final LoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
                 final int returnStatus = returnMsg.getStatus();
                 final String resultString = returnMsg.getResultString();
                 
@@ -344,7 +346,7 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     
 
     
-    public synchronized boolean removePendingLongLoadProfileRequest(LiteYukonPAObject device, long requestId, YukonUserContext userContext) {
+    public synchronized boolean removePendingLoadProfileRequest(LiteYukonPAObject device, long requestId, YukonUserContext userContext) {
         
         boolean removed = false;
         int deviceId = device.getLiteID();
@@ -362,7 +364,7 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
                 expectedReturnCount.remove(requestId);
                 receivedReturnsCount.remove(requestId);
                 // get runner and execute it on the global thread pool
-                final LongLoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
+                final LoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
                 executor.execute(new Runnable() {
                     public void run() {
                         runnable.onCancel(cancelUser);
@@ -389,7 +391,7 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
                     expectedReturnCount.remove(requestId);
                     receivedReturnsCount.remove(requestId);
                     // get runner and execute it on the global thread pool
-                    final LongLoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
+                    final LoadProfileService.CompletionCallback runnable = currentRequestIds.remove(requestId);
                     executor.execute(new Runnable() {
                         public void run() {
                             runnable.onCancel(cancelUser);
@@ -445,7 +447,7 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
     
     
     
-    public synchronized List<ProfileRequestInfo> getPendingLongLoadProfileRequests(LiteYukonPAObject device) {
+    public synchronized List<ProfileRequestInfo> getPendingLoadProfileRequests(LiteYukonPAObject device) {
         int deviceId = device.getLiteID();
         ProfileRequestInfo info = currentDeviceRequests.get(deviceId);
         List<ProfileRequestInfo> result = new ArrayList<ProfileRequestInfo>();
@@ -505,6 +507,39 @@ public class LongLoadProfileServiceImpl implements LongLoadProfileService {
         System.out.println("currentDeviceRequests = " +currentDeviceRequests.size());
         System.out.println("- " + currentDeviceRequests.toString());
         
+    }
+    
+    public List<Map<String, String>> getPendingRequests(LiteYukonPAObject device,  YukonUserContext userContext) {
+        
+        //  pending past profiles
+        List<Map<String, String>> pendingRequests = new ArrayList<Map<String, String>>();
+        Collection<ProfileRequestInfo> loadProfileRequests = getPendingLoadProfileRequests(device);
+        for (ProfileRequestInfo info : loadProfileRequests) {
+            HashMap<String, String> data = new HashMap<String, String>();
+            
+            String email = "";
+            if (info.runner != null) {
+                email = info.runner.toString();
+            }
+            data.put("email", email);
+            data.put("from",
+                     dateFormattingService.formatDate(info.from,
+                                                      DateFormattingService.DateFormatEnum.DATE,
+                                                      userContext));
+            data.put("to",
+                     dateFormattingService.formatDate(DateUtils.addDays(info.to,
+                                                                        -1),
+                                                                        DateFormattingService.DateFormatEnum.DATE,
+                                                                        userContext));
+            data.put("command", info.request.getCommandString());
+            data.put("requestId", Long.toString(info.request.getUserMessageID()));
+            data.put("channel", ((Integer) info.channel).toString());
+            data.put("userName", info.userName);
+            data.put("percentDone", info.percentDone.toString());
+            pendingRequests.add(data);
+        }
+
+        return pendingRequests;
     }
     
     @Required

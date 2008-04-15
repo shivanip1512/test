@@ -8,4 +8,6 @@ public interface PeakReportDao {
     public PeakReportResult getResult(int deviceId, PeakReportRunType runType);
 
     public void saveResult(PeakReportResult peakResult);
+    
+    public void deleteReport(int deviceId, PeakReportRunType runType);
 }

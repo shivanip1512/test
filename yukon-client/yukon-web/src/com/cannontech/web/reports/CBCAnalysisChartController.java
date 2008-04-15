@@ -24,6 +24,7 @@ import com.cannontech.cbc.dao.FeederDao;
 import com.cannontech.cbc.dao.SubstationBusDao;
 import com.cannontech.cbc.model.SubstationBus;
 import com.cannontech.cbc.web.CBCWebUtils;
+import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.yukon.cbc.Feeder;
@@ -63,6 +64,8 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	else if(chartPeriod == ChartPeriod.DAY) {
     		startDate = DateUtils.truncate(startDate, Calendar.DATE);
     	}
+    	
+    	ChartInterval chartInterval = chartPeriod.getChartUnit(startDate, endDate);
     	
     	
     	Long startDateMillis = startDate.getTime();
@@ -221,7 +224,7 @@ public class CBCAnalysisChartController extends MultiActionController  {
     	    			graph.put("pointName", pointDao.getPointName(pointIdsListForTarget.get(groupLabel).get(0)));
     	    		}
     	    		graph.put("pointIds", StringUtils.join(pointIdsListForTarget.get(groupLabel), ","));
-    	    		graph.put("period", chartPeriod);
+    	    		graph.put("interval", chartInterval);
     	    		graph.put("converterType", "RAW");
     	    		graph.put("graphType", "LINE");
     	    		graph.put("startDateMillis", startDateMillis);

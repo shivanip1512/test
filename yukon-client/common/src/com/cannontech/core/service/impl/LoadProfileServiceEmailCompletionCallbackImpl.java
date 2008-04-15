@@ -17,16 +17,16 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.util.FormattingTemplateProcessor;
 import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.LongLoadProfileService;
+import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailService;
 import com.cannontech.user.YukonUserContext;
 
 
-public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLoadProfileService.CompletionCallback {
+public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfileService.CompletionCallback {
         
-    private Logger log = YukonLogManager.getLogger(LongLoadProfileServiceEmailCompletionCallbackImpl.class);
+    private Logger log = YukonLogManager.getLogger(LoadProfileServiceEmailCompletionCallbackImpl.class);
     private EmailService emailService = null;
     private DateFormattingService dateFormattingService = null;
     private TemplateProcessorFactory templateProcessorFactory = null;
@@ -66,7 +66,7 @@ public class LongLoadProfileServiceEmailCompletionCallbackImpl implements LongLo
         return emailer;
     }
     
-    public LongLoadProfileServiceEmailCompletionCallbackImpl(
+    public LoadProfileServiceEmailCompletionCallbackImpl(
             EmailService emailService, DateFormattingService dateFormattingeService, DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
         this.emailService = emailService;
         this.dateFormattingService = dateFormattingeService;

@@ -25,29 +25,37 @@
     </table>
     
     <br>
+    
+    <ct:widgetContainer deviceId="${deviceId}">
+    <table class="widgetColumns">
+        
+        <tr>
+            <td class="widgetColumnCell" valign="top">
+            
+                <c:if test="${lpSupported && lpEnabled}">
+                    <ct:widget bean="profileWidget" />
+                </c:if>
+                
+                <c:if test="${peakReportSupported}">
+                    <ct:widget bean="peakReportWidget" />
+                </c:if>
+                
+            </td>
+            
+            <td class="widgetColumnCell" valign="top">
+            
+                <ct:widget bean="meterInformationWidget" />
+                
+                <c:if test="${lpSupported && lpEnabled}">
+                    <ct:widget bean="pendingProfilesWidget" />
+                </c:if>
+            
+            </td>
+        </tr>
+        
+    </table>
+    </ct:widgetContainer>
 	
-	<div style="width: 50%;">
-		<ct:widgetContainer deviceId="${deviceId}">
-        
-            <div class="widgetColumns">
-        
-    			<ct:widget bean="meterInformationWidget" />
-    			
-    			<%-- profile collection widget --%>
-    			<c:if test="${lpSupported && lpEnabled}">
-	    			<br>
-	    			<ct:widget bean="profileWidget" />
-    			</c:if>
-    			
-    			<%-- peak report widget --%>
-    			<c:if test="${peakReportSupported}">
-	    			<br>
-	    			<ct:widget bean="peakReportWidget" />
-    			</c:if>
-                
-            </div>
-                
-		</ct:widgetContainer>
-	</div>
+	
 
 </cti:standardPage>

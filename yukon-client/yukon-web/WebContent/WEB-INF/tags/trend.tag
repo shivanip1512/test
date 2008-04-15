@@ -2,9 +2,14 @@
 <%@ attribute name="pointIds" required="true"%>
 <%@ attribute name="startDate" required="true"%>
 <%@ attribute name="endDate" required="true"%>
-<%@ attribute name="period" required="true"%>
+<%@ attribute name="interval" required="true"%>
 <%@ attribute name="graphType" required="false"%>
 <%@ attribute name="converterType" required="true"%>
+<%@ attribute name="width" required="false"%>
+<%@ attribute name="height" required="false"%>
+<%@ attribute name="reloadInterval" required="false"%>
+<%@ attribute name="min" required="false"%>
+<%@ attribute name="max" required="false"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -28,7 +33,18 @@
 	<!-- require in order to determine a good frequency setting because bar charts do not have ability to do this themselves -->
 	<c:param name="startDate" value="${startDate}" />
 	<c:param name="endDate" value="${endDate}" />
-	<c:param name="period" value="${period}" />
+	<c:param name="interval" value="${interval}" />
+    
+    <c:if test="${not empty reloadInterval}">
+        <c:param name="reloadInterval" value="${reloadInterval}" />
+    </c:if>
+    
+    <!-- to set the charts y min/max values -->
+    <c:if test="${not empty min && not empty max}">
+        <c:param name="yMin" value="${min}" />
+        <c:param name="yMax" value="${max}" />
+    </c:if>
+    
 </c:url>
 
 <c:url var="amDataFile" scope="page" value="/spring/chart/chart">
@@ -36,7 +52,7 @@
 	<c:param name="pointIds" value="${pointIds}" />
 	<c:param name="startDate" value="${startDate}" />
 	<c:param name="endDate" value="${endDate}" />
-	<c:param name="period" value="${period}" />
+	<c:param name="interval" value="${interval}" />
 	<c:param name="graphType" value="${graphType}" />
 	<c:param name="converterType" value="${converterType}" />
 </c:url>
@@ -50,7 +66,6 @@
 	<c:param name="${amChartsProduct}_dataFile" value="${amDataFile}" />
 
 </c:url>
-
 
 <c:url var="expressInstallSrc" scope="page" value="/JavaScript/expressinstall.swf" />
 <cti:includeScript link="/JavaScript/swfobject.js"/>
@@ -70,8 +85,19 @@
     </div>
 </div>
 
+<c:set var="swfWidth" value="100%"/>
+<c:set var="swfHeight" value="100%"/>
+
+<c:if test="${not empty width}">
+    <c:set var="swfWidth" value="${width}"/>
+</c:if>
+
+<c:if test="${not empty height}">
+    <c:set var="swfHeight" value="${height}"/>
+</c:if>
+
 <script type="text/javascript">
-   var so = new SWFObject("${amSrc}", "dataGraph", "100%", "100%", "8", "#FFFFFF");
+   var so = new SWFObject("${amSrc}", "dataGraph", "${swfWidth}", "${swfHeight}", "8", "#FFFFFF");
    so.useExpressInstall('${expressInstallSrc}');
    so.write("${uniqueId}");
 </script>

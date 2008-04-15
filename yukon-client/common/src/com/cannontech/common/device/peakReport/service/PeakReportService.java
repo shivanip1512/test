@@ -35,6 +35,16 @@ public interface PeakReportService {
      * @return
      */
     public PeakReportResult retrieveArchivedPeakReport(int deviceId, PeakReportRunType runType, LiteYukonUser user);
+    
+    /**
+     * To remove a report for a given device and run type. 
+     * Process result into a PeakReportResult and return it if found.
+     * @param deviceId
+     * @param runType
+     * @param user
+     * @return
+     */
+    public void deleteArchivedPeakReport(int deviceId, PeakReportRunType runType);
         
     /**
      * Helper method to determine the interval of a device for a given channel.

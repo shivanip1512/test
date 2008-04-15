@@ -19,7 +19,7 @@ import org.junit.Test;
 
 import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.service.LongLoadProfileService;
+import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteBase;
@@ -88,15 +88,15 @@ public class LongLoadProfileServiceImplTest {
         }
     }
 
-    private LongLoadProfileService service;
-    private LongLoadProfileServiceImpl serviceDebug;
+    private LoadProfileService service;
+    private LoadProfileServiceImpl serviceDebug;
     private PorterConnection porterConnection;
     private int successRan = 0;
     private int failureRan = 0;
     private int cancelRan = 0;
     private YukonUserContext userContext = new SystemUserContext();
     
-    private LongLoadProfileService.CompletionCallback incrementingRunner = new LongLoadProfileServiceEmailCompletionCallbackImpl(null, null, null) {
+    private LoadProfileService.CompletionCallback incrementingRunner = new LoadProfileServiceEmailCompletionCallbackImpl(null, null, null) {
         public void onFailure(int returnStatus, String resultString) {
             failureRan++;
         }
@@ -114,7 +114,7 @@ public class LongLoadProfileServiceImplTest {
 
     @Before
     public void setUp() throws Exception {
-        serviceDebug = new LongLoadProfileServiceImpl();
+        serviceDebug = new LoadProfileServiceImpl();
         scheduledExecutorMock = new ScheduledExecutorMock(true);
         serviceDebug.setExecutor(scheduledExecutorMock);
         queueDataService = new PorterQueueDataServiceMock();
@@ -191,7 +191,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("5/5/05 4:30 pm");
         Date stop = dateTimeInstance.parse("10/9/06 1:50 am");
-        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
         
         // get message that was written
         Message message = porterConnection.writtenOut.remove();
@@ -213,7 +213,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("10/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
-        service.initiateLongLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice, channel, start, stop, incrementingRunner, userContext);
         
         // check that outQueue has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
@@ -264,7 +264,7 @@ public class LongLoadProfileServiceImplTest {
         DateFormat dateTimeInstance = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT);
         Date start = dateTimeInstance.parse("12/13/06 1:50 pm");
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
         
         // check that outQueue has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
@@ -273,18 +273,18 @@ public class LongLoadProfileServiceImplTest {
         Assert.assertEquals("runner should not have run", 0, successRan);
         
         // attempt to request again
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
         
         // check that outQueue still has one message
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
         
         // attempt to request for device 2
-        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
         
         Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
         
         // attempt to request again for device 1
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
         
         // check that outQueue still has two messages
         Assert.assertEquals("out queue should have two messages", 2, porterConnection.writtenOut.size());
@@ -292,8 +292,8 @@ public class LongLoadProfileServiceImplTest {
         // check that runner still hasn't run
         Assert.assertEquals("runner should not have run", 0, successRan);
         
-        Assert.assertEquals("pending list should have three messages", 3, service.getPendingLongLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("pending list should have one message", 1, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("pending list should have three messages", 3, service.getPendingLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("pending list should have one message", 1, service.getPendingLoadProfileRequests(myDevice2).size());
 
         int responses = 0;
         Set<Long> usedIds = new HashSet<Long>();
@@ -339,26 +339,26 @@ public class LongLoadProfileServiceImplTest {
         porterConnection.failMode = true;
         
         try {
-            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+            service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
             fail("should have thrown an exception");
         } catch (RuntimeException e) {
             // expected
         }
-        Assert.assertEquals("pending list should have zero messages", 0, service.getPendingLongLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("pending list should have zero messages", 0, service.getPendingLoadProfileRequests(myDevice1).size());
         
         porterConnection.failMode = false;
         
         // this should not fail and it shouldn't cause the service to hold the message
         // because its deviceId is the same as the previous
         try {
-            service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+            service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
         } catch (RuntimeException e) {
             fail("should have not thrown an exception");
         }
         
         Assert.assertEquals("out queue should have one message", 1, porterConnection.writtenOut.size());
         
-        Assert.assertEquals("pending list should have one message", 1, service.getPendingLongLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("pending list should have one message", 1, service.getPendingLoadProfileRequests(myDevice1).size());
         
         Assert.assertEquals("runner should not have run", 0, successRan);
     }
@@ -377,13 +377,13 @@ public class LongLoadProfileServiceImplTest {
         Date stop = dateTimeInstance.parse("12/13/06 1:50 pm");
 
 
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
-        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
-        service.initiateLongLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
-        service.initiateLongLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice1, channel, start, stop, incrementingRunner, userContext);
+        service.initiateLoadProfile(myDevice2, channel, start, stop, incrementingRunner, userContext);
         Assert.assertEquals("wrong number of messages reached out queue", 2, porterConnection.writtenOut.size());
-        Assert.assertEquals("messages weren't queued", 2, service.getPendingLongLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("messages weren't queued", 2, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("messages weren't queued", 2, service.getPendingLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 2, service.getPendingLoadProfileRequests(myDevice2).size());
         Assert.assertEquals("runner should not have run", 0, successRan);
         Assert.assertEquals("runner should not have run", 0, failureRan);
         Assert.assertEquals("runner should not have run", 0, cancelRan);
@@ -398,8 +398,8 @@ public class LongLoadProfileServiceImplTest {
 
         // this should have queued two LLP request
         Assert.assertEquals("wrong number of messages reached out queue", 2, porterConnection.writtenOut.size());
-        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLoadProfileRequests(myDevice2).size());
         Assert.assertEquals("runner should not have run", 0, successRan);
         Assert.assertEquals("runner should not have run", 2, failureRan);
         
@@ -417,8 +417,8 @@ public class LongLoadProfileServiceImplTest {
         scheduledExecutorMock.doAllTasks();
         // even though the queueDataService is still set to return 0, nothing should change
         Assert.assertEquals("wrong number of messages reached out queue", 0, porterConnection.writtenOut.size());
-        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLoadProfileRequests(myDevice2).size());
         Assert.assertEquals("runner should not have run", 0, successRan);
         Assert.assertEquals("runner should not have run", 2, failureRan);
         
@@ -428,8 +428,8 @@ public class LongLoadProfileServiceImplTest {
        
         // nothing should change
         Assert.assertEquals("wrong number of messages reached out queue", 0, porterConnection.writtenOut.size());
-        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("messages weren't queued", 1, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 1, service.getPendingLoadProfileRequests(myDevice2).size());
         Assert.assertEquals("runner should not have run", 0, successRan);
         Assert.assertEquals("runner should not have run", 2, failureRan);
 
@@ -440,8 +440,8 @@ public class LongLoadProfileServiceImplTest {
         
         // nothing should be left
         Assert.assertEquals("wrong number of messages reached out queue", 0, porterConnection.writtenOut.size());
-        Assert.assertEquals("messages weren't queued", 0, service.getPendingLongLoadProfileRequests(myDevice1).size());
-        Assert.assertEquals("messages weren't queued", 0, service.getPendingLongLoadProfileRequests(myDevice2).size());
+        Assert.assertEquals("messages weren't queued", 0, service.getPendingLoadProfileRequests(myDevice1).size());
+        Assert.assertEquals("messages weren't queued", 0, service.getPendingLoadProfileRequests(myDevice2).size());
         Assert.assertEquals("runner should not have run", 0, successRan);
         Assert.assertEquals("runner should not have run", 4, failureRan);
 

@@ -29,7 +29,7 @@
 		
 		<%-- THE CHART --%>
 		<div style="height: 250px">
-			<tags:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${stopDateMillis}" period="${period}" converterType="${attributeGraphType.converterType}" graphType="${graphType}"></tags:trend>
+			<tags:trend title="${title}" pointIds="${pointId}" startDate="${startDateMillis}" endDate="${stopDateMillis}" interval="${interval}" converterType="${attributeGraphType.converterType}" graphType="${graphType}"></tags:trend>
 		</div>
 		
 		<table class="compactResultsTable">

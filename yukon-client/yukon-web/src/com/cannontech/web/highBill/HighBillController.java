@@ -1,0 +1,793 @@
+package com.cannontech.web.highBill;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
+
+import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.chart.model.ChartInterval;
+import com.cannontech.common.chart.model.ConverterType;
+import com.cannontech.common.chart.model.GraphType;
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.attribute.model.BuiltInAttribute;
+import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.device.commands.CommandDateFormatFactory;
+import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
+import com.cannontech.common.device.peakReport.model.PeakReportResult;
+import com.cannontech.common.device.peakReport.model.PeakReportRunType;
+import com.cannontech.common.device.peakReport.service.PeakReportService;
+import com.cannontech.common.exception.InitiateLoadProfileRequestException;
+import com.cannontech.common.exception.PeakSummaryReportRequestException;
+import com.cannontech.common.util.FriendlyExceptionResolver;
+import com.cannontech.common.util.TimeUtil;
+import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
+import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.RawPointHistoryDao;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.LoadProfileService;
+import com.cannontech.core.service.impl.LoadProfileServiceEmailCompletionCallbackImpl;
+import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.simplereport.SimpleReportService;
+import com.cannontech.tools.email.EmailService;
+import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.util.JsonView;
+
+public class HighBillController extends MultiActionController {
+
+    private DeviceDao deviceDao = null;
+    private PaoDao paoDao = null;
+    private AttributeService attributeService = null;
+    private PeakReportService peakReportService = null;
+    private DateFormattingService dateFormattingService = null;
+    private MeterDao meterDao = null;
+    private PaoCommandAuthorizationService commandAuthorizationService = null;
+    private LoadProfileService loadProfileService = null;
+    private FriendlyExceptionResolver friendlyExceptionResolver = null;
+    private SimpleReportService simpleReportService = null;
+    private EmailService emailService = null;
+    private DeviceErrorTranslatorDao deviceErrorTranslatorDao = null;
+    private YukonUserDao yukonUserDao = null;
+    private ContactDao contactDao = null;
+    private RawPointHistoryDao rphDao = null;
+    
+    final long MS_IN_A_DAY = 1000 * 60 * 60 * 24;
+    
+    public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception, ServletException {
+        
+        // mav
+        ModelAndView mav = new ModelAndView("highBill.jsp");
+        
+        // BASICS
+        //-------------------------------------------
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        mav.addObject("deviceId", String.valueOf(deviceId));
+        Meter meter = meterDao.getForId(deviceId);
+        
+        // readable?
+        boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
+        mav.addObject("readable", readable);
+        
+        // point id
+        addPointIdToMav(mav, meter);
+        
+        // new report or previous?
+        boolean analyze = ServletRequestUtils.getBooleanParameter(request, "analyze", false);
+        mav.addObject("analyze", analyze);
+        
+        // user email address
+        LiteContact contact = yukonUserDao.getLiteContact(userContext.getYukonUser().getUserID());
+        String email = "";
+        if (contact != null) {
+            String[] allEmailAddresses = contactDao.getAllEmailAddresses(contact.getContactID());
+            if (allEmailAddresses.length > 0) {
+                email = allEmailAddresses[0];
+            }
+        }
+        mav.addObject("email", email);
+        
+        // CREATE POINT IF NEEDED
+        //-------------------------------------------
+        YukonDevice device = deviceDao.getYukonDevice(deviceId);
+        boolean createLPPoint = ServletRequestUtils.getBooleanParameter(request, "createLPPoint", false);
+        if (createLPPoint) {
+            attributeService.createPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
+        }
+        boolean lmPointExists = attributeService.pointExistsForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
+        mav.addObject("lmPointExists", lmPointExists);
+        
+        // DATE RANGE
+        //-------------------------------------------
+        SimpleDateFormat dateFormatter = CommandDateFormatFactory.createPeakReportCommandDateFormatter();
+        
+        Date defaultStopDate = new Date();
+        Date defaultStartDate = TimeUtil.addDays(defaultStopDate, -5);
+        
+        String startDateStr = ServletRequestUtils.getStringParameter(request, "getReportStartDate");
+        String stopDateStr = ServletRequestUtils.getStringParameter(request, "getReportStopDate");
+        
+        Date startDate = null;
+        Date stopDate = null;
+        
+        // start date
+        if (startDateStr == null) {
+            startDate = defaultStartDate;
+            startDateStr = dateFormatter.format(startDate);
+        }
+        else {
+            startDate = dateFormattingService.flexibleDateParser(startDateStr, userContext);
+        }
+        
+        // stop date
+        if (stopDateStr == null) {
+            stopDate = defaultStopDate;
+            stopDateStr = dateFormatter.format(stopDate);
+        }
+        else {
+            stopDate = dateFormattingService.flexibleDateParser(stopDateStr, userContext);
+        }
+        
+        mav.addObject("startDateDate", startDate);
+        mav.addObject("stopDateDate", stopDate);
+        mav.addObject("startDate", startDateStr);
+        mav.addObject("stopDate", stopDateStr);
+        
+        
+        
+        // GATHER ARCHIVED RESULTS
+        //-------------------------------------------
+        PeakReportResult preResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.PRE, userContext.getYukonUser());
+        PeakReportResult postResult = peakReportService.retrieveArchivedPeakReport(deviceId, PeakReportRunType.POST, userContext.getYukonUser());
+        
+        // PARSE RESULTS AND ADD TO MAV
+        //-------------------------------------------
+        Map<String, Object> preMap = getParsedPeakResultValuesMap(preResult, userContext, deviceId, 1);
+        Map<String, Object> postMap = getParsedPeakResultValuesMap(postResult, userContext, deviceId, 1);
+        addProfileResultsToMav(mav, deviceId, userContext, preResult, postResult, preMap, postMap);
+        
+        
+        // remaining items are only required during "step 2" (analyze=true)
+        if (analyze) {
+            
+            // PENDING LP REQUESTS
+            //-------------------------------------------
+            LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(deviceId);
+            List<Map<String, String>> pendingRequests = loadProfileService.getPendingRequests(devicePaoObj, userContext);
+            mav.addObject("pendingRequests", pendingRequests);
+            
+            
+            // FOR LOAD_PROFILE CHART
+            //-------------------------------------------
+            LitePoint point = attributeService.getPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
+            int pointId = point.getPointID();
+            
+            // applys to both
+            mav.addObject("pointId", pointId);
+            mav.addObject("converterType", ConverterType.RAW);
+            mav.addObject("graphType", GraphType.LINE);
+            
+            String chartRange = ServletRequestUtils.getStringParameter(request, "chartRange", "PEAK");
+            mav.addObject("chartRange", chartRange);
+            
+            // PRE CHART
+            if (preResult != null && !preResult.isNoData()) {
+                
+                Date preRangeStartDate = null;
+                Date preRangeStopDate = null;
+                
+                if (chartRange.equals("PEAK")) {
+                    
+                    preRangeStartDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
+
+                    preRangeStopDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
+                    preRangeStopDate = DateUtils.addDays(preRangeStopDate, 1);
+                    preRangeStopDate = DateUtils.addSeconds(preRangeStopDate, -1);
+                }
+                else if (chartRange.equals("PEAKPLUSMINUS3")) {
+                    
+                    preRangeStartDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
+                    preRangeStartDate = DateUtils.addDays(preRangeStartDate, -3);
+
+                    preRangeStopDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
+                    preRangeStopDate = DateUtils.addDays(preRangeStopDate, 4);
+                    preRangeStopDate = DateUtils.addSeconds(preRangeStopDate, -1);
+                }
+                else if (chartRange.equals("ENTIRE")) {
+                    
+                    preRangeStartDate = DateUtils.truncate(preResult.getRangeStartDate(), Calendar.DATE);
+
+                    preRangeStopDate = DateUtils.truncate(preResult.getRangeStopDate(), Calendar.DATE);
+                    preRangeStopDate = DateUtils.addDays(preRangeStopDate, 1);
+                    preRangeStopDate = DateUtils.addSeconds(preRangeStopDate, -1);
+                }
+                
+                String preRangeStartDateStr = dateFormattingService.formatDate(preRangeStartDate, DateFormattingService.DateFormatEnum.DATE, userContext);
+                String preRangeStopDateStr = dateFormattingService.formatDate(preRangeStopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
+                String preChartTitle = "";
+                if (chartRange.equals("PEAK")) {
+                    preChartTitle = preRangeStartDateStr;
+                }
+                else if (chartRange.equals("PEAKPLUSMINUS3")) {
+                    preChartTitle = preRangeStartDateStr + " - " + preRangeStopDateStr;
+                    preChartTitle += " (" + preMap.get("peakValueStr") + " +/- 3 Days)";
+                }
+                else if (chartRange.equals("ENTIRE")) {
+                    preChartTitle = preRangeStartDateStr + " - " + preRangeStopDateStr;
+                }
+                
+                mav.addObject("preChartTitle", preChartTitle);
+                mav.addObject("preStartDateMillis", preRangeStartDate.getTime());
+                mav.addObject("preStopDateMillis", preRangeStopDate.getTime());
+                mav.addObject("preChartInterval", calcIntervalForPeriod(preRangeStartDate, preRangeStopDate));
+                
+                // POST CHART
+                if (postResult != null && !postResult.isNoData()) {
+                    
+                    Date postRangeStartDate = null;
+                    Date postRangeStopDate = null;
+                    
+                    if (chartRange.equals("PEAK")) {
+                        
+                        postRangeStartDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
+                        postRangeStartDate = DateUtils.addDays(postRangeStartDate, -3);
+
+                        postRangeStopDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
+                        postRangeStopDate = DateUtils.addDays(postRangeStopDate, 4);
+                        postRangeStopDate = DateUtils.addSeconds(postRangeStopDate, -1);
+                    }
+                    else if (chartRange.equals("PEAKPLUSMINUS3")) {
+                        
+                        postRangeStartDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
+
+                        postRangeStopDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
+                        postRangeStopDate = DateUtils.addDays(postRangeStopDate, 1);
+                        postRangeStopDate = DateUtils.addSeconds(postRangeStopDate, -1);
+                    }
+                    else if (chartRange.equals("ENTIRE")) {
+                        
+                        postRangeStartDate = DateUtils.truncate(postResult.getRangeStartDate(), Calendar.DATE);
+
+                        postRangeStopDate = DateUtils.truncate(postResult.getRangeStopDate(), Calendar.DATE);
+                        postRangeStopDate = DateUtils.addDays(postRangeStopDate, 1);
+                        postRangeStopDate = DateUtils.addSeconds(postRangeStopDate, -1);
+                    }
+                    
+                    String postRangeStartDateStr = dateFormattingService.formatDate(postRangeStartDate, DateFormattingService.DateFormatEnum.DATE, userContext);
+                    String postRangeStopDateStr = dateFormattingService.formatDate(postRangeStopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
+                    String postChartTitle = "";
+                    if (chartRange.equals("PEAK")) {
+                        postChartTitle = postRangeStartDateStr;
+                    }
+                    else if (chartRange.equals("PEAKPLUSMINUS3")) {
+                        postChartTitle = postRangeStartDateStr + " - " + postRangeStopDateStr;
+                        postChartTitle += " (" + postMap.get("peakValueStr") + " +/- 3 Days)";
+                    }
+                    else if (chartRange.equals("ENTIRE")) {
+                        postChartTitle = postRangeStartDateStr + " - " + postRangeStopDateStr;
+                    }
+                    
+                    mav.addObject("postChartTitle", postChartTitle);
+                    mav.addObject("postStartDateMillis", postRangeStartDate.getTime());
+                    mav.addObject("postStopDateMillis", postRangeStopDate.getTime());
+                    mav.addObject("postChartInterval", calcIntervalForPeriod(postRangeStartDate, postRangeStopDate));
+                    
+                    // Get point values for each range to determine the min/max y values
+                    double preMin = 0.0;
+                    double postMin = 0.0;
+                    double preMax = 0.0;
+                    double postMax = 0.0;
+                    
+                    // pre min/max
+                    List<PointValueHolder> prePointData = rphDao.getPointData(pointId, preRangeStartDate, preRangeStopDate);
+                    for (PointValueHolder data : prePointData) {
+                        double val = data.getValue();
+                        if (val < preMin) {
+                            preMin = val;
+                        }
+                        if (val > preMax) {
+                            preMax = val;
+                        }
+                    }
+                    
+                    // post min/max
+                    List<PointValueHolder> postPointData = rphDao.getPointData(pointId, postRangeStartDate, postRangeStopDate);
+                    for (PointValueHolder data : postPointData) {
+                        double val = data.getValue();
+                        if (val < postMin) {
+                            postMin = val;
+                        }
+                        if (val > postMax) {
+                            postMax = val;
+                        }
+                    }
+                    
+                    Double min = Math.min(preMin, postMin);
+                    Double max = Math.max(preMax, postMax);
+                    mav.addObject("yMin", min.toString());
+                    mav.addObject("yMax", max.toString());
+                }
+            }
+        }
+        
+        return mav;
+    }
+    
+    private ChartInterval calcIntervalForPeriod(Date startDate, Date stopDate) {
+        
+        long diff = Math.abs( startDate.getTime() - stopDate.getTime() );
+        int dayDiff = (int)Math.floor(diff/1000/60/60/24);  
+
+        // week and day are smaller intervals, everything else uses a day interval
+        if(dayDiff > 7){
+            return ChartInterval.HOUR;
+        }
+        else if(dayDiff <=7 && dayDiff > 1){
+            return ChartInterval.FIFTEENMINUTE;
+        }
+        else{
+            return ChartInterval.FIVEMINUTE;
+        }
+    }
+    
+    public ModelAndView getReport(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+        
+        ModelAndView mav = new ModelAndView("meterReadErrors.jsp");
+        
+        // basics
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        
+        // DATE RANGE - get requested
+        //-------------------------------------------
+        String startDateStr = ServletRequestUtils.getRequiredStringParameter(request, "getReportStartDate");
+        String stopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "getReportStopDate");
+        
+        // DATE RANGE - parse for errors first
+        // if error occurs, return mav which will redirect back to view without setting requestReport=true so we will be at step 1
+        //-------------------------------------------
+        Date preCommandStartDate = null;
+        Date preCommandStopDate = null;
+        Date postCommandStopDate = new Date();
+        
+        try {
+            preCommandStartDate = dateFormattingService.flexibleDateParser(startDateStr, userContext);
+        } catch (ParseException e) {
+            mav.addObject("errorMsg", "Start date: " + startDateStr + " is not formatted correctly - example (mm/dd/yyyy).");
+            return mav;
+        }
+        
+        
+        try {
+            preCommandStopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+        } catch (ParseException e) {
+            mav.addObject("errorMsg", "Stop date: " + stopDateStr + " is not formatted correctly - example (mm/dd/yyyy).");
+            return mav;
+        }
+
+        if (preCommandStopDate.before(preCommandStartDate) || preCommandStartDate.getTime() == preCommandStopDate.getTime()) {
+            mav.addObject("errorMsg", "Start date must be before stop date.");
+            return mav;
+        }
+        
+        Date today = new Date();
+        if (preCommandStartDate.after(today)) {
+            mav.addObject("errorMsg", "Start date must be before today.");
+            return mav;
+        }
+        
+        if (preCommandStopDate.after(today)) {
+            mav.addObject("errorMsg", "Stop date must on or before today.");
+            return mav;
+        }
+        
+        
+        // EXECUTE COMMANDS TO GET RESULTS
+        //-------------------------------------------
+        PeakReportResult preResult = null;
+        PeakReportResult postResult = null;
+        
+        try {
+            preResult = peakReportService.requestPeakReport(deviceId, PeakReportPeakType.DAY, PeakReportRunType.PRE, 1, preCommandStartDate, preCommandStopDate, true, userContext);
+            if (getDaysBetween(postCommandStopDate, preCommandStopDate) > 0) {
+                postResult = peakReportService.requestPeakReport(deviceId, PeakReportPeakType.DAY, PeakReportRunType.POST, 1, preCommandStopDate, postCommandStopDate, true, userContext);
+            }
+            
+            // if the range we ran for only gives us a peak report and not a post report
+            // remove any lingering post reports that may be archived for this device, cause thats just confusing
+            if (preResult != null && postResult == null) {
+                peakReportService.deleteArchivedPeakReport(deviceId, PeakReportRunType.POST);
+            }
+            
+        } 
+        catch (PeakSummaryReportRequestException e) {
+            String readError = friendlyExceptionResolver.getFriendlyExceptionMessage(e);
+            mav.addObject("errorMsg", readError);
+            return mav;
+        }
+        
+        // error results
+        List<PeakReportResult> results = new ArrayList<PeakReportResult>();
+        if (preResult != null && preResult.isNoData()) {
+            results.add(preResult);
+        }
+        if (postResult != null && postResult.isNoData()) {
+            results.add(postResult);
+        }
+        mav.addObject("results", results);
+        
+        
+        return mav;
+    }
+    
+    public ModelAndView initiateLoadProfile(HttpServletRequest request, HttpServletResponse response) throws Exception {
+
+        ModelAndView mav = new ModelAndView(new JsonView());
+
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        
+        String errorMsg = "";
+        
+        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
+        LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
+        LiteDeviceMeterNumber meterNum = deviceDao.getLiteDeviceMeterNumber(deviceId);
+        
+        try {
+            
+            String email = ServletRequestUtils.getRequiredStringParameter(request, "email");
+            
+            // DATE PARAMETERS
+            String peakDateStr = ServletRequestUtils.getRequiredStringParameter(request, "peakDate");
+            String startDateStr = ServletRequestUtils.getRequiredStringParameter(request, "startDate");
+            String stopDateStr = ServletRequestUtils.getRequiredStringParameter(request, "stopDate");
+            
+            String beforeDaysStr = ServletRequestUtils.getRequiredStringParameter(request, "beforeDays");
+            String afterDaysStr = ServletRequestUtils.getRequiredStringParameter(request, "afterDays");
+            
+            // PARSE DATES
+            Date startDate = null;
+            Date stopDate = null;
+            
+            // before peak
+            if (beforeDaysStr.equalsIgnoreCase("ALL")) {
+                startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+                startDate = DateUtils.truncate(startDate, Calendar.DATE);
+            }
+            else {
+                startDate = dateFormattingService.flexibleDateParser(peakDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
+                startDate = DateUtils.truncate(startDate, Calendar.DATE);
+                startDate = DateUtils.addDays(startDate, -Integer.parseInt(beforeDaysStr));
+            }
+            
+            // after peak
+            if (afterDaysStr.equalsIgnoreCase("ALL")) {
+                stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.END_OF_DAY, userContext);
+                stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+                stopDate = DateUtils.addDays(stopDate, 1);
+            }
+            else {
+                stopDate = dateFormattingService.flexibleDateParser(peakDateStr, DateFormattingService.DateOnlyMode.END_OF_DAY, userContext);
+                stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
+                stopDate = DateUtils.addDays(stopDate, Integer.parseInt(afterDaysStr));
+                stopDate = DateUtils.addDays(stopDate, 1);
+            }
+         
+            // map of email elements
+            Map<String, Object> msgData = new HashMap<String, Object>();
+            SimpleDateFormat dateFormat = CommandDateFormatFactory.createLoadProfileCommandDateFormatter();
+            
+            msgData.put("email", email);
+            msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
+            msgData.put("deviceName", device.getPaoName());
+            msgData.put("meterNumber", meterNum.getMeterNumber());
+            msgData.put("physAddress", device.getAddress());
+            msgData.put("startDate", dateFormat.format(startDate));
+            msgData.put("stopDate", dateFormat.format(stopDate));
+            long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
+            msgData.put("totalDays", Long.toString(numDays));
+            
+            // determine pointId in order to build report URL
+            LitePoint litePoint = attributeService.getPointForAttribute(deviceDao.getYukonDevice(device), BuiltInAttribute.LOAD_PROFILE);
+            
+            Map<String, Object> inputValues = new HashMap<String, Object>();
+            inputValues.put("startDate", startDate.getTime());
+            inputValues.put("stopDate", stopDate.getTime());
+            inputValues.put("pointId", litePoint.getPointID());
+            
+            Map<String, String> optionalAttributeDefaults = new HashMap<String, String>();
+            optionalAttributeDefaults.put("module", "amr");
+            optionalAttributeDefaults.put("showMenu", "true");
+            optionalAttributeDefaults.put("menuSelection", "deviceselection");
+            optionalAttributeDefaults.put("viewJsp", "MENU");
+            
+            String reportHtmlUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "htmlView", true);
+            String reportCsvUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "csvView", true);
+            String reportPdfUrl = simpleReportService.getReportUrl(request, "rawPointHistoryDefinition", inputValues, optionalAttributeDefaults, "pdfView", true);
+            msgData.put("reportHtmlUrl", reportHtmlUrl);
+            msgData.put("reportCsvUrl", reportCsvUrl);
+            msgData.put("reportPdfUrl", reportPdfUrl);
+
+            // completion callbacks
+            LoadProfileServiceEmailCompletionCallbackImpl callback = new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, deviceErrorTranslatorDao);
+            
+            callback.setUserContext(userContext);
+            callback.setEmail(email);
+            callback.setMessageData(msgData);
+            
+            // will throw InitiateLoadProfileRequestException if connection problem
+            loadProfileService.initiateLoadProfile(device,
+                                                       1,
+                                                       startDate,
+                                                       stopDate,
+                                                       callback,
+                                                       userContext);
+                
+
+        } catch (ParseException e) {
+            errorMsg = "Invalid Date: " + e.getMessage();
+            
+        } catch (InitiateLoadProfileRequestException e) {
+            errorMsg = friendlyExceptionResolver.getFriendlyExceptionMessage(e);
+        } catch (ServletRequestBindingException e) {
+            errorMsg = e.getMessage();
+        }
+
+        mav.addObject("errorMsg", errorMsg);
+        
+        return mav;
+    }
+
+    /**
+     * HELPER to get pointId, and set to mav
+     * @param mav
+     * @param deviceId
+     */
+    private void addPointIdToMav(ModelAndView mav, Meter meter) {
+        
+        LitePoint point = attributeService.getPointForAttribute(meter, BuiltInAttribute.LOAD_PROFILE);
+        int pointId = point.getPointID();
+        mav.addObject("pointId", pointId);
+    }
+    
+    /**
+     * HELPER to call parse and add parsed results to mav.
+     * @param mav
+     * @param deviceId
+     * @param userContext
+     * @param preResult
+     * @param postResult
+     * @return
+     */
+    private void addProfileResultsToMav(ModelAndView mav, int deviceId, YukonUserContext userContext, PeakReportResult preResult, PeakReportResult postResult, Map<String, Object> preMap, Map<String, Object> postMap) {
+        
+        Date today = DateUtils.truncate(new Date(), Calendar.DATE);
+        mav.addObject("preResult", preResult);
+        mav.addObject("postResult", postResult);
+        
+        List<String> preAvailableDaysAfterPeak = new ArrayList<String>();
+        if(preResult != null && !preResult.isNoData()) {
+            mav.addObject("displayName", preMap.get("displayName"));
+            mav.addObject("prePeriodStartDate",preMap.get("periodStartDate"));
+            mav.addObject("prePeriodStopDate",preMap.get("periodStopDate"));
+            mav.addObject("prePeriodStartDateDisplay",preMap.get("periodStartDateDisplay"));
+            mav.addObject("prePeriodStopDateDisplay",preMap.get("periodStopDateDisplay"));
+            mav.addObject("prePeakValue",preMap.get("peakValueStr"));
+            
+            // how many days after peak should be available to gather lp data? 0,1,2,3?
+            Date peakDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
+            preAvailableDaysAfterPeak.add("0");
+            long daysBetween = getDaysBetween(today, peakDate) + 1;
+            for (int d = 1; d < daysBetween && d <= 3; d++) {
+                preAvailableDaysAfterPeak.add(Integer.valueOf(d).toString());
+            }
+            Date rangeStopDate = DateUtils.truncate(preResult.getRangeStopDate(), Calendar.DATE);
+            if (rangeStopDate.compareTo(today) <= 0) {
+                preAvailableDaysAfterPeak.add("All");
+            }
+        }
+        mav.addObject("preAvailableDaysAfterPeak", preAvailableDaysAfterPeak);
+        
+        List<String> postAvailableDaysAfterPeak = new ArrayList<String>();
+        if(postResult != null && !postResult.isNoData()) {
+            mav.addObject("postPeriodStartDate",postMap.get("periodStartDate"));
+            mav.addObject("postPeriodStopDate",postMap.get("periodStopDate"));
+            mav.addObject("postPeriodStartDateDisplay",postMap.get("periodStartDateDisplay"));
+            mav.addObject("postPeriodStopDateDisplay",postMap.get("periodStopDateDisplay"));
+            mav.addObject("postPeakValue",postMap.get("peakValueStr"));
+            
+            // how many days after peak should be available to gather lp data? 0,1,2,3?
+            Date peakDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
+            postAvailableDaysAfterPeak.add("0");
+            long daysBetween = getDaysBetween(today, peakDate) + 1;
+            for (int d = 1; d < daysBetween && d <= 3; d++) {
+                postAvailableDaysAfterPeak.add(Integer.valueOf(d).toString());
+            }
+            Date rangeStopDate = DateUtils.truncate(preResult.getRangeStopDate(), Calendar.DATE);
+            if (rangeStopDate.compareTo(today) <= 0) {
+                postAvailableDaysAfterPeak.add("All");
+            }
+        }
+        mav.addObject("postAvailableDaysAfterPeak", postAvailableDaysAfterPeak);
+    }
+    
+    
+    /**
+     * HELPER to parse PeakReportResult objects.
+     * @param peakResult
+     * @param userContext
+     * @param deviceId
+     * @param channel
+     * @return
+     */
+    private Map<String, Object> getParsedPeakResultValuesMap(PeakReportResult peakResult, YukonUserContext userContext, int deviceId, int channel) {
+        
+        if (peakResult == null || peakResult.isNoData()) {
+            return null;
+        }
+        
+        // init hash
+        Map<String, Object> parsedVals = new HashMap<String, Object>();
+        
+        // special formatting of peakResult dates for display purposes
+        String runDateDisplay = dateFormattingService.formatDate(peakResult.getRunDate(), DateFormattingService.DateFormatEnum.DATEHM, userContext);
+        parsedVals.put("runDateDisplay", runDateDisplay);
+        
+        String periodStartDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
+        parsedVals.put("periodStartDate", peakResult.getRangeStartDate());
+        parsedVals.put("periodStartDateDisplay", periodStartDateDisplay);
+        
+        String periodStopDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
+        parsedVals.put("periodStopDate", peakResult.getRangeStopDate());
+        parsedVals.put("periodStopDateDisplay", periodStopDateDisplay);
+        
+        parsedVals.put("displayName", peakResult.getPeakType().getDisplayName());
+        parsedVals.put("reportTypeDisplayName",peakResult.getPeakType().getReportTypeDisplayName());
+        
+        String peakValueStr = "";
+        if(peakResult.getPeakType() == PeakReportPeakType.DAY) {
+            peakValueStr = dateFormattingService.formatDate(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
+        }
+        else if(peakResult.getPeakType() == PeakReportPeakType.HOUR) {
+            peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());
+            peakValueStr += " ";
+            peakValueStr += new SimpleDateFormat("Ka").format(peakResult.getPeakStartDate());
+            peakValueStr += " - ";
+            peakValueStr += new SimpleDateFormat("Ka").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
+        }
+        else if(peakResult.getPeakType() == PeakReportPeakType.INTERVAL) {
+            int interval = peakReportService.getChannelIntervalForDevice(deviceId,channel);
+            peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());
+            peakValueStr += " ";
+            if(interval == 60){
+                peakValueStr += new SimpleDateFormat("Ha").format(peakResult.getPeakStartDate());
+                peakValueStr += " - ";
+                peakValueStr += new SimpleDateFormat("Ha").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
+            }
+            else{
+                peakValueStr += new SimpleDateFormat("K:mma").format(peakResult.getPeakStartDate());
+                peakValueStr += " - ";
+                peakValueStr += new SimpleDateFormat("K:mma").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
+            }
+        }
+        parsedVals.put("peakValueStr", peakValueStr);
+        
+        return parsedVals;
+    }
+    
+    /**
+     * HELPER to calculate days between two dates
+     * @param date1
+     * @param date2
+     * @return
+     */
+    private long getDaysBetween(Date date1, Date date2) {
+
+        long delta = date1.getTime() - date2.getTime();
+        // Convert delta to days (86400000 milliseconds in a day)
+        long days = delta / 86400000;
+
+        return days;
+    }
+    
+    
+    @Required
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
+    }
+
+    @Required
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
+    
+    @Required
+    public void setAttributeService(AttributeService attributeService) {
+        this.attributeService = attributeService;
+    }
+
+    @Required
+    public void setPeakReportService(PeakReportService peakReportService) {
+        this.peakReportService = peakReportService;
+    }
+
+    @Required
+    public void setDateFormattingService(DateFormattingService dateFormattingService) {
+        this.dateFormattingService = dateFormattingService;
+    }
+
+    @Required
+    public void setMeterDao(MeterDao meterDao) {
+        this.meterDao = meterDao;
+    }
+
+    @Required
+    public void setCommandAuthorizationService(PaoCommandAuthorizationService commandAuthorizationService) {
+        this.commandAuthorizationService = commandAuthorizationService;
+    }
+
+    @Required
+    public void setLoadProfileService(LoadProfileService loadProfileService) {
+        this.loadProfileService = loadProfileService;
+    }
+    
+    @Required
+    public void setFriendlyExceptionResolver(FriendlyExceptionResolver friendlyExceptionResolver) {
+        this.friendlyExceptionResolver = friendlyExceptionResolver;
+    }
+    
+    @Required
+    public void setSimpleReportService(SimpleReportService simpleReportService) {
+        this.simpleReportService = simpleReportService;
+    }
+    
+    @Required
+    public void setEmailService(EmailService emailService) {
+        this.emailService = emailService;
+    }
+    
+    @Required
+    public void setDeviceErrorTranslatorDao(
+            DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
+        this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
+    }
+    
+    @Required
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
+    }
+    
+    @Required
+    public void setContactDao(ContactDao contactDao) {
+        this.contactDao = contactDao;
+    }
+
+    @Required
+    public void setRphDao(RawPointHistoryDao rphDao) {
+        this.rphDao = rphDao;
+    }
+}

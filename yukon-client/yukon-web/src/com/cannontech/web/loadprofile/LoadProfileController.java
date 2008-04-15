@@ -2,9 +2,7 @@ package com.cannontech.web.loadprofile;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -30,9 +28,8 @@ import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
-import com.cannontech.core.service.LongLoadProfileService;
-import com.cannontech.core.service.LongLoadProfileService.ProfileRequestInfo;
-import com.cannontech.core.service.impl.LongLoadProfileServiceEmailCompletionCallbackImpl;
+import com.cannontech.core.service.LoadProfileService;
+import com.cannontech.core.service.impl.LoadProfileServiceEmailCompletionCallbackImpl;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -44,7 +41,7 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.util.JsonView;
 
 public class LoadProfileController extends MultiActionController {
-    private LongLoadProfileService loadProfileService;
+    private LoadProfileService loadProfileService;
     private EmailService emailService;
     private PaoDao paoDao;
     private DeviceDao deviceDao;
@@ -158,14 +155,14 @@ public class LoadProfileController extends MultiActionController {
             long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
             msgData.put("totalDays", Long.toString(numDays));
             
-            LongLoadProfileServiceEmailCompletionCallbackImpl callback = 
-                new LongLoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, deviceErrorTranslatorDao);
+            LoadProfileServiceEmailCompletionCallbackImpl callback = 
+                new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, deviceErrorTranslatorDao);
             
             callback.setUserContext(userContext);
             callback.setEmail(email);
             callback.setMessageData(msgData);
             
-            loadProfileService.initiateLongLoadProfile(device, 1, startDate, stopDate, callback, userContext);
+            loadProfileService.initiateLoadProfile(device, 1, startDate, stopDate, callback, userContext);
             
             mav.addObject("success", true);
             
@@ -228,7 +225,7 @@ public class LoadProfileController extends MultiActionController {
         
         LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
         // re-get pending
-        List<Map<String, String>> pendingRequests = getPendingRequests(device, yukonUser);
+        List<Map<String, String>> pendingRequests = loadProfileService.getPendingRequests(device, userContext);
         mav.addObject("pendingRequests", pendingRequests);
         
         return mav;
@@ -241,17 +238,16 @@ public class LoadProfileController extends MultiActionController {
             
 
             YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-            LiteYukonUser user = ServletUtil.getYukonUser(request);
 
             long requestId = ServletRequestUtils.getRequiredLongParameter(request, "requestId");
             int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
             LiteYukonPAObject device = paoDao.getLiteYukonPAO(deviceId);
 
             // remove
-            loadProfileService.removePendingLongLoadProfileRequest(device, requestId, userContext);
+            loadProfileService.removePendingLoadProfileRequest(device, requestId, userContext);
             
             // re-get pending
-            List<Map<String, String>> pendingRequests = getPendingRequests(device, user);
+            List<Map<String, String>> pendingRequests = loadProfileService.getPendingRequests(device, userContext);
             mav.addObject("pendingRequests", pendingRequests);
             
             
@@ -263,33 +259,13 @@ public class LoadProfileController extends MultiActionController {
         return mav;
     }
     
-    private List<Map<String, String>> getPendingRequests(LiteYukonPAObject device,  LiteYukonUser user){
-        
-        List<Map<String,String>> pendingRequests = new ArrayList<Map<String, String>>();
-        Collection<ProfileRequestInfo> loadProfileRequests = loadProfileService.getPendingLongLoadProfileRequests(device);
-        for (ProfileRequestInfo info : loadProfileRequests) {
-            HashMap<String, String> data = new HashMap<String, String>();
-            
-            data.put("email", info.runner.toString());
-            data.put("from", cmdDateFormat.format(info.from));
-            data.put("to", cmdDateFormat.format(info.to));
-            data.put("command", info.request.getCommandString());
-            data.put("requestId", Long.toString(info.request.getUserMessageID()));
-            pendingRequests.add(data);
-        }
-        
-        return pendingRequests;
-        
-    }
-        
-        
     @Required
     public void setEmailService(EmailService emailService) {
         this.emailService = emailService;
     }
 
     @Required
-    public void setLoadProfileService(LongLoadProfileService loadProfileService) {
+    public void setLoadProfileService(LoadProfileService loadProfileService) {
         this.loadProfileService = loadProfileService;
     }
 

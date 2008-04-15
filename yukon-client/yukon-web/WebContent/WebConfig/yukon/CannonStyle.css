@@ -75,3 +75,8 @@ a.Link4:hover {color: #0066CC}
 .breadCrumbs a {
 	color: #f90;
 }
+
+.smallBoldLabel {
+   font-size:11px;
+   font-weight:bold;
+ }

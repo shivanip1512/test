@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.cannontech.common.chart.model.AttributeGraphType;
+import com.cannontech.common.chart.model.ChartInterval;
 import com.cannontech.common.chart.model.ChartPeriod;
 import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.device.YukonDevice;
@@ -124,6 +125,10 @@ public class TrendWidget extends WidgetControllerBase {
             cachingWidgetParameterGrabber.removeFromCache("startDateParam");
             cachingWidgetParameterGrabber.removeFromCache("stopDateParam");
         }
+        
+        ChartPeriod periodEnum = ChartPeriod.valueOf(period);
+        ChartInterval chartInteval = periodEnum.getChartUnit(startDate, stopDate);
+        
 
         // GET DATES STRINGS
         String startDateStr = dateFormattingService.formatDate(startDate, DateFormattingService.DateFormatEnum.DATE, userContext);
@@ -151,6 +156,7 @@ public class TrendWidget extends WidgetControllerBase {
         mav.addObject("attributeGraphType", attributeGraphType);
         mav.addObject("availableAttributeGraphs", availableAttributeGraphs);
         mav.addObject("period", period);
+        mav.addObject("interval", chartInteval);
         mav.addObject("startDate", startDateStr);
         mav.addObject("stopDate", stopDateStr);
         mav.addObject("graphType", graphType);

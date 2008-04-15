@@ -1,6 +1,6 @@
 
 
-function longLoadProfile_display(divId,profileRequestOrigin) {
+function loadProfile_display(divId,profileRequestOrigin) {
   var holder = $(divId + '_holder');
   if (holder.visible()) {
     holder.hide();
@@ -27,7 +27,7 @@ function longLoadProfile_display(divId,profileRequestOrigin) {
       // fill in pending section
       json.pendingRequests.each(function(req) {
         var liEl = document.createElement('li');
-        liEl.innerHTML = req.from + ' - ' + req.to + ' <br>Requested by: ' + req.email + ' <a href="javascript:void(0);' + " onclick=longLoadProfile_cancel('" + divId + "'," + req.requestId + ",'" + profileRequestOrigin + "');" + '">Cancel</a>';
+        liEl.innerHTML = req.from + ' - ' + req.to + ' <br>Requested by: ' + req.email + ' <a href="javascript:void(0);' + " onclick=loadProfile_cancel('" + divId + "'," + req.requestId + ",'" + profileRequestOrigin + "');" + '">Cancel</a>';
         liEl.setAttribute('title', req.requestId + ": \"" + req.command + "\"");
         listEl.appendChild(liEl);
       });
@@ -51,7 +51,7 @@ function longLoadProfile_display(divId,profileRequestOrigin) {
   new Ajax.Request(url, {'method': 'post', 'onSuccess': onDisplayComplete, 'onFailure': onDisplayFailure, 'parameters': args});
 }  
 
-function longLoadProfile_cancel(divId,requestId,profileRequestOrigin) {
+function loadProfile_cancel(divId,requestId,profileRequestOrigin) {
 
 	var onCancelFailure = function(transport, json) {
     	alert("There was an error canceling the profile collection:\n" + transport.responseText);
@@ -73,11 +73,11 @@ function longLoadProfile_cancel(divId,requestId,profileRequestOrigin) {
 	var url = '/spring/loadProfile/cancelLoadProfile';
   	new Ajax.Request(url, {'method': 'post', 'onComplete': onCancelComplete, 'onFailure': onCancelFailure, 'parameters': args});
   	
-  	longLoadProfile_display(divId,profileRequestOrigin)
+  	loadProfile_display(divId,profileRequestOrigin)
 }
 
 
-function longLoadProfile_start(divId,profileRequestOrigin) {
+function loadProfile_start(divId,profileRequestOrigin) {
   var onStartFailure = function(transport, json) {
     alert("There was an error starting the profile collection:\n" + transport.responseText);
     $(divId + '_startButton').enabled = true;

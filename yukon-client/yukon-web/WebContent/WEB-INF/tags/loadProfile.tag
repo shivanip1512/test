@@ -14,18 +14,18 @@
 
 <cti:uniqueIdentifier prefix="llp_" var="thisId"/>
 
-<cti:includeScript link="/JavaScript/longLoadProfile.js"/>
-<a style="position:relative;" class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}','${profileRequestOrigin}')"><c:if test="${isReadable}"><jsp:doBody/></c:if></a>
+<cti:includeScript link="/JavaScript/loadProfile.js"/>
+<a style="position:relative;" class="${styleClass}" href="javascript:loadProfile_display('${thisId}','${profileRequestOrigin}')"><c:if test="${isReadable}"><jsp:doBody/></c:if></a>
 <div style="position:relative;z-index:2;">
 <span id="${thisId}_indicator" style="visibility:hidden"><img src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>"></span>
-<div id="${thisId}_holder" style="display:none; position:absolute; right: 0px; top: 5px; background-color: white; padding: .5em; border: 1px #888 solid;" class="longLoadProfileHolder">
+<div id="${thisId}_holder" style="display:none; position:absolute; right: 0px; top: 5px; background-color: white; padding: .5em; border: 1px #888 solid;">
 <input id="${thisId}_startOffset" type="hidden" value="${startOffset}">
 <input id="${thisId}_deviceId" type="hidden" value="${deviceId}">
   
   <table> 	
 	<tr>
-  		<th colspan="3">Collect Long Load Profile </th>
-  		<th> <a class="${styleClass}" href="javascript:longLoadProfile_display('${thisId}','${profileRequestOrigin}')">close</a> </th>
+  		<th colspan="3">Collect Load Profile </th>
+  		<th> <a class="${styleClass}" href="javascript:loadProfile_display('${thisId}','${profileRequestOrigin}')">close</a> </th>
   	</tr>
     <tr>
     	<td>
@@ -60,7 +60,7 @@
 			<input id="${thisId}_email" type="text" size="40">
 		</td>
 	    <td>
-			<button id="${thisId}_startButton" type="button" onclick="longLoadProfile_start('${thisId}','${profileRequestOrigin}')">Start</button>
+			<button id="${thisId}_startButton" type="button" onclick="loadProfile_start('${thisId}','${profileRequestOrigin}')">Start</button>
 		</td>
     </tr>
     <tr>

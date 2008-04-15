@@ -474,7 +474,7 @@ for (int i = 0; i < 60; i=i+5) {
  					<input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
  				</td>
               <td class="bottomLink">
-                  <tags:longLoadProfile isReadable="true" styleClass="breadCrumbs" deviceId="${deviceId}" profileRequestOrigin="LLP">Schedule Load Profile Request</tags:longLoadProfile>
+                  <tags:loadProfile isReadable="true" styleClass="breadCrumbs" deviceId="${deviceId}" profileRequestOrigin="LLP">Schedule Load Profile Request</tags:loadProfile>
                 </td>
             </tr>               
 	  	</table>								  

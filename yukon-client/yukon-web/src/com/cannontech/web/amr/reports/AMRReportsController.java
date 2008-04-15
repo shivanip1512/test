@@ -33,6 +33,13 @@ public class AMRReportsController extends MultiActionController  {
         
         setupArchivedDataReportMav(request, mav);
         
+        // additional info needed to create a bread crumb link back to HBC
+        mav.addObject("analyze", ServletRequestUtils.getRequiredStringParameter(request, "analyze"));
+        mav.addObject("deviceId", ServletRequestUtils.getRequiredStringParameter(request, "deviceId"));
+        mav.addObject("getReportStartDate", ServletRequestUtils.getRequiredStringParameter(request, "getReportStartDate"));
+        mav.addObject("getReportStopDate", ServletRequestUtils.getRequiredStringParameter(request, "getReportStopDate"));
+        mav.addObject("chartRange", ServletRequestUtils.getRequiredStringParameter(request, "chartRange"));
+        
         return mav;
     }
     

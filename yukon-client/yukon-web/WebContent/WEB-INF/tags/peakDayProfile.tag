@@ -6,24 +6,25 @@
 <%@ attribute name="profileRequestOrigin" required="true" type="java.lang.String"%>
 <%@ attribute name="isReadable" required="true" type="java.lang.Boolean"%>
 <%@ attribute name="availableDaysAfterPeak" required="true" type="java.util.List"%>
+<%@ attribute name="email" required="false" type="java.lang.String"%>
 
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 
 <cti:uniqueIdentifier prefix="pdp_" var="id"/>
-<cti:includeScript link="/JavaScript/longLoadProfile.js"/>
+<cti:includeScript link="/JavaScript/loadProfile.js"/>
 <cti:includeScript link="/JavaScript/peakDayProfile.js"/>
 
 <%-- The link --%>
 <c:if test="${isReadable}">
-    <a style="position:relative;" class="${styleClass}" href="javascript:peakDayProfile_toggleDisplay('${id}')"><jsp:doBody/></a>
+    <a class="${styleClass}" href="javascript:peakDayProfile_toggleDisplay('${id}')"><jsp:doBody/></a>
 </c:if>
 
-<div style="position:relative;z-index:2;">
-<div id="${id}_holder" style="width:380px; display:none; position:absolute; left:-60px; bottom:5px; background-color:white; padding:.5em; border:1px #888 solid;">
+<div style="position:relative;z-index:2;display:inline;">
+<div id="${id}_holder" style="width:420px; display:none; position:absolute; left:-60px; bottom:5px; background-color:white; padding:.5em; border:1px #888 solid;">
     
-    <div style="padding-bottom: 6px; text-align:right;">
+    <div style="padding-bottom:6px;text-align:right;">
         <a class="${styleClass}" href="javascript:peakDayProfile_toggleDisplay('${id}', '${profileRequestOrigin}');">Close</a>
     </div>
     
@@ -70,20 +71,11 @@
                 <table class="noStyle">
                     <tr>
                         <td nowrap>
-                            Email: <input id="${id}_email" type="text" size="32">
+                            Email: <input id="${id}_email" value="${email}" type="text" size="32">
                         </td>
                         <td>
-                            <button id="${id}_startButton" type="button" onclick="peakDayProfile_start('${id}', '${profileRequestOrigin}')">Start</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                              <div id="${id}_errors" class="formErrorSummary"></div>
-                              <div id="${id}_pendingHolder" style="display:none">
-                              <tags:hideReveal title="Pending requests in progress" showInitially="true">
-                                <ol id="${id}_pendingList" style="margin: 0 0 10px 0; padding: 0 0 0 40px" ></ol>
-                              </tags:hideReveal>
-                              </div>
+                            <input type="button" id="${id}_startButton" value="Start" onclick="peakDayProfile_start('${id}', '${profileRequestOrigin}')">
+                            <img id="${id}_startImg" style="display:none;" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
                         </td>
                     </tr>
                 </table>
