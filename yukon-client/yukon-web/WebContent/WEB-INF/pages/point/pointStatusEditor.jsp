@@ -99,6 +99,32 @@
 						value="#{ptEditorForm.pointBase.pointStatus.stateOneControl}" 
 						required="true" maxlength="100" styleClass="char64Label" />
                 </x:panelGrid>
+                
+                <x:htmlTag value="br"/>
+            
+            <x:htmlTag value="fieldset" styleClass="fieldSet">
+                <x:htmlTag value="legend"><x:outputText value="Stale Data"/></x:htmlTag>
+                
+                <h:selectBooleanCheckbox id="enableStaleData" onclick="submit();"
+                            valueChangeListener="#{ptEditorForm.staleData.enableClick}"
+                            value="#{ptEditorForm.staleData.enabled}"
+                            immediate="true" />
+                            
+                <x:outputLabel for="enableStaleData" value="Enable" title="The first limit that can be set for this point, used to determine if an alarm condition is active" />
+                
+                <x:htmlTag value="br"/>
+                <x:panelGrid columns="2">
+                    <x:outputLabel for="staleDataTime" value="Time in Minutes:"/>
+                    <x:inputText id="staleDataTime" value="#{ptEditorForm.staleData.time}" disabled="#{!ptEditorForm.staleData.enabled}">
+                        <f:validateLongRange minimum="0" maximum="99999999" />
+                    </x:inputText>
+                    
+                    <x:outputLabel for="staleDataUpdateStyle" value="Update Style:"/>
+                    <x:selectOneMenu id="staleDataUpdateStyle" value="#{ptEditorForm.staleData.updateStyle}" disabled="#{!ptEditorForm.staleData.enabled}">
+                        <f:selectItems value="#{ptEditorForm.staleData.updateStyles}"/>
+                    </x:selectOneMenu>
+                </x:panelGrid>
+            </x:htmlTag>
 			</h:column>
 		</h:panelGrid>
 	</x:htmlTag>
