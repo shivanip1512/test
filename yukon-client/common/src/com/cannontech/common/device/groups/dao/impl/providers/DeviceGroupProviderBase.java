@@ -53,7 +53,7 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     public DeviceGroup getGroup(DeviceGroup base, String groupName) {
         List<? extends DeviceGroup> childGroups = getChildGroups(base);
         for (DeviceGroup group : childGroups) {
-            if (group.getName().equals(groupName)) {
+            if (group.getName().equalsIgnoreCase(groupName)) {
                 return group;
             }
         }

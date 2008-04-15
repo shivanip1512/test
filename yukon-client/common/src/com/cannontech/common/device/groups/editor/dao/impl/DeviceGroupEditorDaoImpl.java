@@ -195,7 +195,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("select dg.*");
         sql.append("from DeviceGroup dg");
-        sql.append("where dg.parentdevicegroupid = ? and dg.groupname = ?");
+        sql.append("where dg.parentdevicegroupid = ? and lower(dg.groupname) = lower(?)");
         PartialDeviceGroupRowMapper mapper = new PartialDeviceGroupRowMapper();
         PartialDeviceGroup group = null;
         try{
@@ -458,7 +458,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         if (count == 0) {
             sql.append("where dg.parentdevicegroupid is null");
         } else {
-            sql.append("where dg.groupname = ?");
+            sql.append("where lower(dg.groupname) = lower(?)");
             sql.append(" and dg.parentdevicegroupid = (", getRelativeGroupSql(count - 1, true), ")");
         }
         

@@ -869,9 +869,15 @@ public Object getValue(Object val)
     
     LiteYukonPAObject liteYuk = DaoFactory.getPaoDao().getLiteYukonPAO(dmg.getDeviceID());
     YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(liteYuk);
-    hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
-    hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, cycleGroup);
-    hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, alternateGroup);
+    
+    billingGroup = hacker.setGroup(FixedDeviceGroups.BILLINGGROUP, yukonDevice, billingGroup);
+    getJComboBoxBillingGroup().setSelectedItem(billingGroup);
+    
+    cycleGroup = hacker.setGroup(FixedDeviceGroups.COLLECTIONGROUP, yukonDevice, cycleGroup);
+    getCycleGroupComboBox().setSelectedItem(cycleGroup);
+    
+    alternateGroup = hacker.setGroup(FixedDeviceGroups.TESTCOLLECTIONGROUP, yukonDevice, alternateGroup);
+    getAlternateGroupComboBox().setSelectedItem(alternateGroup);
 
     if( meterNumber != null && meterNumber.length() > 0 ) {
 	    dmg.setMeterNumber( meterNumber );

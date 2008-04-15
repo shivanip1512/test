@@ -15,6 +15,7 @@ import com.cannontech.common.device.groups.dao.impl.providers.DeviceGroupProvide
 import com.cannontech.common.device.groups.dao.impl.providers.StaticDeviceGroupProvider;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.CaseInsensitiveMap;
 
 /**
  * This class serves as a delegation point between the DeviceGroupProviderDao
@@ -26,7 +27,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     private Map<DeviceGroupType, DeviceGroupProvider> providers;
     private StaticDeviceGroupProvider staticProvider;
-    private Map<String, DeviceGroup> systemGroupCache = new HashMap<String, DeviceGroup>();
+    private Map<String, DeviceGroup> systemGroupCache = new CaseInsensitiveMap<DeviceGroup>();
 
 
     public List<YukonDevice> getChildDevices(DeviceGroup group) {

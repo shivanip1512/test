@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
@@ -61,24 +62,12 @@ public class FixedDeviceGroupingHack {
         return result;
     }
     
-    public void setGroup(FixedDeviceGroups group, YukonDevice device, String groupName) {
+    public String setGroup(FixedDeviceGroups group, YukonDevice device, String groupName) {
         StoredDeviceGroup parentGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(group.getPrefix());
         
         stripFromGroup(parentGroup, device);
-        if (groupName == null) {
-            //TODO check if group is now empty
-//            SqlStatementBuilder sql = new SqlStatementBuilder();
-//            sql.append("delete from DeviceGroup");
-//            sql.append("where DeviceGroupId in (");
-//            sql.append("select dg.devicegroupid from DeviceGroup dg");
-//            sql.append("join DeviceGroupMember dgm on dg.DeviceGroupId = dgm.DeviceGroupId");
-//            sql.append("where dg.ParentDeviceGroupId = ?");
-//            sql.append("group by dg.DeviceGroupId");
-//            sql.append("having count(*) = 0");
-//            sql.append(")");
-//            
-//            jdbcTemplate.update(sql.toString(), parentGroup.getId());
-            return;
+        if (StringUtils.isEmpty(groupName)) {
+            return null;
         }
         
         String fullName = group.getGroup(groupName);
@@ -92,6 +81,8 @@ public class FixedDeviceGroupingHack {
         
         
         deviceGroupMemberEditorDao.addDevices(newGroup, Collections.singletonList(device));
+        
+        return newGroup.getName(); // not the full name because this is the hacker!
         
     }
     
