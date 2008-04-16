@@ -636,7 +636,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 
 				<td>
                     
-                    <cti:pointStatusColor pointId="<%=capBank.getStatusPointID()%>">
+                    <cti:capBankStateColor paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS_COLOR">
                         <a id="capbank_status_${thisCapBankId}"
                             <c:if test="${hasControl}">
                                 href="javascript:void(0);"
@@ -645,7 +645,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                         >
 					       <cti:capControlValue paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS"/>
                         </a>
-                    </cti:pointStatusColor>
+                    </cti:capBankStateColor>
                     
 				    <span id="opcount_span${thisCapBankId}" style="display: none;" >Op Count:
 					   <input type="text" id="opcount_${thisCapBankId}" maxlength="5" size="5"/>

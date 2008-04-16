@@ -600,6 +600,10 @@
         <property name="pointDataRegistrationService" ref="pointDataUpdateRegistrationService"/>
     </bean>
     
+    <bean id="capBankStateColorTagPrototype" class="com.cannontech.web.taglib.CapBankStateColorTag">
+        <property name="updaterService" ref="dataUpdaterService" />
+    </bean>
+    
     <bean id="customerAccountInfoTagPrototype" class="com.cannontech.web.stars.dr.taglib.CustomerAccountInfoTag">
         <property name="customerAccountDao" ref="customerAccountDao"/>
         <property name="contactDao" ref="contactDao"/>

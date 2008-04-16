@@ -25,6 +25,11 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
                 break;
             }
             
+            case CB_STATUS_COLOR : {
+                value = getCBStatusColor(latestValue, cbcDisplay);
+                break;
+            }
+            
             case CB_STATUS_MESSAGE : {
                 value = getCBStatusMessage(latestValue, cbcDisplay);
                 break;
@@ -138,6 +143,10 @@ public abstract class AbstractFormattingService<E extends StreamableCapObject> i
     }
     
     protected String getCBStatus(E latestValue, CBCDisplay cbcDisplay) {
+        throw new UnsupportedOperationException("Not supported at this level");
+    }
+    
+    protected String getCBStatusColor(E latestValue, CBCDisplay cbcDisplay) {
         throw new UnsupportedOperationException("Not supported at this level");
     }
     

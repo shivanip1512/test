@@ -549,6 +549,27 @@
   </tag>  
   
   <tag>
+    <name>capBankStateColor</name>
+    <tag-class>com.cannontech.web.taglib.CapBankStateColorTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+      <name>paoId</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>type</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+      <name>format</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
     <name>capControlValue</name>
     <tag-class>com.cannontech.web.updater.capcontrol.CapControlValueTag</tag-class>
     <body-content>empty</body-content>

@@ -1,0 +1,80 @@
+package com.cannontech.web.taglib;
+
+import java.io.IOException;
+
+import javax.servlet.jsp.JspException;
+import javax.servlet.jsp.JspWriter;
+
+import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Required;
+
+import com.cannontech.web.updater.DataType;
+import com.cannontech.web.updater.DataUpdaterService;
+import com.cannontech.web.updater.UpdateValue;
+
+@Configurable("capBankStateColorTagPrototype")
+public class CapBankStateColorTag extends YukonTagSupport {
+    private DataUpdaterService updaterService;
+    private int paoId;
+    private boolean isPaoIdSet;
+    private String type;
+    private boolean isTypeSet;
+    private String format;
+    
+    @Override
+    public void doTag() throws JspException ,IOException {
+        if (!isPaoIdSet) {
+            throw new JspException("paoId must be set");
+        }
+
+        if (!isTypeSet) {
+            throw new JspException("type must be set");
+        }
+        
+        DataType dataType = DataType.valueOf(type);
+        
+        String id = dataType + "/" + paoId + "/" + format;
+        UpdateValue value = updaterService.getFirstValue(id, getUserContext());
+        final String color = value.getValue();
+        
+        final StringBuilder beforeBodyBuilder = new StringBuilder();
+        beforeBodyBuilder.append("<span id=\"cannonColorUpdater_" + paoId + "\" style=\"color: ");
+        beforeBodyBuilder.append(color + " !important");
+        beforeBodyBuilder.append(";\" cannonColorUpdater=\"" + value.getFullIdentifier() + "\">");
+        String before = beforeBodyBuilder.toString(); 
+        
+        final StringBuilder afterBodyBuilder = new StringBuilder();
+        afterBodyBuilder.append("</span>\n");
+        afterBodyBuilder.append("<script type=\"text/javascript\" language=\"JavaScript\">\n");
+        afterBodyBuilder.append("   $('cannonColorUpdater_" + paoId + "').childElements().each(function(child) {\n");
+        afterBodyBuilder.append("       child.style.color = '" + color + "';\n");
+        afterBodyBuilder.append("   });\n");
+        afterBodyBuilder.append("</script>\n");
+        String after = afterBodyBuilder.toString();
+        
+        final JspWriter writer = getJspContext().getOut();
+        writer.print(before);
+        getJspBody().invoke(writer);
+        writer.print(after);
+    }
+
+    public void setPaoId(int paoId) {
+        isPaoIdSet = true;
+        this.paoId = paoId;
+    }
+    
+    public void setType(final String type) {
+        this.isTypeSet = true;
+        this.type = type;
+    }
+    
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    @Required
+    public void setUpdaterService(DataUpdaterService updaterService) {
+        this.updaterService = updaterService;
+    }
+    
+}

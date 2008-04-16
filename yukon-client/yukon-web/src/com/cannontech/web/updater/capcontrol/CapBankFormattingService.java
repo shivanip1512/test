@@ -32,6 +32,12 @@ public class CapBankFormattingService extends AbstractFormattingService<CapBankD
     }
     
     @Override
+    protected String getCBStatusColor(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
+        String value = cbcDisplay.getHTMLFgColor(latestValue);
+        return value;
+    }
+    
+    @Override
     protected String getCBStatusMessage(CapBankDevice latestValue, CBCDisplay cbcDisplay) {
         String value = (String) cbcDisplay.getCapBankValueAt(latestValue, CBCDisplay.CB_STATUS_POPUP);
         return value;
