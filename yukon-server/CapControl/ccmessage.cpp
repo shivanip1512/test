@@ -72,6 +72,21 @@ CtiCCMessage::CtiCCMessage(const string& message) :  _message(message)
 {
 }
 
+/*---------------------------------------------------------------------------
+    operator=
+---------------------------------------------------------------------------*/
+CtiCCMessage& CtiCCMessage::operator=(const CtiCCMessage& right)
+{
+
+    if( this != &right )
+    {
+        CtiMessage::operator=(right);
+        _message = right._message;
+    }
+
+    return *this;
+}
+
 
 /*===========================================================================
     CtiCCCommand
@@ -165,6 +180,7 @@ CtiCCCommand& CtiCCCommand::operator=(const CtiCCCommand& right)
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
         _command = right._command;
         _id = right._id;
     }
@@ -267,6 +283,8 @@ CtiCCCapBankMoveMsg& CtiCCCapBankMoveMsg::operator=(const CtiCCCapBankMoveMsg& r
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
+
         _permanentflag    = right._permanentflag    ;
         _oldfeederid      = right._oldfeederid      ;
         _capbankid        = right._capbankid        ;
@@ -338,6 +356,7 @@ CtiCCSubstationVerificationMsg& CtiCCSubstationVerificationMsg::operator=(const 
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
         _action           = right._action;
         _strategy         = right._strategy;
         _id               = right._id;
@@ -444,6 +463,7 @@ CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
         _logId      = right._logId;    
         _timeStamp  = right._timeStamp;
         _pointId    = right._pointId;  
@@ -545,6 +565,8 @@ CtiCCAreaMsg& CtiCCAreaMsg::operator=(const CtiCCAreaMsg& right)
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
+
         _msgInfoBitMask = right.getMsgInfoBitMask();
         if( _ccAreas != NULL &&
             _ccAreas->size() > 0 )
@@ -671,6 +693,8 @@ CtiCCSubstationBusMsg& CtiCCSubstationBusMsg::operator=(const CtiCCSubstationBus
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
+
         _msgInfoBitMask = right.getMsgInfoBitMask();
         if( _ccSubstationBuses != NULL &&
             _ccSubstationBuses->size() > 0 )
@@ -776,6 +800,8 @@ CtiCCCapBankStatesMsg& CtiCCCapBankStatesMsg::operator=(const CtiCCCapBankStates
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
+
         if( _ccCapBankStates != NULL &&
             _ccCapBankStates->size() > 0 )
         {
@@ -890,6 +916,8 @@ CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
+
         if( _ccGeoAreas != NULL &&
             _ccGeoAreas->size() > 0 )
         {
@@ -1001,6 +1029,8 @@ CtiCCSpecialAreasMsg& CtiCCSpecialAreasMsg::operator=(const CtiCCSpecialAreasMsg
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
+
         if( _ccSpecialAreas != NULL &&
             _ccSpecialAreas->size() > 0 )
         {
@@ -1144,6 +1174,7 @@ CtiCCSubstationsMsg& CtiCCSubstationsMsg::operator=(const CtiCCSubstationsMsg& r
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
         _msgInfoBitMask = right.getMsgInfoBitMask();
         if( _ccSubstations != NULL &&
             _ccSubstations->size() > 0 )
@@ -1270,6 +1301,7 @@ CtiPAOScheduleMsg& CtiPAOScheduleMsg::operator=(const CtiPAOScheduleMsg& right)
 {
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
         _scheduleId    = right._scheduleId;
     }
 
@@ -1354,8 +1386,10 @@ void CtiCCServerResponse::saveGuts(RWvostream& strm) const
 ---------------------------------------------------------------------------*/
 CtiCCServerResponse& CtiCCServerResponse::operator=(const CtiCCServerResponse& right)
 {
+
     if( this != &right )
     {
+        CtiCCMessage::operator=(right);
         response = right.response;
         responseType = right.responseType;
     }
