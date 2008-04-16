@@ -3,6 +3,10 @@ package com.cannontech.common.util;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * This class is a holder for data to be processed by a FormattingTemplateProcessor.
+ * In a JSP page, it can be rendered with the FormatTemplateTag.
+ */
 public class ResolvableTemplate {
     private String code = null;
     private Map<String, Object> data = new HashMap<String, Object>();

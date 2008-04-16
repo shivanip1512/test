@@ -3,5 +3,6 @@
 <properties>
 
 <entry key="yukon.common.alerts.alarm">{paoName} / {pointName}: {alarmText}</entry>
+<entry key="yukon.common.alerts.serverResponse">{responseText}</entry>
 
 </properties>
