@@ -9,6 +9,7 @@ package com.cannontech.yimp.importer;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -31,6 +32,7 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
@@ -320,7 +322,7 @@ public void runImport(List<ImportData> imps) {
                 log.error(logMsgPrefix + error);
                 errorMsg.add(error);
             } else {
-                if(name.indexOf(',') != -1) {
+                if(CtiUtilities.isContainsInvalidPaoNameCharacters(name)) {
                     String error = "Has a name that uses invalid characters.  ";
                     log.error(logMsgPrefix + error);
                     errorMsg.add(error);
@@ -390,11 +392,19 @@ public void runImport(List<ImportData> imps) {
                 log.error(logMsgPrefix + error);
                 errorMsg.add(error);
             }
+            
+            // COLLECTION GROUP
             if(StringUtils.isBlank(collectionGrp)) {
                 String error = "Has no collection group.  ";
                 log.warn(logMsgPrefix + error);
                 errorMsg.add(error);
-            } else {
+            } 
+            else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(collectionGrp)) {
+                String error = "Collection group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
+                log.warn(logMsgPrefix + error);
+                errorMsg.add(error);
+            } 
+            else {
                 try {
                     String fullGrpName = collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp();
                     collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
@@ -410,11 +420,19 @@ public void runImport(List<ImportData> imps) {
                     collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp());
                 }
             }
+            
+            // ALTERNATE GROUP
             if(StringUtils.isBlank(altGrp)) {
                 String error = "Has no alternate group.  ";
                 log.warn(logMsgPrefix + error);
                 errorMsg.add(error);
-            } else {
+            } 
+            else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(altGrp)) {
+                String error = "Alternate group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
+                log.warn(logMsgPrefix + error);
+                errorMsg.add(error);
+            } 
+            else {
                 try {
                     String fullGrpName = alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp();
                     alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
@@ -431,11 +449,19 @@ public void runImport(List<ImportData> imps) {
                 }
                 
             }
+            
+            // BILLING GROUP
             if(StringUtils.isBlank(billGrp)) {
                 String warning = "Has no billing group.  ";
                 log.warn(logMsgPrefix + warning);
                 //This is not an error.  Otherwise we could not be backwards compatible, but we should note it anyways in the log file.
-            } else {
+            }
+            else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(billGrp)) {
+                String error = "Billing group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
+                log.warn(logMsgPrefix + error);
+                errorMsg.add(error);
+            } 
+            else {
                 try {
                     String fullGrpName = billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup();
                     billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);

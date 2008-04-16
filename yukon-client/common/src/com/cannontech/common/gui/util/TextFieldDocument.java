@@ -61,6 +61,12 @@ public class TextFieldDocument extends javax.swing.text.PlainDocument
 		'"'	
 	};
 	
+	public static final char[] INVALID_CHARS_DEVICEGROUPNAME =
+    {
+	    '\\',
+	    '/'
+    };
+	
 	public static final char[] INVALID_CHARS_LMCONSTRAINTS =
 	{
 		'\'',
@@ -112,7 +118,7 @@ public TextFieldDocument( int maxLength, char[] nonvalidChars )
  */
 public boolean checkInputValue(String proposedValue) 
 {
-	if( proposedValue.length() <= maxCharCount
+	if( (proposedValue.length() <= maxCharCount || maxCharCount < 0)
 		 && isValidString(proposedValue) )
 	{
 		return true;

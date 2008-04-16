@@ -46,6 +46,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.database.data.lite.LiteComparators;
@@ -1775,6 +1776,16 @@ public static double convertTemperature(double temperature, String fromUnit, Str
                  defaultsMap.put(defaultsKey, otherMap.get(defaultsKey).toString());
              }
          }
+     }
+     
+     public static boolean isContainsInvalidPaoNameCharacters(String name) {
+         
+         return !StringUtils.containsNone(name, TextFieldDocument.INVALID_CHARS_PAO);
+     }
+     
+     public static boolean isContainsInvalidDeviceGroupNameCharacters(String name) {
+         
+         return !StringUtils.containsNone(name, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME);
      }
      
 }

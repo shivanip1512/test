@@ -1,15 +1,16 @@
 package com.cannontech.dbeditor.editor.device;
 
-import java.util.Iterator;
-import java.util.List;
-
-import javax.swing.*;
-import javax.swing.event.CaretListener;
-
-import java.awt.*;
+import java.awt.Font;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemListener;
 import java.awt.event.KeyListener;
+import java.util.Iterator;
+import java.util.List;
+
+import javax.swing.JOptionPane;
+import javax.swing.JTextArea;
+import javax.swing.event.CaretListener;
+import javax.swing.text.JTextComponent;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.service.FixedDeviceGroupingHack;
@@ -170,6 +171,10 @@ private javax.swing.JComboBox getAlternateGroupComboBox() {
 			alternateGroupComboBox.setPreferredSize(new java.awt.Dimension(200, 25));
 			alternateGroupComboBox.setEditable(true);
 			alternateGroupComboBox.setMinimumSize(new java.awt.Dimension(200, 25));
+			
+			JTextComponent tc = (JTextComponent)alternateGroupComboBox.getEditor().getEditorComponent();
+            tc.setDocument(new TextFieldDocument(-1, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME));
+			
             List<String> availableAlternateGroups = hacker.getGroups(FixedDeviceGroups.TESTCOLLECTIONGROUP);
             Iterator<String> iter = availableAlternateGroups.iterator();
             while(iter.hasNext()) {
@@ -314,6 +319,10 @@ private javax.swing.JComboBox getCycleGroupComboBox() {
 			ivjCycleGroupComboBox.setPreferredSize(new java.awt.Dimension(200, 25));
 			ivjCycleGroupComboBox.setEditable(true);
 			ivjCycleGroupComboBox.setMinimumSize(new java.awt.Dimension(200, 25));
+			
+			JTextComponent tc = (JTextComponent)ivjCycleGroupComboBox.getEditor().getEditorComponent();
+            tc.setDocument(new TextFieldDocument(-1, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME));
+			
             List<String> availableCollectionGroups = hacker.getGroups(FixedDeviceGroups.COLLECTIONGROUP);
             Iterator<String> iter = availableCollectionGroups.iterator();
             while(iter.hasNext()) {
@@ -457,6 +466,10 @@ private javax.swing.JComboBox getJComboBoxBillingGroup() {
 			ivjJComboBoxBillingGroup.setPreferredSize(new java.awt.Dimension(200, 25));
 			ivjJComboBoxBillingGroup.setEditable(true);
 			ivjJComboBoxBillingGroup.setMinimumSize(new java.awt.Dimension(200, 25));
+			
+			JTextComponent tc = (JTextComponent)ivjJComboBoxBillingGroup.getEditor().getEditorComponent();
+			tc.setDocument(new TextFieldDocument(-1, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME));
+			
             List<String> availableBillingsGroups = hacker.getGroups(FixedDeviceGroups.BILLINGGROUP);
             Iterator<String> iter = availableBillingsGroups.iterator();
             while(iter.hasNext()) {

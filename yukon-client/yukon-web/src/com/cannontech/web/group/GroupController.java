@@ -53,6 +53,7 @@ import com.cannontech.common.device.groups.service.AnyDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.CopyDeviceGroupService;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
@@ -392,7 +393,7 @@ public class GroupController extends MultiActionController implements Initializi
 
         // Make sure a new name was entered and doesn't contain slashes
         newGroupName = newGroupName.trim();
-        if (StringUtils.isEmpty(newGroupName) || (newGroupName.contains("\\")) || (newGroupName.contains("/"))) {
+        if (StringUtils.isEmpty(newGroupName) || CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(newGroupName)) {
             mav.addObject("errorMessage",
                           "You must enter a New Group Name.  Group names may not contain slashes.");
             return mav;
@@ -430,7 +431,7 @@ public class GroupController extends MultiActionController implements Initializi
 
             // Make sure a new name was entered and doesn't contain slashes
             childGroupName = childGroupName.trim();
-            if (StringUtils.isEmpty(childGroupName) || (childGroupName.contains("\\")) || (childGroupName.contains("/"))) {
+            if (StringUtils.isEmpty(childGroupName) || CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(childGroupName)) {
                 mav.addObject("errorMessage",
                               "You must enter a Sub Group Name.  Group names may not contain slashes.");
                 return mav;
