@@ -66,6 +66,8 @@ public:
     void restoreGuts(RWvistream&);
     void saveGuts(RWvostream&) const;
 
+    CtiCCMessage& operator=(const CtiCCMessage& right);
+
 private:
     string _message;
 };
