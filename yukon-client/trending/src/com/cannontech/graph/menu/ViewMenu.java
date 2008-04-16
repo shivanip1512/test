@@ -172,7 +172,7 @@ public javax.swing.JRadioButtonMenuItem getDefaultRadioButtonItem() {
 			ivjDefaultRadioButtonItem = new javax.swing.JRadioButtonMenuItem();
 			ivjDefaultRadioButtonItem.setName("DefaultRadioButtonItem");
 			ivjDefaultRadioButtonItem.setSelected(true);
-			ivjDefaultRadioButtonItem.setText("Default (By Serie)");
+			ivjDefaultRadioButtonItem.setText("Default (by Style)");
 			// user code begin {1}
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {

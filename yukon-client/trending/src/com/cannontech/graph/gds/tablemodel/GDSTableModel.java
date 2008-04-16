@@ -40,7 +40,7 @@ public class GDSTableModel extends javax.swing.table.AbstractTableModel
 		"Axis",
 		"Type",
 		"Multiplier",
-		"Renderer"
+		"Style"
 //		, "Setup"
 	};
 

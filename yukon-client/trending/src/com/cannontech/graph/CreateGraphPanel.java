@@ -1462,7 +1462,7 @@ public GraphDefinition showCreateGraphPanelDialog(java.awt.Frame parent)
 		
 	dialog.setModal(true);	
 	dialog.getContentPane().add(this);
-	dialog.setSize(parent.getWidth() - 50, 500);
+	dialog.setSize(parent.getWidth(), 500);
 	dialog.show();
 
 	getOkButton().removeActionListener(listener);
