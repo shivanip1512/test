@@ -18,12 +18,12 @@ public enum CapControlResponseType {
 	}
 	
 	public static CapControlResponseType getResponseTypeById(int id) throws UnsupportedDataTypeException{
-		switch(id) {
-			case CapControlServerResponse.COMMANDREFUSED_ID: 
-				return CommandRefused;
-			default:
-				break;
-		}
-		throw new UnsupportedDataTypeException(" Unsupported ResponseType: " + id);
+	    
+	    for(CapControlResponseType type : CapControlResponseType.values()) {
+	        if(type.getTypeId() == id) {
+	            return type;
+	        }
+	    }
+	    throw new IllegalArgumentException(" Unsupported ResponseType: " + id);
 	}
 }

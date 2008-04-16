@@ -7,8 +7,8 @@ public class CapControlServerResponse extends CapControlMessage{
 	/* This will needs to match the C++ ID's */
 	public static final int COMMANDREFUSED_ID = 1;
 	
-	String response;
-	CapControlResponseType responseType;
+	private String response;
+	private CapControlResponseType responseType;
 	
 	public CapControlServerResponse() {}
 

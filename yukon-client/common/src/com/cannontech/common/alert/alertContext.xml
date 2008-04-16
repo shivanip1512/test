@@ -31,8 +31,8 @@
     <bean id="capControlServerResponseAlertGenerator" class="com.cannontech.common.alert.serverResponse.capcontrol.CapControlServerResponseAlertGenerator"
           init-method="initialize">
         <property name="defCapControlConn" ref="cbcConnection"/>
+        <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="alertService" ref="alertService"/>
-        <property name="userCheckerFactory" ref="rolePropertyUserCheckerFactory"/>
     </bean>
        
     <bean id="alarmAlertClearHandler" class="com.cannontech.common.alert.alarms.AlarmAlertClearHandler">

@@ -1,23 +1,22 @@
 package com.cannontech.common.alert.serverResponse.capcontrol;
 
-import org.springframework.beans.factory.annotation.Required;
-
 import com.cannontech.common.alert.service.AlertService;
 import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.capcontrol.CapControlResponseType;
 import com.cannontech.message.capcontrol.CapControlServerResponse;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.roles.application.WebClientRole;
-import com.cannontech.user.checker.RolePropertyUserCheckerFactory;
+import com.cannontech.user.checker.SingleUserChecker;
 import com.cannontech.user.checker.UserChecker;
 import com.cannontech.yukon.IServerConnection;
 
 public class CapControlServerResponseAlertGenerator implements MessageListener {
     private AlertService alertService;
-    private RolePropertyUserCheckerFactory userCheckerFactory;
     private IServerConnection defCapControlConn;
+    private YukonUserDao yukonUserDao;
     
     
     public void initialize() {
@@ -27,13 +26,15 @@ public class CapControlServerResponseAlertGenerator implements MessageListener {
     @Override
     public void messageReceived(MessageEvent e) {
         Message in = e.getMessage();
+        String user = in.getUserName();
+        LiteYukonUser liteUser = yukonUserDao.getLiteYukonUser(user);
         if (in instanceof CapControlServerResponse) {
             CapControlServerResponse response = (CapControlServerResponse)in;
             if(response.getResponseType() == CapControlResponseType.CommandRefused) {
                 ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.alerts.serverResponse.CapControlServerResponseAlert");
                 resolvableTemplate.addData("responseText", response.getResponse());
                 CapControlServerResonseAlert alert = new CapControlServerResonseAlert(in.getTimeStamp(), resolvableTemplate);
-                UserChecker userChecker = userCheckerFactory.createPropertyChecker(WebClientRole.VIEW_ALARMS_AS_ALERTS);
+                UserChecker userChecker = new SingleUserChecker(liteUser);
                 alert.setUserChecker(userChecker);
                 
                 alertService.add(alert);
@@ -49,8 +50,8 @@ public class CapControlServerResponseAlertGenerator implements MessageListener {
         this.defCapControlConn = defCapControlConn;
     }
     
-    @Required
-    public void setUserCheckerFactory(RolePropertyUserCheckerFactory userCheckerFactory) {
-        this.userCheckerFactory = userCheckerFactory;
+    public void setYukonUserDao(YukonUserDao yukonUserDao) {
+        this.yukonUserDao = yukonUserDao;
     }
+    
 }
