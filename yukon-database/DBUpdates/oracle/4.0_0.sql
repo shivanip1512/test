@@ -523,6 +523,7 @@ begin
     end loop;
     close substation_curs;
 end;
+/
 /* @end-block */
 
 Create table mySubstation2
@@ -614,6 +615,7 @@ while (substation_curs2%found)
     end loop;
 close substation_curs2;
 end;
+/
 /* @end-block */
 
 alter table CCSUBAREAASSIGNMENT
@@ -1786,6 +1788,7 @@ begin
     end loop;
     close cbc_curs;
 end;
+/
 /* @end-block */
 
 
@@ -1822,6 +1825,7 @@ begin
     end loop;
     close cbc_curs;
 end;
+/
 /* @end-block */
 
 
@@ -1858,6 +1862,7 @@ begin
     end loop;
     close cbc_curs;
 end;
+/
 /* @end-block */
 
 
@@ -1894,6 +1899,7 @@ begin
     end loop;
     close cbc_curs;
 end;
+/
 /* @end-block */
 
 
@@ -1931,6 +1937,7 @@ begin
     end loop;
     close cbc_curs;
 end;
+/
 /* @end-block */
 
 
@@ -1967,6 +1974,7 @@ begin
     end loop;
     close cbc_curs;
 end;
+/
 /* @end-block */
 
 
@@ -2003,6 +2011,7 @@ begin
     end loop;
     close cbc_curs;
 end;
+/
 /* @end-block */
 
 
@@ -2040,6 +2049,7 @@ begin
     end loop;
     close cbc_curs;
 end;
+/
 /* @end-block */
 /* End YUK-5557 */
 

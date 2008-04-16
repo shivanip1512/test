@@ -386,6 +386,13 @@ public class UpdateDB
 					{
 					    // Checks to see if its an end block
 						if ( blockState ) {
+						    // Checks to see if the file is using a slash and skips to the next line
+	                        String trimmedToken = token.trim();
+						    if (trimmedToken.equals(DBMSDefines.PROCESS_COMMAND_CHARACTER)) {
+	                            continue;
+	                        }
+	                        
+	                        
                             blockState = !token.endsWith(DBMSDefines.END_BLOCK);
                             if(blockState) {
                                 updLine.getValue().append( token );

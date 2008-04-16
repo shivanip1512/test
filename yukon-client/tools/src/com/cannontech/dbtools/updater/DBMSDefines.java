@@ -7,14 +7,14 @@ package com.cannontech.dbtools.updater;
  */
 public interface DBMSDefines
 {
-	public static final String NAME_STATE				= "DBstate.txt";
-	public static final String NAME_VALID				= "valids.sql";
+	public static final String NAME_STATE			= "DBstate.txt";
+	public static final String NAME_VALID			= "valids.sql";
 	public static final String NAME_INVALID			= "invalids.txt";
-	public static final String META_TAG					= "@";
-	public static final String META_TOKEN				= " ";
+	public static final String META_TAG				= "@";
+	public static final String META_TOKEN			= " ";
 	
-	public static final String META_ERROR				= "error";
-	public static final String META_ERROR_FIX			= "errorfix";
+	public static final String META_ERROR			= "error";
+	public static final String META_ERROR_FIX		= "errorfix";
 	public static final String META_SUCCESS			= "success";
 	public static final String META_INCLUDE			= "include";
 
@@ -43,6 +43,7 @@ public interface DBMSDefines
     /*For use with T-SQL or PL/SQL transaction blocks*/
     public static final String START_BLOCK              = "/* @start-block */";
     public static final String END_BLOCK                = "/* @end-block */";
+    public static final String PROCESS_COMMAND_CHARACTER= "/";
 
 	/** What strings should be ignored by the App for all DBMS's */	
 	public static final String[] IGNORE_STRINGS =
