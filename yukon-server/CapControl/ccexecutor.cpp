@@ -1315,7 +1315,9 @@ void CtiCCCommandExecutor::SendTimeSync()
             }
 
             CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled."));
+            CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled.");
+            msg->setUser(_command->getUser());
+            CtiCCExecutor* executor = f.createExecutor(msg);
             executor->Execute();
             delete executor;
         }
@@ -1852,7 +1854,9 @@ void CtiCCCommandExecutor::SendAllCapBankCommands()
                         }
             
                         CtiCCExecutorFactory f;
-                        CtiCCExecutor* executor = f.createExecutor(new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled."));
+                        CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled.");
+                        msg->setUser(_command->getUser());
+                        CtiCCExecutor* executor = f.createExecutor(msg);
                         executor->Execute();
                         delete executor;
                     }
@@ -2036,7 +2040,9 @@ bool CtiCCCommandExecutor::checkForCommandRefusal(CtiCCFeeder* feeder)
             }
 
             CtiCCExecutorFactory f;
-            CtiCCExecutor* executor = f.createExecutor(new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Another bank is already in a Pending State."));
+            CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Another bank is already in a Pending State.");
+            msg->setUser(_command->getUser());
+            CtiCCExecutor* executor = f.createExecutor(msg);
             executor->Execute();
             delete executor;
 
@@ -4465,7 +4471,9 @@ void CtiCCCommandExecutor::ConfirmArea()
                 }
     
                 CtiCCExecutorFactory f;
-                CtiCCExecutor* executor = f.createExecutor(new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled."));
+                CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, "Special Area is not enabled.");
+                msg->setUser(_command->getUser());
+                CtiCCExecutor* executor = f.createExecutor(msg);
                 executor->Execute();
                 delete executor;
             }
