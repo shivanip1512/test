@@ -71,16 +71,16 @@ function executeCommandController(paoId, commandId, commandName, controlType, re
         'onSuccess': function (transport, result) {
             if (result) { 
                 if(result.success){
-                    display_status(cmd_name, "Success", "green");
+                    display_status(cmd_name, "Command Sent Successfully.", "green");
                 } else {
                     alert(result.errMessage);
                 }
             } else {
-                display_status(commandName, "Success", "green");    
+                display_status(commandName, "Command Sent Successfully.", "green");    
             }    
         },
         'onFailure': function () {
-            display_status(commandName, "Failed", "red"); 
+            display_status(commandName, "Command was not sent.", "red"); 
         }
     });
 }

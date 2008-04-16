@@ -15,7 +15,7 @@
 <![endif]--> 
 
 <div id="outerDiv" style="display: none; width: 200px; bottom: 0%; left: 0%; background: white;">
-    <cti:titledContainer title="Current Status">
+    <cti:titledContainer title="Command Message Status">
         <div align="center" id="cmd_msg_div"></div>
      </cti:titledContainer>
 </div>
