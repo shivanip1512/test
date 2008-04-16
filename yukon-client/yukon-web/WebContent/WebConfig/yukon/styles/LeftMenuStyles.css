@@ -21,6 +21,7 @@
     background-color: #0066CC;
     padding-bottom: .3em;
     vertical-align: top;
+    width: 3%;
 }
 
 .leftMenu .menuOption2 a:link {
@@ -45,6 +46,7 @@
 	color: #FFFFFF;
 	font-style: normal;
 	padding: .3em .3em .3em 1.0em;
+	white-space: nowrap;
 }
 
 .leftSelected2 {
@@ -57,6 +59,7 @@
 	color: #FFFFFF;
 	font-style: normal;
 	padding: .3em .3em .3em 1.7em;
+	white-space: nowrap;
 }
 
 table.contentTable {
