@@ -128,7 +128,7 @@
                         </c:set>
                         </c:when>
                         <c:otherwise>
-                            Previous Reports:
+                            
                         </c:otherwise>
                     </c:choose>
                     
