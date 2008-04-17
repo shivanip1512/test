@@ -12,20 +12,20 @@ import org.jfree.report.elementfactory.StaticShapeElementFactory;
 import org.jfree.report.elementfactory.TextFieldElementFactory;
 
 import com.cannontech.analysis.ReportFactory;
-import com.cannontech.analysis.tablemodel.MaxDailyOpsModel;
+import com.cannontech.analysis.tablemodel.CapBankRecentMaxDailyOpsModel;
 
-public class MaxDailyOpsReport extends YukonReportBase
+public class CapBankRecentMaxDailyOpsReport extends YukonReportBase
 {
     /**
      * Constructor for Report.
      * Data Base for this report type is instanceOf DatabaseModel.
      */
-    public MaxDailyOpsReport()
+    public CapBankRecentMaxDailyOpsReport()
     {
-        this(new MaxDailyOpsModel());
+        this(new CapBankRecentMaxDailyOpsModel());
     }
 
-    public MaxDailyOpsReport(MaxDailyOpsModel model) {
+    public CapBankRecentMaxDailyOpsReport(CapBankRecentMaxDailyOpsModel model) {
         super();
         setModel(model);
     }

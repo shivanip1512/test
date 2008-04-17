@@ -2,6 +2,7 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -14,7 +15,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 
 
-public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsAlarmsModel.ModelRow> implements CapControlFilterable {
+public class CapBankMaxOpsExceededModel extends BareDatedReportModelBase<CapBankMaxOpsExceededModel.ModelRow> implements CapControlFilterable {
     
     private List<ModelRow> data = new ArrayList<ModelRow>();
     private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
@@ -23,8 +24,9 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     private Set<Integer> subbusIds;
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
+    private String orderBy = "area";
     
-    public CapBankMaxOpsAlarmsModel() {
+    public CapBankMaxOpsExceededModel() {
     }
     
     static public class ModelRow {
@@ -33,7 +35,7 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     	public String subBusName;
     	public String feederName;
         public String capBankName;
-        public String maxDailyOps;
+        public String dateTime;
     }
     
     @Override
@@ -47,7 +49,7 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     }
     
     public String getTitle() {
-        return "Cap Bank Max Ops Alarms Report";
+        return "Cap Banks that Exceeded Max Daily Operations";
     }
 
     public int getRowCount() {
@@ -59,21 +61,19 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
         StringBuffer sql = buildSQLStatement();
         CTILogger.info(sql.toString()); 
         
-        jdbcOps.query(sql.toString(), new RowCallbackHandler() {
+        Timestamp[] dateRange = {new java.sql.Timestamp(getStartDate().getTime()), new java.sql.Timestamp(getStopDate().getTime())};
+        
+        jdbcOps.query(sql.toString(), dateRange, new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
                 
-                CapBankMaxOpsAlarmsModel.ModelRow row = new CapBankMaxOpsAlarmsModel.ModelRow();
+                CapBankMaxOpsExceededModel.ModelRow row = new CapBankMaxOpsExceededModel.ModelRow();
                 row.areaName = rs.getString("Area");
                 row.substationName = rs.getString("Substation");
                 row.subBusName = rs.getString("subBus");
                 row.feederName = rs.getString("feederName");
                 row.capBankName = rs.getString("capBankName");
-                row.maxDailyOps = rs.getString("maxDailyOps");
-                String additionalFlags = rs.getString("maxOpHitFlag");
-                String maxOpDisableFlag = rs.getString("maxopDisable");
-                if(additionalFlags.charAt(6) == 'Y' || maxOpDisableFlag.equalsIgnoreCase("Y")) {
-                    data.add(row);
-                }
+                row.dateTime = rs.getString("datetime");
+                data.add(row);
             }
         });
         
@@ -81,21 +81,28 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     }
     
     public StringBuffer buildSQLStatement() {
-        StringBuffer sql = new StringBuffer ("select yp4.paoname Area,  yp3.paoname Substation, yp2.paoname subBus, ");
-        sql.append("yp1.paoname feederName, yp.paoname capBankName, c.maxdailyops, c.maxopDisable maxopDisable, ");
-        sql.append("dcb.additionalflags maxOpHitFlag ");
-        sql.append("from yukonpaobject yp, ");
+        StringBuffer sql = new StringBuffer ("select ");
+        sql.append("yp4.paoname Area ");
+        sql.append(", yp3.paoname Substation ");
+        sql.append(", yp2.paoname subBus ");
+        sql.append(", yp1.paoname feederName ");
+        sql.append(", yp.paoname capBankName ");
+        sql.append(", sl.datetime dateTime");
+        sql.append(", sl.description ");
+        sql.append("from systemlog sl, ");
+        sql.append("yukonpaobject yp, ");
         sql.append("yukonpaobject yp1, ");
         sql.append("yukonpaobject yp2, ");
         sql.append("yukonpaobject yp3, ");
         sql.append("yukonpaobject yp4, ");
-        sql.append("dynamiccccapbank dcb, ");
-        sql.append("capbank c,  ");
+        sql.append("capbank c, ");
+        sql.append("point p, ");
         sql.append("ccfeederbanklist fb, ");
         sql.append("ccfeedersubassignment fs, ");
         sql.append("ccsubstationsubbuslist ss, ");
         sql.append("ccsubareaassignment sa ");
-        sql.append("where yp.paobjectid = dcb.capbankid ");
+        sql.append("where ");
+        sql.append("yp.paobjectid = c.deviceid ");
         sql.append("and sa.substationbusid = ss.substationid ");
         sql.append("and ss.substationbusid = fs.substationbusid ");
         sql.append("and sa.substationbusid = ss.substationid ");
@@ -105,33 +112,36 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
         sql.append("and fs.feederid = fb.feederid ");
         sql.append("and yp1.paobjectid = fb.feederid ");
         sql.append("and c.deviceid = fb.deviceid ");
-        sql.append("and yp.paobjectid = c.deviceid ");
-        sql.append("and c.maxdailyops > 0 ");
+        sql.append("and sl.pointid = p.pointid ");
+        sql.append("and p.paobjectid = c.deviceid ");
+        sql.append("and p.pointoffset = 1 and p.pointtype = 'analog' ");
+        sql.append("and sl.description like '%capbank exceeded%' ");
+        sql.append("and (sl.datetime >= ? and sl.datetime < ?)");
         
         String result = null;
         
         if(capBankIds != null && !capBankIds.isEmpty()) {
-            result = "c.deviceid in ( ";
+            result = "yp.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(capBankIds);
             result += wheres;
             result += " ) ";
         }else if(feederIds != null && !feederIds.isEmpty()) {
-            result = "fb.feederid in ( ";
+            result = "yp1.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(feederIds);
             result += wheres;
             result += " ) ";
         }else if(subbusIds != null && !subbusIds.isEmpty()) {
-            result = "fs.substationbusid in ( ";
+            result = "yp2.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
             result += wheres;
             result += " ) ";
         }else if(substationIds != null && !substationIds.isEmpty()) {
-            result = "ss.substationid in ( ";
+            result = "yp3.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
             result += wheres;
             result += " ) ";
         }else if(areaIds != null && !areaIds.isEmpty()) {
-            result = "sa.areaid in ( ";
+            result = "yp4.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
@@ -140,6 +150,20 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
         if (result != null) {
             sql.append(" and ");
             sql.append(result);
+        }
+        
+        if(orderBy.equalsIgnoreCase("Area")) {
+            sql.append("order by Area ");
+        }else if (orderBy .equalsIgnoreCase("Substation")) {
+            sql.append("order by substation ");
+        }else if (orderBy .equalsIgnoreCase("Substation Bus")) {
+            sql.append("order by subBus ");
+        }else if (orderBy .equalsIgnoreCase("Feeder")) {
+            sql.append("order by feederName ");
+        }else if (orderBy .equalsIgnoreCase("Cap Bank")) {
+            sql.append("order by capBankName ");
+        }else if (orderBy .equalsIgnoreCase("Date/Time")) {
+            sql.append("order by dateTime ");
         }
         
         return sql;
@@ -163,6 +187,10 @@ public class CapBankMaxOpsAlarmsModel extends BareReportModelBase<CapBankMaxOpsA
     
     public void setAreaIdsFilter(Set<Integer> areaIds) {
         this.areaIds = areaIds;
+    }
+    
+    public void setOrderBy(String order_) {
+        this.orderBy = order_;
     }
     
 }

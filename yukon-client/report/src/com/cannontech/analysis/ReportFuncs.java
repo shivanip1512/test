@@ -37,7 +37,7 @@ import com.cannontech.analysis.report.LGAccountingReport;
 import com.cannontech.analysis.report.LPDataSummaryReport;
 import com.cannontech.analysis.report.LPSetupDBReport;
 import com.cannontech.analysis.report.LoadControlVerificationReport;
-import com.cannontech.analysis.report.MaxDailyOpsReport;
+import com.cannontech.analysis.report.CapBankRecentMaxDailyOpsReport;
 import com.cannontech.analysis.report.MeterOutageCountReport;
 import com.cannontech.analysis.report.MeterOutageReport;
 import com.cannontech.analysis.report.MeterReadReport;
@@ -76,7 +76,7 @@ import com.cannontech.analysis.tablemodel.LPDataSummaryModel;
 import com.cannontech.analysis.tablemodel.LPSetupDBModel;
 import com.cannontech.analysis.tablemodel.LoadControlVerificationModel;
 import com.cannontech.analysis.tablemodel.LoadGroupModel;
-import com.cannontech.analysis.tablemodel.MaxDailyOpsModel;
+import com.cannontech.analysis.tablemodel.CapBankRecentMaxDailyOpsModel;
 import com.cannontech.analysis.tablemodel.MeterOutageCountModel;
 import com.cannontech.analysis.tablemodel.MeterOutageModel;
 import com.cannontech.analysis.tablemodel.MeterReadModel;
@@ -200,8 +200,8 @@ public class ReportFuncs
             returnVal = new HECO_CustomerMonthlyBillingSettlementReport();
         else if( model instanceof HECO_DSMISModel)
             returnVal = new HECO_DSMISReport();             
-        else if( model instanceof MaxDailyOpsModel)
-            returnVal = new MaxDailyOpsReport();
+        else if( model instanceof CapBankRecentMaxDailyOpsModel)
+            returnVal = new CapBankRecentMaxDailyOpsReport();
         else if( model instanceof ScheduledMeterReadModel)
             returnVal = new ScheduledMeterReadReport();
         else if( model instanceof RepeaterRoleCollisionModel)

@@ -13,7 +13,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 
-public class MaxDailyOpsModel extends ReportModelBase {
+public class CapBankRecentMaxDailyOpsModel extends ReportModelBase {
     
     /** Number of columns */
     protected final int NUMBER_COLUMNS = 7;
@@ -52,7 +52,7 @@ public class MaxDailyOpsModel extends ReportModelBase {
     /**
      * Default Constructor
      */
-    public MaxDailyOpsModel()
+    public CapBankRecentMaxDailyOpsModel()
     {
         super();
         setFilterModelTypes(new ReportFilter[]{
