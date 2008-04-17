@@ -35,6 +35,7 @@ public class FailureCRSToSAM_PTJ extends DBPersistent {
     private String meterNumber;
     private String errorMsg;
     private Date datetime; 
+    private String siteNumber;
 
     public static final String CONSTRAINT_COLUMNS[] = { "PTJID" };
 
@@ -42,7 +43,7 @@ public class FailureCRSToSAM_PTJ extends DBPersistent {
     												"ConsumptionType", "ServUtilityType", "Notes", "StreetAddress1", "StreetAddress2", "CityName",
     												"StateCode", "ZipCode", "FirstName", "LastName", "HomePhone", "WorkPhone", 
     												"CRSContactPhone", "CRSLoggedUser", "PresenceRequired", "AirConditioner",
-    												"WaterHeater", "ServiceNumber", "MeterNumber", "ErrorMsg", "DateTime"};
+    												"WaterHeater", "ServiceNumber", "MeterNumber", "ErrorMsg", "DateTime", "SiteNumber"};
 
     public static final String TABLE_NAME = "FailureCRSToSAM_PTJ";
 
@@ -77,6 +78,7 @@ public FailureCRSToSAM_PTJ(CRSToSAM_PTJ crsToSam_ptj) {
     setWaterHeater( crsToSam_ptj.getWaterHeater() );
     setServiceNumber( crsToSam_ptj.getServiceNumber());
     setMeterNumber( crsToSam_ptj.getMeterNumber() );
+    setSiteNumber( crsToSam_ptj.getSiteNumber() );
 }
 
 public void add() throws java.sql.SQLException 
@@ -84,7 +86,7 @@ public void add() throws java.sql.SQLException
 	Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getPTJType(), getTimestamp(), getConsumptionType(), 
     		getServUtilityType(), getNotes(), getStreetAddress1(), getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), 
     		getLastName(),getHomePhone(), getWorkPhone(), getCRSContactPhone(), getCRSLoggedUser(), getPresenceRequired(), 
-    		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber(), getErrorMsg(), getDatetime()};
+    		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber(), getErrorMsg(), getDatetime(), getSiteNumber()};
 
     add( TABLE_NAME, setValues );
 }
@@ -128,7 +130,8 @@ public void retrieve() throws java.sql.SQLException
         setServiceNumber( (String) results[21] );
         setMeterNumber( (String) results[22] );
         setErrorMsg( (String) results[23] );
-        setDatetime( (Date) results[24] );            
+        setDatetime( (Date) results[24] );
+        setSiteNumber( (String) results[25]);
     }
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -138,7 +141,7 @@ public void update() throws java.sql.SQLException
 	Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getPTJType(), getTimestamp(), getConsumptionType(), 
     		getServUtilityType(), getNotes(), getStreetAddress1(), getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), 
     		getLastName(),getHomePhone(), getWorkPhone(), getCRSContactPhone(), getCRSLoggedUser(), getPresenceRequired(), 
-    		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber(), getErrorMsg(), getDatetime()};
+    		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber(), getErrorMsg(), getDatetime(), getSiteNumber()};
     
     Object constraintValues[] = { getPTJID() };
 
@@ -186,6 +189,7 @@ public static ArrayList getAllCurrentFailurePTJEntries()
                 currentEntry.setMeterNumber( stmt.getRow(i)[23].toString());
                 currentEntry.setErrorMsg(stmt.getRow(i)[24].toString());
                 currentEntry.setDatetime(new Date(((java.sql.Timestamp)stmt.getRow(i)[25]).getTime()));
+                currentEntry.setSiteNumber( stmt.getRow(i)[26].toString());
                 
                 changes.add(currentEntry);
             }
@@ -293,6 +297,14 @@ public String getMeterNumber() {
 
 public void setMeterNumber(String meterNumber) {
 	this.meterNumber = meterNumber;
+}
+
+public String getSiteNumber() {
+    return siteNumber;
+}
+
+public void setSiteNumber(String siteNumber) {
+    this.siteNumber = siteNumber;
 }
 
 public String getNotes() {

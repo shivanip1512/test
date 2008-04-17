@@ -25,14 +25,15 @@ public class FailureCRSToSAM_PremMeterChg extends DBPersistent {
     private String oldMeterNumber;  
     private String newMeterNumber;
     private String errorMsg;
-    private Date datetime; 
+    private Date datetime;
+    private String siteNumber;
 
     public static final String CONSTRAINT_COLUMNS[] = { "ChangeID" };
 
     public static final String SETTER_COLUMNS[] = { "PremiseNumber","NewDebtorNumber", "TransID", "StreetAddress1", "StreetAddress2",
                                                     "CityName", "StateCode", "ZipCode", "FirstName", "LastName",
                                                     "HomePhone", "WorkPhone", "OldMeterNumber", "NewMeterNumber",
-                                                    "ErrorMsg", "Datetime"};
+                                                    "ErrorMsg", "Datetime", "SiteNumber"};
 
     public static final String TABLE_NAME = "FailureCRSToSAM_PremMeterChg";
 
@@ -58,13 +59,14 @@ public FailureCRSToSAM_PremMeterChg(CRSToSAM_PremiseMeterChange premMeterChange)
     this.workPhone = premMeterChange.getWorkPhone();
     this.oldMeterNumber = premMeterChange.getOldMeterNumber();
     this.newMeterNumber = premMeterChange.getNewMeterNumber();
+    this.siteNumber = premMeterChange.getSiteNumber();
 }
 
 public void add() throws java.sql.SQLException 
 {
     Object setValues[] = { getChangeID(), getPremiseNumber(), getNewDebtorNumber(), getTransID(), getStreetAddress1(),
     	getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), getLastName(), getHomePhone(), 
-    	getWorkPhone(), getOldMeterNumber(), getNewMeterNumber(), getErrorMsg(), getDatetime()};
+    	getWorkPhone(), getOldMeterNumber(), getNewMeterNumber(), getErrorMsg(), getDatetime(), getSiteNumber()};
 
     add( TABLE_NAME, setValues );
 }
@@ -161,6 +163,10 @@ public Date getDatetime()
     return datetime;
 }
 
+public String getSiteNumber() {
+    return siteNumber;
+}
+
 public void retrieve() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getChangeID() };
@@ -185,7 +191,7 @@ public void retrieve() throws java.sql.SQLException
         setNewMeterNumber( (String) results[13] );
         setErrorMsg( (String) results[14] );
         setDatetime( (Date) results[15] );
-        
+        setSiteNumber( (String) results[16]);
     }
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -276,20 +282,24 @@ public void setDatetime(Date newDate)
     datetime = newDate;
 }
 
+public void setSiteNumber(String siteNumber) {
+    this.siteNumber = siteNumber;
+}
+
 public void update() throws java.sql.SQLException 
 {
     Object setValues[] = { getPremiseNumber(), getNewDebtorNumber(), getTransID(), getStreetAddress1(), getStreetAddress2(),
             getCityName(), getStateCode(), getZipCode(), getFirstName(), getLastName(), getHomePhone(), 
-            getWorkPhone(), getOldMeterNumber(), getNewMeterNumber(), getErrorMsg(), getDatetime()};
+            getWorkPhone(), getOldMeterNumber(), getNewMeterNumber(), getErrorMsg(), getDatetime(), getSiteNumber()};
     
     Object constraintValues[] = { getChangeID() };
 
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList getAllCurrentPremiseMeterChangeEntries()
+public static ArrayList<FailureCRSToSAM_PremMeterChg> getAllCurrentPremiseMeterChangeEntries()
 {
-    ArrayList changes = new ArrayList();
+    ArrayList<FailureCRSToSAM_PremMeterChg> changes = new ArrayList<FailureCRSToSAM_PremMeterChg>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
     
@@ -319,6 +329,7 @@ public static ArrayList getAllCurrentPremiseMeterChangeEntries()
                 currentEntry.setNewMeterNumber(stmt.getRow(i)[14].toString());
                 currentEntry.setErrorMsg(stmt.getRow(i)[15].toString());
                 currentEntry.setDatetime(new Date(((java.sql.Timestamp)stmt.getRow(i)[16]).getTime()));
+                currentEntry.setSiteNumber(stmt.getRow(i)[17].toString());
                 
                 changes.add(currentEntry);
             }

@@ -5,6 +5,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
@@ -613,7 +615,7 @@ public class YukonToCRSFuncs
 	public static CustomerAccount createNewCustomerAccount(CustomerAccount customerAccount, String accountNumber, 
     													Integer contactID, String debtorNumber,
     													Character presenceReq, String streetAddress1, String streetAddress2, String cityName, String stateCode, String zipCode,
-    													int ecID_workOrder, String companyName, YukonListEntry ciCustTypeEntry) throws TransactionException
+    													int ecID_workOrder, String companyName, YukonListEntry ciCustTypeEntry, String siteNumber) throws TransactionException
     {
 		
     	com.cannontech.database.data.customer.Customer customer = new com.cannontech.database.data.customer.Customer();
@@ -651,6 +653,7 @@ public class YukonToCRSFuncs
 		customerAccount.getCustomerAccount().setAccountNumber(accountNumber);
 		customerAccount.setCustomer(customer);
 		customerAccount.getAccountSite().getAccountSite().setCustAtHome(presenceReq.toString());
+		customerAccount.getAccountSite().getAccountSite().setSiteNumber(siteNumber);
 		customerAccount.getAccountSite().getStreetAddress().setLocationAddress1(streetAddress1);
 		customerAccount.getAccountSite().getStreetAddress().setLocationAddress2(streetAddress2);
 		customerAccount.getAccountSite().getStreetAddress().setCityName(cityName);
@@ -744,7 +747,8 @@ public class YukonToCRSFuncs
     	return null;
     }
 
-	public static AccountSite updateAccountSite(CustomerAccount customerAccount, String streetAddress1, String streetAddress2, String cityName, String stateCode, String zipCode, Character presenceReq) {
+	public static AccountSite updateAccountSite(CustomerAccount customerAccount, String streetAddress1, String streetAddress2, 
+	        String cityName, String stateCode, String zipCode, Character presenceReq, String siteNumber) {
 //		TODO add support for bad entry
     	boolean isChanged = false;
 
@@ -769,9 +773,13 @@ public class YukonToCRSFuncs
     		accountSite.getStreetAddress().setZipCode(zipCode);
     		isChanged = true;
     	}
-    	if( presenceReq != null && presenceReq.toString().length() > 0 && !presenceReq.toString().equalsIgnoreCase(accountSite.getAccountSite().getCustAtHome()))
+    	if( StringUtils.isNotBlank(presenceReq.toString()) && !presenceReq.toString().equalsIgnoreCase(accountSite.getAccountSite().getCustAtHome()))
     	{
     		accountSite.getAccountSite().setCustAtHome(presenceReq.toString());
+    		isChanged = true;
+    	}
+    	if (StringUtils.isNotBlank(siteNumber) && !siteNumber.equalsIgnoreCase(accountSite.getAccountSite().getSiteNumber())); {
+    		accountSite.getAccountSite().setSiteNumber(siteNumber);
     		isChanged = true;
     	}
     	if( isChanged)

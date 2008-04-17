@@ -199,29 +199,18 @@ public final class YukonCRSIntegrator
     
     }
 
-    public void runCRSToSAM_PremiseMeterChanger(ArrayList entries)
+    public void runCRSToSAM_PremiseMeterChanger(ArrayList<CRSToSAM_PremiseMeterChange> entries)
     {
-        CRSToSAM_PremiseMeterChange currentEntry = null;
-    	FailureCRSToSAM_PremMeterChg currentFailure = null;
-    	
-        ArrayList failures = new ArrayList();
-    	ArrayList successArrayList = new ArrayList();
     	int successCounter = 0;
-    	Connection conn = null;
-        
-        for(int j = 0; j < entries.size(); j++)
-    	{
+
+    	for (CRSToSAM_PremiseMeterChange currentEntry : entries) {
             StringBuffer errorMsg = new StringBuffer("");
-            currentEntry = (CRSToSAM_PremiseMeterChange)entries.get(j);
-            
+
             if(currentEntry.getPremiseNumber() != null && currentEntry.getPremiseNumber().toString().length() > 0)
             {
                 String accountNumber = currentEntry.getPremiseNumber().toString();
                 CustomerAccount customerAccount = YukonToCRSFuncs.retrieveCustomerAccount(accountNumber);
-                //Contact currentContact = YukonToCRSFuncs.getContactFromAccountNumber(accountNumber);
-                ContactNotification workNotify = null;
-                ContactNotification homeNotify = null;
-                
+
                 String lastName = currentEntry.getLastName();
                 String firstName = currentEntry.getFirstName();
                 String homePhone = currentEntry.getHomePhone();
@@ -235,6 +224,7 @@ public final class YukonCRSIntegrator
                 String alternateTrackingNumber = currentEntry.getTransID();
                 String oldMeterNumber = currentEntry.getOldMeterNumber();
                 String newMeterNumber = currentEntry.getNewMeterNumber();
+                String siteNumber = currentEntry.getSiteNumber();
                 
                 if(customerAccount != null)
                 {
@@ -246,7 +236,7 @@ public final class YukonCRSIntegrator
                         contactDB = (Contact)Transaction.createTransaction(Transaction.RETRIEVE, contactDB).execute();
                     
                         YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, null);
-                        YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, state, zipCode, null);
+                        YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, state, zipCode, null, siteNumber);
                         YukonToCRSFuncs.updateCustomer(customerDB, customerNumber);
                         
                         if(oldMeterNumber.compareTo(newMeterNumber) != 0)
@@ -311,15 +301,11 @@ public final class YukonCRSIntegrator
      * Process the PTJ, create Yukon objects, etc.
      * @param entries
      */
-    public void runCRSToSAM_PTJ(ArrayList entries)
+    public void runCRSToSAM_PTJ(ArrayList<CRSToSAM_PTJ> entries)
     {
-        CRSToSAM_PTJ currentEntry = null;
-
         int newWorkOrderCount = 0;
-        for(int j = 0; j < entries.size(); j++)
-    	{
+        for (CRSToSAM_PTJ currentEntry : entries) {
         	StringBuffer errorMsg = new StringBuffer("");
-            currentEntry = (CRSToSAM_PTJ)entries.get(j);
 
             String accountNumber = currentEntry.getPremiseNumber().toString();
             if(accountNumber.length() <= 0)
@@ -349,9 +335,10 @@ public final class YukonCRSIntegrator
             Character presenceReq = currentEntry.getPresenceRequired( );
             Character airCond = currentEntry.getAirConditioner( );
             Character waterHeater = currentEntry.getWaterHeater( );
-//              String serviceNumber = currentEntry.getServiceNumber( );	//not applicable yet
+
             //TODO Meter Number support on install
             String meterNumber = currentEntry.getMeterNumber( );
+            String siteNumber = currentEntry.getSiteNumber();
 
 //            CMP = Company Use
 //            CO = Commercial
@@ -419,7 +406,8 @@ public final class YukonCRSIntegrator
 	        			//Create a new CustomerAccount data object
 	        			customerAccount = new CustomerAccount();
 	        			customerAccount = YukonToCRSFuncs.createNewCustomerAccount(customerAccount, accountNumber, contact.getContact().getContactID(), debtorNumber, 
-	        														presenceReq, streetAddress1, streetAddress2, cityName, stateCode, zipCode, ecID_workOrder, lastName, ciCustTypeEntry);
+	        														presenceReq, streetAddress1, streetAddress2, cityName, stateCode, zipCode, ecID_workOrder, lastName, 
+	        														ciCustTypeEntry, siteNumber);
 	        			//Create new ApplianceBase (and extension of) objects
 	        			YukonToCRSFuncs.createNewAppliances(customerAccount.getCustomerAccount().getAccountID(), airCond, waterHeater, ciCustTypeEntry, liteStarsEnergyCompany);
 	        			
@@ -470,7 +458,7 @@ public final class YukonCRSIntegrator
   						}
 
 	    				YukonToCRSFuncs.updateAllContactInfo(contactDB, firstName, lastName, homePhone, workPhone, crsContactPhone);
-	    	            YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, stateCode, zipCode, presenceReq);
+	    	            YukonToCRSFuncs.updateAccountSite(customerAccount, streetAddress1, streetAddress2, cityName, stateCode, zipCode, presenceReq, siteNumber);
 	    	            YukonToCRSFuncs.updateCustomer(customerDB, debtorNumber);
 	    	            //TODO create new appliance if they don't exist?
 	    	            //TODO create new meternumbers if they don't exist?
@@ -672,10 +660,8 @@ public final class YukonCRSIntegrator
     	{
         	StringBuffer errorMsg = new StringBuffer("");
             currentEntry = (SwitchReplacement)entries.get(j);
-            Integer replacementID = currentEntry.getReplacementID(); 
             String serialNumber = currentEntry.getSerialNumber();
             String woType = currentEntry.getWOType();
-            String deviceType = currentEntry.getDeviceType();
             String username = currentEntry.getUserName();
 
         	if( !woType.equalsIgnoreCase(YukonToCRSFuncs.PTJ_TYPE_XCEL_MAINTENANCE_STRING))

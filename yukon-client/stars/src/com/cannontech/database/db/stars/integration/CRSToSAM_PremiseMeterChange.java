@@ -23,12 +23,13 @@ public class CRSToSAM_PremiseMeterChange extends DBPersistent {
     private String workPhone = "";       
     private String oldMeterNumber = "";  
     private String newMeterNumber = "";
-
+    private String siteNumber = "";
+    
     public static final String CONSTRAINT_COLUMNS[] = { "ChangeID" };
 
     public static final String SETTER_COLUMNS[] = { "PremiseNumber","NewDebtorNumber", "TransID", "StreetAddress1", "StreetAddress2", 
                                                     "CityName", "StateCode", "ZipCode", "FirstName", "LastName",
-                                                    "HomePhone", "WorkPhone", "OldMeterNumber", "NewMeterNumber"};
+                                                    "HomePhone", "WorkPhone", "OldMeterNumber", "NewMeterNumber", "SiteNumber"};
 
     public static final String TABLE_NAME = "CRSToSAM_PremiseMeterChange";
 
@@ -41,7 +42,7 @@ public void add() throws java.sql.SQLException
 {
     Object setValues[] = { getChangeID(), getPremiseNumber(), getNewDebtorNumber(), getTransID(), getStreetAddress1(),
     	getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), getLastName(), getHomePhone(), 
-    	getWorkPhone(), getOldMeterNumber(), getNewMeterNumber()};
+    	getWorkPhone(), getOldMeterNumber(), getNewMeterNumber(), getSiteNumber()};
 
     add( TABLE_NAME, setValues );
 }
@@ -128,6 +129,10 @@ public String getNewMeterNumber()
     return newMeterNumber;
 }
 
+public String getSiteNumber() {
+    return siteNumber;
+}
+
 public void retrieve() throws java.sql.SQLException 
 {
     Object constraintValues[] = { getChangeID() };
@@ -150,7 +155,7 @@ public void retrieve() throws java.sql.SQLException
         setWorkPhone( (String) results[11] );        
         setOldMeterNumber( (String) results[12] );  
         setNewMeterNumber( (String) results[13] );
-        
+        setSiteNumber( (String) results[14]);
     }
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -230,20 +235,24 @@ public void setNewMeterNumber(String newValue)
     newMeterNumber = newValue;
 }
 
+public void setSiteNumber(String siteNumber) {
+    this.siteNumber = siteNumber;
+}
+
 public void update() throws java.sql.SQLException 
 {
     Object setValues[] = { getPremiseNumber(), getNewDebtorNumber(), getTransID(), getStreetAddress1(),
     		getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), getLastName(), 
-    		getHomePhone(), getWorkPhone(), getOldMeterNumber(), getNewMeterNumber()};
+    		getHomePhone(), getWorkPhone(), getOldMeterNumber(), getNewMeterNumber(), getSiteNumber()};
     
     Object constraintValues[] = { getChangeID() };
 
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList getAllCurrentPremiseMeterChangeEntries()
+public static ArrayList<CRSToSAM_PremiseMeterChange> getAllCurrentPremiseMeterChangeEntries()
 {
-    ArrayList changes = new ArrayList();
+    ArrayList<CRSToSAM_PremiseMeterChange> changes = new ArrayList<CRSToSAM_PremiseMeterChange>();
     
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
     
@@ -285,6 +294,8 @@ public static ArrayList getAllCurrentPremiseMeterChangeEntries()
                     currentEntry.setOldMeterNumber(stmt.getRow(i)[13].toString());
                 if(stmt.getRow(i)[14] != null)
                     currentEntry.setNewMeterNumber(stmt.getRow(i)[14].toString());
+                if(stmt.getRow(i)[15] != null)
+                    currentEntry.setSiteNumber(stmt.getRow(i)[15].toString());
                 
                 changes.add(currentEntry);
             }

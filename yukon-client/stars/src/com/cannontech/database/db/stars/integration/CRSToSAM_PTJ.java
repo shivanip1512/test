@@ -35,6 +35,7 @@ public class CRSToSAM_PTJ extends DBPersistent {
     private Character waterHeater = null;
     private String serviceNumber = "";
     private String meterNumber = "";
+    private String siteNumber = "";
 
     private ArrayList<CRSToSAM_PTJAdditionalMeters> additionalMeters;
     public static final String CONSTRAINT_COLUMNS[] = { "PTJID" };
@@ -43,7 +44,7 @@ public class CRSToSAM_PTJ extends DBPersistent {
     												"ConsumptionType", "ServUtilityType", "Notes", "StreetAddress1", "StreetAddress2",
     												"CityName", "StateCode", "ZipCode", "FirstName", "LastName", "HomePhone", "WorkPhone", 
     												"CRSContactPhone", "CRSLoggedUser", "PresenceRequired", "AirConditioner",
-    												"WaterHeater", "ServiceNumber", "MeterNumber"};
+    												"WaterHeater", "ServiceNumber", "MeterNumber", "SiteNumber"};
 
     public static final String TABLE_NAME = "CRSToSAM_PTJ";
 
@@ -57,7 +58,7 @@ public void add() throws java.sql.SQLException
     Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getPTJType(), getTimestamp(), getConsumptionType(), 
     		getServUtilityType(), getNotes(), getStreetAddress1(), getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), 
     		getLastName(),getHomePhone(), getWorkPhone(), getCRSContactPhone(), getCRSLoggedUser(), getPresenceRequired(), 
-    		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber()};
+    		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber(), getSiteNumber()};
 
     add( TABLE_NAME, setValues );
 }
@@ -113,6 +114,7 @@ public void retrieve() throws java.sql.SQLException
         setWaterHeater( (Character) results[20] );
         setServiceNumber( (String) results[21] );
         setMeterNumber( (String) results[22] );
+        setSiteNumber( (String) results[23] );
     }
     else
         throw new Error( getClass() + "::retrieve - Incorrect number of results" );
@@ -124,16 +126,16 @@ public void update() throws java.sql.SQLException
     Object setValues[] = { getPTJID(), getPremiseNumber(), getDebtorNumber(), getPTJType(), getTimestamp(), getConsumptionType(), 
     		getServUtilityType(), getNotes(), getStreetAddress1(), getStreetAddress2(), getCityName(), getStateCode(), getZipCode(), getFirstName(), 
     		getLastName(),getHomePhone(), getWorkPhone(), getCRSContactPhone(), getCRSLoggedUser(), getPresenceRequired(), 
-    		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber()}; 
+    		getAirConditioner(), getWaterHeater(), getServiceNumber(), getMeterNumber(), getSiteNumber()}; 
     		
     		Object constraintValues[] = { getPTJID() };
 
     update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
 
-public static ArrayList getAllCurrentPTJEntries()
+public static ArrayList<CRSToSAM_PTJ> getAllCurrentPTJEntries()
 {
-    ArrayList changes = new ArrayList();
+    ArrayList<CRSToSAM_PTJ> changes = new ArrayList<CRSToSAM_PTJ>();
     
     //Join the additional meter number table to load all additional meter numbers too.
     SqlStatement stmt = new SqlStatement("SELECT * FROM " + TABLE_NAME, CtiUtilities.getDatabaseAlias());
@@ -196,6 +198,8 @@ public static ArrayList getAllCurrentPTJEntries()
             		currentEntry.setServiceNumber( stmt.getRow(i)[22].toString());
             	if (stmt.getRow(i)[23] != null)
             		currentEntry.setMeterNumber( stmt.getRow(i)[23].toString());
+            	if (stmt.getRow(i)[24] != null)
+            	    currentEntry.setSiteNumber( stmt.getRow(i)[24].toString());
                 
                 ArrayList<CRSToSAM_PTJAdditionalMeters> addtlMeters = (ArrayList<CRSToSAM_PTJAdditionalMeters>)ptjToAddtlMetersMap.get(currentEntry.getPTJID());
                 if( addtlMeters != null)	//found an ArrayList of CRSToSam_PTJAdditionalMeters
@@ -290,6 +294,14 @@ public String getMeterNumber() {
 
 public void setMeterNumber(String meterNumber) {
 	this.meterNumber = meterNumber;
+}
+
+public String getSiteNumber() {
+    return siteNumber;
+}
+
+public void setSiteNumber(String siteNumber) {
+    this.siteNumber = siteNumber;
 }
 
 public String getNotes() {
