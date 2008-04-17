@@ -33,6 +33,7 @@ public class AlertController extends MultiActionController {
         return mav;
     }
 
+    
     public void clear(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
         final String jsonString = ServletRequestUtils.getRequiredStringParameter(request, "jsonString");
@@ -43,6 +44,33 @@ public class AlertController extends MultiActionController {
             alertIds[x] = array.getInt(x);
         }
         
+        alertService.remove(alertIds, user);
+    }
+
+    //View to return a popup that matches oneline.
+    public ModelAndView onelineView(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	final ModelAndView mav = new ModelAndView();
+    	final LiteYukonUser user = ServletUtil.getYukonUser(request);
+    	
+    	final Collection<IdentifiableAlert> alerts = alertService.getAll(user);
+    	mav.addObject("alerts", alerts);
+    	
+    	int count = alerts.size();
+    	mav.addObject("count", count);
+    	
+    	mav.setViewName("alert/onelineAlertView.jsp");
+    	return mav;
+    }
+    
+    //This is duplicated because Oneline uses Prototype 1.5.0 and cannot upgrade. 
+    //the toJSON call exists in 1.5.1+
+    public void onelineClear(HttpServletRequest request, HttpServletResponse response) throws Exception {
+        final LiteYukonUser user = ServletUtil.getYukonUser(request);
+        final int alertId = ServletRequestUtils.getRequiredIntParameter(request, "alertId");
+        
+        final int[] alertIds = new int[1];
+        alertIds[0] = alertId;
+
         alertService.remove(alertIds, user);
     }
     

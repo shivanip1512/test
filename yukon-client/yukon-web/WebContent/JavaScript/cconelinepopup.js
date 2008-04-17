@@ -17,6 +17,7 @@ var ALL_POPUP_TYPES = {
     bankMoveBack: "MoveBankBack",
     bankMove: "TempMoveBank",
     warningPopup: "WarningPopup",
+    alertsPopup: "AlertsPopup",
     legend: "legend"
 };
 
@@ -191,10 +192,21 @@ function openPopupWin(elem, compositeIdType) {
     else if (type == ALL_POPUP_TYPES.warningPopup) {
     	menuName = 'warningInfoPopop';
     }
+    else if (type == ALL_POPUP_TYPES.alertsPopup) {
+        var alertUrl = '/spring/common/alert/onelineView';
+        new Ajax.Request(alertUrl, {
+            method: 'post',
+            onSuccess: function(transport) {
+                var html = transport.responseText;
+                showPopup(html);
+            }
+        });
+        return;
+    }
     else if (type == ALL_POPUP_TYPES.legend) {
         var legendUrl = '/spring/capcontrol/oneline/legend';
         new Ajax.Request(legendUrl, {
-            method: 'get',
+            method: 'post',
             onSuccess: function(transport) {
                 currentPopup.offsetX = window.innerWidth/2;
                 currentPopup.offsetY = 0;

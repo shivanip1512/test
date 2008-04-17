@@ -50,6 +50,7 @@ function updateHTML(xml) {
 	    updateFeeders(xml);
 	    updateCaps(xml);
 	    updateWarningImages(xml);
+	    updateAlert(xml);
     }   
 }
 
@@ -77,6 +78,10 @@ function applyBlackStyle(element) {
     var currentStyle = element.getAttribute('style');
     currentStyle += ';fill:rgb(0,0,0)';
     element.setAttribute("style", currentStyle);
+}
+
+function updateAlert(xml) {
+	updateVisibleText("AlertsPopup", xml);
 }
 
 function updateSub(xml) {

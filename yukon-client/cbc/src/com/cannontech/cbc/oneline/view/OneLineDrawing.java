@@ -52,7 +52,7 @@ public class OneLineDrawing {
 
     public void addLogos() {
         logos = new OnelineLogos();
-        logos.addDrawing(this);
+        logos.addDrawing(this,user);
     }
 
     public void addCap(SubBus subBusMessage, int curIdx) {

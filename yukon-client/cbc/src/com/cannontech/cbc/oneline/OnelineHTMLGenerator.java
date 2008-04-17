@@ -54,7 +54,16 @@ public class OnelineHTMLGenerator extends HTMLGenerator {
         sb.append("        printableView = true;" + NEW_LINE);
         sb.append("    }" + NEW_LINE);
         sb.append("}" + NEW_LINE);
+        sb.append("function alert_clearAlert(alertId) {" + NEW_LINE);
+        sb.append("    $('alertTableRow_' + alertId).remove();" + NEW_LINE);
+        sb.append("    var remainingAlerts = $$('table#alertTable tbody tr').size();" + NEW_LINE);
+        sb.append("    new Ajax.Request('/spring/common/alert/onelineClear', {" + NEW_LINE);
+        sb.append("        'method': 'POST'," + NEW_LINE); 
+        sb.append("        'parameters': { 'alertId': alertId}" + NEW_LINE);
+        sb.append("    });" + NEW_LINE);    
+        sb.append("}" + NEW_LINE);
         sb.append("</script>" + NEW_LINE);
+       
         return sb.toString();
     }
     

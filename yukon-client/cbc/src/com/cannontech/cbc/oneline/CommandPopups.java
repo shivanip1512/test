@@ -25,5 +25,6 @@ public class CommandPopups {
     public static final String BANK_MOVE_BACK = "MoveBankBack";
     public static final String BANK_MOVE = "TempMoveBank";
     public static final String WARNING_IMAGE = "WarningPopup";
+    public static final String ALERTS_POPUP = "AlertsPopup";
 
 }
