@@ -71,7 +71,10 @@ public class CapControlDaoImpl  implements CapControlDao{
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "IP Address");
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "UDP Port");
     	pointGroupConfig.add(CBCPointGroup.ANALOG, "Firmware Version");
-
+        pointGroupConfig.add(CBCPointGroup.ANALOG, "Com Loss Time");
+        pointGroupConfig.add(CBCPointGroup.ANALOG, "Com Retry Delay Time");
+        pointGroupConfig.add(CBCPointGroup.ANALOG, "Yukon Poll Time");
+        
     	// Accumulator Group
     	pointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "Total op count");
     	pointGroupConfig.add(CBCPointGroup.ACCUMULATOR, "UV op count");
