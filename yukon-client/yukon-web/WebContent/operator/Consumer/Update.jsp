@@ -453,7 +453,7 @@ function setCommercial() {
                           <div align="right">Map #:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="PropNo" maxlength="12" size="14" value="<%= account.getPropertyNumber() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="PropNo" maxlength="40" size="24" value="<%= account.getPropertyNumber() %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
 					  <tr> 
