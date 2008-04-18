@@ -22,6 +22,7 @@ public class AlertController extends MultiActionController {
     public ModelAndView view(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
+        final String viewName = ServletRequestUtils.getStringParameter(request, "style", "alertView");
         
         final Collection<IdentifiableAlert> alerts = alertService.getAll(user);
         mav.addObject("alerts", alerts);
@@ -29,10 +30,9 @@ public class AlertController extends MultiActionController {
         int count = alerts.size();
         mav.addObject("count", count);
         
-        mav.setViewName("alert/alertView.jsp");
+        mav.setViewName("alert/" + viewName + ".jsp");
         return mav;
     }
-
     
     public void clear(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
@@ -46,25 +46,8 @@ public class AlertController extends MultiActionController {
         
         alertService.remove(alertIds, user);
     }
-
-    //View to return a popup that matches oneline.
-    public ModelAndView onelineView(HttpServletRequest request, HttpServletResponse response) throws Exception {
-    	final ModelAndView mav = new ModelAndView();
-    	final LiteYukonUser user = ServletUtil.getYukonUser(request);
-    	
-    	final Collection<IdentifiableAlert> alerts = alertService.getAll(user);
-    	mav.addObject("alerts", alerts);
-    	
-    	int count = alerts.size();
-    	mav.addObject("count", count);
-    	
-    	mav.setViewName("alert/onelineAlertView.jsp");
-    	return mav;
-    }
     
-    //This is duplicated because Oneline uses Prototype 1.5.0 and cannot upgrade. 
-    //the toJSON call exists in 1.5.1+
-    public void onelineClear(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void singleClear(HttpServletRequest request, HttpServletResponse response) throws Exception {
         final LiteYukonUser user = ServletUtil.getYukonUser(request);
         final int alertId = ServletRequestUtils.getRequiredIntParameter(request, "alertId");
         

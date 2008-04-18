@@ -193,7 +193,7 @@ function openPopupWin(elem, compositeIdType) {
     	menuName = 'warningInfoPopop';
     }
     else if (type == ALL_POPUP_TYPES.alertsPopup) {
-        var alertUrl = '/spring/common/alert/onelineView';
+        var alertUrl = '/spring/common/alert/view?style=onelineAlertView';
         new Ajax.Request(alertUrl, {
             method: 'post',
             onSuccess: function(transport) {
