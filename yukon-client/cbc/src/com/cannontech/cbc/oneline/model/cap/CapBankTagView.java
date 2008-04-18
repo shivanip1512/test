@@ -54,8 +54,9 @@ public class CapBankTagView extends LxAbstractView implements TagView {
         label.setFont(OnelineUtil.LARGE_FONT);
         label.setPaint(OnelineUtil.TAG_COLOR);
 
-        label.setLinkTo("javascript: void(0)");
-
+        if(parent.isCommandsFlag()) {
+        	label.setLinkTo("javascript: void(0)");
+        }
         String text = "";
         StaticText value = OnelineUtil.createTextElement(text,
                                                          OnelineUtil.getStartPoint(label),

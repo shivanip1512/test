@@ -71,7 +71,9 @@ public class OnelineCap extends OnelineObject {
         initCapBankName ();
         graph.add(stateImage);
         graph.add(connectorLn);
-        graph.add(editorImage);
+        if(isEditFlag()) {
+        	graph.add(editorImage);
+        }
         graph.add(warningImageStatic);
         graph.add(infoImage);
         graph.add(capBankName);
@@ -109,14 +111,15 @@ public class OnelineCap extends OnelineObject {
         if( !getStreamable().isBankMoved() ){
             capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE);
         	capBankName.setPaint(OnelineUtil.PURPLISH);
-        	capBankName.setLinkTo("javascript:void(0)");
         }
         else{//if moved
             capBankName.setName(getName() + "_" + CommandPopups.BANK_MOVE_BACK);
             capBankName.setPaint(OnelineUtil.ORANGE);
-            capBankName.setLinkTo("javascript:void(0)");
         }
-       
+        
+        if (isCommandsFlag()) {
+        	capBankName.setLinkTo("javascript:void(0)");
+        }
     }
 
     private void initConnector(double xImgYPos, double imgXPos) {
@@ -135,7 +138,9 @@ public class OnelineCap extends OnelineObject {
         stateImage.setX(imgXPos);
         stateImage.setName(getName());
         stateImage.setCenterY(xImgYPos + 30);
-        stateImage.setLinkTo("javascript:void(0)");
+        if (isCommandsFlag()) {
+        	stateImage.setLinkTo("javascript:void(0)");
+        }
     }
     
     private void initWarningStaticImage(double xImgYPos, double imgXPos) {

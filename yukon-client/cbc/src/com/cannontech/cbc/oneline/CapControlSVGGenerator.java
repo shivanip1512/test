@@ -13,7 +13,6 @@ import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
-import com.cannontech.esub.element.StaticText;
 import com.cannontech.esub.svg.BaseSVGGenerator;
 import com.cannontech.esub.svg.SVGOptions;
 import com.cannontech.esub.util.DrawingUpdater;

@@ -17,7 +17,6 @@ import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
-import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxArrowElement;
@@ -78,7 +77,11 @@ public class OnelineFeeder extends OnelineObject {
         
         LxGraph graph = drawing.getDrawing().getLxGraph();
         graph.add(feederLn);
-        graph.add(editorImage);
+        
+        if(isEditFlag()) {
+        	graph.add(editorImage);
+        }
+        
         graph.add(warningImageStatic);
         
         UpdatableStats stats = new FeederUpdatableStats(graph, this);
@@ -157,8 +160,9 @@ public class OnelineFeeder extends OnelineObject {
             feederName.setText(feeder.getCcName());
             drawing.getDrawing().getLxGraph().add(feederName);
             feederName.setName(getName());
-            feederName.setLinkTo("javascript:void(0)");
-
+            if(isCommandsFlag()) {
+            	feederName.setLinkTo("javascript:void(0)");
+            }
         }
         return feederLn;
     }

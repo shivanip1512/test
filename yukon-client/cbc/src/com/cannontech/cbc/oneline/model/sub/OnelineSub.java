@@ -21,7 +21,6 @@ import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
 import com.cannontech.yukon.cbc.SubBus;
-import com.loox.jloox.LxComponent;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
 
@@ -60,7 +59,9 @@ public class OnelineSub extends OnelineObject {
         initEditorImage();
         initWarningStaticImage();
         
-        graph.add(editorImage);
+        if(isEditFlag()) {
+        	graph.add(editorImage);
+        }
         graph.add(warningImageStatic);
         
         UpdatableStats stats = new SubUpdatableStats(graph, this, getSubBus());
@@ -131,8 +132,9 @@ public class OnelineSub extends OnelineObject {
             OneLineParams layoutParams = drawing.getLayoutParams();
             transformerImg.setCenter(20, layoutParams.getHeight() / 3 + 50);
             transformerImg.setName(createSubName());
-            transformerImg.setLinkTo("javascript:void(0)");
-
+            if(isCommandsFlag()) {
+            	transformerImg.setLinkTo("javascript:void(0)");
+            }
         }
         return transformerImg;
     }
