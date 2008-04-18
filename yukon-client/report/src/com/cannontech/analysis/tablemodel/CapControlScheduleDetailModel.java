@@ -3,6 +3,7 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -12,7 +13,6 @@ import org.springframework.jdbc.core.RowCallbackHandler;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
-
 
 public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapControlScheduleDetailModel.ModelRow> implements CapControlFilterable {
     
@@ -24,6 +24,40 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     private String orderBy = "schedulename";
+    
+    public static final HashMap<Integer, String> TIME_INTERVAL =  new HashMap<Integer, String>();
+ 
+    static {
+        TIME_INTERVAL.put(new Integer(1), "1 seconds");
+        TIME_INTERVAL.put(new Integer(2), "2 seconds");
+        TIME_INTERVAL.put(new Integer(5), "5 seconds");
+        TIME_INTERVAL.put(new Integer(10), "10 seconds");
+        TIME_INTERVAL.put(new Integer(15), "15 seconds");
+        TIME_INTERVAL.put(new Integer(30), "30 seconds");
+        TIME_INTERVAL.put(new Integer(60), "1 minute");
+        TIME_INTERVAL.put(new Integer(120), "2 minutes");
+        TIME_INTERVAL.put(new Integer(180), "3 minutes");
+        TIME_INTERVAL.put(new Integer(240), "4 minutes");
+        TIME_INTERVAL.put(new Integer(300), "5 minutes");
+        TIME_INTERVAL.put(new Integer(420), "7 minutes");
+        TIME_INTERVAL.put(new Integer(600), "10 minutes");
+        TIME_INTERVAL.put(new Integer(720), "12 minutes");
+        TIME_INTERVAL.put(new Integer(900), "15 minutes");
+        TIME_INTERVAL.put(new Integer(1200), "20 minutes");
+        TIME_INTERVAL.put(new Integer(1500), "25 minutes");
+        TIME_INTERVAL.put(new Integer(1800), "30 minutes");
+        TIME_INTERVAL.put(new Integer(3600), "1 hour");
+        TIME_INTERVAL.put(new Integer(7200), "2 hours");
+        TIME_INTERVAL.put(new Integer(21600), "6 hours");
+        TIME_INTERVAL.put(new Integer(43200), "12 hours");
+        TIME_INTERVAL.put(new Integer(86400), "1 day");
+        TIME_INTERVAL.put(new Integer(172800), "2 days");
+        TIME_INTERVAL.put(new Integer(432000), "5 days");
+        TIME_INTERVAL.put(new Integer(604800), "7 days");
+        TIME_INTERVAL.put(new Integer(1209600), "14 days");
+        TIME_INTERVAL.put(new Integer(2592000), "30 days");
+    }
+    
 
     public CapControlScheduleDetailModel() {
     }
@@ -34,6 +68,7 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
         public String feederName;
         public String outgoingCommand;
         public String lastRunTime;
+        public String nextRunTime;
         public String interval;
     }
     
@@ -70,7 +105,10 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
                 row.feederName = rs.getString("feeder");
                 row.outgoingCommand = rs.getString("outgoingcommand");
                 row.lastRunTime = rs.getString("lastruntime");
-                row.interval = rs.getString("interval");
+                row.nextRunTime = rs.getString("nextruntime");
+                int seconds = rs.getInt("interval");
+                String interval = TIME_INTERVAL.get(seconds);
+                row.interval = interval;
                 data.add(row);
             }
         });
@@ -81,7 +119,7 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
     public StringBuffer buildSQLStatement()
     {
         StringBuffer sql = new StringBuffer ("select ps.schedulename schedulename, yp.paoname substationbus, yp1.paoname feeder, psa.command outgoingcommand, ");
-        sql.append("ps.nextruntime, ps.lastruntime lastruntime, ps.intervalrate interval " );
+        sql.append("ps.nextruntime, ps.lastruntime lastruntime, ps.nextruntime, ps.intervalrate interval " );
         sql.append("from paoscheduleassignment psa  ");
         sql.append("join yukonpaobject yp on psa.paoid = yp.paobjectid  ");
         sql.append("join ccfeedersubassignment cfs on cfs.substationbusid = yp.paobjectid  ");
@@ -92,7 +130,6 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = cfs.substationbusid ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
         sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
-        sql.append("left outer join ccfeederbanklist fbl on fbl.feederid = cfs.feederid ");
         
         String result = null;
         
@@ -138,6 +175,8 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
             sql.append("order by outgoingcommand ");
         }else if (orderBy .equalsIgnoreCase("Last Run Time")) {
             sql.append("order by lastruntime ");
+        }else if (orderBy .equalsIgnoreCase("Next Run Time")) {
+            sql.append("order by nextruntime ");
         }else if (orderBy .equalsIgnoreCase("Interval")) {
             sql.append("order by interval ");
         }

@@ -17,6 +17,7 @@ import org.apache.myfaces.custom.tree2.TreeNodeBase;
 import com.cannontech.cbc.web.CCSessionInfo;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LitePoint;
@@ -46,12 +47,18 @@ public class PointTreeForm {
      */
     public PointTreeForm(int paoId) {
         super();
-
-        LiteYukonPAObject litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoId);
-        device = PAOFactory.createPAObject(litePAO);
-        setPao(device);
+        LiteYukonPAObject litePAO = null;
+        try {
+            litePAO = DaoFactory.getPaoDao().getLiteYukonPAO(paoId);
+        } catch(NotFoundException nfe) {
+            // might be coming from a schedule or someother crazy nonpao
+        }
+        if(litePAO != null) {
+            device = PAOFactory.createPAObject(litePAO);
+            setPao(device);
         
-        retrieveDB();
+            retrieveDB();
+        }
     }
 
 

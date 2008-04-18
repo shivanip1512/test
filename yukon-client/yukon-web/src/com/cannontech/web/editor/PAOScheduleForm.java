@@ -21,7 +21,6 @@ public class PAOScheduleForm extends DBEditorForm {
 
 	private SelectItem[] selectScheds = null;
 	private Integer currentSchedID = null;
-
 	
 	/**
 	 * 
@@ -29,7 +28,6 @@ public class PAOScheduleForm extends DBEditorForm {
 	public PAOScheduleForm() {
 		super();
 	}
-
 
 	public PAOSchedule[] getPAOSchedules() {
 		
@@ -48,9 +46,8 @@ public class PAOScheduleForm extends DBEditorForm {
 		
         CapControlForm f = new CapControlForm();
 		f.initItem( elemID, DBEditorNav.EDITOR_SCHEDULE );
-
-		context.getExternalContext().getSessionMap().put(
-			"capControlForm", f );			
+		
+		context.getExternalContext().getSessionMap().put("capControlForm", f );		
 	}
 
 	/**
@@ -68,7 +65,6 @@ public class PAOScheduleForm extends DBEditorForm {
 		return "cbcEditor";
 	}
 
-
 	/**
 	 * Edit a schedule with the given id
 	 * -- TODO: this is a workaround for a bug in MyFaces 1.1.0,
@@ -77,9 +73,6 @@ public class PAOScheduleForm extends DBEditorForm {
 	 */
 	public String delete( ActionEvent ev ) {
 
-//		FacesContext context = FacesContext.getCurrentInstance();
-//		Map paramMap = context.getExternalContext().getRequestParameterMap();
-//		int elemID = Integer.parseInt( (String)paramMap.get("schedID") );
 		int elemID = Integer.parseInt(
 			ev.getComponent().getAttributes().get("title").toString().trim() );
 
@@ -97,28 +90,21 @@ public class PAOScheduleForm extends DBEditorForm {
 			facesMsg.setDetail( "Unable to delete Schedule from the database: " + e.getMessage() );
 			facesMsg.setSeverity( FacesMessage.SEVERITY_ERROR );
 		}
-
-		//CTILogger.info("...in delete ");
-
-		//context.
-		return "";		
+		return "";
 	}
-
 
 	/**
 	 * Hold all the PAOSchedules in memory for quicker access.
 	 */
 	public SelectItem[] getPAOSchedulesSelItems() {
 		
-		if( selectScheds == null ) {
-			PAOSchedule[] scheds = getPAOSchedules();
-			selectScheds = new SelectItem[scheds.length];
-				
-			for( int i = 0; i < scheds.length; i++ ) {
-				selectScheds[i] = new SelectItem( //value, label
-					scheds[i].getScheduleID(), //.toString(),
-					scheds[i].getScheduleName() );
-			}
+		PAOSchedule[] scheds = getPAOSchedules();
+		selectScheds = new SelectItem[scheds.length];
+			
+		for( int i = 0; i < scheds.length; i++ ) {
+			selectScheds[i] = new SelectItem( //value, label
+				scheds[i].getScheduleID(), //.toString(),
+				scheds[i].getScheduleName() );
 		}
 
 		return selectScheds;
@@ -138,15 +124,12 @@ public class PAOScheduleForm extends DBEditorForm {
 		currentSchedID = i;
 	}
 
-
     protected void checkForErrors() throws Exception {
         // TODO Auto-generated method stub
         
     }
 
-
     public void resetForm() {
         
     }
-
 }
