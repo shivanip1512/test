@@ -84,7 +84,8 @@ public class CapControlCommandExecutor
     }
     
     public void executeSubAreaCommand(int cmdId, int paoId) {
-        CapControlCommand cmd = new CapControlCommand (cmdId, paoId);    
+        CapControlCommand cmd = new CapControlCommand (cmdId, paoId);
+        cmd.setUserName(getUserName());
         capControlCache.getConnection().write(cmd);
     }
     
