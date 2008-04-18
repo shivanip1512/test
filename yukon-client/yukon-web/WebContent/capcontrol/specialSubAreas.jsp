@@ -92,13 +92,23 @@ if (allowCtlVal!=null) {
                 </td>
                 
                 <td>
-					<a id="area_state_${thisAreaId}"
-                   	   name="area_state" 
-                       class="<%=css%>"
-                       href="javascript:void(0);"
-					   <%=popupEvent%>="getSpecialAreaMenu('${thisAreaId}');">
-						<cti:capControlValue paoId="${thisAreaId}" type="CBCSPECIALAREA" format="STATE" />
-					</a>
+                	<cti:checkProperty property="CBCSettingsRole.ALLOW_CONTROLS">
+						<a id="area_state_${thisAreaId}"
+	                   	   name="area_state" 
+	                       class="<%=css%>"
+	                       href="javascript:void(0);"
+						   <%=popupEvent%>="getSpecialAreaMenu('${thisAreaId}');">
+							<cti:capControlValue paoId="${thisAreaId}" type="CBCSPECIALAREA" format="STATE" />
+						</a>
+					</cti:checkProperty>
+					<cti:checkNoProperty propertyid="<%=CBCSettingsRole.ALLOW_CONTROLS%>">
+						<a id="area_state_${thisAreaId}"
+	                   	   name="area_state" 
+	                       class="<%=css%>"
+	                       href="javascript:void(0);">
+							<cti:capControlValue paoId="${thisAreaId}" type="CBCSPECIALAREA" format="STATE" />
+						</a>
+					</cti:checkNoProperty>
 					<cti:dataUpdaterCallback function="updateStateColorGenerator('area_state_${thisAreaId}')" initialize="true" value="CBCSPECIALAREA/${thisAreaId}/STATE"/>
                 </td>
 				<td><cti:capControlValue paoId="<%=area.getPaoID()%>" type="CBCSPECIALAREA" format="SETUP" /> Substation(s)</td>
