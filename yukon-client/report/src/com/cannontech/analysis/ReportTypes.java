@@ -87,6 +87,8 @@ public enum ReportTypes {
             "Report showing the var imbalance on execution."),
     CBC_SPECIALAREA_ASSIGNMENT("CBC Special Area Assignment Report", CBCSpecialAreaAssignmentController.class, ReportGroup.CAP_CONTROL,
             "Report showing the special area assignment for cbc's."),
+    CAP_CONTROL_UNSOLICITED_MESSAGES("Unsolicited Messages Report", CapControlUnsolicitedMessagesController.class, ReportGroup.CAP_CONTROL,
+            "Report showing unsolicited messages recieved form cbc's."),
             
     COMM_STATISTICS("Communication Statistics", StatisticModel.class, ReportGroup.STATISTICAL),
     //STATISTIC_HISTORY_PORT_DATA("Historical Daily Port Statistics", StatisticHistoryPortModel.class, ReportGroup.STATISTICAL),
