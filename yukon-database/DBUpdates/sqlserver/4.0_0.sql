@@ -821,8 +821,8 @@ go
 create table JOBPROPERTY (
    JobPropertyID        numeric              not null,
    JobID                int                  not null,
-   name                 varchar(25)          not null,
-   value                varchar(100)         not null,
+   name                 varchar(100)         not null,
+   value                varchar(1000)        not null,
    constraint PK_JOBPROPERTY primary key (JobPropertyID)
 );
 go
@@ -862,7 +862,7 @@ go
 
 create table JOBSCHEDULEDREPEATING (
    JobID                int                  not null,
-   CronString           varchar(25)          not null,
+   CronString           varchar(100)         not null,
    constraint PK_JobScheduledRepeating primary key (JobID)
 );
 go
@@ -886,7 +886,7 @@ create table JOBSTATUS (
    StartTime            datetime             not null,
    StopTime             datetime             null,
    JobState             varchar(50)          null,
-   Message              varchar(100)         null,
+   Message              varchar(1000)        null,
    constraint PK_JOBSTATUS primary key (JobStatusID)
 );
 go

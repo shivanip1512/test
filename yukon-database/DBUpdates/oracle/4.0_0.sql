@@ -746,8 +746,8 @@ alter table JOB
 create table JOBPROPERTY  (
    JobPropertyID        NUMBER                          not null,
    JobID                INTEGER                         not null,
-   name                 VARCHAR2(25)                    not null,
-   value                VARCHAR2(100)                   not null,
+   name                 VARCHAR2(100)                   not null,
+   value                VARCHAR2(1000)                  not null,
    constraint PK_JOBPROPERTY primary key (JobPropertyID)
 );
 
@@ -769,7 +769,7 @@ alter table JOBSCHEDULEDONETIME
 
 create table JOBSCHEDULEDREPEATING  (
    JobID                INTEGER                         not null,
-   CronString           VARCHAR2(25)                    not null,
+   CronString           VARCHAR2(100)                   not null,
    constraint PK_JobScheduledRepeating primary key (JobID)
 );
 
@@ -784,7 +784,7 @@ create table JOBSTATUS  (
    StartTime            DATE                            not null,
    StopTime             DATE,
    JobState             VARCHAR2(50),
-   Message              VARCHAR2(100),
+   Message              VARCHAR2(1000),
    constraint PK_JOBSTATUS primary key (JobStatusID)
 );
 
