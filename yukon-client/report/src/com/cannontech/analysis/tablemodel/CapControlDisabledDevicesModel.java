@@ -42,6 +42,9 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         public String deviceName;
         public String deviceType;
         public String deviceParent;
+        public String dateTime;
+        public String user;
+        public String comment;
     }
     
     @Override
@@ -78,6 +81,24 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
                     row.deviceType = rs.getString("deviceType");
                     row.deviceParent = rs.getString("deviceParent");
                     
+                    String time = rs.getString("commenttime");
+                    if(time == null || time.length() < 1) {
+                        time = "---";
+                    }
+                    row.dateTime = time;
+                    
+                    String user = rs.getString("username");
+                    if(user == null || user.length() < 1) {
+                        user = "---";
+                    }
+                    row.user = user;
+                    
+                    String comment = rs.getString("capcomment");
+                    if(comment == null || comment.length() < 1) {
+                        comment = "---";
+                    }
+                    row.comment = comment;
+                    
                     data.add(row);
                 }
             });
@@ -88,46 +109,96 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
     
     public String buildSQLStatement(String type) {
         
-        String areaQuery = "select yp.paoname devicename, yp.type deviceType, ' --- ' deviceParent from yukonpaobject yp where type = 'CCAREA' and disableflag = 'Y'";
+        String areaQuery = "select yp.paoname devicename ";
+        areaQuery += ", yp.type deviceType ";
+        areaQuery += ", ' --- ' deviceParent ";
+        areaQuery += ", c.capcomment ";
+        areaQuery += ", c.commenttime ";
+        areaQuery += ", yu.username ";
+        areaQuery += "from ";
+        areaQuery += "(select * from yukonpaobject where type = 'CCAREA' and disableflag = 'Y') yp ";
+        areaQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        areaQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         
-        String substationQuery ="select yp.paoname devicename, yp.type deviceType, pInfo.parent deviceParent from yukonpaobject yp, ";
-        substationQuery += "(select ypa.paoname PARENT , yps.paobjectid from yukonpaobject ypa , yukonpaobject yps, ";
+        String substationQuery = "select yp.paoname devicename ";
+        substationQuery += ", yp.type deviceType ";
+        substationQuery += ", pInfo.parent deviceParent ";
+        substationQuery += ", c.capcomment ";
+        substationQuery += ", c.commenttime ";
+        substationQuery += ", yu.username ";
+        substationQuery += "from (select * from yukonpaobject where type = 'CCSUBSTATION' and disableflag = 'Y') yp ";
+        substationQuery += "join (select ypa.paoname PARENT , yps.paobjectid from yukonpaobject ypa , yukonpaobject yps, ";
         substationQuery += "ccsubareaassignment sa, ccsubstationsubbuslist ss where yps.paobjectid = ss.substationid ";
-        substationQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') pInfo ";
-        substationQuery += "where type = 'CCSUBSTATION' and disableflag = 'Y' and yp.paobjectid = pInfo.paobjectid order by type ";
+        substationQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') pInfo on yp.paobjectid = pInfo.paobjectid ";
+        substationQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        substationQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
+        substationQuery += "order by yp.type ";
         
-        String subBusQuery = "select yp.paoname devicename, yp.type deviceType, pInfo.parent deviceParent from yukonpaobject yp, ";
-        subBusQuery += "(select ypa.paoname + '->' + yps.paoname PARENT, ypsb.paobjectid from yukonpaobject ypa, yukonpaobject yps, ";
+        String subBusQuery = "select yp.paoname devicename ";
+        subBusQuery += ", yp.type deviceType ";
+        subBusQuery += ", pInfo.parent deviceParent ";
+        subBusQuery += ", c.capcomment ";
+        subBusQuery += ", c.commenttime ";
+        subBusQuery += ", yu.username ";
+        subBusQuery += "from (select * from yukonpaobject where type = 'CCSUBBUS' and disableflag = 'Y') yp ";
+        subBusQuery += "join (select ypa.paoname + '->' + yps.paoname PARENT, ypsb.paobjectid from yukonpaobject ypa, yukonpaobject yps, ";
         subBusQuery += "yukonpaobject ypsb, ccsubareaassignment sa, ccsubstationsubbuslist ss where ypsb.paobjectid = ss.substationbusid ";
         subBusQuery += "and yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid ";
-        subBusQuery += "and ypsb.type like 'CCSUBBUS') pInfo where type = 'CCSUBBUS' and disableflag = 'Y' ";
-        subBusQuery += "and yp.paobjectid = pInfo.paobjectid order by type ";
+        subBusQuery += "and ypsb.type like 'CCSUBBUS') pInfo on yp.paobjectid = pInfo.paobjectid ";
+        subBusQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        subBusQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
+        subBusQuery += "order by yp.type ";
         
-        String feederQuery = "select yp.paoname devicename, yp.type deviceType, pInfo.parent deviceParent from yukonpaobject yp, ";
-        feederQuery += "(select ypa.paoname + '->' + yps.paoname + '->' + ypsb.paoname PARENT, ypf.paobjectid from yukonpaobject ypa, ";
+        String feederQuery = "select yp.paoname devicename ";
+        feederQuery += ", yp.type deviceType ";
+        feederQuery += ", pInfo.parent deviceParent ";
+        feederQuery += ", c.capcomment ";
+        feederQuery += ", c.commenttime ";
+        feederQuery += ", yu.username ";
+        feederQuery += "from (select * from yukonpaobject where type = 'CCFEEDER' and disableflag = 'Y') yp ";
+        feederQuery += "join (select ypa.paoname + '->' + yps.paoname + '->' + ypsb.paoname PARENT, ypf.paobjectid from yukonpaobject ypa, ";
         feederQuery += "yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, ccsubareaassignment sa, ccsubstationsubbuslist ss, ";
         feederQuery += "ccfeedersubassignment fs where ypf.paobjectid = fs.feederid and ypsb.paobjectid = fs.substationbusid ";
         feederQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
-        feederQuery += "and sa.areaid = ypa.paobjectid and ypf.type like 'CCFEEDER') pInfo where type = 'CCFEEDER' and disableflag = 'Y' ";
-        feederQuery += "and yp.paobjectid = pInfo.paobjectid order by type ";
+        feederQuery += "and sa.areaid = ypa.paobjectid and ypf.type like 'CCFEEDER') pInfo on yp.paobjectid = pInfo.paobjectid ";
+        feederQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        feederQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
+        feederQuery += "order by yp.type ";
         
-        String capBankQuery = "select yp.paoname devicename, yp.type deviceType, pInfo.parent deviceParent from yukonpaobject yp, ";
-        capBankQuery += "(select ypa.paoname + '->' + yps.paoname + '->' + ypsb.paoname + '->' + ypf.paoname PARENT, ypc.paobjectid ";
+        String capBankQuery = "select yp.paoname devicename ";
+        capBankQuery += ", yp.type deviceType ";
+        capBankQuery += ", pInfo.parent deviceParent ";
+        capBankQuery += ", c.capcomment ";
+        capBankQuery += ", c.commenttime ";
+        capBankQuery += ", yu.username ";
+        capBankQuery += "from (select * from yukonpaobject where type = 'CAP BANK' and disableflag = 'Y') yp ";
+        capBankQuery += "join (select ypa.paoname + '->' + yps.paoname + '->' + ypsb.paoname + '->' + ypf.paoname PARENT, ypc.paobjectid ";
         capBankQuery += "from yukonpaobject ypa, yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, yukonpaobject ypc, ";
         capBankQuery += "ccsubareaassignment sa, ccsubstationsubbuslist ss, ccfeedersubassignment fs, ccfeederbanklist fb, capbank c ";
         capBankQuery += "where ypc.paobjectid = c.deviceid and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid ";
         capBankQuery += "and ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid ";
-        capBankQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') pInfo ";
-        capBankQuery += "where type = 'CAP BANK' and disableflag = 'Y' and pInfo.paobjectid = yp.paobjectid order by type ";
+        capBankQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') pInfo on pInfo.paobjectid = yp.paobjectid ";
+        capBankQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        capBankQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
+        capBankQuery += "order by yp.type ";
         
-        String cbcQuery = "select yp.paoname devicename, yp.type deviceType, pInfo.parent deviceParent from yukonpaobject yp, (select ypa.paoname + '->' + yps.paoname + '->' ";
+        String cbcQuery = "select yp.paoname devicename ";
+        cbcQuery += ", yp.type deviceType ";
+        cbcQuery += ", pInfo.parent deviceParent ";
+        cbcQuery += ", c.capcomment ";
+        cbcQuery += ", c.commenttime ";
+        cbcQuery += ", yu.username ";
+        cbcQuery += "from (select * from yukonpaobject where type like 'CBC%' and disableflag = 'Y') yp ";
+        cbcQuery += "join (select ypa.paoname + '->' + yps.paoname + '->' ";
         cbcQuery += "+ ypsb.paoname + '->' + ypf.paoname + '->' + ypc.paoname PARENT, yp.paobjectid from yukonpaobject yp , yukonpaobject ypa, ";
         cbcQuery += "yukonpaobject yps, yukonpaobject ypsb, yukonpaobject ypf, yukonpaobject ypc, ccsubareaassignment sa, ccsubstationsubbuslist ss, ";
         cbcQuery += "ccfeedersubassignment fs, ccfeederbanklist fb, capbank c where yp.paobjectid = c.controldeviceid and ypc.paobjectid = c.deviceid ";
         cbcQuery += "and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid and ypsb.paobjectid = fs.substationbusid ";
         cbcQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
-        cbcQuery += "and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo where type like 'CBC %' and disableflag = 'Y' ";
-        cbcQuery += "and yp.paobjectid = pInfo.paobjectid order by type ";
+        cbcQuery += "and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo on yp.paobjectid = pInfo.paobjectid ";
+        cbcQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        cbcQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
+        cbcQuery += "order by yp.type ";
         
         if(type.equalsIgnoreCase("CBC")) {
             return cbcQuery;
