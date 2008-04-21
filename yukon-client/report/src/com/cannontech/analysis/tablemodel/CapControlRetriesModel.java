@@ -1,5 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -25,7 +26,9 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         public String Feeder;
         public String CapBank;
         public String CBC;
-        public String numRetries;
+        public Integer numRetries;
+        public Integer numAttempts;
+        public String successPercent;
     }
     
     @Override
@@ -57,9 +60,13 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
 
                 pstmt.setTimestamp(1, new java.sql.Timestamp(getStartDate().getTime()));
                 pstmt.setTimestamp(2, new java.sql.Timestamp(getStopDate().getTime()));
+                pstmt.setTimestamp(3, new java.sql.Timestamp(getStartDate().getTime()));
+                pstmt.setTimestamp(4, new java.sql.Timestamp(getStopDate().getTime()));
+                pstmt.setTimestamp(5, new java.sql.Timestamp(getStartDate().getTime()));
+                pstmt.setTimestamp(6, new java.sql.Timestamp(getStopDate().getTime()));
    
                 rs = pstmt.executeQuery();
-
+                DecimalFormat twoPlaces = new DecimalFormat("00.00");
                 while (rs.next()) {
                     try {
                         CapControlRetriesModel.ModelRow row = new CapControlRetriesModel.ModelRow();
@@ -68,8 +75,15 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
                         row.Feeder = rs.getString("Feeder");
                         row.CapBank = rs.getString("CapBank");
                         row.CBC = rs.getString("CBC");
-                        row.numRetries = rs.getString("NumRetries");
-
+                        row.numRetries = rs.getInt("NumRetries");
+                        Integer attempts = rs.getInt("numAttempts");
+                        row.numAttempts = attempts;
+                        Integer success = rs.getInt("success");
+                        double successRate = (success.doubleValue() / attempts.doubleValue()* 100.0);
+                        
+                        String successString = twoPlaces.format(successRate);
+                        successString += "%";
+                        row.successPercent = successString;
                         data.add(row);
                     } catch (java.sql.SQLException e) {
                         e.printStackTrace();
@@ -87,12 +101,31 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select yp.paoname region, yp1.paoname subbus, yp2.paoname feeder, yp3.paoname capbank, yp4.paoname cbc, el.ct numRetries ");
-        sql.append("from (select pointid, count(*) ct from cceventlog where text like '%resending%' ");
+        StringBuffer sql = new StringBuffer ("select yp.paoname region");
+        sql.append(", yp1.paoname subbus ");
+        sql.append(", yp2.paoname feeder ");
+        sql.append(", yp3.paoname capbank ");
+        sql.append(", yp4.paoname cbc ");
+        sql.append(", el.ct numRetries ");
+        sql.append(", el2.ct numAttempts ");
+        sql.append(", el3.ct success ");
+        sql.append("from (select pointid, count(*) ct from cceventlog ");
+        sql.append("where text like '%resending%' ");
         sql.append("and datetime > ? ");
         sql.append("and datetime <= ? ");
         sql.append("group by pointid) el ");
         sql.append("join point p on p.pointid = el.pointid ");
+        sql.append("join (select pointid, count(*) ct from cceventlog ");
+        sql.append("where (text like '%Open sent%' or text like '%Close sent%') ");
+        sql.append("and datetime > ? ");
+        sql.append("and datetime <= ? ");
+        sql.append("group by pointid) el2 on el2.pointid = el.pointid ");
+        sql.append("join (select pointid, count(*) ct from cceventlog ");
+        sql.append("where (text like 'Var:%, Open' or text like 'Var:%, Closed' ");
+        sql.append("or text like 'Var:%Questionable') ");
+        sql.append("and datetime > ? ");
+        sql.append("and datetime <= ? ");
+        sql.append("group by pointid) el3 on el3.pointid = el.pointid ");
         sql.append("join capbank cb on p.paobjectid = cb.deviceid ");
         sql.append("join yukonpaobject yp4 on yp4.paobjectid = cb.controldeviceid ");
         sql.append("join yukonpaobject yp3 on yp3.paobjectid = cb.deviceid ");
@@ -104,7 +137,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("join yukonpaobject yp5 on yp5.paobjectid = ss.substationid ");
         sql.append("join ccsubstationsubbuslist ssb on ssb.substationbusid = fs.substationbusid ");
         sql.append("join ccsubareaassignment sa on sa.substationbusid = ssb.substationid ");
-        sql.append("join  yukonpaobject yp on yp.paobjectid = sa.areaid ");
+        sql.append("join yukonpaobject yp on yp.paobjectid = sa.areaid ");
         sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = sa.areaid ");
         
         String result = null;
