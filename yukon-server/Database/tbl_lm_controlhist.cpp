@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.40 $
-* DATE         :  $Date: 2008/04/21 15:22:32 $
+* REVISION     :  $Revision: 1.41 $
+* DATE         :  $Date: 2008/04/21 15:53:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -955,7 +955,7 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
     table["currentannualtime"].assign( getCurrentAnnualTime() ) <<
     table["activerestore"].assign( getActiveRestore().c_str() ) <<
     table["reductionvalue"].assign( getReductionValue() ) <<
-    table["controlpriority"].assign( getReductionValue() );
+    table["controlpriority"].assign( getControlPriority() );
 
     long rowsAffected;
     RWDBStatus stat(RWDBStatus::ok);
