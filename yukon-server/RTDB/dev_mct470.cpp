@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.115 $
-* DATE         :  $Date: 2008/03/26 14:47:05 $
+* REVISION     :  $Revision: 1.116 $
+* DATE         :  $Date: 2008/04/21 21:57:08 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -144,6 +144,8 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
     cs.insert(CommandStore(Emetcon::PutValue_IEDReset,          Emetcon::IO_Function_Write, FuncWrite_IEDCommand,         FuncWrite_IEDCommandLen));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeOne,        Emetcon::IO_Write,          Command_FreezeOne,             0));
     cs.insert(CommandStore(Emetcon::PutStatus_FreezeTwo,        Emetcon::IO_Write,          Command_FreezeTwo,             0));
+    cs.insert(CommandStore(Emetcon::GetStatus_Freeze,           Emetcon::IO_Read,           Memory_LastFreezeTimestampPos, Memory_LastFreezeTimestampLen
+                                                                                                                             + Memory_FreezeCounterLen));
 
     //******************************** Config Related starts here *************************
     cs.insert(CommandStore(Emetcon::PutConfig_Addressing,       Emetcon::IO_Write,          Memory_AddressingPos,        Memory_AddressingLen));
@@ -4662,6 +4664,67 @@ INT CtiDeviceMCT470::decodeGetStatusDNP( INMESS *InMessage, CtiTime &TimeNow, li
         resultString += "DNP point: " + CtiNumStr(dnpPoint) + "\n";
         resultString += "Command status: " + resolveDNPStatus(commandStatus) + "(" + CtiNumStr(commandStatus) + ")" + "\n";
         resultString += "Last Successful Read: " + printable_time(ied_time) + "(" + CtiNumStr(ied_time) + ")" + "\n";
+
+        ReturnMsg->setResultString(resultString);
+
+        retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );
+    }
+
+    return status;
+}
+
+
+INT CtiDeviceMCT470::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList )
+{
+    INT status = NORMAL;
+
+    INT ErrReturn  = InMessage->EventCode & 0x3fff;
+    DSTRUCT *DSt  = &InMessage->Buffer.DSt;
+
+    if(!(status = decodeCheckErrorReturn(InMessage, retList, outList)))
+    {
+        // No error occured, we must do a real decode!
+
+        string resultString;
+        unsigned long tmpTime;
+        CtiTime lpTime;
+
+        CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
+        CtiPointDataMsg      *pData = NULL;
+
+        if((ReturnMsg = CTIDBG_new CtiReturnMsg(getID(), InMessage->Return.CommandStr)) == NULL)
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " Could NOT allocate memory " << __FILE__ << " (" << __LINE__ << ") " << endl;
+
+            return MEMORY;
+        }
+
+        ReturnMsg->setUserMessageId(InMessage->Return.UserID);
+
+        resultString += getName() + " / Freeze status:\n";
+
+        tmpTime = DSt->Message[0] << 24 |
+                  DSt->Message[1] << 16 |
+                  DSt->Message[2] <<  8 |
+                  DSt->Message[3];
+
+        updateFreezeInfo(DSt->Message[4], tmpTime);
+
+        CtiTime lastFreeze(tmpTime);
+        if( lastFreeze.isValid() )
+        {
+            resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
+        }
+        else
+        {
+            resultString += "Last freeze timestamp: (no freeze recorded)\n";
+        }
+
+        resultString += "Freeze counter: " + CtiNumStr(getCurrentFreeze()) + "\n";
+        resultString += "Next freeze expected: freeze ";
+        resultString += ((getCurrentFreeze() % 2)?("two"):("one"));
+        resultString += "\n";
 
         ReturnMsg->setResultString(resultString);
 

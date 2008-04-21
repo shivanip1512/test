@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.156 $
-* DATE         :  $Date: 2008/04/09 19:49:54 $
+* REVISION     :  $Revision: 1.157 $
+* DATE         :  $Date: 2008/04/21 21:57:08 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -969,8 +969,6 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         case Emetcon::GetStatus_Disconnect:         status = decodeGetStatusDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
 
-        case Emetcon::GetStatus_Freeze:             status = decodeGetStatusFreeze(InMessage, TimeNow, vgList, retList, outList);       break;
-
         case Emetcon::GetConfig_Disconnect:         status = decodeGetConfigDisconnect(InMessage, TimeNow, vgList, retList, outList);   break;
 
         case Emetcon::GetConfig_UniqueAddress:      status = decodeGetConfigAddress(InMessage, TimeNow, vgList, retList, outList);      break;
@@ -1749,16 +1747,6 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
         }
     }
-    else if( parse.isKeyValid("freeze_counter") )
-    {
-        found = true;
-
-        function = Emetcon::GetValue_FreezeCounter;
-
-        OutMessage->Buffer.BSt.Function = 0x2a;
-        OutMessage->Buffer.BSt.Length   = 1;
-        OutMessage->Buffer.BSt.IO       = Emetcon::IO_Read;
-    }
     else if( parse.isKeyValid("outage") )  //  outages
     {
         if( !hasDynamicInfo(Keys::Key_MCT_SSpec) )
@@ -1931,68 +1919,6 @@ INT CtiDeviceMCT410::executeGetConfig( CtiRequestMsg              *pReq,
     else
     {
         nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
-    }
-
-    if( found )
-    {
-        // Load all the other stuff that is needed
-        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
-        OutMessage->DeviceID  = getID();
-        OutMessage->TargetID  = getID();
-        OutMessage->Port      = getPortID();
-        OutMessage->Remote    = getAddress();
-        OutMessage->TimeOut   = 2;
-        OutMessage->Retry     = 2;
-
-        OutMessage->Request.RouteID   = getRouteID();
-        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
-
-        nRet = NoError;
-    }
-
-    if( errRet )
-    {
-        delete errRet;
-        errRet = 0;
-    }
-
-    return nRet;
-}
-
-
-INT CtiDeviceMCT410::executeGetStatus( CtiRequestMsg              *pReq,
-                                       CtiCommandParser           &parse,
-                                       OUTMESS                   *&OutMessage,
-                                       list< CtiMessage* >  &vgList,
-                                       list< CtiMessage* >  &retList,
-                                       list< OUTMESS* >     &outList )
-{
-    INT nRet = NoMethod;
-
-
-    bool found = false;
-
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   string(OutMessage->Request.CommandStr),
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
-
-    if(parse.isKeyValid("freeze"))
-    {
-        found = getOperation(Emetcon::GetStatus_Freeze, OutMessage->Buffer.BSt);
-
-        OutMessage->Sequence = Emetcon::GetStatus_Freeze;
-    }
-    else
-    {
-        nRet = Inherited::executeGetStatus(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
     if( found )
@@ -3724,7 +3650,15 @@ INT CtiDeviceMCT410::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow,
 
         updateFreezeInfo(DSt->Message[4], tmpTime);
 
-        resultString += "Last freeze timestamp: " + CtiTime(tmpTime).asString() + "\n";
+        CtiTime lastFreeze(tmpTime);
+        if( lastFreeze.isValid() )
+        {
+            resultString += "Last freeze timestamp: " + lastFreeze.asString() + "\n";
+        }
+        else
+        {
+            resultString += "Last freeze timestamp: (no freeze recorded)\n";
+        }
 
         resultString += "Freeze counter: " + CtiNumStr(getCurrentFreeze()) + "\n";
         resultString += "Next freeze expected: freeze ";
@@ -3738,7 +3672,15 @@ INT CtiDeviceMCT410::decodeGetStatusFreeze( INMESS *InMessage, CtiTime &TimeNow,
 
         //  we should eventually save the voltage freeze info as well
 
-        resultString += "Last voltage freeze timestamp: " + CtiTime(tmpTime).asString() + "\n";
+        CtiTime lastVoltageFreeze(tmpTime);
+        if( lastVoltageFreeze.isValid() )
+        {
+            resultString += "Last voltage freeze timestamp: " + lastVoltageFreeze.asString() + "\n";
+        }
+        else
+        {
+            resultString += "Last voltage freeze timestamp: (no freeze recorded)\n";
+        }
 
         resultString += "Voltage freeze counter: " + CtiNumStr(static_cast<unsigned>(DSt->Message[9])) + "\n";
         resultString += "Next voltage freeze expected: freeze ";

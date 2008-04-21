@@ -618,10 +618,6 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         {
             _cmd["codes"] = CtiParseValue(TRUE);
         }
-        else if(CmdStr.contains(" freezecount"))
-        {
-            _cmd["freeze_counter"] = CtiParseValue(TRUE);
-        }
         else if(CmdStr.contains(" dnp"))
         {
             _cmd["ied_dnp"] = CtiParseValue(TRUE);

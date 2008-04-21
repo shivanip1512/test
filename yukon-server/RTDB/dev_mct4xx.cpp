@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.76 $
-* DATE         :  $Date: 2008/04/09 19:49:54 $
+* REVISION     :  $Revision: 1.77 $
+* DATE         :  $Date: 2008/04/21 21:57:08 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1095,6 +1095,68 @@ INT CtiDeviceMCT4xx::executeGetConfig( CtiRequestMsg              *pReq,
         nRet = Inherited::executeGetConfig(pReq, parse, OutMessage, vgList, retList, outList);
     }
 
+
+    if( found )
+    {
+        // Load all the other stuff that is needed
+        //  FIXME:  most of this is taken care of in propagateRequest - we could probably trim a lot of this out
+        OutMessage->DeviceID  = getID();
+        OutMessage->TargetID  = getID();
+        OutMessage->Port      = getPortID();
+        OutMessage->Remote    = getAddress();
+        OutMessage->TimeOut   = 2;
+        OutMessage->Retry     = 2;
+
+        OutMessage->Request.RouteID   = getRouteID();
+        strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
+
+        nRet = NoError;
+    }
+
+    if( errRet )
+    {
+        delete errRet;
+        errRet = 0;
+    }
+
+    return nRet;
+}
+
+
+INT CtiDeviceMCT4xx::executeGetStatus( CtiRequestMsg              *pReq,
+                                       CtiCommandParser           &parse,
+                                       OUTMESS                   *&OutMessage,
+                                       list< CtiMessage* >  &vgList,
+                                       list< CtiMessage* >  &retList,
+                                       list< OUTMESS* >     &outList )
+{
+    INT nRet = NoMethod;
+
+
+    bool found = false;
+
+    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                   string(OutMessage->Request.CommandStr),
+                                                   string(),
+                                                   nRet,
+                                                   OutMessage->Request.RouteID,
+                                                   OutMessage->Request.MacroOffset,
+                                                   OutMessage->Request.Attempt,
+                                                   OutMessage->Request.TrxID,
+                                                   OutMessage->Request.UserID,
+                                                   OutMessage->Request.SOE,
+                                                   CtiMultiMsg_vec( ));
+
+    if(parse.isKeyValid("freeze"))
+    {
+        found = getOperation(Emetcon::GetStatus_Freeze, OutMessage->Buffer.BSt);
+
+        OutMessage->Sequence = Emetcon::GetStatus_Freeze;
+    }
+    else
+    {
+        nRet = Inherited::executeGetStatus(pReq, parse, OutMessage, vgList, retList, outList);
+    }
 
     if( found )
     {
@@ -3668,6 +3730,12 @@ INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         case (Emetcon::GetConfig_TOU):
         {
             status = decodeGetConfigTOU(InMessage, TimeNow, vgList, retList, outList);
+            break;
+        }
+
+        case Emetcon::GetStatus_Freeze:
+        {
+            status = decodeGetStatusFreeze(InMessage, TimeNow, vgList, retList, outList);
             break;
         }
 
