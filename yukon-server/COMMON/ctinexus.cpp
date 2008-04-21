@@ -527,9 +527,6 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
 {
     INT retval = NoError;
 
-    struct timeval tv = {0, 100000};  //  100 ms
-    fd_set readfds;
-
     try
     {
         //  READANY waits until the timeout occurs or until any data is read
@@ -541,68 +538,80 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
         {
             int socket_status;
             unsigned long bytes_read = 0, bytes_available = 0;
+            struct timeval tv = {0, 0};
+            fd_set readfds;
 
             if( TimeOut )
             {
-                if( TimeOut > 0 )   elapsed.reset();
-
-                //  initialize the FD set
-                FD_ZERO(&readfds);
-                FD_SET(sockt, &readfds);
-
-                //  block for tv until there's something to read
-                int data_available = select(0, &readfds, NULL, NULL, &tv);
-
-                if( TimeOut > 0 )   TimeOut -= std::min(elapsed.delta(), TimeOut);
-
-                if( data_available == SOCKET_ERROR )
+                if( TimeOut > 0 )
                 {
-                    socket_status = SOCKET_ERROR;
+                    tv.tv_usec = std::min(TimeOut, 500);
                 }
-                else if( data_available > 0 )
+                else
                 {
-                    socket_status = ioctlsocket(sockt, FIONREAD, &bytes_available);
+                    tv.tv_usec = 500;
                 }
-            }
-            else
-            {
-                socket_status = ioctlsocket(sockt, FIONREAD, &bytes_available);
+
+                elapsed.reset();
             }
 
-            if( socket_status == SOCKET_ERROR )
+            //  initialize the FD set
+            FD_ZERO(&readfds);
+            FD_SET(sockt, &readfds);
+
+            //  block for tv until there's something to read
+            int data_available = select(0, &readfds, NULL, NULL, &tv);
+
+            if( data_available == SOCKET_ERROR )
             {
                 INT Error = CTIGetLastError();
                 CTINexusReportError(__FILE__, __LINE__, Error );
 
                 retval = -Error;
             }
-            else if( bytes_available > 0 )
+            else if( data_available > 0 )
             {
-                if( bytes_available > 4096 )  bytes_available = 4096;
-
-                //  ensure current buffer is large enough to fit the bytes available
-                unsigned insert_position = read_buffer.size();
-                read_buffer.insert(read_buffer.end(), bytes_available, 0);
-
-                bytes_read = recv(sockt, read_buffer.begin() + insert_position, bytes_available, 0);
-
-                if( bytes_read == SOCKET_ERROR)
+                if( ioctlsocket(sockt, FIONREAD, &bytes_available) == SOCKET_ERROR )
                 {
-                    bytes_read = 0;
+                    INT Error = CTIGetLastError();
+                    CTINexusReportError(__FILE__, __LINE__, Error );
 
-                    CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
-
-                    retval = ErrorNexusRead;
+                    retval = -Error;
                 }
-
-                if( bytes_read < bytes_available )
+                else if( bytes_available == 0 )
                 {
-                    read_buffer.erase(read_buffer.begin() + insert_position + bytes_read, read_buffer.end());
+                    len = read_buffer.size();  //  socket's been closed - exit quietly
+                }
+                else if( bytes_available > 0 )
+                {
+                    if( bytes_available > 4096 )  bytes_available = 4096;
+
+                    //  ensure current buffer is large enough to fit the bytes available
+                    unsigned insert_position = read_buffer.size();
+                    read_buffer.insert(read_buffer.end(), bytes_available, 0);
+
+                    bytes_read = recv(sockt, read_buffer.begin() + insert_position, bytes_available, 0);
+
+                    if( bytes_read == SOCKET_ERROR)
+                    {
+                        bytes_read = 0;
+
+                        CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
+
+                        retval = ErrorNexusRead;
+                    }
+
+                    if( bytes_read < bytes_available )
+                    {
+                        read_buffer.erase(read_buffer.begin() + insert_position + bytes_read, read_buffer.end());
+                    }
                 }
             }
 
             if( TimeOut )
             {
+                if( TimeOut > 0 )   TimeOut -= std::min(elapsed.delta(), TimeOut);
+
                 try
                 {
                     rwServiceCancellation();
