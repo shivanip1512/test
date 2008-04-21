@@ -13,8 +13,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -55,6 +55,7 @@ protected:
     USHORT _uda;                    // 1 - 65534            // User Defined Address
     UCHAR _program;                 // 1 - 65534
     UCHAR _splinter;
+    UCHAR _priority;
 
     USHORT _addressUsage;             // bit indicators.  LSB is SPID.  No bits set indicates serial.
     USHORT _loads;             // 0 indicates all loads.  Otherwise, one load per message!
@@ -89,6 +90,8 @@ public:
     CtiTableExpresscomLoadGroup& setZip(UINT zip);
     USHORT getUda() const;
     CtiTableExpresscomLoadGroup& setUda(USHORT user);
+    UCHAR getPriority() const;
+    CtiTableExpresscomLoadGroup& setPriority(UCHAR prog);
     UCHAR getProgram() const;
     CtiTableExpresscomLoadGroup& setProgram(UCHAR prog);
     UCHAR getSplinter() const;

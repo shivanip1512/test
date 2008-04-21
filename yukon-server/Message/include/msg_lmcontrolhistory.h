@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/INCLUDE/msg_lmcontrolhistory.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2005/12/20 17:18:54 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,6 +33,7 @@ protected:
    string   _controlType;            //
    string   _activeRestore;          // Indicates whether group will time-in or a message is required.
    double      _reductionValue;         // kW reduction on this group.
+   int         _controlPriority;        // 0=highest priority. higher = lower priority. In Expresscom, 3 = lowest priority
 
 private:
 
@@ -50,6 +51,7 @@ public:
                           CtiTime     start      = CtiTime(),
                           int        dur        = 0,
                           int        redrat     = 100,
+                          int        ctrlPriority   = 0,
                           string  type       = string("N/A"),
                           string  restore    = string("N"),
                           double     reduce     = 0.0,
@@ -65,6 +67,9 @@ public:
 
    long getPointId() const;
    CtiLMControlHistoryMsg& setPointId( const long a_id );
+
+   int getControlPriority() const;
+   CtiLMControlHistoryMsg& setControlPriority( const int priority );
 
    int getRawState() const;
    CtiLMControlHistoryMsg& setRawState(const int raw);

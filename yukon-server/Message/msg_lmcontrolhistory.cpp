@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_lmcontrolhistory.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2005/12/20 17:18:53 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,8 @@ void CtiLMControlHistoryMsg::saveGuts(RWvostream &aStream) const
         getReductionRatio() <<
         getControlType() <<
         getActiveRestore() <<
-        getReductionValue();
+        getReductionValue() <<
+        getControlPriority();
 }
 
 void CtiLMControlHistoryMsg::restoreGuts(RWvistream& aStream)
@@ -54,7 +55,8 @@ void CtiLMControlHistoryMsg::restoreGuts(RWvistream& aStream)
         _reductionRatio >>
         _controlType >>
         _activeRestore >>
-        _reductionValue;
+        _reductionValue >>
+        _controlPriority;
 }
 
 long CtiLMControlHistoryMsg::getPAOId() const
@@ -76,6 +78,17 @@ long CtiLMControlHistoryMsg::getPointId() const
 CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setPointId( const long a_id )
 {
     _pointId = a_id;
+    return *this;
+}
+
+int CtiLMControlHistoryMsg::getControlPriority() const
+{
+    return _controlPriority;
+}
+
+CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::setControlPriority( const int priority )
+{
+    _controlPriority = priority;
     return *this;
 }
 
@@ -170,6 +183,7 @@ void CtiLMControlHistoryMsg::dump() const
     dout << " Control Type                  " << getControlType() << endl;
     dout << " Active Restore                " << getActiveRestore() << endl;
     dout << " Reduction Value               " << getReductionValue() << endl;
+    dout << " Control Priority              " << getControlPriority() << endl;
 }
 
 
@@ -183,11 +197,11 @@ CtiMessage* CtiLMControlHistoryMsg::replicateMessage() const
 
 
 CtiLMControlHistoryMsg::CtiLMControlHistoryMsg(long paoid, long pointid, int raw, CtiTime start,
-                                               int dur, int redrat,  string type, string restore,
+                                               int dur, int redrat, int ctrlPriority, string type, string restore,
                                                double reduce, int pri) :
 Inherited(pri), _paoId(paoid), _pointId(pointid), _rawState(raw), _startDateTime(start),
 _controlDuration(dur), _reductionRatio(redrat), _controlType(type), _activeRestore(restore),
-_reductionValue(reduce)
+_reductionValue(reduce), _controlPriority(ctrlPriority)
 {
     _instanceCount++;
 }
@@ -218,6 +232,7 @@ CtiLMControlHistoryMsg& CtiLMControlHistoryMsg::operator=(const CtiLMControlHist
         _controlType        = aRef.getControlType();
         _activeRestore      = aRef.getActiveRestore();
         _reductionValue     = aRef.getReductionValue();
+        _controlPriority    = aRef.getControlPriority();
     }
     return *this;
 }

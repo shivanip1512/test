@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.183 $
-* DATE         :  $Date: 2008/04/10 21:04:49 $
+* REVISION     :  $Revision: 1.184 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2678,6 +2678,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg->getControl().setReductionValue(pMsg->getReductionValue());
                 pendingControlLMMsg->getControl().setReductionRatio(pMsg->getReductionRatio());
                 pendingControlLMMsg->getControl().setStartTime(pMsg->getStartDateTime());
+                pendingControlLMMsg->getControl().setControlPriority(pMsg->getControlPriority());
 
                 CtiTime cntrlStopTime(pMsg->getStartDateTime().seconds() + pMsg->getControlDuration());
                 if(pMsg->getControlDuration() < 0) cntrlStopTime = pMsg->getStartDateTime();

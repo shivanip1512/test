@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2007/11/21 19:55:47 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -126,7 +126,7 @@ public:
         _lastCommandExpiration = now.seconds() + parse.getiValue("control_interval", 0);
     }
 
-    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string("") )
+    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string(""), int controlPriority = 0 )
     {
         /*
          *  This is the CONTROL STATUS point (offset) for the group.
@@ -136,7 +136,7 @@ public:
 
         if(pControlStatus)
         {
-            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( getID(), pControlStatus->getPointID(), isshed, CtiTime(), (isshed == CONTROLLED ? shedtime : RESTORE_DURATION), (isshed == CONTROLLED ? reductionratio : 0));
+            CtiLMControlHistoryMsg *hist = CTIDBG_new CtiLMControlHistoryMsg ( getID(), pControlStatus->getPointID(), isshed, CtiTime(), (isshed == CONTROLLED ? shedtime : RESTORE_DURATION), (isshed == CONTROLLED ? reductionratio : 0), controlPriority);
 
             hist->setControlType( cmd );      // Could be the state group name ????
             hist->setActiveRestore( shedtime > 0 ? LMAR_TIMED_RESTORE : LMAR_MANUAL_RESTORE);

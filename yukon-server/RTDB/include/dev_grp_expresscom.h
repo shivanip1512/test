@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/11/21 19:55:47 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,7 @@ private:
 
     // This method makes a gripe if any addressing level or load is predefined when submitting a request to a group
     bool checkForEmptyParseAddressing( CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &retList );
-    void reportChildControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd );
+    void reportChildControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd, int controlPriority );
     typedef std::map< long, CtiDeviceGroupBaseWPtr > WPtrGroupMap;
     WPtrGroupMap _children;
 
@@ -57,7 +57,7 @@ public:
     virtual void DecodeDatabaseReader(RWDBReader &rdr);
     virtual INT ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
     virtual string getPutConfigAssignment(UINT modifier = 0);
-    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string("") );
+    virtual void reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd = string(""), int priority = 0 );
 
     virtual ADDRESSING_COMPARE_RESULT compareAddressing(CtiDeviceGroupBaseSPtr otherGroup);
     bool compareAddressValues(USHORT addressing, CtiDeviceGroupExpresscom *expGroup);

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_lm_controlhist.h-arc  $
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -69,6 +69,7 @@ protected:
     LONG        _currentAnnualTime;
     mutable string   _activeRestore;
     DOUBLE      _reductionValue;
+    INT         _controlPriority;
 
     // Values below are note stored in the DB.
     string   _defaultActiveRestore;
@@ -134,6 +135,9 @@ public:
 
     INT getControlDuration() const;
     CtiTableLMControlHistory& setControlDuration( const INT cd );
+
+    INT getControlPriority() const;
+    CtiTableLMControlHistory& setControlPriority( const INT cd );
 
     const string& getControlType() const;
     CtiTableLMControlHistory& setControlType( const string& ct );

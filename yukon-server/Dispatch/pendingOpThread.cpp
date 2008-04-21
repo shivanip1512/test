@@ -7,11 +7,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.34 $
-* DATE         :  $Date: 2007/08/27 18:27:52 $
+* REVISION     :  $Revision: 1.35 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.35  2008/04/21 15:22:32  jotteson
+* YUK-4897 Load management implementation of Expresscom priorities
+* Added expresscom priority tracking.
+* Modified tables to add priorities.
+*
 * Revision 1.34  2007/08/27 18:27:52  jotteson
 * YUK-4279
 * Changed "repeat control" functionality to copy the "control state" to the new control object.
@@ -1747,7 +1752,12 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                      */
                     pendable->_ppo->setOffsetMap(ppo.getOffsetMap());   // Try to reduce the number of pointmap searches.
 
-                    if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress)
+                    // If this is a control and the new control is at least as high of priority as the previous
+                    // Remember that 0 is high priority and higher than 0 is lower
+                    // priority. If old priority value >= new, the new can
+                    // override the old. By default most things will have priority 0.
+                    if(ppo.getControlState() == CtiPendingPointOperations::controlInProgress && 
+                       ppo.getControl().getControlPriority() >= pendable->_ppo->getControl().getControlPriority())
                     {
                         tempTime = pendable->_time >= ppo.getControl().getPreviousLogTime() ? pendable->_time : ppo.getControl().getPreviousLogTime();
 
@@ -1817,7 +1827,7 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
                             ppo = *pendable->_ppo;    // Copy it to update the control state.
                         }
                     }
-                    else
+                    else if( ppo.getControl().getControlPriority() >= pendable->_ppo->getControl().getControlPriority() )
                     {
                         pendable->_ppo->getControl().setCurrentDailyTime(ppo.getControl().getCurrentDailyTime());
                         pendable->_ppo->getControl().setCurrentMonthlyTime(ppo.getControl().getCurrentMonthlyTime());

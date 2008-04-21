@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.39 $
-* DATE         :  $Date: 2005/12/21 22:22:07 $
+* REVISION     :  $Revision: 1.40 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -64,6 +64,7 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::operator=(const CtiTableLMCo
         _controlCompleteTime = aRef.getControlCompleteTime();
         _soeTag              = aRef.getSoeTag();
         _controlDuration     = aRef.getControlDuration();
+        _controlPriority     = aRef.getControlPriority();
         _controlType         = aRef.getControlType();
         _currentDailyTime    = aRef.getCurrentDailyTime();
         _currentMonthlyTime  = aRef.getCurrentMonthlyTime();
@@ -185,6 +186,18 @@ CtiTableLMControlHistory& CtiTableLMControlHistory::setControlDuration( const IN
 {
     setDirty();
     _controlDuration = cd;
+    return *this;
+}
+
+INT CtiTableLMControlHistory::getControlPriority() const
+{
+    return _controlPriority;
+}
+
+CtiTableLMControlHistory& CtiTableLMControlHistory::setControlPriority( const INT priority )
+{
+    setDirty();
+    _controlPriority = priority;
     return *this;
 }
 
@@ -325,7 +338,8 @@ void CtiTableLMControlHistory::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
     devTbl["currentseasonaltime"] <<
     devTbl["currentannualtime"] <<
     devTbl["activerestore"] <<
-    devTbl["reductionvalue"];
+    devTbl["reductionvalue"] <<
+    devTbl["controlpriority"];
 
     selector.from(keyTable);
     selector.from(devTbl);
@@ -351,7 +365,8 @@ void CtiTableLMControlHistory::getDynamicSQL(RWDBDatabase &db,  RWDBTable &keyTa
     devTbl["currentseasonaltime"] <<
     devTbl["currentannualtime"] <<
     devTbl["activerestore"] <<
-    devTbl["reductionvalue"];
+    devTbl["reductionvalue"] <<
+    devTbl["controlpriority"];
 
     selector.from(keyTable);
     selector.from(devTbl);
@@ -376,7 +391,8 @@ void CtiTableLMControlHistory::getSQLForOutstandingControls(RWDBDatabase &db,  R
     keyTable["currentseasonaltime"] <<
     keyTable["currentannualtime"] <<
     keyTable["activerestore"] <<
-    keyTable["reductionvalue"];
+    keyTable["reductionvalue"] <<
+    keyTable["controlpriority"];
 
     selector.from(keyTable);
 
@@ -456,6 +472,7 @@ void CtiTableLMControlHistory::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["activerestore"]       >> _defaultActiveRestore;
     rdr["reductionvalue"]      >> _reductionValue;
+    rdr["controlpriority"]     >> _controlPriority;
 
     setUpdatedFlag();
 }
@@ -534,7 +551,8 @@ RWDBStatus CtiTableLMControlHistory::Restore()
     table["currentseasonaltime"] <<
     table["currentannualtime"] <<
     table["activerestore"] <<
-    table["reductionvalue"];
+    table["reductionvalue"] <<
+    table["controlpriority"];
 
     selector.where( table["paobjectid"] == getPAOID() && table["lmctrlhistid"] == maxid);
 
@@ -582,7 +600,8 @@ RWDBStatus CtiTableLMControlHistory::Insert(RWDBConnection &conn)
     getCurrentAnnualTime() <<
     (getActiveRestore().empty() ? "U" : getActiveRestore()) <<
     getReductionValue() <<
-    CtiTime(getStopTime());
+    CtiTime(getStopTime()) <<
+    getControlPriority();
 
     if(getStopTime().seconds() >= getStartTime().seconds())
     {
@@ -636,7 +655,8 @@ RWDBStatus CtiTableLMControlHistory::Update()
     table["currentseasonaltime"].assign( getCurrentSeasonalTime() ) <<
     table["currentannualtime"].assign( getCurrentAnnualTime() ) <<
     table["activerestore"].assign( getActiveRestore().c_str() ) <<
-    table["reductionvalue"].assign( getReductionValue() );
+    table["reductionvalue"].assign( getReductionValue() ) <<
+    table["controlpriority"].assign( getControlPriority() );
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
@@ -821,6 +841,7 @@ void CtiTableLMControlHistory::dump() const
         dout << " currentannualtime     " << getCurrentAnnualTime() << endl;
         dout << " activerestore         " << getActiveRestore() << endl;
         dout << " reductionvalue        " << getReductionValue() << endl;
+        dout << " controlpriority       " << getControlPriority() << endl;
     }
 
     return;
@@ -846,6 +867,7 @@ void CtiTableLMControlHistory::DecodeOutstandingControls(RWDBReader &rdr)
     rdr["currentannualtime"]    >> _currentAnnualTime;
     rdr["activerestore"]        >> _loadedActiveRestore;
     rdr["reductionvalue"]       >> _reductionValue;
+    rdr["controlpriority"]      >> _controlPriority;
 
     if(_loadedActiveRestore == LMAR_DISPATCH_SHUTDOWN && now < _stopDateTime)
     {
@@ -886,7 +908,8 @@ void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RW
     keyTable["currentseasonaltime"] <<
     keyTable["currentannualtime"] <<
     keyTable["activerestore"] <<
-    keyTable["reductionvalue"];
+    keyTable["reductionvalue"] <<
+    keyTable["controlpriority"];
 
     selector.from(keyTable);
 
@@ -931,7 +954,8 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
     table["currentseasonaltime"].assign( getCurrentSeasonalTime() ) <<
     table["currentannualtime"].assign( getCurrentAnnualTime() ) <<
     table["activerestore"].assign( getActiveRestore().c_str() ) <<
-    table["reductionvalue"].assign( getReductionValue() );
+    table["reductionvalue"].assign( getReductionValue() ) <<
+    table["controlpriority"].assign( getReductionValue() );
 
     long rowsAffected;
     RWDBStatus stat(RWDBStatus::ok);
@@ -966,7 +990,8 @@ RWDBStatus CtiTableLMControlHistory::InsertDynamic(RWDBConnection &conn)
     getCurrentAnnualTime() <<
     getActiveRestore() <<
     getReductionValue() <<
-    CtiTime(getStopTime());
+    CtiTime(getStopTime()) <<
+    getControlPriority();
 
     if(getStopTime().seconds() >= getStartTime().seconds())
     {

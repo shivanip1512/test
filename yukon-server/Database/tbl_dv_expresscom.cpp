@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2005/12/20 17:16:05 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,6 +66,7 @@ CtiTableExpresscomLoadGroup& CtiTableExpresscomLoadGroup::operator=(const CtiTab
         _splinter = aRef.getSplinter();
         _addressUsage = aRef.getAddressUsage();
         _loads = aRef.getLoadMask();
+        _priority = aRef.getPriority();
     }
 
     return *this;
@@ -161,6 +162,15 @@ CtiTableExpresscomLoadGroup& CtiTableExpresscomLoadGroup::setProgram(UCHAR prog)
     _program = prog;
     return *this;
 }
+UCHAR CtiTableExpresscomLoadGroup::getPriority() const
+{
+    return _priority;
+}
+CtiTableExpresscomLoadGroup& CtiTableExpresscomLoadGroup::setPriority(UCHAR priority)
+{
+    _priority = priority;
+    return *this;
+}
 UCHAR CtiTableExpresscomLoadGroup::getSplinter() const
 {
     return _splinter;
@@ -211,7 +221,8 @@ void CtiTableExpresscomLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable,
     devTbl["programaddress"    ] <<
     devTbl["splinteraddress"   ] <<
     devTbl["addressusage"      ] <<
-    devTbl["relayusage"        ];
+    devTbl["relayusage"        ] <<
+    devTbl["priority"         ];
 
 
     selector.from(devTbl);
@@ -264,6 +275,7 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     _addressUsage = resolveAddressUsage( rwsTemp.c_str(), expresscomAddressUsage );
 
     rdr["relayusage"        ] >> rwsTemp;
+    rdr["priority"          ] >> _priority;
 
     _loads = resolveRelayUsage(rwsTemp.c_str());
 }

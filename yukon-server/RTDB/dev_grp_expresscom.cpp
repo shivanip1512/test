@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2008/02/29 17:05:14 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2008/04/21 15:22:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -177,6 +177,11 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
             parse.setValue("xc_serial", serial);
         }
 
+        if(getExpresscomGroup().getPriority() < 3 && getExpresscomGroup().getPriority() >=0 && !parse.isKeyValid("xcpriority"))
+        {
+            parse.setValue("xcpriority", getExpresscomGroup().getPriority());
+        }
+
         if(parse.getCommand() == ControlRequest && serial <= 0 && program == 0 && splinter == 0 )
         {
             if((getExpresscomGroup().getAddressUsage() & CtiProtocolExpresscom::atLoad) &&
@@ -245,7 +250,13 @@ INT CtiDeviceGroupExpresscom::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandPars
         {
             if(parse.getCommand() == ControlRequest)
             {
-                reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()) );
+                int priority = parse.getiValue("xcpriority",3);
+                if(priority < 0 || priority > 3)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Priority is invalid: " << priority << " " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+                reportControlStart( parse.getControlled(), parse.getiValue("control_interval"), parse.getiValue("control_reduction", 100), vgList, removeCommandDynamicText(parse.getCommandStr()), priority );
             }
 
             delete pRet;
@@ -451,9 +462,9 @@ CtiDeviceGroupBase::ADDRESSING_COMPARE_RESULT CtiDeviceGroupExpresscom::compareA
 }
 
 // Function to report control start for this group and ALL CHILD groups
-void CtiDeviceGroupExpresscom::reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd )
+void CtiDeviceGroupExpresscom::reportControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd, int controlPriority )
 {
-    reportChildControlStart(isshed, shedtime, reductionratio, vgList, cmd);
+    reportChildControlStart(isshed, shedtime, reductionratio, vgList, cmd, controlPriority);
     if( isAParent() )
     {
         //We need multiple copies!
@@ -463,16 +474,16 @@ void CtiDeviceGroupExpresscom::reportControlStart(int isshed, int shedtime, int 
             if( sptr && sptr->getType() == TYPE_LMGROUP_EXPRESSCOM )
             {
                 CtiDeviceGroupExpresscom *grpPtr = (CtiDeviceGroupExpresscom*)sptr.get();
-                grpPtr->reportChildControlStart(isshed, shedtime, reductionratio, vgList, cmd);
+                grpPtr->reportChildControlStart(isshed, shedtime, reductionratio, vgList, cmd, controlPriority);
             }
         }
     }
 }
 
 // Function to report control start for ONLY this group.
-void CtiDeviceGroupExpresscom::reportChildControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd )
+void CtiDeviceGroupExpresscom::reportChildControlStart(int isshed, int shedtime, int reductionratio, list< CtiMessage* >  &vgList, string cmd, int controlPriority)
 {
-    Inherited::reportControlStart(isshed, shedtime, reductionratio, vgList, cmd);
+    Inherited::reportControlStart(isshed, shedtime, reductionratio, vgList, cmd, controlPriority);
 }
 
 bool CtiDeviceGroupExpresscom::compareAddressValues(USHORT addressing, CtiDeviceGroupExpresscom *expGroup)

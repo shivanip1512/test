@@ -4460,6 +4460,13 @@ void  CtiCommandParser::doParseControlExpresscom(const string &_CmdStr)
             _cmd["xcbacklightperiod"] = CtiParseValue( iValue );
         }
     }
+    if(!(token = CmdStr.match(" priority " + str_num)).empty())
+    {
+        if(!(temp = token.match(re_num)).empty())
+        {
+            _cmd["xcpriority"] = CtiParseValue( atoi(temp.c_str()) );            // Expresscom only supports a 0 - 3 priority 0 highest.
+        }
+    }
 }
 
 
