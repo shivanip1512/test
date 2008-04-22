@@ -914,7 +914,7 @@ public class LMControlHistoryUtil {
                         //opt out ended during a control period that started during the opt out
                         //subtract the difference of opt out stop and period start.
                         else if(optOutEntry.getOptOutStart().getTime() < start.getTime() && optOutEntry.getOptOutStop() != null &&
-                                optOutEntry.getOptOutStop().getTime() < stop.getTime()) {
+                                optOutEntry.getOptOutStop().getTime() > start.getTime() && optOutEntry.getOptOutStop().getTime() < stop.getTime()) {
                             newDuration = newDuration - (optOutEntry.getOptOutStop().getTime() - start.getTime());
                             newOptOutControlTime = newOptOutControlTime + (optOutEntry.getOptOutStop().getTime() - start.getTime());
                         }
