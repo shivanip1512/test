@@ -938,7 +938,7 @@ public class Multispeak implements MessageListener {
         String meterNumber = mspMeter.getMeterNo().trim();
         
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
-        String mspBillingCycle = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? "":mspServiceLocation.getBillingCycle();
+        String mspBillingCycle = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? "Default":mspServiceLocation.getBillingCycle();
 
         // get the Collection Group value...returns a set...just pick one I guess.
         DeviceGroup collDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.COLLECTION);
