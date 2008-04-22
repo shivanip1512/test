@@ -622,12 +622,12 @@ public class LMControlHistoryUtil {
                     notEnrolled = false;
                 }
                 //enrollment started after the beginning of the period, subtract the difference
-                if(enrollmentEntry.getGroupEnrollStart().getTime() > periodStart.getTime()) { 
+                else if(enrollmentEntry.getGroupEnrollStart().getTime() > periodStart.getTime()) { 
                     controlHistoryTotal = controlHistoryTotal - (enrollmentEntry.getGroupEnrollStart().getTime() - periodStart.getTime());
                     notEnrolled = false;
                 }
                 //enrollment stopped before the end of the period, subtract the difference
-                if(enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().getTime() < periodStop.getTime()) {
+                else if(enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().getTime() < periodStop.getTime()) {
                     controlHistoryTotal = controlHistoryTotal - (periodStop.getTime() - enrollmentEntry.getGroupEnrollStop().getTime());
                     notEnrolled = false;
                 }
@@ -638,21 +638,21 @@ public class LMControlHistoryUtil {
             return -1;
         
         for(LMHardwareControlGroup optOutEntry : optOuts) {
-            //period falls entirely within an opt out period.  Discard it.
+            //control occurred entirely during an opt out.  Discard it.
             if(optOutEntry.getOptOutStart().getTime() < periodStart.getTime() && optOutEntry.getOptOutStop() != null &&
                     optOutEntry.getOptOutStop().getTime() > periodStop.getTime()) {
                 return -1;
             }
-            //opt out started during a control period and period stopped during the opt out.  
+            //An opt out started during control, control stopped before opt out ended
             //Subtract the difference of opt out start and the period's stop from duration.
             else if(optOutEntry.getOptOutStart().getTime() > periodStart.getTime() && optOutEntry.getOptOutStart().getTime() < periodStop.getTime() && 
                     (optOutEntry.getOptOutStop() == null || optOutEntry.getOptOutStop().getTime() > periodStop.getTime())) {
                 controlHistoryTotal = controlHistoryTotal - (periodStop.getTime() - optOutEntry.getOptOutStart().getTime());
             }
-            //opt out ended during a control period that started during the opt out
+            //control occurred during an already active opt out, that opt out then ended before control was complete
             //subtract the difference of opt out stop and period start.
             else if(optOutEntry.getOptOutStart().getTime() < periodStart.getTime() && optOutEntry.getOptOutStop() != null &&
-                    optOutEntry.getOptOutStop().getTime() < periodStop.getTime()) {
+                    optOutEntry.getOptOutStop().getTime() > periodStart.getTime() && optOutEntry.getOptOutStop().getTime() < periodStop.getTime()) {
                 controlHistoryTotal = controlHistoryTotal - (optOutEntry.getOptOutStop().getTime() - periodStart.getTime());
             }
             //an opt out occurred cleanly in the middle of a control period
