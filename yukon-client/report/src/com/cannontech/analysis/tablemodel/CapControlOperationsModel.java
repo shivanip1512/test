@@ -25,6 +25,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     private Set<Integer> substationIds;
     private Set<Integer> areaIds;
     private String[] statusQualities;
+    private String orderBy = "area";
     
     public CapControlOperationsModel() {
     }
@@ -38,9 +39,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         public String confStatus;
         public String bankStatusQuality;
         public String feederName;
-        public Integer feederId;
         public String subName;
-        public Integer subBusId;
         public String region;
         public Integer bankSize;
         public String protocol;
@@ -86,9 +85,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
                 row.confStatus = rs.getString("confStatus");
                 row.bankStatusQuality = rs.getString("bankStatusQuality");
                 row.feederName = rs.getString("feederName");
-                row.feederId = rs.getInt("feederId");
                 row.subName = rs.getString("subName");
-                row.subBusId = rs.getInt("subBusId");
                 row.region = rs.getString("region");
                 row.bankSize = rs.getInt("bankSize");
                 row.protocol = rs.getString("protocol");
@@ -174,6 +171,33 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
             sql.append(result);
         }
         
+        if(orderBy.equalsIgnoreCase("CBC")) {
+            sql.append("order by cbcName ");
+        }else if (orderBy .equalsIgnoreCase("Operation Time")) {
+            sql.append("order by opTime ");
+        }else if (orderBy .equalsIgnoreCase("Operation")) {
+            sql.append("order by operation ");
+        }else if (orderBy .equalsIgnoreCase("Conf Time")) {
+            sql.append("order by confTime ");
+        }else if (orderBy .equalsIgnoreCase("Conf Status")) {
+            sql.append("order by confStatus ");
+        }else if (orderBy .equalsIgnoreCase("Status Quality")) {
+            sql.append("order by bankStatusQuality ");
+        }else if (orderBy .equalsIgnoreCase("Feeder")) {
+            sql.append("order by feederName ");
+        }else if (orderBy .equalsIgnoreCase("Substation Bus")) {
+            sql.append("order by subName ");
+        }else if (orderBy .equalsIgnoreCase("Area")) {
+            sql.append("order by region ");
+        }else if (orderBy .equalsIgnoreCase("Bank Size")) {
+            sql.append("order by bankSize ");
+        }else if (orderBy .equalsIgnoreCase("Ip Address")) {
+            sql.append("order by ipAddress ");
+        }else if (orderBy .equalsIgnoreCase("Serial Num")) {
+            sql.append("order by serialNum ");
+        }else if (orderBy .equalsIgnoreCase("Slave Address")) {
+            sql.append("order by slaveAddress ");
+        }
         return sql;
     }
     
@@ -212,6 +236,10 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
     
     public void setStatusQualities(String[] statusQualities) {
         this.statusQualities = statusQualities;
+    }
+    
+    public void setOrderBy(String orderBy) {
+        this.orderBy = orderBy;
     }
     
 }
