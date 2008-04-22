@@ -13,6 +13,7 @@
 			<value>com/cannontech/common/device/deviceContext.xml</value>
 			<value>com/cannontech/amr/amrContext-client.xml</value>
 			<value>com/cannontech/common/bulk/bulkContext.xml</value>
+            <value>com/cannontech/web/input/inputContext.xml</value>
 			<value>com/cannontech/common/device/config/deviceConfigurationContext.xml</value>
 			<value>com/cannontech/core/authentication/authContext.xml</value>
 			<value>com/cannontech/core/authorization/applicationContext.xml</value>
