@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.116 $
-* DATE         :  $Date: 2008/04/21 21:57:08 $
+* REVISION     :  $Revision: 1.117 $
+* DATE         :  $Date: 2008/04/22 15:59:40 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -114,6 +114,7 @@ CtiDeviceMCT470::CommandSet CtiDeviceMCT470::initCommandStore( )
 
     cs.insert(CommandStore(Emetcon::Scan_Accum,                 Emetcon::IO_Function_Read,  FuncRead_MReadPos,            FuncRead_MReadLen));
     cs.insert(CommandStore(Emetcon::GetValue_KWH,               Emetcon::IO_Function_Read,  FuncRead_MReadPos,            FuncRead_MReadLen));
+    cs.insert(CommandStore(Emetcon::GetValue_FrozenKWH,         Emetcon::IO_Function_Read,  FuncRead_MReadFrozenPos,      FuncRead_MReadFrozenLen));
     cs.insert(CommandStore(Emetcon::Scan_Integrity,             Emetcon::IO_Function_Read,  FuncRead_DemandPos,           FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::GetValue_Demand,            Emetcon::IO_Function_Read,  FuncRead_DemandPos,           FuncRead_DemandLen));
     cs.insert(CommandStore(Emetcon::Scan_LoadProfile,           Emetcon::IO_Function_Read,  0,                             0));
@@ -1335,7 +1336,8 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     switch(InMessage->Sequence)
     {
         case Emetcon::Scan_Accum:
-        case Emetcon::GetValue_KWH:             status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);           break;
+        case Emetcon::GetValue_KWH:
+        case Emetcon::GetValue_FrozenKWH:       status = decodeGetValueKWH(InMessage, TimeNow, vgList, retList, outList);           break;
 
         case Emetcon::Scan_Integrity:
         case Emetcon::GetValue_Demand:          status = decodeGetValueDemand(InMessage, TimeNow, vgList, retList, outList);        break;
@@ -3468,30 +3470,21 @@ int CtiDeviceMCT470::sendDNPConfigMessages(int startMCTID, list< OUTMESS * > &ou
 INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
 {
     INT status = NORMAL;
-    ULONG i,x;
-    INT pid;
-    string resultString;
+    int tags;
 
-    INT ErrReturn  = InMessage->EventCode & 0x3fff;
     DSTRUCT *DSt   = &InMessage->Buffer.DSt;
 
-    unsigned long pulses;
-    point_info  pi;
+    CtiTime pointTime;
+    point_info  pi, pi_freezecount;
+    bool freeze_info_valid = true;
 
-    CtiPointSPtr          pPoint;
-    CtiReturnMsg         *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
-    CtiPointDataMsg      *pData = NULL;
+    CtiReturnMsg *ReturnMsg = NULL;    // Message sent to VanGogh, inherits from Multi
 
     if( getMCTDebugLevel(DebugLevel_Scanrates) )
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Accumulator Decode for \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
-
-
-    //  ACH:  are these necessary?  /mskf
-    resetScanFlag(ScanFreezePending);
-    resetScanFlag(ScanFreezeFailed);
 
     if( InMessage->Sequence == Emetcon::Scan_Accum )
     {
@@ -3512,23 +3505,82 @@ INT CtiDeviceMCT470::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
         ReturnMsg->setUserMessageId(InMessage->Return.UserID);
 
-        //  add freeze smarts here
-
-        for( i = 0; i < ChannelCount; i++ )
+        if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
         {
-            pPoint = getDevicePointOffsetTypeEqual( 1 + i, PulseAccumulatorPointType );
+            string freeze_error;
 
-            point_info pi = CtiDeviceMCT4xx::getData(DSt->Message + (i * 3), 3, ValueType_Accumulator);
+            pi_freezecount = CtiDeviceMCT4xx::getData(DSt->Message + 3, 1, ValueType_Raw);
 
-            CtiTime pointTime;
-            pointTime -= pointTime.seconds() % 300;
+            if( status = checkFreezeLogic(pi_freezecount.value, freeze_error) )
+            {
+                ReturnMsg->setResultString(freeze_error);
+            }
+        }
 
-            string point_name;
+        if( !status )
+        {
+            for( int i = 0; i < ChannelCount; i++ )
+            {
+                int offset = (i * 3);
 
-            if( !i )  point_name = "KYZ 1";
+                if( !i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType) )
+                {
+                    if( InMessage->Sequence == Cti::Protocol::Emetcon::Scan_Accum ||
+                        InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_KWH )
+                    {
+                        //  normal KWH read, nothing too special
+                        pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_Accumulator);
 
-            insertPointDataReport(PulseAccumulatorPointType, i + 1,
-                                  ReturnMsg, pi, point_name, pointTime, 1.0, TAG_POINT_MUST_ARCHIVE);
+                        pointTime -= pointTime.seconds() % 300;
+                    }
+                    else if( InMessage->Sequence == Cti::Protocol::Emetcon::GetValue_FrozenKWH )
+                    {
+                        //  this is where the action is - frozen decode
+                        if( i ) offset++;  //  so that, for the frozen read, it goes 0, 4, 7 to step past the freeze counter in position 3
+
+                        pi = CtiDeviceMCT4xx::getData(DSt->Message + offset, 3, ValueType_FrozenAccumulator);
+
+                        if( pi.freeze_bit != getExpectedFreezeParity() )
+                        {
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " **** Checkpoint - incoming freeze parity bit (" << pi.freeze_bit <<
+                                                    ") does not match expected freeze bit (" << getExpectedFreezeParity() <<
+                                                    "/" << getExpectedFreeze() << ") on device \"" << getName() << "\", not sending data **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                            }
+
+                            pi.description  = "Freeze parity does not match (";
+                            pi.description += CtiNumStr(pi.freeze_bit) + " != " + CtiNumStr(getExpectedFreezeParity());
+                            pi.description += "/" + CtiNumStr(getExpectedFreeze()) + ")";
+                            pi.quality = InvalidQuality;
+                            pi.value = 0;
+
+                            ReturnMsg->setResultString("Invalid freeze parity; last recorded freeze sent at " + getLastFreezeTimestamp().asString());
+                            status = ErrorInvalidFrozenReadingParity;
+                        }
+                        else
+                        {
+                            pointTime  = getLastFreezeTimestamp();
+                            pointTime -= pointTime.seconds() % 60;
+                        }
+                    }
+
+                    string point_name;
+                    bool reported = false;
+
+                    if( !i )    point_name = "KYZ 1";
+
+                    insertPointDataReport(PulseAccumulatorPointType, i + 1,
+                                          ReturnMsg, pi, point_name, pointTime, 1.0, TAG_POINT_MUST_ARCHIVE);
+
+                    //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
+                    if( pi.quality == InvalidQuality && !status && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
+                    {
+                        ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1) + "\n" + ReturnMsg->ResultString());
+                        status = ErrorInvalidData;
+                    }
+                }
+            }
         }
 
         retMsgHandler( InMessage->Return.CommandStr, status, ReturnMsg, vgList, retList );

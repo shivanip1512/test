@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.157 $
-* DATE         :  $Date: 2008/04/21 21:57:08 $
+* REVISION     :  $Revision: 1.158 $
+* DATE         :  $Date: 2008/04/22 15:59:40 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2502,7 +2502,7 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
                     //  if the quality's invalid, throw the status to abnormal if it's the first channel OR there's a point defined
                     if( pi.quality == InvalidQuality && !status && (!i || getDevicePointOffsetTypeEqual(i + 1, PulseAccumulatorPointType)) )
                     {
-                        ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1));
+                        ReturnMsg->setResultString("Invalid data returned for channel " + CtiNumStr(i + 1) + "\n" + ReturnMsg->ResultString());
                         status = ErrorInvalidData;
                     }
                 }
