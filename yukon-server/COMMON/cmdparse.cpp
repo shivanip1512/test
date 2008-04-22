@@ -3359,7 +3359,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 int   val;
                 char *ptr = NULL;
 
-                CtiParseValue  rawStr;     // This is to contain the raw bytes
+                CtiString      rawStr;     // This is to contain the raw bytes
 
                 CtiTokenizer   tok(token);
 
@@ -3369,13 +3369,11 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
                 {
                     token = tok(); // Returns each whitespace seperated token successivly.
 
-                    //  returns 0 if token is empty or not convertable
-                    val = strtol( token.c_str(), &ptr, 16 );
-
-                    rawStr.getString().append(1, (CHAR)val);
+                    //  strtol returns 0 if token is empty or not convertable, which is what we want
+                    rawStr.append(1, (CHAR)strtol(token.c_str(), &ptr, 16));
                 }
 
-                _cmd[ "raw" ] = rawStr;
+                _cmd["raw"] = rawStr;
             }
         }
 
