@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2008/04/15 21:56:02 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2008/04/22 21:40:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -782,8 +782,6 @@ INT CtiProtocolVersacom::adjustVersacomAddress(VSTRUCT &vTemp, ULONG Serial, UIN
 
 INT    CtiProtocolVersacom::VersacomShedCommand(UINT controltime, UINT relaymask)
 {
-    INT i, mask;
-
     _vst.back()->CommandType           = VCONTROL;
     _vst.back()->Load[0].ControlType   = TRUE;
     _vst.back()->Load[0].TimeCode      = VersacomControlDuration(_vst.back()->Load[0].ControlType, controltime);
@@ -797,7 +795,7 @@ INT    CtiProtocolVersacom::VersacomShedCommand(UINT controltime, UINT relaymask
         relaymask = _vst.back()->RelayMask;
     }
 
-    for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
+    for(int i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
     {
         _vst.back()->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
     }
@@ -868,8 +866,6 @@ INT    CtiProtocolVersacom::VersacomCycleCommandEx(UINT percent,      // = 0,
 
 INT    CtiProtocolVersacom::VersacomCycleCommand(UINT controltime, UINT relaymask)
 {
-    INT i, mask;
-
     _vst.back()->CommandType           = VCONTROL;
     _vst.back()->Load[0].ControlType   = FALSE;
     _vst.back()->Load[0].TimeCode      = VersacomControlDuration(_vst.back()->Load[0].ControlType, controltime);
@@ -883,7 +879,7 @@ INT    CtiProtocolVersacom::VersacomCycleCommand(UINT controltime, UINT relaymas
         relaymask = _vst.back()->RelayMask;
     }
 
-    for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
+    for(int i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
     {
         _vst.back()->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
     }
@@ -1061,8 +1057,6 @@ UINT CtiProtocolVersacom::VersacomControlDurationEx(UINT type, UINT controltime)
 
 INT    CtiProtocolVersacom::VersacomRestoreCommand(UINT relaymask)
 {
-    INT i, mask;
-
     _vst.back()->CommandType           = VCONTROL;
     _vst.back()->Load[0].ControlType   = TRUE;
     _vst.back()->Load[0].TimeCode      = 0;           // Restore from shed!
@@ -1076,7 +1070,7 @@ INT    CtiProtocolVersacom::VersacomRestoreCommand(UINT relaymask)
         relaymask = _vst.back()->RelayMask;
     }
 
-    for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
+    for(int i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
     {
         _vst.back()->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
     }
@@ -1087,8 +1081,6 @@ INT    CtiProtocolVersacom::VersacomRestoreCommand(UINT relaymask)
 
 INT    CtiProtocolVersacom::VersacomTerminateCommand(UINT relaymask)
 {
-    INT i, mask;
-
     _vst.back()->CommandType           = VCONTROL;
     _vst.back()->Load[0].ControlType   = FALSE;
     _vst.back()->Load[0].TimeCode      = 0;           // Terminate the cycle command!
@@ -1102,7 +1094,7 @@ INT    CtiProtocolVersacom::VersacomTerminateCommand(UINT relaymask)
         relaymask = _vst.back()->RelayMask;
     }
 
-    for(i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
+    for(int i = 0, mask = 0x01; i < 3; i++, mask <<= 1)
     {
         _vst.back()->Load[0].Relay[i] = ( (relaymask & mask) ? TRUE : FALSE);
     }
@@ -1255,12 +1247,10 @@ INT CtiProtocolVersacom::VersacomDataCommand(BYTE *message, INT len)
 
 INT CtiProtocolVersacom::VersacomConfigCommand(UINT configtype, BYTE *cfg)
 {
-    int i;
-
     _vst.back()->CommandType           = VCONFIG;
     _vst.back()->VConfig.ConfigType    = (USHORT)configtype;
 
-    for(i = 0; i < 5; i++)
+    for(int i = 0; i < 5; i++)
     {
         _vst.back()->VConfig.Data[i]      = (BYTE)cfg[i];
     }
@@ -1270,8 +1260,6 @@ INT CtiProtocolVersacom::VersacomConfigCommand(UINT configtype, BYTE *cfg)
 
 INT CtiProtocolVersacom::VersacomFillerCommand(BYTE uid)
 {
-    int i;
-
     _vst.back()->CommandType = VFILLER;
     _vst.back()->Address = 0;
     _vst.back()->UtilityID = uid;
@@ -1281,12 +1269,10 @@ INT CtiProtocolVersacom::VersacomFillerCommand(BYTE uid)
 
 INT CtiProtocolVersacom::VersacomRawConfigCommand(const BYTE *cfg)
 {
-    int i;
-
     _vst.back()->CommandType           = VCONFIG;
     _vst.back()->VConfig.ConfigType    = (USHORT)cfg[0];
 
-    for(i = 0; i < 5; i++)
+    for(int i = 0; i < 5; i++)
     {
         _vst.back()->VConfig.Data[i]      = (BYTE)cfg[i + 1];
     }
@@ -1296,8 +1282,6 @@ INT CtiProtocolVersacom::VersacomRawConfigCommand(const BYTE *cfg)
 
 INT CtiProtocolVersacom::VersacomPropagationCommand(BYTE propmask)
 {
-    int i;
-
     /*
      * VC_PROPTERMINATE
      * VC_PROPINCREMENT
@@ -1330,8 +1314,6 @@ INT CtiProtocolVersacom::VersacomConfigPropagationTimeCommand(BYTE duration)
 
 INT CtiProtocolVersacom::VersacomCountResetCommand(UINT resetmask)
 {
-    int i;
-
     /*
      * VC_RESETR4COUNT
      * VC_RESETRTCCOUNT
@@ -1587,7 +1569,13 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
     {
         primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
-        if(VersacomRawConfigCommand( (const BYTE*)parse.getsValue("raw").c_str() ))
+        string rawcmd = parse.getsValue("raw");
+
+        //  pad with zeroes to at least 6 characters
+        if( rawcmd.length() < 6 )
+            rawcmd.append(6 - rawcmd.length(), '\0');
+
+        if(VersacomRawConfigCommand( (const BYTE*)rawcmd.c_str() ))
             removeLastVStruct();
     }
 
@@ -1744,9 +1732,10 @@ INT CtiProtocolVersacom::assemblePutConfig(CtiCommandParser  &parse, const VSTRU
                 removeLastVStruct();
         }
 
-        if( isConfig63Valid(sn) && ((iNum = parse.getiValue("section")) != INT_MIN) && 
-            ((iNum = parse.getiValue("class")) != INT_MIN) &&
-            ((iNum = parse.getiValue("division")) != INT_MIN) )
+        //  if our serial supports config 0x63 AND we have section AND class AND division
+        if( isConfig63Valid(sn) && ((iNum = parse.getiValue("section"))  != INT_MIN) &&
+                                   ((iNum = parse.getiValue("class"))    != INT_MIN) &&
+                                   ((iNum = parse.getiValue("division")) != INT_MIN) )
         {
             primeAndAppend(VStTemplate);    // Get a new one in the list that looks like the original in terms of addressing
 
