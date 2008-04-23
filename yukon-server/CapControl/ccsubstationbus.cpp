@@ -2087,7 +2087,19 @@ CtiCCSubstationBus& CtiCCSubstationBus::figureNextCheckTime()
             _nextchecktime = CtiTime(CtiTime(tempsum));
         }
         else
+        {
             _nextchecktime = CtiTime(CtiTime(0, 0, 0).seconds() + getNextTODStartTime());
+            if (_nextchecktime == CtiTime(0,0,0) && _nextchecktime.seconds() <= currenttime.seconds()) 
+            {
+                _nextchecktime = _nextchecktime.addDays(1, _nextchecktime.isDST());
+            }
+        }
+
+        if (_CC_DEBUG & CC_DEBUG_TIMEOFDAY )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - TOD: NextCheckTime:  " <<CtiTime(_nextchecktime)<<" for SubBus: "<<getPAOName() << endl;
+        }
     }
     else if( _controlinterval != 0 )
     {
@@ -3645,7 +3657,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
             setLastFeederControlledPAOId(currentFeeder->getPAOId());
             setLastFeederControlledPosition(currentPosition);
             ((CtiCCFeeder*)_ccfeeders.at(currentPosition))->setLastOperationTime(currentDateTime);
-            setVarValueBeforeControl( getCurrentVarLoadPointValue() );  
+            setVarValueBeforeControl( getCurrentVarLoadPointValue() ); 
             setCurrentDailyOperations(getCurrentDailyOperations() + 1);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
@@ -4665,6 +4677,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                 {
                     returnBoolean = currentFeeder->capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents,
                                                                                            minConfirmPercent, failPercent);
+                    foundCap = TRUE;
                 }
                 else
                 {
@@ -4976,35 +4989,38 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            setSolution(text);
                            if( currentCapBank->getStatusPointId() > 0 )
                            {
-                               if( text.length() > 0 )
-                               {//if control failed or questionable, create event to be sent to dispatch
-                                   long tempLong = currentCapBank->getStatusPointId();
-                                   if (_LOG_MAPID_INFO) 
-                                   {
-                                       additional += " MapID: ";
-                                       additional += currentFeeder->getMapLocationId();
-                                       additional += " (";
-                                       additional += currentFeeder->getPAODescription();
-                                       additional += ")";
+                               if (!currentCapBank->getPorterRetFailFlag())
+                               {
+                                   if( text.length() > 0 )
+                                   {//if control failed or questionable, create event to be sent to dispatch
+                                       long tempLong = currentCapBank->getStatusPointId();
+                                       if (_LOG_MAPID_INFO) 
+                                       {
+                                           additional += " MapID: ";
+                                           additional += currentFeeder->getMapLocationId();
+                                           additional += " (";
+                                           additional += currentFeeder->getPAODescription();
+                                           additional += ")";
+                                       }
+                                       pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control verification"));
+                                       ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                                    }
-                                   pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control verification"));
-                                   ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
+                                   pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
+                                   ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
+                                   currentCapBank->setLastStatusChangeTime(CtiTime());
+                                   
+                                   INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
+                                   string stateInfo = currentCapBank->getControlStatusQualityString();
+                                   LONG stationId, areaId, spAreaId;
+                                   store->getSubBusParentInfo(this, spAreaId, areaId, stationId); 
+                                   ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, 
+                                                                           getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, 
+                                                                           getEventSequence(), currentCapBank->getControlStatus(), text, 
+                                                                           "cap control verification", oldValue, newValue, change, 
+                                                                           currentCapBank->getIpAddress(), actionId, stateInfo,
+                                                                           getPhaseAValue(), getPhaseBValue(), getPhaseCValue()));
                                }
-                               pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
-                               ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
-                               currentCapBank->setLastStatusChangeTime(CtiTime());
-                   
-                               INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
-                               string stateInfo = currentCapBank->getControlStatusQualityString();
-                               LONG stationId, areaId, spAreaId;
-                               store->getSubBusParentInfo(this, spAreaId, areaId, stationId); 
-                               ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, 
-                                                                       getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, 
-                                                                       getEventSequence(), currentCapBank->getControlStatus(), text, 
-                                                                       "cap control verification", oldValue, newValue, change, 
-                                                                       currentCapBank->getIpAddress(), actionId, stateInfo,
-                                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue()));
-                   
+                                   
                            }
                            else
                            {
@@ -5491,38 +5507,42 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                    setSolution(text);
                    if( currentCapBank->getStatusPointId() > 0 )
                    {
-                       if( text.length() > 0 )
-                       {//if control failed or questionable, create event to be sent to dispatch
-                           long tempLong = currentCapBank->getStatusPointId();
-                           if (_LOG_MAPID_INFO) 
-                           {
-                               additional += " MapID: ";
-                               additional += currentFeeder->getMapLocationId();
-                               additional += " (";
-                               additional += currentFeeder->getPAODescription();
-                               additional += ")";
+                       if (!currentCapBank->getPorterRetFailFlag())
+                       {
+                                   
+                           if( text.length() > 0 )
+                           {//if control failed or questionable, create event to be sent to dispatch
+                               long tempLong = currentCapBank->getStatusPointId();
+                               if (_LOG_MAPID_INFO) 
+                               {
+                                   additional += " MapID: ";
+                                   additional += currentFeeder->getMapLocationId();
+                                   additional += " (";
+                                   additional += currentFeeder->getPAODescription();
+                                   additional += ")";
+                               }
+                               pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control verification"));
+                               ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
                            }
-                           pointChanges.push_back(new CtiSignalMsg(tempLong,0,text,additional,CapControlLogType,SignalEvent, "cap control verification"));
-                           ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(1);
+                           pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
+                           ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
+                           currentCapBank->setLastStatusChangeTime(CtiTime());
+                           
+                           INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
+                           string stateInfo = currentCapBank->getControlStatusQualityString();
+                           LONG stationId, areaId, spAreaId;
+                           store->getSubBusParentInfo(this, spAreaId, areaId, stationId); 
+                           ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, 
+                                                                   getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, 
+                                                                   getEventSequence(), currentCapBank->getControlStatus(), text, 
+                                                                   "cap control verification", 
+                                                                   varAValue+varBValue+varCValue,
+                                                                   varValueAbc+varValueBbc+varValueCbc, 
+                                                                   changeA+changeB+changeC, 
+                                                                   currentCapBank->getIpAddress(),
+                                                                    actionId, stateInfo,
+                                                                   getPhaseAValue(), getPhaseBValue(), getPhaseCValue()));
                        }
-                       pointChanges.push_back(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType));
-                       ((CtiPointDataMsg*)pointChanges[pointChanges.size()-1])->setSOE(2);
-                       currentCapBank->setLastStatusChangeTime(CtiTime());
-
-                       INT actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
-                       string stateInfo = currentCapBank->getControlStatusQualityString();
-                       LONG stationId, areaId, spAreaId;
-                       store->getSubBusParentInfo(this, spAreaId, areaId, stationId); 
-                       ccEvents.push_back(new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, 
-                                                               getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, 
-                                                               getEventSequence(), currentCapBank->getControlStatus(), text, 
-                                                               "cap control verification", 
-                                                               varAValue+varBValue+varCValue,
-                                                               varValueAbc+varValueBbc+varValueCbc, 
-                                                               changeA+changeB+changeC, 
-                                                               currentCapBank->getIpAddress(),
-                                                                actionId, stateInfo,
-                                                               getPhaseAValue(), getPhaseBValue(), getPhaseCValue()));
 
                    }
                    else
@@ -5587,6 +5607,15 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
             else
             {
                 returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
+                if (returnBoolean)
+                {
+                    if (_CC_DEBUG & CC_DEBUG_TIMEOFDAY )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " - TOD DEBUG: getNextCheckTime().seconds() <= currentDateTime.seconds() : " <<CtiTime(getNextCheckTime().seconds())<<"<="<<CtiTime(currentDateTime.seconds()) << " for SubBus: "<<getPAOName() 
+                        << endl;
+                    }
+                }
             }
         }
         else
@@ -6611,6 +6640,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                     currentCapBank->setVCtrlIndex(1); //1st control sent
                     currentCapBank->setPerformingVerificationFlag(TRUE);
                     currentFeeder->setPerformingVerificationFlag(TRUE);
+                    currentFeeder->setCurrentVerificationCapBankId(_currentVerificationCapBankId);
 
                     DOUBLE controlValue;
                     DOUBLE confirmValue;
@@ -6823,34 +6853,52 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
 {
     BOOL verifyCapFound = FALSE;
 
+
+
     for(LONG i=0;i<_ccfeeders.size();i++)
     {
+        LONG minConfirmPercent =  getMinConfirmPercent();
+        LONG maxConfirmTime =  getMaxConfirmTime();
+        LONG sendRetries = getControlSendRetries();
+        LONG failPercent = getFailurePercent();
+
         CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
+
+        if (stringCompareIgnoreCase(currentCCFeeder->getStrategyName(),"(none)"))
+        {
+            minConfirmPercent = currentCCFeeder->getMinConfirmPercent();
+            maxConfirmTime = currentCCFeeder->getMaxConfirmTime();
+            sendRetries = currentCCFeeder->getControlSendRetries();
+            failPercent = currentCCFeeder->getFailurePercent();
+        }
 
         if (currentCCFeeder->getPerformingVerificationFlag())
         {
-            if (currentCCFeeder->isVerificationAlreadyControlled(getMinConfirmPercent(), getCurrentVarPointQuality(),
+            if (currentCCFeeder->isVerificationAlreadyControlled(minConfirmPercent, currentCCFeeder->getCurrentVarPointQuality(),
                                                                    currentCCFeeder->getPhaseAValueBeforeControl(),
                                                                    currentCCFeeder->getPhaseBValueBeforeControl(), 
                                                                    currentCCFeeder->getPhaseCValueBeforeControl(),
-                                                                   currentCCFeeder->getPhaseAValue(), currentCCFeeder->getPhaseBValue(), 
-                                                                   currentCCFeeder->getPhaseCValue(), getVarValueBeforeControl(), getCurrentVarLoadPointValue())
-                 || currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()))
+                                                                   currentCCFeeder->getPhaseAValue(), 
+                                                                   currentCCFeeder->getPhaseBValue(), 
+                                                                   currentCCFeeder->getPhaseCValue(), 
+                                                                   currentCCFeeder->getVarValueBeforeControl(), 
+                                                                   currentCCFeeder->getCurrentVarLoadPointValue())
+                 || currentCCFeeder->isPastMaxConfirmTime(currentDateTime,maxConfirmTime,sendRetries))
             {
 
                 if ( getControlSendRetries() > 0 &&
-                     !currentCCFeeder->isVerificationAlreadyControlled(getMinConfirmPercent(), 
-                                                                       getCurrentVarPointQuality(),
+                     !currentCCFeeder->isVerificationAlreadyControlled(minConfirmPercent, 
+                                                                       currentCCFeeder->getCurrentVarPointQuality(),
                                                                        currentCCFeeder->getPhaseAValueBeforeControl(),
                                                                        currentCCFeeder->getPhaseBValueBeforeControl(), 
                                                                        currentCCFeeder->getPhaseCValueBeforeControl(),
                                                                        currentCCFeeder->getPhaseAValue(), 
                                                                        currentCCFeeder->getPhaseBValue(), 
                                                                        currentCCFeeder->getPhaseCValue(),
-                                                                       getVarValueBeforeControl(), getCurrentVarLoadPointValue()) && 
-                    currentDateTime.seconds() < currentCCFeeder->getLastOperationTime().seconds() + getMaxConfirmTime())
+                                                                       currentCCFeeder->getVarValueBeforeControl(), currentCCFeeder->getCurrentVarLoadPointValue()) && 
+                    currentDateTime.seconds() < currentCCFeeder->getLastOperationTime().seconds() + maxConfirmTime)
                 {
-                    if(currentCCFeeder->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime(), getControlSendRetries()))
+                    if(currentCCFeeder->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages, maxConfirmTime, sendRetries))
                     {
                         setLastOperationTime(currentDateTime); 
                         setBusUpdatedFlag(TRUE);
@@ -6858,7 +6906,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
                     verifyCapFound = TRUE;
                 }
                 else if (currentCCFeeder->getWaitForReCloseDelayFlag() || 
-                         (!currentCCFeeder->capBankVerificationStatusUpdate(pointChanges, ccEvents, getMinConfirmPercent(), getFailurePercent(), 
+                         (!currentCCFeeder->capBankVerificationStatusUpdate(pointChanges, ccEvents, minConfirmPercent, failPercent, 
                                                                             currentCCFeeder->getPhaseAValue(), 
                                                                             currentCCFeeder->getPhaseBValue(), 
                                                                             currentCCFeeder->getPhaseCValue()) &&
@@ -9523,7 +9571,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                                 {
                                     currentFeeder->setRecentlyControlledFlag(TRUE);
                                     setRecentlyControlledFlag(TRUE);
-                                    if (currentNumClosed < targetNumClose + 1)
+                                    setVarValueBeforeControl(getCurrentVarLoadPointValue());
+                                    if (currentNumClosed + 1 < targetNumClose)
                                     {
                                         setSendMoreTimeControlledCommandsFlag(TRUE);
                                         currentNumClosed = targetNumClose;
@@ -9632,7 +9681,8 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                                     {
                                         currentFeeder->setRecentlyControlledFlag(TRUE);
                                         setRecentlyControlledFlag(TRUE);
-                                        if (currentNumOpen < targetNumOpen + 1)
+                                        setVarValueBeforeControl(getCurrentVarLoadPointValue());
+                                        if (currentNumOpen + 1 < targetNumOpen)
                                         {
                                             setSendMoreTimeControlledCommandsFlag(TRUE);
                                             currentNumOpen = targetNumOpen;
@@ -10464,6 +10514,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setControlUnits("KVAR");
     setControlDelayTime(0);
     setControlSendRetries(0);
+    setDecimalPlaces(0);
 
     setSendMoreTimeControlledCommandsFlag(FALSE);
     figureNextCheckTime();
@@ -10683,7 +10734,7 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         {
             setSendMoreTimeControlledCommandsFlag(FALSE);
         }
-        
+        figureNextCheckTime();
         if (_voltReductionControlId <= 0 )
         {
             setVoltReductionFlag(FALSE);

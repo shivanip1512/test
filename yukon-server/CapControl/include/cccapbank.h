@@ -125,6 +125,7 @@ public:
     BOOL getReEnableOvUvFlag() const;
     BOOL getLocalControlFlag() const;
     BOOL getControlRecentlySentFlag() const;
+    BOOL getPorterRetFailFlag() const;
 
     BOOL getOvUvSituationFlag() const;
     LONG getUDPPort() const;
@@ -202,6 +203,7 @@ public:
     CtiCCCapBank& setReEnableOvUvFlag(BOOL flag);
     CtiCCCapBank& setLocalControlFlag(BOOL localControlFlag);
     CtiCCCapBank& setControlRecentlySentFlag(BOOL flag);
+    CtiCCCapBank& setPorterRetFailFlag(BOOL flag);
 
     CtiCCCapBank& setOvUvSituationFlag(BOOL ovUvSituationFlag);
     CtiCCCapBank& setUDPPort(LONG value);
@@ -221,7 +223,7 @@ public:
     CtiCCCapBank& updatePointResponseDeltas(CtiCCMonitorPoint* point);
 
     string getControlStatusQualityString();
-    //int getAssumedOrigVerificationState();
+    string getIgnoreReasonText() const;
     CtiCCCapBank& initVerificationControlStatus();
     CtiCCCapBank& addAllCapBankPointsToMsg(CtiCommandMsg *pointAddMsg);
     string getControlStatusText() const;
@@ -344,6 +346,7 @@ private:
     BOOL _reEnableOvUvFlag;
     BOOL _localControlFlag;
     BOOL _controlRecentlySentFlag;
+    BOOL _porterRetFailFlag;
     
     CtiCCTwoWayPoints *_twoWayPoints;
     string _ipAddress;

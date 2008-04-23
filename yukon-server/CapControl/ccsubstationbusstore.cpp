@@ -3739,19 +3739,23 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                     CtiHolidayManager::getInstance().refresh();
                     if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
                     {
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - HOLIDAY!  CELEBRATE..." << endl;
+                        if (_CC_DEBUG & CC_DEBUG_EXTENDED)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - HOLIDAY!  CELEBRATE..." << endl;
+                        }
 
                         reloadAndAssignHolidayStrategysFromDatabase(strategyId, strategy_map);
     
                     }
                     else
                     {
-
-                        CtiLockGuard<CtiLogger> logger_guard(dout);
-                        dout << CtiTime() << " - No HOLIDAY!  No CELEBRATE..." << endl;
+                        if (_CC_DEBUG & CC_DEBUG_EXTENDED)
+                        {
+                            CtiLockGuard<CtiLogger> logger_guard(dout);
+                            dout << CtiTime() << " - No HOLIDAY!  No CELEBRATE..." << endl;
+                        }
                     }
-
 
                 }
             }

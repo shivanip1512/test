@@ -131,6 +131,7 @@ public:
     LONG getUvCount() const; 
     const CtiTime& getOvUvCountResetDate() const;
     const CtiTime& getLastOvUvDateTime() const;
+    string getLastControlText() const;
 
     
     

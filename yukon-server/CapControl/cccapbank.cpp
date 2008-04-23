@@ -445,6 +445,11 @@ BOOL CtiCCCapBank::getVerificationDoneFlag() const
     return _verificationDoneFlag;
 }
 
+BOOL CtiCCCapBank::getPorterRetFailFlag() const
+{
+    return _porterRetFailFlag;
+}
+
 BOOL CtiCCCapBank::getRetryOpenFailedFlag() const
 {
     return _retryOpenFailedFlag;
@@ -591,7 +596,6 @@ string CtiCCCapBank::getControlStatusText() const
 
     return retVal;
 }
-
 
 /*---------------------------------------------------------------------------
     getOperationAnalogPointId
@@ -1039,6 +1043,17 @@ CtiCCCapBank& CtiCCCapBank::setVerificationDoneFlag(BOOL verificationDoneFlag)
 
     return *this;
 }
+
+CtiCCCapBank& CtiCCCapBank::setPorterRetFailFlag(BOOL flag)
+{
+    if (_porterRetFailFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _porterRetFailFlag = flag;
+    return *this;
+}
+
 /*---------------------------------------------------------------------------
     setRetryOpenFailedFlag
     
@@ -1432,6 +1447,36 @@ string CtiCCCapBank::getControlStatusQualityString()
 
 
 }
+
+string CtiCCCapBank::getIgnoreReasonText() const
+{
+    string retVal = "";
+
+    switch (_ignoreReason)
+    {
+        case 0:  retVal = "-Local"; break;
+        case 1:  retVal = "-FaultCurrent"; break;
+        case 2:  retVal = "-EmVolt"; break;
+        case 3:  retVal = "-Time"; break;
+        case 4:  retVal = "-Voltage"; break;
+        case 5:  retVal = "-Digital1"; break;
+        case 6:  retVal = "-Analog1"; break;
+        case 7:  retVal = "-Digital2"; break;
+        case 8:  retVal = "-Analog2"; break;
+        case 9:  retVal = "-Digital3"; break;
+        case 10: retVal = "-Analog3"; break;
+        case 11: retVal = "-Digital4"; break;
+        case 12: retVal = "-Temp"; break;
+        case 13: retVal = "-Remote"; break;
+        case 14: retVal = "-NtrlLockOut"; break;
+        case 15: retVal = "-BrownOut"; break;    
+        case 16: retVal = "-BadActRelay"; break;  
+        default: retVal = "-unknown"; break;
+    }
+    
+    return retVal;
+}
+
 
 
 CtiCCCapBank& CtiCCCapBank::setIpAddress(ULONG value)
@@ -2164,6 +2209,7 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _reEnableOvUvFlag = right._reEnableOvUvFlag;
         _localControlFlag = right._localControlFlag;
         _controlRecentlySentFlag = right._controlRecentlySentFlag;
+        _porterRetFailFlag = right._porterRetFailFlag;
         
         _ipAddress = right._ipAddress;
         _udpPortNumber = right._udpPortNumber;
@@ -2267,6 +2313,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setReEnableOvUvFlag(FALSE);
     setLocalControlFlag(FALSE);
     setControlRecentlySentFlag(FALSE);
+    setPorterRetFailFlag(FALSE);
 
     setOvUvSituationFlag(FALSE);
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
@@ -2323,6 +2370,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _reEnableOvUvFlag = (_additionalFlags[15]=='y'?TRUE:FALSE);
     _localControlFlag = (_additionalFlags[16]=='y'?TRUE:FALSE);
     _controlRecentlySentFlag = (_additionalFlags[17]=='y'?TRUE:FALSE);
+    _porterRetFailFlag = (_additionalFlags[18]=='y'?TRUE:FALSE);
 
     if (_controlStatusPartialFlag)
         _controlStatusQuality = CC_Partial;
@@ -2429,6 +2477,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[15] = (_reEnableOvUvFlag?'Y':'N');
             addFlags[16] = (_localControlFlag?'Y':'N');
             addFlags[17] = (_controlRecentlySentFlag?'Y':'N');
+            addFlags[18] = (_porterRetFailFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
@@ -2447,7 +2496,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             _additionalFlags.append(char2string(*(addFlags+15))); 
             _additionalFlags.append(char2string(*(addFlags+16))); 
             _additionalFlags.append(char2string(*(addFlags+17))); 
-            _additionalFlags.append("NN");
+            _additionalFlags.append(char2string(*(addFlags+18))); 
+            _additionalFlags.append("N");
 
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 

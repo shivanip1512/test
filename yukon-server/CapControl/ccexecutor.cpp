@@ -4167,8 +4167,7 @@ void CtiCCCommandExecutor::Scan2WayDevice()
         CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
         else
             delete eventMulti;
-        if (multi->getCount() > 0)
-            CtiCapController::getInstance()->sendMessageToDispatch(multi);
+        
     }
     else
     {
@@ -6333,6 +6332,8 @@ void CtiCCPointDataMsgExecutor::Execute()
                             currentCapBank->setControlStatusQuality(CC_Normal);
                             currentCapBank->setTagsControlStatus((LONG)tags);
                             currentCapBank->setLastStatusChangeTime(timestamp);
+                            currentCapBank->setControlRecentlySentFlag(FALSE);
+                            currentCapBank->setPorterRetFailFlag(FALSE);
                             currentSubstationBus->figureEstimatedVarLoadPointValue();
                             if( currentSubstationBus->getEstimatedVarLoadPointId() > 0 )
                                 CtiCapController::getInstance()->sendMessageToDispatch(new CtiPointDataMsg(currentSubstationBus->getEstimatedVarLoadPointId(),currentSubstationBus->getEstimatedVarLoadPointValue(),NormalQuality,AnalogPointType));

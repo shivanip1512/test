@@ -2399,3 +2399,28 @@ int CtiCCTwoWayPoints::operator!=(const CtiCCTwoWayPoints& right) const
     return getPAOId() != right.getPAOId();
 }
 
+
+string CtiCCTwoWayPoints::getLastControlText() const
+{
+    string retVal = "";
+
+    if (_lastControlLocal > 0 )
+        retVal = "-Local";
+    else if (_lastControlRemote > 0 )
+        retVal = "-Remote";
+    else if (_lastControlOvUv > 0 )
+        retVal = "-OvUv";
+    else if (_lastControlNeutralFault > 0 )
+        retVal = "-NeutralFault";
+    else if (_lastControlScheduled > 0 )
+        retVal = "-Schedule";
+    else if (_lastControlDigital > 0 )
+        retVal = "-Digital";
+    else if (_lastControlAnalog > 0 )
+        retVal = "-Analog";
+    else if (_lastControlTemperature > 0 )
+        retVal = "-Temp";
+
+    return retVal;
+}
+
