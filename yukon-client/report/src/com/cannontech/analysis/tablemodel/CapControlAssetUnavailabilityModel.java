@@ -109,7 +109,6 @@ public class CapControlAssetUnavailabilityModel extends BareDatedReportModelBase
         sql.append("and ss.substationbusid = fs.substationbusid ");
         sql.append("and yp3.paobjectid = fs.feederid ");
         sql.append("and els.subid = fs.substationbusid ");
-        sql.append("and elf.feederid = fs.feederid ");
         sql.append("and (els.feederid = fs.feederid or els.feederid = 0) ");
         sql.append("and (elf.feederid = fs.feederid or elf.feederid = 0) ");
         
