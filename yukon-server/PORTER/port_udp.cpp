@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2008/03/19 18:38:43 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2008/04/23 20:26:39 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -53,8 +53,10 @@ namespace Porter
 
 UDPMessenger UDPInterfaceQueue;
 
-const char *UDPInterface::tickle_packet = "tickle";
+string ip_to_string(u_long ip);
+u_long string_to_ip(string ip);
 
+const char *UDPInterface::tickle_packet = "tickle";
 
 
 void UDPInterface::delete_dr_id_map_value( dr_id_map::value_type map_entry )
@@ -553,7 +555,7 @@ bool UDPInterface::getPackets( int wait )
                                 dr->ip   = p->ip;
                                 dr->port = p->port;
 
-                                dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   dr->ip);
+                                dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   ip_to_string(dr->ip));
                                 dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, dr->port);
                             }
 
@@ -1183,7 +1185,7 @@ bool UDPInterface::getPackets( int wait )
                                     dr->ip   = p->ip;
                                     dr->port = p->port;
 
-                                    dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   dr->ip);
+                                    dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP,   ip_to_string(p->ip));
                                     dr->device->setDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port, dr->port);
                                 }
 
@@ -2589,7 +2591,10 @@ void UDPInterface::applyGetUDPInfo(const long unusedid, CtiDeviceSPtr RemoteDevi
             dr->master = dr->device->getMasterAddress();
             dr->slave  = dr->device->getAddress();
 
-            dr->ip   = dr->device->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP);
+            string ip_string;
+            dr->device->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_IP, ip_string);
+
+            dr->ip   = string_to_ip(ip_string);
             dr->port = dr->device->getDynamicInfo(CtiTableDynamicPaoInfo::Key_UDP_Port);
 
             if( gConfigParms.getValueAsULong("PORTER_UDP_DEBUGLEVEL", 0, 16) & 0x00000001 )
@@ -2666,7 +2671,36 @@ void UDPMessenger::push_back(CtiMessage *msg)
 }
 
 
+string ip_to_string(u_long ip)
+{
+    return CtiNumStr((ip >> 24) & 0xff) + "." +
+           CtiNumStr((ip >> 16) & 0xff) + "." +
+           CtiNumStr((ip >>  8) & 0xff) + "." +
+           CtiNumStr((ip >>  0) & 0xff);
 }
+
+u_long string_to_ip(string ip_string)
+{
+   int pos = 0;
+   u_long ip = 0;
+
+    while( pos < ip_string.length() )
+    {
+        ip <<= 8;
+
+        ip |= atoi(ip_string.c_str() + pos);
+
+        pos = ip_string.find_first_of(".", pos + 1);
+
+        if( pos != string::npos )
+        {
+            pos++;  //  move past the dot if we found one
+        }
+    }
+
+    return ip;
 }
 
 
+}
+}
