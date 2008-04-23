@@ -6,9 +6,6 @@ package com.cannontech.analysis.data.device;
 import java.util.Date;
 
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.core.dao.DaoFactory;
-import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 
 
 
@@ -20,7 +17,6 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
  */
 public class MeterAndPointData
 {	
-//    private MeterData meterData = null;
     private Meter meter = null;
     private Integer pointID = null;
     private String pointName = null;
@@ -75,14 +71,6 @@ public class MeterAndPointData
 	{
 		return value;
 	}
-	
-	/**
-	 * @return Returns the meterData.
-	 */
-//	public MeterData getMeterData()
-//	{
-//	    return meterData;
-//	}
 	
     /**
      * @return Returns the pointID.

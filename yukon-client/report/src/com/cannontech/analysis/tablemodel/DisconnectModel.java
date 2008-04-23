@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.data.device.DisconnectMeterAndPointData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -39,7 +40,7 @@ import com.cannontech.util.NaturalOrderComparator;
  * 				pointName - Point.pointname
  * @author bjonasson
  */
-public class DisconnectModel extends ReportModelBase<MeterAndPointData> implements Comparator<MeterAndPointData>
+public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData> implements Comparator<DisconnectMeterAndPointData>
 {
     /** Number of columns */
     protected final int NUMBER_COLUMNS = 7;
@@ -50,8 +51,9 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
     public final static int ADDRESS_COLUMN = 2;
     public final static int TYPE_COLUMN = 3;
     public final static int ROUTE_NAME_COLUMN = 4;
-    public final static int TIMESTAMP_COLUMN = 5;
-    public final static int STATE_COLUMN = 6;
+    public final static int DISCONNECT_ADDRESS_COLUMN = 5;
+    public final static int TIMESTAMP_COLUMN = 6;
+    public final static int STATE_COLUMN = 7;
 
     /** String values for column representation */
     public final static String DEVICE_NAME_STRING = "Device Name";
@@ -59,6 +61,7 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
     public final static String ADDRESS_STRING = "Address";
     public final static String TYPE_STRING = "Type";
     public final static String ROUTE_NAME_STRING = "Route Name";
+    public final static String DISCONNECT_ADDRESS_STRING = "Collar Addr";
     public final static String TIMESTAMP_STRING = "Timestamp";
     public final static String STATE_STRING = "State";
 
@@ -185,7 +188,7 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
         //SELECT
         sql.append("SELECT DISTINCT PAO.PAOBJECTID, PAO.PAONAME, PAO.TYPE, PAO.DISABLEFLAG, ");
         sql.append("DMG.METERNUMBER, DCS.ADDRESS, ROUTE.PAOBJECTID as ROUTEPAOID, ROUTE.PAONAME as ROUTEPAONAME, ");
-        sql.append("P.POINTID, P.POINTNAME, RPH1.TIMESTAMP, RPH1.VALUE ");
+        sql.append("P.POINTID, P.POINTNAME, RPH1.TIMESTAMP, RPH1.VALUE, DISCONNECTADDRESS ");
 
         //FROM
         sql.append("FROM YukonPAObject pao left outer join DeviceMCT400Series mct on pao.paobjectid = mct.deviceid, ");
@@ -245,15 +248,15 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
             meter.setAddress(rs.getString("ADDRESS"));
             meter.setRouteId(rs.getInt("ROUTEPAOID"));
             meter.setRoute(rs.getString("ROUTEPAONAME"));
-
-            getData().add(
-                new MeterAndPointData(
-                    meter,
-                    rs.getInt("POINTID"),
-                    rs.getString("POINTNAME"),
-                    rs.getTimestamp("TIMESTAMP"),
-                    rs.getDouble("VALUE")
-                ));
+            final MeterAndPointData meterAndPointData = new MeterAndPointData(
+                                                          meter,
+                                                          rs.getInt("POINTID"),
+                                                          rs.getString("POINTNAME"),
+                                                          rs.getTimestamp("TIMESTAMP"),
+                                                          rs.getDouble("VALUE")
+                                                      );
+            getData().add(new DisconnectMeterAndPointData(meterAndPointData, 
+                                                          rs.getString("DISCONNECTADDRESS")));
 
         } catch(java.sql.SQLException e) {
             e.printStackTrace();
@@ -281,25 +284,29 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
      */
     public Object getAttribute(final int columnIndex, final Object o) {
 
-        if (o instanceof MeterAndPointData) {
+        if (o instanceof DisconnectMeterAndPointData) {
 
-            final MeterAndPointData mpData = (MeterAndPointData) o;
+            final DisconnectMeterAndPointData discMandPData = (DisconnectMeterAndPointData) o;
 
             switch( columnIndex) {
                 case DEVICE_NAME_COLUMN:    
-                    return mpData.getMeter().getName();
+                    return discMandPData.getMeter().getName();
                 case TIMESTAMP_COLUMN:
-                    return mpData.getTimeStamp();
+                    return discMandPData.getMeterAndPointData().getTimeStamp();
                 case METER_NUMBER_COLUMN:
-                    return mpData.getMeter().getMeterNumber();
+                    return discMandPData.getMeter().getMeterNumber();
                 case ADDRESS_COLUMN:
-                    return mpData.getMeter().getAddress();
+                    return discMandPData.getMeter().getAddress();
                 case TYPE_COLUMN:
-                    return mpData.getMeter().getTypeStr();
+                    return discMandPData.getMeter().getTypeStr();
                 case STATE_COLUMN:
-                    return (mpData.getValue() != null) ? getRPHValueString(mpData.getPointID(), mpData.getValue()) : "Unknown";
+                    return (discMandPData.getMeterAndPointData().getValue() != null) ? 
+                                getRPHValueString(discMandPData.getMeterAndPointData().getPointID(), 
+                                                  discMandPData.getMeterAndPointData().getValue()) : "Unknown";
                 case ROUTE_NAME_COLUMN:
-                    return mpData.getMeter().getRoute();
+                    return discMandPData.getMeter().getRoute();
+                case DISCONNECT_ADDRESS_COLUMN:
+                    return discMandPData.getDisconnectAddress();
             }
         }
         return null;
@@ -319,6 +326,7 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
                     ADDRESS_STRING,
                     TYPE_STRING,
                     ROUTE_NAME_STRING,
+                    DISCONNECT_ADDRESS_STRING,
                     TIMESTAMP_STRING,
                     STATE_STRING
             };
@@ -335,6 +343,7 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
         if( columnTypes == null)
         {
             columnTypes = new Class[]{
+                    String.class,
                     String.class,
                     String.class,
                     String.class,
@@ -359,11 +368,12 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
             columnProperties = new ColumnProperties[]{
                     //posX, posY, width, height, numberFormatString
                     new ColumnProperties(offset, 1, offset+=150, null),	//Device Name
-                    new ColumnProperties(offset, 1, offset+=70, null), //meternumber
-                    new ColumnProperties(offset, 1, offset+=70, null), //address
+                    new ColumnProperties(offset, 1, offset+=65, null), //meternumber
+                    new ColumnProperties(offset, 1, offset+=65, null), //address
                     new ColumnProperties(offset, 1, offset+=70, null), //type
                     new ColumnProperties(offset, 1, offset+=100, null), //routeName
-                    new ColumnProperties(offset, 1, offset+=105, "MM/dd/yyyy HH:mm:ss"),   //Timestamp
+                    new ColumnProperties(offset, 1, offset+=65, null), //discAddress 
+                    new ColumnProperties(offset, 1, offset+=90, "MM/dd/yyyy HH:mm:ss"),   //Timestamp
                     new ColumnProperties(offset, 1, offset+=65, null) //state
             };
         }
@@ -550,7 +560,7 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
         this.disconnectState = disconnectState;
     }
 
-    public int compare(MeterAndPointData o1, MeterAndPointData o2) {
+    public int compare(DisconnectMeterAndPointData o1, DisconnectMeterAndPointData o2) {
         if (getOrderBy() == ORDER_BY_ROUTE_NAME) {
             return o1.getMeter().getRoute().compareToIgnoreCase(o2.getMeter().getRoute());
         } 
@@ -561,11 +571,11 @@ public class DisconnectModel extends ReportModelBase<MeterAndPointData> implemen
         }
 
         if (getOrderBy() == ORDER_BY_TIMESTAMP) {
-            return o1.getTimeStamp().compareTo(o2.getTimeStamp());
+            return o1.getMeterAndPointData().getTimeStamp().compareTo(o2.getMeterAndPointData().getTimeStamp());
         }
 
         if ( getOrderBy() == ORDER_BY_STATE) {
-            return o1.getValue().compareTo(o2.getValue());
+            return o1.getMeterAndPointData().getValue().compareTo(o2.getMeterAndPointData().getValue());
         }
 
         return o1.getMeter().getName().compareToIgnoreCase(o2.getMeter().getName());
