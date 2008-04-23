@@ -18,12 +18,12 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.lite.LiteTOUSchedule;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yc.bean.YCBean;
 
@@ -88,32 +88,25 @@ public class VoltageAndTouController extends MultiActionController {
         Meter meter = meterDao.getForId(deviceId);  
 
 		// Get the point data for the page
-		PointData data = ycBean.getRecentPointData(deviceId, 4,
-				PointTypes.DEMAND_ACCUMULATOR_POINT);
+		PointValueHolder data = ycBean.getRecentPointData(deviceId, 4, PointTypes.DEMAND_ACCUMULATOR_POINT);
 		String lastIntervalTime = ycBean.getFormattedTimestamp(data, "---");
 		mav.addObject("lastIntervalTime", lastIntervalTime);
-		String lastIntervalValue = ycBean.getFormattedValue(data, "#0.000",
-				"&nbsp;");
+		String lastIntervalValue = ycBean.getFormattedValue(data, "#0.000", "&nbsp;");
 		mav.addObject("lastIntervalValue", lastIntervalValue);
 
-		data = (PointData) ycBean.getRecentPointData(deviceId, 15,
-				PointTypes.DEMAND_ACCUMULATOR_POINT);
+		data = ycBean.getRecentPointData(deviceId, 15, PointTypes.DEMAND_ACCUMULATOR_POINT);
 		String minimumTime = ycBean.getFormattedTimestamp(data, "---");
 		mav.addObject("minimumTime", minimumTime);
-		String minimumValue = ycBean
-				.getFormattedValue(data, "#0.000", "&nbsp;");
+		String minimumValue = ycBean.getFormattedValue(data, "#0.000", "&nbsp;");
 		mav.addObject("minimumValue", minimumValue);
 
-		data = (PointData) ycBean.getRecentPointData(deviceId, 14,
-				PointTypes.DEMAND_ACCUMULATOR_POINT);
+		data = ycBean.getRecentPointData(deviceId, 14, PointTypes.DEMAND_ACCUMULATOR_POINT);
 		String maximumTime = ycBean.getFormattedTimestamp(data, "---");
 		mav.addObject("maximumTime", maximumTime);
-		String maximumValue = ycBean
-				.getFormattedValue(data, "#0.000", "&nbsp;");
+		String maximumValue = ycBean.getFormattedValue(data, "#0.000", "&nbsp;");
 		mav.addObject("maximumValue", maximumValue);
 
-		List<LiteTOUSchedule> schedules = DefaultDatabaseCache.getInstance()
-				.getAllTOUSchedules();
+		List<LiteTOUSchedule> schedules = DefaultDatabaseCache.getInstance().getAllTOUSchedules();
 		mav.addObject("schedules", schedules);
 
         // Checks to see if the meter is readable
