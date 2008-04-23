@@ -312,7 +312,15 @@ else if (devTypeMCT != null && meterBase != null && meterBase.compareTo(com.cann
                                     <option value="<%= entry.getEntryID() %>" <%= selected %>><%= entry.getContent() %></option>
                                     <%
 	}
+	boolean creationAllowed = false;
 %>
+									
+									<cti:checkProperty property="ConsumerInfoRole.INVENTORY_CHECKING_CREATE">
+										<%creationAllowed = true;%>
+									</cti:checkProperty>	
+									<%if(!creationAllowed) { %>
+										<option value="-1">ALL</option>
+									<%} %>
                                   </select>
                                 </td>
                               </tr>
