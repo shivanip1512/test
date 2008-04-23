@@ -13,18 +13,17 @@ public class CapControlOperationsReport extends SimpleYukonReportBase {
     
     private static final ColumnLayoutData bodyColumns[] = new ColumnLayoutData[] {
         new ColumnLayoutData("CBC", "cbcName", 45),
-        new ColumnLayoutData("Operation Time", "opTime", 60),
-        new ColumnLayoutData("Operation", "operation", 70),
-        new ColumnLayoutData("Conf Time", "confTime", 55),
-        new ColumnLayoutData("Conf Status", "confStatus", 55),
-        new ColumnLayoutData("Status Quality", "bankStatusQuality", 45),
+        new ColumnLayoutData("Operation Time", "opTime", 65),
+        new ColumnLayoutData("Operation", "operation", 115),
+        new ColumnLayoutData("Conf Time", "confTime", 65),
+        new ColumnLayoutData("Conf Status", "confStatus", 110),
+        new ColumnLayoutData("Quality", "bankStatusQuality", 75),
         new ColumnLayoutData("Feeder", "feederName", 45),
-        new ColumnLayoutData("Substation Bus", "subName", 90),
-        new ColumnLayoutData("Area", "region", 90),
-        new ColumnLayoutData("Bank Size", "bankSize", 45),
-        new ColumnLayoutData("IP Address", "ipAddress", 45),
-        new ColumnLayoutData("Serial Num", "serialNum", 45),
-        new ColumnLayoutData("Slave Address", "slaveAddress", 45),
+        new ColumnLayoutData("Sub Bus", "subName", 60),
+        new ColumnLayoutData("Bank Size", "bankSize", 35),
+        new ColumnLayoutData("IP Address", "ipAddress", 50),
+        new ColumnLayoutData("Serial#", "serialNum", 45),
+        new ColumnLayoutData("Slave", "slaveAddress", 25),
     };
 
     public CapControlOperationsReport(BareReportModel bareModel) {

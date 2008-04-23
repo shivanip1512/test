@@ -40,9 +40,7 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         public String bankStatusQuality;
         public String feederName;
         public String subName;
-        public String region;
         public Integer bankSize;
-        public String protocol;
         public String ipAddress;
         public String serialNum;
         public String slaveAddress;
@@ -86,10 +84,14 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
                 row.bankStatusQuality = rs.getString("bankStatusQuality");
                 row.feederName = rs.getString("feederName");
                 row.subName = rs.getString("subName");
-                row.region = rs.getString("region");
                 row.bankSize = rs.getInt("bankSize");
-                row.protocol = rs.getString("protocol");
-                row.ipAddress = rs.getString("ipAddress");
+                String bob = rs.getString("ipAddress");
+                Long boss = 0l;
+                
+                if(bob !=null) {
+                    boss = new Long(bob);
+                }
+                row.ipAddress = convertToOctalIp(boss); 
                 row.serialNum = rs.getString("serialNum");
                 row.slaveAddress = rs.getString("slaveAddress");
                 
@@ -99,6 +101,21 @@ public class CapControlOperationsModel extends BareDatedReportModelBase<CapContr
         
         CTILogger.info("Report Records Collected from Database: " + data.size());
     }
+    
+    public String convertToOctalIp(long ipvalue){
+        
+        StringBuilder sb = new StringBuilder();
+        int temp = (int) ((ipvalue >> 24) & 0xFF);
+        sb.append(Integer.toString(temp, 10) + ".");
+        temp = (int) ((ipvalue >> 16) & 0xFF);
+        sb.append(Integer.toString(temp, 10) + ".");
+        temp = (int) ((ipvalue >> 8) & 0xFF);
+        sb.append(Integer.toString(temp, 10) + ".");
+        temp = (int) (ipvalue & 0xFF);
+        sb.append(Integer.toString(temp, 10));
+       
+        return sb.toString();
+   }
     
     public StringBuffer buildSQLStatement()
     {
