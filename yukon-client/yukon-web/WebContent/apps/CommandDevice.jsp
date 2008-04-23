@@ -7,7 +7,7 @@
 <%@ page import="com.cannontech.roles.application.WebClientRole" %>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
-<%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
+<%@ page import="com.cannontech.core.dynamic.PointValueHolder"%> 
 <%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
 <%@ page import="com.cannontech.database.data.point.PointTypes"%>
@@ -36,7 +36,7 @@
 
 <%-- Grab the search criteria --%>
 <%
-	PointData pointData = null;
+	PointValueHolder pointValueHolder = null;
 
 	int invNo = -1;	//used for directing to different application starting points
 	int deviceID = PAOGroups.INVALID;

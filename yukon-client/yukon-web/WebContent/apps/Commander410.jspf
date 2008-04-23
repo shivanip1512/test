@@ -1,6 +1,8 @@
 <%@ page import="com.cannontech.database.data.lite.LitePointUnit"%>
 <%@ page import="com.cannontech.yukon.IDatabaseCache"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+<%@page import="com.cannontech.core.dynamic.PointValueHolder"%>
+<%@page import="com.cannontech.yc.bean.YCBean"%>
 <jsp:directive.page import="com.cannontech.core.dao.DaoFactory"/>
 <%
 
@@ -88,36 +90,36 @@ function setCommand(cmd)
 	                	<td width="20%" class="columnHeader">Last Interval</td>
 	                    <td width="35%"class="main" align="center"> 
 <%
-	pointData = YC_BEAN.getRecentPointData(deviceID, 4, PointTypes.DEMAND_ACCUMULATOR_POINT);
+	pointValueHolder = YC_BEAN.getRecentPointData(deviceID, 4, PointTypes.DEMAND_ACCUMULATOR_POINT);
 %>
-							<%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
+							<%= YC_BEAN.getFormattedTimestamp(pointValueHolder, "---")%>
 						</td>
 						<td width="35%" class="main" align="right"> 
-							<%= YC_BEAN.getFormattedValue(pointData, "#0.000", "&nbsp;")%>
+							<%= YC_BEAN.getFormattedValue(pointValueHolder, "#0.000", "&nbsp;")%>
 						</td>
 					</tr>
 	                <tr class="altRow"> 
 						<td class="columnHeader">Minimum</td>
 	                    <td class="main" align="center"> 
 <%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, 15, PointTypes.DEMAND_ACCUMULATOR_POINT);
+	pointValueHolder = YC_BEAN.getRecentPointData(deviceID, 15, PointTypes.DEMAND_ACCUMULATOR_POINT);
 %>
-							<%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
+							<%= YC_BEAN.getFormattedTimestamp(pointValueHolder, "---")%>
 	                    </td>
 	                    <td class="main" align="right"> 
-							<%= YC_BEAN.getFormattedValue(pointData, "#0.000", "&nbsp;")%>
+							<%= YC_BEAN.getFormattedValue(pointValueHolder, "#0.000", "&nbsp;")%>
 	                    </td>
 					</tr>
 	                <tr> 
 	                	<td width="20%" class="columnHeader">Maximum</td>
 	                    <td width="35%"class="main" align="center"> 
 <%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, 14, PointTypes.DEMAND_ACCUMULATOR_POINT);
+	pointValueHolder = YC_BEAN.getRecentPointData(deviceID, 14, PointTypes.DEMAND_ACCUMULATOR_POINT);
 %>
-							<%= YC_BEAN.getFormattedTimestamp(pointData, "---")%>
+							<%= YC_BEAN.getFormattedTimestamp(pointValueHolder, "---")%>
 						</td>
 						<td width="35%" class="main" align="right"> 
-							<%= YC_BEAN.getFormattedValue(pointData, "#0.000", "&nbsp;")%>
+							<%= YC_BEAN.getFormattedValue(pointValueHolder, "#0.000", "&nbsp;")%>
 	                    </td>
 					</tr>
 				</table>

@@ -141,17 +141,6 @@ div.scroll { font-size: 12px;
 
 <h3>Control Commands:&nbsp;&nbsp;<%=name%></h3>
 
-<% 
-	if (errorMsg != null && errorMsg.length() != 0) {
-	    out.write("<br/><center><span class=\"ErrorMsg\">* " + errorMsg + "</span></center><br/>");
-	    errorMsg = null;
-	}
-	if (YC_BEAN.getErrorMsg().length() > 0 ) {
-	    out.write("<br/><center><span class=\"ErrorMsg\">" + YC_BEAN.getErrorMsg() + "</span></center><br/>");
-	    YC_BEAN.setErrorMsg("");
-	}
-%>
-	
 	<form name="commandForm" method="POST" action="<%= request.getContextPath() %>/servlet/CommanderServlet">
 		<input type="hidden" name="deviceID" value="<%=deviceID%>">
 	    <input type="hidden" name="timeOut" value="8000">
@@ -159,7 +148,7 @@ div.scroll { font-size: 12px;
 	    <input id="redirect" type="hidden" name="REDIRECT" value="<%= redirect %>">
 	    <input id="referrer" type="hidden" name="REFERRER" value="<%= redirect %>">
 					
-		<table class="nameValueContainer">
+		<table class="nameValueTable">
 	    	<tr> 
 	          	<td class="name">Type:</td>
 	            <td class="value"><%=YC_BEAN.getDeviceType()%></td>

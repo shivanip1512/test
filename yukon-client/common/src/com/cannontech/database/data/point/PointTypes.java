@@ -60,14 +60,6 @@ public final class PointTypes implements IPointOffsets, TypeBase
 	public static final int DATAFILTERTYPE_USELAST = 33 + TypeBase.POINT_OFFSET;
 	public static final int DATAFILTERTYPE_USEDEFAULT = 34 + TypeBase.POINT_OFFSET;
 	
-	//Outage points (for MCT410 and maybe more?), these types cannot be "created", it is only to give them a reference 
-	public static final int OUTAGE_1 = 35 + TypeBase.POINT_OFFSET;
-	public static final int OUTAGE_2 = 36 + TypeBase.POINT_OFFSET;
-	public static final int OUTAGE_3 = 37 + TypeBase.POINT_OFFSET;
-	public static final int OUTAGE_4 = 38 + TypeBase.POINT_OFFSET;
-	public static final int OUTAGE_5 = 39 + TypeBase.POINT_OFFSET;
-	public static final int OUTAGE_6 = 40 + TypeBase.POINT_OFFSET;
-	
 	public static final int LP_PEAK_REPORT = 41 + TypeBase.POINT_OFFSET;
 	public static final int LP_ARCHIVED_DATA = 42 + TypeBase.POINT_OFFSET;
 	

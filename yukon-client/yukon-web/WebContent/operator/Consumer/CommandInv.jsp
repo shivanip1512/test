@@ -4,6 +4,7 @@
 
 <%@ include file="include/StarsHeader.jsp" %>
 <%@ page import="com.cannontech.database.data.pao.YukonPAObject"%>
+<%@ page import="com.cannontech.core.dynamic.PointValueHolder"%> 
 <%@ page import="com.cannontech.message.dispatch.message.PointData"%> 
 <%@ page import="com.cannontech.database.data.lite.LiteRawPointHistory"%>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups"%>
@@ -15,7 +16,7 @@
 
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 <%
-	PointData pointData = null;
+	PointValueHolder pointValueHolder = null;
 	
 	String cmd = request.getParameter("command");
 	if (cmd != null)
@@ -80,6 +81,7 @@
 <link rel="stylesheet" href="../../WebConfig/<cti:getProperty propertyid="<%=WebClientRole.STYLE_SHEET%>" defaultvalue="yukon/CannonStyle.css"/>" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/yukon/Base.css" type="text/css">
 <link rel="stylesheet" href="../../WebConfig/yukon/styles/commanderStyles.css" type="text/css">
+<link rel="stylesheet" href="../../WebConfig/yukon/styles/YukonGeneralStyles.css" type="text/css">
 <SCRIPT  LANGUAGE="JavaScript" SRC="../../JavaScript/calendar.js"></SCRIPT>
 </head>
 <body class="Background" leftmargin="0" topmargin="0">

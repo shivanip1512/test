@@ -36,14 +36,6 @@
 	}
 %>
 
-<cti:breadCrumbs>
-    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home"  />
-    <cti:crumbLink url="/spring/csr/search" title="Device Selection"  />
-    <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}" title="Device Detail"  />
-    &gt; Profile
-</cti:breadCrumbs>
-
-
 <script type="text/javascript">
 
 	function StopPropagation(e)
@@ -107,7 +99,7 @@
 	}
 </script>
 
-<div style="width: 70%;">
+<div style="width: 98%; margin:5">
 
 	<h2>MCT 400series - Profile:&nbsp;&nbsp;<%= liteYukonPao.getPaoName()%></h2>
 	
@@ -137,16 +129,10 @@
 <% 
 	if ( com.cannontech.database.data.device.DeviceTypesFuncs.isMCT410(liteYukonPao.getType()) ) { 
 %>			
-		<cti:titledContainer>
-	  		
+		<cti:titledContainer>	  		
 			<jsp:attribute name="title">
-			
+                Profile Peak Summary Reports
 				<table width="100%" class="titleTable">
-					<tr>
-						<td>
-							Profile Peak Summary Reports
-						</td>
-					</tr>
 					<tr>
 						<td style="padding-left: 20px">
 							<select name="rate" id="rateID">
@@ -178,15 +164,16 @@
 			</jsp:attribute>
 			<jsp:body>
   									  								  
-  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-					<tr colspan="3"> 
+  				<table width="95%">
+					<tr> 
 						<td class="columnHeader">Profile Peak Report - <%= channel_1Str %></td>
 					</tr>
+
 <%
-		pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);
-		if( pointData != null) {
+		pointValueHolder = YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_PEAK_REPORT);
+		if( pointValueHolder != null) {
 			boolean bg = true;
-			String tempStr = pointData.getStr();
+			String tempStr = ((PointData) pointValueHolder).getStr();
 			int beginIndex = 0;
 			int endIndex = tempStr.indexOf("\n");
 			while( endIndex > 0) {
@@ -216,7 +203,7 @@
   		</cti:titledContainer>
 			  
 		<div>
-			<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
+			<table width="95%">
 				<tr> 
 			  		<td align="right"><span class="NavText">
 						<a href="javascript:document.commandForm.action.value='SavePeakReport';document.commandForm.submit();" class="Link1" id="PRSaveID"
@@ -233,13 +220,8 @@
 	 	<cti:titledContainer>
 	  		
 			<jsp:attribute name="title">
-			
+			    Profile Data Collection
 				<table width="100%" class="titleTable">
-					<tr>
-						<td>
-							Profile Data Collection
-						</td>
-					</tr>
 					<tr>
 						<td style="padding-left: 20px">
 							Date: 
@@ -294,16 +276,16 @@ for (int i = 0; i < 60; i=i+5) {
 			
 			<jsp:body>
   		
-  				<table width="95%" border="0" cellspacing="0" cellpadding="0" align="center">
-					<tr colspan="3"> 
+  				<table width="95%">
+					<tr> 
 						<td class="columnHeader">Recent Profile Data Collection (last 6 readings collected) - <%= channel_1Str%></td>
 					</tr>
 							
 <%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_ARCHIVED_DATA);
-	if( pointData != null){
+	pointValueHolder = YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_KW_DEMAND, PointTypes.LP_ARCHIVED_DATA);
+	if( pointValueHolder != null){
 		boolean bg = true;
-		String tempStr = pointData.getStr();
+		String tempStr = ((PointData) pointValueHolder).getStr();
 		int beginIndex = 0;
 		int endIndex = tempStr.indexOf("\n");
 		while( endIndex > 0) {
@@ -334,10 +316,10 @@ for (int i = 0; i < 60; i=i+5) {
 				    	<td class="columnHeader">Recent Profile Data Collection (last 6 readings collected) - <%= channel_4Str%></td>
 				  	</tr>
 <%
-	pointData = (PointData)YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_ARCHIVED_DATA);
-	if( pointData != null){
+	pointValueHolder = YC_BEAN.getRecentPointData(deviceID, PointTypes.PT_OFFSET_LPROFILE_VOLTAGE_DEMAND, PointTypes.LP_ARCHIVED_DATA);
+	if( pointValueHolder != null){
 		boolean bg = true;
-		String tempStr = pointData.getStr();
+		String tempStr = ((PointData) pointValueHolder).getStr();
 		int beginIndex = 0;
 		int endIndex = tempStr.indexOf("\n");
 		while( endIndex > 0) {
@@ -372,13 +354,8 @@ for (int i = 0; i < 60; i=i+5) {
   		<cti:titledContainer>
 	  		
 			<jsp:attribute name="title">
-			
+                Profile Archived Data Display			
 				<table width="100%" class="titleTable">
-					<tr>
-						<td>
-							Profile Archived Data Display
-						</td>
-					</tr>
 					<tr>
 						<td style="padding-left: 20px">
 							Date 
