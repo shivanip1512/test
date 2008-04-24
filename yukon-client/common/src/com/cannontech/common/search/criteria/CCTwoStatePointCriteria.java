@@ -8,18 +8,15 @@ public class CCTwoStatePointCriteria extends YukonObjectCriteriaHelper {
         super();
         //create all the rules for this criteria
         //point for the dual bus should be
-        //a. two state
-        //b. not a status point or CALCULATED_STATUS_POINT
-        //c. can't have name BANK STATUS
+        //a. two-state state groups 
+        //b. can't have name BANK STATUS
+        
         //a
         addCriteria("stategroupid", 1, BooleanClause.Occur.SHOULD);
+        addCriteria("stategroupid", 4, BooleanClause.Occur.SHOULD);
+        addCriteria("stategroupid", 5, BooleanClause.Occur.SHOULD);
+        addCriteria("stategroupid", -8, BooleanClause.Occur.SHOULD);
         //b
-        addCriteria("pointtype", "CalcStatus", BooleanClause.Occur.MUST_NOT);
-        //c
         addCriteria("pointName", "BANK STATUS", BooleanClause.Occur.MUST_NOT);
     }
-
-
-    
-
 }
