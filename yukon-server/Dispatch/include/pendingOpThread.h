@@ -8,10 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2006/09/26 14:11:52 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/04/24 19:41:51 $
 * HISTORY      :
 * $Log: pendingOpThread.h,v $
+* Revision 1.14  2008/04/24 19:41:51  jotteson
+* YUK-4897 Load management implementation of Expresscom priorities
+* Moved the handling of control status points to Dispatch.
+* Enabled dispatch to know what the current control priority of any group is.
+*
 * Revision 1.13  2006/09/26 14:11:52  mfisher
 * moved headers to the top so Slick's diff ignores them
 *
@@ -77,6 +82,8 @@ using std::pair;
 #include "tbl_lm_controlhist.h"
 #include "thread.h"
 #include "signalmanager.h"
+#include "guard.h"
+#include "mutex.h"
 
 class CtiPendingOpThread : public CtiThread
 {
@@ -99,6 +106,7 @@ private:
     static CtiPendingOpSet_t _pendingPointData;
     static CtiPendingOpSet_t _pendingPointLimit;
 
+    CtiMutex _controlMux;
 
     CtiFIFOQueue< CtiTableLMControlHistory > _lmControlHistoryQueue;
     CtiFIFOQueue< CtiTableLMControlHistory > _dynLMControlHistoryQueue;
@@ -144,6 +152,7 @@ public:
     void postControlStopPoint( CtiPendingPointOperations &ppc, bool doit = false);
     void postControlHistoryPoints( CtiPendingPointOperations &ppc, bool doit = false );
     bool isPointInPendingControl(LONG pointid);
+    int  getCurrentControlPriority(LONG pointid);
 
     void insertControlHistoryRow( CtiPendingPointOperations &ppc, int line);
     void writeLMControlHistoryToDB(bool justdoit = false);

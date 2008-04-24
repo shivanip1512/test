@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2008/04/21 15:22:32 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/04/24 19:41:51 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -142,26 +142,7 @@ public:
             hist->setActiveRestore( shedtime > 0 ? LMAR_TIMED_RESTORE : LMAR_MANUAL_RESTORE);
             hist->setMessagePriority( hist->getMessagePriority() + 1 );
             // vgList.push_back( hist );
-            pMulti->insert(hist);
-
-            if(pControlStatus->isPseudoPoint())
-            {
-                // There is no physical point to observe and respect.  We lie to the control point.
-                CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)(isshed), NormalQuality, StatusPointType, (isshed == CONTROLLED ? string(getName() + " controlling") : string(getName() + " restoring")));
-                pData->setMessagePriority( pData->getMessagePriority() + 1 );
-                //vgList.push_back(pData);
-                pMulti->insert(pData);
-            }
-
-            if(isshed == CONTROLLED && shedtime > 0)
-            {
-                // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
-                CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, string(getName() + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
-                pData->setTime( CtiTime() + shedtime );
-                pData->setMessagePriority( pData->getMessagePriority() - 1 );
-                //vgList.push_back(pData);
-                pMulti->insert(pData);
-            }
+            pMulti->insert(hist);         
         }
 
         CtiPointSPtr point = getDevicePointOffsetTypeEqual( CONTROLSTOPCOUNTDOWNOFFSET, AnalogPointType );

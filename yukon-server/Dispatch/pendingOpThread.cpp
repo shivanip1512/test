@@ -7,11 +7,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.35 $
-* DATE         :  $Date: 2008/04/21 15:22:32 $
+* REVISION     :  $Revision: 1.36 $
+* DATE         :  $Date: 2008/04/24 19:41:50 $
 *
 * HISTORY      :
 * $Log: pendingOpThread.cpp,v $
+* Revision 1.36  2008/04/24 19:41:50  jotteson
+* YUK-4897 Load management implementation of Expresscom priorities
+* Moved the handling of control status points to Dispatch.
+* Enabled dispatch to know what the current control priority of any group is.
+*
 * Revision 1.35  2008/04/21 15:22:32  jotteson
 * YUK-4897 Load management implementation of Expresscom priorities
 * Added expresscom priority tracking.
@@ -234,7 +239,10 @@ void CtiPendingOpThread::run( void )
                 processPendableQueue();
                 doPendingLimits(false);
                 doPendingPointData(false);
-                doPendingControls(false);
+                {
+                    CtiLockGuard<CtiMutex> guard(_controlMux);
+                    doPendingControls(false);
+                }
 
                 // Every 60 seconds or when the box is large/full enough.
                 if(lastMulti < now || _multi->getCount() > gConfigParms.getValueAsULong("DISPATCH_MAX_CTLHIST_POINT_BATCH", 100) )
@@ -281,7 +289,10 @@ void CtiPendingOpThread::run( void )
         processPendableQueue();
         doPendingLimits(true);
         doPendingPointData(true);
-        doPendingControls(true);
+        {
+            CtiLockGuard<CtiMutex> guard(_controlMux);
+            doPendingControls(true);
+        }
 
         if(_multi && _multi->getCount() > 0)
         {
@@ -1164,6 +1175,23 @@ bool CtiPendingOpThread::isPointInPendingControl(LONG pointid)
     return(stat);
 }
 
+int CtiPendingOpThread::getCurrentControlPriority(LONG pointid)
+{
+    int retVal = INT_MAX;
+    CtiLockGuard<CtiMutex> guard(_controlMux);
+
+    if(!_pendingControls.empty())
+    {
+        CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pointid, CtiPendingPointOperations::pendingControl));
+        if(it != _pendingControls.end())
+        {
+            retVal = it->getControl().getControlPriority();
+        }
+    }
+
+    return(retVal);
+}
+
 void CtiPendingOpThread::insertControlHistoryRow( CtiPendingPointOperations &ppc, int line)
 {
     createOrUpdateICControl(ppc.getControl().getPAOID(), ppc.getControl());     // This keeps it current in mem.
@@ -1595,6 +1623,7 @@ bool CtiPendingOpThread::getICControlHistory( CtiTableLMControlHistory &lmch )
 
 void CtiPendingOpThread::checkForControlBegin( CtiPendable *&pendable )
 {
+    CtiLockGuard<CtiMutex> guard(_controlMux);
     CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pendable->_pointID, CtiPendingPointOperations::pendingControl));
 
     if( it != _pendingControls.end() )
@@ -1633,6 +1662,7 @@ void CtiPendingOpThread::checkForControlBegin( CtiPendable *&pendable )
  */
 void CtiPendingOpThread::checkControlStatusChange( CtiPendable *&pendable )
 {
+    CtiLockGuard<CtiMutex> guard(_controlMux);
     CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pendable->_pointID, CtiPendingPointOperations::pendingControl));
 
     if( it != _pendingControls.end() )
@@ -1665,6 +1695,7 @@ void CtiPendingOpThread::checkControlStatusChange( CtiPendable *&pendable )
 
 void CtiPendingOpThread::removeControl(CtiPendable *&pendable)
 {
+    CtiLockGuard<CtiMutex> guard(_controlMux);
     CtiPendingOpSet_t::iterator it = _pendingControls.find(CtiPendingPointOperations(pendable->_pointID, CtiPendingPointOperations::pendingControl));
 
     if( it != _pendingControls.end() )
@@ -1739,6 +1770,7 @@ void CtiPendingOpThread::processPendableAdd(CtiPendable *&pendable)
         {
         case (CtiPendingPointOperations::pendingControl):
             {
+                CtiLockGuard<CtiMutex> guard(_controlMux);
                 pair< CtiPendingOpSet_t::iterator, bool > resultpair;
                 resultpair = insertPendingControl( *pendable->_ppo );            // Add a copy (ppo) to the pending operations.
 

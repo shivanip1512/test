@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.184 $
-* DATE         :  $Date: 2008/04/21 15:22:32 $
+* REVISION     :  $Revision: 1.185 $
+* DATE         :  $Date: 2008/04/24 19:41:50 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2702,6 +2702,28 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                 pendingControlLMMsg->setSignal( pFailSig );
 
                 QueryPerformanceCounter(&t5Time);
+
+                if(isDeviceGroupType(pMsg->getPAOId()) && _pendingOpThread.getCurrentControlPriority(pMsg->getPointId()) >= pMsg->getControlPriority())
+                {
+                    CtiPointSPtr pControlStatus = PointMgr.getControlOffsetEqual(pMsg->getPAOId() , 1);
+                    if(pControlStatus->isPseudoPoint())
+                    {
+                        // There is no physical point to observe and respect.  We lie to the control point.
+                        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), pMsg->getRawState(), NormalQuality, StatusPointType, (pMsg->getRawState() == CONTROLLED ? string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " controlling") : string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring")));
+                        pData->setMessagePriority( pData->getMessagePriority() + 1 );
+                        MainQueue_.putQueue(pData);
+                    }
+        
+                    if(pMsg->getRawState() == CONTROLLED && pMsg->getControlDuration() > 0)
+                    {
+                        // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
+                        CtiPointDataMsg *pData = CTIDBG_new CtiPointDataMsg( pControlStatus->getPointID(), (DOUBLE)UNCONTROLLED, NormalQuality, StatusPointType, string(resolveDeviceNameByPaoId(pMsg->getPAOId()) + " restoring (delayed)"), TAG_POINT_DELAYED_UPDATE);
+                        pData->setTime( CtiTime() + pMsg->getControlDuration() );
+                        pData->setMessagePriority( pData->getMessagePriority() - 1 );
+                        //vgList.push_back(pData);
+                        MainQueue_.putQueue(pData);
+                    }
+                }
 
                 if( isPseudo )
                 {
