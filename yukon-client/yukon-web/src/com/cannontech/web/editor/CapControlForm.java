@@ -2022,17 +2022,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             if (voltPoint != PointTypes.SYS_PID_SYSTEM) {
                 pointNameMap.put(voltPoint, pointDao.getPointName(voltPoint));
             }
-            int switchPointID = PointTypes.SYS_PID_SYSTEM;
-            if (switchPointID != PointTypes.SYS_PID_SYSTEM) {
-                pointNameMap.put(switchPointID, pointDao.getPointName(switchPointID));
-            }
             if (getDbPersistent() instanceof CapControlSubBus) {
                 CapControlSubBus sub = (CapControlSubBus) getDbPersistent();
                 CapControlSubstationBus subBus = sub.getCapControlSubstationBus();
-                switchPointID = subBus.getSwitchPointID();
+                int switchPoint = subBus.getSwitchPointID();
                 int phaseBPoint = subBus.getPhaseB();
                 int phaseCPoint = subBus.getPhaseC();
                 int voltReductionPoint = subBus.getVoltReductionPointId();
+                pointNameMap.put(switchPoint, pointDao.getPointName(switchPoint));
                 pointNameMap.put(phaseBPoint, pointDao.getPointName(phaseBPoint));
                 pointNameMap.put(phaseCPoint, pointDao.getPointName(phaseCPoint));
                 pointNameMap.put(voltReductionPoint, pointDao.getPointName(voltReductionPoint));
@@ -2084,10 +2081,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                 paoNameMap.put(voltPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(voltPoint).getPaobjectID()));
             }
             if(getDbPersistent() instanceof CapControlSubBus) {
-                CapControlSubstationBus sub = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
-                int phaseBPoint = sub.getPhaseB();
-                int phaseCPoint = sub.getPhaseC();
-                int voltReductionPointId = sub.getVoltReductionPointId();
+                CapControlSubstationBus subBus = ((CapControlSubBus) getPAOBase()).getCapControlSubstationBus();
+                int phaseBPoint = subBus.getPhaseB();
+                int phaseCPoint = subBus.getPhaseC();
+                int voltReductionPointId = subBus.getVoltReductionPointId();
+                int switchPoint = subBus.getSwitchPointID();
+                paoNameMap.put(switchPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(switchPoint).getPaobjectID()));
                 paoNameMap.put(phaseBPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseBPoint).getPaobjectID()));
                 paoNameMap.put(phaseCPoint, paoDao.getYukonPAOName(pointDao.getLitePoint(phaseCPoint).getPaobjectID()));
                 paoNameMap.put(voltReductionPointId, paoDao.getYukonPAOName(pointDao.getLitePoint(voltReductionPointId).getPaobjectID()));
