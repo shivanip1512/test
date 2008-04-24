@@ -68,13 +68,7 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
                 CBCInventoryModel.ModelRow row = new CBCInventoryModel.ModelRow();
 
                 row.cbcName = rs.getString("cbcName");
-                String bob = rs.getString("ipAddress");
-                Long boss = 0l;
-                
-                if(bob !=null) {
-                    boss = new Long(bob);
-                }
-                row.ipAddress = convertToOctalIp(boss); 
+                row.ipAddress = rs.getString("ipAddress");
                 row.slaveAddress = rs.getString("slaveAddress");
                 row.protocol = rs.getString("protocol");
                 row.region = rs.getString("region");
@@ -91,21 +85,6 @@ public class CBCInventoryModel extends BareReportModelBase<CBCInventoryModel.Mod
         
         CTILogger.info("Report Records Collected from Database: " + data.size());
     }
-    
-    public String convertToOctalIp(long ipvalue){
-        
-        StringBuilder sb = new StringBuilder();
-        int temp = (int) ((ipvalue >> 24) & 0xFF);
-        sb.append(Integer.toString(temp, 10) + ".");
-        temp = (int) ((ipvalue >> 16) & 0xFF);
-        sb.append(Integer.toString(temp, 10) + ".");
-        temp = (int) ((ipvalue >> 8) & 0xFF);
-        sb.append(Integer.toString(temp, 10) + ".");
-        temp = (int) (ipvalue & 0xFF);
-        sb.append(Integer.toString(temp, 10));
-       
-        return sb.toString();
-   }
     
     public StringBuffer buildSQLStatement()
     {
