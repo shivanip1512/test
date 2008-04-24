@@ -6,6 +6,7 @@
  */
 package com.cannontech.analysis.tablemodel;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,12 +22,25 @@ import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallbackWithoutResult;
+import org.springframework.transaction.support.TransactionTemplate;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.stars.WorkOrder;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlGenerator;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -42,6 +56,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.roles.operator.WorkOrderRole;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 
@@ -158,9 +173,11 @@ public class WorkOrderModel extends ReportModelBase {
 	private final String ATT_SEARCH_COL = "SearchColumn";
 	
 	private HashMap accountIDToMeterNumberMap = null;
-	private HashMap<LiteInventoryBase, String> liteInvBaseToMeterNumberMap = new HashMap<LiteInventoryBase, String>();
+	private Map<LiteInventoryBase, String> liteInvBaseToMeterNumberMap = new HashMap<LiteInventoryBase, String>();
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-		
+
+	private SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+	
 	public static final Comparator workOrderCmptor = new Comparator() {
 		public int compare(Object o1, Object o2) {
 			WorkOrder wo1 = (WorkOrder) o1;
@@ -400,17 +417,123 @@ public class WorkOrderModel extends ReportModelBase {
 		return accountIDToMeterNumberMap;
 	}*/
 
+	private void setLiteInvToMeterNumberMap(Map<LiteInventoryBase, String> liteInvBaseToMeterNumberMap) {
+	    this.liteInvBaseToMeterNumberMap = liteInvBaseToMeterNumberMap;
+	}
+	
 	/**
 	 * Build a mapping of LiteInvBase:String).
 	 * @return String an Sqlstatement
 	 */
-	public HashMap<LiteInventoryBase, String> getLiteInvToMeterNumberMap()
+	public Map<LiteInventoryBase, String> getLiteInvToMeterNumberMap()
 	{
 		if( liteInvBaseToMeterNumberMap == null)
 			liteInvBaseToMeterNumberMap = new HashMap<LiteInventoryBase, String>();
 		return liteInvBaseToMeterNumberMap;
 	}
 
+	private Map<LiteInventoryBase, String> getInventoryMeterNumbers(List<LiteInventoryBase> liteInvBaseList) {
+	    final Map<Integer, LiteInventoryBase> inventoryMap = new HashMap<Integer, LiteInventoryBase>(liteInvBaseList.size());
+	    final List<Integer> nonZeroDeviceIdList = new ArrayList<Integer>();
+	    final List<Integer> zeroDeviceIdList = new ArrayList<Integer>();
+	    
+	    /* Populate the inventoryMap with InventoryID to LiteInventoryBase Object, and sort
+	     * the LiteInventoryBase Objects by the DeviceID value into separate lists. 
+	     */
+	    for (final LiteInventoryBase inventoryBase : liteInvBaseList) {
+	        if (!(inventoryBase instanceof LiteStarsLMHardware)) continue;
+	        
+	        int inventoryId = inventoryBase.getInventoryID(); 
+	        int deviceId = inventoryBase.getDeviceID();
+	        
+	        if (deviceId > 0) {
+	            nonZeroDeviceIdList.add(inventoryId);
+	        } else {
+	            zeroDeviceIdList.add(inventoryId);
+	        }
+	        
+	        inventoryMap.put(inventoryId, inventoryBase);
+	    }
+	    
+	    // Temporary holder for generating the result Map<LiteInventoryBase, String>
+	    class Holder {
+	        LiteInventoryBase inventory;
+	        String meterNumber;
+	    }
+	    
+	    final ParameterizedRowMapper<Holder> holderRowMapper = new ParameterizedRowMapper<Holder>() {
+            @Override
+            public Holder mapRow(ResultSet rs, int rowNum) throws SQLException {
+                int inventoryId = rs.getInt(1);
+                LiteInventoryBase inventory = inventoryMap.get(inventoryId);
+                String meterNumber = rs.getString(2);
+                
+                Holder holder = new Holder();
+                holder.inventory = inventory;
+                holder.meterNumber = meterNumber;
+                return holder;
+            }
+	    };
+	    
+	    // Run SQL for Inventory that contain non-zero DeviceID's.
+	    final ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+	    List<Holder> list1 = template.query(new SqlGenerator<Integer>() {
+            @Override
+            public String generate(List<Integer> subList) {
+                final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+                sqlBuilder.append(" SELECT inv.InventoryID,dmg.MeterNumber ");
+                sqlBuilder.append(" FROM InventoryBase inv, DeviceMeterGroup dmg ");
+                sqlBuilder.append(" WHERE INV.INVENTORYID IN (");
+                sqlBuilder.append(subList);
+                sqlBuilder.append(") AND INV.DEVICEID = DMG.DEVICEID ");
+                sqlBuilder.append(" ORDER BY inv.InventoryID");
+                String sql = sqlBuilder.toString();
+                return sql;
+            }
+	        
+	    }, nonZeroDeviceIdList, holderRowMapper);
+	    
+	    // Run SQL for Inventory that have DeviceID of zero.
+	    List<Holder> list2 = template.query(new SqlGenerator<Integer>() {
+	        @Override
+	        public String generate(List<Integer> subList) {
+	            final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+	            sqlBuilder.append("SELECT MAP.LMHARDWAREINVENTORYID,MHB.MeterNumber ");
+	            sqlBuilder.append(" FROM MeterHardwareBase mhb, lmhardwaretometermapping map "); 
+	            sqlBuilder.append(" WHERE MAP.LMHARDWAREINVENTORYID IN ("); 
+	            sqlBuilder.append(subList);    
+	            sqlBuilder.append(") and mhb.inventoryid = map.meterinventoryid ");
+	            String sql = sqlBuilder.toString();
+	            return sql;
+	        }
+	        
+	    }, zeroDeviceIdList, holderRowMapper);
+	    
+	    final List<Holder> holderList = new ArrayList<Holder>(list1.size() + list2.size());
+	    holderList.addAll(list1);
+	    holderList.addAll(list2);
+	    
+	    final Map<LiteInventoryBase, String> meterNumberMap = new HashMap<LiteInventoryBase, String>(holderList.size());
+	    
+	    for (final Holder holder : holderList) {
+	        LiteInventoryBase key = holder.inventory;
+	        String value = holder.meterNumber;
+	        meterNumberMap.put(key, value);
+	    }
+	    
+	    // Place empty Strings as values for any keys that don't exist in the meterNumberMap
+	    for (Integer inventoryId : inventoryMap.keySet()) {
+	        String meterNumber = meterNumberMap.get(inventoryId);
+	        
+	        if (meterNumber != null) continue;
+	        
+	        LiteInventoryBase inventoryBase = inventoryMap.get(inventoryId);
+	        meterNumberMap.put(inventoryBase, CtiUtilities.STRING_NONE);
+	    }
+	    
+	    return meterNumberMap;
+	}
+	
 	/**
 	 * Returns the MeterNumber string for liteInvBase.  Retrieves the meterNumber and updates
 	 *  the map if it is not already in the map. 
@@ -538,13 +661,42 @@ public class WorkOrderModel extends ReportModelBase {
 	    Collections.sort( getData(), workOrderCmptor );
 	}
 	
-	public void loadData(LiteStarsEnergyCompany liteStarsEC, List<LiteWorkOrderBase> woList)
+	public void loadData(final LiteStarsEnergyCompany liteStarsEC, final List<LiteWorkOrderBase> woList)
 	{
         //Reset all objects, new data being collected!
         setData(null);
         Date startTimer = new Date();
        
         CTILogger.info("Reporting Data Loading for " + woList.size() + " Work Orders.");
+        
+        final List<LiteInventoryBase> meterInventoryList = new ArrayList<LiteInventoryBase>();
+        
+        JdbcTemplate jdbcTemplate = new JdbcTemplate(PoolManager.getYukonDataSource());
+        PlatformTransactionManager txManager = new DataSourceTransactionManager(jdbcTemplate.getDataSource());
+        
+        TransactionTemplate template = new TransactionTemplate(txManager);
+        template.setPropagationBehavior(TransactionDefinition.PROPAGATION_SUPPORTS);
+        template.setReadOnly(true);
+        template.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            protected void doInTransactionWithoutResult(TransactionStatus status) {
+                for (final LiteWorkOrderBase workOrder : woList) {
+                    int accountId = workOrder.getAccountID();
+                    if (accountId == 0) continue;
+                    
+                    LiteStarsCustAccountInformation accountInfo = liteStarsEC.getBriefCustAccountInfo(accountId, true);
+                    for (int x = 0; x < accountInfo.getInventories().size(); x++) {
+                        Integer inventoryId = accountInfo.getInventories().get(x);
+                        LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(inventoryId, true);
+                        meterInventoryList.add(liteInvBase);
+                    }
+                }
+
+                final Map<LiteInventoryBase, String> meterNumberMap = getInventoryMeterNumbers(meterInventoryList);
+                setLiteInvToMeterNumberMap(meterNumberMap);
+            }
+        });
+        
 		for (int j = 0; j < woList.size(); j++) {
 			LiteWorkOrderBase liteOrder = woList.get(j);
 			
@@ -563,14 +715,15 @@ public class WorkOrderModel extends ReportModelBase {
                     //First loop through, find all LiteStarsLMHardware, forcing this type to be first in the list.
                     ArrayList<String> ignoreMeterNumbers = new ArrayList<String>();
 					for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
-						int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
+						Integer invID = liteAcctInfo.getInventories().get(k);
 						LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(invID, true);
 						 
 						if (liteInvBase instanceof LiteStarsLMHardware)
 						{
 							WorkOrder wo = new WorkOrder( liteOrder , liteInvBase);
 							getData().add(wo);	//add to the begining
-                            String meterNumber = getInventoryMeterNumber(liteInvBase);
+							
+                            String meterNumber = getLiteInvToMeterNumberMap().get(liteInvBase);
                             if (!meterNumber.equalsIgnoreCase(CtiUtilities.STRING_NONE));
                                 ignoreMeterNumbers.add(meterNumber);
 						}
@@ -684,7 +837,9 @@ public class WorkOrderModel extends ReportModelBase {
 		    workOrder.setAdditionalInformation(info);
 		}
 		
-        CTILogger.info("Loading of Data Objects (" + getData().size() + ")  took " + (new Date().getTime() - startTimer.getTime()*.001) + " secs.");
+		double totalTime = (System.currentTimeMillis() - startTimer.getTime()) / 1000;
+		
+        CTILogger.info("Loading of Data Objects (" + getData().size() + ")  took " + totalTime + " secs.");
 	}
 
 	/* (non-Javadoc)
@@ -875,7 +1030,8 @@ public class WorkOrderModel extends ReportModelBase {
 					{
 						if( liteInvBase instanceof LiteMeterHardwareBase)
 							return ((LiteMeterHardwareBase)liteInvBase).getMeterNumber();
-                        String meterNumber = getInventoryMeterNumber(liteInvBase);
+                        
+						String meterNumber = getLiteInvToMeterNumberMap().get(liteInvBase);
 						return (meterNumber.equalsIgnoreCase(CtiUtilities.STRING_NONE) ? null : meterNumber);
 					}
 					return "";
