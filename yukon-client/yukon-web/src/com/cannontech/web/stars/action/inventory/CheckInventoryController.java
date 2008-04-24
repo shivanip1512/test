@@ -79,7 +79,7 @@ public class CheckInventoryController extends StarsInventoryActionController {
             //session.setAttribute( ServletUtils.FILTER_INVEN_LIST, tempList );
             iBean.setFilterByList(tempList);
             iBean.setCheckInvenForAccount(true);
-            String redirect = request.getContextPath() + "/operator/Consumer/CheckInv.jsp";
+            String redirect = request.getContextPath() + "/operator/Consumer/SelectInv.jsp";
             response.sendRedirect(redirect);
             return;
         }    
