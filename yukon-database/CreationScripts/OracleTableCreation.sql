@@ -1,12 +1,14 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/20/2008 10:20:36 PM                        */
+/* Created on:     4/24/2008 4:18:51 PM                         */
 /*==============================================================*/
 
 
 set define off;
 
+
+drop view TempMovedCapBanks_View;
 
 drop view SubstationAddress_View;
 
@@ -36,11 +38,19 @@ drop view ExpressComAddress_View;
 
 drop view DISPLAY2WAYDATA_VIEW;
 
-drop view CCOPERATIONS_VIEW;
+drop view CCOperations_View;
 
-drop view CCINVENTORY_VIEW;
+drop view CCInventory_View;
 
-drop view CCCAP_INVENTORY_VIEW;
+drop view CCCapInventory_View;
+
+drop view CCCBCInventory_View;
+
+drop view CCCBCCVMSState_View;
+
+drop view CBCConfiguration_View;
+
+drop view CBCConfiguration2_View;
 
 drop index CstSrvCstProp_FK;
 
@@ -847,6 +857,11 @@ drop table YukonUserGroup cascade constraints;
 drop table YukonUserRole cascade constraints;
 
 drop table YukonWebConfiguration cascade constraints;
+
+/*==============================================================*/
+/* Database: YukonDatabase                                      */
+/*==============================================================*/
+create database YukonDatabase;
 
 /*==============================================================*/
 /* Table: AccountSite                                           */
@@ -7478,27 +7493,10 @@ insert into YukonGroupRole values(-130,-100,-101,-10111,'(none)');
 
 /* Trending */
 insert into YukonGroupRole values(-150,-100,-102,-10200,'(none)');
-
 insert into YukonGroupRole values(-152,-100,-102,-10202,'(none)');
 insert into YukonGroupRole values(-153,-100,-102,-10203,'(none)');
-insert into YukonGroupRole values(-154,-100,-102,-10204,'(none)');
 insert into YukonGroupRole values(-155,-100,-102,-10205,'(none)');
 insert into YukonGroupRole values(-156,-100,-102,-10206,'(none)');
-insert into YukonGroupRole values(-157,-100,-102,-10207,'(none)');
-insert into YukonGroupRole values(-158,-100,-102,-10208,'(none)');
-insert into YukonGroupRole values(-159,-100,-102,-10209,'(none)');
-insert into YukonGroupRole values(-160,-100,-102,-10210,'(none)');
-insert into YukonGroupRole values(-161,-100,-102,-10211,'(none)');
-insert into YukonGroupRole values(-162,-100,-102,-10212,'(none)');
-insert into YukonGroupRole values(-163,-100,-102,-10213,'(none)');
-insert into YukonGroupRole values(-164,-100,-102,-10214,'(none)');
-insert into YukonGroupRole values(-165,-100,-102,-10215,'(none)');
-insert into YukonGroupRole values(-166,-100,-102,-10216,'(none)');
-insert into YukonGroupRole values(-167,-100,-102,-10217,'(none)');
-insert into YukonGroupRole values(-168,-100,-102,-10218,'(none)');
-insert into YukonGroupRole values(-169,-100,-102,-10219,'(none)');
-insert into YukonGroupRole values(-149,-100,-102,-10220,'(none)');
-insert into YukonGroupRole values(-148,-100,-102,-10221,'(none)');
 
 /* Commander */
 insert into YukonGroupRole values(-170,-100,-103,-10300,'(none)');
@@ -7810,27 +7808,11 @@ insert into YukonGroupRole values(-1028,-2,-101,-10108,'(none)');
 insert into YukonGroupRole values(-1031,-2,-101,-10111,'(none)');
 
 /* Trending */
-insert into YukonGroupRole values(-1048,-2,-102,-10221,'(none)');
-insert into YukonGroupRole values(-1049,-2,-102,-10220,'(none)');
 insert into YukonGroupRole values(-1050,-2,-102,-10200,'(none)');
 insert into YukonGroupRole values(-1052,-2,-102,-10202,'(none)');
 insert into YukonGroupRole values(-1053,-2,-102,-10203,'(none)');
-insert into YukonGroupRole values(-1054,-2,-102,-10204,'(none)');
 insert into YukonGroupRole values(-1055,-2,-102,-10205,'(none)');
 insert into YukonGroupRole values(-1056,-2,-102,-10206,'(none)');
-insert into YukonGroupRole values(-1057,-2,-102,-10207,'(none)');
-insert into YukonGroupRole values(-1058,-2,-102,-10208,'(none)');
-insert into YukonGroupRole values(-1059,-2,-102,-10209,'(none)');
-insert into YukonGroupRole values(-1060,-2,-102,-10210,'(none)');
-insert into YukonGroupRole values(-1061,-2,-102,-10211,'(none)');
-insert into YukonGroupRole values(-1062,-2,-102,-10212,'(none)');
-insert into YukonGroupRole values(-1063,-2,-102,-10213,'(none)');
-insert into YukonGroupRole values(-1064,-2,-102,-10214,'(none)');
-insert into YukonGroupRole values(-1065,-2,-102,-10215,'(none)');
-insert into YukonGroupRole values(-1066,-2,-102,-10216,'(none)');
-insert into YukonGroupRole values(-1067,-2,-102,-10217,'(none)');
-insert into YukonGroupRole values(-1068,-2,-102,-10218,'(none)');
-insert into YukonGroupRole values(-1069,-2,-102,-10219,'(none)');
 
 /* Commander */
 insert into YukonGroupRole values(-1070,-2,-103,-10300,'(none)');
@@ -8803,28 +8785,10 @@ insert into YukonRoleProperty values(-10111,-101,'lc_reduction_col','true','Tell
 
 /* Trending Role */
 insert into YukonRoleProperty values(-10200,-102,'graph_edit_graphdefinition','true','<description>');
-
 insert into YukonRoleProperty values(-10202, -102, 'Trending Disclaimer',' ','The disclaimer that appears with trends.');
 insert into yukonroleproperty values(-10203, -102, 'Scan Now Enabled', 'false', 'Controls access to retrieve meter data on demand.');
-insert into yukonroleproperty values(-10204, -102, 'Scan Now Label', 'Get Data Now', 'The label for the scan data now option.');
 insert into yukonroleproperty values(-10205, -102, 'Minimum Scan Frequency', '15', 'Minimum duration (in minutes) between get data now events.');
 insert into yukonroleproperty values(-10206, -102, 'Maximum Daily Scans', '2', 'Maximum number of get data now scans available daily.');
-insert into yukonroleproperty values(-10207, -102, 'Reset Peaks Enabled', 'false', 'Allow access to reset the peak time period.');
-insert into yukonroleproperty values(-10208, -102, 'Header Label', 'Trending', 'The header label for trends.');
-insert into yukonroleproperty values(-10209, -102, 'Header Secondary Label', 'Interval Data', 'A secondary header label for grouping trends.');
-insert into yukonroleproperty values(-10210, -102, 'Trend Assignment', 'false', 'Allow assignment of trends to users.');
-insert into yukonroleproperty values(-10211, -102, 'Trend Create', 'false', 'Allow creation of new trends.');
-insert into yukonroleproperty values(-10212, -102, 'Trend Delete', 'false', 'Allow deletion of old trends.');
-insert into yukonroleproperty values(-10213, -102, 'Trend Edit', 'false', 'Allow ditting of existing trends.');
-insert into yukonroleproperty values(-10214, -102, 'Options Button Enabled', 'true', 'Display the Options link to additional trending configuration properties.');
-insert into yukonroleproperty values(-10215, -102, 'Export/Print Button Enabled', 'true', 'Display the Export/Print options button (drop down menu).');
-insert into yukonroleproperty values(-10216, -102, 'View Button Enabled', 'true', 'Display the View options button (drop down menu).');
-insert into yukonroleproperty values(-10217, -102, 'Export/Print Button Label', 'Trend', 'The label for the trend print/export button (drop down menu).');
-insert into yukonroleproperty values(-10218, -102, 'View Button Label', 'View', 'The label for the trend view options button (drop down menu).');
-insert into yukonroleproperty values(-10219, -102, 'Trending Usage', 'false', 'Allow access to trending time of use.');
-insert into yukonroleproperty values(-10220, -102, 'Default Start Date Offset', '0', 'Offset the start date by this number.');
-insert into yukonroleproperty values(-10221, -102, 'Default Time Period', '(none)', 'Default the time period.');
-
 
 /* Commander Role Properties */ 
 insert into YukonRoleProperty values(-10300,-103,'msg_priority','14','Tells commander what the outbound priority of messages are (low)1 - 14(high)');
@@ -9395,27 +9359,10 @@ insert into YukonUserRole values(-130,-1,-101,-10111,'(none)');
 
 /* Trending */
 insert into YukonUserRole values(-150,-1,-102,-10200,'(none)');
-
 insert into YukonUserRole values(-152,-1,-102,-10202,'(none)');
 insert into YukonUserRole values(-153,-1,-102,-10203,'(none)');
-insert into YukonUserRole values(-154,-1,-102,-10204,'(none)');
 insert into YukonUserRole values(-155,-1,-102,-10205,'(none)');
 insert into YukonUserRole values(-156,-1,-102,-10206,'(none)');
-insert into YukonUserRole values(-157,-1,-102,-10207,'(none)');
-insert into YukonUserRole values(-158,-1,-102,-10208,'(none)');
-insert into YukonUserRole values(-159,-1,-102,-10209,'(none)');
-insert into YukonUserRole values(-160,-1,-102,-10210,'(none)');
-insert into YukonUserRole values(-161,-1,-102,-10211,'(none)');
-insert into YukonUserRole values(-162,-1,-102,-10212,'(none)');
-insert into YukonUserRole values(-163,-1,-102,-10213,'(none)');
-insert into YukonUserRole values(-164,-1,-102,-10214,'(none)');
-insert into YukonUserRole values(-165,-1,-102,-10215,'(none)');
-insert into YukonUserRole values(-166,-1,-102,-10216,'(none)');
-insert into YukonUserRole values(-167,-1,-102,-10217,'(none)');
-insert into YukonUserRole values(-168,-1,-102,-10218,'(none)');
-insert into YukonUserRole values(-169,-1,-102,-10219,'(none)');
-insert into YukonUserRole values(-149,-1,-102,-10220,'(none)');
-insert into YukonUserRole values(-148,-1,-102,-10221,'(none)');
 
 /* Commander */
 insert into YukonUserRole values(-170,-1,-103,-10300,'(none)');
@@ -9496,120 +9443,219 @@ INSERT INTO YukonWebConfiguration VALUES (-2,'Winter.gif','Default Winter Settin
 insert into YukonWebConfiguration values(0,'(none)','(none)','(none)','(none)');
 
 /*==============================================================*/
-/* View: CCCAP_INVENTORY_VIEW                                   */
+/* View: CBCConfiguration2_View                                 */
 /*==============================================================*/
-create or replace view CCCAP_INVENTORY_VIEW as
-SELECT
-	yp4.paoname AS REGION
-	, cb.maplocationid AS OP_CENTER
-	, capa.maintenanceareaid AS TA_AREA
-	, yp5.paoname as SUBSTATION_NAME
-	, yp3.PAOName AS SUBSTATION_BANK_NAME
-	, yp2.PAOName AS BREAKER_NUMBER
-	, yp1.PAOName AS BANK_NAME
-	, cb.BANKSIZE AS BANK_SIZE
-	, cb.OPERATIONALSTATE AS CONTROL_TYPE
-	, cb.SwitchManufacture AS SWITCH_MANUFACTURER
-	, cb.TypeOfSwitch AS SWITCH_TYPE
-	, yp.PAOName AS CBC_NAME
-	, p.Value AS IP_ADDRESS
-	, da.SlaveAddress AS DNP_ADDRESS
-	, capa.driveDirections AS DRIVE_DIRECTION
-	, capa.latitude AS LATITUDE
-	, capa.longitude AS LONGITUDE
-FROM
-	CAPBANK cb
-	INNER JOIN YukonPAObject yp1 ON yp1.PAObjectID = cb.DEVICEID
-	LEFT OUTER JOIN YukonPAObject yp ON cb.CONTROLDEVICEID = yp.PAObjectID AND cb.CONTROLDEVICEID > 0
-	LEFT OUTER JOIN CCFeederBankList fb ON fb.DeviceID = cb.DEVICEID
-	LEFT OUTER JOIN YukonPAObject yp2 ON yp2.PAObjectID = fb.FeederID
-	LEFT OUTER JOIN CCFeederSubAssignment sf ON fb.FeederID = sf.FeederID
-	LEFT OUTER JOIN YukonPAObject yp3 ON yp3.PAObjectID = sf.SubStationBusID
-	LEFT OUTER JOIN ccsubstationsubbuslist ss on ss.substationbusid = yp3.paobjectid
-	LEFT OUTER JOIN YukonPAObject yp5 ON yp5.PAObjectID = ss.SubStationID
-	left outer join ccsubareaassignment sa on ss.substationid = sa.substationbusid
-	left outer join YukonPAObject yp4 on yp4.paobjectid = sa.areaid
-	LEFT OUTER JOIN DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID
-	LEFT OUTER JOIN (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
-					  FROM DynamicPAOInfo
-					  WHERE (InfoKey LIKE '%udp ip%')) p ON p.PAObjectID = yp.PAObjectID
-	left outer join capbankadditional capa on capa.deviceid = cb.deviceid;
+create or replace view CBCConfiguration2_View as
+SELECT YP.PAOName AS CBCName, D.* 
+FROM DynamicCCTwoWayCBC D, YukonPAObject YP
+WHERE YP.PAObjectId = D.DeviceId;
 
 /*==============================================================*/
-/* View: CCINVENTORY_VIEW                                       */
+/* View: CBCConfiguration_View                                  */
 /*==============================================================*/
-create or replace view CCINVENTORY_VIEW(Region, SubName, FeederName, subId, substationid, fdrId, CBCName, cbcId, capbankname, bankId, CapBankSize, Sequence, ControlStatus, SWMfgr, SWType, ControlType, Protocol, IPADDRESS, SlaveAddress, LAT, LON, DriveDirection, OpCenter, TA) as
-SELECT yp4.paoname AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, ssl.substationid AS substationid, yp2.PAObjectID AS fdrId, 
-                      yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS capBankName, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
-                      fb.ControlOrder AS Sequence, dcb.ControlStatus, cb.SwitchManufacture AS SWMfgr, cb.TypeOfSwitch AS SWType, 
-                      cb.OPERATIONALSTATE AS ControlType, cb.ControllerType AS Protocol, pts.IPADDRESS, da.SlaveAddress, 
-                                capa.latitude AS LAT, capa.longitude AS LON, capa.drivedirections AS DriveDirection, 
-                                cb.maplocationid AS OpCenter, capa.maintenanceareaid AS TA
-FROM CAPBANK cb INNER JOIN
-                      YukonPAObject yp ON yp.PAObjectID = cb.CONTROLDEVICEID INNER JOIN
-                      YukonPAObject yp1 ON yp1.PAObjectID = cb.DEVICEID INNER JOIN
-                      DynamicCCCapBank dcb ON dcb.CapBankID = yp1.PAObjectID INNER JOIN
-                      STATE s ON s.STATEGROUPID = 3 AND dcb.ControlStatus = s.RAWSTATE INNER JOIN
-                      CCFeederBankList fb ON fb.DeviceID = cb.DEVICEID INNER JOIN
-                      YukonPAObject yp2 ON yp2.PAObjectID = fb.FeederID INNER JOIN
-                      CCFeederSubAssignment sf ON fb.FeederID = sf.FeederID INNER JOIN
-                      YukonPAObject yp3 ON yp3.PAObjectID = sf.SubStationBusID INNER JOIN
-                      ccsubstationsubbuslist ssl on ssl.substationbusid = yp3.paobjectid INNER JOIN
-                      ccsubareaassignment sa on sa.substationbusid = ssl.substationid INNER JOIN
-                      yukonpaobject yp4 on yp4.paobjectid = sa.areaid INNER JOIN
-                      DeviceDirectCommSettings ddcs ON ddcs.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
-                      DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID INNER JOIN
-                      PORTTERMINALSERVER pts ON pts.PORTID = ddcs.PORTID INNER JOIN
-                      DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
-                      capbankadditional capa on capa.deviceid = cb.deviceid;
+create or replace view CBCConfiguration_View as
+SELECT YP.PAOName AS CBCName, YP.PAObjectId AS CBCId, P.PointName AS PointName, P.PointId AS PointId, 
+       PD.Value AS PointValue, PD.Timestamp, UOM.UOMName AS UnitOfMeasure
+FROM Point P
+JOIN YukonPAObject YP ON YP.PAObjectId = P.PAObjectId AND YP.Type like 'CBC 702%'
+LEFT OUTER JOIN DynamicPointDispatch PD ON PD.PointId = P.PointId
+LEFT OUTER JOIN PointUnit PU ON PU.PointId = P.PointId
+LEFT OUTER JOIN UnitMeasure UOM ON UOM.UOMId = PU.UOMId;
 
 /*==============================================================*/
-/* View: CCOPERATIONS_VIEW                                      */
+/* View: CCCBCCVMSState_View                                    */
 /*==============================================================*/
-create or replace view CCOPERATIONS_VIEW(cbcName, capbankname, opTime, operation, confTime, confStatus, feederName, feederId, subName, subBusId, substationid, region, BANKSIZE, protocol, ipAddress, serialNum, SlaveAddress, kvarAfter, kvarChange, kvarBefore) as
-SELECT 
-      yp3.PAOName AS cbcName, yp.PAOName AS capbankname, el.DateTime AS opTime, el.Text AS operation, 
-      el2.DateTime AS confTime, el2.Text AS confStatus, yp1.PAOName AS feederName, yp1.PAObjectID AS feederId, 
-        yp2.PAOName AS subName, yp2.PAObjectID AS subBusId, ssl.substationid AS substationid, yp4.paoname AS region, cb.BANKSIZE, 
-        cb.ControllerType AS protocol, p.Value AS ipAddress, cbc.SERIALNUMBER AS serialNum, da.SlaveAddress, 
-        el2.kvarAfter, el2.kvarChange, el2.kvarBefore
-FROM   
-      (SELECT op.LogID AS oid, MIN(aaa.confid) AS cid FROM
-              (SELECT LogID, PointID FROM CCEventLog 
-        WHERE Text LIKE '%Close sent%' OR Text LIKE '%Open sent%') op
-        LEFT OUTER JOIN 
-        (SELECT el.LogID AS opid, MIN(el2.LogID) AS confid 
-        FROM CCEventLog el INNER JOIN CCEventLog el2 ON el2.PointID = el.PointID AND el.LogID < el2.LogID 
-        LEFT OUTER JOIN
-        (SELECT a.LogID AS aid, MIN(b.LogID) AS next_aid FROM 
-        CCEventLog a INNER JOIN CCEventLog b ON a.PointID = b.PointID AND a.LogID < b.LogID 
-        WHERE (a.Text LIKE '%Close sent,%' OR a.Text LIKE '%Open sent,%') 
-        AND (b.Text LIKE '%Close sent,%' OR b.Text LIKE '%Open sent,%')
-        GROUP BY a.LogID) el3 ON el3.aid = el.LogID 
-      WHERE (el.Text LIKE '%Close sent,%' OR el.Text LIKE '%Open sent,%') 
-        AND (el2.Text LIKE 'Var: %') AND (el2.LogID < el3.next_aid) 
-      OR (el.Text LIKE '%Close sent,%' OR el.Text LIKE '%Open sent,%') 
-        AND (el2.Text LIKE 'Var: %') AND (el3.next_aid IS NULL)
-        GROUP BY el.LogID)  aaa ON op.LogID = aaa.opid
-GROUP BY op.LogID) OpConf INNER JOIN
-        CCEventLog el ON el.LogID = OpConf.oid LEFT OUTER JOIN
-        CCEventLog el2 ON el2.LogID = OpConf.cid INNER JOIN
-        POINT ON POINT.POINTID = el.PointID INNER JOIN
-        DynamicCCCapBank ON DynamicCCCapBank.CapBankID = POINT.PAObjectID INNER JOIN
-        YukonPAObject yp ON yp.PAObjectID = DynamicCCCapBank.CapBankID INNER JOIN
-        YukonPAObject yp1 ON yp1.PAObjectID = el.FeederID INNER JOIN
-        YukonPAObject yp2 ON yp2.PAObjectID = el.SubID INNER JOIN
-        CAPBANK cb ON cb.DEVICEID = DynamicCCCapBank.CapBankID LEFT OUTER JOIN
-        DeviceDirectCommSettings ddcs ON ddcs.DEVICEID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID INNER JOIN
-        YukonPAObject yp3 ON yp3.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
-        FROM DynamicPAOInfo WHERE (InfoKey LIKE '%udp ip%')) 
-        p ON p.PAObjectID = cb.CONTROLDEVICEID LEFT OUTER JOIN
-        ccsubstationsubbuslist ssl on ssl.substationbusid = el.subid  LEFT OUTER JOIN
-        ccsubareaassignment csa on csa.substationbusid = ssl.substationid left outer join 
-        YukonPAObject yp4 ON yp4.paobjectid = csa.areaid;
+create or replace view CCCBCCVMSState_View as
+SELECT YP5.PAOName AS Region, YP4.PAOName AS Substation, CB.MapLocationId AS OpCenter, 
+       YP3.PAOName AS SubName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
+       YP.PAOName AS CBCName, S.Text AS CapBankStatus, S1.Text AS CBCStatus, 
+       CASE WHEN S.Text = S1.Text THEN 'No' ELSE 'Yes' END AS IsMisMatch, 
+       DCB.LastStatusChangeTime AS CapBankChangeTime, DCB.TwoWayCBCStateTime AS CBCChangeTime
+FROM (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
+      FROM YukonPAObject
+      WHERE  (Type LIKE 'CBC 702%')) YP 
+LEFT OUTER JOIN CapBank CB ON CB.ControlDeviceId = YP.PAObjectId AND CB.ControlDeviceId > 0 
+INNER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
+            FROM YukonPAObject YukonPAObject_3
+            WHERE (Type LIKE 'CAP BANK')) YP1 ON YP1.PAObjectId = cb.DeviceId 
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
+                 FROM YukonPAObject YukonPAObject_2
+                 WHERE (Type LIKE 'CCFEEDER')) YP2 ON YP2.PAObjectId = FB.FeederId 
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
+LEFT OUTER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
+                 FROM YukonPAObject YukonPAObject_1
+                 WHERE (Type LIKE 'CCSUBBUS')) YP3 ON YP3.PAObjectId = SF.SubStationBusId 
+LEFT OUTER JOIN CCSubstationSubbusList SS ON SS.SubstationBusId = SF.SubStationBusId 
+LEFT OUTER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
+                 FROM YukonPAObject YukonPAObject_1
+                 WHERE (Type LIKE 'CCSUBSTATION')) YP4 ON YP4.PAObjectId = SS.SubStationId 
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SS.SubStationId 
+LEFT OUTER JOIN (SELECT PAObjectId, Category, PAOClass, PAOName, Type, Description, DisableFlag, PAOStatistics
+                 FROM YukonPAObject YukonPAObject_1
+                 WHERE (Type LIKE 'CCAREA')) YP5 ON YP5.PAObjectId = SA.AreaId 
+INNER JOIN DynamicCCCapBank DCB ON DCB.CapBankId = CB.DeviceId 
+INNER JOIN State S ON S.StateGroupId = 3 AND DCB.ControlStatus = S.RawState 
+LEFT OUTER JOIN State S1 ON S1.StateGroupId = 3 AND DCB.TwoWayCBCState = S1.RawState;
+
+/*==============================================================*/
+/* View: CCCBCInventory_View                                    */
+/*==============================================================*/
+create or replace view CCCBCInventory_View(CBCNAME, IPADDRESS, SLAVEADDRESS, CONTROLLERTYPE, OPCENTER, REGION, SUBSTATIONNAME, SUBBUSNAME, FEEDERNAME, CAPBANKNAME, BANKSIZE, OPERATIONMETHOD, LAT, LON, DRIVEDIRECTION, CAPBANKADDRESS, TA, CAPBANKCONFIG, COMMMEDIUM, COMMSTRENGTH, EXTERNALANTENNA, OPERATIONSCOUNTERRESETDATE, OPSCOUNTERSINCELASTRESET, OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, OVOPERATIONSCOUNTER, UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) as
+SELECT YP.PAOName AS CBCName, DPI.Value AS IPAddress, DA.SlaveAddress, CB.ControllerType, 
+       CB.MapLocationId AS OpCenter, YP5.PAOName AS Region, YP4.PAOName AS SubstationName, 
+       YP3.PAOName AS SubBusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
+       CB.BankSize, CB.OperationalState AS OperationMethod, CAPA.Latitude AS Lat, 
+       CAPA.Longitude AS Lon, CAPA.DriveDirections AS DriveDirection, 
+       YP1.Description AS CapBankAddress, CAPA.MaintenanceAreaId AS TA, CAPA.CapBankConfig,
+       CAPA.CommMedium, CAPA.CommStrength, CAPA.ExtAntenna AS ExternalAntenna, 
+       CAPA.OpCountResetDate AS OperationsCounterResetDate, 
+       DTWC.TotalOpCount AS OpsCounterSinceLastReset, 
+       DTWC.TotalOpCount AS OperationsCounterToday, DTWC.UvOpCount AS UvOperationsCounter, 
+       DTWC.OvOpCount AS OvOperationsCounter, DTWC.OvUvCountResetDate AS UvOvCounterResetDate, 
+       DTWC.LastOvUvDateTime
+FROM (SELECT PAObjectId, PAOName 
+      FROM YukonPAObject 
+      WHERE (Type LIKE '%CBC%')) YP 
+LEFT OUTER JOIN CapBank CB ON CB.ControlDeviceId = YP.PAObjectId 
+LEFT OUTER JOIN YukonPAObject YP1 ON CB.DeviceId = YP1.PAObjectId 
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
+LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
+LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = YP3.PAObjectId 
+LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SSL.SubstationId 
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId 
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SA.AreaId 
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
+                 FROM DynamicPAOInfo 
+                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId
+LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
+
+/*==============================================================*/
+/* View: CCCapInventory_View                                    */
+/*==============================================================*/
+create or replace view CCCapInventory_View as
+SELECT YP4.PAOName AS Region, CB.MapLocationId AS OpCenter, YP5.PAOName AS SubstationName, 
+       YP3.PAOName AS SubName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
+       CB.BankSize, CAPA.Latitude AS Lat, CAPA.Longitude AS LON, 
+       CAPA.DriveDirections AS DriveDirection, CB.OperationalState AS OperationMethod, 
+       CB.SwitchManufacture AS SWMfgr, CB.TypeOfSwitch AS SWType, YP.PAOName AS CBCName, 
+       DPI.Value AS IPAddress, DA.SlaveAddress, CAPA.MaintenanceAreaId AS TA, 
+       CAPA.CapBankConfig, CAPA.CommMedium, CAPA.CommStrength
+FROM CapBank CB 
+INNER JOIN YukonPAObject YP1 ON YP1.PAObjectId = CB.DeviceId 
+LEFT OUTER JOIN YukonPAObject YP ON CB.ControlDeviceId = YP.PAObjectId AND CB.ControlDeviceId > 0 
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
+LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
+LEFT OUTER JOIN CCSubStationSubbusList SS on SS.SubstationBusId = YP3.PAObjectId
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SS.SubStationId 
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SS.SubstationId = SA.SubstationBusId
+LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime 
+                 FROM DynamicPAOInfo 
+                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId 
+LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId;
+
+/*==============================================================*/
+/* View: CCInventory_View                                       */
+/*==============================================================*/
+create or replace view CCInventory_View(REGION, SUBSTATIONNAME, SUBBUSNAME, FEEDERNAME, AREAID, SUBID, SUBBUSID, FDRID, CBCNAME, CBCID, CAPBANKNAME, BANKID, CAPBANKSIZE, DISPLAYORDER, CONTROLSTATUS, CONTROLSTATUSNAME, SWMFGR, SWTYPE, OPERATIONMETHOD, CONTROLLERTYPE, IPADDRESS, SLAVEADDRESS, LAT, LON, DRIVEDIRECTION, OPCENTER, TA, CLOSESEQUENCE, OPENSEQUENCE, LASTOPERATIONTIME, LASTINSPECTIONDATE, LASTMAINTENANCEDATE, MAINTENANCEREQPEND, CAPDISABLED, POTENTIALTRANSFORMER, OTHERCOMMENTS, OPTEAMCOMMENTS, POLENUMBER, OPSCOUNTERSINCELASTRESET, OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, OVOPERATIONSCOUNTER, UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) as
+SELECT YP4.PAOName AS Region, YP5.PAOName AS SubstationName, YP3.PAOName AS SubBusName, 
+       YP2.PAOName AS FeederName, YP4.PAObjectId AS AreaId, YP5.PAObjectId AS SubId, 
+       YP3.PAObjectId AS SubBusId, YP2.PAObjectId AS FdrId, YP.PAOName AS CBCName, 
+       YP.PAObjectId AS CBCId, YP1.PAOName AS CapBankName, YP1.PAObjectId AS BankId, 
+       CB.BankSize AS CapBankSize, FB.ControlOrder AS DisplayOrder, DCB.ControlStatus, 
+       S.Text AS ControlStatusName, CB.SwitchManufacture AS SWMfgr, CB.TypeOfSwitch AS SWType,
+       CB.OperationalState AS OperationMethod, CB.ControllerType, DPI.Value AS IPAddress, 
+       DA.SlaveAddress, CAPA.Latitude AS Lat, CAPA.Longitude AS Lon, CAPA.DriveDirections AS DriveDirection, 
+       CB.MapLocationId AS OpCenter, CAPA.MaintenanceAreaId AS TA, FB.CloseOrder AS CloseSequence, 
+       FB.TripOrder AS OpenSequence, DCB.LastStatusChangeTime AS LastOperationTime, 
+       CAPA.LastInspVisit AS LastInspectionDate, CAPA.LastMaintVisit AS LastMaintenanceDate, 
+       CAPA.MaintenanceReqPend, YP1.DisableFlag as CapDisabled, CAPA.PotentialTransformer, 
+       CAPA.OtherComments, CAPA.OpTeamComments, CAPA.PoleNumber, 
+       DTWC.TotalOpCount AS OpsCounterSinceLastReset, DTWC.TotalOpCount AS OperationsCounterToday, 
+       DTWC.UvOpCount AS UvOperationsCounter, DTWC.OvOpCount AS OvOperationsCounter, 
+       DTWC.OvUvCountResetDate AS UvOvCounterResetDate, DTWC.LastOvUvDateTime
+FROM (SELECT  PAObjectId, PAOName 
+      FROM YukonPAObject 
+      WHERE (Type LIKE '%CBC%')) YP 
+LEFT OUTER JOIN CapBank CB ON YP.PAObjectId = CB.ControlDeviceId 
+LEFT OUTER JOIN YukonPAObject YP1 ON YP1.PAObjectId = CB.DeviceId 
+LEFT OUTER JOIN DynamicCCCapBank DCB ON DCB.CapBankId = YP1.PAObjectId 
+LEFT OUTER JOIN State S ON S.StateGroupId = 3 AND DCB.ControlStatus = S.RawState 
+LEFT OUTER JOIN State SL ON SL.StateGroupId = 3 AND DCB.TwoWayCBCState = SL.RawState
+LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId 
+LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
+LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
+LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
+LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = YP3.PAObjectId 
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SSL.SubstationId 
+LEFT OUTER JOIN CCSubAreaAssignment SA ON SA.SubstationBusId = SSL.SubstationId 
+LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId 
+LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = YP.PAObjectId 
+LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
+                 FROM DynamicPAOInfo 
+                 WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId 
+LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId
+LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
+
+/*==============================================================*/
+/* View: CCOperations_View                                      */
+/*==============================================================*/
+create or replace view CCOperations_View as
+SELECT YP3.PAOName AS CBCName, YP.PAOName AS CapBankName, EL.DateTime AS OpTime, 
+       EL.Text AS Operation, EL2.DateTime AS ConfTime, EL2.Text AS ConfStatus, 
+       YP1.PAOName AS FeederName, YP1.PAObjectId AS FeederId, YP2.PAOName AS SubBusName, 
+       YP2.PAObjectId AS SubBusId, YP5.PAOName AS SubstationName, YP5.PAObjectId AS SubstationId, 
+       YP4.PAOName AS Region, YP4.PAObjectId AS AreaId, CB.BankSize, CB.ControllerType, 
+       EL.AdditionalInfo AS IPAddress, CBC.SerialNumber AS SerialNum, DA.SlaveAddress, 
+       EL2.KvarAfter, EL2.KvarChange, EL2.KvarBefore
+FROM (SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId 
+      FROM (SELECT LogId, PointId 
+            FROM CCEventLog 
+            WHERE Text LIKE '%Close sent%' OR Text LIKE '%Open sent%') OP
+      LEFT OUTER JOIN (SELECT EL.LogId AS OpId, MIN(el2.LogID) AS ConfId 
+                       FROM CCEventLog EL 
+                       INNER JOIN CCEventLog EL2 ON EL2.PointId = EL.PointId AND EL.LogId < EL2.LogId 
+                       LEFT OUTER JOIN (SELECT A.LogId AS AId, MIN(b.LogID) AS NextAId 
+                                        FROM CCEventLog A 
+                                        INNER JOIN CCEventLog B ON A.PointId = B.PointId AND A.LogId < B.LogId 
+                                        WHERE (A.Text LIKE '%Close sent,%' OR A.Text LIKE '%Open sent,%') 
+                                        AND (B.Text LIKE '%Close sent,%' OR B.Text LIKE '%Open sent,%')
+                                        GROUP BY A.LogId) EL3 ON EL3.AId = EL.LogId 
+                       WHERE (EL.Text LIKE '%Close sent,%' OR EL.Text LIKE '%Open sent,%') 
+                       AND (EL2.Text LIKE 'Var: %') AND (EL2.LogId < EL3.NextAId) 
+                       OR (EL.Text LIKE '%Close sent,%' OR EL.Text LIKE '%Open sent,%') 
+                       AND (EL2.Text LIKE 'Var: %') AND (EL3.NextAId IS NULL)
+                       GROUP BY EL.LogId) AAA ON OP.LogId = AAA.OpId
+      GROUP BY OP.LogId) OpConf 
+      INNER JOIN CCEventLog EL ON EL.LogId = OpConf.OId 
+      LEFT OUTER JOIN CCEventLog EL2 ON EL2.LogId = OpConf.CId 
+      INNER JOIN Point ON Point.PointId = EL.PointId 
+      INNER JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId 
+      INNER JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId 
+      INNER JOIN YukonPAObject YP1 ON YP1.PAObjectId = EL.FeederId 
+      INNER JOIN YukonPAObject YP2 ON YP2.PAObjectId = EL.SubId 
+      INNER JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId 
+      LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId 
+      LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
+      INNER JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId 
+      LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
+      LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
+                       FROM DynamicPAOInfo 
+                       WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId 
+      LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId  
+      LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId 
+      LEFT OUTER JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
+      LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 
 /*==============================================================*/
 /* View: DISPLAY2WAYDATA_VIEW                                   */
@@ -9650,7 +9696,7 @@ where ( x.FeederID = a.AddressID and ( a.AddressType = 'FEEDER' or a.AddressID =
 /*==============================================================*/
 /* View: FullEventLog_View                                      */
 /*==============================================================*/
-create or replace view FullEventLog_View(EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, DeviceName, PointName, EventDescription, AdditionalInfo, EventUserName) as
+create or replace view FullEventLog_View(EVENTID, POINTID, EVENTTIMESTAMP, EVENTSEQUENCE, EVENTTYPE, EVENTALARMID, DEVICENAME, POINTNAME, EVENTDESCRIPTION, ADDITIONALINFO, EVENTUSERNAME) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, y.PAOName, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from YukonPAObject y, POINT p, SYSTEMLOG s
 where s.POINTID = p.POINTID and p.PAObjectID = y.PAObjectID;
@@ -9658,7 +9704,7 @@ where s.POINTID = p.POINTID and p.PAObjectID = y.PAObjectID;
 /*==============================================================*/
 /* View: FullPointHistory_View                                  */
 /*==============================================================*/
-create or replace view FullPointHistory_View(PointID, DeviceName, PointName, DataValue, DataTimeStamp, DataQuality) as
+create or replace view FullPointHistory_View(POINTID, DEVICENAME, POINTNAME, DATAVALUE, DATATIMESTAMP, DATAQUALITY) as
 select r.POINTID, y.PAOName, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from YukonPAObject y, POINT p, RAWPOINTHISTORY r
 where r.POINTID = p.POINTID and p.PAObjectID = y.PAObjectID;
@@ -9699,7 +9745,7 @@ group by POINTID, VALUE;
 /*==============================================================*/
 /* View: PointEventLog_View                                     */
 /*==============================================================*/
-create or replace view PointEventLog_View(EventID, PointID, EventTimeStamp, EventSequence, EventType, EventAlarmID, PointName, EventDescription, AdditionalInfo, EventUserName) as
+create or replace view PointEventLog_View(EVENTID, POINTID, EVENTTIMESTAMP, EVENTSEQUENCE, EVENTTYPE, EVENTALARMID, POINTNAME, EVENTDESCRIPTION, ADDITIONALINFO, EVENTUSERNAME) as
 select s.LOGID, s.POINTID, s.DATETIME, s.SOE_TAG, s.TYPE, s.PRIORITY, p.POINTNAME, s.DESCRIPTION, s.ACTION, s.USERNAME
 from POINT p, SYSTEMLOG s
 where s.POINTID = p.POINTID;
@@ -9707,7 +9753,7 @@ where s.POINTID = p.POINTID;
 /*==============================================================*/
 /* View: PointHistory_View                                      */
 /*==============================================================*/
-create or replace view PointHistory_View(PointID, PointName, DataValue, DataTimeStamp, DataQuality) as
+create or replace view PointHistory_View(POINTID, POINTNAME, DATAVALUE, DATATIMESTAMP, DATAQUALITY) as
 select r.POINTID, p.POINTNAME, r.VALUE, r.TIMESTAMP, r.QUALITY
 from POINT p, RAWPOINTHISTORY r
 where r.POINTID = p.POINTID;
@@ -9735,6 +9781,20 @@ create or replace view SubstationAddress_View as
 select x.LMGroupID, a.Address as SubstationAddress
 from LMGroupExpressCom x, LMGroupExpressComAddress a
 where ( x.SubstationID = a.AddressID and ( a.AddressType = 'SUBSTATION' or a.AddressID = 0 ) );
+
+/*==============================================================*/
+/* View: TempMovedCapBanks_View                                 */
+/*==============================================================*/
+create or replace view TempMovedCapBanks_View as
+SELECT YPF.PAOName TempFeederName, YPF.PAObjectId TempFeederId, YPC.PAOName CapBankName, 
+       YPC.PAObjectId CapBankId, FB.ControlOrder, FB.CloseOrder, FB.TripOrder, 
+       YPOF.PAOName OriginalFeederName, YPOF.PAObjectId OriginalFeederId 
+FROM CCFeederBankList FB, YukonPAObject YPF, YukonPAObject YPC, YukonPAObject YPOF, DynamicCCCapBank DC 
+WHERE FB.DeviceId = DC.CapBankId 
+AND YPC.PAObjectId = DC.CapBankId 
+AND FB.FeederId = YPF.PAObjectId 
+AND YPOF.PAObjectId = DC.OriginalFeederId 
+AND DC.OriginalFeederId <> 0;
 
 alter table AccountSite
    add constraint FK_CUS_CSTS_CUS2 foreign key (SiteInformationID)
