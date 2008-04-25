@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2007/10/30 17:59:39 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -380,7 +380,7 @@ public:
 
     bool inputIsValid( CtiIONApplicationLayer &al, CtiIONDataStream &ds );
 
-    bool isTransactionComplete( void );
+    bool isTransactionComplete( void ) const;
 
     int sendCommRequest( OUTMESS *&OutMessage, list< OUTMESS* > &outList );
     int recvCommResult ( INMESS   *InMessage,  list< OUTMESS* > &outList );

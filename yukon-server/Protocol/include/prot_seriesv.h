@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/10/31 20:52:35 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -268,7 +268,7 @@ public:
     int recvCommRequest( OUTMESS *OutMessage );
     int sendCommResult ( INMESS  *InMessage );
 
-    bool isTransactionComplete( void );
+    bool isTransactionComplete( void ) const;
 
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );

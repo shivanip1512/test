@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2006/08/30 15:34:59 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -466,7 +466,7 @@ CtiTime CtiProtocolLMI::getLastCodeDownload( void ) const
 }
 
 
-bool CtiProtocolLMI::isTransactionComplete( void )
+bool CtiProtocolLMI::isTransactionComplete( void ) const
 {
     bool retval = false;
 

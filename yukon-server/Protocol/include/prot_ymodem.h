@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/01/14 19:43:26 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ class IM_EX_PROT CtiProtocolYmodem
       bool generate( CtiXfer &xfer, int packets );
       bool decode( CtiXfer &xfer, int status );
 
-      bool isTransactionComplete( void );
+      bool isTransactionComplete( void ) const;
 
       void retreiveData( BYTE *data, int *bytes );
       bool isCrcValid( void );

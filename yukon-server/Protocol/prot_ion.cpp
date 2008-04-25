@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2007/08/07 21:05:11 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2614,7 +2614,7 @@ void CtiProtocolION::putResult( unsigned char *buf )
 }
 
 
-bool CtiProtocolION::isTransactionComplete( void )
+bool CtiProtocolION::isTransactionComplete( void ) const
 {
     //  ACH: factor in application layer retries... ?
 

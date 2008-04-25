@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/01/14 19:40:08 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -263,7 +263,7 @@ vector<CtiTransdataData *> CtiProtocolTransdata::resultDecode( INMESS *InMessage
 //=====================================================================================================================
 //=====================================================================================================================
 
-bool CtiProtocolTransdata::isTransactionComplete( void )
+bool CtiProtocolTransdata::isTransactionComplete( void ) const
 {
    return( _finished );
 }

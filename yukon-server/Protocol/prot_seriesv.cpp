@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -236,7 +236,7 @@ int CtiProtocolSeriesV::sendCommResult( INMESS *InMessage )
 }
 
 
-bool CtiProtocolSeriesV::isTransactionComplete( void )
+bool CtiProtocolSeriesV::isTransactionComplete( void ) const
 {
     return (_state == State_Complete) || (_retry_count >= Retries);
 }

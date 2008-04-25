@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/02/05 16:31:48 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *
@@ -202,7 +202,7 @@ bool CtiProtocolYmodem::decode( CtiXfer &xfer, int status )
 //=====================================================================================================================
 //=====================================================================================================================
 
-bool CtiProtocolYmodem::isTransactionComplete( void )
+bool CtiProtocolYmodem::isTransactionComplete( void ) const
 {
    bool complete = false;
 

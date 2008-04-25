@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2005/12/20 17:19:59 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ using std::vector;
 class IM_EX_PROT CtiProtocolTransdata
 {
    public:
-      
+
       struct mkv
       {
          int   command;
@@ -45,14 +45,14 @@ class IM_EX_PROT CtiProtocolTransdata
 
       CtiProtocolTransdata();
       ~CtiProtocolTransdata();
-      
+
       bool generate( CtiXfer &xfer );
       bool decode( CtiXfer &xfer, int status );
 
       int sendCommResult( INMESS *InMessage );
       int recvOutbound( OUTMESS *OutMessage );
 
-      bool isTransactionComplete( void );
+      bool isTransactionComplete( void ) const;
       void injectData( string str );
       void reinitalize( void );
       void destroy( void );
@@ -97,7 +97,7 @@ class IM_EX_PROT CtiProtocolTransdata
       BYTE                       *_storage;
       BYTE                       *_billingBytes;
       BYTE                       *_lpBytes;
-      
+
       int                        _numBytes;
       int                        _command;
       int                        _error;

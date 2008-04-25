@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2007/08/07 21:05:11 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -115,7 +115,7 @@ public:
     int generate( CtiXfer &xfer );
     int decode  ( CtiXfer &xfer, int status );
 
-    bool isTransactionComplete( void );
+    bool isTransactionComplete( void ) const;
 
     void addStatusPoint(int point);
     void addAnalogPoint(int point);

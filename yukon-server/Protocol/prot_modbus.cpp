@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:19:56 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -97,7 +97,7 @@ int Modbus::generate( CtiXfer &xfer )
     switch( _command )
         {
             case Command_ScanALL:
-                {                    
+                {
                     xfer.getOutBuffer()[i++] = function; //Protocol defined number.
                     xfer.getOutBuffer()[i++] = address>>8;
                     xfer.getOutBuffer()[i++] = address;
@@ -186,7 +186,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                                 dout << CtiTime() << " **** Checkpoint - crc error in received data " << __FILE__ << " (" << __LINE__ << ")" << endl;
                                 retVal = UnknownError;//some error code should be set!
-                                
+
                                 if(++_retries>Retries_Default)//retry and if that doesnt work, quit!
                                 {
                                     clearPoints();
@@ -213,7 +213,7 @@ int Modbus::decode( CtiXfer &xfer, int status )
                                     clearPoints();
                                 }
                                 break;
-                                
+
                             }
                             else if(xfer.getInBuffer()[0] == xfer.getOutBuffer()[0] && xfer.getInBuffer()[1] == (xfer.getOutBuffer()[1] | 0x80))
                             {
@@ -254,16 +254,16 @@ int Modbus::decode( CtiXfer &xfer, int status )
                             }
 
                         }
-                        else 
+                        else
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " **** Checkpoint - ascii decode unimplemented " << __FILE__ << " (" << __LINE__ << ")" << endl;
                             retVal = NoMethod;//some error code should be set!
                             _status = End;
                             clearPoints();
-                            break;                            
+                            break;
                         }
-                    
+
                         break;
 
                     }
@@ -314,7 +314,7 @@ bool Modbus::prepareNextOutMessage(int &function,int &address,int &lengthOrData)
                         current = (*_points_finish).pointOffset;
                         _points_finish++;
                     }
-                    
+
                     address = base;
 
                     if(current == base)
@@ -340,7 +340,7 @@ bool Modbus::prepareNextOutMessage(int &function,int &address,int &lengthOrData)
                     _points_finish++;
                     function = (*_points_start).pointType;
                     current = base;
-                         
+
                     while((function == (*_points_finish).pointType) && ((*_points_finish).pointOffset - base < ReadAnalogDataPointLimit)
                            && (((*_points_finish).pointOffset - current)<=ReadAnalogGapLimit) && (_points_finish != _points.end()))
                     {
@@ -372,14 +372,14 @@ bool Modbus::prepareNextOutMessage(int &function,int &address,int &lengthOrData)
                     _points_finish++;
                     function = (*_points_start).pointType==Command_DecomposeReadHoldingRegisters ? Command_ReadHoldingRegisters : Command_ReadInputRegisters;
                     current = base;
-    
+
                     while(((*_points_start).pointType == (*_points_finish).pointType) && ((*_points_finish).pointOffset - base < ReadStatusMaxBits)
                            && (((*_points_finish).pointOffset - current)<=ReadStatusGapBitLimit) && (_points_finish != _points.end()))
                     {
                         current = (*_points_finish).pointOffset;
                         _points_finish++;
                     }
-    
+
                     if(base == current)
                         lengthOrData = 1;
                     else
@@ -389,7 +389,7 @@ bool Modbus::prepareNextOutMessage(int &function,int &address,int &lengthOrData)
                 }
                 break;
             }
-        default:    
+        default:
             retVal =  false;
             break;
     }
@@ -518,13 +518,13 @@ void Modbus::addStatusPoint(int point)
     {
         tempData.pointOffset = point-1;
         tempData.pointType = Command_ReadCoilStatus;
-        _points.insert(tempData);     
+        _points.insert(tempData);
     }
     else if(point>=SecondStartPoint && point<=(SecondStartPoint+SizeLimit))
     {
         tempData.pointOffset = point-SecondStartPoint;
         tempData.pointType = Command_ReadInputStatus;
-        _points.insert(tempData);  
+        _points.insert(tempData);
     }
     else if(point>=HoldingDecomposeRegStart && point<=(HoldingDecomposeRegStart + DecomposeSizeLimit))
     {
@@ -540,7 +540,7 @@ void Modbus::addStatusPoint(int point)
     }
     _points_start = _points.begin();
 }
-        
+
 void Modbus::addAnalogPoint(int point)
 {
     point_data tempData;
@@ -550,18 +550,18 @@ void Modbus::addAnalogPoint(int point)
     {
         tempData.pointOffset = point-1;
         tempData.pointType = Command_ReadHoldingRegisters;
-        _points.insert(tempData);     
+        _points.insert(tempData);
     }
     else if(point>=SecondStartPoint && point<=(SecondStartPoint+SizeLimit))
     {
         tempData.pointOffset = point-SecondStartPoint;
         tempData.pointType = Command_ReadInputRegisters;
-        _points.insert(tempData);  
+        _points.insert(tempData);
     }
 
     //This must be done because any addition causes iterators to become invalid, and we always want to start at begin!!!
     _points_start = _points.begin();
-} 
+}
 
 void Modbus::clearPoints()//ok, this does more than clear points. Sue me.
 {
@@ -587,7 +587,7 @@ void Modbus::getInboundStrings( stringlist_t &strings )
 }
 
 
-bool Modbus::isTransactionComplete( void )
+bool Modbus::isTransactionComplete( void ) const
 {
     return _status == End;
 }

@@ -11,10 +11,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/ansi_application.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2006/04/06 17:00:30 $
-*    History: 
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
+*    History:
       $Log: ansi_application.cpp,v $
+      Revision 1.17  2008/04/25 21:45:14  mfisher
+      YUK-5743 isTransactionComplete() changes not propagated to all protocols
+      changed isTransactionComplete() to const
+
       Revision 1.16  2006/04/06 17:00:30  jrichter
       BUG FIX:  memory leak in porter...cleared out stdTablesAvailable/mfgTablesAvailable list.  since, prot_ansi object was not being destructed...it kept adding each time through connecting to device.  hopefully this is the root of all sentinel evil.
 
@@ -160,7 +164,7 @@ void CtiANSIApplication::destroyMe( void )
         delete []_lpTempBigTable;
         _lpTempBigTable = NULL;
     }
-    if (_parmPtr != NULL) 
+    if (_parmPtr != NULL)
     {
         delete []_parmPtr;
         _parmPtr = NULL;
@@ -213,7 +217,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
 
      case negotiated:
         {
-            if  ((int)_ansiDeviceType == sentinel) 
+            if  ((int)_ansiDeviceType == sentinel)
                 getDatalinkLayer().buildNegotiate(negotiate_no_baud, xfer );
             else
                 getDatalinkLayer().buildNegotiate(negotiate1, xfer );
@@ -297,7 +301,7 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
 
      case request:
         {
-            if (_currentTableID == 64) 
+            if (_currentTableID == 64)
             {
                 // make this generic
                 //getDatalinkLayer().buildTableRequest( xfer, _currentTableID, pread_offset, _currentTableOffset, _currentType );
@@ -312,25 +316,25 @@ bool CtiANSIApplication::generate( CtiXfer &xfer )
                 _requestedState = _currentState;
                 getDatalinkLayer().initializeForNewPacket();
             }
-            else if (_currentTableID != 7 && _currentTableID != 2049) 
+            else if (_currentTableID != 7 && _currentTableID != 2049)
             {
                 // make this generic
-                BYTE operation; 
+                BYTE operation;
                 short pktSize;
                 // sentinel likes full reads, kv2 likes partial read offsets
-                if  ((int)_ansiDeviceType == sentinel) 
-                { 
-                    if (_currentBytesExpected < (_maxPktSize.sh) || (_currentTableID == 23 && (int)getFWVersionNumber() < 3)) //FW Version 5 
+                if  ((int)_ansiDeviceType == sentinel)
+                {
+                    if (_currentBytesExpected < (_maxPktSize.sh) || (_currentTableID == 23 && (int)getFWVersionNumber() < 3)) //FW Version 5
 
                         //_currentTableID == 28)  */
                         operation =  full_read;
                     else
                         operation = pread_offset;
                 }
-                else 
+                else
                     operation =  pread_offset;
 
-                
+
                 if ((_currentBytesExpected - _currentTableOffset) < _maxPktSize.sh)
                 {
                     pktSize = _currentBytesExpected - _currentTableOffset;
@@ -462,10 +466,10 @@ void CtiANSIApplication::initializeTableRequest( short aID, int aOffset, unsigne
     setRetries (MAXRETRIES);
     setTableComplete (false);
     memset( _currentTable, NULL, sizeof( *_currentTable ) );
-    if (_lpMode == true) 
+    if (_lpMode == true)
     {
         memset(_lpTempBigTable, NULL, sizeof( *_lpTempBigTable ) );
-    } 
+    }
     _totalBytesInTable = 0;
     _initialOffset = aOffset;
 
@@ -535,7 +539,7 @@ bool CtiANSIApplication::decode( CtiXfer &xfer, int aCommStatus )
                   dout << CtiTime::now() << " ** CRC Not Valid **" << endl;
                   dout << CtiTime::now() << " ** _currentState/_requestedState " <<_currentState<< endl;
                   dout << endl;
-               }   
+               }
 
             }
         }
@@ -584,41 +588,41 @@ bool CtiANSIApplication::analyzePacket()
              }
              case request:
              {
-                 if (_lpMode) 
+                 if (_lpMode)
                  {
                      if (getDatalinkLayer().getPacketPart())
-                     {   
-                         if (getDatalinkLayer().getPacketFirst()) 
+                     {
+                         if (getDatalinkLayer().getPacketFirst())
                          {
-                             memcpy (_lpTempBigTable+_totalBytesInTable, 
-                                 getDatalinkLayer().getCurrentPacket()+9, 
+                             memcpy (_lpTempBigTable+_totalBytesInTable,
+                                 getDatalinkLayer().getCurrentPacket()+9,
                                  getDatalinkLayer().getPacketBytesReceived()-11); //header(6),crc(2),length(2),response(1)
 
                              _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-11;
 
-                            if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit 
+                            if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
                             {
                                  getDatalinkLayer().toggleToggle();
                             }
                          }
 
-                        else if (getDatalinkLayer().getSequence() == 0) 
+                        else if (getDatalinkLayer().getSequence() == 0)
                          {
                               // move the data into storage
-                             memcpy (_lpTempBigTable+_totalBytesInTable, 
-                                getDatalinkLayer().getCurrentPacket()+6, 
+                             memcpy (_lpTempBigTable+_totalBytesInTable,
+                                getDatalinkLayer().getCurrentPacket()+6,
                                 getDatalinkLayer().getPacketBytesReceived()-9); //header(6),crc(2),cksm(1)
-                     
+
                              _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-9;
-                                 
+
                          }
                          else
                          {
                               // move the data into storage
-                             memcpy (_lpTempBigTable+_totalBytesInTable, 
-                                getDatalinkLayer().getCurrentPacket()+6, 
+                             memcpy (_lpTempBigTable+_totalBytesInTable,
+                                getDatalinkLayer().getCurrentPacket()+6,
                                 getDatalinkLayer().getPacketBytesReceived()-8); //header(6),crc(2)
-                     
+
                              _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-8;
 
                          }
@@ -626,51 +630,51 @@ bool CtiANSIApplication::analyzePacket()
                      else
                      {
                          // move the data into storage
-                         memcpy (_lpTempBigTable+_totalBytesInTable, 
-                            getDatalinkLayer().getCurrentPacket()+9, 
+                         memcpy (_lpTempBigTable+_totalBytesInTable,
+                            getDatalinkLayer().getCurrentPacket()+9,
                             getDatalinkLayer().getPacketBytesReceived()-12); //header(6),crc(2),length(2),checksum(1),response(1)
 
                          _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-12;
-                     }   
+                     }
                  }
-                 else if (getDatalinkLayer().getPacketPart()) 
-                 { 
-                     if (getDatalinkLayer().getPacketFirst()) 
+                 else if (getDatalinkLayer().getPacketPart())
+                 {
+                     if (getDatalinkLayer().getPacketFirst())
                      {
                          // move the data into storage
-                         memcpy (_currentTable+_totalBytesInTable, 
-                            getDatalinkLayer().getCurrentPacket()+9, 
+                         memcpy (_currentTable+_totalBytesInTable,
+                            getDatalinkLayer().getCurrentPacket()+9,
                             getDatalinkLayer().getPacketBytesReceived()-11); //header(6),crc(2),length(2),response(1)
-                 
+
                          _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-11;
 
-                         if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit 
+                         if (getDatalinkLayer().getSequence() %2 !=0) //if odd, set toggle bit
                          {
                               getDatalinkLayer().toggleToggle();
                          }
 
                      }
-                     else if (getDatalinkLayer().getSequence() == 0) 
+                     else if (getDatalinkLayer().getSequence() == 0)
                      {
                           // move the data into storage
-                         memcpy (_currentTable+_totalBytesInTable, 
-                            getDatalinkLayer().getCurrentPacket()+6, 
+                         memcpy (_currentTable+_totalBytesInTable,
+                            getDatalinkLayer().getCurrentPacket()+6,
                             getDatalinkLayer().getPacketBytesReceived()-9); //header(6),crc(2),cksm(1)
-                 
+
                          _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-9;
-                             
+
                      }
                      else
                      {
                           // move the data into storage
-                         memcpy (_currentTable+_totalBytesInTable, 
-                            getDatalinkLayer().getCurrentPacket()+6, 
+                         memcpy (_currentTable+_totalBytesInTable,
+                            getDatalinkLayer().getCurrentPacket()+6,
                             getDatalinkLayer().getPacketBytesReceived()-8); //header(6),crc(2)
-                 
+
                          _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-8;
                      }
                  }
-                 else if (_currentTableID == 7 || _currentTableID == 2049) 
+                 else if (_currentTableID == 7 || _currentTableID == 2049)
                  {
                      setTableComplete (true);
                      _currentState = _requestedState;
@@ -679,8 +683,8 @@ bool CtiANSIApplication::analyzePacket()
                  else
                  {
                      // move the data into storage
-                     memcpy (_currentTable+_totalBytesInTable, 
-                         getDatalinkLayer().getCurrentPacket()+9, 
+                     memcpy (_currentTable+_totalBytesInTable,
+                         getDatalinkLayer().getCurrentPacket()+9,
                          getDatalinkLayer().getPacketBytesReceived()-12); //header(6),crc(2),length(2),checksum(1),response(1)
 
                      _totalBytesInTable += getDatalinkLayer().getPacketBytesReceived()-12;
@@ -775,7 +779,7 @@ bool CtiANSIApplication::areThereMorePackets()
     bool retVal;
     if (getDatalinkLayer().getPacketPart() )
     {
-        if(getDatalinkLayer().getSequence() == 0 )  
+        if(getDatalinkLayer().getSequence() == 0 )
         {
             if (_totalBytesInTable < _currentBytesExpected)
             {
@@ -792,7 +796,7 @@ bool CtiANSIApplication::areThereMorePackets()
         }
     }
     else
-    { 
+    {
         if (_totalBytesInTable < _currentBytesExpected)
         {
             retVal = true;
@@ -820,7 +824,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
       break;
 
    case err:
-      {  
+      {
           CtiLockGuard< CtiLogger > doubt_guard( dout );
           dout << endl;
           dout << CtiTime::now() <<"The " << getAnsiDeviceName() << " responded: Service Request Rejected"<< endl;
@@ -923,7 +927,7 @@ bool CtiANSIApplication::checkResponse( BYTE aResponseByte)
 }
 
 void CtiANSIApplication::identificationData( BYTE *aPacket)
-{                                                                 
+{
     _prot_version = aPacket[1];
     if( aPacket[4] == 0x00 )                //no authentication will be used
     {
@@ -954,7 +958,7 @@ void CtiANSIApplication::identificationData( BYTE *aPacket)
          _authTicket[i] = aPacket[8+i];
      }
      encryptDataMethod();
-    
+
      //FIXME: well, finish
      //we need to grab the algorithm value but I don't know
      //how it is used, so I'm not sure how to store it
@@ -966,7 +970,7 @@ void CtiANSIApplication::identificationData( BYTE *aPacket)
 
 BYTE* CtiANSIApplication::getCurrentTable( )
 {
-    if (_lpMode) 
+    if (_lpMode)
     {
         return (_lpTempBigTable);
     }
@@ -1042,7 +1046,7 @@ CtiANSIApplication::ANSI_STATES CtiANSIApplication::getNextState( ANSI_STATES cu
       break;
    case waitState:
       //next = loggedOff;
-       if (_currentTableID == -1) 
+       if (_currentTableID == -1)
        {
            next = terminated;
        }
@@ -1094,12 +1098,12 @@ CtiANSIDatalink &CtiANSIApplication::getDatalinkLayer( void )
 //=========================================================================================================================================
 //=========================================================================================================================================
 
-bool CtiANSIApplication::isReadComplete( void )
+bool CtiANSIApplication::isReadComplete( void ) const
 {
    return _readComplete;
 }
 
-bool CtiANSIApplication::isReadFailed( void )
+bool CtiANSIApplication::isReadFailed( void ) const
 {
    return _readFailed;
 }
@@ -1136,18 +1140,18 @@ void CtiANSIApplication::setLPDataMode( bool value, int sizeOfLpTable )
 {
     _lpMode = value;
     _sizeOfLpTable = sizeOfLpTable;
-    if (_lpMode) 
+    if (_lpMode)
     {
-        if (_lpTempBigTable != NULL) 
+        if (_lpTempBigTable != NULL)
         {
             delete []_lpTempBigTable;
             _lpTempBigTable = NULL;
         }
         _lpTempBigTable = CTIDBG_new BYTE[_sizeOfLpTable];
     }
-    else 
+    else
     {
-        if (_lpTempBigTable != NULL) 
+        if (_lpTempBigTable != NULL)
         {
             delete []_lpTempBigTable;
             _lpTempBigTable = NULL;
@@ -1157,14 +1161,14 @@ void CtiANSIApplication::setLPDataMode( bool value, int sizeOfLpTable )
 
 void CtiANSIApplication::populateParmPtr(BYTE *value, int size)
 {
-    if (_parmPtr != NULL) 
+    if (_parmPtr != NULL)
     {
         delete _parmPtr;
         _parmPtr = NULL;
-    } 
+    }
     _parmPtr = new BYTE[size];
-     
-    for (int x = 0; x < size; x++) 
+
+    for (int x = 0; x < size; x++)
     {
         _parmPtr[x] = value[x];
     }
@@ -1218,7 +1222,7 @@ void CtiANSIApplication::setFWVersionNumber(BYTE fwVersionNumber)
 }
 
 BYTE CtiANSIApplication::getFWVersionNumber()
-{ 
+{
     return _fwVersionNumber;
 }
 
@@ -1254,7 +1258,7 @@ string CtiANSIApplication::getMeterTypeString()
 }
 
 /*****************************************************************************************
-*   
+*
 *  Data Encryption Standard (ANSI Std X3.92-1981)
 *
 ******************************************************************************************/
@@ -1383,8 +1387,8 @@ void sBoxes(BYTE *dst, BYTE *src, BYTE *sbox)
     dst[2] = ii >> 1 & 1;
     dst[1] = ii >> 2 & 1;
     dst[0] = ii >> 3 & 1;
-   
-    
+
+
 }
 void dataEncryptionStandard(BYTE *_key, BYTE *_data, int _encrypt)
 {
@@ -1424,7 +1428,7 @@ int CtiANSIApplication::encryptDataMethod()
 {
 
     BYTE key1[8] = {'B', 'E', 'E', 'F','B', 'E', 'E', 'F'};
-     
+
     BYTE key[64];
     BYTE data[64];
 
@@ -1439,18 +1443,18 @@ int CtiANSIApplication::encryptDataMethod()
         key[(i*8)+6] = key1[i] & 0x40;
         key[(i*8)+7] = key1[i] & 0x80;
 
-        data[(i*8)+0] = _authTicket[i] & 0x01;  
-        data[(i*8)+1] = _authTicket[i] & 0x02;  
-        data[(i*8)+2] = _authTicket[i] & 0x04;  
-        data[(i*8)+3] = _authTicket[i] & 0x08;  
-        data[(i*8)+4] = _authTicket[i] & 0x10;  
-        data[(i*8)+5] = _authTicket[i] & 0x20;  
-        data[(i*8)+6] = _authTicket[i] & 0x40;  
-        data[(i*8)+7] = _authTicket[i] & 0x80;  
+        data[(i*8)+0] = _authTicket[i] & 0x01;
+        data[(i*8)+1] = _authTicket[i] & 0x02;
+        data[(i*8)+2] = _authTicket[i] & 0x04;
+        data[(i*8)+3] = _authTicket[i] & 0x08;
+        data[(i*8)+4] = _authTicket[i] & 0x10;
+        data[(i*8)+5] = _authTicket[i] & 0x20;
+        data[(i*8)+6] = _authTicket[i] & 0x40;
+        data[(i*8)+7] = _authTicket[i] & 0x80;
 
 
     }
-    
+
 
     dataEncryptionStandard(key, data, 1);
     dataEncryptionStandard(key, data, 0);
@@ -1472,7 +1476,7 @@ int CtiANSIApplication::encryptDataMethod()
                             ((data[(i*8)+5] & 0x01) << 5) |
                             ((data[(i*8)+6] & 0x01) << 6) |
                             ((data[(i*8)+7] & 0x01) << 7);
-                            
+
     }
     return 0;
 }
@@ -1506,7 +1510,7 @@ void CtiANSIApplication::setAnsiDeviceName(const string& devName)
 {
     _devName = devName;
     return;
-} 
+}
 
 void CtiANSIApplication::setLPBlockSize(long blockSize)
 {

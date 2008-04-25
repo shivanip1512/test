@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2007/08/07 19:56:17 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -264,7 +264,7 @@ public:
     CtiTime getTransmissionEnd() const;
     CtiTime getLastCodeDownload() const;
 
-    bool isTransactionComplete();
+    bool isTransactionComplete() const;
 
     int generate(CtiXfer &xfer);
     int decode  (CtiXfer &xfer, int status);

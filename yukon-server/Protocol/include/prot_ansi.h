@@ -14,10 +14,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_ansi.h-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2007/03/15 17:46:36 $
-*    History: 
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
+*    History:
       $Log: prot_ansi.h,v $
+      Revision 1.17  2008/04/25 21:45:14  mfisher
+      YUK-5743 isTransactionComplete() changes not propagated to all protocols
+      changed isTransactionComplete() to const
+
       Revision 1.16  2007/03/15 17:46:36  jrichter
       Last Interval Quadrant KVar readings reporting back correctly from present value table 28.
 
@@ -168,7 +172,7 @@ struct REQ_DATA_RCD
     union PARMS
     {
       struct PARM0
-      {  
+      {
           //no parms
       }p0;
       struct PARM1
@@ -322,7 +326,7 @@ class IM_EX_PROT CtiProtocolANSI
       bool generate( CtiXfer &xfer );
       bool decode  ( CtiXfer &xfer, int status );
 
-      bool isTransactionComplete( void );
+      bool isTransactionComplete( void ) const;
       bool isTransactionFailed( void );
       int recvOutbound( OUTMESS  *OutMessage );
 
@@ -403,7 +407,7 @@ class IM_EX_PROT CtiProtocolANSI
     unsigned long getlastLoadProfileTime(void);
 
 
-    void setTablesAvailable(unsigned char * stdTblsUsed, int dimStdTblsUsed, 
+    void setTablesAvailable(unsigned char * stdTblsUsed, int dimStdTblsUsed,
                             unsigned char * mfgTblsUsed, int dimMfgTblsUsed);
 
 
@@ -417,7 +421,7 @@ class IM_EX_PROT CtiProtocolANSI
 
     bool forceProcessDispatchMsg();
     bool isTimeUninitialized(double time);
-    
+
     static const CHAR * METER_TIME_TOLERANCE;
 
    protected:
@@ -463,7 +467,7 @@ class IM_EX_PROT CtiProtocolANSI
     //  CtiAnsiTableFiveFive             *_tableFiveFive;
 
       CtiAnsiTableTwoFive             *_frozenRegTable;
-      
+
       bool _validFlag;
       bool _previewTable64;
       bool _entireTableFlag;
@@ -503,7 +507,7 @@ class IM_EX_PROT CtiProtocolANSI
      bool _invalidLastLoadProfileTime;
      bool _forceProcessDispatchMsg;
 
-     ANSI_SCAN_OPERATION _scanOperation;  //General Scan, Demand Reset, 
+     ANSI_SCAN_OPERATION _scanOperation;  //General Scan, Demand Reset,
      UINT _parseFlags;
 };
 

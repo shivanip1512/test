@@ -12,10 +12,14 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/ansi_application.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2005/12/20 17:19:58 $
-*    History: 
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/04/25 21:45:14 $
+*    History:
       $Log: ansi_application.h,v $
+      Revision 1.15  2008/04/25 21:45:14  mfisher
+      YUK-5743 isTransactionComplete() changes not propagated to all protocols
+      changed isTransactionComplete() to const
+
       Revision 1.14  2005/12/20 17:19:58  tspar
       Commiting  RougeWave Replacement of:  RWCString RWTokenizer RWtime RWDate Regex
 
@@ -143,7 +147,7 @@ class IM_EX_PROT CtiANSIApplication
 
       } ANSI_SERVICE;
 
-      typedef enum  
+      typedef enum
       {
        identified = 0,
        negotiated,
@@ -184,8 +188,8 @@ class IM_EX_PROT CtiANSIApplication
     void identificationData(BYTE * );
     bool areThereMorePackets( void );
 
-    bool isReadComplete( void );
-    bool isReadFailed( void );
+    bool isReadComplete( void ) const;
+    bool isReadFailed( void )   const;
 
       CtiANSIDatalink &getDatalinkLayer( void );
 
@@ -269,14 +273,14 @@ class IM_EX_PROT CtiANSIApplication
        bool        _partialProcessLPDataFlag;
        int         _lpByteCount;
 
-       BYTE _securityPassword[20];   
+       BYTE _securityPassword[20];
        int _negotiateRetry;
        ANSI_DEVICE_TYPE _ansiDeviceType;
        BYTE _fwVersionNumber;
 
        BYTEUSHORT _maxPktSize;
        BYTE _maxNbrPkts;
-       BYTE _negBaudRate;    
+       BYTE _negBaudRate;
 
        string _devName;
        static const string KVmeter;
