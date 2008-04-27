@@ -130,26 +130,37 @@ public class LMHardwareControlInformationServiceImpl implements LMHardwareContro
         return false;
     }
     
-    public List<Integer> getInventoryNotOptedOut(int inventoryId, int loadGroupId, int accountId) {
-        List<LMHardwareControlGroup> controlInformationList;
+    public List<Integer> getInventoryNotOptedOutForThisLoadGroup(int loadGroupId, int accountId) {
+        Validate.notNull(loadGroupId, "LoadGroupID cannot be null");
+        Validate.notNull(accountId, "AccountID cannot be null");
+        
+        List<LMHardwareControlGroup> currentlyOptedOutList;
+        List<LMHardwareControlGroup> enrolledForThisGroup;
         List<Integer> inventoryIds = new ArrayList<Integer>();
         try {
-            controlInformationList = lmHardwareControlGroupDao.getByInventoryIdAndGroupIdAndAccountIdAndType(inventoryId, loadGroupId, accountId, LMHardwareControlGroup.OPT_OUT_ENTRY);
-            if(controlInformationList.size() > 0) {
-                for(LMHardwareControlGroup controlInformation : controlInformationList) {
-                    //currently opted out
-                    if(controlInformation.getOptOutStart() != null && controlInformation.getOptOutStop() == null) 
-                        continue;
-                    //not opted out, return it
-                    inventoryIds.add(controlInformation.getInventoryId());
+            currentlyOptedOutList = lmHardwareControlGroupDao.getCurrentOptOutByGroupIdAndAccountId(loadGroupId, accountId);
+            enrolledForThisGroup = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(loadGroupId, accountId, LMHardwareControlGroup.ENROLLMENT_ENTRY);
+            /*Look for current enrollments for this load group, and check to see if there is an inventoryID that is enrolled in
+             * program (by lmgroup in this case obviously) and isn't in the opt out list.*/
+            if(enrolledForThisGroup.size() > 0) {
+                for(LMHardwareControlGroup enrolledEntry : enrolledForThisGroup) {
+                    //check to see if enrollment is current, opt outs already are current due to the query so we don't need to worry about them
+                    if(enrolledEntry.getGroupEnrollStop() == null && !currentlyOptedOutList.contains(enrolledEntry)) {
+                        boolean optedOut = false;
+                        for(LMHardwareControlGroup optOutEntry : currentlyOptedOutList) {
+                            if(enrolledEntry.getInventoryId() == optOutEntry.getInventoryId()) {
+                                optedOut = true;
+                                break;
+                            }
+                        }
+                        
+                        if(!optedOut && ! inventoryIds.contains(enrolledEntry.getInventoryId()))
+                            inventoryIds.add(enrolledEntry.getInventoryId());
+                    }
                 }
             }
-            //inventory id coming in must not have been opted out at all, even in the past.
-            else
-                inventoryIds.add(inventoryId);
-            
         } catch (Exception e) {
-            logger.error("Unable to retrieve non-opted-out inventory for InventoryId: " + inventoryId + " LMGroupId: " + loadGroupId + " AccountId: " + accountId, e );
+            logger.error("Unable to retrieve opted-out inventory for LMGroupId: " + loadGroupId + " AccountId: " + accountId, e );
         }
         return inventoryIds;
     }

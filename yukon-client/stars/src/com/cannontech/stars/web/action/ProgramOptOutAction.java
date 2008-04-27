@@ -834,7 +834,7 @@ public class ProgramOptOutAction implements ActionBase {
 		for (int i = 0; i < hardwares.size(); i++) {
 			LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hardwares.get(i);
 			try {
-				resp.addStarsLMHardwareHistory( processOptOut(optOut, liteHw, liteAcctInfo, energyCompany, null) );
+				resp.addStarsLMHardwareHistory( processOptOut(optOut, liteHw, liteAcctInfo, energyCompany, currentUser) );
 			}
 			catch (com.cannontech.database.TransactionException e) {
 				CTILogger.error( e.getMessage(), e );

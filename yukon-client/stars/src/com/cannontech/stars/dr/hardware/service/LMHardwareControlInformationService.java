@@ -15,5 +15,5 @@ public interface LMHardwareControlInformationService {
     
     public boolean stopOptOut(int inventoryId, int loadGroupID, int accountId, LiteYukonUser currentUser);
     
-    public List<Integer> getInventoryNotOptedOut(int inventoryId, int loadGroupId, int accountId);
+    public List<Integer> getInventoryNotOptedOutForThisLoadGroup(int loadGroupId, int accountId);
 }

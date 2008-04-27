@@ -34,6 +34,7 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
     private static final String selectByEnrollStopRange;
     private static final String selectByOptOutStartRange;
     private static final String selectByOptOutStopRange;
+    private static final String selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId;
     private static final String selectByInventoryIdAndGroupIdAndAccountId;
     private static final String selectByInventoryIdAndGroupIdAndAccountIdAndType;
     private static final String selectAllByEnergyCompanyId;
@@ -76,6 +77,8 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
         selectByOptOutStartRange = selectAllSql + " WHERE OptOutStart > ? AND OptOutStart <= ?";
         
         selectByOptOutStopRange = selectAllSql + " WHERE OptOutStop > ? AND OptOutStop <= ?";
+        
+        selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE LMGroupId = ? AND AccountId = ? AND OptOutStop IS NULL AND NOT OptOutStart IS NULL";
         
         selectByInventoryIdAndGroupIdAndAccountId = selectAllSql + " WHERE InventoryId = ? AND LMGroupId = ? AND AccountId = ?";
         
@@ -224,6 +227,16 @@ public class LMHardwareControlGroupDaoImpl implements LMHardwareControlGroupDao,
             return list;
         } catch (DataAccessException e) {
             return Collections.emptyList();
+        }
+    }
+    
+    public List<LMHardwareControlGroup> getCurrentOptOutByGroupIdAndAccountId(int lmGroupId, int accountId) {
+        try {
+            List<LMHardwareControlGroup> list = simpleJdbcTemplate.query(selectCurrentOptOutsByInventoryIdAndGroupIdAndAccountId, rowMapper, lmGroupId, accountId);
+            return list;
+        } catch (DataAccessException e) {
+            return Collections.emptyList();
+            
         }
     }
     
