@@ -200,7 +200,7 @@
 	HashMap<Integer, List<Integer>> partialOptOutMap = new HashMap<Integer, List<Integer>>();
 	for(int x = 0; x < currentAppList.size(); x++) {
 		LiteStarsAppliance currentApp = (LiteStarsAppliance)currentAppList.get(x);
-        List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOut(currentApp.getInventoryID(), currentApp.getAddressingGroupID(), account.getAccountID());
+        List<Integer> inventoryNotOptedOut = lmHardwareControlInformationService.getInventoryNotOptedOutForThisLoadGroup(currentApp.getAddressingGroupID(), account.getAccountID());
         for(Integer invenId : inventoryNotOptedOut) {
         	if(currentApp.getInventoryID() == invenId) {
         		List<Integer> progInventory = partialOptOutMap.get(currentApp.getProgramID());
