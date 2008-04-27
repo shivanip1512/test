@@ -98,9 +98,9 @@ function setRedirect(form) {
                   </td>
                   <td width="262" valign="top"> 
                     <%
-		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE)) {
+		if (program.getStatus().equalsIgnoreCase(ServletUtils.OUT_OF_SERVICE) && !partialOutOfService) {
 %>
-                    <div align="center" class="TableCell"><%=programStatus%></div>
+        	<div align="center" class="TableCell"><%=programStatus%></div>
 <%
 		}
 		else {
