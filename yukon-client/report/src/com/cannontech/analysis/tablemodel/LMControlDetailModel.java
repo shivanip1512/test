@@ -77,7 +77,7 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
          *ranges being assembled out of individual events.  May have to do something unpleasant.
          */
         //SUPERHACK-------------------------------------------------------------------------
-        HashMap<Integer, ProgramLoadGroup> groupIdToProgram = new HashMap<Integer, ProgramLoadGroup>(10);
+        HashMap<Integer, List<ProgramLoadGroup>> groupIdToProgram = new HashMap<Integer, List<ProgramLoadGroup>>(10);
         HashMap<Integer, StarsLMControlHistory> groupIdToSTARSControlHistory = new HashMap<Integer, StarsLMControlHistory>(10);
         
         data = new ArrayList<ModelRow>(accounts.size());
@@ -89,44 +89,47 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
                     ModelRow row = new ModelRow();
                     row.accountNumberAndName = "#" + account.getAccountNumber() + " ---- " + account.getLastName() + ", " + account.getFirstName();
                     
-                    ProgramLoadGroup program = groupIdToProgram.get(groupId);
-                    if(program == null) {
-                        program = applianceAndProgramDao.getProgramByLMGroupId(groupId);
-                        groupIdToProgram.put(groupId, program);
+                    List<ProgramLoadGroup> groupPrograms = groupIdToProgram.get(groupId);
+                    if(groupPrograms == null) {
+                        groupPrograms = applianceAndProgramDao.getProgramsByLMGroupId(groupId);
+                        groupIdToProgram.put(groupId, groupPrograms);
                     }
                     
-                    //Check filter: program
-                    if(programIds != null && programIds.size() > 0 && ! programIds.contains(program.getPaobjectId())) 
-                        continue;
-                    else {
-                        row.program = program.getProgramName();
-                        
-                        StarsLMControlHistory allControlEventsForAGroup = groupIdToSTARSControlHistory.get(groupId);
-                        if(allControlEventsForAGroup == null) {
-                            allControlEventsForAGroup = LMControlHistoryUtil.getSTARSFormattedLMControlHistory(groupId, getStartDate(), energyCompanyId);
-                            groupIdToSTARSControlHistory.put(groupId, allControlEventsForAGroup);
+                    /*lots of for loops, but this one will not normally be more than one iteration*/
+                    for(ProgramLoadGroup currentGroupProgram : groupPrograms) {
+                        //Check filter: program
+                        if(programIds != null && programIds.size() > 0 && ! programIds.contains(currentGroupProgram.getPaobjectId())) 
+                            continue;
+                        else {
+                            row.program = currentGroupProgram.getProgramName();
+                            
+                            StarsLMControlHistory allControlEventsForAGroup = groupIdToSTARSControlHistory.get(groupId);
+                            if(allControlEventsForAGroup == null) {
+                                allControlEventsForAGroup = LMControlHistoryUtil.getSTARSFormattedLMControlHistory(groupId, getStartDate(), energyCompanyId);
+                                groupIdToSTARSControlHistory.put(groupId, allControlEventsForAGroup);
+                            }
+                            
+                            List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.ENROLLMENT_ENTRY);
+                            List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.OPT_OUT_ENTRY);
+                            
+                            long[] controlTotals = LMControlHistoryUtil.calculateCumulativeCustomerControlValues(allControlEventsForAGroup, getStartDate(), getStopDate(), enrollments, optOuts);
+                            row.controlHours = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_CONTROL_TIME] / 3600));
+                            row.totalOptOutHours = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_OPTOUT_TIME] / 3600));
+                            row.totalOptOutHoursDuringControl = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_CONTROL_DURING_OPTOUT_TIME] / 3600));
+                            row.optOutEvents = new Integer(Long.valueOf(controlTotals[LMControlHistoryUtil.TOTAL_OPTOUT_EVENTS]).toString());
+                            
+                            /*These are sorted by date.  For reporting purposes, we'll take the first enrollment start date we can find for
+                             * this group, and the last enrollment stop we can find for this group.
+                             */
+                            if(enrollments.size() > 0) {
+                                if(enrollments.get(0).getGroupEnrollStart() != null)
+                                    row.enrollmentStart = enrollments.get(0).getGroupEnrollStart();
+                                if(enrollments.get(enrollments.size() - 1).getGroupEnrollStop() != null)
+                                row.enrollmentStop = enrollments.get(enrollments.size() - 1).getGroupEnrollStop();
+                            }
+                            
+                            data.add(row);
                         }
-                        
-                        List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.ENROLLMENT_ENTRY);
-                        List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.OPT_OUT_ENTRY);
-                        
-                        long[] controlTotals = LMControlHistoryUtil.calculateCumulativeCustomerControlValues(allControlEventsForAGroup, getStartDate(), getStopDate(), enrollments, optOuts);
-                        row.controlHours = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_CONTROL_TIME] / 3600));
-                        row.totalOptOutHours = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_OPTOUT_TIME] / 3600));
-                        row.totalOptOutHoursDuringControl = new Double(decFormat.format(1.0 * controlTotals[LMControlHistoryUtil.TOTAL_CONTROL_DURING_OPTOUT_TIME] / 3600));
-                        row.optOutEvents = new Integer(Long.valueOf(controlTotals[LMControlHistoryUtil.TOTAL_OPTOUT_EVENTS]).toString());
-                        
-                        /*These are sorted by date.  For reporting purposes, we'll take the first enrollment start date we can find for
-                         * this group, and the last enrollment stop we can find for this group.
-                         */
-                        if(enrollments.size() > 0) {
-                            if(enrollments.get(0).getGroupEnrollStart() != null)
-                                row.enrollmentStart = enrollments.get(0).getGroupEnrollStart();
-                            if(enrollments.get(enrollments.size() - 1).getGroupEnrollStop() != null)
-                            row.enrollmentStop = enrollments.get(enrollments.size() - 1).getGroupEnrollStop();
-                        }
-                        
-                        data.add(row);
                     }
                 }
             } catch (Exception e) {

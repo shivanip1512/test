@@ -606,35 +606,34 @@ public class LMControlHistoryUtil {
         Validate.notNull(enrollments);
         Validate.notNull(optOuts);
         
-        boolean notEnrolled = true;
+        boolean neverEnrolledDuringThisPeriod = true;
         
         for(LMHardwareControlGroup enrollmentEntry : enrollments) {
-            //wasn't enrolled at all at the time
+            //wasn't enrolled with this entry at the time
             if(enrollmentEntry.getGroupEnrollStart().getTime() > periodStop.getTime() ||
                     (enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().getTime() < periodStart.getTime())) {
-                notEnrolled = true;
                 continue;
             }
             else {
                 //period falls cleanly within the enrollment range, total remains the same
                 if(enrollmentEntry.getGroupEnrollStart().getTime() < periodStart.getTime() &&
                         (enrollmentEntry.getGroupEnrollStop() == null || enrollmentEntry.getGroupEnrollStop().getTime() > periodStop.getTime())) {
-                    notEnrolled = false;
+                    neverEnrolledDuringThisPeriod = false;
                 }
                 //enrollment started after the beginning of the period, subtract the difference
                 else if(enrollmentEntry.getGroupEnrollStart().getTime() > periodStart.getTime()) { 
                     controlHistoryTotal = controlHistoryTotal - (enrollmentEntry.getGroupEnrollStart().getTime() - periodStart.getTime());
-                    notEnrolled = false;
+                    neverEnrolledDuringThisPeriod = false;
                 }
                 //enrollment stopped before the end of the period, subtract the difference
                 else if(enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().getTime() < periodStop.getTime()) {
                     controlHistoryTotal = controlHistoryTotal - (periodStop.getTime() - enrollmentEntry.getGroupEnrollStop().getTime());
-                    notEnrolled = false;
+                    neverEnrolledDuringThisPeriod = false;
                 }
             }
         }
         
-        if(notEnrolled)
+        if(neverEnrolledDuringThisPeriod)
             return -1;
         
         for(LMHardwareControlGroup optOutEntry : optOuts) {
@@ -842,35 +841,34 @@ public class LMControlHistoryUtil {
             long newDuration = cntrlHist.getControlDuration();
             long newOptOutControlTime = 0;
             long totalOptOutTime = 0;
-            boolean notEnrolled = true;
+            boolean neverEnrolled = true;
             
             for(LMHardwareControlGroup enrollmentEntry : enrollments) {
-                //wasn't enrolled at all at the time
+                //wasn't enrolled at all at the time, at least this entry
                 if(enrollmentEntry.getGroupEnrollStart().getTime() > stop.getTime() ||
                         (enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().getTime() < start.getTime())) {
-                    notEnrolled = true;
                     continue;
                 }
                 else {
                     //period falls cleanly within the enrollment range, total remains the same
                     if(enrollmentEntry.getGroupEnrollStart().getTime() < start.getTime() &&
                             (enrollmentEntry.getGroupEnrollStop() == null || enrollmentEntry.getGroupEnrollStop().getTime() > stop.getTime())) {
-                        notEnrolled = false;
+                        neverEnrolled = false;
                     }
                     //enrollment started after the beginning of the period, subtract the difference
                     else if(enrollmentEntry.getGroupEnrollStart().getTime() > start.getTime()) { 
                         newDuration = newDuration - (enrollmentEntry.getGroupEnrollStart().getTime() - start.getTime());
-                        notEnrolled = false;
+                        neverEnrolled = false;
                     }
                     //enrollment stopped before the end of the period, subtract the difference
                     else if(enrollmentEntry.getGroupEnrollStop() != null && enrollmentEntry.getGroupEnrollStop().getTime() < stop.getTime()) {
                         newDuration = newDuration - (stop.getTime() - enrollmentEntry.getGroupEnrollStop().getTime());
-                        notEnrolled = false;
+                        neverEnrolled = false;
                     }
                 }
             }
             
-            if(! notEnrolled)
+            if(!neverEnrolled)
             {
                 long optOutEvent = 0;
                 for(LMHardwareControlGroup optOutEntry : optOuts) {

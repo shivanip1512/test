@@ -16,7 +16,7 @@ import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 
 public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
     private static final String selectAllProgramsForECSql;
-    private static final String selectProgramByLMGroupId;
+    private static final String selectProgramsByLMGroupId;
     private static final ParameterizedRowMapper<ProgramLoadGroup> programGroupRowMapper;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
@@ -27,7 +27,7 @@ public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
                 " AND yp.Type = '" + PAOGroups.STRING_LM_DIRECT_PROGRAM[0] + "' AND lmwp.ApplianceCategoryId in" +
                 " (SELECT ItemId FROM ECToGenericMapping WHERE MappingCategory = 'ApplianceCategory' AND EnergyCompanyId = ?)";
         
-        selectProgramByLMGroupId = "SELECT yp.PAObjectId, lmwp.ProgramId, ywc.AlternateDisplayName, yp.PAOName, lmpdg.LMGroupDeviceId FROM " +
+        selectProgramsByLMGroupId = "SELECT yp.PAObjectId, lmwp.ProgramId, ywc.AlternateDisplayName, yp.PAOName, lmpdg.LMGroupDeviceId FROM " +
                 "YukonPAObject yp, LMProgramWebPublishing lmwp, YukonWebConfiguration ywc, LMProgramDirectGroup lmpdg WHERE " +
                 "yp.PAObjectId = lmwp.DeviceId AND lmwp.WebSettingsId = ywc.ConfigurationId AND lmwp.DeviceId = lmpdg.DeviceId AND " +
                 "lmpdg.LMGroupDeviceId = ?";
@@ -36,9 +36,9 @@ public class ApplianceAndProgramDaoImpl implements ApplianceAndProgramDao {
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public ProgramLoadGroup getProgramByLMGroupId(final int lmGroupId) throws DataAccessException {
-        ProgramLoadGroup prog = simpleJdbcTemplate.queryForObject(selectProgramByLMGroupId, programGroupRowMapper, lmGroupId);
-        return prog;
+    public List<ProgramLoadGroup> getProgramsByLMGroupId(final int lmGroupId) throws DataAccessException {
+        List<ProgramLoadGroup> progs = simpleJdbcTemplate.query(selectProgramsByLMGroupId, programGroupRowMapper, lmGroupId);
+        return progs;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)

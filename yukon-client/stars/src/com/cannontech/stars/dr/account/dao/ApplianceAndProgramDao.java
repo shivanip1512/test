@@ -8,7 +8,7 @@ import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 
 public interface ApplianceAndProgramDao {
 
-    public ProgramLoadGroup getProgramByLMGroupId(final int lmGroupId) throws DataAccessException;
+    public List<ProgramLoadGroup> getProgramsByLMGroupId(final int lmGroupId) throws DataAccessException;
     
     public List<ProgramLoadGroup> getAllProgramsForAnEC(final int energyCompanyId) throws DataAccessException;
 }
