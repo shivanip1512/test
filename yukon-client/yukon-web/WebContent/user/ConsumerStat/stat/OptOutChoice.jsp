@@ -59,7 +59,7 @@ function prepareSubmit(form) {
 				<input type="hidden" name="StartDate" value="<%= request.getParameter("StartDate") %>">
 				<input type="hidden" name="Duration" value="<%= request.getParameter("Duration") %>">
 			    <input type="hidden" name="REDIRECT" value="<%= request.getContextPath() %>/user/ConsumerStat/stat/General.jsp">
-			    <input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>user/ConsumerStat/stat/OptOut.jsp">
+			    <input type="hidden" name="REFERRER" value="<%= request.getContextPath() %>/user/ConsumerStat/stat/OptOut.jsp">
 			    <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
 <% if (exitQuestions != null && exitQuestions.getStarsExitInterviewQuestionCount() > 0) { %>
 			    <input type="hidden" name="<%= ServletUtils.NEED_MORE_INFORMATION %>">
