@@ -944,6 +944,10 @@ void CtiCalculateThread::baselineThread( void )
                 CtiTime curCalculatedTime;
                 for( ; ; )//Until we break!
                 {
+                    //searchTime limits how many days back we can check.
+                    searchTime = lastTime;
+                    searchTime.addDays(-1*baselineDataPtr->maxSearchDays);
+
                     DynamicTableSinglePointData::iterator lastIter;
                     if( !data.empty() )
                     {
@@ -972,7 +976,7 @@ void CtiCalculateThread::baselineThread( void )
                     //Until we have enough days
                     while( dayValues.size() < baselineDataPtr->usedDays )
                     {
-                        if( curTime < searchTime ) //failure
+                        if( curTime <= searchTime ) //failure
                         {
                             break;//while
                         }
@@ -1014,7 +1018,7 @@ void CtiCalculateThread::baselineThread( void )
                         {
                             //If ok, try to get data
                             HourlyValues results;
-                            if( processDay(baselineID, curTime, data, percentData, baselineDataPtr->percent, results) )
+                            if( processDay(baselineID, curTime, data, percentData, baselinePercentID > 0 ? baselineDataPtr->percent : 0, results) )
                             {
                                 //If data is ok, store data and decrement day
                                 if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
@@ -2262,7 +2266,7 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
                 retVal = false;
             }
 
-            if( isKW )
+            if( isKW && count != 0)
             {
                 results[i] = value/count;
             }
@@ -2279,6 +2283,7 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
                 dout << CtiTime( ) << " No data found at all for day. " << curTime.date() << endl;
             }
             retVal = false;
+            break; //break out of the for loop. no point in continuing.
         }
     }
 
@@ -2288,13 +2293,12 @@ bool CtiCalculateThread::processDay(long baselineID, CtiTime curTime, DynamicTab
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime( ) << " Percent processing beginning on day " << curTime.date() << endl;
-            dout << "BaselineData     BaselinePercentData" << endl;
         }
         HourlyValues percentResults;
         float decimalPercent = (float)percent/100;
         //we need to compare to values in the percent baseline component
-        processDay(baselineID, startTime, percentData, percentData, 0, percentResults); //get percentResults for use
-        for( int i = 0; i < 24; i++ )
+        retVal = processDay(baselineID, startTime, percentData, percentData, 0, percentResults); //get percentResults for use
+        for( int i = 0; i < 24 && retVal != false; i++ )
         {
             if( results[i] < (decimalPercent*percentResults[i]) )
             {
