@@ -87,7 +87,7 @@
                       <tr> 
                         <td width="25%" align="right" class="TableCell">State:</td>
                         <td width="75%" class="TableCell">
-                          <input type="text" name="State" value="<%= address.getState() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="State" value="<%= address.getState() %>" maxlength="2" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
