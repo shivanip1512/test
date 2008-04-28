@@ -369,6 +369,11 @@ public Object getValue(Object val) {
 	         }
 	      }
 	   }
+	   if(getRepeatersAddRemovePanel().getRightList().getModel().getSize() == 0) {
+	       dbRegenerate = false;
+	       ((CCURoute)val).getCarrierRoute().setCcuFixBits(new Integer(31));
+	       ((CCURoute)val).getCarrierRoute().setCcuVariableBits(new Integer(7));
+	   }
 
 	   route.setRepeaterVector(repeaterRouteVector);
 	   if (dbRegenerate) {
