@@ -76,21 +76,5 @@
         <property name="paoDao" ref="paoDao" />
         
     </bean>
-    
-    <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl">
-        <property name="collectionProducerList">
-            <list>
-                <bean class="com.cannontech.web.bulk.model.collection.DeviceAddressRangeCollectionProducer">
-                    <property name="paoDao" ref="paoDao" />
-                </bean>
-                <bean class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer">
-                    <property name="deviceGroupService" ref="deviceGroupService" />
-                </bean>
-                <bean class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer">
-                    <property name="deviceDao" ref="deviceDao" />
-                </bean>
-            </list>
-        </property>
-    </bean>
-        
+           
 </beans>

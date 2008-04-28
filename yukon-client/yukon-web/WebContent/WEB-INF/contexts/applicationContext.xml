@@ -10,7 +10,7 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	
-	<tx:annotation-driven />
+	<tx:annotation-driven transaction-manager="transactionManager"/>
     <context:annotation-config/>
     <aop:aspectj-autoproxy/>
 
@@ -715,6 +715,27 @@
     <bean id="trendingMenuOption" class="com.cannontech.web.menu.option.producer.TrendingMenuOptionProducer">
         <property name="graphDao" ref="graphDao" />
     </bean>
-
+    
+    <bean id="deviceGroupSelectorTagPrototype" class="com.cannontech.web.taglib.DeviceGroupSelectorTag">
+        <property name="deviceGroupService" ref="deviceGroupService"/>
+    </bean>
+    
+    <!-- DEVICE COLLECTION FACTORY -->
+    <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl">
+        <property name="collectionProducerList">
+            <list>
+                <bean class="com.cannontech.web.bulk.model.collection.DeviceAddressRangeCollectionProducer">
+                    <property name="paoDao" ref="paoDao" />
+                </bean>
+                <bean class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer">
+                    <property name="deviceGroupService" ref="deviceGroupService" />
+                </bean>
+                <bean class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer">
+                    <property name="deviceDao" ref="deviceDao" />
+                </bean>
+            </list>
+        </property>
+    </bean>
+    
    
 </beans>

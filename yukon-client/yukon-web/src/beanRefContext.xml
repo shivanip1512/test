@@ -16,7 +16,6 @@
 			<value>com/cannontech/common/chart/chartContext.xml</value>
 			<value>com/cannontech/common/search/searchContext.xml</value>
 			<value>com/cannontech/core/service/applicationContext.xml</value>
-			<value>com/cannontech/hibernate/hibernateContext.xml</value>
 			<value>com/cannontech/loadcontrol/applicationContext.xml</value>
 			<value>com/cannontech/multispeak/client/applicationContext.xml</value>
 			<value>com/cannontech/common/device/deviceContext-server.xml</value>
@@ -29,7 +28,12 @@
        </list>
      </constructor-arg>
      <constructor-arg>
-       <ref bean="com.cannontech.context.common"/> <!-- this is the parent -->
+         <bean class="com.cannontech.spring.CannonClassPathXmlApplicationContext"
+             lazy-init="true">
+             <constructor-arg index="0" ref="com.cannontech.baseserver.list" />
+             <constructor-arg index="1" value="true"/>
+             <constructor-arg index="2"><null /></constructor-arg>
+         </bean>
      </constructor-arg>
    </bean>
     
