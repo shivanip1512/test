@@ -25,6 +25,7 @@ abstract class PointCreate
 	private static boolean mct410PointCreate = false;
 	private static boolean capBankOpCntPointCreate = false;
 	private static boolean outageLogCreate = false;
+	private static boolean mct410FrozenPointCreate = false;
 	/**
 	 * PowerFailPointCreate constructor comment.
 	 */
@@ -69,6 +70,10 @@ abstract class PointCreate
 			{
 				mct410PointCreate = true;	//MCT 410 Missing Points Will Be Created
 			}
+            else if( args[i].toLowerCase().startsWith("mct410frozen"))
+            {
+                mct410FrozenPointCreate = true;   //MCT 410 Missing Points FROZEN Will Be Created
+            }
 			else if( args[i].toLowerCase().startsWith("cbop"))
 			{
 				capBankOpCntPointCreate = true;    //Cap Bank missing Operations Count points will be created
@@ -123,6 +128,14 @@ abstract class PointCreate
 			timerStop = new java.util.Date();
 			CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for MCT410AllPointCreate to complete" );
 		}
+        if( mct410FrozenPointCreate)
+        {
+            timerStart = new java.util.Date();
+            MCT410FrozenPointCreate mct410FrozenCreator = new MCT410FrozenPointCreate();
+            mct410FrozenCreator.create();
+            timerStop = new java.util.Date();
+            CTILogger.info( (timerStop.getTime() - timerStart.getTime())*.001 + " Secs for MCT410FrozenPointCreate to complete" );
+        }
 		if(capBankOpCntPointCreate)			
 		{
 			timerStart = new java.util.Date();
