@@ -48,8 +48,8 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class CommandDeviceBean implements DBChangeLiteListener
 {
-	private HashMap loadGroupIDToLiteLoadGroupsMap = null;
-    private HashMap cbcIDToLiteCBCMap = null;
+	private HashMap<Integer, YCLiteLoadGroup> loadGroupIDToLiteLoadGroupsMap = null;
+    private HashMap<Integer, YCLiteCBC> cbcIDToLiteCBCMap = null;
 	private boolean clear = false;	//flag to clear all selection settings
 	private boolean changed = false;
 	private int userID = -1;//	admin userid    
@@ -151,7 +151,7 @@ public class CommandDeviceBean implements DBChangeLiteListener
 	public static final int DCU_SA305_SERIAL_SORT_BY = -5;	
 
 	//Contains LiteYukonPaobjects
-	private ArrayList deviceList = null;
+	private ArrayList<LiteYukonPAObject> deviceList = null;
 	
 	//stores the currently selected Filter By value
 	public String filterValue = "";
@@ -167,61 +167,27 @@ public class CommandDeviceBean implements DBChangeLiteListener
 	//List of <int(commChannels)> values
 	public List<LiteYukonPAObject> validCommChannels = null;
 	//List of <String, (collectionGroup)> values
-	public ArrayList validCollGroups = null;
+	public ArrayList<String> validCollGroups = null;
     //List of <int(CBC Types)> values
-    public ArrayList validCBCTypes = null;
+    public ArrayList<String> validCBCTypes = null;
 	
 	/**
 	 * Sort deviceTypeCommands by their displayOrder
 	 */
-	public static java.util.Comparator DEVICE_TYPE_COMPARATOR = new java.util.Comparator()
+	public static java.util.Comparator<LiteYukonPAObject> DEVICE_TYPE_COMPARATOR = new java.util.Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			String thisVal = null, anotherVal = null;
 
-			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
-			{
-				thisVal = PAOGroups.getPAOTypeString(((LiteYukonPAObject) o1).getType());
-				anotherVal = PAOGroups.getPAOTypeString(((LiteYukonPAObject) o2).getType());
-
-				if (thisVal.equalsIgnoreCase(anotherVal))
-				{
-					//if the types are equal, we need to sort by deviceName
-					thisVal = ((LiteYukonPAObject) o1).getPaoName();
-					anotherVal = ((LiteYukonPAObject) o2).getPaoName();
-				}
-			}
-
-			return (thisVal.compareToIgnoreCase(anotherVal));
-		}
-
-		public boolean equals(Object obj)
-		{
-			return false;
-		}
-	};
-
-	/**
-	 * Sort deviceTypeCommands by their displayOrder
-	 */
-	public static java.util.Comparator ADDRESS_COMPARATOR = new java.util.Comparator()
-	{
-		public int compare(Object o1, Object o2)
-		{
-			String thisVal = null, anotherVal = null;
-
-			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
-			{
-				thisVal = String.valueOf(((LiteYukonPAObject) o1).getAddress());
-				anotherVal = String.valueOf(((LiteYukonPAObject) o2).getAddress());
-			}
+			thisVal = PAOGroups.getPAOTypeString(o1.getType());
+			anotherVal = PAOGroups.getPAOTypeString(o2.getType());
 
 			if (thisVal.equalsIgnoreCase(anotherVal))
 			{
 				//if the types are equal, we need to sort by deviceName
-				thisVal = ((LiteYukonPAObject) o1).getPaoName();
-				anotherVal = ((LiteYukonPAObject) o2).getPaoName();
+				thisVal = o1.getPaoName();
+				anotherVal = o2.getPaoName();
 			}
 
 			return (thisVal.compareToIgnoreCase(anotherVal));
@@ -236,26 +202,51 @@ public class CommandDeviceBean implements DBChangeLiteListener
 	/**
 	 * Sort deviceTypeCommands by their displayOrder
 	 */
-    public java.util.Comparator CBC_SERIAL_COMPARATOR = new java.util.Comparator()
+	public static java.util.Comparator<LiteYukonPAObject> ADDRESS_COMPARATOR = new java.util.Comparator<LiteYukonPAObject>()
+	{
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
+		{
+			String thisVal = null, anotherVal = null;
+
+			thisVal = String.valueOf(((LiteYukonPAObject) o1).getAddress());
+			anotherVal = String.valueOf(((LiteYukonPAObject) o2).getAddress());
+
+			if (thisVal.equalsIgnoreCase(anotherVal))
+			{
+				//if the types are equal, we need to sort by deviceName
+				thisVal = o1.getPaoName();
+				anotherVal = o2.getPaoName();
+			}
+
+			return (thisVal.compareToIgnoreCase(anotherVal));
+		}
+
+		public boolean equals(Object obj)
+		{
+			return false;
+		}
+	};
+
+	/**
+	 * Sort deviceTypeCommands by their displayOrder
+	 */
+    public java.util.Comparator<LiteYukonPAObject> CBC_SERIAL_COMPARATOR = new java.util.Comparator<LiteYukonPAObject>()
     {
-        public int compare(Object o1, Object o2)
+        public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
         {
             String thisVal = null, anotherVal = null;
 
-            if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
+            YCLiteCBC lcbc1 = getCBCIDToLiteCBCMap().get(o1.getYukonID());
+            YCLiteCBC lcbc2 = getCBCIDToLiteCBCMap().get(o2.getYukonID());
+            if (lcbc1 != null && lcbc2 != null)
             {
-                YCLiteCBC lcbc1 = (YCLiteCBC)getCBCIDToLiteCBCMap().get(new Integer( ((LiteYukonPAObject) o1).getYukonID()));
-                YCLiteCBC lcbc2 = (YCLiteCBC)getCBCIDToLiteCBCMap().get(new Integer( ((LiteYukonPAObject) o2).getYukonID()));
-                if (lcbc1 != null && lcbc2 != null)
+                thisVal = lcbc1.getSerial();
+                anotherVal = lcbc2.getSerial();
+        
+                if (thisVal.equalsIgnoreCase(anotherVal))
                 {
-                    thisVal = lcbc1.getSerial();
-                    anotherVal = lcbc2.getSerial();
-            
-                    if (thisVal.equalsIgnoreCase(anotherVal))
-                    {
-                        thisVal = DaoFactory.getPaoDao().getYukonPAOName(lcbc1.getCbcID());
-                        anotherVal = DaoFactory.getPaoDao().getYukonPAOName(lcbc2.getCbcID());
-                    }
+                    thisVal = DaoFactory.getPaoDao().getYukonPAOName(lcbc1.getCbcID());
+                    anotherVal = DaoFactory.getPaoDao().getYukonPAOName(lcbc2.getCbcID());
                 }
             }
             return (thisVal.compareToIgnoreCase(anotherVal));
@@ -269,24 +260,21 @@ public class CommandDeviceBean implements DBChangeLiteListener
 	/**
 	 * Sort deviceTypeCommands by their displayOrder
 	 */
-	public static java.util.Comparator ROUTE_COMPARATOR = new java.util.Comparator()
+	public static java.util.Comparator<LiteYukonPAObject> ROUTE_COMPARATOR = new java.util.Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			String thisVal = null, anotherVal = null;
 
-			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
-			{
-				if (PAOGroups.INVALID == ((LiteYukonPAObject) o1).getRouteID())
-					thisVal = NULL_OBJECT_STRING;
-				else
-					thisVal = DaoFactory.getPaoDao().getYukonPAOName(((LiteYukonPAObject) o1).getRouteID());
+			if (PAOGroups.INVALID == o1.getRouteID())
+				thisVal = NULL_OBJECT_STRING;
+			else
+				thisVal = DaoFactory.getPaoDao().getYukonPAOName(o1.getRouteID());
 
-				if (PAOGroups.INVALID == ((LiteYukonPAObject) o2).getRouteID())
-					anotherVal = NULL_OBJECT_STRING;
-				else
-					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(((LiteYukonPAObject) o2).getRouteID());
-			}
+			if (PAOGroups.INVALID == o2.getRouteID())
+				anotherVal = NULL_OBJECT_STRING;
+			else
+				anotherVal = DaoFactory.getPaoDao().getYukonPAOName(o2.getRouteID());
 
 			if (thisVal.equalsIgnoreCase(anotherVal))
 			{
@@ -307,26 +295,23 @@ public class CommandDeviceBean implements DBChangeLiteListener
 	/**
 	 * Sort deviceTypeCommands by their displayOrder
 	 */
-	public static java.util.Comparator METER_NUMBER_COMPARATOR = new java.util.Comparator()
+	public static java.util.Comparator<LiteYukonPAObject> METER_NUMBER_COMPARATOR = new java.util.Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			String thisVal = null, anotherVal = null;
 
-			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
+			LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(o1.getYukonID());
+			LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(o2.getYukonID());
+
+			thisVal = (ldmn1 != null ? ldmn1.getMeterNumber() : NULL_OBJECT_STRING);
+			anotherVal = (ldmn2 != null ? ldmn2.getMeterNumber() : NULL_OBJECT_STRING);
+
+			if (thisVal.equalsIgnoreCase(anotherVal))
 			{
-				LiteDeviceMeterNumber ldmn1 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(((LiteYukonPAObject) o1).getYukonID());
-				LiteDeviceMeterNumber ldmn2 = DaoFactory.getDeviceDao().getLiteDeviceMeterNumber(((LiteYukonPAObject) o2).getYukonID());
-
-				thisVal = (ldmn1 != null ? ldmn1.getMeterNumber() : NULL_OBJECT_STRING);
-				anotherVal = (ldmn2 != null ? ldmn2.getMeterNumber() : NULL_OBJECT_STRING);
-
-				if (thisVal.equalsIgnoreCase(anotherVal))
-				{
-					//if the types are equal, we need to sort by deviceName
-					thisVal = ((LiteYukonPAObject) o1).getPaoName();
-					anotherVal = ((LiteYukonPAObject) o2).getPaoName();
-				}
+				//if the types are equal, we need to sort by deviceName
+				thisVal = o1.getPaoName();
+				anotherVal = o2.getPaoName();
 			}
 			return (thisVal.compareToIgnoreCase(anotherVal));
 		}
@@ -337,21 +322,19 @@ public class CommandDeviceBean implements DBChangeLiteListener
 		}
 	};
     
-	public java.util.Comparator LOAD_GROUP_COMPARATOR = new java.util.Comparator()
+	public java.util.Comparator<LiteYukonPAObject> LOAD_GROUP_COMPARATOR = new java.util.Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			String thisVal = null, anotherVal = null;
 
-			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
-			{
-				thisVal = DaoFactory.getPaoDao().getYukonPAOName(((LiteYukonPAObject) o1).getYukonID());
-				anotherVal = DaoFactory.getPaoDao().getYukonPAOName(((LiteYukonPAObject) o2).getYukonID());
-			}
+			thisVal = DaoFactory.getPaoDao().getYukonPAOName(o1.getYukonID());
+			anotherVal = DaoFactory.getPaoDao().getYukonPAOName(o2.getYukonID());
+
 			if (thisVal.equalsIgnoreCase(anotherVal))
 			{
-				YCLiteLoadGroup llg1 = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer( ((LiteYukonPAObject) o1).getYukonID()));
-				YCLiteLoadGroup llg2 = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer( ((LiteYukonPAObject) o2).getYukonID()));
+				YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonID());
+				YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonID());
 				if (llg1 != null && llg2 != null)
 				{
 					//if the types are equal, we need to sort by serialNumber
@@ -368,26 +351,23 @@ public class CommandDeviceBean implements DBChangeLiteListener
 		}
 	};
 
-	public java.util.Comparator LMGROUP_ROUTE_COMPARATOR = new java.util.Comparator()
+	public java.util.Comparator<LiteYukonPAObject> LMGROUP_ROUTE_COMPARATOR = new java.util.Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			String thisVal = null, anotherVal = null;
 
-			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
+			YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonID());
+			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonID());
+			if (llg1 != null && llg2 != null)
 			{
-				YCLiteLoadGroup llg1 = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer( ((LiteYukonPAObject) o1).getYukonID()));
-				YCLiteLoadGroup llg2 = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer( ((LiteYukonPAObject) o2).getYukonID()));
-				if (llg1 != null && llg2 != null)
+				thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getRouteID());
+				anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getRouteID());
+		
+				if (thisVal.equalsIgnoreCase(anotherVal))
 				{
-					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getRouteID());
-					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getRouteID());
-			
-					if (thisVal.equalsIgnoreCase(anotherVal))
-					{
-						thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
-						anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
-					}
+					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
+					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
 				}
 			}
 			return (thisVal.compareToIgnoreCase(anotherVal));
@@ -399,26 +379,23 @@ public class CommandDeviceBean implements DBChangeLiteListener
 		}
 	};
 	
-	public java.util.Comparator LMGROUP_SERIAL_COMPARATOR = new java.util.Comparator()
+	public java.util.Comparator<LiteYukonPAObject> LMGROUP_SERIAL_COMPARATOR = new java.util.Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			String thisVal = null, anotherVal = null;
 
-			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
+			YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonID());
+			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonID());
+			if (llg1 != null && llg2 != null)
 			{
-				YCLiteLoadGroup llg1 = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer( ((LiteYukonPAObject) o1).getYukonID()));
-				YCLiteLoadGroup llg2 = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer( ((LiteYukonPAObject) o2).getYukonID()));
-				if (llg1 != null && llg2 != null)
+				thisVal = llg1.getSerial();
+				anotherVal = llg2.getSerial();
+		
+				if (thisVal.equalsIgnoreCase(anotherVal))
 				{
-					thisVal = llg1.getSerial();
-					anotherVal = llg2.getSerial();
-			
-					if (thisVal.equalsIgnoreCase(anotherVal))
-					{
-						thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
-						anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
-					}
+					thisVal = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
+					anotherVal = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
 				}
 			}
 			return (thisVal.compareToIgnoreCase(anotherVal));
@@ -429,28 +406,25 @@ public class CommandDeviceBean implements DBChangeLiteListener
 			return false;
 		}
 	};	
-	public java.util.Comparator LMGROUP_CAPACITY_COMPARATOR = new java.util.Comparator()
+	public java.util.Comparator<LiteYukonPAObject> LMGROUP_CAPACITY_COMPARATOR = new java.util.Comparator<LiteYukonPAObject>()
 	{
-		public int compare(Object o1, Object o2)
+		public int compare(LiteYukonPAObject o1, LiteYukonPAObject o2)
 		{
 			double thisVal = 0;
 			double anotherVal = 0;
 		    
-			if (o1 instanceof LiteYukonPAObject && o2 instanceof LiteYukonPAObject)
+			YCLiteLoadGroup llg1 = getLoadGroupIDToLiteLoadGroupsMap().get(o1.getYukonID());
+			YCLiteLoadGroup llg2 = getLoadGroupIDToLiteLoadGroupsMap().get(o2.getYukonID());
+			if (llg1 != null && llg2 != null)
 			{
-				YCLiteLoadGroup llg1 = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer( ((LiteYukonPAObject) o1).getYukonID()));
-				YCLiteLoadGroup llg2 = (YCLiteLoadGroup)getLoadGroupIDToLiteLoadGroupsMap().get(new Integer( ((LiteYukonPAObject) o2).getYukonID()));
-				if (llg1 != null && llg2 != null)
+				thisVal = llg1.getKwCapacity();
+				anotherVal = llg2.getKwCapacity();
+				
+				if (thisVal == anotherVal)
 				{
-					thisVal = llg1.getKwCapacity();
-					anotherVal = llg2.getKwCapacity();
-					
-					if (thisVal == anotherVal)
-					{
-						String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
-						String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
-						return (thisValStr.compareToIgnoreCase(anotherValStr));
-					}
+					String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(llg1.getGroupID());
+					String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(llg2.getGroupID());
+					return (thisValStr.compareToIgnoreCase(anotherValStr));
 				}
 			}
 			return (thisVal<anotherVal ? -1 : (thisVal==anotherVal ? 0 : 1));
@@ -468,18 +442,22 @@ public class CommandDeviceBean implements DBChangeLiteListener
         dataSource.addDBChangeLiteListener(this);
 	}
 
-	public ArrayList getDeviceList()
+	public ArrayList<LiteYukonPAObject> getDeviceList()
 	{
     	
 		if (deviceList == null || isChanged())
 		{
-
+            if (isChanged()) {    //clear out all maps, we're not sure what changed at this point.
+                loadGroupIDToLiteLoadGroupsMap = null;
+                cbcIDToLiteCBCMap = null;
+            }
+            
 			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
 			synchronized (cache)
 			{
-				List allPaos = cache.getAllDevices();
+				List<LiteYukonPAObject> allPaos = cache.getAllDevices();
 
-				deviceList = new ArrayList(allPaos.size());
+				deviceList = new ArrayList<LiteYukonPAObject>(allPaos.size());
 				for (int i = 0; i < allPaos.size(); i++)
 				{
 					boolean isValid = true;
@@ -879,11 +857,11 @@ public class CommandDeviceBean implements DBChangeLiteListener
 		if (validRoutes == null)
 		{
 			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			List routes = cache.getAllRoutes();
+			List<LiteYukonPAObject> routes = cache.getAllRoutes();
 			validRoutes= new ArrayList<LiteYukonPAObject>();
 			for (int i = 0; i < routes.size(); i++)
 			{
-				LiteYukonPAObject lPao = (LiteYukonPAObject)routes.get(i);
+				LiteYukonPAObject lPao = routes.get(i);
 				validRoutes.add(lPao);
 			}
 		}
@@ -895,25 +873,25 @@ public class CommandDeviceBean implements DBChangeLiteListener
 		if (validCommChannels == null)
 		{
 			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-			List ports = cache.getAllPorts();
+			List<LiteYukonPAObject> ports = cache.getAllPorts();
 			validCommChannels = new ArrayList<LiteYukonPAObject>();
 			for (int i = 0; i < ports.size(); i++)
 			{
-				LiteYukonPAObject lPao = (LiteYukonPAObject)ports.get(i);
+				LiteYukonPAObject lPao = ports.get(i);
 				validCommChannels.add(lPao);
 			}
 		}
 		return validCommChannels;
 	}
 
-    public ArrayList getValidCBCTypes()
+    public ArrayList<String> getValidCBCTypes()
     {
         if (validCBCTypes == null)
         {
             try
             {
                 String[] valids = retrieveCBCTypes();
-                validCBCTypes = new ArrayList(valids.length);
+                validCBCTypes = new ArrayList<String>(valids.length);
                 for (int i = 0; i < valids.length; i++)
                     validCBCTypes.add(valids[i]);
             }
@@ -1213,12 +1191,12 @@ public class CommandDeviceBean implements DBChangeLiteListener
 		return (DeviceClasses.LOADMANAGEMENT == lPao.getPaoClass() || DeviceClasses.GROUP == lPao.getPaoClass());
 	}
 	
-	public HashMap getLoadGroupIDToLiteLoadGroupsMap()
+	public HashMap<Integer, YCLiteLoadGroup> getLoadGroupIDToLiteLoadGroupsMap()
 	{
 		if (loadGroupIDToLiteLoadGroupsMap == null)
 		{
 			//Vector of Integer values(loadGroup or loadgroup(from within a macroGroup) ids)
-			Vector groupIDs = null; 
+			Vector<Integer> groupIDs = null; 
 
 			StringBuffer sql = new StringBuffer	("SELECT DISTINCT PAO.PAOBJECTID FROM " + YukonPAObject.TABLE_NAME  + " PAO " +
 				" WHERE PAO.PAOBJECTID IN ( " +
@@ -1250,21 +1228,21 @@ public class CommandDeviceBean implements DBChangeLiteListener
 					stmt = conn.prepareStatement(sql.toString());
 					rset = stmt.executeQuery();
 					Integer paoID = 0;
-                    groupIDs = new Vector();
+                    groupIDs = new Vector<Integer>();
 					while( rset.next()) {
                         paoID = rset.getInt(1);
                         //no permissions for this user, they can see them all
 					    if(permittedPaos == null || permittedPaos.isEmpty())
-					        groupIDs.add(new Integer( paoID ) );
+					        groupIDs.add(paoID);
                         /*there are permissions for this user, only allow them to see this pao if
                         it is permitted*/
                         else if(permittedPaos.contains(paoID)) 
-                            groupIDs.add(new Integer( paoID ) );
+                            groupIDs.add(paoID);
                     }	
 					if( stmt != null )	//close the statement after every use.
 						stmt.close();
 
-					loadGroupIDToLiteLoadGroupsMap = new HashMap(groupIDs.size());
+					loadGroupIDToLiteLoadGroupsMap = new HashMap<Integer, YCLiteLoadGroup>(groupIDs.size());
 					//Load all serial numbers for versacom and expresscom					
 					sql = new StringBuffer(" SELECT DISTINCT LMGV.DEVICEID, ROUTEID, KWCAPACITY, SERIALADDRESS " +
 							" FROM " + LMGroupVersacom.TABLE_NAME + " LMGV, " + LMGroup.TABLE_NAME + " LMG " +
@@ -1318,13 +1296,11 @@ public class CommandDeviceBean implements DBChangeLiteListener
 		return loadGroupIDToLiteLoadGroupsMap;
 	}
     
-    public HashMap getCBCIDToLiteCBCMap()
+    public HashMap<Integer, YCLiteCBC> getCBCIDToLiteCBCMap()
     {
         if (cbcIDToLiteCBCMap == null)
         {
-            cbcIDToLiteCBCMap = new HashMap();
-            //Vector of Integer values(CBC ids)
-            Vector cbcIDs = null; 
+            cbcIDToLiteCBCMap = new HashMap<Integer, YCLiteCBC>();
 
             java.sql.Connection conn = null;
             java.sql.PreparedStatement stmt = null;
@@ -1352,7 +1328,7 @@ public class CommandDeviceBean implements DBChangeLiteListener
                         String serial = rset.getString(2);                        
                         int routeID = rset.getInt(3);
                         YCLiteCBC lcbc = new YCLiteCBC(cbcID, routeID, serial);
-                        cbcIDToLiteCBCMap.put(new Integer(cbcID), lcbc);
+                        cbcIDToLiteCBCMap.put(cbcID, lcbc);
                     }
                 }
             }
