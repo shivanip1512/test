@@ -137,7 +137,7 @@ public class StarsAdminUtil {
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
                 Set<Integer> permittedPaoIDs = pService.getPaoIdsForUserPermission(new LiteYukonUser(energyCompany.getUserID()), Permission.DEFAULT_ROUTE);
                 if(! permittedPaoIDs.isEmpty()) {
-                    String sql = "SELECT exc.LMGroupID, FROM LMGroupExpressCom exc, GenericMacro macro " +
+                    String sql = "SELECT exc.LMGroupID FROM LMGroupExpressCom exc, GenericMacro macro " +
                         "WHERE macro.MacroType = '" + MacroTypes.GROUP + "' AND macro.ChildID = exc.LMGroupID AND exc.SerialNumber = '0'";
                     sql += " AND macro.OwnerID in (";
                     Integer[] permittedIDs = new Integer[permittedPaoIDs.size()];
@@ -1256,7 +1256,7 @@ public class StarsAdminUtil {
 	public static LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
-	    String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
+	    String defaultAuthTypeStr = DaoFactory.getAuthDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
 	    AuthType defaultAuthType = AuthType.valueOf(defaultAuthTypeStr);
 		if (username.length() == 0)
 			throw new WebClientException( "Username cannot be empty" );
