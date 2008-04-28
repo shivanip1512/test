@@ -494,7 +494,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                     {
                                         int colon = tempString1.find_first_of(':');
 
-                                        if( colon !=RW_NPOS )
+                                        if( colon !=string::npos )
                                         {
                                             tempString1.replace(colon,1," ");
                                             *programming += " temp ";
@@ -513,7 +513,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             {
                                                 int colon = tempString1.find_first_of(':');
 
-                                                if( colon !=RW_NPOS )
+                                                if( colon !=string::npos )
                                                 {
                                                     tempString1.replace(colon,1," ");
                                                     *programming += tempString1.c_str();
@@ -589,7 +589,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             sectionAddr = string ("section ");
                                             sectionAddr += tempString1;
                                         }
-                                        else if (tempString1.find ("c"))
+                                        else if (tempString1.find ("c")!=string::npos)
                                         {
                                             // we have a class address
                                             if (firstClass)
@@ -605,7 +605,7 @@ bool validateAndDecodeLine( string &input, int aProtocolFlag, RWCollectableStrin
                                             classAddr += tempString1;
     
                                         }
-                                        else if (tempString1.find ("d"))
+                                        else if (tempString1.find ("d")!=string::npos)
                                         {
                                             // we have a division address
                                             if (firstDivision)
