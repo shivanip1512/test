@@ -1256,7 +1256,7 @@ public class StarsAdminUtil {
 	public static LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,
 		LiteStarsEnergyCompany energyCompany) throws Exception
 	{
-	    String defaultAuthTypeStr = DaoFactory.getAuthDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
+	    String defaultAuthTypeStr = DaoFactory.getRoleDao().getGlobalPropertyValue(AuthenticationRole.DEFAULT_AUTH_TYPE);
 	    AuthType defaultAuthType = AuthType.valueOf(defaultAuthTypeStr);
 		if (username.length() == 0)
 			throw new WebClientException( "Username cannot be empty" );
