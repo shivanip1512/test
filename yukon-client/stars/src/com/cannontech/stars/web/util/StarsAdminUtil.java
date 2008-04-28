@@ -1290,8 +1290,9 @@ public class StarsAdminUtil {
 					);
 			stmt.execute();
 			
-			List operatorLoginIDs = energyCompany.getOperatorLoginIDs();
-			operatorLoginIDs.add(yukonUser.getUserID());
+			List<Integer> operatorLoginIDs = energyCompany.getOperatorLoginIDs();
+			if(! operatorLoginIDs.contains(yukonUser.getUserID()))
+			    operatorLoginIDs.add(yukonUser.getUserID());
 		}
 		
 		LiteYukonUser liteUser = new LiteYukonUser(
