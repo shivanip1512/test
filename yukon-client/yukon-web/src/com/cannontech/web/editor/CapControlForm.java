@@ -1440,6 +1440,20 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             }catch( EmptyResultDataAccessException e ){
                 //do nothing
             }
+        } else if (getDbPersistent() instanceof CapControlSubBus) {
+            try{
+                parentID = cache.getSubBus(itemID).getParentID();
+            }catch( NotFoundException e ){
+                //do nothing
+                parentID = 0;
+            }
+        } else if (getDbPersistent() instanceof CapControlSubstation) {
+            try{
+                parentID = cache.getSubstation(itemID).getParentID();
+            }catch( NotFoundException e ){
+                //do nothing
+                parentID = 0;
+            }
         }
 		if (parentID == CtiUtilities.NONE_ZERO_ID) {
 			return CtiUtilities.STRING_NONE;
