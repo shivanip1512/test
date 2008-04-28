@@ -1226,14 +1226,18 @@ public class Multispeak implements MessageListener {
                 try {
                     String serviceLocationStr = mspServiceLocation.getObjectID();
                     CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
-                    long start = System.currentTimeMillis();
-                    CTILogger.debug("Begin call to getMeterByServLoc for ServLoc:" + serviceLocationStr);
-                    Meter[] mspMeters = port.getMeterByServLoc(serviceLocationStr);
-                    CTILogger.debug("End call to getMeterByServLoc for ServLoc:" + serviceLocationStr + "  (took " + (System.currentTimeMillis() - start) + " millis)");
-                    if( mspMeters != null ) {
-                        for (Meter mspMeter : mspMeters) {
-                            return mspMeter.getMeterNo();
+                    if (port != null) {
+                        long start = System.currentTimeMillis();
+                        CTILogger.debug("Begin call to getMeterByServLoc for ServLoc:" + serviceLocationStr);
+                        Meter[] mspMeters = port.getMeterByServLoc(serviceLocationStr);
+                        CTILogger.debug("End call to getMeterByServLoc for ServLoc:" + serviceLocationStr + "  (took " + (System.currentTimeMillis() - start) + " millis)");
+                        if( mspMeters != null ) {
+                            for (Meter mspMeter : mspMeters) {
+                                return mspMeter.getMeterNo();
+                            }
                         }
+                    } else {
+                        CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for ServLoc: " + mspServiceLocation.getObjectID());
                     }
                 } catch (RemoteException e) {
                     CTILogger.error("TargetService: " + endpointURL + " - updateServiceLocation (" + mspVendor.getCompanyName() + ") for ServLoc: " + mspServiceLocation.getObjectID());

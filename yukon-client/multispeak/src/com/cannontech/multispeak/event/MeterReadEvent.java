@@ -86,11 +86,14 @@ public class MeterReadEvent extends MultispeakEvent{
             MeterRead [] meterReads = new MeterRead[1];
             meterReads[0] = getDevice().getMeterRead();
 
-            CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(getMspVendor());            
-            ErrorObject[] errObjects = port.readingChangedNotification(meterReads, getTransactionID());
-            if( errObjects != null)
-                ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ReadingChangedNotification", errObjects);
-            
+            CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(getMspVendor());
+            if (port != null) {
+                ErrorObject[] errObjects = port.readingChangedNotification(meterReads, getTransactionID());
+                if( errObjects != null)
+                    ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ReadingChangedNotification", errObjects);
+            } else {
+                CTILogger.error("Port not found for CB_MR (" + getMspVendor().getCompanyName() + ")");
+            }
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - ReadingChangedNotification (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: " + e.getMessage());

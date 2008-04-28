@@ -149,8 +149,11 @@ public class CDEvent extends MultispeakEvent{
         try
         {
             CB_CDSoap_BindingStub port = MultispeakPortFactory.getCB_CDPort(getMspVendor());
-            port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode(), getTransactionID());
-            
+            if (port != null) {
+                port.CDStateChangedNotification(getMeterNumber(), getLoadActionCode(), getTransactionID());
+            } else {
+                CTILogger.error("Port not found for CB_CD (" + getMspVendor().getCompanyName() + ")");
+            }  
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - initiateConnectDisconnect (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: "+e.getMessage());

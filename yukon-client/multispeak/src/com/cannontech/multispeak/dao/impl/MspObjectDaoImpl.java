@@ -25,7 +25,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
         Customer mspCustomer = new Customer();
         try {    
             CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
-            mspCustomer = port.getCustomerByMeterNo(meterNumber);
+            if (port != null) {
+                mspCustomer = port.getCustomerByMeterNo(meterNumber);
+            } else {
+                CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+            }                
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
             CTILogger.error("TargetService: " + endpointURL + " - getCustomerByMeterNo(" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
@@ -43,7 +47,11 @@ public class MspObjectDaoImpl implements MspObjectDao {
         ServiceLocation mspServiceLocation = new ServiceLocation();
         try {
             CB_MRSoap_BindingStub port = MultispeakPortFactory.getCB_MRPort(mspVendor);
-            mspServiceLocation =  port.getServiceLocationByMeterNo(meterNumber);
+            if (port != null) {
+                mspServiceLocation =  port.getServiceLocationByMeterNo(meterNumber);
+            } else {
+                CTILogger.error("Port not found for CB_MR (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);
+            }
         } catch (RemoteException e) {
             String endpointURL = mspVendor.getEndpointURL(MultispeakDefines.CB_MR_STR);
             CTILogger.error("TargetService: " + endpointURL + " - getServiceLocationByMeterNo (" + mspVendor.getCompanyName() + ") for MeterNo: " + meterNumber);

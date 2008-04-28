@@ -80,11 +80,14 @@ public class BlockMeterReadEvent extends MultispeakEvent {
         CTILogger.info("Sending EA_MR_FormattedBlockNotification ("+ endpointURL+ ")");
         
         try {            
-            EA_MRSoap_BindingStub port = MultispeakPortFactory.getEA_MRPort(getMspVendor());            
-            ErrorObject[] errObjects = port.formattedBlockNotification( getMspFormattedBlock(), getTransactionID());
-            if( errObjects != null)
-                ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ReadingChangedNotification", errObjects);
-            
+            EA_MRSoap_BindingStub port = MultispeakPortFactory.getEA_MRPort(getMspVendor());
+            if (port != null) {
+                ErrorObject[] errObjects = port.formattedBlockNotification( getMspFormattedBlock(), getTransactionID());
+                if( errObjects != null)
+                    ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ReadingChangedNotification", errObjects);
+            } else {
+                CTILogger.error("Port not found for EA_MR (" + getMspVendor().getCompanyName() + ")");
+            }
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - ReadingChangedNotification (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: " + e.getMessage());

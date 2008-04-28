@@ -143,10 +143,13 @@ public class ODEvent extends MultispeakEvent{
             odEvents [0] = getOutageDetectionEvent();
             
             OA_ODSoap_BindingStub port = MultispeakPortFactory.getOA_ODPort(getMspVendor());
-            ErrorObject[] errObjects = port.ODEventNotification(odEvents, getTransactionID());
-            if( errObjects != null)
-                ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ODEventNotification", errObjects);
-            
+            if (port != null) {
+                ErrorObject[] errObjects = port.ODEventNotification(odEvents, getTransactionID());
+                if( errObjects != null)
+                    ((MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs")).logErrorObjects(endpointURL, "ODEventNotification", errObjects);
+            } else {
+                CTILogger.error("Port not found for OA_OD (" + getMspVendor().getCompanyName() + ")");
+            }
         } catch (RemoteException e) {
             CTILogger.error("TargetService: " + endpointURL + " - initiateOutageDetection (" + getMspVendor().getCompanyName() + ")");
             CTILogger.error("RemoteExceptionDetail: " + e.getMessage());
