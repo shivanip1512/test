@@ -774,7 +774,7 @@ void CtiCalculateThread::baselineThread( void )
         DynamicTableSinglePointData percentData;
         DatesSet curtailedDates;
         int frequencyInSeconds = 24*60*60;//24 hours;
-        int prevDaysToCalc = 30;//30 days
+        int initialDays = 30;//30 days
         char var[256];
 
         int calcQuality;
@@ -789,6 +789,16 @@ void CtiCalculateThread::baselineThread( void )
         {
             nextCalcTime.addDays(-1);//Should let us run immediatelly
         }
+
+        strcpy(var, "CALC_BASELINE_INITIAL_DAYS_CALCULATED");
+        if( 30 != (initialDays = gConfigParms.getValueAsInt(var,30)) )
+        {
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << CtiNumStr(initialDays).toString() << endl;
+            }
+        }
+
 
         while( !interrupted )
         {
@@ -898,7 +908,7 @@ void CtiCalculateThread::baselineThread( void )
                 else
                 {
                     lastTime = CtiTime((unsigned)0, (unsigned)0);
-                    lastTime.addDays(-1*prevDaysToCalc);//This should return 30 days ago, at 00:00:00
+                    lastTime.addDays(-1*initialDays);//This should return 30 days ago, at 00:00:00
                     unlistedPoints.insert(PointTimeMap::value_type(pointID, lastTime));
 
                     if( _CALC_DEBUG & CALC_DEBUG_BASELINE)
