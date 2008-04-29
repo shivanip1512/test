@@ -1944,6 +1944,7 @@ while (@@fetch_status = 0)
 
 close cbc_curs;
 deallocate cbc_curs;
+go
 /* @end-block */
 
 
@@ -1975,6 +1976,7 @@ while (@@fetch_status = 0)
 
 close cbc_curs;
 deallocate cbc_curs;
+go
 /* @end-block */
 
 /* Emergency OV Set Point */
@@ -2005,6 +2007,7 @@ while (@@fetch_status = 0)
 
 close cbc_curs;
 deallocate cbc_curs;
+go
 /* @end-block */
 
 
@@ -2036,6 +2039,7 @@ while (@@fetch_status = 0)
 
 close cbc_curs;
 deallocate cbc_curs;
+go
 /* @end-block */
 
 /* Trip Delay Time */
@@ -2066,6 +2070,7 @@ while (@@fetch_status = 0)
 
 close cbc_curs;
 deallocate cbc_curs;
+go
 /* @end-block */
 
 /* Close Delay Time */
@@ -2096,6 +2101,7 @@ while (@@fetch_status = 0)
 
 close cbc_curs;
 deallocate cbc_curs;
+go
 /* @end-block */
 
 /* Re-Close Delay Time */
@@ -2126,6 +2132,7 @@ while (@@fetch_status = 0)
 
 close cbc_curs;
 deallocate cbc_curs;
+go
 /* @end-block */
 
 /* Bank Control Time */
@@ -2156,6 +2163,7 @@ while (@@fetch_status = 0)
 
 close cbc_curs;
 deallocate cbc_curs;
+go
 /* @end-block */
 /* End YUK-5557 */
 
@@ -2191,61 +2199,77 @@ INSERT INTO DeviceTypeCommand VALUES (-721, -142, 'MCT-410IL', 35, 'N', -1);
 /* End YUK-5673 */
 
 /* Start YUK-5630 */
+/* @start-block */
 if exists (select 1
             from  sysobjects
            where  id = object_id('AreaSubBusFeeder_View')
             and   type = 'V')
    drop view AreaSubBusFeeder_View
 go
+/* @end-block */
 
+/* @start-block */
 if exists (select 1
             from  sysobjects
            where  id = object_id('CCOperations_View')
             and   type = 'V')
    drop view CCOperations_View
 go
+/* @end-block */
 
+/* @start-block */
 if exists (select 1
             from  sysobjects
            where  id = object_id('CCInventory_View')
             and   type = 'V')
    drop view CCInventory_View
 go
+/* @end-block */
 
+/* @start-block */
 if exists (select 1
             from  sysobjects
            where  id = object_id('CCCapInventory_View')
             and   type = 'V')
    drop view CCCapInventory_View
 go
+/* @end-block */
 
+/* @start-block */
 if exists (select 1
             from  sysobjects
            where  id = object_id('CCCBCInventory_View')
             and   type = 'V')
    drop view CCCBCInventory_View
 go
+/* @end-block */
 
+/* @start-block */
 if exists (select 1
             from  sysobjects
            where  id = object_id('CCCBCCVMSState_View')
             and   type = 'V')
    drop view CCCBCCVMSState_View
 go
+/* @end-block */
 
+/* @start-block */
 if exists (select 1
             from  sysobjects
            where  id = object_id('CBCConfiguration_View')
             and   type = 'V')
    drop view CBCConfiguration_View
 go
+/* @end-block */
 
+/* @start-block */
 if exists (select 1
             from  sysobjects
            where  id = object_id('CBCConfiguration2_View')
             and   type = 'V')
    drop view CBCConfiguration2_View
 go
+/* @end-block */
 
 /*==============================================================*/
 /* View: AreaSubBusFeeder_View                                  */
@@ -2276,11 +2300,11 @@ AND (cast(SeasonStartMonth AS VARCHAR(2)) + '/' +
 AND (cast(SeasonEndMonth AS VARCHAR(2)) + '/' + 
           cast(SeasonEndDay AS VARCHAR(2)) + '/' + 
           cast(datepart(year,getdate()) AS VARCHAR(4))) > getdate();
+go
 
 /*==============================================================*/
 /* View: CBCConfiguration2_View                                 */
 /*==============================================================*/
-go
 create view CBCConfiguration2_View as
 SELECT YP.PAOName AS CBCName, D.* 
 FROM DynamicCCTwoWayCBC D, YukonPAObject YP
@@ -2290,7 +2314,6 @@ go
 /*==============================================================*/
 /* View: CBCConfiguration_View                                  */
 /*==============================================================*/
-go
 create view CBCConfiguration_View as
 SELECT YP.PAOName AS CBCName, YP.PAObjectId AS CBCId, P.PointName AS PointName, P.PointId AS PointId, 
        PD.Value AS PointValue, PD.Timestamp, UOM.UOMName AS UnitOfMeasure
@@ -2304,7 +2327,7 @@ go
 /*==============================================================*/
 /* View: CCCBCCVMSState_View                                    */
 /*==============================================================*/
-go
+/* @start-block */
 create view CCCBCCVMSState_View as
 SELECT YP5.PAOName AS Region, YP4.PAOName AS Substation, CB.MapLocationId AS OpCenter, 
        YP3.PAOName AS SubName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
@@ -2338,11 +2361,12 @@ INNER JOIN DynamicCCCapBank DCB ON DCB.CapBankId = CB.DeviceId
 INNER JOIN State S ON S.StateGroupId = 3 AND DCB.ControlStatus = S.RawState 
 LEFT OUTER JOIN State S1 ON S1.StateGroupId = 3 AND DCB.TwoWayCBCState = S1.RawState
 go
+/* @end-block */
 
 /*==============================================================*/
 /* View: CCCBCInventory_View                                    */
 /*==============================================================*/
-go
+/* @start-block */
 create view CCCBCInventory_View (CBCNAME, IPADDRESS, SLAVEADDRESS, CONTROLLERTYPE, OPCENTER, REGION, SUBSTATIONNAME, SUBBUSNAME, FEEDERNAME, CAPBANKNAME, BANKSIZE, OPERATIONMETHOD, LAT, LON, DRIVEDIRECTION, CAPBANKADDRESS, TA, CAPBANKCONFIG, COMMMEDIUM, COMMSTRENGTH, EXTERNALANTENNA, OPERATIONSCOUNTERRESETDATE, OPSCOUNTERSINCELASTRESET, OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, OVOPERATIONSCOUNTER, UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) as
 SELECT YP.PAOName AS CBCName, DPI.Value AS IPAddress, DA.SlaveAddress, CB.ControllerType, 
        CB.MapLocationId AS OpCenter, YP5.PAOName AS Region, YP4.PAOName AS SubstationName, 
@@ -2376,11 +2400,12 @@ LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId 
 LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId
 go
+/* @end-block */
 
 /*==============================================================*/
 /* View: CCCapInventory_View                                    */
 /*==============================================================*/
-go
+/* @start-block */
 create view CCCapInventory_View as
 SELECT YP4.PAOName AS Region, CB.MapLocationId AS OpCenter, YP5.PAOName AS SubstationName, 
        YP3.PAOName AS SubbusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
@@ -2406,11 +2431,12 @@ LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
                  WHERE (InfoKey LIKE '%udp ip%')) DPI ON DPI.PAObjectId = YP.PAObjectId 
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId
 go
+/* @end-block */
 
 /*==============================================================*/
 /* View: CCInventory_View                                       */
 /*==============================================================*/
-go
+/* @start-block */
 create view CCInventory_View (REGION, SUBSTATIONNAME, SUBBUSNAME, FEEDERNAME, AREAID, SUBID, SUBBUSID, FDRID, CBCNAME, CBCID, CAPBANKNAME, BANKID, CAPBANKSIZE, DISPLAYORDER, CONTROLSTATUS, CONTROLSTATUSNAME, SWMFGR, SWTYPE, OPERATIONMETHOD, CONTROLLERTYPE, IPADDRESS, SLAVEADDRESS, LAT, LON, DRIVEDIRECTION, OPCENTER, TA, CLOSESEQUENCE, OPENSEQUENCE, LASTOPERATIONTIME, LASTINSPECTIONDATE, LASTMAINTENANCEDATE, MAINTENANCEREQPEND, CAPDISABLED, POTENTIALTRANSFORMER, OTHERCOMMENTS, OPTEAMCOMMENTS, POLENUMBER, OPSCOUNTERSINCELASTRESET, OPERATIONSCOUNTERTODAY, UVOPERATIONSCOUNTER, OVOPERATIONSCOUNTER, UVOVCOUNTERRESETDATE, LASTOVUVDATETIME) as
 SELECT YP4.PAOName AS Region, YP5.PAOName AS SubstationName, YP3.PAOName AS SubBusName, 
        YP2.PAOName AS FeederName, YP4.PAObjectId AS AreaId, YP5.PAObjectId AS SubId, 
@@ -2453,11 +2479,13 @@ LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId
 LEFT OUTER JOIN CapBankAdditional CAPA ON CAPA.DeviceId = CB.DeviceId
 LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId
 go
+/* @end-block */
+
 
 /*==============================================================*/
 /* View: CCOperations_View                                      */
 /*==============================================================*/
-go
+/* @start-block */
 create view CCOperations_View as
 SELECT YP3.PAOName AS CBCName, YP.PAOName AS CapBankName, EL.DateTime AS OpTime, 
        EL.Text AS Operation, EL2.DateTime AS ConfTime, EL2.Text AS ConfStatus, 
@@ -2505,17 +2533,20 @@ FROM (SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId
       LEFT OUTER JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
       LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
 go
+/* @end-block */
 /* End YUK-5630 */
 
 /* Start YUK-5403 */
+/* @start-block */
 if exists (SELECT 1
            FROM  SysObjects
            WHERE  Id = Object_Id('TempMovedCapBanks_View')
            AND   type = 'V')
    DROP VIEW TempMovedCapBanks_View
 go
+/* @end-block */
 
-go
+/* @start-block */
 create view TempMovedCapBanks_View as
 SELECT YPF.PAOName TempFeederName, YPF.PAObjectId TempFeederId, YPC.PAOName CapBankName, 
        YPC.PAObjectId CapBankId, FB.ControlOrder, FB.CloseOrder, FB.TripOrder, 
@@ -2527,6 +2558,7 @@ AND FB.FeederId = YPF.PAObjectId
 AND YPOF.PAObjectId = DC.OriginalFeederId 
 AND DC.OriginalFeederId <> 0
 go
+/* @end-block */
 /* End YUK-5403 */
 
 /* Start YUK-5791 */
@@ -2540,6 +2572,7 @@ INSERT INTO FDRInterfaceOption VALUES(26, 'Server Name', 1, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Group', 2, 'Text', '(none)'); 
 INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
 /* End YUK-5567 */
+
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
