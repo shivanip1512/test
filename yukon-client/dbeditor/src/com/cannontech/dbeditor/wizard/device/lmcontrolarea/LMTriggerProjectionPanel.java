@@ -190,7 +190,6 @@ private javax.swing.JComboBox getJComboBoxSamples() {
 			ivjJComboBoxSamples.setName("JComboBoxSamples");
 			// user code begin {1}
 
-			ivjJComboBoxSamples.addItem( new Integer(1) );
 			ivjJComboBoxSamples.addItem( new Integer(2) );
 			ivjJComboBoxSamples.addItem( new Integer(3) );
 			ivjJComboBoxSamples.addItem( new Integer(4) );
@@ -202,7 +201,7 @@ private javax.swing.JComboBox getJComboBoxSamples() {
 			ivjJComboBoxSamples.addItem( new Integer(10) );
 			ivjJComboBoxSamples.addItem( new Integer(11) );
 			ivjJComboBoxSamples.addItem( new Integer(12) );
-
+			ivjJComboBoxSamples.setSelectedItem(new Integer(5));
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
 			// user code begin {2}
