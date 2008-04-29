@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:aop="http://www.springframework.org/schema/aop"
@@ -14,6 +13,14 @@
  <bean id="inputFloatType" class="com.cannontech.web.input.type.FloatType" />
  <bean id="inputDateType" class="com.cannontech.web.input.type.DateType" />
  <bean id="inputBooleanType" class="com.cannontech.web.input.type.BooleanType" />
+ <bean id="inputRouteEnumeratedType" class="com.cannontech.web.input.type.RouteEnumeratedType">
+     <property name="paoDao" ref="paoDao" />
+     <property name="enumeratedType" ref="inputIntegerType" />
+ </bean>
+  <bean id="inputDeviceTypeEnumeratedType" class="com.cannontech.web.input.type.DeviceTypeEnumeratedType">
+     <property name="deviceDefinitionService" ref="deviceService" />
+     <property name="enumeratedType" ref="inputIntegerType" />
+ </bean>
  
  
  </beans>
