@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/24/2008 4:18:51 PM                         */
+/* Created on:     4/29/2008 10:43:12 AM                        */
 /*==============================================================*/
 
 
@@ -9124,6 +9124,7 @@ insert into YukonRoleProperty values(-70016,-700,'Definition Closed','Switched:C
 insert into yukonroleproperty values(-70017,-700, 'Add Comments', 'false', 'Allows the user to Add comments to Cap Bank objects.');
 insert into yukonroleproperty values(-70018,-700, 'Modify Comments', 'false', 'Allows the user to Modify comments on Cap Bank objects.');
 insert into yukonroleproperty values(-70019,-700, 'System Wide Controls', 'false', 'Allow system wide controls');
+INSERT INTO YukonRoleProperty VALUES(-70020,-700, 'Force Default Comment', 'false', 'If the user does not provide a comment, a default comment will be stored.'); 
 
 /* Notification / IVR Role properties */
 insert into YukonRoleProperty values(-1400,-800,'voice_app','login','The voice server application that Yukon should use');

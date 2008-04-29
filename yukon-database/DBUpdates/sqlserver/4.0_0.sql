@@ -2529,6 +2529,10 @@ AND DC.OriginalFeederId <> 0
 go
 /* End YUK-5403 */
 
+/* Start YUK-5791 */
+INSERT INTO YukonRoleProperty VALUES(-70020,-700, 'Force Default Comment', 'false', 'If the user does not provide a comment, a default comment will be stored.'); 
+/* End YUK-5791 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

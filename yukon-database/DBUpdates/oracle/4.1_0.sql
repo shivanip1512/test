@@ -442,6 +442,11 @@ AND YPOF.PAObjectId = DC.OriginalFeederId
 AND DC.OriginalFeederId <> 0;
 /* End YUK-5403 */
 
+/* Start YUK-5791 */
+/* @error ignore-begin */
+INSERT INTO YukonRoleProperty VALUES(-70020,-700, 'Force Default Comment', 'false', 'If the user does not provide a comment, a default comment will be stored.'); 
+/* @error ignore-end */
+/* End YUK-5791 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
