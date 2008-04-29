@@ -380,7 +380,7 @@ go
 go
 create view CCCapInventory_View as
 SELECT YP4.PAOName AS Region, CB.MapLocationId AS OpCenter, YP5.PAOName AS SubstationName, 
-       YP3.PAOName AS SubName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
+       YP3.PAOName AS SubbusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
        CB.BankSize, CAPA.Latitude AS Lat, CAPA.Longitude AS LON, 
        CAPA.DriveDirections AS DriveDirection, CB.OperationalState AS OperationMethod, 
        CB.SwitchManufacture AS SWMfgr, CB.TypeOfSwitch AS SWType, YP.PAOName AS CBCName, 

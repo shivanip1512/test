@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/29/2008 10:43:12 AM                        */
+/* Created on:     4/29/2008 11:32:08 AM                        */
 /*==============================================================*/
 
 
@@ -9540,7 +9540,7 @@ LEFT OUTER JOIN DynamicCCTwoWayCBC DTWC ON CB.ControlDeviceId = DTWC.DeviceId;
 /*==============================================================*/
 create or replace view CCCapInventory_View as
 SELECT YP4.PAOName AS Region, CB.MapLocationId AS OpCenter, YP5.PAOName AS SubstationName, 
-       YP3.PAOName AS SubName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
+       YP3.PAOName AS SubbusName, YP2.PAOName AS FeederName, YP1.PAOName AS CapBankName, 
        CB.BankSize, CAPA.Latitude AS Lat, CAPA.Longitude AS LON, 
        CAPA.DriveDirections AS DriveDirection, CB.OperationalState AS OperationMethod, 
        CB.SwitchManufacture AS SWMfgr, CB.TypeOfSwitch AS SWType, YP.PAOName AS CBCName, 
@@ -9553,7 +9553,7 @@ LEFT OUTER JOIN CCFeederBankList FB ON FB.DeviceId = CB.DeviceId
 LEFT OUTER JOIN YukonPAObject YP2 ON YP2.PAObjectId = FB.FeederId 
 LEFT OUTER JOIN CCFeederSubAssignment SF ON FB.FeederId = SF.FeederId 
 LEFT OUTER JOIN YukonPAObject YP3 ON YP3.PAObjectId = SF.SubStationBusId 
-LEFT OUTER JOIN CCSubStationSubbusList SS on SS.SubstationBusId = YP3.PAObjectId
+LEFT OUTER JOIN CCSubStationSubbusList SS ON SS.SubstationBusId = YP3.PAObjectId
 LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SS.SubStationId 
 LEFT OUTER JOIN CCSubAreaAssignment SA ON SS.SubstationId = SA.SubstationBusId
 LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = SA.AreaId
@@ -9578,7 +9578,7 @@ SELECT YP4.PAOName AS Region, YP5.PAOName AS SubstationName, YP3.PAOName AS SubB
        CB.MapLocationId AS OpCenter, CAPA.MaintenanceAreaId AS TA, FB.CloseOrder AS CloseSequence, 
        FB.TripOrder AS OpenSequence, DCB.LastStatusChangeTime AS LastOperationTime, 
        CAPA.LastInspVisit AS LastInspectionDate, CAPA.LastMaintVisit AS LastMaintenanceDate, 
-       CAPA.MaintenanceReqPend, YP1.DisableFlag as CapDisabled, CAPA.PotentialTransformer, 
+       CAPA.MaintenanceReqPend, YP1.DisableFlag AS CapDisabled, CAPA.PotentialTransformer, 
        CAPA.OtherComments, CAPA.OpTeamComments, CAPA.PoleNumber, 
        DTWC.TotalOpCount AS OpsCounterSinceLastReset, DTWC.TotalOpCount AS OperationsCounterToday, 
        DTWC.UvOpCount AS UvOperationsCounter, DTWC.OvOpCount AS OvOperationsCounter, 
