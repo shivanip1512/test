@@ -33,7 +33,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         public Integer Questionable;
         public Integer Failure;
         public String SuccessPcnt;
-        public String Protocol;
+        public String Refusals;
     }
     
     @Override
@@ -71,6 +71,8 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
                 pstmt.setTimestamp(6, new java.sql.Timestamp(getStopDate().getTime()));
                 pstmt.setTimestamp(7, new java.sql.Timestamp(getStartDate().getTime()));
                 pstmt.setTimestamp(8, new java.sql.Timestamp(getStopDate().getTime()));
+                pstmt.setTimestamp(9, new java.sql.Timestamp(getStartDate().getTime()));
+                pstmt.setTimestamp(10, new java.sql.Timestamp(getStopDate().getTime()));
                 rs = pstmt.executeQuery();
                 DecimalFormat twoPlaces = new DecimalFormat("00.00");
                 while (rs.next()) {
@@ -93,6 +95,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
                         String successString = twoPlaces.format(successRate);
                         successString += "%";
                         row.SuccessPcnt = successString;
+                        row.Refusals = rs.getString("Refusals");
                         data.add(row);
                     } catch (java.sql.SQLException e) {
                         e.printStackTrace();
@@ -110,20 +113,47 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select rs.Region, rs.OpCenter, rs.TA, rs.SubBusName, rs.FeederName, rs.capbankname, RS.CBCName,  s.Attempts, s. Success, s.Questionable, s.Failure ");
-        sql.append("from (select T.CBCName, T.Attempts, F.Failure, q.Questionable, SS.Success ");
-        sql.append("from (select CBCName, count(*) Attempts from ccoperations_view where Optime  between ? and ? ");
+        StringBuffer sql = new StringBuffer ("select rs.Region ");
+        sql.append(", rs.OpCenter ");
+        sql.append(", rs.TA ");
+        sql.append(", rs.SubbusName ");
+        sql.append(", rs.FeederName ");
+        sql.append(", rs.capbankname ");
+        sql.append(", RS.CBCName ");
+        sql.append(", s.Attempts ");
+        sql.append(", s. Success ");
+        sql.append(", s.Questionable ");
+        sql.append(", s.Failure ");
+        sql.append(", S.Refusals ");
+        sql.append("from (select T.CBCName ");
+        sql.append(", T.Attempts, F.Failure, q.Questionable, SS.Success, RR.Refusals ");
+        sql.append("from (select CBCName, count(*) Attempts ");
+        sql.append("from ccoperations_view where Optime between ? and ? ");
         sql.append("group by CBCName ) T ");
-        sql.append("left outer join (select CBCName, count(*) Failure from ccoperations_view where Optime  between ? and ? ");
-        sql.append("and (ConfStatus like '%CloseFail' or  ConfStatus like '%OpenFail') group by CBCName ) F on T.CBCName = F.CBCName  ");
-        sql.append("left outer join (select CBCName, count(*) Questionable from ccoperations_view where Optime  between ? and ? ");
-        sql.append("and (ConfStatus like '%OpenQuestionable' or  ConfStatus like '%CloseQuestionable') group by CBCName ) Q on T.CBCName = Q.CBCName ");
-        sql.append("left outer join (select CBCName, count(*) Success from ccoperations_view where Optime  between ? and ? ");
-        sql.append("and (ConfStatus like '%Close' or  ConfStatus like '%Open') group by CBCName ) SS on T.CBCName = SS.CBCName )S ");
-        sql.append("inner join (Select Region , OpCenter, TA, SubBusName , subID, FeederName, FdrId, CBCName, cbcId, capbankname, bankID from ccinventory_view ) rs on S.CBCName = RS.CBCName  ");
+        sql.append("left outer join (select CBCName, count(*) Failure ");
+        sql.append("from ccoperations_view where Optime between ? and ? ");
+        sql.append("and (ConfStatus like '%CloseFail' or ConfStatus like '%OpenFail' and ConfStatus not like '%rejected%') ");
+        sql.append("group by CBCName ) F on T.CBCName = F.CBCName ");
+        sql.append("left outer join (select CBCName, count(*) Questionable ");
+        sql.append("from ccoperations_view where Optime between ? and ? ");
+        sql.append("and (ConfStatus like '%OpenQuestionable' or ConfStatus like '%CloseQuestionable') and ConfStatus not like '%rejected%' ");
+        sql.append("group by CBCName ) Q on T.CBCName = Q.CBCName ");
+        sql.append("left outer join (select CBCName, count(*) Refusals ");
+        sql.append("from ccoperations_view where Optime between ? and ? ");
+        sql.append("and ConfStatus like '%rejected%' ");
+        sql.append("group by CBCName ) RR on T.CBCName = RR.CBCName ");
+        sql.append("left outer join (select CBCName, count(*) Success ");
+        sql.append("from ccoperations_view where Optime between ? and ? ");
+        sql.append("and (ConfStatus like '%Close' or ConfStatus like '%Open') and ConfStatus not like '%rejected%' ");
+        sql.append("group by CBCName ) SS on T.CBCName = SS.CBCName )S ");
+        sql.append("inner join (Select Region , OpCenter, TA, SubbusName ");
+        sql.append(", subID, FeederName, FdrId, CBCName ");
+        sql.append(", cbcId, capbankname, bankID ");
+        sql.append("from ccinventory_view ) rs on S.CBCName = RS.CBCName ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = rs.subID ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
- 	 	sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
+        sql.append("left outer join (select paobjectid ");
+        sql.append("from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid  ");
         
         String result = null;
         

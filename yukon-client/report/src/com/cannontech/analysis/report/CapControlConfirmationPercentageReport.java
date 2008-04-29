@@ -21,7 +21,7 @@ public class CapControlConfirmationPercentageReport extends SimpleYukonReportBas
         new ColumnLayoutData("Questionable", "Questionable", 60),
         new ColumnLayoutData("Failure", "Failure", 40),
         new ColumnLayoutData("SuccessPcnt", "SuccessPcnt", 55),
-        new ColumnLayoutData("Protocol", "Protocol", 50),
+        new ColumnLayoutData("Refusals", "Refusals", 50),
     };
 
     public CapControlConfirmationPercentageReport(BareReportModel bareModel) {
