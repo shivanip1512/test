@@ -32,6 +32,10 @@ public abstract class BaseEnumeratedType<T> implements InputType<T> {
 
             public void validate(String path, String displayName, T value, Errors errors) {
 
+                if (value == null) {
+                    return;
+                }
+                
                 String valueString = value.toString();
 
                 List<InputOption> optionList = getOptionList();
