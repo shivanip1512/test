@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/29/2008 11:32:08 AM                        */
+/* Created on:     4/29/2008 1:17:27 PM                         */
 /*==============================================================*/
 
 
@@ -4922,6 +4922,7 @@ insert into FDRInterface values (22, 'LIVEDATA','Receive', 'f' );
 insert into FDRInterface values (23, 'ACSMULTI', 'Send,Send for control,Receive,Receive for control', 't' );
 insert into FDRInterface values (24, 'WABASH', 'Send', 'f' );
 insert into FDRInterface values (25, 'TRISTATESUB', 'Receive', 'f' );
+INSERT INTO FDRInterface VALUES (26, 'OPC', 'Receive', 'f');
 
 /*==============================================================*/
 /* Table: FDRInterfaceOption                                    */
@@ -4983,6 +4984,9 @@ insert into FDRInterfaceOption values(24, 'SchedName', 1, 'Text', '(none)' );
 insert into FDRInterfaceOption values(24, 'Path', 2, 'Text', 'c:\yukon\server\export\' );
 insert into FDRInterfaceOption values(24, 'Filename', 3, 'Text', 'control.txt' );
 insert into FDRInterfaceOption values(25, 'Point', 1, 'Combo', 'Nucla 115/69 Xfmr.,Happy Canyon 661Idarado,Cascade 115/69 (T2),Ames Generation,Dallas Creek MW,Dallas Creek MV' );
+INSERT INTO FDRInterfaceOption VALUES(26, 'Server Name', 1, 'Text', '(none)'); 
+INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Group', 2, 'Text', '(none)'); 
+INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
 
 /*==============================================================*/
 /* Table: FDRTRANSLATION                                        */

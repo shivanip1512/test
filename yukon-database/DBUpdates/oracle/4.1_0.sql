@@ -448,6 +448,18 @@ INSERT INTO YukonRoleProperty VALUES(-70020,-700, 'Force Default Comment', 'fals
 /* @error ignore-end */
 /* End YUK-5791 */
 
+
+/* Start YUK-5567 */
+/* @error ignore-begin */
+INSERT INTO FDRInterface VALUES(26, 'OPC', 'Receive', 'f'); 
+
+INSERT INTO FDRInterfaceOption VALUES(26, 'Server Name', 1, 'Text', '(none)'); 
+INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Group', 2, 'Text', '(none)'); 
+INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
+/* @error ignore-end */
+/* End YUK-5567 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
