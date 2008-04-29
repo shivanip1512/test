@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_script.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2005/12/20 17:25:02 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/04/29 15:34:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -80,10 +80,9 @@ bool CtiMCScript::readContents()
         {
             num = fread( buf, sizeof(char), _io_buf_size, fi );
             _contents.append( buf, num );
+            result = (_contents.length() > 0);
 
         } while( result && num == _io_buf_size );
-
-        result = (_contents.length() > 0);
     }
 
     if( fi != NULL )
