@@ -447,4 +447,5 @@ AND DC.OriginalFeederId <> 0;
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
 /**************************************************************/
-insert into CTIDatabase values('4.1', 'David', '07-Dec-2007', 'Latest Update', 0 );
+
+/* __YUKON_VERSION__ */
