@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_lm_controlhist.cpp-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2008/04/21 15:53:16 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2008/04/30 21:15:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -339,7 +339,7 @@ void CtiTableLMControlHistory::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RW
     devTbl["currentannualtime"] <<
     devTbl["activerestore"] <<
     devTbl["reductionvalue"] <<
-    devTbl["controlpriority"];
+    devTbl["protocolpriority"];
 
     selector.from(keyTable);
     selector.from(devTbl);
@@ -366,7 +366,7 @@ void CtiTableLMControlHistory::getDynamicSQL(RWDBDatabase &db,  RWDBTable &keyTa
     devTbl["currentannualtime"] <<
     devTbl["activerestore"] <<
     devTbl["reductionvalue"] <<
-    devTbl["controlpriority"];
+    devTbl["protocolpriority"];
 
     selector.from(keyTable);
     selector.from(devTbl);
@@ -392,7 +392,7 @@ void CtiTableLMControlHistory::getSQLForOutstandingControls(RWDBDatabase &db,  R
     keyTable["currentannualtime"] <<
     keyTable["activerestore"] <<
     keyTable["reductionvalue"] <<
-    keyTable["controlpriority"];
+    keyTable["protocolpriority"];
 
     selector.from(keyTable);
 
@@ -472,7 +472,7 @@ void CtiTableLMControlHistory::DecodeDatabaseReader(RWDBReader &rdr)
 
     rdr["activerestore"]       >> _defaultActiveRestore;
     rdr["reductionvalue"]      >> _reductionValue;
-    rdr["controlpriority"]     >> _controlPriority;
+    rdr["protocolpriority"]     >> _controlPriority;
 
     setUpdatedFlag();
 }
@@ -552,7 +552,7 @@ RWDBStatus CtiTableLMControlHistory::Restore()
     table["currentannualtime"] <<
     table["activerestore"] <<
     table["reductionvalue"] <<
-    table["controlpriority"];
+    table["protocolpriority"];
 
     selector.where( table["paobjectid"] == getPAOID() && table["lmctrlhistid"] == maxid);
 
@@ -656,7 +656,7 @@ RWDBStatus CtiTableLMControlHistory::Update()
     table["currentannualtime"].assign( getCurrentAnnualTime() ) <<
     table["activerestore"].assign( getActiveRestore().c_str() ) <<
     table["reductionvalue"].assign( getReductionValue() ) <<
-    table["controlpriority"].assign( getControlPriority() );
+    table["protocolpriority"].assign( getControlPriority() );
 
     if( ExecuteUpdater(conn,updater,__FILE__,__LINE__) == RWDBStatus::ok )
     {
@@ -841,7 +841,7 @@ void CtiTableLMControlHistory::dump() const
         dout << " currentannualtime     " << getCurrentAnnualTime() << endl;
         dout << " activerestore         " << getActiveRestore() << endl;
         dout << " reductionvalue        " << getReductionValue() << endl;
-        dout << " controlpriority       " << getControlPriority() << endl;
+        dout << " protocolpriority      " << getControlPriority() << endl;
     }
 
     return;
@@ -867,7 +867,7 @@ void CtiTableLMControlHistory::DecodeOutstandingControls(RWDBReader &rdr)
     rdr["currentannualtime"]    >> _currentAnnualTime;
     rdr["activerestore"]        >> _loadedActiveRestore;
     rdr["reductionvalue"]       >> _reductionValue;
-    rdr["controlpriority"]      >> _controlPriority;
+    rdr["protocolpriority"]     >> _controlPriority;
 
     if(_loadedActiveRestore == LMAR_DISPATCH_SHUTDOWN && now < _stopDateTime)
     {
@@ -909,7 +909,7 @@ void CtiTableLMControlHistory::getSQLForIncompleteControls(RWDBDatabase &db,  RW
     keyTable["currentannualtime"] <<
     keyTable["activerestore"] <<
     keyTable["reductionvalue"] <<
-    keyTable["controlpriority"];
+    keyTable["protocolpriority"];
 
     selector.from(keyTable);
 
@@ -955,7 +955,7 @@ RWDBStatus CtiTableLMControlHistory::UpdateDynamic(RWDBConnection &conn)
     table["currentannualtime"].assign( getCurrentAnnualTime() ) <<
     table["activerestore"].assign( getActiveRestore().c_str() ) <<
     table["reductionvalue"].assign( getReductionValue() ) <<
-    table["controlpriority"].assign( getControlPriority() );
+    table["protocolpriority"].assign( getControlPriority() );
 
     long rowsAffected;
     RWDBStatus stat(RWDBStatus::ok);

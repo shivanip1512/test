@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/04/21 15:22:32 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/04/30 21:15:39 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -222,7 +222,7 @@ void CtiTableExpresscomLoadGroup::getSQL(RWDBDatabase &db,  RWDBTable &keyTable,
     devTbl["splinteraddress"   ] <<
     devTbl["addressusage"      ] <<
     devTbl["relayusage"        ] <<
-    devTbl["priority"         ];
+    devTbl["protocolpriority"  ];
 
 
     selector.from(devTbl);
@@ -275,7 +275,7 @@ void CtiTableExpresscomLoadGroup::DecodeDatabaseReader(RWDBReader &rdr)
     _addressUsage = resolveAddressUsage( rwsTemp.c_str(), expresscomAddressUsage );
 
     rdr["relayusage"        ] >> rwsTemp;
-    rdr["priority"          ] >> _priority;
+    rdr["protocolpriority"  ] >> _priority;
 
     _loads = resolveRelayUsage(rwsTemp.c_str());
 }
