@@ -459,6 +459,10 @@ INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
 /* @error ignore-end */
 /* End YUK-5567 */
 
+/* Start YUK-5768 */
+INSERT INTO DeviceTypeCommand VALUES (-722, -140, 'MCT-470', 33, 'Y', -1);
+/* End YUK-5768 */
+
 
 /**************************************************************/
 /* VERSION INFO                                               */
