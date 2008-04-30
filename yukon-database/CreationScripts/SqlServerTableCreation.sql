@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/30/2008 11:39:26 AM                        */
+/* Created on:     4/30/2008 3:42:12 PM                         */
 /*==============================================================*/
 
 
@@ -6962,6 +6962,7 @@ create table DynamicLMControlHistory (
    ActiveRestore        char(1)              not null,
    ReductionValue       float                not null,
    StopDateTime         datetime             not null,
+   ProtocolPriority     numeric(9,0)         not null,
    constraint PK_DYNLMCONTROLHISTORY primary key (PAObjectID)
 )
 go
@@ -7977,6 +7978,7 @@ create table LMControlHistory (
    ActiveRestore        char(1)              not null,
    ReductionValue       float                not null,
    StopDateTime         datetime             not null,
+   ProtocolPriority     numeric(9,0)         not null,
    constraint PK_LMCONTROLHISTORY primary key (LMCtrlHistID)
 )
 go
@@ -8217,6 +8219,7 @@ create table LMGroupExpressCom (
    SplinterID           numeric              not null,
    AddressUsage         varchar(10)          not null,
    RelayUsage           char(15)             not null,
+   ProtocolPriority     numeric(9,0)         not null,
    constraint PK_LMGROUPEXPRESSCOM primary key (LMGroupID)
 )
 go
@@ -12361,21 +12364,29 @@ go
 /*==============================================================*/
 go
 create view ExpressComAddress_View as
-select x.LMGroupID, x.RouteID, x.SerialNumber, s.Address as serviceaddress,
-g.Address as geoaddress, b.Address as substationaddress, f.Address as feederaddress,
-z.Address as ZipCodeAddress, us.Address as UDAddress, p.Address as programaddress, sp.Address as SplinterAddress, x.AddressUsage, x.RelayUsage
-from LMGroupExpressCom x, LMGroupExpressComAddress s, 
-LMGroupExpressComAddress g, LMGroupExpressComAddress b, LMGroupExpressComAddress f,
-LMGroupExpressComAddress p,
-LMGroupExpressComAddress sp, LMGroupExpressComAddress us, LMGroupExpressComAddress z
-where ( x.ServiceProviderID = s.AddressID and ( s.AddressType = 'SERVICE' or s.AddressID = 0 ) )
-and ( x.FeederID = f.AddressID and ( f.AddressType = 'FEEDER' or f.AddressID = 0 ) )
-and ( x.GeoID = g.AddressID and ( g.AddressType = 'GEO' or g.AddressID = 0 ) )
-and ( x.ProgramID = p.AddressID and ( p.AddressType = 'PROGRAM' or p.AddressID = 0 ) )
-and ( x.SubstationID = b.AddressID and ( b.AddressType = 'SUBSTATION' or b.AddressID = 0 ) )
-and ( x.SplinterID = sp.AddressID and ( sp.AddressType = 'SPLINTER' or sp.AddressID = 0 ) )
-and ( x.UserID = us.AddressID and ( us.AddressType = 'USER' or us.AddressID = 0 ) )
-and ( x.ZipID = z.AddressID and ( z.AddressType = 'ZIP' or z.AddressID = 0 ) )
+SELECT X.LMGroupId, X.RouteId, X.SerialNumber, S.Address AS ServiceAddress, G.Address AS GeoAddress, 
+       B.Address AS SubstationAddress, F.Address AS FeederAddress, Z.Address AS ZipCodeAddress, 
+       US.Address AS UDAddress, P.Address AS ProgramAddress, SP.Address AS SplinterAddress, 
+       X.AddressUsage, X.RelayUsage, X.ProtocolPriority
+FROM LMGroupExpressCom X, LMGroupExpressComAddress S, LMGroupExpressComAddress G, 
+     LMGroupExpressComAddress B, LMGroupExpressComAddress F, LMGroupExpressComAddress P,
+     LMGroupExpressComAddress SP, LMGroupExpressComAddress US, LMGroupExpressComAddress Z
+WHERE (X.ServiceProviderId = S.AddressId AND 
+      (S.AddressType = 'SERVICE' OR S.AddressId = 0)) AND 
+      (X.FeederId = F.AddressId AND 
+      (F.AddressType = 'FEEDER' OR F.AddressId = 0)) AND 
+      (X.GeoId = G.AddressId AND 
+      (G.AddressType = 'GEO' OR G.AddressId = 0 )) AND 
+      (X.ProgramId = P.AddressId AND 
+      (P.AddressType = 'PROGRAM' OR P.AddressId = 0)) AND 
+      (X.SubstationId = B.AddressId AND 
+      (B.AddressType = 'SUBSTATION' OR B.AddressId = 0)) AND 
+      (X.SplinterId = SP.AddressId AND 
+      (SP.AddressType = 'SPLINTER' OR SP.AddressId = 0)) AND 
+      (X.UserId = US.AddressId AND 
+      (US.AddressType = 'USER' OR US.AddressId = 0)) AND 
+      (X.ZipId = Z.AddressId AND 
+      (Z.AddressType = 'ZIP' OR Z.AddressId = 0))
 go
 
 /*==============================================================*/

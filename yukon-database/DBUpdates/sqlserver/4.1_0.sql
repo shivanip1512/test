@@ -587,6 +587,79 @@ INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
 INSERT INTO DeviceTypeCommand VALUES (-722, -140, 'MCT-470', 33, 'Y', -1);
 /* End YUK-5768 */
 
+/* Start YUK-5759 */
+/* Adding ProtocolPriority column to LMControlHistory */
+ALTER TABLE LMControlHistory ADD ProtocolPriority numeric(9,0);
+go
+UPDATE LMControlHistory SET ProtocolPriority = 0;
+go
+UPDATE LMControlhistory SET ProtocolPriority = 3 
+WHERE PAObjectId IN (SELECT LMGroupId 
+                     FROM LMGroupExpressCom);
+go
+ALTER TABLE LMControlHistory ALTER COLUMN ProtocolPriority numeric(9,0) NOT NULL;
+go
+
+/* Adding ProtocolPriority column to DynamicLMControlHistory */ 
+ALTER TABLE DynamicLMControlHistory ADD ProtocolPriority numeric(9,0);
+go
+UPDATE DynamicLMControlHistory SET ProtocolPriority = 0;
+go
+UPDATE DynamicLMControlHistory SET ProtocolPriority = 3 
+WHERE PAObjectId IN (SELECT LMGroupID 
+                     FROM LMGroupExpressCom);
+go
+ALTER TABLE DynamicLMControlHistory ALTER COLUMN ProtocolPriority numeric(9,0) NOT NULL;
+go
+
+/* Adding ProtocolPriority column to LMGroupExpressCom */
+ALTER TABLE LMGroupExpressCom ADD ProtocolPriority numeric(9,0);
+go
+UPDATE LMGroupExpressCom SET ProtocolPriority = 3;
+go
+ALTER TABLE LMGroupExpressCom ALTER COLUMN ProtocolPriority numeric(9,0) NOT NULL;
+go
+
+/* Adding ProtocolPriority column to the ExpressComAddress_View */
+/* @start-block */
+if exists (SELECT 1
+           FROM  SysObjects
+           WHERE  Id = Object_Id('ExpressComAddress_View')
+           AND   type = 'V')
+   DROP VIEW ExpressComAddress_View
+go
+/* @end-block */
+
+/* @start-block */
+CREATE VIEW ExpressComAddress_View AS
+SELECT X.LMGroupId, X.RouteId, X.SerialNumber, S.Address AS ServiceAddress, G.Address AS GeoAddress,
+       B.Address AS SubstationAddress, F.Address AS FeederAddress, Z.Address AS ZipCodeAddress, 
+       US.Address AS UDAddress, P.Address AS ProgramAddress, SP.Address AS SplinterAddress, 
+       X.AddressUsage, X.RelayUsage, X.ProtocolPriority
+FROM LMGroupExpressCom X, LMGroupExpressComAddress S, LMGroupExpressComAddress G, 
+     LMGroupExpressComAddress B, LMGroupExpressComAddress F, LMGroupExpressComAddress P,
+     LMGroupExpressComAddress SP, LMGroupExpressComAddress US, LMGroupExpressComAddress Z
+WHERE (X.ServiceProviderId = S.AddressId AND 
+      (S.AddressType = 'SERVICE' OR S.AddressId = 0)) AND 
+      (X.FeederId = F.AddressId AND 
+      (F.AddressType = 'FEEDER' OR F.AddressId = 0)) AND 
+      (X.GeoId = G.AddressId AND 
+      (G.AddressType = 'GEO' OR G.AddressId = 0 )) AND 
+      (X.ProgramId = P.AddressId AND 
+      (P.AddressType = 'PROGRAM' OR P.AddressId = 0)) AND 
+      (X.SubstationId = B.AddressId AND 
+      (B.AddressType = 'SUBSTATION' OR B.AddressId = 0)) AND 
+      (X.SplinterId = SP.AddressId AND 
+      (SP.AddressType = 'SPLINTER' OR SP.AddressId = 0)) AND 
+      (X.UserId = US.AddressId AND 
+      (US.AddressType = 'USER' OR US.AddressId = 0)) AND 
+      (X.ZipId = Z.AddressId AND 
+      (Z.AddressType = 'ZIP' OR Z.AddressId = 0))
+go
+/* @end-block */
+/* End YUK-5759 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

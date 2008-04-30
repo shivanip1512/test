@@ -463,6 +463,54 @@ INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
 INSERT INTO DeviceTypeCommand VALUES (-722, -140, 'MCT-470', 33, 'Y', -1);
 /* End YUK-5768 */
 
+/* Start YUK-5759 */
+/* Adding ProtocolPriority column to LMControlHistory */
+ALTER TABLE LMControlHistory ADD ProtocolPriority number(9,0);
+UPDATE LMControlHistory SET ProtocolPriority = 0;
+UPDATE LMControlhistory SET ProtocolPriority = 3 
+WHERE PAObjectId IN (SELECT LMGroupId 
+                     FROM LMGroupExpressCom);
+ALTER TABLE LMControlHistory MODIFY ProtocolPriority number(9,0) NOT NULL;
+
+/* Adding ProtocolPriority column to DynamicLMControlHistory */
+ALTER TABLE DynamicLMControlHistory ADD ProtocolPriority number(9,0);
+UPDATE DynamicLMControlHistory SET ProtocolPriority = 0;
+UPDATE DynamicLMControlHistory SET ProtocolPriority = 3 
+WHERE PAObjectId IN (SELECT LMGroupID 
+                     FROM LMGroupExpressCom);
+ALTER TABLE DynamicLMControlHistory MODIFY ProtocolPriority number(9,0) NOT NULL;
+
+/* Adding ProtocolPriority column to LMGroupExpressCom */
+ALTER TABLE LMGroupExpressCom ADD ProtocolPriority number(9,0);
+UPDATE LMGroupExpressCom SET ProtocolPriority = 3;
+ALTER TABLE LMGroupExpressCom MODIFY ProtocolPriority number(9,0) NOT NULL;
+
+/* Adding ProtocolPriority column to the ExpressComAddress_View */
+create or replace view ExpressComAddress_View as
+SELECT X.LMGroupId, X.RouteId, X.SerialNumber, S.Address AS ServiceAddress, G.Address AS GeoAddress, 
+       B.Address AS SubstationAddress, F.Address AS FeederAddress, Z.Address AS ZipCodeAddress, 
+       US.Address AS UDAddress, P.Address AS ProgramAddress, SP.Address AS SplinterAddress, 
+       X.AddressUsage, X.RelayUsage, X.ProtocolPriority
+FROM LMGroupExpressCom X, LMGroupExpressComAddress S, LMGroupExpressComAddress G, 
+     LMGroupExpressComAddress B, LMGroupExpressComAddress F, LMGroupExpressComAddress P,
+     LMGroupExpressComAddress SP, LMGroupExpressComAddress US, LMGroupExpressComAddress Z
+WHERE (X.ServiceProviderId = S.AddressId AND 
+      (S.AddressType = 'SERVICE' OR S.AddressId = 0)) AND 
+      (X.FeederId = F.AddressId AND 
+      (F.AddressType = 'FEEDER' OR F.AddressId = 0)) AND 
+      (X.GeoId = G.AddressId AND 
+      (G.AddressType = 'GEO' OR G.AddressId = 0 )) AND 
+      (X.ProgramId = P.AddressId AND 
+      (P.AddressType = 'PROGRAM' OR P.AddressId = 0)) AND 
+      (X.SubstationId = B.AddressId AND 
+      (B.AddressType = 'SUBSTATION' OR B.AddressId = 0)) AND 
+      (X.SplinterId = SP.AddressId AND 
+      (SP.AddressType = 'SPLINTER' OR SP.AddressId = 0)) AND 
+      (X.UserId = US.AddressId AND 
+      (US.AddressType = 'USER' OR US.AddressId = 0)) AND 
+      (X.ZipId = Z.AddressId AND 
+      (Z.AddressType = 'ZIP' OR Z.AddressId = 0));
+/* End YUK-5759 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
