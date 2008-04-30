@@ -18,7 +18,7 @@
       <tr>
         <td title="${job.id}">${job.jobDefinition.title}</td>
         <td>${job.beanName}</td>
-        <td>${job.runAsUser.username}</td>
+        <td>${job.userContext.yukonUser.username}</td>
         <td>${job.cronString}</td>
         <td>
         <%--
@@ -55,7 +55,7 @@
       <tr>
         <td>${job.jobDefinition.title}</td>
         <td title="${job.id}">${job.beanName}</td>
-        <td>${job.runAsUser.username}</td>
+        <td>${job.userContext.yukonUser.username}</td>
         <td>${job.startTime}</td>
         <td>${job.disabled ? "Disabled" : "Enabled"}</td>
       </tr>
