@@ -6,6 +6,7 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.dr.hardware.model.ListEntryEnum;
 
 /**
  * Helper class for dealing with the YukonListEntry table
@@ -62,4 +63,23 @@ public class YukonListEntryHelper {
 
         throw new NotFoundException("Could not find yukon definition id for list: " + listName + " EntryId: " + listEntryId);
     }
+
+    /**
+     * Helper method to get a yukon definition id for a given energy company
+     * based on a list entry enum
+     * @param energyCompany - Current energy company
+     * @param listEnum - Enum value to get entry id for
+     * @return The entry id
+     */
+    public static int getListEntryId(LiteStarsEnergyCompany energyCompany,
+            ListEntryEnum listEnum) {
+
+        String listName = listEnum.getListName();
+        int definitionId = listEnum.getDefinitionId();
+
+        return YukonListEntryHelper.getListEntryId(energyCompany,
+                                                   listName,
+                                                   definitionId);
+    }
+
 }

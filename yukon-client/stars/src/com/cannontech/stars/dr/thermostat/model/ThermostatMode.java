@@ -1,11 +1,13 @@
 package com.cannontech.stars.dr.thermostat.model;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.stars.dr.hardware.model.ListEntryEnum;
 
 /**
  * Enum which represents thermostat modes
  */
-public enum ThermostatMode {
+public enum ThermostatMode implements ListEntryEnum {
     DEFAULT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_DEFAULT, "default"), 
     COOL(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_COOL, "cool"), 
     HEAT(YukonListEntryTypes.YUK_DEF_ID_THERM_MODE_HEAT, "heat"), 
@@ -63,5 +65,10 @@ public enum ThermostatMode {
     
     public String getValue(){
         return toString();
+    }
+
+    @Override
+    public String getListName() {
+        return YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_MODE;
     }
 }

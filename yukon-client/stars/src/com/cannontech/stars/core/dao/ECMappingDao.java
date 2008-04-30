@@ -8,7 +8,19 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
  */
 public interface ECMappingDao {
 
+    /**
+     * Method to get an energy company by account
+     * @param account - Account to get energy company for
+     * @return Energy company
+     */
     public LiteStarsEnergyCompany getCustomerAccountEC(CustomerAccount account);
+
+    /**
+     * Method to get an energy company by accountId
+     * @param accountId - Id of account to get energy company for
+     * @return Energy company
+     */
+    public LiteStarsEnergyCompany getCustomerAccountEC(int accountId);
 
     /**
      * Method to get the energy company for a given inventory id

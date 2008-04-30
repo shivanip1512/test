@@ -13,6 +13,7 @@ import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
+import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 
 @Aspect
 public class StarsDaoAdvice {
@@ -40,7 +41,7 @@ public class StarsDaoAdvice {
         return returnValue; //required
     }
     
-    @After("bean(manualEventDao) && saveMethodNamePointCut() && args(event)")
+    @After("bean(customerEventDao) && saveMethodNamePointCut() && args(event)")
     public void doManualEventAction(ThermostatManualEvent event) throws Throwable {
 
         Integer thermostatId = event.getThermostatId();
@@ -55,6 +56,23 @@ public class StarsDaoAdvice {
         // Clear inventory cache entry
         energyCompany.deleteInventory(thermostatId);
 
+    }
+    
+    @After("bean(thermostatScheduleDao) && saveMethodNamePointCut() && args(schedule)")
+    public void doThermostatScheduleAction(ThermostatSchedule schedule) throws Throwable {
+        
+        Integer thermostatId = schedule.getInventoryId();
+        LiteStarsEnergyCompany energyCompany = mappingDao.getInventoryEC(thermostatId);
+        
+        // Clear account info cache entry
+        CustomerAccount account = customerAccountDao.getAccountByInventoryId(thermostatId);
+        int accountId = account.getAccountId();
+        
+        energyCompany.deleteStarsCustAccountInformation(accountId);
+        
+        // Clear inventory cache entry
+        energyCompany.deleteInventory(thermostatId);
+        
     }
 
     @Autowired

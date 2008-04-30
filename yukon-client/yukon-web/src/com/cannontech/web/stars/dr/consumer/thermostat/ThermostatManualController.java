@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
+import com.cannontech.stars.dr.hardware.model.CustomerAction;
+import com.cannontech.stars.dr.hardware.model.CustomerEventType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
-import com.cannontech.stars.dr.thermostat.dao.ManualEventDao;
+import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
@@ -29,10 +30,10 @@ import com.cannontech.web.stars.dr.consumer.AbstractConsumerController;
  * Controller for Manual thermostat operations
  */
 @Controller
-public class ThermostatController extends AbstractConsumerController {
+public class ThermostatManualController extends AbstractConsumerController {
 
     private InventoryDao inventoryDao;
-    private ManualEventDao manualEventDao;
+    private CustomerEventDao customerEventDao;
     private ThermostatService thermostatService;
 
     @RequestMapping(value = "/consumer/thermostat/view", method = RequestMethod.GET)
@@ -41,7 +42,7 @@ public class ThermostatController extends AbstractConsumerController {
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
         map.addAttribute("thermostat", thermostat);
 
-        ThermostatManualEvent event = manualEventDao.getLastManualEvent(thermostatId);
+        ThermostatManualEvent event = customerEventDao.getLastManualEvent(thermostatId);
         map.addAttribute("event", event);
 
         return "consumer/thermostat.jsp";
@@ -91,6 +92,8 @@ public class ThermostatController extends AbstractConsumerController {
         event.setPreviousTemperature(temperature);
         event.setTemperatureUnit(temperatureUnit);
         event.setRunProgram(runProgram);
+        event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
+        event.setAction(CustomerAction.MANUAL_OPTION);
 
         // Mode and fan can be blank
         if (!StringUtils.isBlank(mode)) {
@@ -125,7 +128,9 @@ public class ThermostatController extends AbstractConsumerController {
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
         map.addAttribute("thermostat", thermostat);
 
-        return "consumer/manualComplete.jsp";
+        map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/view");
+
+        return "consumer/actionComplete.jsp";
     }
 
     @Autowired
@@ -134,13 +139,8 @@ public class ThermostatController extends AbstractConsumerController {
     }
 
     @Autowired
-    public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
-        this.customerAccountDao = customerAccountDao;
-    }
-
-    @Autowired
-    public void setManualEventDao(ManualEventDao manualEventDao) {
-        this.manualEventDao = manualEventDao;
+    public void setCustomerEventDao(CustomerEventDao customerEventDao) {
+        this.customerEventDao = customerEventDao;
     }
 
     @Autowired

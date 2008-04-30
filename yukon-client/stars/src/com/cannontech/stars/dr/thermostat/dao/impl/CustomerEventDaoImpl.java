@@ -10,22 +10,24 @@ import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
-import com.cannontech.stars.dr.thermostat.dao.ManualEventDao;
+import com.cannontech.stars.dr.hardware.model.CustomerAction;
+import com.cannontech.stars.dr.hardware.model.CustomerEventType;
+import com.cannontech.stars.dr.thermostat.dao.CustomerEventDao;
+import com.cannontech.stars.dr.thermostat.model.CustomerThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatFanState;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.util.YukonListEntryHelper;
 
 /**
- * Implementation class for ManualEventDao
+ * Implementation class for CustomerEventDao
  */
-public class ManualEventDaoImpl implements ManualEventDao {
+public class CustomerEventDaoImpl implements CustomerEventDao {
 
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
@@ -91,7 +93,7 @@ public class ManualEventDaoImpl implements ManualEventDao {
 
     @Override
     @Transactional
-    public void save(ThermostatManualEvent event) {
+    public void save(CustomerThermostatEvent event) {
 
         // Get next eventid
         int eventId = nextValueHelper.getNextValue("LMCustomerEventBase");
@@ -100,69 +102,33 @@ public class ManualEventDaoImpl implements ManualEventDao {
         // Get current time
         Date date = new Date();
         event.setDate(date);
-        
-        // Set to default values for run program event
-        if (event.isRunProgram()) {
-            event.setPreviousTemperature(-1);
-            event.setMode(ThermostatMode.DEFAULT);
-            event.setFanState(ThermostatFanState.DEFAULT);
-            event.setHoldTemperature(false);
-        }
-        
 
         int thermostatId = event.getThermostatId();
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(thermostatId);
 
-
         // Insert row into LMCustomerEventBase
         SqlStatementBuilder baseSql = new SqlStatementBuilder();
         baseSql.append("INSERT INTO LMCustomerEventBase");
-        baseSql.append("(EventId, EventTypeId, ActionId, EventDateTime)");
-        baseSql.append("VALUES (?,?,?,?)");
+        baseSql.append("(EventId, EventTypeId, ActionId, EventDateTime, Notes, AuthorizedBy)");
+        baseSql.append("VALUES (?,?,?,?,?,?)");
 
+        CustomerEventType eventType = event.getEventType();
         int eventTypeId = YukonListEntryHelper.getListEntryId(energyCompany,
-                                                              YukonSelectionListDefs.YUK_LIST_NAME_LM_CUSTOMER_EVENT,
-                                                              YukonListEntryTypes.YUK_DEF_ID_CUST_EVENT_LMTHERMOSTAT_MANUAL);
+                                                              eventType);
 
+        CustomerAction action = event.getAction();
         int actionId = YukonListEntryHelper.getListEntryId(energyCompany,
-                                                           YukonSelectionListDefs.YUK_LIST_NAME_LM_CUSTOMER_ACTION,
-                                                           YukonListEntryTypes.YUK_DEF_ID_CUST_ACT_MANUAL_OPTION);
+                                                           action);
 
+        String notes = event.getNotes();
+        String authorizedBy = event.getAuthorizedBy();
         simpleJdbcTemplate.update(baseSql.toString(),
                                   eventId,
                                   eventTypeId,
                                   actionId,
-                                  date);
-
-        // Insert row into LMThermostatManualEvent
-        SqlStatementBuilder eventSql = new SqlStatementBuilder();
-        eventSql.append("INSERT INTO LMThermostatManualEvent");
-        eventSql.append("(EventId, InventoryId, PreviousTemperature, HoldTemperature, OperationStateId, FanOperationId)");
-        eventSql.append("VALUES (?,?,?,?,?,?)");
-
-
-        Integer previousTemperature = event.getPreviousTemperature();
-        boolean holdTemperature = event.isHoldTemperature();
-
-        ThermostatMode mode = event.getMode();
-        int modeDefinitionId = mode.getDefinitionId();
-        int modeEntryId = YukonListEntryHelper.getListEntryId(energyCompany,
-                                                              YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_MODE,
-                                                              modeDefinitionId);
-
-        ThermostatFanState fanState = event.getFanState();
-        int fanStateDefinitionId = fanState.getDefinitionId();
-        int fanStateEntryId = YukonListEntryHelper.getListEntryId(energyCompany,
-                                                                  YukonSelectionListDefs.YUK_LIST_NAME_THERMOSTAT_FAN_STATE,
-                                                                  fanStateDefinitionId);
-
-        simpleJdbcTemplate.update(eventSql.toString(),
-                                  eventId,
-                                  thermostatId,
-                                  previousTemperature,
-                                  (holdTemperature) ? "Y" : "N",
-                                  modeEntryId,
-                                  fanStateEntryId);
+                                  date,
+                                  notes,
+                                  authorizedBy);
 
         // Insert row into ECToLMCustomerEventMapping
         SqlStatementBuilder mappingSql = new SqlStatementBuilder();
@@ -174,6 +140,66 @@ public class ManualEventDaoImpl implements ManualEventDao {
         simpleJdbcTemplate.update(mappingSql.toString(),
                                   energyCompanyId,
                                   eventId);
+
+        // Save event-specific data into db
+        if (eventType.equals(CustomerEventType.HARDWARE)) {
+            this.saveHardwareEvent(event);
+        } else if (eventType.equals(CustomerEventType.THERMOSTAT_MANUAL) && event instanceof ThermostatManualEvent) {
+            this.saveManualEvent((ThermostatManualEvent) event, energyCompany);
+        }
+
+    }
+
+    /**
+     * Helper method to add a row to the LMHardwareEvent table
+     * @param event - Event to add row for
+     */
+    private void saveHardwareEvent(CustomerThermostatEvent event) {
+
+        // Insert row into LMHardwareEvent
+        SqlStatementBuilder mappingSql = new SqlStatementBuilder();
+        mappingSql.append("INSERT INTO LMHardwareEvent");
+        mappingSql.append("(EventId, InventoryId)");
+        mappingSql.append("VALUES (?,?)");
+
+        simpleJdbcTemplate.update(mappingSql.toString(),
+                                  event.getEventId(),
+                                  event.getThermostatId());
+    }
+
+    /**
+     * Helper method to add a row to the LMThermostatManualEvent table
+     * @param event - Manual event to add row for
+     */
+    private void saveManualEvent(ThermostatManualEvent event,
+            LiteStarsEnergyCompany energyCompany) {
+
+        // Insert row into LMThermostatManualEvent
+        SqlStatementBuilder eventSql = new SqlStatementBuilder();
+        eventSql.append("INSERT INTO LMThermostatManualEvent");
+        eventSql.append("(EventId, InventoryId, PreviousTemperature, HoldTemperature, OperationStateId, FanOperationId)");
+        eventSql.append("VALUES (?,?,?,?,?,?)");
+
+        Integer previousTemperature = event.getPreviousTemperature();
+        boolean holdTemperature = event.isHoldTemperature();
+
+        ThermostatMode mode = event.getMode();
+        int modeEntryId = YukonListEntryHelper.getListEntryId(energyCompany,
+                                                              mode);
+
+        ThermostatFanState fanState = event.getFanState();
+        int fanStateEntryId = YukonListEntryHelper.getListEntryId(energyCompany,
+                                                                  fanState);
+
+        Integer eventId = event.getEventId();
+        Integer thermostatId = event.getThermostatId();
+        simpleJdbcTemplate.update(eventSql.toString(),
+                                  eventId,
+                                  thermostatId,
+                                  previousTemperature,
+                                  (holdTemperature) ? "Y" : "N",
+                                  modeEntryId,
+                                  fanStateEntryId);
 
     }
 
@@ -234,6 +260,9 @@ public class ManualEventDaoImpl implements ManualEventDao {
             event.setFanState(fanState);
 
             event.setDate(date);
+
+            event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
+            event.setAction(CustomerAction.MANUAL_OPTION);
 
             return event;
         }

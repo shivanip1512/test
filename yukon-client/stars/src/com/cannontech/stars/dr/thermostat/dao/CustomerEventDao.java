@@ -1,11 +1,12 @@
 package com.cannontech.stars.dr.thermostat.dao;
 
+import com.cannontech.stars.dr.thermostat.model.CustomerThermostatEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 
 /**
- * Data Access interface for manual thermostat events
+ * Data Access interface for customer thermostat events
  */
-public interface ManualEventDao {
+public interface CustomerEventDao {
 
     /**
      * Method to get the last manual event if ther is one
@@ -15,8 +16,8 @@ public interface ManualEventDao {
     public ThermostatManualEvent getLastManualEvent(int inventoryId);
 
     /**
-     * Method to save a manual thermostat event
+     * Method to save a customer thermostat event
      * @param event - Event to save
      */
-    public void save(ThermostatManualEvent event);
+    public void save(CustomerThermostatEvent event);
 }

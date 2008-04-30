@@ -64,7 +64,7 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
         MenuOptionProducer producer;
         
         // Create schedule menu option
-        producer = createLink("schedule", "/user/ConsumerStat/stat/ThermSchedule.jsp?Item=0");
+        producer = createLink("schedule", "/spring/stars/consumer/thermostat/schedule/view?thermostatId=" + thermostat.getId());
         producerList.add(producer);
 
         // Create schedule menu option

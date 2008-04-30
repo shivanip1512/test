@@ -1,45 +1,23 @@
 package com.cannontech.stars.dr.thermostat.model;
 
-import java.util.Date;
-
 import com.cannontech.common.util.CtiUtilities;
 
 /**
  * Model object which represents a manual thermostat event
  */
-public class ThermostatManualEvent {
+public class ThermostatManualEvent extends CustomerThermostatEventBase {
 
     public static final int DEFAULT_TEMPERATURE = 72;
-    
-    private Integer eventId;
-    private Integer thermostatId;
 
     // Default temp to 72F
     private Integer previousTemperature = DEFAULT_TEMPERATURE;
     private boolean holdTemperature = false;
     private ThermostatMode mode = ThermostatMode.DEFAULT;
     private ThermostatFanState fanState = ThermostatFanState.DEFAULT;
-    private Date date;
     private boolean runProgram = false;
 
     // Fahrenheit by default
     private String temperatureUnit = CtiUtilities.FAHRENHEIT_CHARACTER;
-
-    public Integer getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(Integer eventId) {
-        this.eventId = eventId;
-    }
-
-    public Integer getThermostatId() {
-        return thermostatId;
-    }
-
-    public void setThermostatId(Integer thermostatId) {
-        this.thermostatId = thermostatId;
-    }
 
     /**
      * Method to get the temperature based on the current temperature unit
@@ -64,7 +42,7 @@ public class ThermostatManualEvent {
         long celsiusTemp = CtiUtilities.convertTemperature(previousTemperature,
                                                            CtiUtilities.FAHRENHEIT_CHARACTER,
                                                            CtiUtilities.CELSIUS_CHARACTER);
-        return (int)celsiusTemp;
+        return (int) celsiusTemp;
     }
 
     public Integer getPreviousTemperature() {
@@ -113,14 +91,6 @@ public class ThermostatManualEvent {
         }
 
         return fanState.getValue();
-    }
-
-    public Date getDate() {
-        return date;
-    }
-
-    public void setDate(Date date) {
-        this.date = date;
     }
 
     public String getTemperatureUnit() {

@@ -14,8 +14,14 @@ public class ECMappingDaoImpl implements ECMappingDao {
     
     @Override
     public LiteStarsEnergyCompany getCustomerAccountEC(final CustomerAccount account) {
+        int accountId = account.getAccountId();
+        return this.getCustomerAccountEC(accountId);
+    }
+
+    @Override
+    public LiteStarsEnergyCompany getCustomerAccountEC(final int accountId) {
         String sql = "SELECT EnergyCompanyID FROM ECToAccountMapping WHERE AccountID = ?";
-        int energyCompanyId = simpleJdbcTemplate.queryForInt(sql, account.getAccountId());
+        int energyCompanyId = simpleJdbcTemplate.queryForInt(sql, accountId);
         LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(energyCompanyId);
         return energyCompany;
     }

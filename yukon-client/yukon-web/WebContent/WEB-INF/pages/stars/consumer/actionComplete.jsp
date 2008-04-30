@@ -10,16 +10,19 @@
     <tr>
         <td class="leftColumn">
             <h3>
-                <cti:msg key="yukon.dr.consumer.manualComplete.header" /><br>
+                <cti:msg key="yukon.dr.consumer.actionComplete.header" /><br>
             </h3>
             
             <div class="message">
-                <cti:msg key="${message.displayKey}" arguments="${thermostat.label}" />
-                <c:url var="viewUrl" value="/spring/stars/consumer/thermostat/view">
+                <div style="text-align: left;">
+                    <cti:msg key="${message.displayKey}" arguments="${thermostat.label}" />
+                </div>
+                
+                <c:url var="viewUrl" value="${viewUrl}">
                     <c:param name="thermostatId" value="${thermostat.id}" />
                 </c:url>
                 <br><br>
-                <a href="${viewUrl}"><cti:msg key="yukon.dr.consumer.manualComplete.ok" /></a>
+                <a href="${viewUrl}"><cti:msg key="yukon.dr.consumer.actionComplete.ok" /></a>
             </div>
 
         </td>

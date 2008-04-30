@@ -75,5 +75,76 @@ td.arrow {
 }
 
 div.message {
-    text-align: center;    
+    text-align: center; 
+    border: 1px solid gray;
+    padding: 2em;   
+}
+
+/* Schedule Styles */
+
+div.movingBar {
+    position: relative; 
+    width: 30px; 
+    height: 162px; 
+    left: 0px; 
+    top: 5px; 
+}
+
+.barTemperature {
+    text-align: center;
+    white-space: nowrap;
+    font-size: 11px; 
+}
+
+.barImage {
+    width: 16px;
+    height: 131px; 
+}
+
+.barCool {
+    text-align: left;
+    position: relative; 
+    left: 0px; 
+    top:-115px; 
+}
+
+.barHeat {
+    text-align: right;
+    position: relative; 
+    left: 0px; 
+    top:-115px; 
+}
+
+.barGrayArrow {
+    width: 10px;
+    height: 10px;
+    top:-15px; 
+}
+
+.timeOfDayLabel {
+    text-align: left; 
+    width: 15%;
+    font-size: 11px;
+    font-weight:bold
+}
+
+.fieldLabel {
+    width: 10%; 
+    text-align: right;
+    font-size: 11px;
+}
+
+.timeTempField {
+    width: 15%; 
+    font-size: 11px;
+}
+
+.modeText {
+    text-align: center;
+    font-size: 11px;
+}
+
+.timePeriodText {
+    font-size: 11px;
+    color: #FFFFFF;
 }

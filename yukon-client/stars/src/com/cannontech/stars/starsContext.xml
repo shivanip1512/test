@@ -59,7 +59,9 @@
     
     <bean id="inventoryDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryDaoImpl" />
 
-    <bean id="manualEventDao" class="com.cannontech.stars.dr.thermostat.dao.impl.ManualEventDaoImpl" />
+    <bean id="customerEventDao" class="com.cannontech.stars.dr.thermostat.dao.impl.CustomerEventDaoImpl" />
+
+    <bean id="thermostatScheduleDao" class="com.cannontech.stars.dr.thermostat.dao.impl.ThermostatScheduleDaoImpl" />
 
     <bean id="thermostatService" class="com.cannontech.stars.dr.thermostat.service.impl.ThermostatServiceImpl" />
 
