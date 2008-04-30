@@ -1,5 +1,8 @@
 package com.cannontech.database.data.lite.stars;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteTypes;
@@ -18,7 +21,7 @@ public class LiteLMThermostatSeason extends LiteBase {
 	private int webConfigurationID = CtiUtilities.NONE_ZERO_ID;
 	private long startDate = 0;
 	private int displayOrder = 0;
-	private java.util.ArrayList seasonEntries = null;	// List of LiteLMThermostatSeasonEntry
+	private List<LiteLMThermostatSeasonEntry> seasonEntries = null;
 	
 	public LiteLMThermostatSeason() {
 		super();
@@ -107,9 +110,9 @@ public class LiteLMThermostatSeason extends LiteBase {
 	 * Returns the seasonEntries.
 	 * @return java.util.ArrayList
 	 */
-	public java.util.ArrayList getSeasonEntries() {
+	public List<LiteLMThermostatSeasonEntry> getSeasonEntries() {
 		if (seasonEntries == null)
-			seasonEntries = new java.util.ArrayList();
+			seasonEntries = new ArrayList<LiteLMThermostatSeasonEntry>();
 		return seasonEntries;
 	}
 
@@ -117,7 +120,7 @@ public class LiteLMThermostatSeason extends LiteBase {
 	 * Sets the seasonEntries.
 	 * @param seasonEntries The seasonEntries to set
 	 */
-	public void setSeasonEntries(java.util.ArrayList seasonEntries) {
+	public void setSeasonEntries(List<LiteLMThermostatSeasonEntry> seasonEntries) {
 		this.seasonEntries = seasonEntries;
 	}
 

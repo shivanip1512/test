@@ -7,6 +7,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.SqlStatement;
 import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * @author yao
@@ -36,36 +38,11 @@ public class LMThermostatSeason extends DBPersistent {
 	
 	public static final String GET_NEXT_SEASON_ID_SQL =
 			"SELECT MAX(SeasonID) FROM " + TABLE_NAME;
+	
+	private static NextValueHelper nextValueHelper = YukonSpringHook.getNextValueHelper();
 			
 	public LMThermostatSeason() {
 		super();
-	}
-	
-	public final Integer getNextSeasonID() {
-        java.sql.PreparedStatement pstmt = null;
-        java.sql.ResultSet rset = null;
-
-        int nextSeasonID = 1;
-
-        try {
-            pstmt = getDbConnection().prepareStatement( GET_NEXT_SEASON_ID_SQL );
-            rset = pstmt.executeQuery();
-
-            if (rset.next())
-                nextSeasonID = rset.getInt(1) + 1;
-        }
-        catch (java.sql.SQLException e) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (pstmt != null) pstmt.close();
-            }
-            catch (java.sql.SQLException e2) {}
-        }
-
-        return new Integer( nextSeasonID );
 	}
 
 	/**
@@ -73,7 +50,7 @@ public class LMThermostatSeason extends DBPersistent {
 	 */
 	public void add() throws SQLException {
 		if (getSeasonID() == null)
-			setSeasonID( getNextSeasonID() );
+			setSeasonID( nextValueHelper.getNextValue(TABLE_NAME) );
 			
 		Object[] addValues = {
 			getSeasonID(), getScheduleID(), getWebConfigurationID(),

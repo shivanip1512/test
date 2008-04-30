@@ -381,7 +381,7 @@ public class LiteStarsThermostatSettings extends LiteBase {
 		int saturdayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SATURDAY ).getEntryID();
 		int sundayID = energyCompany.getYukonListEntry( YukonListEntryTypes.YUK_DEF_ID_TOW_SUNDAY ).getEntryID();
 		
-		ArrayList seasons = getThermostatSchedule().getThermostatSeasons();
+		List seasons = getThermostatSchedule().getThermostatSeasons();
 		for (int i = 0; i < seasons.size(); i++) {
 			LiteLMThermostatSeason season = (LiteLMThermostatSeason) seasons.get(i);
 			

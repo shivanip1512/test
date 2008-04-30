@@ -7,6 +7,7 @@
 package com.cannontech.database.data.lite.stars;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.data.lite.LiteBase;
@@ -25,7 +26,7 @@ public class LiteLMThermostatSchedule extends LiteBase {
 	private int accountID = CtiUtilities.NONE_ZERO_ID;
 	private int inventoryID = CtiUtilities.NONE_ZERO_ID;
 	
-	private ArrayList thermostatSeasons = null;		// List of LiteLMThermostatSeason
+	private List<LiteLMThermostatSeason> thermostatSeasons = null;
 	
 	public LiteLMThermostatSchedule() {
 		super();
@@ -106,9 +107,9 @@ public class LiteLMThermostatSchedule extends LiteBase {
 	 * Returns the thermostatSeasons.
 	 * @return java.util.ArrayList
 	 */
-	public ArrayList getThermostatSeasons() {
+	public List<LiteLMThermostatSeason> getThermostatSeasons() {
 		if (thermostatSeasons == null)
-			thermostatSeasons = new java.util.ArrayList();
+			thermostatSeasons = new ArrayList<LiteLMThermostatSeason>();
 		return thermostatSeasons;
 	}
 
@@ -116,7 +117,7 @@ public class LiteLMThermostatSchedule extends LiteBase {
 	 * Sets the thermostatSeasons.
 	 * @param thermostatSeasons The thermostatSeasons to set
 	 */
-	public void setThermostatSeasons(ArrayList thermostatSeasons) {
+	public void setThermostatSeasons(List<LiteLMThermostatSeason> thermostatSeasons) {
 		this.thermostatSeasons = thermostatSeasons;
 	}
 

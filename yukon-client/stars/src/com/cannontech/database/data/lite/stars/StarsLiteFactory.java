@@ -428,7 +428,7 @@ public class StarsLiteFactory {
 		for (int i = 0; i < seasonEntries.size(); i++) {
 			com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry seasonEntry =
 					(com.cannontech.database.db.stars.hardware.LMThermostatSeasonEntry) seasonEntries.get(i);
-			liteSeason.getSeasonEntries().add( createLite(seasonEntry) );
+			liteSeason.getSeasonEntries().add( (LiteLMThermostatSeasonEntry) createLite(seasonEntry) );
 		}
 		
 		return liteSeason;

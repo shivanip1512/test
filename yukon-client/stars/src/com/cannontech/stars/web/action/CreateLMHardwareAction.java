@@ -2,6 +2,7 @@ package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -15,11 +16,9 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.cache.StarsDatabaseCache;
-import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteLMCustomerEvent;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSchedule;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeason;
 import com.cannontech.database.data.lite.stars.LiteLMThermostatSeasonEntry;
@@ -218,7 +217,7 @@ public class CreateLMHardwareAction implements ActionBase {
 		boolean isDftCommTstat = (hwTypeDefID == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_COMM_EXPRESSSTAT)
 				&& ECUtils.isDefaultEnergyCompany( energyCompany );
 		
-		ArrayList liteSeasons = energyCompany.getDefaultThermostatSchedule(hwTypeDefID).getThermostatSeasons();
+		List<LiteLMThermostatSeason> liteSeasons = energyCompany.getDefaultThermostatSchedule(hwTypeDefID).getThermostatSeasons();
 		for (int i = 0; i < liteSeasons.size(); i++) {
 			LiteLMThermostatSeason liteSeason = (LiteLMThermostatSeason) liteSeasons.get(i);
 			
@@ -226,7 +225,7 @@ public class CreateLMHardwareAction implements ActionBase {
 			StarsLiteFactory.setLMThermostatSeason( season.getLMThermostatSeason(), liteSeason );
 			season.getLMThermostatSeason().setSeasonID( null );
 			
-			ArrayList entries = season.getLMThermostatSeasonEntries();
+			List entries = season.getLMThermostatSeasonEntries();
 			
 			for (int j = 0; j < liteSeason.getSeasonEntries().size(); j++) {
 				LiteLMThermostatSeasonEntry liteEntry = (LiteLMThermostatSeasonEntry) liteSeason.getSeasonEntries().get(j);
