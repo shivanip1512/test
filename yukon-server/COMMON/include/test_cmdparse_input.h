@@ -8,8 +8,8 @@
 
 std::string inputString[TEST_SIZE] = {
 "getvalue kwh",
-"getvalue kwh select name \"test device\"",
-"getvalue kwh select name \" test  multispace  device     \"",
+"getvalue kwh select name \"Test device\"",
+"getvalue kwh select name \" Test  multispace  device     \"",
 "control emetcon shed 1hr relay 1,2",
 "control shed ?'NumMins'm",
 "putconfig led yyy",
@@ -114,10 +114,10 @@ std::string inputString[TEST_SIZE] = {
 "putconfig xcom extended tier 2 rate 254 cmd 5 display 3 timeout 600 delay 5432",
 "putconfig xcom display setup LCD",
 "putconfig xcom display setup segment",
-"putconfig xcom display 2 'thisismessage2'",
+"putconfig xcom display 2 'ThisisMessage2'",
 "putconfig xcom thermo config 34",
 "putconfig xcom utility usage 1:34, 2:36, 4:56.3",
-"putconfig xcom utility info chan 1 delete 2 name 'julie' currency 'dollars' present usage 2 past usage 33 present charge 333 cents past charge 555 cents",
+"putconfig xcom utility info chan 1 delete 2 name 'Julie' currency 'Dollars' present usage 2 past usage 33 present charge 333 cents past charge 555 cents",
 "control xcom tcycle 12 period 2 count 35 ctrl temp 45 limit 34 afallback 4 max rate 23 bfallback 76 delay time 4",
 "control xcom setpoint min 2 max 50 tr 25 ta 26 tb 27 dsb 4 tc 30 td 29 dsd -1 te 32 tf 35 dsf 11 stage 15 hold bump",
 "putconfig xcom setstate run hold timeout 40 cooltemp 33 fan on system auto",
@@ -126,7 +126,7 @@ std::string inputString[TEST_SIZE] = {
 "putconfig xcom setstate run timeout 40 heattemp 43 fan circulate system cool",
 "putconfig xcom setstate run timeout 40 heattemp 43 cooltemp 33 fan circulate system emheat",
 "control xcom backlight cycles 23 duty 34 bperiod 45",
-"putconfig xcom data 'julie rocks!' port 2 deletable priority 7 timeout 30 hour clear"
+"putconfig xcom data 'Julie rocks!' port 2 deletable priority 7 timeout 30 hour clear"
 };
 
 

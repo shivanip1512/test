@@ -45,8 +45,6 @@ CtiCommandParser::CtiCommandParser(const string str)
 {
     CtiString cmdStr(str);
 
-    cmdStr.toLower();
-
     for( int pos = 0; pos < cmdStr.length(); )
     {
         CtiString::size_type quoted_begin, quoted_length;
@@ -75,6 +73,7 @@ CtiCommandParser::CtiCommandParser(const string str)
 
             temp_str.replace("\t", " ", CtiString::all);  //  first, replace all tabs with spaces
             temp_str.replace(" +", " ", CtiString::all);  //  then truncate any duplicate spaces
+            temp_str.toLower();
 
             _cmdString += temp_str;
         }
