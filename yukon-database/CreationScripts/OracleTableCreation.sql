@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     4/30/2008 10:24:16 AM                        */
+/* Created on:     4/30/2008 11:42:16 AM                        */
 /*==============================================================*/
 
 
@@ -857,11 +857,6 @@ drop table YukonUserGroup cascade constraints;
 drop table YukonUserRole cascade constraints;
 
 drop table YukonWebConfiguration cascade constraints;
-
-/*==============================================================*/
-/* Database: YukonDatabase                                      */
-/*==============================================================*/
-create database YukonDatabase;
 
 /*==============================================================*/
 /* Table: AccountSite                                           */

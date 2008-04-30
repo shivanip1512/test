@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     4/30/2008 10:26:28 AM                        */
+/* Created on:     4/30/2008 11:39:26 AM                        */
 /*==============================================================*/
 
 
@@ -3120,14 +3120,6 @@ if exists (select 1
            where  id = object_id('YukonWebConfiguration')
             and   type = 'U')
    drop table YukonWebConfiguration
-go
-
-use master
-go
-/*==============================================================*/
-/* Database: YukonDatabase                                      */
-/*==============================================================*/
-create database YukonDatabase
 go
 
 /*==============================================================*/
