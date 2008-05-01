@@ -9,6 +9,7 @@
 <%@ page import="com.cannontech.core.dao.PaoDao" %>
 <%@ page import="com.cannontech.database.data.lite.LiteYukonPAObject" %>
 <%@ page import="com.cannontech.cbc.util.CBCUtils" %>
+<%@ page import="com.cannontech.clientutils.CTILogger" %>
 
 <%@page import="org.springframework.web.bind.ServletRequestUtils"%>
 <c:url var="onelineCBCServlet" value="/capcontrol/oneline/OnelineCBCServlet"/>
@@ -355,7 +356,11 @@ for( SubBus subBus: subBuses ) {
 					if (subBus != null) {
 					    String areaName = "(none)";
 					    if(!special){
-					        areaName = CBCUtils.getAreaNameForSubStationBusIdFromCache(subBus.getCcId().intValue());
+					        try{
+					            areaName = CBCUtils.getAreaNameForSubStationBusIdFromCache(subBus.getCcId().intValue());
+					        }catch (NotFoundException nfe){
+					            // perhaps special should have been true?
+					        }
 					    }
 					int varPoint = subBus.getCurrentVarLoadPointID().intValue();
 					int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
