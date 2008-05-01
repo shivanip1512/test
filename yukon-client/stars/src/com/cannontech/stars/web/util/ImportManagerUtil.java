@@ -945,7 +945,7 @@ public class ImportManagerUtil {
         ArrayList hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, currentUser );
         
         /*TODO: revisit this post-BGE short-term.  This should never make it past the 4.0 branch!*/
-        if(isValidLocationForImport(energyCompany, automatedImport)) {
+        if(isValidLocationForImport(energyCompany, true)) {
             //Send out the config/disable command
             for (int i = 0; i < hwsToConfig.size(); i++) {
                 LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToConfig.get(i);
@@ -954,8 +954,7 @@ public class ImportManagerUtil {
                 if (toConfig) {
                     // Send the reenable command if hardware status is unavailable,
                     // whether to send the config command is controlled by the AUTOMATIC_CONFIGURATION role property
-                        YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, false, null );
-                        Thread.sleep(3000);
+                        YukonSwitchCommandAction.sendConfigCommand( energyCompany, liteHw, true, null );
                 }
                 else {
                     // Send disable command to hardware
