@@ -46,7 +46,7 @@
 
 						<x:panelGroup>
 							<x:htmlTag value="fieldset" styleClass="fieldSet">
-                                <x:htmlTag value="legend"><x:outputText value="Gengeral"/></x:htmlTag>
+                                <x:htmlTag value="legend"><x:outputText value="General"/></x:htmlTag>
 								<x:outputLabel for="Name" value="Name: "
 									title="A label for the item in the system" />
 								<x:inputText id="Name" maxlength="32" styleClass="char32Label"
