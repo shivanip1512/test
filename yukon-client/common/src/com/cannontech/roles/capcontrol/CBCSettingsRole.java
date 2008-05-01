@@ -39,4 +39,5 @@ public interface CBCSettingsRole
     public static final int ADD_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 17;
     public static final int MODIFY_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 18;
     public static final int SYSTEM_WIDE_CONTROLS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 19;
+    public static final int FORCE_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 20;
 }

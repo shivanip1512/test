@@ -132,6 +132,7 @@
         <property name="methodNameResolver" ref="methodNameResolver"/>
         <property name="commentDao" ref="capCommentDao" />
         <property name="capControlCache" ref="capControlCache" />
+        <property name="authDao" ref="authDao" />
     </bean>
 
     <bean id="onelinePopupMenuController" class="com.cannontech.web.capcontrol.OnelinePopupMenuController">

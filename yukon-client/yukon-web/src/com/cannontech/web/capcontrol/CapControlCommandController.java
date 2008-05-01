@@ -19,7 +19,9 @@ import com.cannontech.cbc.model.CapControlComment;
 import com.cannontech.cbc.web.CapControlCommandExecutor;
 import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.yukon.cbc.CapControlCommand;
 import com.cannontech.yukon.cbc.CCSpecialArea;
@@ -29,6 +31,7 @@ public class CapControlCommandController extends MultiActionController {
     private static final String defaultReason = "(none)";
     private static final String emptyString = "";
     private CapControlCommentDao commentDao;
+    private AuthDao authDao;
     private CapControlCache capControlCache;
 	
     //4-Tier Version of the command executor
@@ -50,8 +53,12 @@ public class CapControlCommandController extends MultiActionController {
 	    }
 	    
 	    executor.execute(controlType, cmdId, paoId, opt, null);
-
-	    if (reason != null) insertComment(paoId, user.getUserID(), reason, cmdId);
+	    String forceComment = authDao.getRolePropertyValue(user,CBCSettingsRole.FORCE_COMMENTS);
+	    if (reason != null) {
+	        insertComment(paoId, user.getUserID(), reason, cmdId);
+	    }else if(forceComment.equalsIgnoreCase("true")) {
+	        insertComment(paoId, user.getUserID(), CapControlCommand.getCommandString(cmdId), cmdId);
+	    }
 	    
 	    String redirectURL = ServletRequestUtils.getStringParameter(request, "redirectURL");
 	    if (redirectURL != null) {
@@ -365,6 +372,10 @@ public class CapControlCommandController extends MultiActionController {
     
     public void setCommentDao(CapControlCommentDao commentDao) {
         this.commentDao = commentDao;
+    }
+    
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
     
     public void setCapControlCache(CapControlCache capControlCache) {
