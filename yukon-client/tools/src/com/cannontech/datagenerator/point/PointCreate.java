@@ -66,14 +66,14 @@ abstract class PointCreate
 			{
 				loadGroupPointCreate = true;	//Load Group Control History Points Will Be Created
 			}
-			else if( args[i].toLowerCase().startsWith("mct410"))
-			{
-				mct410PointCreate = true;	//MCT 410 Missing Points Will Be Created
-			}
             else if( args[i].toLowerCase().startsWith("mct410frozen"))
             {
                 mct410FrozenPointCreate = true;   //MCT 410 Missing Points FROZEN Will Be Created
             }
+			else if( args[i].toLowerCase().startsWith("mct410"))
+			{
+				mct410PointCreate = true;	//MCT 410 Missing Points Will Be Created
+			}
 			else if( args[i].toLowerCase().startsWith("cbop"))
 			{
 				capBankOpCntPointCreate = true;    //Cap Bank missing Operations Count points will be created
