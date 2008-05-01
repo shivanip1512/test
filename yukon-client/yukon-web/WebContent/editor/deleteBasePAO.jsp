@@ -9,6 +9,15 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <f:view>
 <cti:standardPage title="CapControl Wizard" module="capcontrol">
+
+<%@ page import="com.cannontech.web.editor.CapControlForm" %>
+
+<%
+//This is needed because this was handled in the CBCSerlvet before entering faces pages.
+//Since the servlet bypass, this static method will need to be called entering any faces page.
+	CapControlForm.setupFacesNavigation();
+%>
+
 <cti:includeScript link="/capcontrol/js/cbc_funcs.js"/>
 <f:verbatim>
 <script type="text/JavaScript">
