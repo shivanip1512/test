@@ -13,8 +13,8 @@ import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandDateFormatFactory;
-import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.DeviceCommandRequestExecutor;
 import com.cannontech.common.device.peakReport.dao.PeakReportDao;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
@@ -37,7 +37,7 @@ public class PeakReportServiceImpl implements PeakReportService {
     private DateFormattingService dateFormattingService = null;
     private DBPersistentDao dbPersistentDao = null;
     private PaoDao paoDao = null;
-    private CommandRequestExecutor commandRequestExecutor = null;
+    private DeviceCommandRequestExecutor commandRequestExecutor = null;
     private MeterDao meterDao = null;
     private PeakReportDao peakReportDao = null;
     
@@ -303,7 +303,7 @@ public class PeakReportServiceImpl implements PeakReportService {
 
     @Required
     public void setCommandRequestExecutor(
-            CommandRequestExecutor commandRequestExecutor) {
+            DeviceCommandRequestExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
     }
 

@@ -2,18 +2,50 @@ package com.cannontech.common.device.commands;
 
 import java.util.List;
 
-import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
-public interface CommandRequestExecutor {
-    
-    public CommandResultHolder execute(YukonDevice device, String command, LiteYukonUser user) throws Exception;
+/**
+ * Interface used to execute command requests
+ * @param <T> - Type of command request to execute
+ */
+public interface CommandRequestExecutor<T> {
 
-    public CommandResultHolder execute(CommandRequest command, LiteYukonUser user) throws CommandCompletionException, PaoAuthorizationException ;
-    
-    public CommandResultHolder execute(List<CommandRequest> commands, LiteYukonUser user) throws CommandCompletionException, PaoAuthorizationException ;
+    /**
+     * Method to execute a command request for a given user
+     * @param command - Command request to execute
+     * @param user - User executing the command
+     * @return Results of executing command
+     * @throws CommandCompletionException
+     * @throws PaoAuthorizationException - When user doesn't have permissing to
+     *             execute the command
+     */
+    public CommandResultHolder execute(T command, LiteYukonUser user)
+            throws CommandCompletionException, PaoAuthorizationException;
 
-    public void execute(List<CommandRequest> commands, CommandCompletionCallback callback, LiteYukonUser user) throws PaoAuthorizationException;
+    /**
+     * Method to execute multiple command request for a given user (this method
+     * will block until command execution is complete)
+     * @param commands - List of command request to execute
+     * @param user - User executing the commands
+     * @return Results of executing commands
+     * @throws CommandCompletionException
+     * @throws PaoAuthorizationException - When user doesn't have permissing to
+     *             execute the commands
+     */
+    public CommandResultHolder execute(List<T> commands, LiteYukonUser user)
+            throws CommandCompletionException, PaoAuthorizationException;
+
+    /**
+     * Method to execute multiple command request for a given user (this method
+     * will NOT block until command execution is complete)
+     * @param commands - Commands to execute
+     * @param callback - Callback which will be called as the commands execute
+     * @param user - User executing the commands
+     * @throws PaoAuthorizationException - When user doesn't have permissing to
+     *             execute the commands
+     */
+    public void execute(List<T> commands, CommandCompletionCallback callback,
+            LiteYukonUser user) throws PaoAuthorizationException;
 }

@@ -10,9 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.device.commands.CommandRequestRoute;
+import com.cannontech.common.device.commands.RouteCommandRequestExecutor;
+import com.cannontech.common.device.commands.impl.CommandCompletionException;
+import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.message.util.ConnectionException;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -33,9 +38,7 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
-import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
-import com.cannontech.stars.util.WebClientException;
 import com.cannontech.user.YukonUserContext;
 
 /**
@@ -48,6 +51,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     private InventoryDao inventoryDao;
     private ECMappingDao ecMappingDao;
     private ThermostatScheduleDao thermostatScheduleDao;
+    private RouteCommandRequestExecutor commandRequestExecutor;
 
     private SimpleDateFormat SCHEDULE_START_TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
@@ -72,6 +76,12 @@ public class ThermostatServiceImpl implements ThermostatService {
         this.thermostatScheduleDao = thermostatScheduleDao;
     }
 
+    @Autowired
+    public void setCommandRequestExecutor(
+            RouteCommandRequestExecutor commandRequestExecutor) {
+        this.commandRequestExecutor = commandRequestExecutor;
+    }
+
     @Override
     public ThermostatManualEventResult executeManualEvent(
             CustomerAccount account, ThermostatManualEvent event,
@@ -93,15 +103,37 @@ public class ThermostatServiceImpl implements ThermostatService {
             return error;
 
         }
+        
+        // Make sure the device has a serial number
+        String serialNumber = thermostat.getSerialNumber();
+        if (StringUtils.isBlank(serialNumber)) {
+
+            ThermostatManualEventResult error;
+            if (StarsUtils.isOperator(yukonUser)) {
+                error = ThermostatManualEventResult.OPERATOR_NO_SERIAL_ERROR;
+            } else {
+                error = ThermostatManualEventResult.CONSUMER_NO_SERIAL_ERROR;
+            }
+            return error;
+        }
 
         // Build command to send to thermostat
         String command = this.buildManualEventCommand(thermostat, event);
 
         // Send command to thermostat
-        int routeID = thermostat.getRouteId();
         try {
-            ServerUtils.sendSerialCommand(command, routeID, yukonUser);
-        } catch (WebClientException e) {
+            int routeId = thermostat.getRouteId();
+            CommandRequestRoute commandRequest = new CommandRequestRoute();
+            commandRequest.setCommand(command);
+            commandRequest.setRouteId(routeId);
+            commandRequestExecutor.execute(commandRequest, yukonUser);
+        } catch (CommandCompletionException e) {
+            logger.error("Thermostat manual event failed.", e);
+            return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
+        } catch (PaoAuthorizationException e) {
+            logger.error("Thermostat manual event failed.", e);
+            return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
+        } catch (ConnectionException e) {
             logger.error("Thermostat manual event failed.", e);
             return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
         }
@@ -200,23 +232,23 @@ public class ThermostatServiceImpl implements ThermostatService {
                                                                        timeOfWeek,
                                                                        applyToAll);
 
-        // *****************************************************
-        // TODO Change sending request to use new CommandRequest
-        // *****************************************************
         // Send command to thermostat
-        int routeID = thermostat.getRouteId();
         try {
-            ServerUtils.sendSerialCommand(updateScheduleCommand,
-                                          routeID,
-                                          yukonUser);
-
-        } catch (WebClientException e) {
-            logger.error("Failed to update thermostat schedules.", e);
+            int routeId = thermostat.getRouteId();
+            CommandRequestRoute commandRequest = new CommandRequestRoute();
+            commandRequest.setCommand(updateScheduleCommand);
+            commandRequest.setRouteId(routeId);
+            commandRequestExecutor.execute(commandRequest, yukonUser);
+        } catch (CommandCompletionException e) {
+            logger.error("Failed to update thermostat schedule.", e);
+            return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
+        } catch (PaoAuthorizationException e) {
+            logger.error("Failed to update thermostat schedule.", e);
+            return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
+        } catch (ConnectionException e) {
+            logger.error("Thermostat manual event failed.", e);
             return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
         }
-        // *****************************************************
-        // TODO Change sending request to use new CommandRequest
-        // *****************************************************
 
         // Log the schedule update in the activity log
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(account);

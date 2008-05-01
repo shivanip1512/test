@@ -4,7 +4,11 @@ package com.cannontech.stars.dr.thermostat.model;
  * Enum which represents manual event execution results
  */
 public enum ThermostatManualEventResult {
-    OPERATOR_UNAVAILABLE_ERROR, CONSUMER_MANUAL_ERROR, CONSUMER_MANUAL_SUCCESS;
+    OPERATOR_UNAVAILABLE_ERROR, 
+    CONSUMER_MANUAL_ERROR, 
+    CONSUMER_MANUAL_SUCCESS, 
+    OPERATOR_NO_SERIAL_ERROR, 
+    CONSUMER_NO_SERIAL_ERROR;
 
     // this key prefix can be found in the following file:
     // com.cannontech.yukon.dr.consumer.xml

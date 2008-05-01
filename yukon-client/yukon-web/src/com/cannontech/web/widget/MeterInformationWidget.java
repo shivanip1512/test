@@ -9,8 +9,8 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.DeviceCommandRequestExecutor;
 import com.cannontech.common.device.outagestate.OutageState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
@@ -25,7 +25,7 @@ public class MeterInformationWidget extends WidgetControllerBase {
 
     private MeterDao meterDao = null;
     private PaoGroupsWrapper paoGroupsWrapper = null;
-    private CommandRequestExecutor commandRequestExecutor;
+    private DeviceCommandRequestExecutor commandRequestExecutor;
 
     @Required
     public void setMeterDao(MeterDao meterDao) {
@@ -39,7 +39,7 @@ public class MeterInformationWidget extends WidgetControllerBase {
     
     @Required
     public void setCommandRequestExecutor(
-            CommandRequestExecutor commandRequestExecutor) {
+            DeviceCommandRequestExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
     }
     

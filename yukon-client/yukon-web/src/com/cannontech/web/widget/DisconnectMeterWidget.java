@@ -16,8 +16,8 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.DeviceCommandRequestExecutor;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.StateDao;
@@ -37,7 +37,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     private AttributeService attributeService;
     private StateDao stateDao;
     private DynamicDataSource dynamicDataSource;
-    private CommandRequestExecutor commandRequestExecutor;
+    private DeviceCommandRequestExecutor commandRequestExecutor;
     private PaoCommandAuthorizationService commandAuthorizationService;
     
     private final String CONTROL_CONNECT_COMMAND = "control connect";
@@ -227,7 +227,7 @@ public class DisconnectMeterWidget extends WidgetControllerBase {
     
     @Required
     public void setCommandRequestExecutor(
-            CommandRequestExecutor commandRequestExecutor) {
+            DeviceCommandRequestExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
     }
     

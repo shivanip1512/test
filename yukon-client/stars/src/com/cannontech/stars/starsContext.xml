@@ -154,4 +154,9 @@
         scope="prototype">
     </bean>
     
+    <bean id="routeCommandRequestExecutor" class="com.cannontech.common.device.commands.impl.CommandRequestExecutorRoute">
+        <property name="porterConnection" ref="porterConnection" />
+        <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator" />
+    </bean>
+    
 </beans>

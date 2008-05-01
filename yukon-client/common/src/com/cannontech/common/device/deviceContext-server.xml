@@ -12,7 +12,7 @@
          was rewritten to not have a dependency on emailService. -->
 	<bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl" lazy-init="true">
 		<property name="emailService" ref="emailService"/>
-		<property name="commandRequestExecutor" ref="commandRequestExecutor" />
+		<property name="commandRequestExecutor" ref="deviceCommandRequestExecutor" />
 		<property name="meterDao" ref="meterDao" />
 		<property name="executor" ref="globalScheduledExecutor" />
 		<property name="pointFormattingService" ref="pointFormattingService" />

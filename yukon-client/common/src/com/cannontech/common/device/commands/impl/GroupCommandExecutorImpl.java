@@ -8,8 +8,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import javax.mail.MessagingException;
-
 import org.apache.log4j.Logger;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -17,7 +15,7 @@ import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CollectingCommandCompletionCallback;
-import com.cannontech.common.device.commands.CommandRequest;
+import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -28,10 +26,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.tools.email.DefaultEmailMessage;
 import com.cannontech.tools.email.EmailService;
 
+/**
+ * Implementation class for GroupCommandExecutor
+ */
 public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
     private EmailService emailService = null;
-    private CommandRequestExecutor commandRequestExecutor = null;
+    private CommandRequestExecutor<CommandRequestDevice> commandRequestExecutor = null;
     private MeterDao meterDao = null;
     private ScheduledExecutor executor = null;
     private PointFormattingService pointFormattingService = null;
@@ -43,7 +44,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
         this.emailService = emailService;
     }
 
-    public void setCommandRequestExecutor(CommandRequestExecutor commandRequestExecutor) {
+    public void setCommandRequestExecutor(CommandRequestExecutor<CommandRequestDevice> commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
     }
 
@@ -61,7 +62,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
     public void execute(final Set<Integer> deviceIds, final String command, 
                         final String emailAddresses, final String emailSubject, LiteYukonUser user)
-            throws MessagingException, PaoAuthorizationException {
+            throws PaoAuthorizationException {
 
         final Date startTime = new Date();
         
@@ -75,7 +76,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
         // Execute the command for all device ids
         for (final Integer id : deviceIds) {
-            CommandRequest request = new CommandRequest();
+            CommandRequestDevice request = new CommandRequestDevice();
             request.setDeviceId(id);
             request.setBackgroundPriority(true);
             

@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import javax.mail.MessagingException;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -888,9 +887,6 @@ public class GroupController extends MultiActionController implements Initializi
 
             try {
                 groupCommandExecutor.execute(deviceIds, command, emailAddresses, emailSubject, user);
-            } catch (MessagingException e) {
-                log.warn("Unable to execute, putting error in model", e);
-                mav.addObject("error", "Unable to send email");
             } catch (PaoAuthorizationException e) {
                 log.warn("Unable to execute, putting error in model", e);
                 mav.addObject("error", "Unable to execute specified commands");

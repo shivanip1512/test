@@ -166,7 +166,7 @@
         <property name="meterDao" ref="meterDao"/>
         <property name="stateDao" ref="stateDao"/>
         <property name="dynamicDataSource" ref="dynamicDataSource"/>
-        <property name="commandRequestExecutor" ref="commandRequestExecutor"/>
+        <property name="commandRequestExecutor" ref="deviceCommandRequestExecutor"/>
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
     
@@ -196,7 +196,7 @@
         </property>
         <property name="meterDao" ref="meterDao"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
-        <property name="commandRequestExecutor" ref="commandRequestExecutor"/>
+        <property name="commandRequestExecutor" ref="deviceCommandRequestExecutor"/>
     </bean>
     
     <bean id="meterReadingsWidget"
