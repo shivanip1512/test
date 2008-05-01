@@ -4,7 +4,7 @@
 
 <f:subview id="cbcSchedule" rendered="#{capControlForm.visibleTabs['CBCSchedule']}" >
 
-	<h:panelGrid id="cbcBody" columns="2" styleClass="gridLayout" columnClasses="gridColumn,gridColumn" >
+	<h:panelGrid id="cbcBody" columns="2" styleClass="gridLayout" columnClasses="gridCell,gridCell" >
 
 		<h:column>
 		    <f:verbatim><br/><fieldset class="fieldSet"><legend>Schedule</legend></f:verbatim>

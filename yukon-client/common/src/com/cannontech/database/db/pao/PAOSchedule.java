@@ -113,8 +113,8 @@ public class PAOSchedule extends DBPersistent implements CTIDbChange
 				PAOSchedule item = new PAOSchedule();
 
 				item.setScheduleID( new Integer(rset.getInt(1)) );
-				item.setNextRunTime( rset.getDate(2) );
-				item.setLastRunTime( rset.getDate(3) );
+				item.setNextRunTime( rset.getTimestamp(2) );
+				item.setLastRunTime( rset.getTimestamp(3) );
 				item.setIntervalRate( new Integer(rset.getInt(4)) );
 				item.setScheduleName( new String(rset.getString(5)) );
 				item.setDisabled(
