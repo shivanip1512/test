@@ -76,11 +76,22 @@
     <entry key="yukon.dr.consumer.thermostat.unitMode">Mode:</entry>
     <entry key="yukon.dr.consumer.thermostat.degreesCelsius">&amp;deg;C</entry>
     <entry key="yukon.dr.consumer.thermostat.degreesFahrenheit">&amp;deg;F</entry>
-    <entry key="yukon.dr.consumer.thermostat.step1">Select the new temperature to maintain until the next program scheduled change. Check HOLD to maintain this setting across program changes.</entry>
-    <entry key="yukon.dr.consumer.thermostat.step2">Adjust MODE and FAN settings.</entry>
-    <entry key="yukon.dr.consumer.thermostat.step3">Click SUBMIT.</entry>
-    <entry key="yukon.dr.consumer.thermostat.or">or</entry>
-    <entry key="yukon.dr.consumer.thermostat.alternateStep">Click RUN PROGRAM to revert to your thermostat program.</entry>
+    <entry key="yukon.dr.consumer.thermostat.stepText"><![CDATA[
+        <ol>
+            <li>
+                Select the new temperature to maintain until the next program scheduled change. Check <b>HOLD</b> to maintain this setting across program changes.
+            </li>
+            <li>
+                Adjust <b>MODE</b> and <b>FAN</b> settings.
+            </li>
+            <li>
+                Click SUBMIT.
+            </li>
+        </ol>
+        <b>or</b><br><br>
+        Click <b>RUN PROGRAM</b> to revert to your thermostat program.
+        
+    ]]></entry>
     
     <!--  actionComplete.jsp -->
     <entry key="yukon.dr.consumer.manualevent.result.OPERATOR_UNAVAILABLE_ERROR">Thermostat {0} is currently out of service. Manual option is not sent.</entry>

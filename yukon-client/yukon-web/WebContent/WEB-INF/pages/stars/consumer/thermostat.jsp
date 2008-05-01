@@ -53,12 +53,6 @@
                                                         <span style="font-size: 11px;"><a href="javascript:editName()"><cti:msg key="yukon.dr.consumer.thermostat.edit" /></a></span>
                                                         
                                                     </form>
-                                                <td style="text-align: right; padding: 0em 1em 0em 2em;">
-                                                    <form action="/spring/stars/consumer/thermostat/manual" method="post" >
-                                                        <input name="thermostatId" type="hidden" value="${thermostat.id}" />
-                                                        <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
-                                                        <input name="runProgram" type="submit" value="${runProgramText}" />
-                                                    </form>
                                                 </td>
                                             </tr>
                                         </table>
@@ -193,27 +187,18 @@
                                 </tr>
                             </table>
                         </td>
-                        <td style="font-size: 11px; padding-left: 2em;">
-            
-                            <ol>
-                                <li>
-                                    <cti:msg key="yukon.dr.consumer.thermostat.step1" />
-                                </li>
-                                <li>
-                                    <cti:msg key="yukon.dr.consumer.thermostat.step2" />
-                                </li>
-                                <li>
-                                    <cti:msg key="yukon.dr.consumer.thermostat.step3" />
-                                </li>
-                            </ol>
-                            <cti:msg key="yukon.dr.consumer.thermostat.or" /><br><br>
-                            <div style="padding-left: 20px;">
-                                <cti:msg key="yukon.dr.consumer.thermostat.alternateStep" />
-                            </div>
-                            
+                        <td style="font-size: 11px; padding-left: 2em; vertical-align: top;">
+                            <cti:msg key="yukon.dr.consumer.thermostat.stepText" />
+                            <br><br>
+                            <form action="/spring/stars/consumer/thermostat/manual" method="post" >
+                                <input name="thermostatId" type="hidden" value="${thermostat.id}" />
+                                <cti:msg var="runProgramText" key="yukon.dr.consumer.thermostat.runProgram" />
+                                <input name="runProgram" type="submit" value="${runProgramText}" />
+                            </form>
                         </td>
                     </tr>
                 </table>     
+
                         
             </td>
             <td class="rightColumn">

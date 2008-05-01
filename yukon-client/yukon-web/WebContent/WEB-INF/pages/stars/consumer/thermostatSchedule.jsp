@@ -188,12 +188,10 @@
                                                                 <span id="tempdisp1"></span>
                                                                 <c:choose>
                                                                     <c:when test="${temperatureUnit == 'F'}">
-                                                                        <span id="tempdisp1F">${degreesFahrenheit}</span>
-                                                                        <span id="tempdisp1C" style="display: none;">${degreesCelsius}</span>
+                                                                        <span id="tempdisp1F">${degreesFahrenheit}</span><span id="tempdisp1C" style="display: none;">${degreesCelsius}</span>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <span id="tempdisp1F" style="display: none;">${degreesFahrenheit}</span>
-                                                                        <span id="tempdisp1C">${degreesCelsius}</span>
+                                                                        <span id="tempdisp1F" style="display: none;">${degreesFahrenheit}</span><span id="tempdisp1C">${degreesCelsius}</span>
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </td>
@@ -228,12 +226,10 @@
                                                                 <span id="tempdisp2"></span>
                                                                 <c:choose>
                                                                     <c:when test="${temperatureUnit == 'F'}">
-                                                                        <span id="tempdisp2F">${degreesFahrenheit}</span>
-                                                                        <span id="tempdisp2C" style="display: none;">${degreesCelsius}</span>
+                                                                        <span id="tempdisp2F">${degreesFahrenheit}</span><span id="tempdisp2C" style="display: none;">${degreesCelsius}</span>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <span id="tempdisp2F" style="display: none;">${degreesFahrenheit}</span>
-                                                                        <span id="tempdisp2C">${degreesCelsius}</span>
+                                                                        <span id="tempdisp2F" style="display: none;">${degreesFahrenheit}</span><span id="tempdisp2C">${degreesCelsius}</span>
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </td>
@@ -268,12 +264,10 @@
                                                                 <span id="tempdisp3"></span>
                                                                 <c:choose>
                                                                     <c:when test="${temperatureUnit == 'F'}">
-                                                                        <span id="tempdisp3F">${degreesFahrenheit}</span>
-                                                                        <span id="tempdisp3C" style="display: none;">${degreesCelsius}</span>
+                                                                        <span id="tempdisp3F">${degreesFahrenheit}</span><span id="tempdisp3C" style="display: none;">${degreesCelsius}</span>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <span id="tempdisp3F" style="display: none;">${degreesFahrenheit}</span>
-                                                                        <span id="tempdisp3C">${degreesCelsius}</span>
+                                                                        <span id="tempdisp3F" style="display: none;">${degreesFahrenheit}</span><span id="tempdisp3C">${degreesCelsius}</span>
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </td>
@@ -308,12 +302,10 @@
                                                                 <span id="tempdisp4"></span>
                                                                 <c:choose>
                                                                     <c:when test="${temperatureUnit == 'F'}">
-                                                                        <span id="tempdisp4F">${degreesFahrenheit}</span>
-                                                                        <span id="tempdisp4C" style="display: none;">${degreesCelsius}</span>
+                                                                        <span id="tempdisp4F">${degreesFahrenheit}</span><span id="tempdisp4C" style="display: none;">${degreesCelsius}</span>
                                                                     </c:when>
                                                                     <c:otherwise>
-                                                                        <span id="tempdisp4F" style="display: none;">${degreesFahrenheit}</span>
-                                                                        <span id="tempdisp4C">${degreesCelsius}</span>
+                                                                        <span id="tempdisp4F" style="display: none;">${degreesFahrenheit}</span><span id="tempdisp4C">${degreesCelsius}</span>
                                                                     </c:otherwise>
                                                                 </c:choose>
                                                             </td>
@@ -380,12 +372,10 @@
                                                         <input id="tempin1" type="text" size="3" value="" name="tempin1" onchange="tempChange(1);">
                                                         <c:choose>
                                                             <c:when test="${temperatureUnit == 'F'}">
-                                                                <span id="tempin1F">${degreesFahrenheit}</span>
-                                                                <span id="tempin1C" style="display: none;">${degreesCelsius}</span>
+                                                                <span id="tempin1F">${degreesFahrenheit}</span><span id="tempin1C" style="display: none;">${degreesCelsius}</span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span id="tempin1F" style="display: none;">${degreesFahrenheit}</span>
-                                                                <span id="tempin1C">${degreesCelsius}</span>
+                                                                <span id="tempin1F" style="display: none;">${degreesFahrenheit}</span><span id="tempin1C">${degreesCelsius}</span>
                                                             </c:otherwise>
                                                         </c:choose>
                                                         <span style="display: none;">
@@ -406,12 +396,10 @@
                                                         <input id="tempin4" type="text" size="3" value="" name="tempin4" onchange="tempChange(4);">
                                                         <c:choose>
                                                             <c:when test="${temperatureUnit == 'F'}">
-                                                                <span id="tempin4F">${degreesFahrenheit}</span>
-                                                                <span id="tempin4C" style="display: none;">${degreesCelsius}</span>
+                                                                <span id="tempin4F">${degreesFahrenheit}</span><span id="tempin4C" style="display: none;">${degreesCelsius}</span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span id="tempin4F" style="display: none;">${degreesFahrenheit}</span>
-                                                                <span id="tempin4C">${degreesCelsius}</span>
+                                                                <span id="tempin4F" style="display: none;">${degreesFahrenheit}</span><span id="tempin4C">${degreesCelsius}</span>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
@@ -472,12 +460,10 @@
                                                         <input id="tempin1" type="text" size="3" value="" name="tempin1" onchange="tempChange(1);">
                                                             <c:choose>
                                                                 <c:when test="${temperatureUnit == 'F'}">
-                                                                    <span id="tempin1F">${degreesFahrenheit}</span>
-                                                                    <span id="tempin1C" style="display: none;">${degreesCelsius}</span>
+                                                                    <span id="tempin1F">${degreesFahrenheit}</span><span id="tempin1C" style="display: none;">${degreesCelsius}</span>
                                                                 </c:when>
                                                                 <c:otherwise>
-                                                                    <span id="tempin1F" style="display: none;">${degreesFahrenheit}</span>
-                                                                    <span id="tempin1C">${degreesCelsius}</span>
+                                                                    <span id="tempin1F" style="display: none;">${degreesFahrenheit}</span><span id="tempin1C">${degreesCelsius}</span>
                                                                 </c:otherwise>
                                                             </c:choose>
                                                     </td>
@@ -488,12 +474,10 @@
                                                         <input id="tempin2" type="text" size="3" value="" name="tempin2" onchange="tempChange(2);">
                                                         <c:choose>
                                                             <c:when test="${temperatureUnit == 'F'}">
-                                                                <span id="tempin2F">${degreesFahrenheit}</span>
-                                                                <span id="tempin2C" style="display: none;">${degreesCelsius}</span>
+                                                                <span id="tempin2F">${degreesFahrenheit}</span><span id="tempin2C" style="display: none;">${degreesCelsius}</span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span id="tempin2F" style="display: none;">${degreesFahrenheit}</span>
-                                                                <span id="tempin2C">${degreesCelsius}</span>
+                                                                <span id="tempin2F" style="display: none;">${degreesFahrenheit}</span><span id="tempin2C">${degreesCelsius}</span>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
@@ -504,12 +488,10 @@
                                                         <input id="tempin3" type="text" size="3" value="" name="tempin3" onchange="tempChange(3);">
                                                         <c:choose>
                                                             <c:when test="${temperatureUnit == 'F'}">
-                                                                <span id="tempin3F">${degreesFahrenheit}</span>
-                                                                <span id="tempin3C" style="display: none;">${degreesCelsius}</span>
+                                                                <span id="tempin3F">${degreesFahrenheit}</span><span id="tempin3C" style="display: none;">${degreesCelsius}</span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span id="tempin3F" style="display: none;">${degreesFahrenheit}</span>
-                                                                <span id="tempin3C">${degreesCelsius}</span>
+                                                                <span id="tempin3F" style="display: none;">${degreesFahrenheit}</span><span id="tempin3C">${degreesCelsius}</span>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
@@ -520,12 +502,10 @@
                                                         <input id="tempin4" type="text" size="3" value="" name="tempin4" onchange="tempChange(4);">
                                                         <c:choose>
                                                             <c:when test="${temperatureUnit == 'F'}">
-                                                                <span id="tempin4F">${degreesFahrenheit}</span>
-                                                                <span id="tempin4C" style="display: none;">${degreesCelsius}</span>
+                                                                <span id="tempin4F">${degreesFahrenheit}</span><span id="tempin4C" style="display: none;">${degreesCelsius}</span>
                                                             </c:when>
                                                             <c:otherwise>
-                                                                <span id="tempin4F" style="display: none;">${degreesFahrenheit}</span>
-                                                                <span id="tempin4C">${degreesCelsius}</span>
+                                                                <span id="tempin4F" style="display: none;">${degreesFahrenheit}</span><span id="tempin4C">${degreesCelsius}</span>
                                                             </c:otherwise>
                                                         </c:choose>
                                                     </td>
