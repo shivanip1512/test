@@ -728,8 +728,7 @@ public class PointForm extends DBEditorForm
      */
     public PointFDREntry getPointFDREntry() {
         
-        if( pointFDREntry == null )
-            pointFDREntry = new PointFDREntry( getPointBase() );
+        pointFDREntry = new PointFDREntry( getPointBase() );
 
         return pointFDREntry;
     }
