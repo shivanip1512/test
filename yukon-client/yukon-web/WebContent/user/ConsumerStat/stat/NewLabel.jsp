@@ -80,7 +80,7 @@
 				  </div>
                 </td>
                 <td> 
-                  <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="location.href = "Thermostat.jsp?Item=<%= itemNo %>"">
+                  <div align="center" style="border:solid 1px #666999; cursor:pointer" onclick="location.href = 'Thermostat.jsp?Item=<%= itemNo %>'">
 				    <span class="MainText"><%= DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL) %></span>
 				  </div>
                 </td>
