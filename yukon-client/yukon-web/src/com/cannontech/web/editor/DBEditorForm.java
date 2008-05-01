@@ -60,6 +60,9 @@ public abstract class DBEditorForm {
         } catch (TransactionException e) {
             CTILogger.error(e.getMessage(), e);
             facesMsg.setDetail("Error updating the database, " + e.getMessage());
+            if(e.getCause().getMessage().contains("duplicate")) {
+                facesMsg.setSummary("There may already be a object with that name.");
+            }
             facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
             throw e; // chuck this thing up
         } catch (Exception e) {
