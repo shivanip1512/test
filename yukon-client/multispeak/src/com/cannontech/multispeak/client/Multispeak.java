@@ -97,7 +97,9 @@ public class Multispeak implements MessageListener {
     private MeterDao meterDao;
     private SystemLogHelper _systemLogHelper = null;
     private TransactionTemplate transactionTemplate = null;
-   
+    
+    private String DEFAULT_GROUPNAME = "Default";
+
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
 
@@ -938,27 +940,27 @@ public class Multispeak implements MessageListener {
         String meterNumber = mspMeter.getMeterNo().trim();
         
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
-        String mspBillingCycle = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? "Default":mspServiceLocation.getBillingCycle();
+        String mspBillingCycle = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? DEFAULT_GROUPNAME : mspServiceLocation.getBillingCycle();
 
         // get the Collection Group value...returns a set...just pick one I guess.
         DeviceGroup collDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.COLLECTION);
-        String collectionGroup = (collDeviceGroup != null ? collDeviceGroup.getName() : "Default");
+        String collectionGroup = (collDeviceGroup != null ? collDeviceGroup.getName() : DEFAULT_GROUPNAME);
         
         // get the Alternate Group value...returns a set...just pick one I guess.
         DeviceGroup altDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.ALTERNATE);
-        String alternateGroup = (altDeviceGroup != null ? altDeviceGroup.getName() : "Default");
+        String alternateGroup = (altDeviceGroup != null ? altDeviceGroup.getName() : DEFAULT_GROUPNAME);
 
         // get the Billing Group value...returns a set...just pick one I guess.
         DeviceGroup billingDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.BILLING);
-        String billingGroup = (billingDeviceGroup != null ? billingDeviceGroup.getName() : "Default");
+        String billingGroup = (billingDeviceGroup != null ? billingDeviceGroup.getName() : DEFAULT_GROUPNAME);
 
         //Update one of the possible ImportData group values with the mspBillingCyle based on the RoleProperty
         DeviceGroup billingCyleFromRole = multispeakFuncs.getBillingCycleDeviceGroup();
-        if (collDeviceGroup.getParent().getFullName().equals(billingCyleFromRole.getFullName()))
+        if (multispeakFuncs.getSystemGroup(SystemGroupEnum.COLLECTION).equals(billingCyleFromRole))
             collectionGroup = mspBillingCycle;
-        else if ( altDeviceGroup.getParent().getFullName().equals(billingCyleFromRole.getFullName()))
+        else if ( multispeakFuncs.getSystemGroup(SystemGroupEnum.ALTERNATE).equals(billingCyleFromRole))
             alternateGroup = mspBillingCycle;
-        else if ( billingDeviceGroup.getParent().getFullName().equals(billingCyleFromRole.getFullName()))
+        else if ( multispeakFuncs.getSystemGroup(SystemGroupEnum.BILLING).equals(billingCyleFromRole))
             billingGroup = mspBillingCycle;
         else
             CTILogger.info("BilingCycle DeviceGroup roleProperty is not a valid parent group for BulkImporter, using template default values for groups.");
@@ -968,10 +970,8 @@ public class Multispeak implements MessageListener {
         String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, meterNumber);
 
         ImportData importData = new ImportData(address, paoName, "", meterNumber, 
-                                               (collectionGroup == null ? "" : collectionGroup),
-                                               (alternateGroup == null ? "" : alternateGroup), 
-                                               templatePaoName, 
-                                               (billingGroup == null ? "" : billingGroup),
+                                               collectionGroup, alternateGroup,  
+                                               templatePaoName, billingGroup,
                                                substationName);
         try {
             Transaction.createTransaction(Transaction.INSERT, importData).execute();

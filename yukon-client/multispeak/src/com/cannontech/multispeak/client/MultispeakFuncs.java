@@ -20,6 +20,8 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.NotFoundException;
@@ -274,5 +276,13 @@ public class MultispeakFuncs
         DeviceGroup deviceGroup = deviceGroupService.resolveGroupName(value);
         return deviceGroup;
     }
-
+    
+    /**
+     * @return Returns the deviceGroup for a SystemGroupEnum
+     */
+    public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum) throws NotFoundException{
+        //WE MAY HAVE SOME PROBLEMS HERE WITH THE EXPLICIT CAST TO STOREDDEVICEGROUP....
+        StoredDeviceGroup deviceGroup = (StoredDeviceGroup)deviceGroupService.resolveGroupName(systemGroupEnum.getFullPath());
+        return deviceGroup;
+    }
 }
