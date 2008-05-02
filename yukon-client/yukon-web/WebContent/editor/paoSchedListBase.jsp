@@ -1,6 +1,3 @@
-
-
-
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
@@ -81,7 +78,7 @@
                             <h:outputText value="Next Run Time" title="The next time this scheduled is to run" />
                         </f:facet>
                         <h:outputText value="#{paoSched.nextRunTime}" rendered="#{paoSched.nextRunTime.time > selLists.startOfTime}" >
-                            <f:convertDateTime pattern="#{selLists.dateTime}" />
+                            <f:convertDateTime type="both" timeStyle="full" dateStyle="full" timeZone="#{selLists.timeZone}"/>
                         </h:outputText>
                         <h:outputText value="---" rendered="#{paoSched.nextRunTime.time <= selLists.startOfTime}" />
                    </h:column>
@@ -91,7 +88,7 @@
                             <h:outputText value="Last Run Time" title="The last time this scheduled ran" />
                         </f:facet>
                         <h:outputText value="#{paoSched.lastRunTime}" rendered="#{paoSched.lastRunTime.time > selLists.startOfTime}" >
-                            <f:convertDateTime pattern="#{selLists.dateTime}" />
+                            <f:convertDateTime type="both" timeStyle="full" dateStyle="full" timeZone="#{selLists.timeZone}"/>
                         </h:outputText>
                         <h:outputText value="---" rendered="#{paoSched.lastRunTime.time <= selLists.startOfTime}" />
                    </h:column>
