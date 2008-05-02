@@ -3,7 +3,7 @@
 <%@ taglib uri="http://java.sun.com/jstl/xml" prefix="x"  %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 
-<cti:standardPage title="Overview of All Saved Format" module="amr">
+<cti:standardPage title="Billing Formats Setup" module="amr">
 	<cti:standardMenu menuSelection="billing|setup"/>
 	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
