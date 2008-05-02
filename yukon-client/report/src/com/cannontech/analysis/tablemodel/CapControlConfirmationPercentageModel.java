@@ -33,7 +33,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         public Integer Questionable;
         public Integer Failure;
         public String SuccessPcnt;
-        public String Refusals;
+        public Integer Refusals;
     }
     
     @Override
@@ -89,13 +89,13 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
                         row.Success = rs.getInt("Success");
                         row.Questionable = rs.getInt("Questionable");
                         row.Failure = rs.getInt("Failure");
-                        
-                        double successRate = ((row.Success.doubleValue() + row.Questionable.doubleValue()) / row.Attempts.doubleValue()* 100.0);
+                        row.Refusals = rs.getInt("Refusals");
+                        double successRate = (((row.Success.doubleValue() + row.Questionable.doubleValue()) / row.Attempts.doubleValue() - row.Refusals.doubleValue())* 100.0);
                         
                         String successString = twoPlaces.format(successRate);
                         successString += "%";
                         row.SuccessPcnt = successString;
-                        row.Refusals = rs.getString("Refusals");
+                        
                         data.add(row);
                     } catch (java.sql.SQLException e) {
                         e.printStackTrace();
