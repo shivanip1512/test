@@ -1226,28 +1226,22 @@ private boolean isPointOffsetInUse(int pointOffset) {
 
 }
 
-    public boolean isInputValid() {
+public boolean isInputValid() {
+    if (getPhysicalPointOffsetCheckBox().isSelected()) {
         Object value = this.getPointOffsetSpinner().getValue();
 
-        if (value != null) {
-            if (value instanceof Long) {
-                if (this.isPointOffsetInUse(((Long) value).intValue())) {
-                    setErrorString("Status Point Offset " + ((Long) value).intValue()
-                            + " is in use for this device");
-                    return false;
-                }
-            }
-            if (value instanceof Integer) {
-                if (this.isPointOffsetInUse(((Integer) value).intValue())) {
-                    setErrorString("Status Point Offset " + ((Integer) value).intValue()
-                            + " is in use for this device");
-                    return false;
-                }
+        if (value instanceof Number) {
+            Number numValue = (Number)value;
+            if (this.isPointOffsetInUse(numValue.intValue())) {
+                setErrorString("Status Point Offset " + numValue.intValue()
+                               + " is in use for this device");
+                return false;
             }
         }
-
-        return true;
     }
+
+    return true;
+}
 /**
  * Method to handle events for the ItemListener interface.
  * @param e java.awt.event.ItemEvent

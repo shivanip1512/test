@@ -840,24 +840,18 @@ public boolean isInputValid()
 		return false;
 	}
     
-    Object value = this.getPointOffsetSpinner().getValue();
+	if (getPhysicalPointOffsetCheckBox().isSelected()) {
+	    Object value = this.getPointOffsetSpinner().getValue();
 
-        if (value != null) {
-            if (value instanceof Long) {
-                if (this.isPointOffsetInUse(((Long) value).intValue())) {
-                    setErrorString("Analog Point Offset " + ((Long) value).intValue()
-                            + " is in use for this device");
-                    return false;
-                }
-            }
-            if (value instanceof Integer) {
-                if (this.isPointOffsetInUse(((Integer) value).intValue())) {
-                    setErrorString("Analog Point Offset " + ((Integer) value).intValue()
-                            + " is in use for this device");
-                    return false;
-                }
-            }
-        }
+	    if (value instanceof Number) {
+	        Number numValue = (Number)value;
+	        if (this.isPointOffsetInUse(numValue.intValue())) {
+	            setErrorString("Analog Point Offset " + numValue.intValue()
+	                           + " is in use for this device");
+	            return false;
+	        }
+	    }
+	}
 
 	return true;
 }

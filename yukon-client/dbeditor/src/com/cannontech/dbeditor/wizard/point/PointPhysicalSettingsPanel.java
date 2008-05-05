@@ -367,20 +367,17 @@ public void physicalPointOffsetCheckBox_ItemStateChanged(java.awt.event.ItemEven
 	return;
 }
 
-    public boolean isInputValid() {
-        Object value = this.getPointOffsetSpinner().getValue();
+public boolean isInputValid() {
+    if (!getPhysicalPointOffsetCheckBox().isSelected()) return true;
+    Object value = this.getPointOffsetSpinner().getValue();
 
-        if (value != null) {
-            if (value instanceof Long) {
-                return !this.isPointOffsetInUse(((Long) value).intValue());
-            }
-            if (value instanceof Integer) {
-                return !this.isPointOffsetInUse(((Integer) value).intValue());
-            }
+        if (value instanceof Number) {
+            Number numValue = (Number) value;
+            return !this.isPointOffsetInUse(numValue.intValue());
         }
-        
-        return false;
-    }
+
+    return false;
+}
 
     /**
      * Helper method to determine if the pointOffset is already in use
