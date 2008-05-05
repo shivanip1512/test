@@ -13,6 +13,7 @@ import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.core.dao.AddressDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.core.service.PhoneNumberFormattingService;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -23,7 +24,7 @@ import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.AccountSite;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.util.PhoneNumber;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 @Configurable("customerAccountInfoTagPrototype")
@@ -34,6 +35,7 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
     private ContactDao contactDao;
     private AccountSiteDao accountSiteDao;
     private AddressDao addressDao;
+    private PhoneNumberFormattingService phoneNumberFormattingService;
     
     private String accountNumber;
     private boolean isAccountNumberSet = false;
@@ -60,7 +62,7 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         
         addAddressDiv(mainDiv, address);
         
-        addPhoneNumberDiv(mainDiv, contact);
+        addPhoneNumberDiv(mainDiv, contact, getUserContext());
         
         String output = mainDiv.toString();
         
@@ -100,12 +102,15 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         mainDiv.addElement(companyNameDiv);
     }
     
-    private void addPhoneNumberDiv(final Div mainDiv, final LiteContact contact) {
+    private void addPhoneNumberDiv(final Div mainDiv, final LiteContact contact, 
+            final YukonUserContext yukonUserContext) {
+        
         LiteContactNotification contactNotification = 
             contactDao.getContactNotification(contact, YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE);
         if (contactNotification == null) return;
         
-        String phoneNumber = PhoneNumber.format(contactNotification.getNotification());
+        String unFormattedPhoneNumber = contactNotification.getNotification();
+        String phoneNumber = phoneNumberFormattingService.formatPhoneNumber(unFormattedPhoneNumber, yukonUserContext);
         
         Div phoneNumberDiv = new Div();
         phoneNumberDiv.addElement(phoneNumber);
@@ -140,6 +145,11 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
 
     public void setAddressDao(AddressDao addressDao) {
         this.addressDao = addressDao;
+    }
+    
+    public void setPhoneNumberFormattingService(
+            PhoneNumberFormattingService phoneNumberFormattingService) {
+        this.phoneNumberFormattingService = phoneNumberFormattingService;
     }
     
 }

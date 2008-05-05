@@ -46,7 +46,7 @@
         <property name="nextValueHelper" ref="nextValueHelper" />
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
-    
+
     <bean id="accountSiteDao" class="com.cannontech.stars.dr.account.dao.impl.AccountSiteDaoImpl"/>
     
     <bean id="starsDaoAdvice" class="com.cannontech.stars.dr.advice.StarsDaoAdvice"/>
@@ -55,9 +55,15 @@
 
     <bean id="applianceDao" class="com.cannontech.stars.dr.appliance.dao.impl.ApplianceDaoImpl"/>
 
+    <bean id="applianceCategoryDao" class="com.cannontech.stars.dr.appliance.dao.impl.ApplianceCategoryDaoImpl"/>
+
     <bean id="starsProgramDao" class="com.cannontech.stars.dr.program.dao.impl.ProgramDaoImpl"/>
     
-    <bean id="inventoryDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryDaoImpl" />
+    <bean id="starsProgramService" class="com.cannontech.stars.dr.program.service.impl.ProgramServiceImpl"/>
+
+    <bean id="starsProgramEnrollmentService" class="com.cannontech.stars.dr.program.service.impl.ProgramEnrollmentServiceImpl"/>
+
+	<bean id="inventoryDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryDaoImpl" />
 
     <bean id="customerEventDao" class="com.cannontech.stars.dr.thermostat.dao.impl.CustomerEventDaoImpl" />
 
@@ -77,13 +83,8 @@
         <property name="nextValueHelper" ref="nextValueHelper" />
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
     </bean>
-    
 
-    <bean id="inventoryBaseDao"
-        class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl">
-        <property name="nextValueHelper" ref="nextValueHelper" />
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-    </bean>
+    <bean id="inventoryBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl"/>
 
     <bean id="ecSearchDao"
         class="com.cannontech.stars.core.dao.impl.ECSearchDaoImpl">
@@ -110,6 +111,10 @@
     <bean id="starsCacheService" class="com.cannontech.stars.core.service.impl.StarsCacheServiceImpl"/>
     
     <bean id="controlHistoryDao" class="com.cannontech.stars.dr.controlhistory.dao.impl.ControlHistoryDaoImpl"/>
+    
+    <bean id="controlHistoryEventDao" class="com.cannontech.stars.dr.controlhistory.dao.impl.ControlHistoryEventDaoImpl"/>
+
+    <bean id="controlHistoryService" class="com.cannontech.stars.dr.controlhistory.service.impl.ControlHistoryServiceImpl"/>
     
     <!-- Import Customer Accounts/Hardware Import Job -->    
     <bean id="importCustAccountsSchedulerJob"

@@ -13,6 +13,7 @@ public class Program {
     private String description;
     private String logoLocation;
     private ChanceOfControl chanceOfControl;
+    private int applianceCategoryId;
     
     public Program() {
         
@@ -66,10 +67,53 @@ public class Program {
         this.chanceOfControl = chanceOfControl;
     }
     
+    public int getApplianceCategoryId() {
+        return applianceCategoryId;
+    }
+
+    public void setApplianceCategoryId(int applianceCategoryId) {
+        this.applianceCategoryId = applianceCategoryId;
+    }
+    
     public MessageSourceResolvable getDisplayName() {
         String code = MessageCodeGenerator.generateCode(PROGAM_PREFIX, programName);
         MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createDefault(code, programName);
         return messageSourceResolvable;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + applianceCategoryId;
+        result = prime * result + programId;
+        result = prime * result + ((programName == null) ? 0
+                : programName.hashCode());
+        result = prime * result + programOrder;
+        return result;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Program other = (Program) obj;
+        if (applianceCategoryId != other.applianceCategoryId)
+            return false;
+        if (programId != other.programId)
+            return false;
+        if (programName == null) {
+            if (other.programName != null)
+                return false;
+        } else if (!programName.equals(other.programName))
+            return false;
+        if (programOrder != other.programOrder)
+            return false;
+        return true;
     }
     
 }

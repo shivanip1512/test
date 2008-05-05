@@ -6,7 +6,6 @@
  */
 package com.cannontech.stars.web.util;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -30,10 +29,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteSubstation;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.ConfigurationRole;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -109,7 +105,6 @@ import com.cannontech.stars.xml.serialize.StarsCustAccount;
 import com.cannontech.stars.xml.serialize.StarsCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsDeleteLMHardware;
 import com.cannontech.stars.xml.serialize.StarsInv;
-import com.cannontech.stars.xml.serialize.StarsInventory;
 import com.cannontech.stars.xml.serialize.StarsNewCustomerAccount;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
@@ -942,13 +937,13 @@ public class ImportManagerUtil {
 		StarsProgramSignUp progSignUp = new StarsProgramSignUp();
 		progSignUp.setStarsSULMPrograms( suPrograms );
 	    
-        ArrayList hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, currentUser );
+		List<LiteStarsLMHardware> hwsToConfig = ProgramSignUpAction.updateProgramEnrollment( progSignUp, liteAcctInfo, liteInv, energyCompany, currentUser );
         
         /*TODO: revisit this post-BGE short-term.  This should never make it past the 4.0 branch!*/
         if(isValidLocationForImport(energyCompany, true)) {
             //Send out the config/disable command
             for (int i = 0; i < hwsToConfig.size(); i++) {
-                LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToConfig.get(i);
+                LiteStarsLMHardware liteHw = hwsToConfig.get(i);
                 boolean toConfig = UpdateLMHardwareConfigAction.isToConfig( liteHw, liteAcctInfo );
                 
                 if (toConfig) {

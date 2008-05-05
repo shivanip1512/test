@@ -39,7 +39,7 @@ public class SiteMinderLoginRequestHandler extends AbstractLoginRequestHandler {
         String input = premiseNumber + loginToken + secret;
         String hash = simpleHasher.hash(input);
 
-        if (!hash.equals(accountIdentifier)) return false;
+        if (!hash.equalsIgnoreCase(accountIdentifier)) return false;
 
         LiteYukonUser user = yukonUserDao.getLiteYukonUser(premiseNumber);
         if (user == null) return false;

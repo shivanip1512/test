@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
@@ -18,7 +19,9 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareBaseDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
+import com.cannontech.stars.dr.hardware.model.LMHardwareBase;
 
 public class InventoryBaseDaoImpl implements InventoryBaseDao {
     private static final String insertSql;
@@ -32,6 +35,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     private static final ParameterizedRowMapper<InventoryBase> rowMapper;
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private LMHardwareBaseDao lmHardwareBaseDao;
     
     static {
         
@@ -51,7 +55,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         
         selectByIdSql = selectAllSql + " WHERE InventoryID = ?";
         
-        selectByAccountIdSql = selectAllSql + " WHERE AccountID + ?";
+        selectByAccountIdSql = selectAllSql + " WHERE AccountID = ?";
         
         selectByInstallationCompanyIdSql = selectAllSql + " WHERE InstallationCompanyID = ?";
         
@@ -142,12 +146,23 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getByAccountId(final int accountId) {
-        try {
-            List<InventoryBase> list = simpleJdbcTemplate.query(selectByAccountIdSql, rowMapper, accountId);
-            return list;
-        } catch (DataAccessException e) {
-            return Collections.emptyList();
-        }
+        List<InventoryBase> list = simpleJdbcTemplate.query(selectByAccountIdSql, rowMapper, accountId);
+        return list;
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<InventoryBase> getDRInventoryByAccountId(int accountId) {
+        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT ib.InventoryID,AccountID,InstallationCompanyID,CategoryID,ReceiveDate,");
+        sqlBuilder.append("       InstallDate,RemoveDate,AlternateTrackingNumber,VoltageID,Notes,DeviceID,");
+        sqlBuilder.append("       DeviceLabel,CurrentStateID");
+        sqlBuilder.append("FROM InventoryBase ib,LMHardwareBase lmhb");
+        sqlBuilder.append("WHERE ib.InventoryID = lmhb.InventoryID");
+        sqlBuilder.append("AND AccountID = ?");
+        String sql = sqlBuilder.toString();
+        
+        List<InventoryBase> list = simpleJdbcTemplate.query(sql, rowMapper, accountId);
+        return list;
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
@@ -179,6 +194,19 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
             return Collections.emptyList();
         }
     }
+    
+    @Override
+    public String getDisplayName(InventoryBase inventory) {
+        String displayName;
+        String deviceLabel = inventory.getDeviceLabel();
+        if (!deviceLabel.matches("^\\s*$")) {
+            displayName = deviceLabel;
+        } else {
+            LMHardwareBase hardware = lmHardwareBaseDao.getById(inventory.getInventoryId());
+            displayName = hardware.getManufacturerSerialNumber();
+        }
+        return displayName;
+    }
 
     private static final ParameterizedRowMapper<InventoryBase> createRowMapper() {
         ParameterizedRowMapper<InventoryBase> rowMapper = new ParameterizedRowMapper<InventoryBase>() {
@@ -203,12 +231,19 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         return rowMapper;
     }
     
+    @Autowired
     public void setNextValueHelper(final NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
 
+    @Autowired
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+    
+    @Autowired
+    public void setLmHardwareBaseDao(LMHardwareBaseDao lmHardwareBaseDao) {
+        this.lmHardwareBaseDao = lmHardwareBaseDao;
     }
     
 }

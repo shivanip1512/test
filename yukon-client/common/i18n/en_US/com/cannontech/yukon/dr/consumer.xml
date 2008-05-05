@@ -4,6 +4,9 @@
     
     <entry key="yukon.dr.consumer.accountNumberLabel">Account #{0}</entry>
     
+    <entry key="yukon.dr.consumer.chanceOfControl.LIKELY">- Chance of control is likely.</entry>
+    <entry key="yukon.dr.consumer.chanceOfControl.UNLIKELY">- Chance of control is unlikely.</entry>
+    
     <!--  Contact Notification types -->
     <entry key="yukon.dr.consumer.contact.(none)">(notification type)</entry>
     <entry key="yukon.dr.consumer.contact.CallBackPhone">Call Back Phone</entry>
@@ -20,13 +23,10 @@
     
     <!--  general.jsp -->
     <entry key="yukon.dr.consumer.general.header">Welcome To Energy Company Services!</entry>
-    <entry key="yukon.dr.consumer.general.description">Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!</entry>
-    <entry key="yukon.dr.consumer.general.description2">This site is designed to help manage your programs on-line from anywhere with access to a Web browser.</entry>
-    <entry key="yukon.dr.consumer.general.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
-    <entry key="yukon.dr.consumer.general.programs">Your Enrolled Programs</entry>
+    <entry key="yukon.dr.consumer.general.description">Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!&lt;br&gt;&lt;br&gt;This site is designed to help manage your programs online from anywhere with access to a Web browser.</entry>
+    <entry key="yukon.dr.consumer.general.enrolledProgramsTitle">Your Enrolled Programs</entry>
     <entry key="yukon.dr.consumer.general.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
-    <entry key="yukon.dr.consumer.general.chanceOfControl.LIKELY">- Chance of control is likely.</entry>
-    <entry key="yukon.dr.consumer.general.chanceOfControl.UNLIKELY">- Chance of control is unlikely.</entry>
+    <entry key="yukon.dr.consumer.general.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.general.scheduledoptout.forMessage">You have an opt out event scheduled for {0}.</entry>
     <entry key="yukon.dr.consumer.general.scheduledoptout.fromMessage">You have an opt out event scheduled from {0} to {1}.</entry>
     
@@ -43,6 +43,37 @@
     <entry key="yukon.dr.consumer.contacts.addNotification">Add notification</entry>
     <entry key="yukon.dr.consumer.contacts.removeNotificationTitle">Remove Notification</entry>
     <entry key="yukon.dr.consumer.contacts.removeImage">/WebConfig/yukon/Icons/clearbits/close.gif</entry>
+    
+    <!-- controlHistory.jsp -->
+    <entry key="yukon.dr.consumer.controlhistory.header">Programs - Control History</entry>
+    <entry key="yukon.dr.consumer.controlhistory.enrolledProgramsTitle">Your Enrolled Programs</entry>
+    <entry key="yukon.dr.consumer.controlhistory.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.consumer.controlhistory.programLabel">Programs</entry>
+    <entry key="yukon.dr.consumer.controlhistory.startLabel">Start</entry>
+    <entry key="yukon.dr.consumer.controlhistory.stopLabel">Stop</entry>
+    <entry key="yukon.dr.consumer.controlhistory.durationLabel">Duration</entry>
+    <entry key="yukon.dr.consumer.controlhistory.completeLabel">Complete History</entry>
+    <entry key="yukon.dr.consumer.controlhistory.todaysProgramControl">Today''s Program Control: {0}</entry>
+    <entry key="yukon.dr.consumer.controlhistory.noProgramControl">No Program Control</entry>
+    <entry key="yukon.dr.consumer.controlhistory.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
+    
+    <!-- completeControlHistory.jsp -->
+    <entry key="yukon.dr.consumer.completecontrolhistory.header">Program - Complete Control History</entry>
+    <entry key="yukon.dr.consumer.completecontrolhistory.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.consumer.completecontrolhistory.controlEventsTitle">Control Events</entry>
+    <entry key="yukon.dr.consumer.completecontrolhistory.viewTitle">View:</entry>
+    <entry key="yukon.dr.consumer.completecontrolhistory.view.pastDay">Past Day</entry>
+    <entry key="yukon.dr.consumer.completecontrolhistory.view.pastWeek">Past Week</entry>
+    <entry key="yukon.dr.consumer.completecontrolhistory.view.pastYear">Past Year</entry>
+    <entry key="yukon.dr.consumer.completecontrolhistory.view.all">All</entry>
+    <entry key="yukon.dr.consumer.completecontrolhistory.todaysProgramControl">Today''s Program Control: {0}</entry>
+    <entry key="yukon.dr.consumer.completecontrolhistory.noProgramControl">No Program Control</entry>
+
+    <!-- innerCompleteControlHistory.jsp -->
+    <entry key="yukon.dr.consumer.innercompletecontrolhistory.deviceLabel">Device Label</entry>
+    <entry key="yukon.dr.consumer.innercompletecontrolhistory.startDate">Start Date</entry>
+    <entry key="yukon.dr.consumer.innercompletecontrolhistory.endDate">End Date</entry>
+    <entry key="yukon.dr.consumer.innercompletecontrolhistory.controlDuration">Control Duration</entry>
     
     <!--  thermostat.jsp -->
     <entry key="yukon.dr.consumer.thermostat.header">Thermostat - Manual</entry>
@@ -155,4 +186,40 @@
     <entry key="yukon.dr.consumer.thermostat.schedule.SATURDAY">Saturday</entry>
     <entry key="yukon.dr.consumer.thermostat.schedule.SUNDAY">Sunday</entry>
     
+    <!-- changeLogin.jsp -->
+    <entry key="yukon.dr.consumer.changelogin.header">Administration - Change Login</entry>
+    <entry key="yukon.dr.consumer.changelogin.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    
+    <!-- contactus.jsp -->
+    <entry key="yukon.dr.consumer.contactus.header">Questions - Utility</entry>
+    <entry key="yukon.dr.consumer.contactus.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.consumer.contactus.phonenumber">Ph:</entry>
+    <entry key="yukon.dr.consumer.contactus.faxnumber">Fax:</entry>
+
+    <!-- enrollment.jsp -->
+    <entry key="yukon.dr.consumer.enrollment.header">Programs - Enrollment</entry>
+    <entry key="yukon.dr.consumer.enrollment.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.consumer.enrollment.enrollmentTitle">Program Enrollment</entry>
+    <entry key="yukon.dr.consumer.enrollment.category">Category</entry>
+    <entry key="yukon.dr.consumer.enrollment.programName">Program Name</entry>
+    <entry key="yukon.dr.consumer.enrollment.description">Description</entry>
+    <entry key="yukon.dr.consumer.enrollment.enrolledHardware">Enrolled Hardware</entry>
+    <entry key="yukon.dr.consumer.enrollment.save">Save</entry>
+    <entry key="yukon.dr.consumer.enrollment.reset">Reset</entry>
+    <entry key="yukon.dr.consumer.enrollment.back">Back</entry>
+    <entry key="yukon.dr.consumer.enrollment.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.consumer.enrollment.result.SUCCESS">&lt;i&gt;** Program enrollment updated successfully.&lt;/i&gt;</entry>
+    <entry key="yukon.dr.consumer.enrollment.result.SUCCESS_HARWARE_CONFIG">&lt;i&gt;** Program enrollment updated successfully. Please go to the hardware configuration page and update the addressing information.&lt;/i&gt;</entry>
+    <entry key="yukon.dr.consumer.enrollment.result.FAILURE">&lt;i&gt;** Failed to update the program enrollment.&lt;/i&gt;</entry>
+    <entry key="yukon.dr.consumer.enrollment.result.NOT_CONFIGURED_CORRECTLY">&lt;i&gt;** Program not defined correctly.  Contact your administrator.&lt;/i&gt;</entry>
+    
+    <!-- faq.jsp -->
+    <entry key="yukon.dr.consumer.faq.header">Questions - FAQ</entry>
+    <entry key="yukon.dr.consumer.faq.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.consumer.faq.backtotop">[back to top]</entry>
+    <!--     
+    <entry key="yukon.dr.consumer.faq.question.1.subject">Subject 1</entry>
+    <entry key="yukon.dr.consumer.faq.question.1.question">Question 1</entry>
+    <entry key="yukon.dr.consumer.faq.question.1.answer">Answer 1</entry>
+    -->
 </properties>    

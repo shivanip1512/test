@@ -10,52 +10,25 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.appliance.model.Appliance;
-import com.cannontech.stars.dr.appliance.model.ApplianceType;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 
 public class ApplianceDaoImpl implements ApplianceDao {
     private static final String selectBaseSql;
     private final ParameterizedRowMapper<Appliance> rowMapper = createRowMapper();
     private SimpleJdbcTemplate simpleJdbcTemplate;
+    private ApplianceCategoryDao applianceCategoryDao;
     
     static {
         
-        selectBaseSql = "SELECT ab.ApplianceID,AccountID,ProgramID,InventoryID " +
-        		        "FROM ApplianceBase ab,LMHardwareConfiguration lmhc " +
-        		        "WHERE ab.ApplianceID = lmhc.ApplianceID";
+        selectBaseSql = "SELECT ab.ApplianceID,ab.ApplianceCategoryID,AccountID,ProgramID,InventoryID,AddressingGroupID,LoadNumber " +
+                        "FROM ApplianceBase ab,LMHardwareConfiguration lmhc " +
+                        "WHERE ab.ApplianceID = lmhc.ApplianceID";
         
     }
     
-    @Override
-    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public ApplianceType getApplianceType(final int applianceId) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("SELECT EntryText FROM YukonListEntry WHERE YukonListEntry.ListID = (");
-        sb.append("SELECT ListID FROM YukonSelectionList WHERE ListName = ?) ");
-        sb.append("AND EntryID = (SELECT CategoryID FROM ApplianceCategory WHERE ApplianceCategoryID = (");
-        sb.append("SELECT ApplianceCategoryID FROM ApplianceBase WHERE ApplianceID = ?))");
-        
-        String sql = sb.toString();
-        
-        String textValue = simpleJdbcTemplate.queryForObject(sql,
-                                                             String.class, 
-                                                             YukonSelectionListDefs.YUK_LIST_NAME_APPLIANCE_CATEGORY,
-                                                             applianceId);
-        
-        ApplianceType type = getApplianceTypeEnumFromTextValue(textValue);
-        return type;
-    }
-    
-    private ApplianceType getApplianceTypeEnumFromTextValue(final String textValue) {
-        String result = textValue;
-        result = result.replaceAll("[(|)]", "");
-        result = result.replaceAll("\\s+", "_");
-        result = result.toUpperCase();
-        return ApplianceType.valueOf(result);
-    }
-
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Appliance getById(final int applianceId) {
@@ -71,19 +44,23 @@ public class ApplianceDaoImpl implements ApplianceDao {
         List<Appliance> list = simpleJdbcTemplate.query(sql, rowMapper, accountId);
         return list;
     }
-
+    
     private ParameterizedRowMapper<Appliance> createRowMapper() {
         final ParameterizedRowMapper<Appliance> mapper = new ParameterizedRowMapper<Appliance>() {
             @Override
             public Appliance mapRow(ResultSet rs, int rowNum) throws SQLException {
-                int applianceId = rs.getInt("ApplianceID");
-
                 final Appliance appliance = new Appliance();
                 appliance.setAccountId(rs.getInt("AccountID"));
-                appliance.setApplianceId(applianceId);
-                appliance.setApplianceType(getApplianceType(applianceId));
+                appliance.setApplianceId(rs.getInt("ApplianceID"));
+                
+                int applianceCategoryId = rs.getInt("ApplianceCategoryID");
+                ApplianceCategory applianceCategory = applianceCategoryDao.getById(applianceCategoryId);
+                appliance.setApplianceCategory(applianceCategory);
+                
                 appliance.setInventoryId(rs.getInt("InventoryID"));
                 appliance.setProgramId(rs.getInt("ProgramID"));
+                appliance.setGroupdId(rs.getInt("AddressingGroupID"));
+                appliance.setRelay(rs.getInt("LoadNumber"));
                 return appliance;
             }
         };
@@ -95,4 +72,9 @@ public class ApplianceDaoImpl implements ApplianceDao {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
+    @Autowired
+    public void setApplianceCategoryDao(
+            ApplianceCategoryDao applianceCategoryDao) {
+        this.applianceCategoryDao = applianceCategoryDao;
+    }
 }

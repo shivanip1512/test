@@ -1,4 +1,4 @@
-package com.cannontech.web.stars.dr.consumer.display;
+package com.cannontech.web.stars.dr.consumer.displayable.model;
 
 import java.util.Date;
 

@@ -3,7 +3,9 @@ package com.cannontech.stars.dr.program.dao.impl;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,9 +14,12 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.stars.dr.appliance.model.Appliance;
+import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.ChanceOfControl;
 import com.cannontech.stars.dr.program.model.Program;
@@ -35,6 +40,14 @@ public class ProgramDaoImpl implements ProgramDao {
     
     @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public Program getByProgramId(final int programId) {
+        final String sql = selectSql + " AND pwp.ProgramID = ?";
+        Program program = simpleJdbcTemplate.queryForObject(sql, rowMapper, programId);
+        return program;
+    }
+    
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Program> getByAppliances(final List<Appliance> applianceList) {
         final List<Integer> programIdList = new ArrayList<Integer>(applianceList.size());
         for (final Appliance appliance : applianceList) {
@@ -46,16 +59,67 @@ public class ProgramDaoImpl implements ProgramDao {
     }
     
     @Override
+    public Map<ApplianceCategory, List<Program>> getByApplianceCategories(
+        final List<ApplianceCategory> applianceCategories) {
+
+        List<Integer> idList = new ArrayList<Integer>(applianceCategories.size());
+        for (final ApplianceCategory applianceCategory : applianceCategories) {
+            Integer applianceCategoryId = applianceCategory.getApplianceCategoryId();
+            idList.add(applianceCategoryId);
+        }
+        
+        final ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
+        List<Program> programList = template.query(new SqlGenerator<Integer>() {
+            @Override
+            public String generate(List<Integer> subList) {
+                SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+                sqlBuilder.append(selectSql);
+                sqlBuilder.append("AND ApplianceCategoryID IN (");
+                sqlBuilder.append(subList);
+                sqlBuilder.append(")");
+                String sql = sqlBuilder.toString();
+                return sql;
+            }
+        }, idList, rowMapper);
+        
+        final Map<ApplianceCategory, List<Program>> resultMap =
+            new HashMap<ApplianceCategory, List<Program>>(applianceCategories.size());
+        
+        for (final ApplianceCategory applianceCategory : applianceCategories) {
+            List<Program> list = resultMap.get(applianceCategory);
+            if (list == null) {
+                list = new ArrayList<Program>(1);
+                resultMap.put(applianceCategory, list);
+            }
+
+            List<Program> programsByApplianceCategory = getProgramsByApplianceCategory(applianceCategory, programList);
+            list.addAll(programsByApplianceCategory);
+        }
+        return resultMap;
+    }
+    
+    private List<Program> getProgramsByApplianceCategory(ApplianceCategory applianceCategory, List<Program> programList) {
+        final int applianceCategoryId = applianceCategory.getApplianceCategoryId();
+        final List<Program> resultList = new ArrayList<Program>(1);
+
+        for (final Program program : programList) {
+            int programsApplianceCategoryId = program.getApplianceCategoryId();
+            if (programsApplianceCategoryId == applianceCategoryId) resultList.add(program);
+        }
+        return resultList;
+    }
+    
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Program> getByProgramIds(final List<Integer> programIdList) {
-        final SqlStatementBuilder sb = new SqlStatementBuilder();
-        sb.append(selectSql);
-        sb.append(" AND pwp.ProgramID IN (");
-        sb.append(programIdList);
-        sb.append(")");
-        sb.append(" ORDER BY ProgramOrder");
+        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append(selectSql);
+        sqlBuilder.append(" AND pwp.ProgramID IN (");
+        sqlBuilder.append(programIdList);
+        sqlBuilder.append(")");
+        sqlBuilder.append(" ORDER BY ProgramOrder");
         
-        String sql = sb.toString();
+        String sql = sqlBuilder.toString();
         List<Program> programList = simpleJdbcTemplate.query(sql, rowMapper);
         return programList;
     }
@@ -64,10 +128,15 @@ public class ProgramDaoImpl implements ProgramDao {
     @SuppressWarnings("unchecked")
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getGroupIdsByProgramId(final int programId) {
-        String sql = "SELECT lmpdg.LMGroupDeviceId " +
-                     "FROM YukonPAObject yp, LMProgramWebPublishing lmwp, YukonWebConfiguration ywc, LMProgramDirectGroup lmpdg " + 
-                     "WHERE yp.PAObjectId = lmwp.DeviceId AND lmwp.WebSettingsId = ywc.ConfigurationId AND lmwp.DeviceId = lmpdg.DeviceId " +
-                     "AND lmwp.ProgramID = ?";
+        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append("SELECT lmpdg.LMGroupDeviceId");
+        sqlBuilder.append("FROM YukonPAObject yp, LMProgramWebPublishing lmwp, YukonWebConfiguration ywc, LMProgramDirectGroup lmpdg"); 
+        sqlBuilder.append("WHERE yp.PAObjectId = lmwp.DeviceId");
+        sqlBuilder.append("AND lmwp.WebSettingsId = ywc.ConfigurationId");
+        sqlBuilder.append("AND lmwp.DeviceId = lmpdg.DeviceId");
+        sqlBuilder.append("AND lmwp.ProgramID = ?");
+        String sql = sqlBuilder.toString();
+        
         List<Integer> groupIdList = simpleJdbcTemplate.query(sql, groupIdRowMapper, programId);
         return groupIdList;
     }
@@ -91,6 +160,9 @@ public class ProgramDaoImpl implements ProgramDao {
 
                 String logoLocation = getLogoLocation(rs);
                 program.setLogoLocation(logoLocation);
+                
+                int applianceCategoryId = rs.getInt("ApplianceCategoryID");
+                program.setApplianceCategoryId(applianceCategoryId);
                 
                 return program;
             }

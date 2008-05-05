@@ -8,7 +8,7 @@ public class ControlHistory {
     private String displayName;
     private InventoryBase inventory;
     private ControlHistoryStatus currentStatus;
-    private List<ControlHistoryStatus> controlHistory;
+    private List<ControlHistoryEvent> currentHistory;
     
     public ControlHistory() {
         
@@ -30,20 +30,20 @@ public class ControlHistory {
         this.currentStatus = currentStatus;
     }
     
-    public List<ControlHistoryStatus> getControlHistory() {
-        return controlHistory;
-    }
-    
-    public void setControlHistory(List<ControlHistoryStatus> controlHistory) {
-        this.controlHistory = controlHistory;
-    }
-
     public String getDisplayName() {
         return displayName;
     }
 
     public void setDisplayName(String displayName) {
         this.displayName = displayName;
+    }
+
+    public List<ControlHistoryEvent> getCurrentHistory() {
+        return currentHistory;
+    }
+
+    public void setCurrentHistory(List<ControlHistoryEvent> currentHistory) {
+        this.currentHistory = currentHistory;
     }
 
     @Override

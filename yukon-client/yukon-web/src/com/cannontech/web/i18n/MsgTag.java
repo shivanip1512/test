@@ -6,6 +6,7 @@ import org.springframework.web.servlet.tags.ThemeTag;
 import com.cannontech.common.i18n.DisplayableEnum;
 
 public class MsgTag extends ThemeTag {
+    
     public void setKey(Object key) {
         if (key instanceof MessageSourceResolvable) {
             setCode(null);
@@ -20,5 +21,9 @@ public class MsgTag extends ThemeTag {
         } else {
             throw new IllegalArgumentException("Expected a String or MessageSourceResolvable, got a " + key.getClass().getName());
         }
+    }
+    
+    public void setArgument(Object argument) {
+        setArguments(new Object[]{argument});
     }
 }

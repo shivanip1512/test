@@ -730,6 +730,43 @@
   </tag>
   
   <tag>
+    <name>formatDuration</name>
+    <tag-class>com.cannontech.web.taglib.FormatDurationTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <name>type</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+
+  <tag>
+    <name>formatPhoneNumber</name>
+    <tag-class>com.cannontech.web.taglib.FormatPhoneNumberTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+        <name>value</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue> 
+    </attribute>
+    <attribute>
+        <name>var</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
+  <tag>
   	<name>renderInput</name>
   	<tag-class>com.cannontech.web.taglib.RenderInputTag</tag-class>
   	<body-content>empty</body-content>
@@ -850,6 +887,14 @@
             <rtexprvalue>true</rtexprvalue>
             <description>The key (code) to use when looking up the message.
             If key is not provided, the text attribute will be used.</description>
+        </attribute>
+        <attribute>
+            <name>argument</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>Set optional message argument for this tag,
+            an Object array (used as argument array), or a single Object (used
+            as single argument).</description>
         </attribute>
         <attribute>
             <name>arguments</name>

@@ -595,6 +595,8 @@
     <bean id="formatDateTagPrototype" class="com.cannontech.web.taglib.FormatDateTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
+
+    <bean id="formatDurationTagPrototype" class="com.cannontech.web.taglib.FormatDurationTag"/>
     
     <bean id="pointStatusColorTagPrototype" class="com.cannontech.web.taglib.PointStatusColorTag">
         <property name="pointDataRegistrationService" ref="pointDataUpdateRegistrationService"/>
@@ -611,6 +613,7 @@
         <property name="accountSiteDao" ref="accountSiteDao"/>
         <property name="addressDao" ref="addressDao"/>
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver"/>
+        <property name="phoneNumberFormattingService" ref="phoneNumberFormattingService"/>
     </bean>     
     
     <bean id="friendlyExceptionResolver" class="com.cannontech.common.util.FriendlyExceptionResolver">
@@ -711,6 +714,8 @@
         <property name="inventoryDao" ref="inventoryDao" />
         <property name="customerAccountDao" ref="customerAccountDao" />
     </bean>
+    
+    <bean id="consumerFAQMenuOption" class="com.cannontech.web.menu.option.producer.ConsumerFAQMenuOptionProducer"/>
     
     <bean id="trendingMenuOption" class="com.cannontech.web.menu.option.producer.TrendingMenuOptionProducer">
         <property name="graphDao" ref="graphDao" />

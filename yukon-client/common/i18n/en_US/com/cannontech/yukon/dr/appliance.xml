@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+    
+    <entry key="yukon.dr.appliance.displayname.DEFAULT">Default</entry>
+    <entry key="yukon.dr.appliance.displayname.AIR_CONDITIONER">Air Conditioner</entry>
+    <entry key="yukon.dr.appliance.displayname.STORAGE_HEAT">Storage Heat</entry>
+    <entry key="yukon.dr.appliance.displayname.IRRIGATION">Irrigation</entry>
+    <entry key="yukon.dr.appliance.displayname.GRAINDRYER">Grain Dryer</entry>
+    <entry key="yukon.dr.appliance.displayname.HEAT_PUMP">Heat Pump</entry>
+    <entry key="yukon.dr.appliance.displayname.GENERATOR">Generator</entry>
+    <entry key="yukon.dr.appliance.displayname.CHILLER">Chiller</entry>
+    <entry key="yukon.dr.appliance.displayname.DUAL_STAGE_AIR_CONDITIONER">Dual Stage Air Conditioner</entry>
+    <entry key="yukon.dr.appliance.displayname.DUAL_FUEL">Dual Fuel</entry>
+    <entry key="yukon.dr.appliance.displayname.WATER_HEATER">Water Heater</entry>
+    
+</properties>    

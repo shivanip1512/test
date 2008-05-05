@@ -211,11 +211,11 @@ public class ProgramSignUpAction implements ActionBase {
 			StarsInventories starsInvs = new StarsInventories();
 			
 			try {
-				ArrayList hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany, liteUser );
+				List<LiteStarsLMHardware> hwsToConfig = updateProgramEnrollment( progSignUp, liteAcctInfo, null, energyCompany, liteUser );
 				
 				// Send out the config/disable command
 				for (int i = 0; i < hwsToConfig.size(); i++) {
-					LiteStarsLMHardware liteHw = (LiteStarsLMHardware) hwsToConfig.get(i);
+					LiteStarsLMHardware liteHw = hwsToConfig.get(i);
 					boolean toConfig = UpdateLMHardwareConfigAction.isToConfig( liteHw, liteAcctInfo );
 					
 					if (toConfig) {
@@ -359,7 +359,7 @@ public class ProgramSignUpAction implements ActionBase {
 		return StarsConstants.FAILURE_CODE_RUNTIME_ERROR;
 	}
 	
-	public static ArrayList updateProgramEnrollment(StarsProgramSignUp progSignUp, LiteStarsCustAccountInformation liteAcctInfo,
+	public static List<LiteStarsLMHardware> updateProgramEnrollment(StarsProgramSignUp progSignUp, LiteStarsCustAccountInformation liteAcctInfo,
 		LiteInventoryBase liteInv, LiteStarsEnergyCompany energyCompany, LiteYukonUser currentUser) throws WebClientException
 	{
 		StarsSULMPrograms programs = progSignUp.getStarsSULMPrograms();

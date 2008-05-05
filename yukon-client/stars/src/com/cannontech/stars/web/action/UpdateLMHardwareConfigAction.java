@@ -1,6 +1,7 @@
 package com.cannontech.stars.web.action;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -334,7 +335,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		LiteStarsLMHardware liteHw, int userID, LiteStarsEnergyCompany energyCompany) throws WebClientException
 	{
 		LiteStarsCustAccountInformation liteAcctInfo = null;
-		ArrayList hwsToConfig = null;
+		List<LiteStarsLMHardware> hwsToConfig = null;
 		
 		if (liteHw.getAccountID() > 0) {
 			liteAcctInfo = energyCompany.getCustAccountInformation( liteHw.getAccountID(), true );
@@ -362,7 +363,7 @@ public class UpdateLMHardwareConfigAction implements ActionBase {
 		if (updateHwConfig.getStarsLMConfiguration() != null) {
 			updateLMConfiguration( updateHwConfig.getStarsLMConfiguration(), liteHw, energyCompany );
 			
-			hwsToConfig = new ArrayList();
+			hwsToConfig = new ArrayList<LiteStarsLMHardware>();
 			hwsToConfig.add( liteHw );
 		}
 		

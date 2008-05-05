@@ -12,17 +12,25 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
+import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryDao;
 import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
+import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
+import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.consumer.display.DisplayableProgramDao;
+import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableOptOutDao;
+import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableProgramDao;
 
 public abstract class AbstractConsumerController {
     protected CustomerAccountDao customerAccountDao;
     protected ApplianceDao applianceDao;
     protected ProgramDao programDao;
+    protected ProgramService programService;
+    protected ProgramEnrollmentService programEnrollmentService;
     protected InventoryBaseDao inventoryBaseDao;
     protected DisplayableProgramDao displayableProgramDao;
+    protected DisplayableOptOutDao displayableOptOutDao;
+    protected ControlHistoryDao controlHistoryDao;
     
     @ModelAttribute("customerAccount")
     public CustomerAccount getCustomerAccount(HttpServletRequest request) {
@@ -48,16 +56,37 @@ public abstract class AbstractConsumerController {
     public void setProgramDao(ProgramDao programDao) {
         this.programDao = programDao;
     }
+    
+    @Autowired
+    public void setProgramService(ProgramService programService) {
+        this.programService = programService;
+    }
+    
+    @Autowired
+    public void setProgramEnrollmentService(
+            ProgramEnrollmentService programEnrollmentService) {
+        this.programEnrollmentService = programEnrollmentService;
+    }
 
     @Autowired
     public void setInventoryBaseDao(InventoryBaseDao inventoryDao) {
         this.inventoryBaseDao = inventoryDao;
     }
-
+    
     @Autowired
-    public void setDisplayableProgramDao(
-            DisplayableProgramDao displayableProgramDao) {
+    public void setDisplayableProgramDao(DisplayableProgramDao displayableProgramDao) {
         this.displayableProgramDao = displayableProgramDao;
+    }
+    
+    @Autowired
+    public void setDisplayableOptOutDao(
+            DisplayableOptOutDao displayableOptOutDao) {
+        this.displayableOptOutDao = displayableOptOutDao;
+    }
+    
+    @Autowired
+    public void setControlHistoryDao(ControlHistoryDao controlHistoryDao) {
+        this.controlHistoryDao = controlHistoryDao;
     }
     
 }

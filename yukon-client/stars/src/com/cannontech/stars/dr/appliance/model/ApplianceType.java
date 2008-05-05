@@ -1,6 +1,8 @@
 package com.cannontech.stars.dr.appliance.model;
 
-public enum ApplianceType {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum ApplianceType implements DisplayableEnum {
     DEFAULT,
     AIR_CONDITIONER,
     STORAGE_HEAT,
@@ -11,5 +13,12 @@ public enum ApplianceType {
     CHILLER,
     DUAL_STAGE_AIR_CONDITIONER,
     DUAL_FUEL,
-    WATER_HEATER
+    WATER_HEATER;
+
+    private final String keyPrefix = "yukon.dr.appliance.displayname.";
+
+    @Override
+    public String getFormatKey() {
+        return keyPrefix + name();
+    }
 }

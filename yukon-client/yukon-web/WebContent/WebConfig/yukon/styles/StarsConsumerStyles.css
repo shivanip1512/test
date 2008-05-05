@@ -2,6 +2,10 @@ h3 {
     text-align: center;   
 }
 
+div.customerAccount {
+	font-size: .8em;
+}	
+
 div.customerAccount div.accountNumber {
 	font-weight: bold;
 }	
@@ -37,6 +41,16 @@ table.contactTable td div {
 	margin-top: .5em;
 }
 
+table.enrolledPrograms {
+    border-collapse: collapse;
+}	
+
+table.enrolledPrograms tr th {
+    text-align: left;
+    color: #0066CC;
+    border-bottom: 1px solid #ccc;
+}
+
 table.enrolledPrograms tr td.logo {
 	border-right: 1px solid #ccc;
 }
@@ -46,8 +60,33 @@ table.enrolledPrograms tr td.logoBordered {
     border-bottom: 1px solid #ccc;
 }
 
+table.enrolledPrograms tr td.logoBorderedAllSidesButBottom {
+    border-top: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.logoBorderedAllSidesButTop {
+    border-bottom: 1px solid #ccc;
+    border-left: 1px solid #ccc;
+    border-right: 1px solid #ccc;
+}
+
 table.enrolledPrograms tr td.bordered {
 	border-bottom: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.view {
+    white-space: nowrap;
+    font-size: .8em;
+    border-left: 1px solid #ccc;
+}
+
+table.enrolledPrograms tr td.viewBordered {
+    white-space: nowrap;
+    font-size: .8em;
+    border-left: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;  
 }
 
 .temperature {
@@ -147,4 +186,40 @@ div.movingBar {
 .timePeriodText {
     font-size: 11px;
     color: #FFFFFF;
+}
+
+table.programTitle {
+	border: 1px solid #ccc;
+	white-space: nowrap;
+}
+
+div#programEnrollmentDiv {
+	font-size: .8em;
+	overflow: auto;
+	height: 325px;
+}	
+
+div#controlEventsDiv {
+	font-size: .8em;
+	overflow: auto;
+	height: 300px;
+}	
+
+div#controlEventsDiv table {
+	border-collapse: collapse;
+}
+
+div#controlEventsDiv table th {
+	color: #0066CC;
+	border-bottom: 1px solid #ccc;
+}
+
+div#controlEventsDiv table th {
+	color: #0066CC;
+	text-align: left;
+}
+
+div#controlEventsDiv table tr td {
+	white-space: nowrap;
+	padding-right: 1em;
 }

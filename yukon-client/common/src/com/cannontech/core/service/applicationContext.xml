@@ -56,4 +56,8 @@
       scope="singleton" lazy-init="default" autowire="default" dependency-check="default">
   </bean>
 
+  <bean id="durationFormattingService" class="com.cannontech.core.service.impl.DurationFormattingServiceImpl"/>
+
+  <bean id="phoneNumberFormattingService" class="com.cannontech.core.service.impl.PhoneNumberFormattingServiceImpl"/>
+
 </beans>

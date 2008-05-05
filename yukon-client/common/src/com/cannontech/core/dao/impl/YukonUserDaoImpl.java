@@ -8,6 +8,7 @@ import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.authentication.service.AuthType;
 import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -43,6 +44,24 @@ public final class YukonUserDaoImpl implements YukonUserDao {
     
 	public YukonUserDaoImpl() {
 	
+	}
+	
+	@Override
+	public void changeUsername(final int userId, final String username) throws NotAuthorizedException {
+	    LiteYukonUser existingUser = getLiteYukonUser(username); 
+	    if (existingUser != null) {
+	        throw new NotAuthorizedException("Username with " + username + " already exists");
+	    }
+	    
+	    final LiteYukonUser user = getLiteYukonUser(userId);
+	    user.setUsername(username);
+	    
+	    final String sql = "UPDATE YukonUser SET UserName = ? WHERE UserID = ?";
+	    simpleJdbcTemplate.update(sql, username, userId);
+	    
+	    synchronized (databaseCache) {
+	        databaseCache.getAllUsersMap().put(userId, user);
+        }
 	}
 
 	public LiteYukonUser getLiteYukonUser(final int userId) {

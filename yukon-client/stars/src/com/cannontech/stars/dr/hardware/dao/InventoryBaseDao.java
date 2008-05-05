@@ -18,11 +18,15 @@ public interface InventoryBaseDao {
     public Map<Integer, InventoryBase> getByIds(List<Integer> inventoryIdList);
     
     public List<InventoryBase> getByAccountId(int accountId);
+
+    public List<InventoryBase> getDRInventoryByAccountId(int accountId);
     
     public List<InventoryBase> getByInstallationCompanyId(int companyId);
     
     public List<InventoryBase> getByCategoryId(int categoryId);
     
     public List<InventoryBase> getAll();
+    
+    public String getDisplayName(InventoryBase inventoryBase);
     
 }

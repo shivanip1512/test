@@ -88,6 +88,13 @@ public class MessageSourceAccessor {
     public String getMessage(String code, Object... args) throws NoSuchMessageException {
         return this.messageSource.getMessage(code, args, getDefaultLocale());
     }
+    
+    /**
+     * @see MessageSourceAccessor.getMessage(String code, Object... args) 
+     */
+    public String getMessage(DisplayableEnum displayableEnum, Object... args) throws NoSuchMessageException {
+        return this.messageSource.getMessage(displayableEnum.getFormatKey(), args, getDefaultLocale());
+    }
 
     /**
      * Retrieve the message for the given code and the default Locale.

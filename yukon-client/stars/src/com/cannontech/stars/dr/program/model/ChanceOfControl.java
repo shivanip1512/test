@@ -1,17 +1,16 @@
 package com.cannontech.stars.dr.program.model;
 
-public enum ChanceOfControl {
+import com.cannontech.common.i18n.DisplayableEnum;
+
+public enum ChanceOfControl implements DisplayableEnum {
     NONE,
     LIKELY,
     UNLIKELY;
 
     private static final String keyPrefix = "yukon.dr.program.displayname.chanceOfControl.";
     
-    /**
-     * I18N key for the display text for this action
-     * @return Display key
-     */
-    public String getDisplayKey() {
+    @Override
+    public String getFormatKey() {
         return keyPrefix + name();
     }
     

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+
+<properties>
+
+    <entry key="yukon.common.durationFormatting.pattern.DHMS">{0} {0,choice,0#days|1#day|1&lt;days} {1} {1,choice,0#hours|1#hour|1&lt;hours} {2} {2,choice,0#minutes|1#minute|1&lt;minutes} {3} {3,choice,0#seconds|1#second|1&lt;seconds}</entry>
+    <entry key="yukon.common.durationFormatting.pattern.HMS">{0} {0,choice,0#hours|1#hour|1&lt;hours} {1} {1,choice,0#minutes|1#minute|1&lt;minutes} {2} {2,choice,0#seconds|1#second|1&lt;seconds}</entry>
+    <entry key="yukon.common.durationFormatting.pattern.HM">{0} {0,choice,0#hours|1#hour|1&lt;hours} {1} {1,choice,0#minutes|1#minute|1&lt;minutes}</entry>
+    <entry key="yukon.common.durationFormatting.pattern.H">{0} {0,choice,0#hours|1#hour|1&lt;hours}</entry>
+    <entry key="yukon.common.durationFormatting.pattern.M">{0} {0,choice,0#minutes|1#minute|1&lt;minutes}</entry>
+
+</properties>

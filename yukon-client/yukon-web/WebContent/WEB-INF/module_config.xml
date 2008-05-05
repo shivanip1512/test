@@ -324,7 +324,7 @@
 		  <links>
 		    <option id="controlHistory">
 			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
-              <link>/user/ConsumerStat/stat/ProgramHist.jsp</link>
+              <link>/spring/stars/consumer/controlhistory</link>
             </option>
 		    <option id="enrollment">
 			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
@@ -350,19 +350,18 @@
 		  <links>
 		    <option id="contactUs">
 			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_UTIL" />
-              <link>/user/ConsumerStat/stat/Util.jsp</link>
+              <link>/spring/stars/consumer/contactus</link>
             </option>
-		    <option id="faq">
+		    <dynamicOptions id="faq" bean="consumerFAQMenuOption">
 			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ" />
-              <link>/user/ConsumerStat/stat/FAQ.jsp</link>
-            </option>
+            </dynamicOptions>
           </links>
 	    </option>
 		<option id="administration">
 		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_ADMIN_CHANGE_LOGIN" />
 		  <links>
 		    <option id="changeLogin">
-              <link>/user/ConsumerStat/stat/Password.jsp</link>
+              <link>/spring/stars/consumer/changelogin</link>
             </option>
           </links>
 	    </option>

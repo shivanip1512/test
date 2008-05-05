@@ -112,14 +112,18 @@
         <property name="basenames">
             <list>
                <value>classpath:com/cannontech/yukon/common/dateFormatting</value>
+               <value>classpath:com/cannontech/yukon/common/durationFormatting</value>
                <value>classpath:com/cannontech/yukon/common/pointFormatting</value>
+               <value>classpath:com/cannontech/yukon/common/phoneNumberFormatting</value>
                <value>classpath:com/cannontech/yukon/common/alerts</value>
                <value>classpath:com/cannontech/yukon/web/menu</value>
                <value>classpath:com/cannontech/yukon/web/layout/standard</value>
                <value>classpath:com/cannontech/yukon/web/input</value>
                <value>classpath:com/cannontech/yukon/web/alerts</value>
+               <value>classpath:com/cannontech/yukon/web/login</value>
                <value>classpath:com/cannontech/yukon/common/device/bulk</value>
                <value>classpath:com/cannontech/yukon/web/deviceGroups</value>
+               <value>classpath:com/cannontech/yukon/dr/appliance</value>
                <value>classpath:com/cannontech/yukon/dr/consumer</value>
                <value>classpath:com/cannontech/yukon/dr/program</value>
             </list>
