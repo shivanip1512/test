@@ -15,11 +15,12 @@ public class MoveOutResult{
     private PointValueHolder currentReading;
     private PointValueHolder calculatedDifference;
     private Meter previousMeter;
-    private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>(); 
+    private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();    //contains device read errors 
     private List<DeviceGroup> deviceGroupsAdded = new ArrayList<DeviceGroup>();
     private String emailAddress;
     private String submissionType;
     private boolean scheduled = false;
+    private String errorMessage;    //contains overall results error message
     
     public PointValueHolder getCalculatedDifference() {
         return calculatedDifference;
@@ -80,5 +81,11 @@ public class MoveOutResult{
     }
     public void setMoveOutDate(Date moveOutDate) {
         this.moveOutDate = moveOutDate;
-    }   
+    }
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }

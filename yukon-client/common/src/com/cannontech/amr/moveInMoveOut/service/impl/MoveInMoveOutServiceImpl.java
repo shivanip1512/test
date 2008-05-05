@@ -22,6 +22,7 @@ import com.cannontech.amr.moveInMoveOut.bean.MoveOutResult;
 import com.cannontech.amr.moveInMoveOut.service.MoveInMoveOutService;
 import com.cannontech.amr.moveInMoveOut.tasks.MoveInTask;
 import com.cannontech.amr.moveInMoveOut.tasks.MoveOutTask;
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.DeviceEventEnum;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
@@ -29,9 +30,11 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.exception.MeterReadRequestException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -69,34 +72,43 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
         moveInResult.setMoveInDate(moveInFormObj.getMoveInDate());
         moveInResult.setSubmissionType("moveIn");
 
-        CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveInResult.getPreviousMeter(),
-                                                                                    moveInFormObj.getMoveInDate(),
-                                                                                    moveInFormObj.getUserContext());
-
-        if (!resultHolder.getErrors().isEmpty()) {
-            logger.info("Move in for " + moveInResult.getPreviousMeter()
-                                                        .toString() + " failed. " + moveInResult.getErrors());
-            moveInResult.setErrors(resultHolder.getErrors());
-            return moveInResult;
-        }
+        try {
+            CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveInResult.getPreviousMeter(),
+                                                                                        moveInFormObj.getMoveInDate(),
+                                                                                        moveInFormObj.getUserContext());
+    
+            if (!resultHolder.getErrors().isEmpty()) {
+                logger.info("Move in for " + moveInResult.getPreviousMeter()
+                                                            .toString() + " failed. " + moveInResult.getErrors());
+                moveInResult.setErrors(resultHolder.getErrors());
+                return moveInResult;
+            }
+            
+            moveInResult.setCurrentReading(resultHolder.getCurrentPVH());
+            moveInResult.setCalculatedDifference(resultHolder.getDifferencePVH());
+            moveInResult.setCalculatedPreviousReading(resultHolder.getCalculatedPVH());
         
-        moveInResult.setCurrentReading(resultHolder.getCurrentPVH());
-        moveInResult.setCalculatedDifference(resultHolder.getDifferencePVH());
-        moveInResult.setCalculatedPreviousReading(resultHolder.getCalculatedPVH());
-
-        // Adds this point to rawPointHistory since it is calculated
-        insertDataPoint(moveInResult.getCurrentReading(),
-                        moveInResult.getCalculatedPreviousReading()
-                                       .getValue(),
-                        moveInFormObj.getMoveInDate());
-
-        archiveDataMoveIn(moveInResult, moveInFormObj.getUserContext().getYukonUser());
-        updateMeter(moveInFormObj.getPreviousMeter(),
-                    moveInResult.getNewMeter());
-        removeServiceDeviceGroups(moveInResult);
-        logger.info("Move in for " + moveInResult.getPreviousMeter()
-                                                    .toString() + " successful.");
-
+            // Adds this point to rawPointHistory since it is calculated
+            insertDataPoint(moveInResult.getCurrentReading(),
+                            moveInResult.getCalculatedPreviousReading()
+                                           .getValue(),
+                            moveInFormObj.getMoveInDate());
+    
+            archiveDataMoveIn(moveInResult, moveInFormObj.getUserContext().getYukonUser());
+            updateMeter(moveInFormObj.getPreviousMeter(),
+                        moveInResult.getNewMeter());
+            removeServiceDeviceGroups(moveInResult);
+            logger.info("Move in for " + moveInResult.getPreviousMeter()
+                                                        .toString() + " successful.");
+        } catch (NotFoundException e) {
+            logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed.");
+            moveInResult.setErrorMessage("Meter and/or point was not found.\n" + e.toString());
+            CTILogger.info(e);
+        } catch (MeterReadRequestException e) {
+            logger.info("Move in for " + moveInResult.getPreviousMeter().toString() + " failed.");
+            moveInResult.setErrorMessage("Meter is not able to be read.  The Meter may not be responding or the connection to Port Control Service may be down.\n" + e.toString());
+            CTILogger.info(e);
+        }
         return moveInResult;
     }
 
@@ -126,39 +138,48 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
 
     public MoveOutResult moveOut(MoveOutForm moveOutFormObj) {
 
-        MoveOutResult moveOutResultObj = new MoveOutResult();
-        moveOutResultObj.setEmailAddress(moveOutFormObj.getEmailAddress());
-        moveOutResultObj.setPreviousMeter(moveOutFormObj.getMeter());
-        moveOutResultObj.setMoveOutDate(moveOutFormObj.getMoveOutDate());
-        moveOutResultObj.setSubmissionType("moveOut");
+        MoveOutResult moveOutResult = new MoveOutResult();
+        moveOutResult.setEmailAddress(moveOutFormObj.getEmailAddress());
+        moveOutResult.setPreviousMeter(moveOutFormObj.getMeter());
+        moveOutResult.setMoveOutDate(moveOutFormObj.getMoveOutDate());
+        moveOutResult.setSubmissionType("moveOut");
 
-        CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveOutResultObj.getPreviousMeter(),
-                                                                                    moveOutFormObj.getMoveOutDate(),
-                                                                                    moveOutFormObj.getUserContext());
-        if (!resultHolder.getErrors().isEmpty()) {
-            logger.info("Move out for " + moveOutResultObj.getPreviousMeter()
-                                                          .toString() + " failed. " + moveOutResultObj.getErrors());
-            moveOutResultObj.setErrors(resultHolder.getErrors());
-            return moveOutResultObj;
+        try {
+            CalculatedPointResults resultHolder = calculatedPointService.calculatePoint(moveOutResult.getPreviousMeter(),
+                                                                                        moveOutFormObj.getMoveOutDate(),
+                                                                                        moveOutFormObj.getUserContext());
+            if (!resultHolder.getErrors().isEmpty()) {
+                logger.info("Move out for " + moveOutResult.getPreviousMeter()
+                                                              .toString() + " failed. " + moveOutResult.getErrors());
+                moveOutResult.setErrors(resultHolder.getErrors());
+                return moveOutResult;
+            }
+    
+            moveOutResult.setCurrentReading(resultHolder.getCurrentPVH());
+            moveOutResult.setCalculatedDifference(resultHolder.getDifferencePVH());
+            moveOutResult.setCalculatedReading(resultHolder.getCalculatedPVH());
+    
+            // if (moveOutResultObj.getErrors().isEmpty()) {
+            // Adds this point to rawPointHistory since it is calculated
+            insertDataPoint(moveOutResult.getCurrentReading(),
+                            moveOutResult.getCalculatedReading().getValue(),
+                            moveOutFormObj.getMoveOutDate());
+    
+            archiveDataMoveOut(moveOutResult, moveOutFormObj.getUserContext().getYukonUser());
+    
+            addServiceDeviceGroups(moveOutResult);
+            logger.info("Move out for " + moveOutResult.getPreviousMeter()
+                                                          .toString() + " successful.");
+        } catch (NotFoundException e) {
+            logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed.");
+            moveOutResult.setErrorMessage("Meter and/or point was not found.\n" + e.toString());
+            CTILogger.info(e);
+        } catch (MeterReadRequestException e) {
+            logger.info("Move in for " + moveOutResult.getPreviousMeter().toString() + " failed.");
+            moveOutResult.setErrorMessage("Meter is not able to be read.  The Meter may not be responding or the connection to Port Control Service may be down.\n" + e.toString());
+            CTILogger.info(e);
         }
-
-        moveOutResultObj.setCurrentReading(resultHolder.getCurrentPVH());
-        moveOutResultObj.setCalculatedDifference(resultHolder.getDifferencePVH());
-        moveOutResultObj.setCalculatedReading(resultHolder.getCalculatedPVH());
-
-        // if (moveOutResultObj.getErrors().isEmpty()) {
-        // Adds this point to rawPointHistory since it is calculated
-        insertDataPoint(moveOutResultObj.getCurrentReading(),
-                        moveOutResultObj.getCalculatedReading().getValue(),
-                        moveOutFormObj.getMoveOutDate());
-
-        archiveDataMoveOut(moveOutResultObj, moveOutFormObj.getUserContext().getYukonUser());
-
-        addServiceDeviceGroups(moveOutResultObj);
-        logger.info("Move out for " + moveOutResultObj.getPreviousMeter()
-                                                      .toString() + " successful.");
-
-        return moveOutResultObj;
+        return moveOutResult;
 
     }
 

@@ -17,12 +17,13 @@ public class MoveInResult{
     private PointValueHolder calculatedDifference;
     private Meter previousMeter;
     private Meter newMeter;
-    private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>(); 
+    private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();  //contains device read errors 
     private List<DeviceGroup> deviceGroupsRemoved = new ArrayList<DeviceGroup>();
     private String emailAddress;
     private String submissionType;
     private boolean scheduled = false;
-    
+    private String errorMessage;    //contains overall results error message
+
     public PointValueHolder getCalculatedDifference() {
         return calculatedDifference;
     }
@@ -90,5 +91,10 @@ public class MoveInResult{
     public void setMoveInDate(Date moveInDate) {
         this.moveInDate = moveInDate;
     }
-    
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
+    }
 }

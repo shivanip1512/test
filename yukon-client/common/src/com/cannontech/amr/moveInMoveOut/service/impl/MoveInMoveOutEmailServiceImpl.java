@@ -62,7 +62,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             if (moveInResult.isScheduled()) {
                 createMoveInScheduleEmail(moveInResult, userContext);
             } else {
-                if (moveInResult.getErrors().isEmpty()) {
+                if (moveInResult.getErrors().isEmpty() && StringUtils.isBlank(moveInResult.getErrorMessage()) ) {
                     createMoveInSuccessEmail(moveInResult, userContext);
                 } else {
                     createMoveInFailureEmail(moveInResult, userContext);
@@ -77,7 +77,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
             if (moveOutResult.isScheduled()) {
                 createMoveOutScheduleEmail(moveOutResult, userContext);
             } else {
-                if (moveOutResult.getErrors().isEmpty()) {
+                if (moveOutResult.getErrors().isEmpty() && StringUtils.isBlank(moveOutResult.getErrorMessage())) {
                     createMoveOutSuccessEmail(moveOutResult, userContext);
                 } else {
                     createMoveOutFailureEmail(moveOutResult, userContext);
@@ -200,6 +200,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("prevMeterName", moveInResult.getPreviousMeter().getName());
 
         setDatesMoveIn(moveInResult, msgData, userContext);
+        msgData.put("errorMessage", moveInResult.getErrorMessage());
         buildErrorStr(moveInResult.getErrors(), msgData);
 
         String subject = tp.process(baseSubjectFormat, msgData);
@@ -308,6 +309,7 @@ public class MoveInMoveOutEmailServiceImpl implements MoveInMoveOutEmailService 
         msgData.put("prevMeterName", moveOutResult.getPreviousMeter().getName());
 
         setDatesMoveOut(moveOutResult, msgData, userContext);
+        msgData.put("errorMessage", moveOutResult.getErrorMessage());
         buildErrorStr(moveOutResult.getErrors(), msgData);
 
         String subject = tp.process(baseSubjectFormat, msgData);
