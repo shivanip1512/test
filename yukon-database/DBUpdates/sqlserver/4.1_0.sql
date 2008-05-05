@@ -659,6 +659,10 @@ go
 /* @end-block */
 /* End YUK-5759 */
 
+/* Start YUK-5419 */
+UPDATE YukonRole SET RoleDescription = 'Administrator privileges.' 
+WHERE RoleDescription = 'Administrator privilages.' 
+/* End YUK-5419 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

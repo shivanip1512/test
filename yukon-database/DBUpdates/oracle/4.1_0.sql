@@ -512,6 +512,12 @@ WHERE (X.ServiceProviderId = S.AddressId AND
       (Z.AddressType = 'ZIP' OR Z.AddressId = 0));
 /* End YUK-5759 */
 
+/* Start YUK-5419 */
+UPDATE YukonRole SET RoleDescription = 'Administrator privileges.' 
+WHERE RoleDescription = 'Administrator privilages.' 
+/* End YUK-5419 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
