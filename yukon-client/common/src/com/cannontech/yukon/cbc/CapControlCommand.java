@@ -48,18 +48,17 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int SEND_TIMESYNC = 34;
     public static final int OPERATIONAL_STATECHANGE = 35;
     
-	public static final int CMD_MANUAL_ENTRY = 30;
-	public static final int CMD_BANK_TEMP_MOVE	= 31;
 	public static final int VERIFY_OFFSET = 40;
-    
 	public static final int CMD_ALL_BANKS = VERIFY_OFFSET + 0;
 	public static final int CMD_FQ_BANKS = VERIFY_OFFSET + 1;
 	public static final int CMD_FAILED_BANKS = VERIFY_OFFSET + 2;
 	public static final int CMD_QUESTIONABLE_BANKS = VERIFY_OFFSET + 3;
 	public static final int CMD_DISABLE_VERIFY = VERIFY_OFFSET + 4;
     public static final int CMD_STANDALONE_VERIFY = VERIFY_OFFSET + 6;
-    
     public static final int CONFIRM_SUBSTATION = VERIFY_OFFSET + 7;
+    
+    public static final int CMD_MANUAL_ENTRY = 30;
+    public static final int CMD_BANK_TEMP_MOVE  = 31;
 
 	public static final String[] COMMAND_STRINGS = {
 		"ENABLE SUBSTATION BUS",
@@ -91,28 +90,26 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
         "ENABLE SYTEM",
         "DISABLE SYSTEM",
         "FLIP 7010 CAPBANK",
-		"","",
-
-
-		//below are not used by the server
-		"Manual Entry", //30
-		"Bank Temp Move", //31
-		"",
-		"Scan All 2Way CBCs",
-		"",
+		"SYSTEM STATUS",
+		"Send All Open", //29
+		"Send All Close", //30
+		"Send All Enable OVUV", //31
+		"Send All Disable OVUV",
+		"Scan All Scan 2Way CBCs",
+		"Send TimeSinc",
 		"Change Operational State",
 		"",
 		"",
 		"",
 		"",
-		"AllBanks", //40 
-		"FailedAndQuestionableBanks",
-		"FailedBanks",
-		"QuestionableBanks", //43
-		"DisableVerify", //44
+		"Verify All Banks", //40 
+		"Verify Failed And Questionable Banks",
+		"Verify Failed Banks",
+		"Verify Questionable Banks", //43
+		"Verify Disabled Banks", //44
         "",
         "VerifyStandaloneBanks",
-        "CONFIRM SUBSTATIONS"
+        "Confirm Substations"
         };
 	
 
