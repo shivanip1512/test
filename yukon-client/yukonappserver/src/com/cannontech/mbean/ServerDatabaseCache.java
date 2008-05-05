@@ -1661,19 +1661,14 @@ public synchronized LiteBase handleDBChangeMessage(DBChangeMsg dbChangeMsg)
     }
     else if ( database == DBChangeMsg.CHANGE_CBC_ADDINFO_DB)
     {
-        
         //Do nothing for now...
-    }	
-    
-    else if( database == DBChangeMsg.CHANGE_WORK_ORDER_DB )
-	{
+    }else if ( database == DBChangeMsg.CHANGE_PAO_SCHEDULE_DB) {
+        //Do nothing we don't care.
+    }else if( database == DBChangeMsg.CHANGE_WORK_ORDER_DB ) {
 		//Do nothing, there is no default cache for workOrders/serviceRequests, but please do not release all cache!
-	}	
-	else  //BAD IDEA to let it all go, lets just tell everyone it wasn't handled instead!
-	{
-		CTILogger.error(" ***** Unhandled DBChangeMessage!  Category: " + dbCategory);
-//		CTILogger.error(" ***** Releasing all Cache!  Unhandled Category:" + dbCategory + ")!");
-//		releaseAllCache();
+	}else {
+	    //BAD IDEA to let it all go, lets just tell everyone it wasn't handled instead!
+	    CTILogger.error(" ***** Unhandled DBChangeMessage!  Category: " + dbCategory);
 	}
 
 	return retLBase;
