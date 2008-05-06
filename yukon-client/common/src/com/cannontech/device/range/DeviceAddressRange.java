@@ -48,6 +48,9 @@ public class DeviceAddressRange
    	private static final RangeBase RANGE_REPEATER902 = 
    		new RangeBase( 800450, 809900, DeviceTypes.REPEATER_902);
 
+   	private static final RangeBase RANGE_CCU710A = 
+        new RangeBase( 0, 127, DeviceTypes.CCU710A);
+   	
    	private static final RangeBase RANGE_CCU711 = 
         new RangeBase( 0, 127, DeviceTypes.CCU711);
    	
@@ -121,7 +124,10 @@ public class DeviceAddressRange
             
             case DeviceTypes.REPEATER_921:
                 return RANGE_REPEATER921;
-                
+            
+            case DeviceTypes.CCU710A:
+                return RANGE_CCU710A;
+            
             case DeviceTypes.CCU711:
                 return RANGE_CCU711;
                 
