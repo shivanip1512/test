@@ -12,7 +12,7 @@ public class CapBankOperationsPerformanceReport extends SimpleYukonReportBase {
         new ColumnLayoutData("Cap Bank", "bankName", 80),
         new ColumnLayoutData("CBC", "cbcName", 80),
         new ColumnLayoutData("Feeder", "feederName", 80),
-        new ColumnLayoutData("Substation Bus", "subName", 80),
+        new ColumnLayoutData("Substation Bus", "subbusName", 80),
         new ColumnLayoutData("Area", "region", 180),
         new ColumnLayoutData("Status", "text", 80),
         new ColumnLayoutData("Status Count", "qCount", 40),
