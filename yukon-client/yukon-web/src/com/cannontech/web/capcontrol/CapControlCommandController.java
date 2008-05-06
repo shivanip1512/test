@@ -93,7 +93,12 @@ public class CapControlCommandController extends MultiActionController {
 	        boolean success = subsInConflict.isEmpty();
 	        if (success) {
 	            executor.execute(CapControlType.SPECIAL_AREA, cmdId, paoId, opt, null);
-	            if (reason != null) insertComment(paoId, user.getUserID(), reason, cmdId);
+	            String forceComment = authDao.getRolePropertyValue(user,CBCSettingsRole.FORCE_COMMENTS);
+	            if (reason != null) {
+	                insertComment(paoId, user.getUserID(), reason, cmdId);
+	            }else if(forceComment.equalsIgnoreCase("true")) {
+	                insertComment(paoId, user.getUserID(), CapControlCommand.getCommandString(cmdId), cmdId);
+	            }
 	        }
 
 	        JSONObject jsonObject = new JSONObject();
