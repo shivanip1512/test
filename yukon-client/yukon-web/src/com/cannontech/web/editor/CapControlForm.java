@@ -1121,10 +1121,14 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
             List<CBCSpecialAreaData> assignedAreas = ((CBCSpecialAreaDataModel)getDataModel()).getAssigned();
             
             for(CBCSpecialAreaData data: assignedAreas) {
-                SubStation substation = cache.getSubstation(data.getSubID());
-                if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId().intValue() != area.getPAObjectID().intValue()) {
-                    duplicates.add(cache.getCBCSpecialArea(substation.getSpecialAreaId()).getCcName() 
-                                   + ": " + substation.getCcName());
+                try {
+                    SubStation substation = cache.getSubstation(data.getSubID());
+                    if(substation.getSpecialAreaEnabled() && substation.getSpecialAreaId().intValue() != area.getPAObjectID().intValue()) {
+                        duplicates.add(cache.getCBCSpecialArea(substation.getSpecialAreaId()).getCcName() + ": " + substation.getCcName());
+                    }
+                } catch(NotFoundException nfe) {
+                    // if it's not in the cache then it's an orphan and there are no duplicates.
+                    continue;
                 }
             }
         }
