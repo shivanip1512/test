@@ -363,12 +363,17 @@ public class CapControlDaoImpl  implements CapControlDao{
     public List<OrphanCBC> getOrphanedCBCs(){
         
         SqlStatementBuilder query = new SqlStatementBuilder();
-        query.append("select y.paoname as devicename, p.pointid as pointid, p.pointname as pointname from point p, yukonpaobject y ");
-        query.append("where p.paobjectid in ( ");
-        query.append("select paobjectid from yukonpaobject where type like 'CBC%' ");
-        query.append("and paobjectid not in (select controldeviceid from capbank) ");
-        query.append(") and p.pointoffset = 1 and p.pointtype = 'STATUS' and p.paobjectid = y.paobjectid");
-        query.append("order by y.paoname");
+        query.append("select y.paoname as devicename ");
+        query.append(", p.pointid as pointid ");
+        query.append(", p.pointname as pointname "); 
+        query.append("from point p ");
+        query.append(", yukonpaobject y ");
+        query.append("where p.paobjectid = y.paobjectid ");
+        query.append("and y.type like 'CBC%'  ");
+        query.append("and y.paobjectid not in (select controldeviceid from capbank) "); 
+        query.append("and p.pointoffset = 1  ");
+        query.append("and p.pointtype = 'STATUS' "); 
+        query.append("order by y.paoname ");
         cbcList = new ArrayList<OrphanCBC>();
         jdbcOps.query(query.toString(), new RowCallbackHandler() {
             public void processRow(ResultSet rs) throws SQLException {
