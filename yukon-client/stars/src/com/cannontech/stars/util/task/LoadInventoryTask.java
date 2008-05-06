@@ -28,7 +28,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMHardwareEvent;
-import com.cannontech.database.data.lite.stars.LiteMeterHardwareBase;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.stars.util.WebClientException;
@@ -193,6 +192,7 @@ public class LoadInventoryTask extends TimeConsumingTask {
 	        });
 
 	        energyCompany.setInventoryLoaded( true );
+	        energyCompany.getEnergyCompanyLatch().countDownInventory();
 	        status = STATUS_FINISHED;
 	        CTILogger.info( "All inventory loaded for energy company #" + energyCompanyId);
 	    }

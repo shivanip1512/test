@@ -11,8 +11,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
@@ -64,10 +62,8 @@ import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
  *
  */
 public class StarsDatabaseCache implements DBChangeLiteListener {
-	
-    private CountDownLatch loadedLatch = new CountDownLatch(1);
-    
-	public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
+
+    public static final int DEFAULT_ENERGY_COMPANY_ID = EnergyCompany.DEFAULT_ENERGY_COMPANY_ID;
 	
 	private static final int CTRL_HIST_CACHE_INVALID_INTERVAL = 7;	// 7 days
 	
@@ -89,22 +85,6 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
         
     }
 
-    /**
-     * Checks to see if the cache is fully loaded.
-     * @return
-     */
-    public boolean isLoaded() {
-        if (loadedLatch.getCount() == 0){
-            return true;
-        } else {
-            return false;
-        }
-    }
-    
-    public void blockUntilLoaded() throws InterruptedException {
-        loadedLatch.await();
-    }
-    
     public void setAsyncDynamicDataSource(final AsyncDynamicDataSource dataSource) {
         this.dataSource = dataSource;
     }
@@ -141,8 +121,6 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
                         company.loadAllWorkOrders( true );
                     }
                 }
-                
-                loadedLatch.countDown();
             }
         });
         initThrd.start();

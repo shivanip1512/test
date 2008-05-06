@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
+import java.util.concurrent.CountDownLatch;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
@@ -106,6 +107,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public static final int FAKE_LIST_ID = -9999;   // Magic number for YukonSelectionList ID, used for substation and service company list
     public static final int INVALID_ROUTE_ID = -1;  // Mark that a valid default route id is not found, and prevent futher attempts
+    private EnergyCompanyLatch energyCompanyLatch = new EnergyCompanyLatch();
     
     private static final String[] OPERATOR_SELECTION_LISTS = {
         YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
@@ -169,6 +171,9 @@ public class LiteStarsEnergyCompany extends LiteBase {
         YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE
     };
     
+    public EnergyCompanyLatch getEnergyCompanyLatch(){
+        return energyCompanyLatch;
+    }
     
     private String name = null;
     private int primaryContactID = CtiUtilities.NONE_ZERO_ID;
@@ -669,6 +674,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public void clearInventory() {
+        energyCompanyLatch.resetInventoryLatch();
+                
         // If the inventory loading task is alive, cancel it first
         TimeConsumingTask loadInvTask = ProgressChecker.getTask( loadInvTaskID );
         if (loadInvTask != null) loadInvTask.cancel();
@@ -3801,5 +3808,187 @@ public class LiteStarsEnergyCompany extends LiteBase {
 
         CTILogger.debug((new Date().getTime() - timerStart.getTime())*.001 + " Secs for '" + accountNumber_  + "' Search (" + count + " AccountIDS loaded; EC=" + (energyCompanyIDList.size() == StarsDatabaseCache.getInstance().getAllEnergyCompanies().size()? "ALL" : energyCompanyIDList.toString()) + ")" );
         return accountList;
+    }
+    
+    public class EnergyCompanyLatch {
+        private CountDownLatch energyCompanyLatch = new CountDownLatch(3);
+        private CountDownLatch accountsLatch = new CountDownLatch(1);
+        private CountDownLatch inventoryLatch = new CountDownLatch(1);
+        private CountDownLatch workOrderLatch = new CountDownLatch(1);
+        
+        /** 
+         * This function blocks until the energy company CountDownLatch 
+         * has reached zero or is interrupted.
+         *
+         * @throws InterruptedException
+         */
+        public void awaitEnergyCompany() throws InterruptedException{
+            energyCompanyLatch.await();
+        }
+        
+        /**
+          * Checks to see if the energy company has been fully loaded.
+          *  
+          * @return boolean
+          */
+        public boolean isLoadedEnergyCompany() {
+            if (energyCompanyLatch.getCount() == 0){
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        /**
+         * Sets all the latches to there initial values.
+         *  
+         */
+        public void resetAllLatches() {
+           energyCompanyLatch = new CountDownLatch(3);
+           accountsLatch = new CountDownLatch(1);
+           inventoryLatch = new CountDownLatch(1);
+           workOrderLatch = new CountDownLatch(1);
+        }
+
+        /** 
+         * This function blocks until the accounts CountDownLatch 
+         * has reached zero or is interrupted.
+         *
+         * @throws InterruptedException
+         */
+        public void awaitAccounts() throws InterruptedException{
+            accountsLatch.await();
+        }
+        
+        /**
+         * This function counts down the accounts CountDownLatch and also the 
+         * energy company CountDownLatch
+         */
+        public void countDownAccounts() {
+            accountsLatch.countDown();
+            energyCompanyLatch.countDown();
+            if(starsEnergyCompany != null) {
+                System.out.println("Accounts Latch Decremented EC="+starsEnergyCompany.getCompanyName());
+            }
+        }
+        
+        /**
+         * Checks to see if the accounts for the given energy company
+         * has been loaded.
+         *  
+         * @return boolean
+         */
+        public boolean isLoadedAccounts() {
+            if (accountsLatch.getCount() == 0){
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        /**
+         * Sets the account latch to its initial value and increments
+         * the energy company latch.
+         *  
+         */
+        public void resetAccountLatch() {
+            accountsLatch = new CountDownLatch(1);
+            int initialCount = ((Long)energyCompanyLatch.getCount()).intValue();          
+            energyCompanyLatch = new CountDownLatch(initialCount + 1);
+        }
+        
+        /** 
+         * This function blocks until the inventory CountDownLatch 
+         * has reached zero or is interrupted.
+         *
+         * @throws InterruptedException
+         */
+        public void awaitInventory() throws InterruptedException{
+            inventoryLatch.await();
+        }
+       
+        /**
+         * This function counts down the inventory CountDownLatch and also the 
+         * energy company CountDownLatch
+         */
+        public void countDownInventory() {
+            inventoryLatch.countDown();
+            energyCompanyLatch.countDown();
+            if(starsEnergyCompany != null) {
+                System.out.println("Inventory Latch Decremented EC="+starsEnergyCompany.getCompanyName());
+            }
+        }
+        
+        /**
+         * Checks to see if the inventory for the given energy company
+         * has been loaded.
+         *  
+         * @return boolean
+         */
+        public boolean isLoadedInventory() {
+            if (inventoryLatch.getCount() == 0){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        /**
+         * Sets the account latch to its initial value and increments
+         * the energy company latch.
+         *  
+         */
+        public void resetInventoryLatch() {
+            inventoryLatch = new CountDownLatch(1);
+            int initialCount = ((Long)energyCompanyLatch.getCount()).intValue();          
+            energyCompanyLatch = new CountDownLatch(initialCount + 1);
+        }
+        
+        /** 
+         * This function blocks until the work order CountDownLatch 
+         * has reached zero or is interrupted.
+         *
+         * @throws InterruptedException
+         */
+        public void awaitWorkOrder() throws InterruptedException{
+            workOrderLatch.await();
+        }
+        
+        /**
+         * This function counts down the work order CountDownLatch and also the 
+         * energy company CountDownLatch
+         */
+        public void countDownWorkOrder() {
+            workOrderLatch.countDown();
+            energyCompanyLatch.countDown();
+            if(starsEnergyCompany != null) {
+                System.out.println("Work Order Latch Decremented EC="+starsEnergyCompany.getCompanyName());
+            }
+        }
+        
+        /**
+         * Checks to see if the work order for the given energy company
+         * has been loaded.
+         *  
+         * @return boolean
+         */
+        public boolean isLoadedWorkOrder() {
+            if (workOrderLatch.getCount() == 0){
+                return true;
+            } else {
+                return false;
+            }
+        }
+        
+        /**
+         * Sets the account latch to its initial value and increments
+         * the energy company latch.
+         *  
+         */
+        public void resetWorkOrderLatch() {
+            workOrderLatch = new CountDownLatch(1);
+            int initialCount = ((Long)energyCompanyLatch.getCount()).intValue();          
+            energyCompanyLatch = new CountDownLatch(initialCount + 1);
+        }
     }
 }

@@ -186,6 +186,7 @@ public class LoadCustAccountsTask extends TimeConsumingTask {
 	        });
 
 	        energyCompany.setAccountsLoaded( true );
+	        energyCompany.getEnergyCompanyLatch().countDownAccounts();
 	        status = STATUS_FINISHED;
 	        CTILogger.info( "All customer accounts loaded for energy company #" + energyCompany.getEnergyCompanyID() );
 	    } catch (Exception e) {

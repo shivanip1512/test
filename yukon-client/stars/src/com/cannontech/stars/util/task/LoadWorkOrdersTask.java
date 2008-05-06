@@ -116,6 +116,7 @@ public class LoadWorkOrdersTask extends TimeConsumingTask {
 	                           });
 
 	        energyCompany.setWorkOrdersLoaded( true );
+	        energyCompany.getEnergyCompanyLatch().countDownWorkOrder();
 	        status = STATUS_FINISHED;
 	        CTILogger.info("All work orders loaded for energy company #" + energyCompany.getEnergyCompanyID());
 	    } catch (Exception e) {

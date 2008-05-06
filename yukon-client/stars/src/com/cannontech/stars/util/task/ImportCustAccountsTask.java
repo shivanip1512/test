@@ -19,10 +19,12 @@ import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.EnergyCompanyDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -34,6 +36,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -51,6 +54,8 @@ import com.cannontech.user.UserUtils;
  */
 public class ImportCustAccountsTask extends TimeConsumingTask {
 
+    private EnergyCompanyDao energyCompanyDao = (EnergyCompanyDao) YukonSpringHook.getBean("energyCompanyDao");
+    
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 	
 	// Generic import file column names
@@ -665,12 +670,26 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						
 						if (!preScan) {
 							try {
-								LiteInventoryBase liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
+                                LiteInventoryBase liteInv = null;
+								if(ImportManagerUtil.isValidLocationForImport(energyCompany, true) && 
+                                        hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
+                                    for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
+                                        int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
+                                        LiteInventoryBase lInv = energyCompany.getInventoryBrief( invID, true );
+                                        if (lInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)lInv).getManufacturerSerialNumber().equals(hwFields[ImportManagerUtil.IDX_SERIAL_NO])) {
+                                            liteInv = lInv;
+                                            break;
+                                        }
+                                    }
+                                    if(liteInv != null)
+                                        programSignUp( new int[0][0], appFields, liteAcctInfo, liteInv, energyCompany );
+                                }
+                                
+								liteInv = importHardware( hwFields, liteAcctInfo, energyCompany );
 
 								if (hwFields[ImportManagerUtil.IDX_PROGRAM_NAME].trim().length() > 0
 										&& !hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE"))
 								{
-
 									int[][] programs = getEnrolledProgram( hwFields, energyCompany );
 									if (programs != null) {
 										programSignUp( programs, appFields, liteAcctInfo, liteInv, energyCompany );
@@ -1472,6 +1491,32 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         
         return baseDir;
 	}
+	
+	public static File getBaseDir(int energyCompanyId){
+        final String fs = System.getProperty( "file.separator" );
+        EnergyCompanyDao energyCompanyDao = (EnergyCompanyDao) YukonSpringHook.getBean("energyCompanyDao");
+        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(energyCompanyId);
+        String ecName = energyCompany.getName();
+        if(ecName.indexOf('<') > -1) {
+            ecName = "EnergyCompany" + energyCompanyId;
+        }
+        
+        // Check to see if it exist in role property if not use default.
+        String baseDirRoleValue = DaoFactory.getRoleDao().getGlobalPropertyValue(ConfigurationRole.CUSTOMER_INFO_IMPORTER_FILE_LOCATION);
+
+        // Gets base Directory
+        File baseDir = null;
+        if (baseDirRoleValue.trim().length() > 0) {
+            baseDir = new File(baseDirRoleValue);
+        } else {
+            baseDir = new File(ServerUtils.getStarsTempDir() + fs + ecName);
+            if (!baseDir.exists()) {
+                baseDir.mkdirs();
+            }
+        }
+        
+        return baseDir;
+    }
 
     private void addToLog(Integer lineNoKey, String[] value, PrintWriter importLog) {
         importLog.println("Error found -Line "+lineNoKey+"= "+value[0]+"- Error="+value[1]);
@@ -1483,5 +1528,75 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         } else {
             throw new WebClientException( "The required column '" + CUST_COLUMNS[COL_ACCOUNT_NO] + "' is missing" );
         }
+    }
+    
+    public static File getImportDirectory(File baseDir){
+        File importInputDir = null;
+        if (baseDir != null) {
+            importInputDir = new File(baseDir, System.getProperty( "file.separator" )+ServerUtils.IMPORT_INPUT_DIR);
+        }
+        
+        return importInputDir;
+    }
+
+    public static SortedSet<String> getAutomationImportFileList(File baseDir, File importInputDir){
+
+        String[] fileList = null;
+        if (importInputDir != null && importInputDir.exists()) {
+            if (importInputDir.isDirectory()) {
+                FilenameFilter csvFilter = new FilenameFilter(){
+                    public boolean accept(File dir, String name){
+                        return name.endsWith(".csv");
+                    }
+                };
+                fileList = importInputDir.list(csvFilter);
+            }
+        }
+    
+        // This takes care of ordering the files if there are more than one found
+        // in the importInput directory
+        Comparator<String> fileNameComparator = new Comparator<String>(){
+
+            @Override
+            public int compare(String s1, String s2) {
+                if ( s1.length() > 10){
+                    // Gets the date portion of the file name (MMDDYY)
+                    String tempKey1 = s1.substring(s1.length()-10, s1.length()-4);
+                
+                    // Changes the key to a (YYMMDD) format
+                    String sortingKey1 = tempKey1.substring(4,6)+
+                                         tempKey1.substring(0,2)+
+                                         tempKey1.substring(2,4);
+                    if (s2.length() > 10){
+                        // Gets the date portion of the file name (MMDDYY)
+                        String tempKey2 = s2.substring(s2.length()-10, s2.length()-4);
+                    
+                        // Changes the key to a (YYMMDD) format
+                        String sortingKey2 = tempKey2.substring(4,6)+
+                                             tempKey2.substring(0,2)+
+                                             tempKey2.substring(2,4);
+                        return sortingKey1.compareTo(sortingKey2);
+                    } else {
+                        return 1;
+                    }
+                } else {
+                    if (s2.length() > 10){
+                        return -1;
+                    } else {
+                        return s1.compareTo(s2);
+                    }
+                }
+            }
+        
+        };
+
+        SortedSet<String> sortedFileList = new TreeSet<String>(fileNameComparator);
+        if (fileList != null) {
+            for (String fileName : fileList) {
+                sortedFileList.add(fileName);
+            }
+        }
+    
+        return sortedFileList;
     }
 }
