@@ -156,7 +156,7 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
             // see if it belongs to a different area than current
             // if yes - delete assignment from the old sub
             Integer areaID = CCSubAreaAssignment.getAreaIDForSubStation(id);
-            if (areaID != null && !areaID.equals(area.getPAObjectID())) {
+            if ((areaID != null || areaID > 0) && !areaID.equals(area.getPAObjectID())) {
                 CCSubAreaAssignment objToDelete = new CCSubAreaAssignment();
                 objToDelete.setAreaID(areaID);
                 objToDelete.setSubstationBusID(id);

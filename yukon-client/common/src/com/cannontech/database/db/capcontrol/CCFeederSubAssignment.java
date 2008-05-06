@@ -3,6 +3,10 @@ package com.cannontech.database.db.capcontrol;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.SqlUtils;
 
 /**
@@ -13,7 +17,7 @@ public class CCFeederSubAssignment extends com.cannontech.database.db.DBPersiste
 	private Integer substationBusID = null;
 	private Integer feederID = null;
 	private Integer displayOrder = null;
-
+	private static JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -107,6 +111,21 @@ public static boolean deleteCCFeedersFromSubList(Integer subId, Integer feederID
 
 	return true;
 }
+
+public static Integer getSubBusIdForFeeder( int paoId ){
+    String sql = "SELECT SubstationBusId FROM " + TABLE_NAME +
+    " WHERE Feederid = ? ";
+    
+    Integer substationBusId = -1;
+    try {
+        substationBusId = jdbcOps.queryForInt(sql, new Integer[] {paoId});
+    } catch (EmptyResultDataAccessException e) {
+        return -1;
+    }
+    
+    return substationBusId;
+}
+
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer

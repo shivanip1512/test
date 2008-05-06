@@ -2,26 +2,26 @@ package com.cannontech.cbc.web;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.core.dao.CapControlDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
 
 public class ParentStringPrinterFactory {
-    private CapControlCache capControlCache;
-    private CapControlDao cbcDao;
+    private PointDao pointDao;
+    private PaoDao paoDao;
 
     public ParentStringPrinter createParentStringPrinter(final HttpServletRequest request) {
         final ParentStringPrinter printer = new ParentStringPrinter(request);
-        printer.setCapControlCache(capControlCache);
-        printer.setCbcDao(cbcDao);
+        printer.setPointDao(pointDao);
+        printer.setPaoDao(paoDao);
         return printer;
     }    
 
-    public void setCapControlCache(CapControlCache capControlCache) {
-        this.capControlCache = capControlCache;
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
     
-    public void setCbcDao(CapControlDao cbcDao) {
-        this.cbcDao = cbcDao;
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
     }
     
 }

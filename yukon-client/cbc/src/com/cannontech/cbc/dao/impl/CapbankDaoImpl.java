@@ -132,6 +132,17 @@ public class CapbankDaoImpl implements CapbankDao {
         return capBank;
     }
     
+    public int getCapBankIdByCBC(Integer paoId) {
+        String sql = "select deviceId from capbank where controlDeviceId = ? ";
+        Integer capBankId = -1;
+        try {
+            capBankId = simpleJdbcTemplate.queryForInt(sql, new Integer[] {paoId});
+        } catch (EmptyResultDataAccessException e) {
+            return -1;
+        }
+        return capBankId;
+    }
+    
     /**
      * This method returns all the CapBank IDs that are not assigned
      *  to a Feeder.

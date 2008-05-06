@@ -2,250 +2,88 @@ package com.cannontech.cbc.web;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.Validate;
-
-import com.cannontech.cbc.cache.CapControlCache;
-import com.cannontech.cbc.util.CBCUtils;
-import com.cannontech.core.dao.CapControlDao;
-import com.cannontech.util.ServletUtil;
-import com.cannontech.yukon.cbc.CCArea;
-import com.cannontech.yukon.cbc.CCSpecialArea;
-import com.cannontech.yukon.cbc.CapBankDevice;
-import com.cannontech.yukon.cbc.Feeder;
-import com.cannontech.yukon.cbc.StreamableCapObject;
-import com.cannontech.yukon.cbc.SubBus;
-import com.cannontech.yukon.cbc.SubStation;
+import com.cannontech.cbc.dao.CapbankDao;
+import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.database.data.pao.CapControlTypes;
+import com.cannontech.database.db.capcontrol.CCFeederBankList;
+import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
+import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
+import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
 
 public class ParentStringPrinter {
-    private static final String AREA_URL = "/capcontrol/subareas.jsp";
-    private static final String SPECIAL_AREA_URL = "/capcontrol/specialSubAreas.jsp";
-    private static final String FEEDER_URL = "/capcontrol/feeders.jsp";
     private static final String ORPH_STRING = "---";
-    private final HttpServletRequest request;
-    private CapControlCache capControlCache;
-    private CapControlDao cbcDao;
+    private CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
+    private PointDao pointDao;
+    private PaoDao paoDao;
 
     public ParentStringPrinter(final HttpServletRequest request) {
-        this.request = request;
     }
 
     public String printPAO(final Integer paoId) {
-        StreamableCapObject obj = getStreamable(paoId);
-        if (obj instanceof CCArea || obj instanceof CCSpecialArea) return ORPH_STRING;
-        
-        Integer parentId = (obj != null) ? obj.getParentID() : getCapBankForController(paoId);
-        if (parentId < 1) return ORPH_STRING;
-        
-        String result = printHierarchy(parentId); 
-        return result;
-    }
-
-    private StreamableCapObject getStreamable(Integer paoId) {
-    	Validate.notNull(paoId, "id cannot be null");
-    	return capControlCache.getCapControlPAO(paoId);
-    }
-
-    private String printHierarchy(int id) {
-        /*
-         * If a cc object does not live under an area it can't be
-         * displayed in feeders.jsp.  If this is the case the parent link
-         * will be set to the editor for it's parent instead of feeders.jsp.
-         */
-        
-        boolean isCBCId = isController(id);
-        if (isCBCId) {
-            Integer capBankId = getCapBankForController(id);
-            String controllerResult = printHierarchy(capBankId);
-            return controllerResult;
-        }
-
-        String result = ORPH_STRING;
-        final StreamableCapObject capObject = getStreamable(id);
-
-        if (capObject == null) return result;
-
-        final int parentId = capObject.getParentID();
-        final String paoName = capObject.getCcName();
-        final Integer paoId = capObject.getCcId();
-
-        if (capObject instanceof CCArea) {
-            result = buildLink(request, paoName, null, AREA_URL);
-        }
-
-        if (capObject instanceof CCSpecialArea) {
-            result = buildLink(request, paoName, null, SPECIAL_AREA_URL);
-        }
-
-        if (capObject instanceof SubStation) {
-            if (((SubStation)capObject).getParentID() < 1) {
-                String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                result = appendHierarchy(editorLink, parentId);
-            }else {
-                String feederLink = buildLink(request, paoName, paoId, FEEDER_URL);
-                result = appendHierarchy(feederLink, parentId);
-            }
-        }
-
-        if (capObject instanceof SubBus) {
-            SubBus bus = (SubBus)capObject;
-            Integer stationId = bus.getParentID();
-            if(stationId < 1) {
-                String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                result = appendHierarchy(editorLink, parentId);
-            }else {
-                SubStation station = capControlCache.getSubstation(stationId);
-                Integer areaId = station.getParentID();
-                if(areaId < 1) {
-                    String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                    result = appendHierarchy(editorLink, parentId);
-                }else {
-                    String feederLink = buildLink(request, paoName, parentId, FEEDER_URL);
-                    result = appendHierarchy(feederLink, parentId);
+        LiteYukonPAObject lite = paoDao.getLiteYukonPAO(paoId);
+        int type = lite.getType();
+        if(type == CapControlTypes.CAP_CONTROL_AREA || type == CapControlTypes.CAP_CONTROL_SPECIAL_AREA) {
+            return ORPH_STRING;
+        }else {
+            switch(type) {
+            case CapControlTypes.CAP_CONTROL_SUBSTATION :
+                Integer subParentId = CCSubAreaAssignment.getAreaIDForSubStation(paoId);
+                if(subParentId > -1) {
+                    return paoDao.getYukonPAOName(subParentId);
+                } else {
+                    return ORPH_STRING;
                 }
-            }
-        }
-
-        if (capObject instanceof Feeder) {
-            Feeder fdr = (Feeder)capObject;
-            Integer busId = fdr.getParentID();
-            if(busId < 1) {
-                String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                result = appendHierarchy(editorLink, parentId);
-            }else {
-                SubBus bus = capControlCache.getSubBus(busId);
-                Integer stationId = bus.getParentID();
-                if(stationId < 1) {
-                    String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                    result = appendHierarchy(editorLink, parentId);
-                }else {
-                    SubStation station = capControlCache.getSubstation(stationId);
-                    Integer areaId = station.getParentID();
-                    if(areaId < 1) {
-                        String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                        result = appendHierarchy(editorLink, parentId);
-                    }else {
-                        Integer substationId = getSubstationId(parentId);
-                        String feederLink = buildLink(request, paoName, substationId, FEEDER_URL);
-                        result = appendHierarchy(feederLink, parentId);
-                    }
-                }
-            }
-        }    
-
-        if (capObject instanceof CapBankDevice) {
-            
-            CapBankDevice cb = (CapBankDevice) capObject;
-            Integer fdrId = cb.getParentID();
-            if(fdrId < 1) {
-                String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                result = appendHierarchy(editorLink, parentId);
-            }else {
                 
-                Feeder fdr = capControlCache.getFeeder(fdrId);
-                Integer busId = fdr.getParentID();
-                if(busId < 1) {
-                    String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                    result = appendHierarchy(editorLink, parentId);
-                }else {
-                    SubBus bus = capControlCache.getSubBus(busId);
-                    Integer stationId = bus.getParentID();
-                    if(stationId < 1) {
-                        String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                        result = appendHierarchy(editorLink, parentId);
-                    }else {
-                        SubStation station = capControlCache.getSubstation(stationId);
-                        Integer areaId = station.getParentID();
-                        if(areaId < 1) {
-                            String editorLink = buildEditorLink(request, paoName, "/editor/cbcBase.jsf?type=2&itemid=" +paoId+"&ignoreBookmark=true");
-                            result = appendHierarchy(editorLink, parentId);
-                        }else {
-                            Integer substationId = getSubstationId(parentId);
-                            String feederLink = buildLink(request, paoName, substationId, FEEDER_URL);
-                            result = appendHierarchy(feederLink, parentId);
-                        }
-                    }
+            case CapControlTypes.CAP_CONTROL_SUBBUS :
+                Integer subBusParentId = CCSubstationSubBusList.getSubStationForSubBus(paoId);
+                if(subBusParentId > -1) {
+                    return paoDao.getYukonPAOName(subBusParentId);
+                } else {
+                    return ORPH_STRING;
+                }
+                
+            case CapControlTypes.CAP_CONTROL_FEEDER :
+                Integer feederParentId = CCFeederSubAssignment.getSubBusIdForFeeder(paoId);
+                if(feederParentId > -1) {
+                    return paoDao.getYukonPAOName(feederParentId);
+                } else {
+                    return ORPH_STRING;
+                }
+                
+            case CapControlTypes.CAP_CONTROL_CAPBANK :
+                Integer capBankParentId = CCFeederBankList.getFeederIdForCapBank(paoId);
+                if(capBankParentId > -1) {
+                    return paoDao.getYukonPAOName(capBankParentId);
+                } else {
+                    return ORPH_STRING;
+                }
+                
+            default :
+                Integer cbcParentId = capbankDao.getCapBankIdByCBC(paoId);
+                if(cbcParentId > -1) {
+                    return paoDao.getYukonPAOName(cbcParentId);
+                } else {
+                    return ORPH_STRING;
                 }
             }
         }
-
-        return result;
-    }
-    
-    private Integer getSubstationId(Integer paoId) {
-        final StreamableCapObject capObject = capControlCache.getCapControlPAO(paoId);
-        
-        if (capObject instanceof CCArea || capObject instanceof CCSpecialArea)
-            throw new UnsupportedOperationException("Area not supported");
-        
-        if (capObject instanceof SubStation) {
-            return capObject.getCcId();
-        }
-        if(capObject == null) {
-            return 0;
-        }
-        return getSubstationId(capObject.getParentID());
-    }
-    
-    private String appendHierarchy(String link, int parentId) {
-        String hierarchy = printHierarchy(parentId);
-        
-        final StringBuilder sb = new StringBuilder();
-        sb.append(hierarchy);
-        sb.append(":");
-        sb.append(link);
-        
-        String result = sb.toString();
-        return result;
-    }
-    
-    private String buildLink(final HttpServletRequest request, final String paoName, final Integer paoId, final String url) {
-        String safeUrl = ServletUtil.createSafeUrl(request, url);
-        
-        final StringBuilder sb = new StringBuilder();
-        sb.append("<a href=\"");
-        sb.append(safeUrl);
-        if (paoId != null) sb.append("?id=" + paoId);
-        sb.append("\">");
-        sb.append(paoName);
-        sb.append("</a>");
-        String result = sb.toString();
-        return result;
-    }
-    
-    private String buildEditorLink(final HttpServletRequest request, final String paoName, final String url) {
-        String safeUrl = ServletUtil.createSafeUrl(request, url);
-        
-        final StringBuilder sb = new StringBuilder();
-        sb.append("<a href=\"");
-        sb.append(safeUrl);
-        sb.append("\">");
-        sb.append(paoName);
-        sb.append("</a>");
-        String result = sb.toString();
-        return result;
-    }
-    
-    private Integer getCapBankForController(int id) {
-        Integer parentID = cbcDao.getParentForController(id);
-        return parentID;
-    }
-
-    private boolean isController(int id) {
-        return CBCUtils.isController(id);
     }
 
     public String printPoint(Integer id) {
-        Integer parentID = cbcDao.getParentForPoint(id);
-        if (parentID > 0) return printHierarchy(parentID);
-        return ORPH_STRING;
+        LitePoint point = pointDao.getLitePoint(id);
+        return paoDao.getYukonPAOName(point.getPaobjectID());
     }
 
-    public void setCapControlCache(CapControlCache capControlCache) {
-        this.capControlCache = capControlCache;
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
     }
-
-    public void setCbcDao(CapControlDao cbcDao) {
-        this.cbcDao = cbcDao;
+    
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
     }
-
+    
 }

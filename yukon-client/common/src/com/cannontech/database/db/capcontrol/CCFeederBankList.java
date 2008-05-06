@@ -2,6 +2,10 @@ package com.cannontech.database.db.capcontrol;
 
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcOperations;
+
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.SqlUtils;
 
 /**
@@ -14,7 +18,7 @@ public class CCFeederBankList extends com.cannontech.database.db.DBPersistent
 	private Float controlOrder = null;
     private Float closeOrder = null;
     private Float tripOrder = null;
-
+    private static JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -107,6 +111,19 @@ public static boolean deleteCapBanksFromFeederList(Integer feederId, Integer cap
 
 	return true;
 }
+
+public static Integer getFeederIdForCapBank( int paoId ){
+    String sql = "SELECT FeederId FROM " + TABLE_NAME +
+                 " WHERE DeviceId = ? ";
+    Integer feederId = -1;
+    try {
+        feederId = jdbcOps.queryForInt(sql, new Integer[] {paoId});
+    } catch (EmptyResultDataAccessException e) {
+        return -1;
+    }
+    return feederId;
+}
+
 /**
  * This method was created in VisualAge.
  * @param pointID java.lang.Integer

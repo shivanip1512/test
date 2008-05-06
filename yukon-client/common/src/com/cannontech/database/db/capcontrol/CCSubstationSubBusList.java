@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
@@ -110,8 +111,13 @@ public class CCSubstationSubBusList extends com.cannontech.database.db.DBPersist
      * @param substationId java.lang.Integer
      */
     public static Integer getSubStationForSubBus(Integer subBusId) {
+        Integer substationId = -1;
         String sql = "SELECT DISTINCT substationId FROM " + TABLE_NAME + " WHERE substationBusId = ? ";
-        Integer substationId = jdbcOps.queryForInt(sql, new Integer[] {subBusId});
+        try {
+            substationId = jdbcOps.queryForInt(sql, new Integer[] {subBusId});
+        }catch (EmptyResultDataAccessException e) {
+            return -1;
+        }
         return substationId;
     }
     

@@ -18,6 +18,8 @@ public interface CapbankDao {
     
     public Capbank getByControlDeviceId(int controlDeviceId) throws DataRetrievalFailureException;
     
+    public int getCapBankIdByCBC(Integer paoId);
+    
     /**
      * This method returns all the CapBank IDs that are not assigned
      *  to a Feeder.

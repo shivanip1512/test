@@ -61,8 +61,8 @@
   </bean> 
    
   <bean id="parentStringPrinterFactory" class="com.cannontech.cbc.web.ParentStringPrinterFactory">
-    <property name="capControlCache" ref="capControlCache"/>
-    <property name="cbcDao" ref="cbcDao"/>
+    <property name="paoDao" ref="paoDao"/>
+    <property name="pointDao" ref="pointDao"/>
   </bean> 
 
 </beans>

@@ -125,7 +125,7 @@ public class CCSubAreaAssignment extends DBPersistent{
         try {
             areaID = yukonTemplate.queryForInt(allSubs.toString(), new Integer[] { subID });
         } catch (EmptyResultDataAccessException erda) {
-            areaID = null;
+            areaID = -1;
         }
         return areaID;
     }

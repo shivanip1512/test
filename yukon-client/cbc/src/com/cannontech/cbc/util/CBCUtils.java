@@ -620,7 +620,11 @@ public final class CBCUtils {
 
     public static String getAreaNameForSubStation(Integer substationId) {
        Integer areaID = CCSubAreaAssignment.getAreaIDForSubStation(substationId);
-       return DaoFactory.getPaoDao().getYukonPAOName(areaID);
+       if(areaID < 0 ) {
+           return "(none)";
+       }else {
+           return DaoFactory.getPaoDao().getYukonPAOName(areaID);
+       }
     }
     
     public static String getAreaNameForSubBus(Integer subBusId) {
