@@ -2,7 +2,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib prefix="x" uri="http://java.sun.com/jstl/xml" %>
 
-<cti:standardPage title="Billing Format Setup" module="amr">
+<cti:standardPage title="Billing Format Editor" module="amr">
 <cti:standardMenu menuSelection="billing|setup"/>
 <cti:breadCrumbs>
     <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
