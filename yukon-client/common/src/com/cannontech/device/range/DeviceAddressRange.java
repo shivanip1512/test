@@ -118,6 +118,9 @@ public class DeviceAddressRange
             
             case DeviceTypes.REPEATER_902:
                 return RANGE_REPEATER902;
+            
+            case DeviceTypes.REPEATER_921:
+                return RANGE_REPEATER921;
                 
             case DeviceTypes.CCU711:
                 return RANGE_CCU711;
