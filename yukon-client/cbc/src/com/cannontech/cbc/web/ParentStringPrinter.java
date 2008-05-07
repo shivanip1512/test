@@ -1,5 +1,7 @@
 package com.cannontech.cbc.web;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.cbc.dao.CapbankDao;
@@ -11,16 +13,24 @@ import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.database.data.pao.CapControlTypes;
 import com.cannontech.database.db.capcontrol.CCFeederBankList;
 import com.cannontech.database.db.capcontrol.CCSubAreaAssignment;
+import com.cannontech.database.db.capcontrol.CCSubSpecialAreaAssignment;
 import com.cannontech.database.db.capcontrol.CCSubstationSubBusList;
 import com.cannontech.database.db.capcontrol.CCFeederSubAssignment;
+import com.cannontech.util.ServletUtil;
+import com.cannontech.common.util.StringUtils;
 
 public class ParentStringPrinter {
+    private HttpServletRequest request;
     private static final String ORPH_STRING = "---";
+    private static final String FEEDER_URL = "/capcontrol/feeders.jsp";
+    private static final String AREA_URL = "/capcontrol/subareas.jsp";
+    private static final String SPECIAL_AREA_URL = "/capcontrol/specialsubareas.jsp";
     private CapbankDao capbankDao = YukonSpringHook.getBean("capbankDao",CapbankDao.class);
     private PointDao pointDao;
     private PaoDao paoDao;
 
     public ParentStringPrinter(final HttpServletRequest request) {
+        this.request = request;
     }
 
     public String printPAO(final Integer paoId) {
@@ -28,49 +38,134 @@ public class ParentStringPrinter {
         int type = lite.getType();
         if(type == CapControlTypes.CAP_CONTROL_AREA || type == CapControlTypes.CAP_CONTROL_SPECIAL_AREA) {
             return ORPH_STRING;
-        }else {
-            switch(type) {
-            case CapControlTypes.CAP_CONTROL_SUBSTATION :
-                Integer subParentId = CCSubAreaAssignment.getAreaIDForSubStation(paoId);
-                if(subParentId > -1) {
-                    return paoDao.getYukonPAOName(subParentId);
+        }else if (type == CapControlTypes.CAP_CONTROL_SUBSTATION ){
+            Integer areaId = CCSubAreaAssignment.getAreaIDForSubStation(paoId);
+            List<Integer> specialAreaIdList = CCSubSpecialAreaAssignment.getAreaIdsForSubstation(paoId);
+            if (areaId > -1) {
+                String areaName = paoDao.getYukonPAOName(areaId);
+                return buildLink(request, areaName, paoId, AREA_URL);
+            } else if (specialAreaIdList != null && specialAreaIdList.size() > 0){
+                String spAreaListString = StringUtils.toStringList(specialAreaIdList);
+                return buildLink(request, spAreaListString, paoId, SPECIAL_AREA_URL);
+            } else {
+                return ORPH_STRING;
+            }
+        } else if (type == CapControlTypes.CAP_CONTROL_SUBBUS) {
+            Integer substationId = CCSubstationSubBusList.getSubStationForSubBus(paoId);
+            if (substationId > -1) {
+                Integer areaId = CCSubAreaAssignment.getAreaIDForSubStation(substationId);
+                List<Integer> subBus_specialAreaIdList = CCSubSpecialAreaAssignment.getAreaIdsForSubstation(substationId);
+                if (areaId > -1) {
+                    String parentString = paoDao.getYukonPAOName(substationId) +", "+ paoDao.getYukonPAOName(areaId);
+                    return buildLink(request, parentString, substationId, FEEDER_URL);
+                } else if (subBus_specialAreaIdList != null && subBus_specialAreaIdList.size() > 0) {
+                    String spAreaListString = StringUtils.toStringList(subBus_specialAreaIdList);
+                    String parentString = paoDao.getYukonPAOName(substationId) +", "+ spAreaListString;
+                    return buildLink(request, parentString, substationId, FEEDER_URL);
                 } else {
-                    return ORPH_STRING;
+                    return paoDao.getYukonPAOName(substationId);
                 }
-                
-            case CapControlTypes.CAP_CONTROL_SUBBUS :
-                Integer subBusParentId = CCSubstationSubBusList.getSubStationForSubBus(paoId);
-                if(subBusParentId > -1) {
-                    return paoDao.getYukonPAOName(subBusParentId);
+            } else {
+                return ORPH_STRING;
+            }
+        } else if (type == CapControlTypes.CAP_CONTROL_FEEDER) {
+            Integer subBusId = CCFeederSubAssignment.getSubBusIdForFeeder(paoId);
+            if (subBusId > -1) {
+                Integer substationId = CCSubstationSubBusList.getSubStationForSubBus(subBusId);
+                if (substationId > -1) {
+                    Integer areaId = CCSubAreaAssignment.getAreaIDForSubStation(substationId);
+                    List<Integer> specialAreaIdList = CCSubSpecialAreaAssignment.getAreaIdsForSubstation(substationId);
+                    if (areaId > -1) {
+                        String parentString = paoDao.getYukonPAOName(subBusId)+", "+ paoDao.getYukonPAOName(substationId) +", "+ paoDao.getYukonPAOName(areaId);
+                        return buildLink(request, parentString, substationId, FEEDER_URL);
+                    } else if (specialAreaIdList != null && specialAreaIdList.size() > 0) {
+                        String spAreaListString = StringUtils.toStringList(specialAreaIdList);
+                        String parentString = paoDao.getYukonPAOName(subBusId)+", "+ paoDao.getYukonPAOName(substationId) +", "+ spAreaListString;
+                        return buildLink(request, parentString, substationId, FEEDER_URL);
+                    } else {
+                        return paoDao.getYukonPAOName(subBusId) +", "+ paoDao.getYukonPAOName(substationId);
+                    }
                 } else {
-                    return ORPH_STRING;
+                    return paoDao.getYukonPAOName(subBusId);
                 }
-                
-            case CapControlTypes.CAP_CONTROL_FEEDER :
-                Integer feederParentId = CCFeederSubAssignment.getSubBusIdForFeeder(paoId);
-                if(feederParentId > -1) {
-                    return paoDao.getYukonPAOName(feederParentId);
+            } else {
+                return ORPH_STRING;
+            }
+        } else if (type == CapControlTypes.CAP_CONTROL_CAPBANK) {
+            Integer feederId = CCFeederBankList.getFeederIdForCapBank(paoId);
+            if (feederId > -1) {
+                Integer subBusId = CCFeederSubAssignment.getSubBusIdForFeeder(feederId);
+                if (subBusId > -1) {
+                    Integer substationId = CCSubstationSubBusList.getSubStationForSubBus(subBusId);
+                    if (substationId > -1) {
+                        Integer areaId = CCSubAreaAssignment.getAreaIDForSubStation(substationId);
+                        List<Integer> specialAreaIdList = CCSubSpecialAreaAssignment.getAreaIdsForSubstation(substationId);
+                        if (areaId > -1) {
+                            String parentString = paoDao.getYukonPAOName(feederId) +", "+ paoDao.getYukonPAOName(subBusId)+", "+ paoDao.getYukonPAOName(substationId) +", "+ paoDao.getYukonPAOName(areaId);
+                            return buildLink(request, parentString, substationId, FEEDER_URL);
+                        } else if (specialAreaIdList != null && specialAreaIdList.size() > 0) {
+                            String spAreaListString = StringUtils.toStringList(specialAreaIdList);
+                            String parentString = paoDao.getYukonPAOName(feederId) +", "+ paoDao.getYukonPAOName(subBusId)+", "+ paoDao.getYukonPAOName(substationId) +", "+ spAreaListString;
+                            return buildLink(request, parentString, substationId, FEEDER_URL);
+                        } else {
+                            return paoDao.getYukonPAOName(feederId) +", "+ paoDao.getYukonPAOName(subBusId) +", "+ paoDao.getYukonPAOName(substationId);
+                        }
+                    } else {
+                        return paoDao.getYukonPAOName(feederId) +", "+ paoDao.getYukonPAOName(subBusId);
+                    }
                 } else {
-                    return ORPH_STRING;
+                    return paoDao.getYukonPAOName(feederId);
                 }
-                
-            case CapControlTypes.CAP_CONTROL_CAPBANK :
-                Integer capBankParentId = CCFeederBankList.getFeederIdForCapBank(paoId);
-                if(capBankParentId > -1) {
-                    return paoDao.getYukonPAOName(capBankParentId);
+            } else {
+                return ORPH_STRING;
+            }
+        } else {
+            Integer capbankId = capbankDao.getCapBankIdByCBC(paoId);
+            if (capbankId > -1) {
+                Integer feederId = CCFeederBankList.getFeederIdForCapBank(capbankId);
+                if (feederId > -1) {
+                    Integer subBusId = CCFeederSubAssignment.getSubBusIdForFeeder(feederId);
+                    if (subBusId > -1) {
+                        Integer substationId = CCSubstationSubBusList.getSubStationForSubBus(subBusId);
+                        if (substationId > -1) {
+                            Integer areaId = CCSubAreaAssignment.getAreaIDForSubStation(substationId);
+                            List<Integer> specialAreaIdList = CCSubSpecialAreaAssignment.getAreaIdsForSubstation(substationId);
+                            if (areaId > -1) {
+                                String parentString = paoDao.getYukonPAOName(capbankId) +", "+ paoDao.getYukonPAOName(feederId) +", "+ paoDao.getYukonPAOName(subBusId)+", "+ paoDao.getYukonPAOName(substationId) +", "+ paoDao.getYukonPAOName(areaId);
+                                return buildLink(request, parentString, substationId, FEEDER_URL);
+                            } else if (specialAreaIdList != null && specialAreaIdList.size() > 0) {
+                                String spAreaListString = StringUtils.toStringList(specialAreaIdList);
+                                String parentString = paoDao.getYukonPAOName(capbankId) +", "+ paoDao.getYukonPAOName(feederId) +", "+ paoDao.getYukonPAOName(subBusId)+", "+ paoDao.getYukonPAOName(substationId) +", "+ spAreaListString;
+                                return buildLink(request, parentString, substationId, FEEDER_URL);
+                            } else {
+                                return paoDao.getYukonPAOName(capbankId) +", "+ paoDao.getYukonPAOName(feederId) +", "+ paoDao.getYukonPAOName(subBusId) +", "+ paoDao.getYukonPAOName(substationId);
+                            }
+                        } else {
+                            return paoDao.getYukonPAOName(capbankId) +", "+ paoDao.getYukonPAOName(feederId) +", "+ paoDao.getYukonPAOName(subBusId);
+                        }
+                    } else {
+                        return paoDao.getYukonPAOName(capbankId) +", "+ paoDao.getYukonPAOName(feederId);
+                    }
                 } else {
-                    return ORPH_STRING;
+                    return paoDao.getYukonPAOName(capbankId);
                 }
-                
-            default :
-                Integer cbcParentId = capbankDao.getCapBankIdByCBC(paoId);
-                if(cbcParentId > -1) {
-                    return paoDao.getYukonPAOName(cbcParentId);
-                } else {
-                    return ORPH_STRING;
-                }
+            } else {
+                return ORPH_STRING;
             }
         }
+    }
+    
+    private String buildLink(final HttpServletRequest request, final String paoName, final Integer paoId, final String url) {
+        String safeUrl = ServletUtil.createSafeUrl(request, url);
+        final StringBuilder sb = new StringBuilder();
+        sb.append("<a href=\"");
+        sb.append(safeUrl);
+        if (paoId != null) sb.append("?id=" + paoId);
+        sb.append("\">");
+        sb.append(paoName);
+        sb.append("</a>");
+        String result = sb.toString();
+        return result;
     }
 
     public String printPoint(Integer id) {
