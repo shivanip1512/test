@@ -64,8 +64,13 @@ public abstract class DeleteForm extends DBEditorForm {
                     if(deleteable.getDbPersistent() instanceof CapControlSubstation) { // get these before the delete
                         com.cannontech.database.db.capcontrol.CapControlSubstation subDB = ((CapControlSubstation)deleteable.getDbPersistent()).getCapControlSubstation();
                         Integer subId = subDB.getSubstationID();
-                        SubStation sub = capControlCache.getSubstation(subId);
-                        Integer areaId = sub.getParentID();
+                        Integer areaId = 0;
+                        try {
+                            SubStation sub = capControlCache.getSubstation(subId);
+                            areaId = sub.getParentID();
+                        }catch(NotFoundException nfe) {
+                            areaId = 0;
+                        }
                         if(areaId > 0) {
                             try {
                                 area = capControlCache.getCBCArea(areaId);
