@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/5/2008 11:25:12 AM                         */
+/* Created on:     5/7/2008 11:08:01 AM                         */
 /*==============================================================*/
 
 
@@ -6545,7 +6545,7 @@ create table POINTLIMITS  (
 create table POINTPROPERTYVALUE  (
    PointID              NUMBER                          not null,
    PointPropertyCode    INTEGER                         not null,
-   FloatValue           FLOAT                           not null,
+   FltValue             FLOAT                           not null,
    constraint PK_POINTPROPERTYVALUE primary key (PointID, PointPropertyCode)
 );
 

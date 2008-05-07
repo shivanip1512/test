@@ -1813,7 +1813,7 @@ go
 create table POINTPROPERTYVALUE (
    PointID              numeric              not null,
    PointPropertyCode    int                  not null,
-   FloatValue           float                not null,
+   FltValue             float                not null,
    constraint PK_POINTPROPERTYVALUE primary key nonclustered (PointID, PointPropertyCode)
 );
 go

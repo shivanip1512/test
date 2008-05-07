@@ -523,6 +523,12 @@ DROP VIEW CCCap_Inventory_View;
 /* @error ignore-end */
 /* End YUK-5630 */
 
+/* Start YUK-5395 */
+/* @error ignore-begin */
+ALTER TABLE PointPropertyValue rename column FloatValue to FltValue;
+/* @error ignore-end */
+/* End YUK-5395 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -1656,7 +1656,7 @@ alter table DYNAMICCCOPERATIONSTATISTICS
 create table POINTPROPERTYVALUE  (
    PointID              NUMBER                          not null,
    PointPropertyCode    INTEGER                         not null,
-   FloatValue           FLOAT                           not null,
+   FltValue             FLOAT                           not null,
    constraint PK_POINTPROPERTYVALUE primary key (PointID, PointPropertyCode)
 );
 

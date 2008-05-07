@@ -670,6 +670,12 @@ DROP VIEW [CCCAP_INVENTORY_VIEW];
 go
 /* End YUK-5630 */
 
+/* Start YUK-5395 */
+/* @error ignore-begin */
+sp_rename 'PointPropertyValue.FloatValue', FltValue
+go
+/* @error ignore-end */
+/* End YUK-5395 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

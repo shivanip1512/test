@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/5/2008 11:26:36 AM                         */
+/* Created on:     5/7/2008 11:04:41 AM                         */
 /*==============================================================*/
 
 
@@ -9145,7 +9145,7 @@ go
 create table POINTPROPERTYVALUE (
    PointID              numeric              not null,
    PointPropertyCode    int                  not null,
-   FloatValue           float                not null,
+   FltValue             float                not null,
    constraint PK_POINTPROPERTYVALUE primary key nonclustered (PointID, PointPropertyCode)
 )
 go
