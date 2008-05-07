@@ -1,5 +1,6 @@
 package com.cannontech.web.navigation;
 
+import java.io.Serializable;
 import java.util.Stack;
 
 /**
@@ -7,8 +8,7 @@ import java.util.Stack;
  *
  * Used to store navigation state between pages
  */
-public class CtiNavObject 
-{
+public class CtiNavObject implements Serializable{
 	private String currentPage;
 	private String previousPage;
 
