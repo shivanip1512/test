@@ -3,6 +3,8 @@ package com.cannontech.billing.format;
 import java.sql.Timestamp;
 import java.text.DecimalFormat;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.billing.device.base.BillableDevice;
 import com.cannontech.common.dynamicBilling.model.BillableField;
 import com.cannontech.common.dynamicBilling.Channel;
@@ -47,13 +49,17 @@ public class NISC_TOU_kVarH_RatesOnlyRecordFormatter extends BillingFormatterBas
         StringBuffer writeToFile = new StringBuffer();
 
         String rowData = null;
-
+        boolean useTotal = true;
         // Rate A kWh, Rate A kw and kvarh
         rowData = createRow(device,
                             1,
                             BillableField.rateADemand,
                             BillableField.rateAConsumption);
-        writeToFile.append(rowData);
+        
+        if (StringUtils.isNotBlank(rowData)) {
+            writeToFile.append(rowData);
+            useTotal = false;
+        }
 
         // Rate B kWh, Rate B kw and kvarh
         rowData = createRow(device,
@@ -61,7 +67,11 @@ public class NISC_TOU_kVarH_RatesOnlyRecordFormatter extends BillingFormatterBas
                             BillableField.rateBDemand,
                             BillableField.rateBConsumption);
 
-        writeToFile.append(rowData);
+        if (StringUtils.isNotBlank(rowData)) {
+            writeToFile.append(rowData);
+            useTotal = false;
+        }
+
 
         // Rate C kWh, Rate C kw and kvarh
         rowData = createRow(device,
@@ -69,7 +79,10 @@ public class NISC_TOU_kVarH_RatesOnlyRecordFormatter extends BillingFormatterBas
                             BillableField.rateCDemand,
                             BillableField.rateCConsumption);
 
-        writeToFile.append(rowData);
+        if (StringUtils.isNotBlank(rowData)) {
+            writeToFile.append(rowData);
+            useTotal = false;
+        }
 
         // Rate D kWh, Rate D kw and kvarh
         rowData = createRow(device,
@@ -77,16 +90,20 @@ public class NISC_TOU_kVarH_RatesOnlyRecordFormatter extends BillingFormatterBas
                             BillableField.rateDDemand,
                             BillableField.rateDConsumption);
         
+        if (StringUtils.isNotBlank(rowData)) {
+            writeToFile.append(rowData);
+            useTotal = false;
+        }
+
         //If no data comes back, try to get the totalConsumption, totalDemand as register 1 instead
-        if( rowData == "") {
+        if( useTotal) {
          // Total kWh, total Peak kw and kvarh
             rowData = createRow(device,
                                 1,
                                 BillableField.totalPeakDemand,
                                 BillableField.totalConsumption);
+            writeToFile.append(rowData);
         }
-        
-        writeToFile.append(rowData);
         
         return writeToFile.toString();
     }
