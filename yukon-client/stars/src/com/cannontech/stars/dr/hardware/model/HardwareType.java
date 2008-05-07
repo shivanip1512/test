@@ -21,6 +21,10 @@ public enum HardwareType {
     EXPRESSSTAT_HEAT_PUMP(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP), 
     ENERGYPRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO);
 
+    // this key prefix can be found in the following file:
+    // com.cannontech.yukon.common.device.bulk.bulkAction.xml
+    private final static String keyPrefix = "yukon.dr.consumer.hardware.type.";
+    
     private int definitionId;
 
     private HardwareType(int definitionId) {
@@ -48,5 +52,13 @@ public enum HardwareType {
 
         throw new IllegalArgumentException("No HardwareType found for definitionId: " + definitionId);
 
+    }
+    
+    /**
+     * I18N key for the display text for this action
+     * @return Display key
+     */
+    public String getDisplayKey() {
+        return keyPrefix + name();
     }
 }

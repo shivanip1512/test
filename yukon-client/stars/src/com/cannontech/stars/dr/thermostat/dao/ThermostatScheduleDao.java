@@ -1,6 +1,9 @@
 package com.cannontech.stars.dr.thermostat.dao;
 
+import java.util.List;
+
 import com.cannontech.stars.dr.hardware.model.HardwareType;
+import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 
 /**
@@ -24,6 +27,22 @@ public interface ThermostatScheduleDao {
      * @return The schedule for that inventory
      */
     public ThermostatSchedule getThermostatScheduleByInventoryId(int inventoryId);
+
+    /**
+     * Method to get the thermostat schedule
+     * @param scheduleId - Id of schedule
+     * @param accountId - Id of current user's account
+     * @return The schedule
+     */
+    public ThermostatSchedule getThermostatScheduleById(int scheduleId, int accountId);
+
+    /**
+     * Method to get a list of currently saved schedules for an account
+     * @param accountId - Id of account to get schedules for
+     * @return List of schedules
+     */
+    public List<ScheduleDropDownItem> getSavedThermostatSchedulesByAccountId(
+            int accountId);
 
     /**
      * Method to save a thermostat schedule

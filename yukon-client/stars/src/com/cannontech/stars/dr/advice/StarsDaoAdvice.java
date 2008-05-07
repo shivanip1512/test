@@ -61,17 +61,17 @@ public class StarsDaoAdvice {
     @After("bean(thermostatScheduleDao) && saveMethodNamePointCut() && args(schedule)")
     public void doThermostatScheduleAction(ThermostatSchedule schedule) throws Throwable {
         
-        Integer thermostatId = schedule.getInventoryId();
-        LiteStarsEnergyCompany energyCompany = mappingDao.getInventoryEC(thermostatId);
+        Integer accountId = schedule.getAccountId();
+        LiteStarsEnergyCompany energyCompany = mappingDao.getCustomerAccountEC(accountId);
         
         // Clear account info cache entry
-        CustomerAccount account = customerAccountDao.getAccountByInventoryId(thermostatId);
-        int accountId = account.getAccountId();
-        
         energyCompany.deleteStarsCustAccountInformation(accountId);
         
         // Clear inventory cache entry
-        energyCompany.deleteInventory(thermostatId);
+        Integer inventoryId = schedule.getInventoryId();
+        if(inventoryId != 0) {
+            energyCompany.deleteInventory(inventoryId);
+        }
         
     }
 
@@ -84,5 +84,5 @@ public class StarsDaoAdvice {
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
         this.customerAccountDao = customerAccountDao;
     }
-    
+
 }

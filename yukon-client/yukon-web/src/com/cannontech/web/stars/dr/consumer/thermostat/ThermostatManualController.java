@@ -1,5 +1,7 @@
 package com.cannontech.web.stars.dr.consumer.thermostat;
 
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
@@ -7,10 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -24,109 +28,167 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.consumer.AbstractConsumerController;
 
 /**
  * Controller for Manual thermostat operations
  */
 @Controller
-public class ThermostatManualController extends AbstractConsumerController {
+public class ThermostatManualController extends AbstractThermostatController {
 
     private InventoryDao inventoryDao;
     private CustomerEventDao customerEventDao;
     private ThermostatService thermostatService;
 
     @RequestMapping(value = "/consumer/thermostat/view", method = RequestMethod.GET)
-    public String view(ModelMap map, int thermostatId) {
+    public String view(ModelMap map, @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
 
-        Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+        // Get the first (or only) thermostat and add to model
+        Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
         map.addAttribute("thermostat", thermostat);
 
-        ThermostatManualEvent event = customerEventDao.getLastManualEvent(thermostatId);
+        
+        ThermostatManualEvent event;
+        if (thermostatIds.size() == 1) {
+            // single thermsotat selected
+            int thermostatId = thermostatIds.get(0);
+
+            YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.consumer.thermostat.label",
+                                                                                       thermostat.getLabel());
+            map.addAttribute("thermostatLabel", resolvable);
+
+            event = customerEventDao.getLastManualEvent(thermostatId);
+        } else {
+            // multiple thermostats selected
+            YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.consumer.thermostat.multipleLabel");
+            map.addAttribute("thermostatLabel", resolvable);
+
+            event = new ThermostatManualEvent();
+        }
+
         map.addAttribute("event", event);
 
         return "consumer/thermostat.jsp";
     }
 
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
-    public String saveLabel(ModelMap map, int thermostatId, String displayLabel) {
+    public String saveLabel(ModelMap map, String displayLabel,
+            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
+
+        if (thermostatIds.size() != 1) {
+            throw new IllegalArgumentException("You can only change the label of 1 thermostat at a time.");
+        }
+
+        int thermostatId = thermostatIds.get(0);
 
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
         thermostat.setDeviceLabel(displayLabel);
 
         inventoryDao.save(thermostat);
 
-        map.addAttribute("thermostatId", thermostatId);
+        map.addAttribute("thermostatIds", thermostatId);
 
         return "redirect:/spring/stars/consumer/thermostat/view";
     }
 
     @RequestMapping(value = "/consumer/thermostat/manual", method = RequestMethod.POST)
-    public String manual(HttpServletRequest request, ModelMap map,
-            int thermostatId, String mode, String fan, String temperatureUnit) {
+    public String manual(HttpServletRequest request, ModelMap map, String mode,
+            String fan, String temperatureUnit,
+            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
 
-        boolean hold = ServletRequestUtils.getBooleanParameter(request,
-                                                               "hold",
-                                                               false);
-        int temperature = ServletRequestUtils.getIntParameter(request,
-                                                              "temperature",
-                                                              ThermostatManualEvent.DEFAULT_TEMPERATURE);
+        ThermostatManualEventResult message = null;
+        boolean failed = false;
 
-        // See if the run program button was clicked
-        String runProgramButtonClicked = ServletRequestUtils.getStringParameter(request,
-                                                                                "runProgram",
-                                                                                null);
-        boolean runProgram = runProgramButtonClicked != null;
+        for (Integer thermostatId : thermostatIds) {
 
-        // Convert to fahrenheit temperature
-        if ("c".equalsIgnoreCase(temperatureUnit)) {
-            temperature = (int) CtiUtilities.convertTemperature(temperature,
-                                                                CtiUtilities.CELSIUS_CHARACTER,
-                                                                CtiUtilities.FAHRENHEIT_CHARACTER);
+            boolean hold = ServletRequestUtils.getBooleanParameter(request,
+                                                                   "hold",
+                                                                   false);
+            int temperature = ServletRequestUtils.getIntParameter(request,
+                                                                  "temperature",
+                                                                  ThermostatManualEvent.DEFAULT_TEMPERATURE);
+
+            // See if the run program button was clicked
+            String runProgramButtonClicked = ServletRequestUtils.getStringParameter(request,
+                                                                                    "runProgram",
+                                                                                    null);
+            boolean runProgram = runProgramButtonClicked != null;
+
+            // Convert to fahrenheit temperature
+            if ("c".equalsIgnoreCase(temperatureUnit)) {
+                temperature = (int) CtiUtilities.convertTemperature(temperature,
+                                                                    CtiUtilities.CELSIUS_CHARACTER,
+                                                                    CtiUtilities.FAHRENHEIT_CHARACTER);
+            }
+
+            // Build up manual event from submitted params
+            ThermostatManualEvent event = new ThermostatManualEvent();
+            event.setThermostatId(thermostatId);
+            event.setHoldTemperature(hold);
+            event.setPreviousTemperature(temperature);
+            event.setTemperatureUnit(temperatureUnit);
+            event.setRunProgram(runProgram);
+            event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
+            event.setAction(CustomerAction.MANUAL_OPTION);
+
+            // Mode and fan can be blank
+            if (!StringUtils.isBlank(mode)) {
+                ThermostatMode thermostatMode = ThermostatMode.valueOf(mode);
+                event.setMode(thermostatMode);
+            }
+            if (!StringUtils.isBlank(fan)) {
+                ThermostatFanState fanState = ThermostatFanState.valueOf(fan);
+                event.setFanState(fanState);
+            }
+
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+            CustomerAccount account = getCustomerAccount(request);
+
+            // Execute manual event and get result
+            message = thermostatService.executeManualEvent(account,
+                                                           event,
+                                                           userContext);
+
+            if (message.isFailed()) {
+                failed = true;
+            }
         }
 
-        // Build up manual event from submitted params
-        ThermostatManualEvent event = new ThermostatManualEvent();
-        event.setThermostatId(thermostatId);
-        event.setHoldTemperature(hold);
-        event.setPreviousTemperature(temperature);
-        event.setTemperatureUnit(temperatureUnit);
-        event.setRunProgram(runProgram);
-        event.setEventType(CustomerEventType.THERMOSTAT_MANUAL);
-        event.setAction(CustomerAction.MANUAL_OPTION);
-
-        // Mode and fan can be blank
-        if (!StringUtils.isBlank(mode)) {
-            ThermostatMode thermostatMode = ThermostatMode.valueOf(mode);
-            event.setMode(thermostatMode);
-        }
-        if (!StringUtils.isBlank(fan)) {
-            ThermostatFanState fanState = ThermostatFanState.valueOf(fan);
-            event.setFanState(fanState);
+        // If there was a failure and we are processing multiple thermostats,
+        // set error to generic multiple error
+        if (failed && thermostatIds.size() > 1) {
+            message = ThermostatManualEventResult.CONSUMER_MULTIPLE_ERROR;
         }
 
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        CustomerAccount account = getCustomerAccount(request);
-
-        // Execute manual event and get result
-        ThermostatManualEventResult message = thermostatService.executeManualEvent(account,
-                                                                                   event,
-                                                                                   userContext);
         map.addAttribute("message", message.toString());
 
-        map.addAttribute("thermostatId", thermostatId);
+        // Manually put thermsotatIds into model for redirect
+        map.addAttribute("thermostatIds", thermostatIds.toString());
 
         return "redirect:/spring/stars/consumer/manualComplete";
     }
 
     @RequestMapping(value = "/consumer/manualComplete", method = RequestMethod.GET)
-    public String manualComplete(ModelMap map, int thermostatId, String message) {
+    public String manualComplete(ModelMap map, String message,
+            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
 
         ThermostatManualEventResult resultMessage = ThermostatManualEventResult.valueOf(message);
-        map.addAttribute("message", resultMessage);
+        String key = resultMessage.getDisplayKey();
 
-        Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-        map.addAttribute("thermostat", thermostat);
+        YukonMessageSourceResolvable resolvable;
+
+        if (thermostatIds.size() == 1) {
+            int id = thermostatIds.get(0);
+            Thermostat thermostat = inventoryDao.getThermostatById(id);
+
+            resolvable = new YukonMessageSourceResolvable(key,
+                                                          thermostat.getLabel());
+
+        } else {
+            resolvable = new YukonMessageSourceResolvable(key);
+        }
+
+        map.addAttribute("message", resolvable);
+        map.addAttribute("thermostatIds", thermostatIds);
 
         map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/view");
 

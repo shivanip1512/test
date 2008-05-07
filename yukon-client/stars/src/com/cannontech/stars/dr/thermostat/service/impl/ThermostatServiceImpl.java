@@ -103,7 +103,7 @@ public class ThermostatServiceImpl implements ThermostatService {
             return error;
 
         }
-        
+
         // Make sure the device has a serial number
         String serialNumber = thermostat.getSerialNumber();
         if (StringUtils.isBlank(serialNumber)) {
@@ -174,8 +174,11 @@ public class ThermostatServiceImpl implements ThermostatService {
             TimeOfWeek timeOfWeek, boolean applyToAll,
             YukonUserContext userContext) {
 
+        Thermostat thermostat = null;
         Integer thermostatId = schedule.getInventoryId();
-        Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+        if (thermostatId != 0) {
+            thermostat = inventoryDao.getThermostatById(thermostatId);
+        }
 
         // Get the existing (or default in none exists) schedule for the
         // thermostat and save the changes
@@ -427,12 +430,34 @@ public class ThermostatServiceImpl implements ThermostatService {
             Thermostat thermostat, ThermostatSchedule updatedSchedule,
             ThermostatMode mode, TimeOfWeek timeOfWeek, boolean applyToWeekend) {
 
-        // Get the current (or default) schedule for the thermostat
-        ThermostatSchedule schedule = this.getThermostatSchedule(thermostat,
-                                                                 account);
-        schedule.setAccountId(account.getAccountId());
-        schedule.setInventoryId(thermostat.getId());
-        schedule.setThermostatType(thermostat.getType());
+        ThermostatSchedule schedule;
+        HardwareType thermostatType = updatedSchedule.getThermostatType();
+        int accountId = account.getAccountId();
+
+        Integer scheduleId = updatedSchedule.getId();
+        if (scheduleId != null) {
+            // Get the existing schedule
+            schedule = thermostatScheduleDao.getThermostatScheduleById(scheduleId,
+                                                                       accountId);
+            schedule.setName(updatedSchedule.getName());
+        } else if (thermostat != null) {
+            // Get the current (or default) schedule for the thermostat
+            schedule = this.getThermostatSchedule(thermostat, account);
+            schedule.setInventoryId(thermostat.getId());
+            schedule.setName(updatedSchedule.getName());
+            if(schedule.getName() == null) {
+                schedule.setName(thermostat.getLabel());
+            }
+        } else {
+            // Get the energy company default schedule if no thermostat or
+            // schedule id was supplied
+            schedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
+                                                                             thermostatType);
+            schedule.setInventoryId(0);
+            schedule.setName(updatedSchedule.getName());
+        }
+        schedule.setThermostatType(thermostatType);
+        schedule.setAccountId(accountId);
 
         // Get the season that is being updated
         ThermostatSeason updatedSeason = updatedSchedule.getSeason(mode);

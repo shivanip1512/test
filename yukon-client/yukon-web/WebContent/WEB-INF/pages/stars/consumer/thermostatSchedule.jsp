@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
@@ -43,8 +44,8 @@
     
     function saveSchedule(action) {
     
-        var scheduleName = $F('scheduleName');
-        if(scheduleName == null || scheduleName == ''){
+        var scheduleName = $('scheduleName');
+        if(scheduleName != null && $F(scheduleName) == ''){
             alert('${noScheduleName}');
             $('scheduleName').focus();
         } else {
@@ -68,7 +69,7 @@
 
                 <h3>
                     <cti:msg key="yukon.dr.consumer.thermostatSchedule.header" /><br>
-                    ${thermostat.label} 
+                    <cti:msg key="${thermostatLabel}" /><br>
                 </h3>
                 
                 <br>
@@ -104,7 +105,7 @@
                 <div align="center">
                 
                     <form id="scheduleForm" name="scheduleForm" method="POST" action="/spring/stars/consumer/thermostat/schedule/save">
-                        <input id="thermostatId" type="hidden" name="thermostatId" value="${thermostat.id}">
+                        <input id="thermostatId" type="hidden" name="thermostatIds" value="${thermostatIds}">
 
                         <input id="temperatureUnit" type="hidden" name="temperatureUnit" value="${temperatureUnit}">
                         <input id="schedules" type="hidden" name="schedules">
@@ -118,6 +119,16 @@
                         <input type="hidden" name="temp2" id="temp2">
                         <input type="hidden" name="temp3" id="temp3">
                         <input type="hidden" name="temp4" id="temp4">
+        
+        
+                        <c:set var="multipleThermostatsSelected" value="${fn:length(fn:split(thermostatIds, ',')) > 1}"></c:set>
+                        <c:if test="${multipleThermostatsSelected}">
+                            <c:url var="allUrl" value="/spring/stars/consumer/thermostat/view/all">
+                                <c:param name="thermostatIds" value="${thermostatIds}"></c:param>
+                            </c:url>
+                            <a href="${allUrl}"><cti:msg key="yukon.dr.consumer.thermostatSchedule.changeSelected" /></a><br><br>
+                        </c:if>
+                        
         
                         <table width="80%" border="1" cellspacing="0" cellpadding="2">
                             <tr> 
@@ -150,16 +161,21 @@
                                         <tr>
                                             <td class="TableCell" style="width: 50%; text-align: left; vertical-align: top;"> 
                                                 <cti:msg key="yukon.dr.consumer.thermostatSchedule.instructions" />
-            
-                                                <a class="Link1" style="margin-left: 25px;" href="/user/ConsumerStat/stat/Instructions.jsp" onclick="return warnUnsavedChanges()">
-                                                    <cti:msg key="yukon.dr.consumer.thermostatSchedule.hints" />
-                                                </a>
                                             </td>
                                             <td class="TableCell"  style="width: 50%; text-align: left; vertical-align: top; padding-top: 11px;"> 
-                                                <cti:msg key="yukon.dr.consumer.thermostatSchedule.temporaryAdjustments" arguments="/spring/stars/consumer/thermostat/view?thermostatId=${thermostat.id}" />
+                                                &nbsp;
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="TableCell" style="width: 50%; text-align: center; vertical-align: top;"> 
+                                                <cti:msg key="yukon.dr.consumer.thermostatSchedule.hints" arguments="/spring/stars/consumer/thermostat/schedule/hints?thermostatIds=${thermostatIds}" />
+                                            </td>
+                                            <td class="TableCell"  style="width: 50%; text-align: center; vertical-align: top;"> 
+                                                <cti:msg key="yukon.dr.consumer.thermostatSchedule.temporaryAdjustments" arguments="/spring/stars/consumer/thermostat/view?thermostatIds=${thermostatIds}" />
                                             </td>
                                         </tr>
                                     </table>
+                                    <br>
                                     <table width="175" border="0" cellspacing="0" cellpadding="0">
                                         <tr>
                                             <td class="TableCell" style="text-align: right; color: #003366;"> 
@@ -541,14 +557,19 @@
                         <table width="80%" border="0" cellpadding="5">
                             <tr>
                                 <td width="85%" align="center"> 
-                                    <cti:msg key="yukon.dr.consumer.thermostatSchedule.name"></cti:msg>
-                                    <input type="text" id="scheduleName" value="${schedule.name}" ></input>
+                                    <c:if test="${!multipleThermostatsSelected}">
+                                        <cti:msg key="yukon.dr.consumer.thermostatSchedule.name"></cti:msg>
+                                        <input type="text" id="scheduleName" name="scheduleName" value="${schedule.name}" ></input>
+                                    </c:if>
+                                    <input type="hidden" name="scheduleId" value="${schedule.id}" ></input>
                                 </td>
                             </tr>
                             <tr>
                                 <td width="85%" align="center"> 
-                                    <cti:msg var="save" key="yukon.dr.consumer.thermostatSchedule.save"></cti:msg>
-                                    <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
+                                    <c:if test="${!multipleThermostatsSelected}">
+                                        <cti:msg var="save" key="yukon.dr.consumer.thermostatSchedule.save"></cti:msg>
+                                        <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
+                                    </c:if>
                                     <cti:msg var="saveApply" key="yukon.dr.consumer.thermostatSchedule.saveApply"></cti:msg>
                                     <input type="button" name="saveApply" value="${saveApply}" onclick="saveSchedule('saveApply')"></input>
                                     <cti:msg var="recommend" key="yukon.dr.consumer.thermostatSchedule.recommend"></cti:msg>

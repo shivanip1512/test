@@ -24,6 +24,7 @@ import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSeason;
@@ -109,6 +110,30 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
     }
 
     @Override
+    public ThermostatSchedule getThermostatScheduleById(int scheduleId,
+            int accountId) {
+
+        LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(accountId);
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT * from LMThermostatSchedule");
+        sql.append("WHERE ScheduleId = ?");
+
+        ThermostatSchedule schedule = simpleJdbcTemplate.queryForObject(sql.toString(),
+                                                                        new ThermostatScheduleMapper(energyCompany),
+                                                                        scheduleId);
+
+        List<ThermostatSeason> seasons = this.getSeasons(schedule.getId(),
+                                                         scheduleId);
+
+        for (ThermostatSeason season : seasons) {
+            schedule.addSeason(season);
+        }
+
+        return schedule;
+    }
+
+    @Override
     public ThermostatSchedule getThermostatScheduleByInventoryId(int inventoryId) {
 
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
@@ -137,6 +162,22 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
         }
 
         return schedule;
+    }
+
+    @Override
+    public List<ScheduleDropDownItem> getSavedThermostatSchedulesByAccountId(
+            int accountId) {
+
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ScheduleId, ScheduleName");
+        sql.append("FROM LMThermostatSchedule");
+        sql.append("WHERE AccountId = ?");
+
+        List<ScheduleDropDownItem> items = simpleJdbcTemplate.query(sql.toString(),
+                                                                    new ScheduleDropDownItemMapper(),
+                                                                    accountId);
+
+        return items;
     }
 
     @Override
@@ -171,7 +212,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
                                                                    thermostatType.getDefinitionId());
 
         simpleJdbcTemplate.update(scheduleSql.toString(),
-                                  "Schedule " + scheduleId,
+                                  schedule.getName(),
                                   thermostatTypeId,
                                   accountId,
                                   inventoryId,
@@ -437,6 +478,26 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
             entry.setTemperature(temperature);
 
             return entry;
+        }
+
+    }
+
+    /**
+     * Helper class to map a result set into a ScheduleDropDownItem
+     */
+    private class ScheduleDropDownItemMapper implements
+            ParameterizedRowMapper<ScheduleDropDownItem> {
+
+        @Override
+        public ScheduleDropDownItem mapRow(ResultSet rs, int rowNum)
+                throws SQLException {
+
+            int id = rs.getInt("ScheduleId");
+            String name = rs.getString("ScheduleName");
+
+            ScheduleDropDownItem item = new ScheduleDropDownItem(id, name);
+
+            return item;
         }
 
     }

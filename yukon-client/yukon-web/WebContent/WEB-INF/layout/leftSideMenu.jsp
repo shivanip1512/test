@@ -48,7 +48,7 @@
                 <td class="leftMenu">
                     <cti:outputContent writable="${menuRenderer}"/>
                 </td>
-                <td id="Content">
+                <td id="Content" style="vertical-align: top;">
                     <cti:outputContent writable="${bodyContent}"/>
                 </td>
             </tr>

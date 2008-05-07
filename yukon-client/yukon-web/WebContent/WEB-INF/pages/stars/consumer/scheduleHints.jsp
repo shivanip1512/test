@@ -10,19 +10,15 @@
     <tr>
         <td class="leftColumn">
             <h3>
-                <cti:msg key="yukon.dr.consumer.actionComplete.header" /><br>
+                <cti:msg key="yukon.dr.consumer.scheduleHints.header" /><br>
             </h3>
             
             <div class="message">
                 <div style="text-align: left;">
-                    <cti:msg key="${message}" />
+                    <cti:msg key="yukon.dr.consumer.scheduleHints.hint" />
                 </div>
                 
-                <c:url var="viewUrl" value="${viewUrl}">
-                    <c:param name="thermostatIds" value="${thermostatIds}" />
-                </c:url>
-                <br><br>
-                <a href="${viewUrl}"><cti:msg key="yukon.dr.consumer.actionComplete.ok" /></a>
+                <a href="/spring/stars/consumer/thermostat/schedule/view?thermostatIds=${thermostatIds}"><cti:msg key="yukon.dr.consumer.scheduleHints.back" /></a>
             </div>
 
         </td>

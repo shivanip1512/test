@@ -26,12 +26,14 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.HardwareType;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 import com.cannontech.stars.dr.thermostat.model.ThermostatScheduleUpdateResult;
@@ -40,13 +42,12 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.consumer.AbstractConsumerController;
 
 /**
  * Controller for Thermostat schedule operations
  */
 @Controller
-public class ThermostatScheduleController extends AbstractConsumerController {
+public class ThermostatScheduleController extends AbstractThermostatController {
 
     private InventoryDao inventoryDao;
     private ThermostatScheduleDao thermostatScheduleDao;
@@ -57,26 +58,66 @@ public class ThermostatScheduleController extends AbstractConsumerController {
 
     @RequestMapping(value = "/consumer/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(HttpServletRequest request, ModelMap map,
-            int thermostatId, @ModelAttribute("customerAccount")
+            Integer scheduleId, @ModelAttribute("thermostatIds")
+            List<Integer> thermostatIds, @ModelAttribute("customerAccount")
             CustomerAccount account) {
 
-        Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-        map.addAttribute("thermostat", thermostat);
-
-        // Get the current (or default if no current) schedule and add to model
-        ThermostatSchedule schedule = thermostatService.getThermostatSchedule(thermostat,
-                                                                              account);
-        if (StringUtils.isBlank(schedule.getName())) {
-            schedule.setName(thermostat.getLabel());
+        ThermostatSchedule schedule = null;
+        ThermostatSchedule defaultSchedule = null;
+        int accountId = account.getAccountId();
+        if (scheduleId != null) {
+            // Get the schedule that the user selected
+            schedule = thermostatScheduleDao.getThermostatScheduleById(scheduleId,
+                                                                       accountId);
         }
 
+        if (thermostatIds.size() == 1) {
+            // single thermsotat selected
+
+            int thermostatId = thermostatIds.get(0);
+
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.consumer.thermostatSchedule.label",
+                                                                                       thermostat.getLabel());
+            map.addAttribute("thermostatLabel", resolvable);
+
+            if (schedule == null) {
+                // Get the current (or default if no current) schedule
+                schedule = thermostatService.getThermostatSchedule(thermostat,
+                                                                   account);
+
+                if (StringUtils.isBlank(schedule.getName())) {
+                    schedule.setName(thermostat.getLabel());
+                }
+            }
+
+            defaultSchedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
+                                                                                    thermostat.getType());
+        } else {
+            // multiple thermostats selected
+
+            // Get type of the first thermostat in the list
+            int thermostatId = thermostatIds.get(0);
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+            HardwareType type = thermostat.getType();
+
+            YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.consumer.thermostatSchedule.multipleLabel");
+            map.addAttribute("thermostatLabel", resolvable);
+            if (schedule == null) {
+                schedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
+                                                                                 type);
+            }
+
+            defaultSchedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(accountId,
+                                                                                    type);
+        }
+
+        // Get json string for schedule and add schedule and string to model
         JSONObject scheduleJSON = this.getJSONForSchedule(schedule);
         map.addAttribute("scheduleJSONString", scheduleJSON.toString());
         map.addAttribute("schedule", schedule);
 
-        // Get the default schedule and add to model
-        ThermostatSchedule defaultSchedule = thermostatScheduleDao.getEnergyCompanyDefaultSchedule(account.getAccountId(),
-                                                                                                   thermostat.getType());
+        // Get json string for the default schedule and add to model
         JSONObject defaultScheduleJSON = this.getJSONForSchedule(defaultSchedule);
         map.addAttribute("defaultScheduleJSONString",
                          defaultScheduleJSON.toString());
@@ -94,12 +135,11 @@ public class ThermostatScheduleController extends AbstractConsumerController {
     }
 
     @RequestMapping(value = "/consumer/thermostat/schedule/save", method = RequestMethod.POST)
-    public String save(HttpServletRequest request, ModelMap map,
-            int thermostatId, String mode, String timeOfWeek,
-            String temperatureUnit, @ModelAttribute("customerAccount")
+    public String save(HttpServletRequest request, ModelMap map, String mode,
+            String timeOfWeek, String temperatureUnit, Integer scheduleId,
+            String scheduleName, @ModelAttribute("thermostatIds")
+            List<Integer> thermostatIds, @ModelAttribute("customerAccount")
             CustomerAccount account) throws ServletRequestBindingException {
-
-        Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
 
         String scheduleString = ServletRequestUtils.getRequiredStringParameter(request,
                                                                                "schedules");
@@ -110,65 +150,142 @@ public class ThermostatScheduleController extends AbstractConsumerController {
         String saveAction = ServletRequestUtils.getStringParameter(request,
                                                                    "saveAction",
                                                                    null);
-        boolean sendSchedule = "saveApply".equals(saveAction);
+        boolean sendAndSave = "saveApply".equals(saveAction);
 
         boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equalsIgnoreCase(temperatureUnit);
 
         // Create schedule from submitted JSON string
         ThermostatSchedule schedule = getScheduleForJSON(scheduleString,
                                                          isFahrenheit);
-        schedule.setInventoryId(thermostatId);
+        schedule.setName(scheduleName);
         schedule.setAccountId(account.getAccountId());
-        HardwareType type = thermostat.getType();
-        schedule.setThermostatType(type);
-
-        if (type.equals(HardwareType.COMMERCIAL_EXPRESSSTAT)) {
-            this.setToTwoTimeTemps(schedule);
-        }
 
         ThermostatMode thermostatMode = ThermostatMode.valueOf(mode);
         TimeOfWeek scheduleTimeOfWeek = TimeOfWeek.valueOf(timeOfWeek);
 
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
 
-        // Save changes to schedule
-        thermostatService.updateSchedule(account,
-                                         schedule,
-                                         thermostatMode,
-                                         scheduleTimeOfWeek,
-                                         applyToAll,
-                                         userContext);
+        ThermostatScheduleUpdateResult message = null;
 
-        ThermostatScheduleUpdateResult message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
+        boolean failed = false;
+        for (Integer thermostatId : thermostatIds) {
 
-        if (sendSchedule) {
-            // Send schedule to thermsotat
-            message = thermostatService.sendSchedule(account,
-                                                     schedule,
-                                                     thermostatMode,
-                                                     scheduleTimeOfWeek,
-                                                     false,
-                                                     userContext);
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+
+            HardwareType type = thermostat.getType();
+            schedule.setThermostatType(type);
+            if (type.equals(HardwareType.COMMERCIAL_EXPRESSSTAT)) {
+                this.setToTwoTimeTemps(schedule);
+            }
+
+            if (sendAndSave) {
+                // Send the schedule to the thermsotat(s) and then update the
+                // existing thermostat(s) schedule or create a new schedule for
+                // the thermostat(s) if it has none
+
+                schedule.setInventoryId(thermostatId);
+
+                // Send schedule to thermsotat
+                message = thermostatService.sendSchedule(account,
+                                                         schedule,
+                                                         thermostatMode,
+                                                         scheduleTimeOfWeek,
+                                                         false,
+                                                         userContext);
+
+                // Save changes to schedule
+                thermostatService.updateSchedule(account,
+                                                 schedule,
+                                                 thermostatMode,
+                                                 scheduleTimeOfWeek,
+                                                 applyToAll,
+                                                 userContext);
+                // If there are multiple thermostats to send schedule to and any
+                // of the save/sends fail, the whole thing is failed
+                if (message.isFailed()) {
+                    failed = true;
+                }
+            } else {
+                // Update the schedule if it exists already or create a new
+                // schedule
+
+                schedule.setId(scheduleId);
+
+                // Default the inventory id
+                schedule.setInventoryId(0);
+
+                // Save changes to schedule
+                thermostatService.updateSchedule(account,
+                                                 schedule,
+                                                 thermostatMode,
+                                                 scheduleTimeOfWeek,
+                                                 applyToAll,
+                                                 userContext);
+
+                message = ThermostatScheduleUpdateResult.CONSUMER_SAVE_SCHEDULE_SUCCESS;
+            }
+        }
+
+        // If there was a failure and we are processing multiple
+        // thermostats, set error to generic multiple error
+        if (failed && thermostatIds.size() > 1) {
+            message = ThermostatScheduleUpdateResult.CONSUMER_MULTIPLE_ERROR;
         }
 
         map.addAttribute("message", message.toString());
-        map.addAttribute("thermostatId", thermostatId);
+
+        // Manually put thermsotatIds into model for redirect
+        map.addAttribute("thermostatIds", thermostatIds.toString());
 
         return "redirect:/spring/stars/consumer/thermostat/schedule/complete";
     }
 
     @RequestMapping(value = "/consumer/thermostat/schedule/complete", method = RequestMethod.GET)
-    public String updateComplete(ModelMap map, int thermostatId, String message) {
+    public String updateComplete(ModelMap map, String message,
+            @ModelAttribute("thermostatIds")
+            List<Integer> thermostatIds) {
 
         ThermostatScheduleUpdateResult resultMessage = ThermostatScheduleUpdateResult.valueOf(message);
-        map.addAttribute("message", resultMessage);
+        String key = resultMessage.getDisplayKey();
 
-        Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
-        map.addAttribute("thermostat", thermostat);
+        YukonMessageSourceResolvable resolvable;
 
-        map.addAttribute("viewUrl", "/spring/stars/consumer/thermostat/schedule/view");
-        
+        if (thermostatIds.size() == 1) {
+            int thermostatId = thermostatIds.get(0);
+            Thermostat thermostat = inventoryDao.getThermostatById(thermostatId);
+
+            resolvable = new YukonMessageSourceResolvable(key,
+                                                          thermostat.getLabel());
+
+        } else {
+            resolvable = new YukonMessageSourceResolvable(key);
+        }
+
+        map.addAttribute("message", resolvable);
+
+        map.addAttribute("thermostatIds", thermostatIds);
+
+        map.addAttribute("viewUrl",
+                         "/spring/stars/consumer/thermostat/schedule/view");
+
         return "consumer/actionComplete.jsp";
+    }
+
+    @RequestMapping(value = "/consumer/thermostat/schedule/hints", method = RequestMethod.GET)
+    public String hints(ModelMap map) {
+        return "consumer/scheduleHints.jsp";
+    }
+
+    @RequestMapping(value = "/consumer/thermostat/schedule/view/saved", method = RequestMethod.GET)
+    public String viewSaved(ModelMap map, @ModelAttribute("thermostatIds")
+    List<Integer> thermostatIds, @ModelAttribute("customerAccount")
+    CustomerAccount account) {
+
+        int accountId = account.getAccountId();
+        List<ScheduleDropDownItem> schedules = thermostatScheduleDao.getSavedThermostatSchedulesByAccountId(accountId);
+        map.addAttribute("schedules", schedules);
+
+        return "consumer/savedSchedules.jsp";
     }
 
     /**

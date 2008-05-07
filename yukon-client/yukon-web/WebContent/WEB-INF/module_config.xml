@@ -304,13 +304,7 @@
 	               <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL" />
 	   		       <links>
 		              <option id="select">
-		                <link>/user/ConsumerStat/stat/AllTherm.jsp</link>
-		              </option>
-		              <option id="schedule">
-		                <link>/user/ConsumerStat/stat/ThermSchedule.jsp?AllTherm</link>
-		              </option>
-		              <option id="manual">
-		                <link>/user/ConsumerStat/stat/Thermostat.jsp?AllTherm</link>
+		                <link>/spring/stars/consumer/thermostat/view/all</link>
 		              </option>
 		          </links>  
 	   		   </option>	
