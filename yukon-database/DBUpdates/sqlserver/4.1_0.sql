@@ -667,14 +667,16 @@ WHERE RoleDescription = 'Administrator privilages.'
 /* End YUK-5419 */
 
 /* Start YUK-5630 */
+/* @start-block */
 IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCCAP_INVENTORY_VIEW]'))
 DROP VIEW [CCCAP_INVENTORY_VIEW];
 go
+/* @end-block */
 /* End YUK-5630 */
 
 /* Start YUK-5395 */
 /* @error ignore-begin */
-sp_rename 'PointPropertyValue.FloatValue', FltValue
+sp_rename 'PointPropertyValue.FloatValue', FltValue;
 go
 /* @error ignore-end */
 /* End YUK-5395 */
