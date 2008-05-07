@@ -1156,48 +1156,11 @@ insert into devicetypecommand values(-704, -139, 'MCT-410GL', 32, 'N', -1);
 insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1); 
 /* End YUK-4860 */
 
-/* Start YUK-4859, YUK-5197 */
+/* Start YUK-4859, YUK-5197, YUK-5630 */
 IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCCAP_INVENTORY_VIEW]'))
 DROP VIEW [CCCAP_INVENTORY_VIEW];
 go
-create view CCCAP_INVENTORY_VIEW as
-SELECT
-	yp4.paoname AS REGION
-	, cb.maplocationid AS OP_CENTER
-	, capa.maintenanceareaid AS TA_AREA
-	, yp5.paoname as SUBSTATION_NAME
-	, yp3.PAOName AS SUBSTATION_BANK_NAME
-	, yp2.PAOName AS BREAKER_NUMBER
-	, yp1.PAOName AS BANK_NAME
-	, cb.BANKSIZE AS BANK_SIZE
-	, cb.OPERATIONALSTATE AS CONTROL_TYPE
-	, cb.SwitchManufacture AS SWITCH_MANUFACTURER
-	, cb.TypeOfSwitch AS SWITCH_TYPE
-	, yp.PAOName AS CBC_NAME
-	, p.Value AS IP_ADDRESS
-	, da.SlaveAddress AS DNP_ADDRESS
-	, capa.driveDirections AS DRIVE_DIRECTION
-	, capa.latitude AS LATITUDE
-	, capa.longitude AS LONGITUDE
-FROM
-	CAPBANK cb
-	INNER JOIN YukonPAObject yp1 ON yp1.PAObjectID = cb.DEVICEID
-	LEFT OUTER JOIN YukonPAObject yp ON cb.CONTROLDEVICEID = yp.PAObjectID AND cb.CONTROLDEVICEID > 0
-	LEFT OUTER JOIN CCFeederBankList fb ON fb.DeviceID = cb.DEVICEID
-	LEFT OUTER JOIN YukonPAObject yp2 ON yp2.PAObjectID = fb.FeederID
-	LEFT OUTER JOIN CCFeederSubAssignment sf ON fb.FeederID = sf.FeederID
-	LEFT OUTER JOIN YukonPAObject yp3 ON yp3.PAObjectID = sf.SubStationBusID
-	LEFT OUTER JOIN ccsubstationsubbuslist ss on ss.substationbusid = yp3.paobjectid
-	LEFT OUTER JOIN YukonPAObject yp5 ON yp5.PAObjectID = ss.SubStationID
-	left outer join ccsubareaassignment sa on ss.substationid = sa.substationbusid
-	left outer join YukonPAObject yp4 on yp4.paobjectid = sa.areaid
-	LEFT OUTER JOIN DeviceAddress da ON da.DeviceID = cb.CONTROLDEVICEID
-	LEFT OUTER JOIN (SELECT EntryID, PAObjectID, Owner, InfoKey, Value, UpdateTime
-					  FROM DynamicPAOInfo
-					  WHERE (InfoKey LIKE '%udp ip%')) p ON p.PAObjectID = yp.PAObjectID
-	left outer join capbankadditional capa on capa.deviceid = cb.deviceid; 
-go
-/* End YUK-4859, YUK-5197 */
+/* End YUK-4859, YUK-5197, YUK-5630 */
 
 /* Start YUK-4862 */
 insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');

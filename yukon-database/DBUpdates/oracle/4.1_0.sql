@@ -517,6 +517,11 @@ UPDATE YukonRole SET RoleDescription = 'Administrator privileges.'
 WHERE RoleDescription = 'Administrator privilages.' 
 /* End YUK-5419 */
 
+/* Start YUK-5630 */
+/* @error ignore-begin */
+DROP VIEW CCCap_Inventory_View;
+/* @error ignore-end */
+/* End YUK-5630 */
 
 /**************************************************************/
 /* VERSION INFO                                               */

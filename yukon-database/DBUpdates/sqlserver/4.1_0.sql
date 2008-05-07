@@ -664,6 +664,13 @@ UPDATE YukonRole SET RoleDescription = 'Administrator privileges.'
 WHERE RoleDescription = 'Administrator privilages.' 
 /* End YUK-5419 */
 
+/* Start YUK-5630 */
+IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCCAP_INVENTORY_VIEW]'))
+DROP VIEW [CCCAP_INVENTORY_VIEW];
+go
+/* End YUK-5630 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/
