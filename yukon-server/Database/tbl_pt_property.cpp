@@ -6,8 +6,8 @@
 * Date:   2/13/08
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2008/02/25 21:12:41 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/05/07 15:43:45 $
 *
 * Copyright (c) 2008 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,7 +89,7 @@ void CtiTablePointProperty::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
     selector <<
     keyTable["pointid"] <<
     keyTable["pointpropertycode"] <<
-    keyTable["floatvalue"];
+    keyTable["fltvalue"];
 
     selector.from(keyTable);
 }
