@@ -26,16 +26,16 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
     
     static {
             insertSql = "INSERT INTO PointPropertyValue (pointid," + 
-            "PointPropertyCode,floatvalue) VALUES (?,?,?)";
+            "PointPropertyCode,fltvalue) VALUES (?,?,?)";
             
             removeSql = "DELETE FROM PointPropertyValue WHERE pointid = ? AND PointPropertyCode = ?";
             
             removeByPointIdSql = "DELETE FROM PointPropertyValue WHERE pointid = ?";
             
-            updateSql = "UPDATE PointProperty SET floatvalue = ?" + 
+            updateSql = "UPDATE PointProperty SET fltvalue = ?" + 
             " WHERE pointid = ? AND PointPropertyCode = ?";
             
-            selectAllSql = "SELECT pointid,PointPropertyCode,floatvalue FROM PointPropertyValue";
+            selectAllSql = "SELECT pointid,PointPropertyCode,fltvalue FROM PointPropertyValue";
             
             selectByIdSql = selectAllSql + " WHERE pointid = ?";
             
@@ -46,7 +46,7 @@ public class PointPropertyValueDaoImpl implements PointPropertyValueDao{
             	PointPropertyValue attribute = new PointPropertyValue();
             	attribute.setPointId(rs.getInt("PointID"));
             	attribute.setPointPropertyCode(rs.getInt("PointPropertyCode"));
-            	attribute.setFloatValue(rs.getFloat("FloatValue"));
+            	attribute.setFloatValue(rs.getFloat("fltvalue"));
                 return attribute;
             }
         };
