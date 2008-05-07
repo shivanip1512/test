@@ -12,6 +12,7 @@ import com.cannontech.common.gui.util.DataInputPanel;
 import com.cannontech.common.wizard.CancelInsertException;
 import com.cannontech.common.wizard.WizardPanelEvent;
 import com.cannontech.database.data.device.DeviceBase;
+import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.device.lm.LMGroupEmetcon;
 import com.cannontech.database.data.device.lm.LMGroupVersacom;
@@ -250,19 +251,11 @@ protected DataInputPanel getNextInputPanel(
 
 		}
 	}else if ( currentInputPanel == getDeviceCopyNameAddressPanel()
-            && (getDeviceType() == DeviceTypes.MCT470
-                    || getDeviceType() == DeviceTypes.MCT430S4
-                    || getDeviceType() == DeviceTypes.MCT430A
-                    || getDeviceType() == DeviceTypes.MCT430SL
-                    || getDeviceType() == DeviceTypes.MCT410IL
-                    || getDeviceType() == DeviceTypes.MCT410CL
-                    || getDeviceType() == DeviceTypes.MCT410FL
-                    || getDeviceType() == DeviceTypes.MCT410GL
-                    || getDeviceType() == DeviceTypes.MCT370
-                    || getDeviceType() == DeviceTypes.MCT360
-                    || getDeviceType() == DeviceTypes.MCT318L
-                    || getDeviceType() == DeviceTypes.MCT318
-                    || getDeviceType() == DeviceTypes.MCT310IM
+            && (DeviceTypesFuncs.isMCT470(getDeviceType())
+                    || DeviceTypesFuncs.isMCT430(getDeviceType())
+                    || DeviceTypesFuncs.isMCT410(getDeviceType())
+                    || DeviceTypesFuncs.isMCT3xx(getDeviceType())
+                    || DeviceTypesFuncs.isMCT410(getDeviceType())
                     || getDeviceType() == DeviceTypes.MCT250
                     || getDeviceType() == DeviceTypes.MCT248
                     || getDeviceType() == DeviceTypes.MCT240
@@ -296,19 +289,11 @@ protected DataInputPanel getNextInputPanel(
 		getRoutePanel().setFirstFocus();
 		return getRoutePanel();
 	}
-	else if( currentInputPanel == getRoutePanel() && (getDeviceType() == DeviceTypes.MCT470
-                                                    || getDeviceType() == DeviceTypes.MCT430S4
-                                                    || getDeviceType() == DeviceTypes.MCT430A
-                                                    || getDeviceType() == DeviceTypes.MCT430SL
-                                                    || getDeviceType() == DeviceTypes.MCT410IL
-                                                    || getDeviceType() == DeviceTypes.MCT410CL
-                                                    || getDeviceType() == DeviceTypes.MCT410FL
-                                                    || getDeviceType() == DeviceTypes.MCT410GL
-                                                    || getDeviceType() == DeviceTypes.MCT370
-                                                    || getDeviceType() == DeviceTypes.MCT360
-                                                    || getDeviceType() == DeviceTypes.MCT318L
-                                                    || getDeviceType() == DeviceTypes.MCT318
-                                                    || getDeviceType() == DeviceTypes.MCT310IM
+	else if( currentInputPanel == getRoutePanel() && (DeviceTypesFuncs.isMCT470(getDeviceType())
+                                                    || DeviceTypesFuncs.isMCT430(getDeviceType())
+                                                    || DeviceTypesFuncs.isMCT410(getDeviceType())
+                                                    || DeviceTypesFuncs.isMCT3xx(getDeviceType())
+                                                    || DeviceTypesFuncs.isMCT410(getDeviceType())
                                                     || getDeviceType() == DeviceTypes.MCT250
                                                     || getDeviceType() == DeviceTypes.MCT248
                                                     || getDeviceType() == DeviceTypes.MCT240
@@ -408,19 +393,11 @@ private DatabaseEditor getDbEditor() {
 protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel currentPanel) {
 	
 
-    if( (currentPanel == getDeviceCopyNameAddressPanel()) && (getDeviceType() == DeviceTypes.MCT470
-                                                                 || getDeviceType() == DeviceTypes.MCT430S4
-                                                                 || getDeviceType() == DeviceTypes.MCT430A
-                                                                 || getDeviceType() == DeviceTypes.MCT430SL
-                                                                 || getDeviceType() == DeviceTypes.MCT410IL
-                                                                 || getDeviceType() == DeviceTypes.MCT410CL
-                                                                 || getDeviceType() == DeviceTypes.MCT410FL
-                                                                 || getDeviceType() == DeviceTypes.MCT410GL
-                                                                 || getDeviceType() == DeviceTypes.MCT370
-                                                                 || getDeviceType() == DeviceTypes.MCT360
-                                                                 || getDeviceType() == DeviceTypes.MCT318L
-                                                                 || getDeviceType() == DeviceTypes.MCT318
-                                                                 || getDeviceType() == DeviceTypes.MCT310IM
+    if( (currentPanel == getDeviceCopyNameAddressPanel()) && ( DeviceTypesFuncs.isMCT470(getDeviceType())
+                                                                 || DeviceTypesFuncs.isMCT430(getDeviceType())
+                                                                 || DeviceTypesFuncs.isMCT410(getDeviceType())
+                                                                 || DeviceTypesFuncs.isMCT3xx(getDeviceType())
+                                                                 || DeviceTypesFuncs.isMCT410(getDeviceType())
                                                                  || getDeviceType() == DeviceTypes.MCT250
                                                                  || getDeviceType() == DeviceTypes.MCT248
                                                                  || getDeviceType() == DeviceTypes.MCT240
@@ -433,19 +410,11 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
                                                                  || getDeviceType() == DeviceTypes.REPEATER_921))
     {
         return false;
-    }else if((currentPanel == getRoutePanel()) && (getDeviceType() == DeviceTypes.MCT470
-                                                                || getDeviceType() == DeviceTypes.MCT430S4
-                                                                || getDeviceType() == DeviceTypes.MCT430A
-                                                                || getDeviceType() == DeviceTypes.MCT430SL
-                                                                || getDeviceType() == DeviceTypes.MCT410IL
-                                                                || getDeviceType() == DeviceTypes.MCT410CL
-                                                                || getDeviceType() == DeviceTypes.MCT410FL
-                                                                || getDeviceType() == DeviceTypes.MCT410GL
-                                                                || getDeviceType() == DeviceTypes.MCT370
-                                                                || getDeviceType() == DeviceTypes.MCT360
-                                                                || getDeviceType() == DeviceTypes.MCT318L
-                                                                || getDeviceType() == DeviceTypes.MCT318
-                                                                || getDeviceType() == DeviceTypes.MCT310IM
+    }else if((currentPanel == getRoutePanel()) && (DeviceTypesFuncs.isMCT470(getDeviceType())
+                                                                || DeviceTypesFuncs.isMCT430(getDeviceType())
+                                                                || DeviceTypesFuncs.isMCT410(getDeviceType())
+                                                                || DeviceTypesFuncs.isMCT3xx(getDeviceType())
+                                                                || DeviceTypesFuncs.isMCT410(getDeviceType())
                                                                 || getDeviceType() == DeviceTypes.MCT250
                                                                 || getDeviceType() == DeviceTypes.MCT248
                                                                 || getDeviceType() == DeviceTypes.MCT240
