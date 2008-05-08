@@ -112,9 +112,10 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
     }
 
     public void unRegisterForPointData(PointDataListener l) {
-        Set<Integer> pointIds = new HashSet<Integer>(pointDataListenerPointIds.get(l));
+        Set<Integer> pointIds = pointDataListenerPointIds.get(l);
         if(pointIds != null) {
-            unRegisterForPointData(l, pointIds);
+        	Set<Integer> copyPointIds = new HashSet<Integer>(pointIds);
+            unRegisterForPointData(l, copyPointIds);
         }
     }
 

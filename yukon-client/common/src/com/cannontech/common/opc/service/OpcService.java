@@ -228,10 +228,10 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
 		
         if(serviceEnabled) {
             dataSource.addDBChangeListener(this);
-            dataSource.registerForPointData(this, outOpcPointIdToServer.keySet() );
         }else {
             refresh = false;
         }
+        dataSource.registerForPointData(this, outOpcPointIdToServer.keySet() );
 	}
 	
 	/**
