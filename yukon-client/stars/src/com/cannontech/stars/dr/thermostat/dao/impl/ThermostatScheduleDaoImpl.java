@@ -87,8 +87,9 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
 
                 ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
 
+				// Start time is seconds from midnight in DB
                 Integer startTime = defaultEntry.getStartTime();
-                entry.setStartTime(startTime);
+                entry.setStartTime(startTime / 60);
 
                 int temperature = defaultEntry.getTemperature();
                 entry.setTemperature(temperature);
@@ -363,7 +364,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
                                                                    timeOfWeek.getDefinitionId());
 
             Integer temperature = entry.getTemperature();
-            Integer startTime = entry.getStartTime();
+            // Start time is seconds from midnight in db
+            Integer startTime = entry.getStartTime() * 60;
 
             simpleJdbcTemplate.update(entrySql.toString(),
                                       seasonId,
@@ -473,7 +475,8 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
             TimeOfWeek timeOfWeek = TimeOfWeek.valueOf(timeOfWeekDefinitionId);
             entry.setTimeOfWeek(timeOfWeek);
 
-            entry.setStartTime(startTime);
+			// Start time is seconds from midnight in db
+            entry.setStartTime(startTime / 60);
 
             entry.setTemperature(temperature);
 

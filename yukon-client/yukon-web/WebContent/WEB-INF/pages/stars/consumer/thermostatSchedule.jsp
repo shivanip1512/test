@@ -13,9 +13,13 @@
     <cti:includeScript link="/JavaScript/drag.js" />
     <cti:includeScript link="/JavaScript/thermostatSchedule.js" />
     <cti:includeScript link="/JavaScript/temp_conversion.js" />
+
     
     <cti:msg var="noScheduleName" key="yukon.dr.consumer.thermostatSchedule.noScheduleName" />
     <c:set var="isCooling" value="${mode == 'COOL'}" />
+    
+    <!-- Add language specific time formatter -->
+    <tags:timeFormatter locale="${localeString}"></tags:timeFormatter>
     
 <script type="text/javascript">
 
@@ -370,14 +374,18 @@
                                                     </td>
                                                     <td class="timeTempField">  
                                                         <input id="time1" type="text" size="8" name="time1" onchange="timeChange(this,1);">
+                                                        <input id="time1min" type="hidden" size="8" name="time1min">
                                                         <input id="time2" type="hidden" size="8" name="time2" onchange="timeChange(this,2);">
+                                                        <input id="time2min" type="hidden" size="8" name="time2min">
                                                     </td>
                                                     <td class="fieldLabel" width="10%">
                                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                                     </td>
                                                     <td class="timeTempField"> 
                                                         <input id="time3" type="hidden" size="8" name="time3" onchange="timeChange(this,3);">
+                                                        <input id="time3min" type="hidden" size="8" name="time3min">
                                                         <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);">
+                                                        <input id="time4min" type="hidden" size="8" name="time4min">
                                                     </td>
                                                 </tr>
                                                 <tr>
@@ -448,24 +456,28 @@
                                                     </td>
                                                     <td class="timeTempField">  
                                                         <input id="time1" type="text" size="8" name="time1" onchange="timeChange(this,1);">
+                                                        <input id="time1min" type="hidden" size="8" name="time1min">
                                                     </td>
                                                     <td class="fieldLabel" width="10%">
                                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                                     </td>
                                                     <td class="timeTempField"> 
                                                         <input id="time2" type="text" size="8" name="time2" onchange="timeChange(this,2);">
+                                                        <input id="time2min" type="hidden" size="8" name="time2min">
                                                     </td>
                                                     <td class="fieldLabel" width="10%">
                                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                                     </td>
                                                     <td class="timeTempField"> 
                                                         <input id="time3" type="text" size="8" name="time3" onchange="timeChange(this,3);">
+                                                        <input id="time3min" type="hidden" size="8" name="time3min">
                                                     </td>
                                                     <td class="fieldLabel" width="10%">
                                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.start" />
                                                     </td>
                                                     <td class="timeTempField"> 
                                                         <input id="time4" type="text" size="8" name="time4" onchange="timeChange(this,4);">
+                                                        <input id="time4min" type="hidden" size="8" name="time4min">
                                                     </td>
                                                 </tr>
                                                 <tr>

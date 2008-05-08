@@ -16,6 +16,7 @@ var thermostats = ['', 'MovingLayer1', 'MovingLayer2', 'MovingLayer3', 'MovingLa
 var tempCArrows = ['', 'div1C', 'div2C', 'div3C', 'div4C'];
 var tempHArrows = ['', 'div1H', 'div2H', 'div3H', 'div4H'];
 var timeFields = ['', 'time1', 'time2', 'time3', 'time4'];
+var timeMinFields = ['', 'time1min', 'time2min', 'time3min', 'time4min'];
 var tempFields = ['', 'temp1', 'temp2', 'temp3', 'temp4'];
 var tempDisplayFields = ['', 'tempdisp1', 'tempdisp2', 'tempdisp3', 'tempdisp4'];
 var tempDisplayFahrenheitFields = ['tempdisp1F', 'tempdisp2F', 'tempdisp3F', 'tempdisp4F'];
@@ -85,7 +86,12 @@ function showEitherTemp(idx, tempCool, tempHeat) {
 
 function showTime(s, txt, idx) {
   var curPos = parseInt(s.style.left, 10);
-  txt.value = timeValToStr(Math.floor((curPos + (idx - 1) * layerHorDist - layerLeftBnd) / tenMinEqlLen) * 10);
+  
+  var timeVal = Math.floor((curPos + (idx - 1) * layerHorDist - layerLeftBnd) / tenMinEqlLen) * 10;
+  var formattedValue = timeValToStr(timeVal); 
+  txt.value = formattedValue;
+  $(timeMinFields[idx]).value = timeVal;
+  
 }
 
 function handleUpdateTemp(idx) {
@@ -146,78 +152,13 @@ layer.style.left = left + 'px';
 
 function timeValToStr(val)
 {
-  if (val < 0) val = 0;
-  if (val >= 24 * 60) val = 24 * 60 - 1;
-  val = Math.floor(val / 10) * 10;	// Align minute to the multiple of 10
-  
-  var hour = Math.floor(val / 60);
-  var minute = val % 60;
-  var ampmStr = "AM";
-  if (hour >= 12)
-  {
-    ampmStr = "PM";
-    if (hour > 12) hour = hour - 12;
-  }
-  var hourStr = "0" + hour;
-  hourStr = hourStr.substr(hourStr.length-2, 2);
-  var minuteStr = "0" + minute;
-  minuteStr = minuteStr.substr(minuteStr.length-2, 2);
-  
-  return hourStr + ":" + minuteStr + " " + ampmStr;
-}
-
-function timeStrMilitaryToVal(str, ampmStr)
-{
-  var time = str.split(":");
-  var hour = 0;
-  var minute = 0;
-  if (time[0]) hour = parseInt(time[0], 10);
-  if (time[1]) minute = parseInt(time[1], 10);
-  
-  if (hour < 0)
-  {
-    hour = 0;
-    minute = 0;
-  }
-  else if (hour > 23)
-  {
-    hour = 23;
-    minute = 59;
-  } else if (ampmStr == "AM" && hour == 12) {
-    // 12am is 0am in military time
-    hour = 0;
-  }
-  else
-  {
-    if (minute < 0) minute = 0;
-    if (minute > 59) minute = 59;
-  }
-  
-  minute = Math.floor(minute / 10) * 10;	// Align minute to the multiple of 10
-  return hour * 60 + minute;
+  var timeStr = timeFormatter.formatTime(val);
+  return timeStr;
 }
 
 function timeStrToVal(str)
 {
-  var val = 0;
-  
-  var ampmStr = str.substr(str.length-2, 2).toUpperCase();
-  if (ampmStr == "AM" || ampmStr == "PM")
-  {
-    val = timeStrMilitaryToVal( str.substr(0, str.length-2), ampmStr);
-    if (ampmStr == "AM")
-    {
-      if (val >= 12 * 60) val = 12 * 60 - 10;	// AM time cannot exceed 11:50
-    }
-    else	// ampmStr == "PM"
-    {
-      if (val >= 13 * 60) val = 12 * 60 - 10;	// PM time cannot exceed 12:50
-      if (val < 12 * 60) val += 12 * 60;	// Add 12 hours to PM time unless it's 12:XX PM
-    }
-  }
-  else
-    val = timeStrMilitaryToVal( str, ampmStr );
-  
+  var val = timeFormatter.parseTime(str);
   return val;
 }
 
@@ -278,23 +219,31 @@ function toggleThermostat(idx, on) {
 }
 
 function timeChange(t, idx) {
-  var val = timeStrToVal( t.value );
+
+  var timeStr = $F(t);
+
+  var val = timeStrToVal(timeStr);
   
   for (i = idx - 1; i >= 1; i--) {
-    var layer = document.getElementById(thermostats[i]);
+    var layer = $(thermostats[i]);
     if (layer != null && layer.style.display == '') {
-      var prevVal = timeStrToVal( document.getElementById(timeFields[i]).value );
-      if (val <= prevVal) val = prevVal + 10;
+      var prevVal = parseInt($F(timeMinFields[i]));
+      if (val <= prevVal) {
+        val = prevVal + 10;
+      }        
     }
   }
   for (i = idx + 1; i <= 4; i++) {
-    var layer = document.getElementById(thermostats[i]);
+    var layer = $(thermostats[i]);
     if (layer != null && layer.style.display == '') {
-      var nextVal = timeStrToVal( document.getElementById(timeFields[i]).value );
-      if (val >= nextVal) val = nextVal - 10;
+      var nextVal = parseInt($F(timeMinFields[i]));
+      if (val >= nextVal) {
+        val = nextVal - 10;
+      }
     }
   }
   t.value = timeValToStr( val );
+  $(timeMinFields[idx]).value = val;
   
   var hour = Math.floor(val / 60);
   var minute = val % 60;
@@ -429,7 +378,7 @@ function getCurrentSchedule(timePeriod, currentCoolHeat) {
 
     // Get each time/temp pair from UI
     for(var i=1;i<5;i++) {
-        var time = $F('time' + i);
+        var time = $F('time' + i + 'min');
         var temp = $F('tempin' + i);
         var timeTemp = $H();
         timeTemp.time = time;
@@ -465,7 +414,9 @@ function setCurrentSchedule(timePeriod) {
     // Set the time/temp values
     if(timeTempArray != null) {
         for(var i=1;i<5;i++) {
-            $('time' + i).value = timeTempArray[i-1].time;
+            var timeVal = timeTempArray[i-1].time;
+            $('time' + i + 'min').value = timeVal;
+            $('time' + i).value = timeValToStr(timeVal);
             $('tempin' + i).value = timeTempArray[i-1].temp;
         }
         

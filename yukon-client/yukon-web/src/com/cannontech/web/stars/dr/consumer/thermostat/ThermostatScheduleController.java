@@ -1,10 +1,8 @@
 package com.cannontech.web.stars.dr.consumer.thermostat;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -53,8 +51,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     private ThermostatScheduleDao thermostatScheduleDao;
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
-
-    private static final SimpleDateFormat SCHEDULE_TIME_FORMAT = new SimpleDateFormat("hh:mm a");
 
     @RequestMapping(value = "/consumer/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(HttpServletRequest request, ModelMap map,
@@ -130,7 +126,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         map.addAttribute("temperatureUnit", temperatureUnit);
 
         map.addAttribute("mode", ThermostatMode.COOL);
-
+        
+        Locale locale = yukonUserContext.getLocale();
+        map.addAttribute("localeString", locale.toString());
+        
         return "consumer/thermostatSchedule.jsp";
     }
 
@@ -362,12 +361,11 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             List<ThermostatSeasonEntry> entryList = seasonEntryMap.get(timeOfWeek);
 
             for (ThermostatSeasonEntry entry : entryList) {
-                Date time = entry.getStartDate();
+                Integer time = entry.getStartTime();
                 Integer temperature = entry.getTemperature();
 
                 JSONObject timeTemp = new JSONObject();
-                String format = SCHEDULE_TIME_FORMAT.format(time);
-                timeTemp.put("time", format);
+                timeTemp.put("time", time);
                 timeTemp.put("temp", temperature);
 
                 object.accumulate(timeOfWeek.toString(), timeTemp);
@@ -427,7 +425,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             for (Object object : timeOfWeekArray.toArray()) {
                 JSONObject jsonObject = (JSONObject) object;
 
-                String timeString = jsonObject.getString("time");
+                Integer time = jsonObject.getInt("time");
                 Integer temperature = jsonObject.getInt("temp");
 
                 // Convert celsius temp to fahrenheit if needed
@@ -437,15 +435,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                                                         CtiUtilities.FAHRENHEIT_CHARACTER);
                 }
 
-                Date date = null;
-                try {
-                    date = SCHEDULE_TIME_FORMAT.parse(timeString);
-                } catch (ParseException e) {
-                    throw new IllegalArgumentException("Could not parse " + timeString + " into a valid time.");
-                }
-
                 ThermostatSeasonEntry entry = new ThermostatSeasonEntry();
-                entry.setStartDate(date);
+                entry.setStartTime(time);
                 entry.setTemperature(temperature);
                 entry.setTimeOfWeek(timeOfWeek);
 

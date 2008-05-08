@@ -12,7 +12,7 @@ public class ThermostatSeasonEntry {
     private Integer seasonId;
     private TimeOfWeek timeOfWeek;
 
-    // Seconds from midnight
+    // Minutes from midnight
     private Integer startTime;
     private Integer temperature;
 
@@ -60,10 +60,10 @@ public class ThermostatSeasonEntry {
 
         Date date = null;
 
-        // Convert seconds from midnight into a date
+        // Convert minutes from midnight into a date
         if (this.getStartTime() != null) {
 
-            int totalMinutes = this.getStartTime() / 60;
+            int totalMinutes = this.getStartTime();
 
             int hours = totalMinutes / 60;
             int minutes = totalMinutes - (hours * 60);
@@ -76,16 +76,6 @@ public class ThermostatSeasonEntry {
         }
 
         return date;
-    }
-
-    public void setStartDate(Date date) {
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-
-        // Convert a date into seconds from midnight
-        this.startTime = (calendar.get(Calendar.HOUR_OF_DAY) * 60 * 60) + (calendar.get(Calendar.MINUTE) * 60);
-
     }
 
 }
