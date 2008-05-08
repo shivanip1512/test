@@ -101,7 +101,7 @@
 </cti:checkRole>
 
 <!-- Metering section -->
-<cti:checkMultiRole roles="operator.MeteringRole.ROLEID,BillingRole.ROLEID,TrendingRole.ROLEID">
+<cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,TrendingRole.ROLEID">
 	<tags:operationSection sectionName="Metering" sectionImageName="MeteringLogo">
 		<cti:checkRole role="TrendingRole.ROLEID">
 			<tags:sectionLink>
@@ -115,7 +115,7 @@
 		        </tags:sectionLink>
 	        </cti:isPropertyTrue>
         </cti:checkRole>
-        <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
+        <cti:checkMultiRole roles="operator.MeteringRole.ROLEID,application.BillingRole.ROLEID,SchedulerRole.ROLEID,CommanderRole.ROLEID">
 			<tags:sectionLink>
     	    	<a href="<c:url value="/spring/csr/search"/>">Metering</a>
 	        </tags:sectionLink>
@@ -130,10 +130,10 @@
 </cti:checkProperty>
 
 <!-- Load Response section -->
-<cti:checkMultiRole roles="DirectLoadcontrolRole.ROLEID,OddsForControlRole.ROLEID,CICurtailmentRole.ROLEID">
+<cti:checkMultiRole roles="loadcontrol.DirectLoadcontrolRole.ROLEID,OddsForControlRole.ROLEID,CICurtailmentRole.ROLEID">
 
 	<tags:operationSection sectionName="Load Response" sectionImageName="LoadResponseLogo">
-		<cti:isPropertyTrue property="DirectLoadcontrolRole.DIRECT_CONTROL">
+		<cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL">
             <tags:sectionLink>
             	<a href="LoadControl/oper_direct.jsp">Direct</a>
             </tags:sectionLink>
@@ -148,7 +148,7 @@
             	<a href="Consumer/Odds.jsp">Odds for Control</a>
             </tags:sectionLink>
 		</cti:checkRole>
-		<cti:isPropertyTrue property="DirectLoadcontrolRole.THREE_TIER_DIRECT"> 
+		<cti:isPropertyTrue property="loadcontrol.DirectLoadcontrolRole.THREE_TIER_DIRECT"> 
             <tags:sectionLink>
             	<a href="../loadmgmt/controlareas.jsp">3-Tier Direct</a>
             </tags:sectionLink>

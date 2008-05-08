@@ -69,48 +69,48 @@
       </links>
     </option>
 
-    <!-- Client Launcher -->
+    <!-- Client Launcher 
     <option id="clientLauncher">
       <requireProperty value="WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED" />
    
       <links>
         <option id="databaseEditor">
           <requireRole value="DBEditorRole.ROLEID" />
-          <link>javascript:jwsLaunch('/jws/dbeditor.jnlp')</link>
+          <script>jwsLaunch('/jws/dbeditor.jnlp')</script>
         </option>
 
         <option id="tabularDataConsole">
           <requireRole value="TDCRole.ROLEID" />
-          <link>javascript:jwsLaunch('/jws/tdc.jnlp')</link>
+          <script>jwsLaunch('/jws/tdc.jnlp')</script>
         </option>
 
         <option id="trending">
           <requireRole value="TrendingRole.ROLEID" />
-          <link>javascript:jwsLaunch('/jws/trending.jnlp')</link>
+          <script>jwsLaunch('/jws/trending.jnlp')</script>
         </option>
         
         <option id="esubstationEditor">
           <requireRole value="EsubEditorRole.ROLEID" />
-          <link>javascript:jwsLaunch('/jws/esub.jnlp')</link>
+          <script>jwsLaunch('/jws/esub.jnlp')</script>
         </option>
         
         <option id="commander">
           <requireRole value="CommanderRole.ROLEID" />
-          <link>javascript:jwsLaunch('/jws/commander.jnlp')</link>
+          <script>jwsLaunch('/jws/commander.jnlp')</script>
         </option>
         
       </links>
     </option>
-
+-->
     <!-- Load Response -->
     <option id="loadResponse">
-      <requiredRole value="DirectLoadcontrolRole.ROLEID"/>
+      <requiredRole value="loadcontrol.DirectLoadcontrolRole.ROLEID"/>
       
       <links>
         <option id="direct">
           <link>/operator/LoadControl/oper_direct.jsp</link>
-          <requireRole value="DirectLoadcontrolRole.ROLEID"/>
-          <requireProperty value="DirectLoadcontrolRole.DIRECT_CONTROL"/>
+          <requireRole value="loadcontrol.DirectLoadcontrolRole.ROLEID"/>
+          <requireProperty value="loadcontrol.DirectLoadcontrolRole.DIRECT_CONTROL"/>
         </option>
 
         <option id="ciCurtailment">
@@ -125,8 +125,8 @@
         
         <option id="threeTierDirect">
           <link>/loadmgmt/controlareas.jsp</link>
-          <requireRole value="DirectLoadcontrolRole.ROLEID"/>
-          <requireProperty value="DirectLoadcontrolRole.THREE_TIER_DIRECT" />
+          <requireRole value="loadcontrol.DirectLoadcontrolRole.ROLEID"/>
+          <requireProperty value="loadcontrol.DirectLoadcontrolRole.THREE_TIER_DIRECT" />
         </option>
         
       </links>
@@ -254,11 +254,11 @@
    		<option id="billing">
    		   <links>
 	          <option id="generation">
-	            <requireRole value="BillingRole.ROLEID"/>
+	            <requireRole value="application.BillingRole.ROLEID"/>
 	   		    <link>/operator/Metering/Billing.jsp</link>
 	          </option>
 	          <option id="setup">
-	          	<requireRole value="BillingRole.ROLEID"/>
+	          	<requireRole value="application.BillingRole.ROLEID"/>
 	            <link>/spring/dynamicBilling/overview</link>
 	          </option>
           </links>	

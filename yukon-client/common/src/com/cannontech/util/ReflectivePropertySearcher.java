@@ -21,10 +21,11 @@ public class ReflectivePropertySearcher {
     public static synchronized ReflectivePropertySearcher getRoleProperty() {
         if (standardInstance == null) {
             String[] path = new String[] {
+                "com.cannontech", 
                 "com.cannontech.roles", 
                 "com.cannontech.roles.application",
                 "com.cannontech.roles.capcontrol",
-                "com.cannotnech.roles.cicustomer",
+                "com.cannontech.roles.cicustomer",
                 "com.cannontech.roles.consumer",
                 "com.cannontech.roles.loadcontrol",
                 "com.cannontech.roles.notifications",
@@ -56,22 +57,36 @@ public class ReflectivePropertySearcher {
         } catch (IllegalArgumentException e) {
             // guess not
         }
+        Integer result = null;
+        String resultFqn = null;
         for (String packagePrefix : searchPath) {
             String fullQualifiedName = packagePrefix + "." + property;
+            int tempResult;
             try {
-                int result = getIntForFQN(fullQualifiedName);
-                // if we got here, it must have worked
-                nameLookupCache.put(property, fullQualifiedName);
-                return result;
+                tempResult = getIntForFQN(fullQualifiedName);
             } catch (IllegalArgumentException e) {
+                continue;
             }
+            // if we got here, it must have worked
+            // but let's make sure it's unique
+            if (result != null) {
+                // we have other matches
+                throw new IllegalArgumentException("\"" + property + "\" is not unique");
+            }
+            result = tempResult;
+            resultFqn = fullQualifiedName;
         }
-        throw new IllegalArgumentException("Unable to find integer value for " 
-                                           + property
-                                           + ", check ReflectivePropertySearcher for a list " 
-                                           + "of paths that were searched.");
+        if (result != null) {
+            nameLookupCache.put(property, resultFqn);
+            return result;
+        } else {
+            throw new IllegalArgumentException("Unable to find integer value for " 
+                                               + property
+                                               + ", check ReflectivePropertySearcher for a list " 
+                                               + "of paths that were searched.");
+        }
     }
-    
+
     /**
      * Uses reflection to look up the value of an fully qualified constant. For instance,
      *   getIntForFQN("com.cannontech.whatever.SomeClass.SOMEFIELD")
@@ -105,7 +120,7 @@ public class ReflectivePropertySearcher {
      * @throws IllegalArgumentException if the fqn isn't valid (see nested cause for
      *   more detail, usually a reflection problem)
      */
-    public static synchronized Object getObjectForFQN(String fqn) {
+    public static synchronized Object getObjectForFQN(String fqn) throws IllegalArgumentException {
         if (valueLookupCache.containsKey(fqn)) {
             return valueLookupCache.get(fqn);
         }
@@ -138,7 +153,7 @@ public class ReflectivePropertySearcher {
      * @throws IllegalArgumentException if the fqn isn't valid (see nested cause for
      *   more detail, usually a reflection problem)
      */
-    public static synchronized int getIntForFQN(String clazz, String constant) {
+    public static synchronized int getIntForFQN(String clazz, String constant) throws IllegalArgumentException {
         return getIntForFQN(clazz + "." + constant);
     }
 
