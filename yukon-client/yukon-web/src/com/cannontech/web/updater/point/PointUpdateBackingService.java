@@ -15,6 +15,7 @@ import com.cannontech.common.util.TimeSource;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.core.service.PointFormattingService;
 import com.cannontech.core.service.PointFormattingService.Format;
 import com.cannontech.user.YukonUserContext;
@@ -93,7 +94,7 @@ public class PointUpdateBackingService implements UpdateBackingService, PointDat
         long receivedTime;
     }
 
-    public void pointDataReceived(PointValueHolder pointData) {
+    public void pointDataReceived(PointValueQualityHolder pointData) {
         trimCache();
         DatedPointValue value = createWrapper(pointData);
         cache.put(pointData.getId(), value);

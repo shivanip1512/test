@@ -83,8 +83,10 @@ public final static int getQuality(String typeStr) throws CTIPointQuailtyExcepti
 	//when we find it
 	for( int i = 0; i < pointStrings.length; i++ )
 	{
-		if( pointStrings[i].equals(typeStr) )
-			return i;
+		for(int n = 0; n < pointStrings[i].length; n++) {
+			if( pointStrings[i][n].equalsIgnoreCase(typeStr) )
+				return i;
+		}
 	}
 
 	//Must not have found it

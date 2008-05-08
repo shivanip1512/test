@@ -2,14 +2,14 @@ package com.cannontech.message.dispatch.message;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.core.dynamic.PointValueHolder;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 
 /**
  * Insert the type's description here.
  * Creation date: (1/28/00 11:17:22 AM)
  * @author: 
  */
-public class PointData extends com.cannontech.message.util.Message implements PointValueHolder
+public class PointData extends com.cannontech.message.util.Message implements PointValueQualityHolder
 {
 	private int id;
 	private int type;
