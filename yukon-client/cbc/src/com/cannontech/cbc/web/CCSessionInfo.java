@@ -20,6 +20,7 @@ public class CCSessionInfo
 	private int lastSubID = 0;
 	private int lastFeederID = 0;
 	private String lastSearchCriteria = "";
+	private String lastSpecialAreaFlag = "";
 	
 	private HashMap<String, Object> treeState = new HashMap<String, Object>(100);
 
@@ -28,7 +29,7 @@ public class CCSessionInfo
 	public static final String STR_SUBID = "cbc_lastSubID";
 	public static final String STR_FEEDERID = "cbc_lastFeederID";
 	public static final String STR_LAST_SEARCH = "cbc_lastSearch";
-	
+	public static final String STR_LAST_SPECIALAREAFLAG = "specialArea";
 	public static final String POPUP_EVENT = "pop_up_event";
 	public CCSessionInfo()
 	{
@@ -42,6 +43,7 @@ public class CCSessionInfo
 		setLastSubID( ParamUtil.getInteger(req, STR_SUBID, getLastSubID()) );
 		setLastFeederID( ParamUtil.getInteger(req, STR_FEEDERID, getLastFeederID()) );
 		setLastSearchCriteria( ParamUtil.getString(req, STR_LAST_SEARCH, getLastSearchCriteria()) );
+		setLastSpecialAreaFlag( ParamUtil.getString(req, STR_LAST_SPECIALAREAFLAG, getLastSpecialAreaFlag()) );
 	}
 
 	/**
@@ -124,6 +126,14 @@ public class CCSessionInfo
 
 	public void setTreeState(String key, Object state) {
 		this.treeState.put(key, state);
+	}
+
+	public String getLastSpecialAreaFlag() {
+		return lastSpecialAreaFlag;
+	}
+
+	public void setLastSpecialAreaFlag(String lastSpecialAreaFlag) {
+		this.lastSpecialAreaFlag = lastSpecialAreaFlag;
 	}
 
 }
