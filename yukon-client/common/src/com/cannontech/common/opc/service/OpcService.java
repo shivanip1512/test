@@ -92,88 +92,88 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
     public void run() {
         try{
         
-        try{
-            serverAddressMap.clear();
-            String ips = config.getRequiredString("OPC_SERVERS");
-            StringTokenizer tokens = new StringTokenizer(ips,";",false);
-            while( tokens.hasMoreTokens()) {
-                String[] value = tokens.nextToken().split(":");
-                serverAddressMap.put(value[0], value[1]);
-            }
-        }catch( UnknownKeyException e) {}
+	        try{
+	            serverAddressMap.clear();
+	            String ips = config.getRequiredString("OPC_SERVERS");
+	            StringTokenizer tokens = new StringTokenizer(ips,";",false);
+	            while( tokens.hasMoreTokens()) {
+	                String[] value = tokens.nextToken().split(":");
+	                serverAddressMap.put(value[0], value[1]);
+	            }
+	        }catch( UnknownKeyException e) {}
         
-        int newRefreshSeconds;
-        try{
-            newRefreshSeconds = Integer.parseInt(config.getRequiredString("OPC_REFRESH"));
-        }catch( UnknownKeyException e) {
-            newRefreshSeconds = 60;
-        }        
-        if( refreshSeconds != newRefreshSeconds) {
-            refreshSeconds = newRefreshSeconds;
-            refresh = true;
-        }
-        
-        /* Code to check if the OPC_ENABLED flag changed in the master.cfg file.*/
-        boolean newServiceState = false;
-        try{
-            newServiceState = Boolean.parseBoolean(config.getRequiredString("OPC_ENABLED"));
-        }catch( UnknownKeyException e) {}
-        
-        if( newServiceState != serviceEnabled) {
-            if(serviceEnabled == false) {
-                //Turn on
-                dataSource.addDBChangeListener(this);
-                refresh = true;
-            }else {
-                //Turn Off
-                dataSource.removeDBChangeListener(this);
-                shutdownAll();
-                refresh = false;
-                deadConnection = false;
-            }
-        }
-        
-        /* Reset the Good Qualities List*/
-        goodQualitiesSet.clear();
-        String qualName = "";
-        String goodQualitiesString = config.getString("OPC_GOODQUALITY");
-        if (goodQualitiesString.equals("")) {
-        	log.warn("Good Qualities not defined in Master.cfg. Defaulting to Normal and Manual");
-        	goodQualitiesSet.add(PointQuality.Normal);
-        	goodQualitiesSet.add(PointQuality.Manual);
-        } else {
-	        StringTokenizer tokens = new StringTokenizer(goodQualitiesString,",",false);
-			while(tokens.hasMoreTokens()) {
-	        	try{
-			    	qualName = tokens.nextToken(); 
-					int qualityId = PointQualities.getQuality(qualName);
-					PointQuality quality = PointQuality.getPointQuality(qualityId);
-					goodQualitiesSet.add(quality);
-			    } catch ( CTIPointQuailtyException e) {
-			    	log.error( qualName + " is not a Yukon Point Quality.");
-			    }
-			}
-        }
-        /* Refresh the OPC connections or Kill a bad connection */
-        if( refresh || deadConnection ) {
-            setupService();
-            deadConnection = false;
-        }else {
-            List<OpcConnection> notConnectedConnectionList = new ArrayList<OpcConnection>();
-            for( OpcConnection conn : opcServerMap.values() ) {
-                if(!conn.isConnected()) {
-                    notConnectedConnectionList.add(conn);
-                }
-            }
-            if(notConnectedConnectionList.size() > 0) {
-                log.error("Stopping Reconnects to OPC server until the configuration is fixed.");
-                deadConnection = true;
-                for(OpcConnection conn : notConnectedConnectionList) {
-                    opcServerMap.remove(conn.getServerName());
-                    conn.stop();
-                }
-            }
-        }
+	        int newRefreshSeconds;
+	        try{
+	            newRefreshSeconds = Integer.parseInt(config.getRequiredString("OPC_REFRESH"));
+	        }catch( UnknownKeyException e) {
+	            newRefreshSeconds = 60;
+	        }        
+	        if( refreshSeconds != newRefreshSeconds) {
+	            refreshSeconds = newRefreshSeconds;
+	            refresh = true;
+	        }
+	        
+	        /* Code to check if the OPC_ENABLED flag changed in the master.cfg file.*/
+	        boolean newServiceState = false;
+	        try{
+	            newServiceState = Boolean.parseBoolean(config.getRequiredString("OPC_ENABLED"));
+	        }catch( UnknownKeyException e) {}
+	        
+	        if( newServiceState != serviceEnabled) {
+	            if(serviceEnabled == false) {
+	                //Turn on
+	                dataSource.addDBChangeListener(this);
+	                refresh = true;
+	            }else {
+	                //Turn Off
+	                dataSource.removeDBChangeListener(this);
+	                shutdownAll();
+	                refresh = false;
+	                deadConnection = false;
+	            }
+	        }
+	        
+	        /* Reset the Good Qualities List*/
+	        goodQualitiesSet.clear();
+	        String qualName = "";
+	        String goodQualitiesString = config.getString("OPC_GOODQUALITY");
+	        if (goodQualitiesString.equals("")) {
+	        	log.debug("Good Qualities not defined in Master.cfg. Defaulting to Normal and Manual");
+	        	goodQualitiesSet.add(PointQuality.Normal);
+	        	goodQualitiesSet.add(PointQuality.Manual);
+	        } else {
+		        StringTokenizer tokens = new StringTokenizer(goodQualitiesString,",",false);
+				while(tokens.hasMoreTokens()) {
+		        	try{
+				    	qualName = tokens.nextToken(); 
+						int qualityId = PointQualities.getQuality(qualName);
+						PointQuality quality = PointQuality.getPointQuality(qualityId);
+						goodQualitiesSet.add(quality);
+				    } catch ( CTIPointQuailtyException e) {
+				    	log.error( qualName + " is not a Yukon Point Quality.");
+				    }
+				}
+	        }
+	        /* Refresh the OPC connections or Kill a bad connection */
+	        if( refresh || deadConnection ) {
+	            setupService();
+	            deadConnection = false;
+	        }else {
+	            List<OpcConnection> notConnectedConnectionList = new ArrayList<OpcConnection>();
+	            for( OpcConnection conn : opcServerMap.values() ) {
+	                if(!conn.isConnected()) {
+	                    notConnectedConnectionList.add(conn);
+	                }
+	            }
+	            if(notConnectedConnectionList.size() > 0) {
+	                log.error("Stopping Reconnects to OPC server until the configuration is fixed.");
+	                deadConnection = true;
+	                for(OpcConnection conn : notConnectedConnectionList) {
+	                    opcServerMap.remove(conn.getServerName());
+	                    conn.stop();
+	                }
+	            }
+	        }
         }catch(Exception e) {
             log.error("Exception in OPC Run Thread: ",e);
             return;
