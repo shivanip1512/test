@@ -10,5 +10,6 @@ public enum DeviceGroupPermission {
     EDIT_MOD,
     EDIT_NOMOD,
     NOEDIT_MOD,
-    NOEDIT_NOMOD;
+    NOEDIT_NOMOD,
+    HIDDEN;
 }

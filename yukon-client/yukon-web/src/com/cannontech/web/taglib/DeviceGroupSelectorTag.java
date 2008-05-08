@@ -13,6 +13,7 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.AnyDeviceGroupPredicate;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 
 @Configurable("deviceGroupSelectorTagPrototype")
 public class DeviceGroupSelectorTag extends YukonTagSupport {
@@ -47,7 +48,7 @@ public class DeviceGroupSelectorTag extends YukonTagSupport {
         else {
             rootGroup = deviceGroupService.getRootGroup();
         }
-        DeviceGroupHierarchy deviceGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new AnyDeviceGroupPredicate());
+        DeviceGroupHierarchy deviceGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
         
         // name container
         out.println("<input type=\"text\" id=\"" + deviceGroupNameElement + "\" name=\"" + deviceGroupNameElement + "\" style=\"width:250px;\" value=\"" + currentDeviceGroup + "\" readonly/>");

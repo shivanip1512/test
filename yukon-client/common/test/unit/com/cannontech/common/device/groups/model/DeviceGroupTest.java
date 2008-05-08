@@ -119,6 +119,11 @@ public class DeviceGroupTest {
             return false;
         }
         
+        @Override
+        public boolean isHidden() {
+            return false;
+        }
+        
     }
 
 }

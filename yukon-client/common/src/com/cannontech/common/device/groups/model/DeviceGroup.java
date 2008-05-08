@@ -22,6 +22,8 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
      * @return True if modifiable
      */
     public abstract boolean isModifiable();
+    
+    public abstract boolean isHidden();
 
     public abstract String getName();
 

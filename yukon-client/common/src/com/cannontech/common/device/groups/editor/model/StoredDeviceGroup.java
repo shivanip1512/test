@@ -18,12 +18,27 @@ public class StoredDeviceGroup extends MutableDeviceGroup {
 
     @Override
     public boolean isEditable() {
+        
+        if (this.isHidden()) {
+            return false;
+        }
+        
         return permission.equals(DeviceGroupPermission.EDIT_MOD) || permission.equals(DeviceGroupPermission.EDIT_NOMOD);
     }
 
     @Override
     public boolean isModifiable() {
+        
+        if (this.isHidden()) {
+            return true;
+        }
+        
         return permission.equals(DeviceGroupPermission.EDIT_MOD) || permission.equals(DeviceGroupPermission.NOEDIT_MOD);
+    }
+    
+    @Override
+    public boolean isHidden() {
+        return permission.equals(DeviceGroupPermission.HIDDEN);
     }
 
     public DeviceGroupPermission getPermission() {

@@ -117,6 +117,11 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
         public boolean isModifiable() {
             return false;
         }
+        
+        @Override
+        public boolean isHidden() {
+            return false;
+        }
     }
 
     public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
