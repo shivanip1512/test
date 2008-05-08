@@ -16,6 +16,7 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
+import javax.swing.table.TableColumn;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.panel.IMultiSelectModel;
@@ -1802,7 +1803,7 @@ private void initialize() {
             //get all the programs and copy the needed values into a different object
     		MultiSelectProg[] prgs = new MultiSelectProg[ rows.length ]; 
     		for( int i = 0; i < rows.length; i++ )
-    			prgs[i] = new MultiSelectProg( (LMProgramBase)rows[i].getBaseProgram() );
+    			prgs[i] = new MultiSelectProg( rows[i].getBaseProgram() );
     				
     		getJPanelMultiSelect().setSelectableData( prgs );
             setParentWidth( showMulti ? 285 : 0 ); //300, 250
@@ -1846,11 +1847,27 @@ private void initialize() {
             gearColumn.setCellRenderer( new MultiJComboCellRenderer(models) );
             gearColumn.setCellEditor( new MultiJComboCellEditor(models) );
 		}
-		else if( rows.length == 1 && rows[0].getBaseProgram() instanceof IGearProgram )
-		{
+		else if( rows.length == 1 && rows[0].getBaseProgram() instanceof IGearProgram ) {
 			//only 1 program, lets just show the gears for this program
-			setGearList( ((IGearProgram)rows[0].getBaseProgram()).getDirectGearVector() );
+		    MultiSelectProg msp = rows[0];
+			setGearList( ((IGearProgram)msp.getBaseProgram()).getDirectGearVector() );
+			TableColumn gearColumn = getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
+			DefaultComboBoxModel[] models = new DefaultComboBoxModel[ rows.length ];
+			if( msp.getBaseProgram() instanceof IGearProgram ) {
+                IGearProgram progGear = (IGearProgram)msp.getBaseProgram();
 
+                DefaultComboBoxModel combModel = new DefaultComboBoxModel();
+                for( int j = 0; j < progGear.getDirectGearVector().size(); j++ ) {
+                    combModel.addElement( progGear.getDirectGearVector().get(j) );
+
+                    if( j == msp.getGearNum()-1 ) {
+                        combModel.setSelectedItem(progGear.getDirectGearVector().get(j) );
+                    }
+                }
+                models[0] = combModel;
+            }
+			gearColumn.setCellRenderer( new MultiJComboCellRenderer(models) );
+            gearColumn.setCellEditor( new MultiJComboCellEditor(models) );
         }
 	
         getJPanelMultiSelect().selectAllSelected( true );
