@@ -340,7 +340,7 @@ function saveProgramConfig(program) {
     var descFile = $('descFile').value;
     program.setDescFile(descFile);
     
-    var ctrlOdds = $('ctrlOdds').selectedIndex;
+    var ctrlOdds = $('ctrlOdds').value;
     program.setCtrlOdds(ctrlOdds);
     
     var iconNameSavings = $('iconNameSavings').value;
@@ -434,7 +434,7 @@ function showProgramConfig(element) {
     $('descFile').value = descFile;
 
     var ctrlOdds = program.getCtrlOdds();
-    $('ctrlOdds').selectedIndex = ctrlOdds;
+    $('ctrlOdds').value = ctrlOdds;
 
     var iconNameSavings = program.getIconNameSavings();
     $('iconNameSavings').value = iconNameSavings;
