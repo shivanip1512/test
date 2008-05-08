@@ -63,7 +63,7 @@
                             value="#{ptEditorForm.staleData.enabled}"
                             immediate="true" />
                             
-                <x:outputLabel for="enableStaleData" value="Enable" title="The first limit that can be set for this point, used to determine if an alarm condition is active" />
+                <x:outputLabel for="enableStaleData" value="Enable" title="Turn on/off stale data checking." />
                 
                 <x:htmlTag value="br"/>
                 <x:panelGrid columns="2">
