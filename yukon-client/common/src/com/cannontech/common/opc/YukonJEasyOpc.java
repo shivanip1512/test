@@ -13,7 +13,11 @@ import com.cannontech.common.opc.service.OpcService;
 
 
 import javafish.clients.opc.component.OpcGroup;
+import javafish.clients.opc.component.OpcItem;
+import javafish.clients.opc.exception.ComponentNotFoundException;
 import javafish.clients.opc.exception.ConnectivityException;
+import javafish.clients.opc.exception.UnableAddGroupException;
+import javafish.clients.opc.exception.UnableAddItemException;
 import javafish.clients.opc.exception.UnableRemoveGroupException;
 import javafish.clients.opc.lang.Translate;
 import javafish.clients.opc.JOpc;
@@ -101,6 +105,33 @@ public class YukonJEasyOpc extends JOpc {
                 listener.connectionStatusChanged(getServerProgID(),status);
             }
         }
+    }
+    
+    public void registerGroups() {
+		
+    	OpcGroup groups [] = this.getGroupsAsArray();
+		
+    	for( OpcGroup g : groups) {
+			List<OpcItem> items = g.getItems();
+			
+			try{
+				super.registerGroup(g);
+			} catch (UnableAddGroupException e) {
+	    		log.error(" Unable to add group: " + g.getGroupName());
+	    	}
+			
+			for (OpcItem i : items) {
+				try{
+					super.registerItem(g, i);
+				} catch (UnableAddItemException e) {
+		    		log.error(" Unable to add Item: " + i.getItemName());
+		    		g.removeItem(i);
+		    	} catch (ComponentNotFoundException e) {
+		    		log.error(" Component Not Found Exception: " + i.getItemName());
+		    		g.removeItem(i);
+		    	}
+			}
+    	}
     }
     
     @Override

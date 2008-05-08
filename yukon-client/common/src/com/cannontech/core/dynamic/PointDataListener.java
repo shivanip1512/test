@@ -7,5 +7,5 @@ package com.cannontech.core.dynamic;
  * @author alauinger
  */
 public interface PointDataListener {
-    public void pointDataReceived(PointValueHolder pointData);
+    public void pointDataReceived(PointValueQualityHolder pointData);
 }

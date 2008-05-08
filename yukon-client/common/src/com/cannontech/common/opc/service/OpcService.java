@@ -1,11 +1,15 @@
 package com.cannontech.common.opc.service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.concurrent.TimeUnit;
-
-import org.apache.commons.lang.StringUtils;
-import org.apache.log4j.Logger;
-import org.springframework.dao.DataRetrievalFailureException;
 
 import javafish.clients.opc.asynch.AsynchEvent;
 import javafish.clients.opc.asynch.OpcAsynchGroupListener;
@@ -16,38 +20,55 @@ import javafish.clients.opc.exception.ItemExistsException;
 import javafish.clients.opc.variant.Variant;
 import javafish.clients.opc.variant.VariantTypes;
 
+import org.apache.commons.lang.StringUtils;
+import org.apache.log4j.Logger;
+import org.springframework.dao.DataRetrievalFailureException;
+
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.UnknownKeyException;
-import com.cannontech.common.opc.*;
+import com.cannontech.common.opc.OpcConnection;
+import com.cannontech.common.opc.OpcConnectionListener;
+import com.cannontech.common.opc.SendMessageToOpcThread;
+import com.cannontech.common.opc.YukonOpcItem;
+import com.cannontech.common.opc.model.FdrDirection;
 import com.cannontech.common.opc.model.FdrInterfaceType;
 import com.cannontech.common.opc.model.FdrTranslation;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.FdrTranslationDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
+import com.cannontech.core.dynamic.PointDataListener;
+import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.point.CTIPointQuailtyException;
 import com.cannontech.database.data.point.PointQualities;
+import com.cannontech.database.data.point.PointTypes;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.dispatch.message.PointData;
-import com.cannontech.message.util.*;
+import com.cannontech.message.util.ConnectionException;
+import com.cannontech.message.util.Message;
 import com.cannontech.yukon.BasicServerConnection;
-import com.cannontech.database.data.point.PointTypes;
 
-public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnectionListener, DBChangeListener{
+public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnectionListener, DBChangeListener, PointDataListener{
 	
 	private FdrTranslationDao fdrTranslationDao;
 	private BasicServerConnection dispatchConnection;
-	private AsyncDynamicDataSource dataSource;
 	private ConfigurationSource config;	
 	private PointDao pointDao;
+
+	private AsyncDynamicDataSource dataSource;
 	
 	private final Map<String,OpcConnection> opcServerMap;
-	private final Map<Integer,OpcConnection> pointIdToOpcServer;
+	private final Map<Integer,OpcConnection> inOpcPointIdToServer;
+	private final Map<Integer,OpcConnection> outOpcPointIdToServer;
 	private final Map<String,String> serverAddressMap;
 	private final Map<String,Integer> opcServerToStatusPointIdMap;
+	
+	private final Set<PointQuality> goodQualitiesSet;
 	
 	private int refreshSeconds;
 	private ScheduledExecutor globalScheduledExecutor;
@@ -59,10 +80,12 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
     Logger log = YukonLogManager.getLogger(OpcService.class);
     
 	public OpcService() {
-	    pointIdToOpcServer = new HashMap<Integer,OpcConnection>();
+	    inOpcPointIdToServer = new HashMap<Integer,OpcConnection>();
+	    outOpcPointIdToServer = new HashMap<Integer,OpcConnection>();
 		opcServerMap =  new HashMap<String,OpcConnection>();
 		serverAddressMap = new HashMap<String,String>();
-		opcServerToStatusPointIdMap = new HashMap<String,Integer>();		
+		opcServerToStatusPointIdMap = new HashMap<String,Integer>();
+		goodQualitiesSet = new HashSet<PointQuality>();
 	}
 	
     @Override
@@ -110,6 +133,27 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
             }
         }
         
+        /* Reset the Good Qualities List*/
+        goodQualitiesSet.clear();
+        String qualName = "";
+        String goodQualitiesString = config.getString("OPC_GOODQUALITY");
+        if (goodQualitiesString.equals("")) {
+        	log.warn("Good Qualities not defined in Master.cfg. Defaulting to Normal and Manual");
+        	goodQualitiesSet.add(PointQuality.Normal);
+        	goodQualitiesSet.add(PointQuality.Manual);
+        } else {
+	        StringTokenizer tokens = new StringTokenizer(goodQualitiesString,",",false);
+			while(tokens.hasMoreTokens()) {
+	        	try{
+			    	qualName = tokens.nextToken(); 
+					int qualityId = PointQualities.getQuality(qualName);
+					PointQuality quality = PointQuality.getPointQuality(qualityId);
+					goodQualitiesSet.add(quality);
+			    } catch ( CTIPointQuailtyException e) {
+			    	log.error( qualName + " is not a Yukon Point Quality.");
+			    }
+			}
+        }
         /* Refresh the OPC connections or Kill a bad connection */
         if( refresh || deadConnection ) {
             setupService();
@@ -167,8 +211,24 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
             log.error("OPC: Enabled flag is not setup, defaulting to disabled. ");
         }
         
+        String qualName = "";
+        String goodQualitiesString = config.getString("OPC_GOODQUALITY");
+        if (goodQualitiesString.equals("")) {
+        	log.warn("Good Qualities not defined in Master.cfg. Defaulting to Normal and Manual");
+        	goodQualitiesSet.add(PointQuality.Normal);
+        	goodQualitiesSet.add(PointQuality.Manual);
+        } else {
+	        StringTokenizer tokens = new StringTokenizer(goodQualitiesString,",",false);
+			while(tokens.hasMoreTokens()) {
+		    	qualName = tokens.nextToken(); 	
+				PointQuality quality = PointQuality.valueOf(qualName);
+				goodQualitiesSet.add(quality);
+			}
+        }
+		
         if(serviceEnabled) {
             dataSource.addDBChangeListener(this);
+            dataSource.registerForPointData(this, outOpcPointIdToServer.keySet() );
         }else {
             refresh = false;
         }
@@ -179,7 +239,10 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
      */
     private synchronized void setupService() {
         shutdownAll();
-        pointIdToOpcServer.clear();
+
+        dataSource.unRegisterForPointData(this);
+        outOpcPointIdToServer.clear();
+        inOpcPointIdToServer.clear();
 
         List<FdrTranslation> opcTranslations = fdrTranslationDao.getByInterfaceType(FdrInterfaceType.OPC);
 
@@ -194,6 +257,9 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
                 log.error("OPC: Error registering Item. ");
             }
         }
+        
+        dataSource.registerForPointData(this, outOpcPointIdToServer.keySet());
+        
         startupAll();
         refresh = false;
     }
@@ -217,16 +283,28 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
 	 * @param fdr
 	 */
 	private void processFdrTranslation( FdrTranslation fdr ) {
-		String server = fdr.getParameter("Server Name");
-		String groupName = fdr.getParameter("OPC Group");
-		String itemName = fdr.getParameter("OPC Item");
-		String serverAddress;
-		boolean newConnection = false;
-		
+		FdrDirection direction = fdr.getDirection();
+
 		int pointId = fdr.getId();
 		LitePoint point = pointDao.getLitePoint(pointId);
 		
-		if( !pointIdToOpcServer.containsKey(pointId)) {
+		if( direction == FdrDirection.Receive || direction == FdrDirection.Send) {
+			processOpcTranslation(point,fdr);
+		} else {
+			log.warn(" Unhandled Fdr Direction");
+		}
+	}
+	
+	private void processOpcTranslation( LitePoint point, FdrTranslation fdr ) {
+		
+		String server = fdr.getParameter("Server Name");
+		String groupName = fdr.getParameter("OPC Group");
+		String itemName = fdr.getParameter("OPC Item");
+		
+		boolean newConnection = false;
+		String serverAddress;
+		
+		if( !inOpcPointIdToServer.containsKey(point.getLiteID())) {
 			
 			serverAddress = serverAddressMap.get(server);
 			if( serverAddress == null) {
@@ -255,57 +333,38 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
                                      refreshSeconds * 1000,
                                      0.0f);
                 group.addAsynchListener(this);
-                conn.addGroup(group);
+            } else {
+            	conn.removeGroup(group);
             }
 
             OpcItem item;
 
             if (point.getPointType() == PointTypes.ANALOG_POINT) {
-                int dataOffset = pointDao.getPointDataOffset(pointId);
-                double dataMultiplier = pointDao.getPointMultiplier(pointId);
+                int dataOffset = pointDao.getPointDataOffset(point.getLiteID());
+                double dataMultiplier = pointDao.getPointMultiplier(point.getLiteID());
                 item = new YukonOpcItem(itemName,true,"",point,dataOffset,dataMultiplier);
             } else {
                 item = new YukonOpcItem(itemName, true, "", point);
             }
 
             group.addItem(item);
-			
+            conn.addGroup(group);
 			/* Sync up maps */
 		    if(newConnection) opcServerMap.put(server, conn);
-			pointIdToOpcServer.put(pointId, conn);
+			
+			if(fdr.getDirection() == FdrDirection.Send) {
+				outOpcPointIdToServer.put(point.getLiteID(), conn);
+			} else {
+				inOpcPointIdToServer.put(point.getLiteID(), conn);
+			}
 
 		} else {
-		    log.error("OPC: Opc Configuration Error. Point ID: " + pointId 
+		    log.error("OPC: Opc Configuration Error. Point ID: " + point.getLiteID() 
                                 + " is mapped to multiple Opc Items, ignoring new item." );
 		    return;
 		}
+		
 	}
-	
-	/* Spring stuff */
-	public void setFdrTranslationDao( FdrTranslationDao dao ) {
-		this.fdrTranslationDao = dao;
-	}
-
-	public void setDispatchConnection(BasicServerConnection defDispConn) {
-		this.dispatchConnection = defDispConn;
-	}
-
-    public void setGlobalScheduledExecutor(
-            ScheduledExecutor globalScheduledExecutor) {
-        this.globalScheduledExecutor = globalScheduledExecutor;
-    }
-
-    public void setConfig(ConfigurationSource config) {
-        this.config = config;
-    }
-    
-    public void setPointDao(PointDao pointDao) {
-        this.pointDao = pointDao;
-    }
-
-    public void setDataSource(AsyncDynamicDataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
     /* Thread Control */
 	/**
@@ -321,6 +380,7 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
 			}
 		}
 	}
+	
 	/**
 	 * Starts the OPC connection, register's the groups and items with the server for asynch updates.
 	 * 
@@ -332,23 +392,18 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
 	private void startup( OpcConnection conn ) throws ConnectivityException{
 		conn.start();
 	}
+	
 	/**
 	 * Shuts down all OPC connections.
 	 */
 	public void shutdownAll() {
 		for( OpcConnection conn : opcServerMap.values() ) {
-			shutdown(conn);
+			conn.stop();
 		}
 		opcServerMap.clear();
 		OpcConnection.coUninitialize();
 	}
-	/**
-	 * Shuts down an individual OPC Connection.
-	 * @param conn
-	 */
-	private void shutdown(OpcConnection conn) {
-		conn.stop();
-	}
+
 	/* end Thread Control*/
 	
 	/* These next two functions are the bread and butter for updating the points.*/
@@ -406,6 +461,12 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
                     newValue += yOpcItem.getOffset();
                     break;
                 }
+                case VariantTypes.VT_I4: {
+                    newValue = value.getInteger();
+                    newValue *= yOpcItem.getMultiplier();
+                    newValue += yOpcItem.getOffset();
+                    break;
+                }
                 default: {
                     log.error("Received an unhandled data type from the OPC server. Type: " + type);
                     continue;
@@ -417,7 +478,8 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
             pointData.setQuality(quality ? PointQualities.NORMAL_QUALITY : PointQualities.UNKNOWN_QUALITY);
             pointData.setType(yOpcItem.getPointType());
             pointData.setValue(newValue);
-            pointData.setTimeStamp(timeStamp.getTime());
+            pointData.setTime(timeStamp.getTime());
+            pointData.setTimeStamp(new Date());
             log.debug("OPC DEBUG: Sending update for " + itemName + ". Value: " + newValue + " to PointID: " + pointId );
             multi.getVector().add(pointData);
 
@@ -446,13 +508,13 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
     @Override
     public synchronized void connectionStatusChanged(String serverName, boolean newStatus) {
         double value;
-        if(newStatus) {
+        if (newStatus) {
             value = 1.0;
-        }else {
+        } else {
             value = 0.0;
         }
         Integer id = opcServerToStatusPointIdMap.get(serverName);
-        if( id != null)
+        if (id != null)
             sendStatusUpdate(id,value);
     }
     /**
@@ -467,7 +529,7 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
         log.debug("OPC DEBUG: OPC dispatch event");
 
         int pid = dbChange.getId();
-        if (pointIdToOpcServer.containsKey(pid)) {
+        if (inOpcPointIdToServer.containsKey(pid)) {
             log.debug("OPC DEBUG: Change to Point involved with OPC");
             refresh = true;
         } else {
@@ -481,4 +543,43 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
         }
     }
 
+	@Override
+	public void pointDataReceived(PointValueQualityHolder pointData) {
+
+		int id = pointData.getId();
+		OpcConnection conn = outOpcPointIdToServer.get(id);		
+
+		if (conn != null) {
+			globalScheduledExecutor.schedule( new SendMessageToOpcThread(pointData,conn,goodQualitiesSet), 0, TimeUnit.SECONDS );
+		} else {
+			log.error("Opc Connection not found for id " + id);
+			return;
+		}
+	}
+	
+	/* Spring stuff */
+	public void setFdrTranslationDao( FdrTranslationDao dao ) {
+		this.fdrTranslationDao = dao;
+	}
+
+	public void setDispatchConnection(BasicServerConnection defDispConn) {
+		this.dispatchConnection = defDispConn;
+	}
+
+    public void setGlobalScheduledExecutor(
+            ScheduledExecutor globalScheduledExecutor) {
+        this.globalScheduledExecutor = globalScheduledExecutor;
+    }
+
+    public void setConfig(ConfigurationSource config) {
+        this.config = config;
+    }
+    
+    public void setPointDao(PointDao pointDao) {
+        this.pointDao = pointDao;
+    }
+
+    public void setDataSource(AsyncDynamicDataSource dataSource) {
+        this.dataSource = dataSource;
+    }
 }

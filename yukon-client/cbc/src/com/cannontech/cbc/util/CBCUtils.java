@@ -10,6 +10,7 @@ import java.util.List;
 
 import com.cannontech.cbc.cache.CapControlCache;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.point.PointQuality;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
@@ -645,7 +646,7 @@ public final class CBCUtils {
     }
 
     public static boolean isPointQualNormal(PointQualityCheckable checkable, Integer type) {
-        return checkable.getCurrentPtQuality(type.intValue()) == PointQualityCheckable.PointQuality.NormalQuality.value();
+        return checkable.getCurrentPtQuality(type.intValue()) == PointQuality.Normal.getPointQualityValue();
     }
     
     public static boolean isController(LiteWrapper lite) {

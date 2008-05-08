@@ -6,6 +6,7 @@ import com.cannontech.common.util.CtiUtilities;
 import javafish.clients.opc.component.OpcGroup;
 import javafish.clients.opc.component.OpcItem;
 import javafish.clients.opc.exception.ConnectivityException;
+import javafish.clients.opc.exception.SynchWriteException;
 
 
 public class OpcConnection {
@@ -55,6 +56,14 @@ public class OpcConnection {
 		opcConnection.terminate();
 		
 	}
+	
+	/**
+	 * 
+	 */
+	public void writeOutPointData(OpcGroup group, OpcItem item) throws SynchWriteException{
+		opcConnection.synchWriteItem(group, item);
+	}
+	
 	/**
 	 * Returns a list of groups on the connection.
 	 * 
@@ -86,5 +95,8 @@ public class OpcConnection {
 	}
 	public String getServerName() {
 		return serverName;
+	}
+	public void removeGroup(OpcGroup group) {
+		opcConnection.removeGroup(group);
 	}
 }
