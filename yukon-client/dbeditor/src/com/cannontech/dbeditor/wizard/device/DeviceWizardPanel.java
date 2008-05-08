@@ -404,9 +404,7 @@ protected boolean isLastInputPanel(com.cannontech.common.gui.util.DataInputPanel
             || currentPanel == getDeviceGridPanel()
             || (currentPanel == getDeviceCommChannelPanel() 
                 && 
-                (getDeviceTypePanel().getDeviceType() == PAOGroups.RTU_DNP
-                 || getDeviceTypePanel().getDeviceType() == PAOGroups.RTU_DART
-                 || getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7700
+                (getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7700
                  || getDeviceTypePanel().getDeviceType() == PAOGroups.ION_7330
                  || getDeviceTypePanel().getDeviceType() == PAOGroups.ION_8300) ) );
 }
