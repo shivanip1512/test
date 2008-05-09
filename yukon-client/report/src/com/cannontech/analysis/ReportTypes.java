@@ -24,8 +24,8 @@ public enum ReportTypes {
     POINT_DATA_SUMMARY("Point Data Summary", PointDataSummaryModel.class, ReportGroup.ADMINISTRATIVE),  //Peaks/Usage
     
     CARRIER_DATA("Carrier Data", CarrierDBModel.class, ReportGroup.DATABASE),
-    CARRIER_ROUTE_MACRO_DATA("Carrier Route Macro Data", RouteDBModel.class, ReportGroup.DATABASE),
-    CARRIER_ROUTE_DATA("Carrier Route Data", RouteMacroModel.class, ReportGroup.DATABASE),
+    CARRIER_ROUTE_MACRO_DATA("Carrier Route Macro Data", RouteMacroModel.class, ReportGroup.DATABASE),
+    CARRIER_ROUTE_DATA("Carrier Route Data", RouteDBModel.class, ReportGroup.DATABASE),
     REPEATER_ROLE_COLLISION("Repeater Role Collision", RepeaterRoleCollisionModel.class, ReportGroup.DATABASE),
     
     METER_READ("Meter Reads", MeterReadModel.class, ReportGroup.METERING),
