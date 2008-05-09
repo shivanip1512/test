@@ -1314,4 +1314,13 @@ public void valueChanged(com.klg.jclass.util.value.JCValueEvent arg1)
 public void valueChanging(com.klg.jclass.util.value.JCValueEvent arg1) 
 {
 }
+
+public boolean isInputValid() {
+    String constraintName = getJTextFieldConstraintName().getText();
+    if (StringUtils.isEmpty(constraintName)) {
+        return false;
+    }else {
+        return true;
+    }
+}
 }
