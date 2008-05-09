@@ -6,5 +6,8 @@ public enum CommentAction {
     STANDALONE_REASON,
     DISABLED,
     DISABLED_OVUV,
-    USER_COMMENT
+    USER_COMMENT,
+    SEND_ALL_CONTROL, 
+    CAPBANK_CONTROL, 
+    VERIFY_CONTROL 
 }

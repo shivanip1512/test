@@ -372,7 +372,7 @@ public class CapControlDaoImpl  implements CapControlDao{
         query.append("and y.type like 'CBC%'  ");
         query.append("and y.paobjectid not in (select controldeviceid from capbank) "); 
         query.append("and p.pointoffset = 1  ");
-        query.append("and p.pointtype = 'STATUS' "); 
+        query.append("and p.pointtype = 'Status' "); 
         query.append("order by y.paoname ");
         cbcList = new ArrayList<OrphanCBC>();
         jdbcOps.query(query.toString(), new RowCallbackHandler() {

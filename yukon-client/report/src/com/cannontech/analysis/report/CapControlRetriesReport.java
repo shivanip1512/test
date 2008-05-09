@@ -15,7 +15,7 @@ public class CapControlRetriesReport extends SimpleYukonReportBase {
         new ColumnLayoutData("Cap Bank", "CapBank", 110),
         new ColumnLayoutData("CBC", "CBC", 110),
         new ColumnLayoutData("Retries", "numRetries", 50),
-        new ColumnLayoutData("Attmepts", "numAttempts", 50),
+        new ColumnLayoutData("Attempts", "numAttempts", 50),
         new ColumnLayoutData("Success %", "successPercent", 50),
     };
 

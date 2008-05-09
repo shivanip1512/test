@@ -26,7 +26,7 @@ public enum CommandHolder {
     SEND_DISABLE_OVUV(CapControlCommand.SEND_ALL_DISABLE_OVUV, "Disable OV/UV", true),
     SEND_ALL_TIMESYNC(CapControlCommand.SEND_TIMESYNC, "Send All TimeSync", false),
     
-    SEND_ALL_SCAN_2WAY(CapControlCommand.SEND_ALL_SCANN_2WAY, "Scan All 2way CBCs", false),
+    SEND_ALL_SCAN_2WAY(CapControlCommand.SEND_ALL_SCAN_2WAY, "Scan All 2way CBCs", false),
     RESET_OP_COUNTS(CapControlCommand.RESET_OPCOUNT, "Reset Op Counts", false),
     
     VERIFY_STOP(CapControlCommand.CMD_DISABLE_VERIFY, "Verify Stop", false),

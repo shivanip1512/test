@@ -44,7 +44,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int SEND_ALL_CLOSE = 30;
     public static final int SEND_ALL_ENABLE_OVUV = 31;
     public static final int SEND_ALL_DISABLE_OVUV = 32;
-    public static final int SEND_ALL_SCANN_2WAY = 33;
+    public static final int SEND_ALL_SCAN_2WAY = 33;
     public static final int SEND_TIMESYNC = 34;
     public static final int OPERATIONAL_STATECHANGE = 35;
     
@@ -96,7 +96,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 		"Send All Enable OVUV", //31
 		"Send All Disable OVUV",
 		"Scan All Scan 2Way CBCs",
-		"Send TimeSinc",
+		"Send TimeSync",
 		"Change Operational State",
 		"",
 		"",

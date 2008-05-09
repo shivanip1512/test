@@ -1055,7 +1055,7 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
                         strategyTimeOfDay = new CCStrategyTimeOfDaySet();
                     }
                 }else {
-                    facesMsg.setDetail("ERROR: When using Integrate Control, the analysis interval must be greater than the integration interval.");
+                	facesMsg.setDetail("ERROR: When using Integrate Control, the analysis interval must be greater than or equal to the integration interval.");
                     facesMsg.setSeverity(FacesMessage.SEVERITY_ERROR);
                 }
             }else if(dbPers instanceof CapControlSpecialArea) {
