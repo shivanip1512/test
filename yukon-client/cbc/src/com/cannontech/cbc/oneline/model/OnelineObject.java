@@ -39,9 +39,9 @@ public abstract class OnelineObject {
         this.paoId = paoId;
     }
 
-    public final void setUser(final LiteYukonUser user) {
+    public void setUser(final LiteYukonUser user) {
         this.user = user;
-        commandsFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.ALLOW_CONTROLS);
+        commandsFlag = false;
         editFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.CBC_DATABASE_EDIT);
     }
     

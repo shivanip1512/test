@@ -20,7 +20,7 @@ public interface CBCSettingsRole
 	public static final int ROLEID = CapControlRoleDefs.CBC_SETTINGS_ROLEID;
 
 	public static final int ACCESS = CapControlRoleDefs.CBC_PROPERTYID_BASE;
-	public static final int ALLOW_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 1;
+	//public static final int ALLOW_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 1;
 	public static final int HIDE_REPORTS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 2;
 	public static final int HIDE_GRAPHS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 3;
 	public static final int HIDE_ONELINE = CapControlRoleDefs.CBC_PROPERTYID_BASE - 4;
@@ -40,4 +40,9 @@ public interface CBCSettingsRole
     public static final int MODIFY_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 18;
     public static final int SYSTEM_WIDE_CONTROLS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 19;
     public static final int FORCE_COMMENTS = ApplicationRoleDefs.CBC_PROPERTYID_BASE - 20;
+    public static final int ALLOW_AREA_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 21;
+    public static final int ALLOW_SUBSTATION_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 22;
+    public static final int ALLOW_SUBBUS_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 23;
+    public static final int ALLOW_FEEDER_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 24;
+    public static final int ALLOW_CAPBANK_CONTROLS = CapControlRoleDefs.CBC_PROPERTYID_BASE - 25;
 }

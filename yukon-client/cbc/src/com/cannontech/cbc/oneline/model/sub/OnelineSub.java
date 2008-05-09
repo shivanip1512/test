@@ -16,10 +16,13 @@ import com.cannontech.cbc.oneline.states.SubImgState;
 import com.cannontech.cbc.oneline.util.OnelineUtil;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.cbc.util.CBCDisplay;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.esub.Drawing;
 import com.cannontech.esub.element.LineElement;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.yukon.cbc.SubBus;
 import com.loox.jloox.LxGraph;
 import com.loox.jloox.LxLine;
@@ -32,6 +35,8 @@ public class OnelineSub extends OnelineObject {
     private DynamicLineElement distributionLn;
     private StaticImage editorImage;
 	private StaticImage warningImageStatic;
+	private boolean editFlag = false;
+    private boolean commandsFlag = false;
 
     public OnelineSub(SubBus subBus) {
         this.subBus = subBus;
@@ -200,6 +205,20 @@ public class OnelineSub extends OnelineObject {
     
     private String createSubName() {
         return OnelineSub.NAME_PREFIX + getPaoId();
+    }
+    
+    public void setUser(final LiteYukonUser user) {
+        this.user = user;
+        commandsFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.ALLOW_SUBBUS_CONTROLS);
+        editFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.CBC_DATABASE_EDIT);
+    }
+    
+    public boolean isEditFlag() {
+        return editFlag;
+    }
+
+    public boolean isCommandsFlag() {
+        return commandsFlag;
     }
 
 }

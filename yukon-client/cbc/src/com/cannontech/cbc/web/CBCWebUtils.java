@@ -264,12 +264,12 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
 	 * 
 	 */
     //TODO: There shouldn't be a dependency on httpsession here!
-	public static synchronized boolean hasControlRights( HttpSession session )
+	public static synchronized boolean hasAreaControlRights( HttpSession session )
 	{
-		LiteYukonUser yukUser = (LiteYukonUser)ServletUtil.getYukonUser(session);
+		LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
 		
 		LiteYukonRoleProperty liteProp =
-			DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_CONTROLS);
+			DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_AREA_CONTROLS);
 
 		if( yukUser != null && liteProp != null )
 		{
@@ -284,7 +284,109 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
 		return false;
 	}
 
+	/**
+     * A quick access method to find out if the user in the given session
+     * has the CBC controls property set to true.
+     * 
+     */
+    //TODO: There shouldn't be a dependency on httpsession here!
+    public static synchronized boolean hasSubstationControlRights( HttpSession session )
+    {
+        LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
+        
+        LiteYukonRoleProperty liteProp =
+            DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_SUBSTATION_CONTROLS);
 
+        if( yukUser != null && liteProp != null )
+        {
+            String val = DaoFactory.getAuthDao().getRolePropertyValue(
+                yukUser,
+                liteProp.getRolePropertyID() );
+            
+            if( Boolean.TRUE.toString().equalsIgnoreCase(val) )
+                return true;
+        }
+
+        return false;
+    }
+    
+    /**
+     * A quick access method to find out if the user in the given session
+     * has the CBC controls property set to true.
+     * 
+     */
+    //TODO: There shouldn't be a dependency on httpsession here!
+    public static synchronized boolean hasSubstationBusControlRights( HttpSession session )
+    {
+        LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
+        
+        LiteYukonRoleProperty liteProp =
+            DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_SUBBUS_CONTROLS);
+
+        if( yukUser != null && liteProp != null )
+        {
+            String val = DaoFactory.getAuthDao().getRolePropertyValue(
+                yukUser,
+                liteProp.getRolePropertyID() );
+            
+            if( Boolean.TRUE.toString().equalsIgnoreCase(val) )
+                return true;
+        }
+
+        return false;
+    }
+    
+    /**
+     * A quick access method to find out if the user in the given session
+     * has the CBC controls property set to true.
+     * 
+     */
+    //TODO: There shouldn't be a dependency on httpsession here!
+    public static synchronized boolean hasFeederControlRights( HttpSession session )
+    {
+        LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
+        
+        LiteYukonRoleProperty liteProp =
+            DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_FEEDER_CONTROLS);
+
+        if( yukUser != null && liteProp != null )
+        {
+            String val = DaoFactory.getAuthDao().getRolePropertyValue(
+                yukUser,
+                liteProp.getRolePropertyID() );
+            
+            if( Boolean.TRUE.toString().equalsIgnoreCase(val) )
+                return true;
+        }
+
+        return false;
+    }
+    
+    /**
+     * A quick access method to find out if the user in the given session
+     * has the CBC controls property set to true.
+     * 
+     */
+    //TODO: There shouldn't be a dependency on httpsession here!
+    public static synchronized boolean hasCapbankControlRights( HttpSession session )
+    {
+        LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
+        
+        LiteYukonRoleProperty liteProp =
+            DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_CAPBANK_CONTROLS);
+
+        if( yukUser != null && liteProp != null )
+        {
+            String val = DaoFactory.getAuthDao().getRolePropertyValue(
+                yukUser,
+                liteProp.getRolePropertyID() );
+            
+            if( Boolean.TRUE.toString().equalsIgnoreCase(val) )
+                return true;
+        }
+
+        return false;
+    }
 
 	/**
 	 * Returns SystemLog rows from the database 

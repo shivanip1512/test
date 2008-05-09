@@ -12,11 +12,14 @@ import com.cannontech.cbc.util.CBCDisplay;
 import com.cannontech.cbc.oneline.util.UpdatableTextList;
 import com.cannontech.cbc.oneline.view.OneLineDrawing;
 import com.cannontech.cbc.util.CBCUtils;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.capcontrol.CapBank;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.esub.element.StateImage;
 import com.cannontech.esub.element.StaticImage;
 import com.cannontech.esub.element.StaticText;
+import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.Feeder;
 import com.cannontech.yukon.cbc.SubBus;
@@ -38,6 +41,8 @@ public class OnelineCap extends OnelineObject {
     private StaticImage warningImageStatic;
     private StaticText capBankName;
     private StaticImage tmStmpImage;
+    private boolean editFlag = false;
+    private boolean commandsFlag = false;
 
     public OnelineCap(SubBus subBus) {
         this.subBus = subBus;
@@ -300,6 +305,20 @@ public class OnelineCap extends OnelineObject {
         Feeder feeder = subBus.getCcFeeders().get(currFdrIndex);
         CapBankDevice cap = feeder.getCcCapBanks().get(currentCapIdx);
         return cap;
+    }
+    
+    public void setUser(final LiteYukonUser user) {
+        this.user = user;
+        commandsFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.ALLOW_CAPBANK_CONTROLS);
+        editFlag = DaoFactory.getAuthDao().checkRoleProperty(user,CBCSettingsRole.CBC_DATABASE_EDIT);
+    }
+    
+    public boolean isEditFlag() {
+        return editFlag;
+    }
+
+    public boolean isCommandsFlag() {
+        return commandsFlag;
     }
 
     public LxComponent getStateImage() {

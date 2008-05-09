@@ -66,7 +66,7 @@ public class CBCAjaxMultiActionController extends MultiActionController {
         boolean turnSystemOff = ParamUtil.getBoolean(req, "turnSystemOff");
         int commandID = (turnSystemOff) ? CapControlCommand.DISABLE_SYSTEM
                 : CapControlCommand.ENABLE_SYSTEM;
-        if (allowControl(user)) {
+        if (allowSystemWideControl(user)) {
             executor.executeCommand(0, commandID);
         } else {
             CTILogger.info("Unable to execute command - " + commandID + ". Check admin settings");
@@ -75,10 +75,8 @@ public class CBCAjaxMultiActionController extends MultiActionController {
 
     }
 
-    private boolean allowControl(LiteYukonUser user) {
-        String allowCtlVal = DaoFactory.getAuthDao()
-                                       .getRolePropertyValue(user,
-                                                             CBCSettingsRole.ALLOW_CONTROLS);
+    private boolean allowSystemWideControl(LiteYukonUser user) {
+        String allowCtlVal = DaoFactory.getAuthDao().getRolePropertyValue(user,CBCSettingsRole.SYSTEM_WIDE_CONTROLS);
         boolean allowControl = Boolean.valueOf(allowCtlVal);
         return allowControl;
     }

@@ -89,13 +89,17 @@
 	
 	String lastStr = (String) request.getSession(false).getAttribute("lastAccessed");
 	int lastAccessed = (lastStr == null) ? -1:Integer.parseInt(lastStr);
-	
-	boolean hasControl = CBCWebUtils.hasControlRights(session);
-
+	boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
+	boolean hasSubBusControl = CBCWebUtils.hasSubstationBusControlRights(session);
+	boolean hasFeederControl = CBCWebUtils.hasFeederControlRights(session);
+	boolean hasCapbankControl = CBCWebUtils.hasCapbankControlRights(session);
 	
 %>
 
-<c:set var="hasControl" value="<%=CBCWebUtils.hasControlRights(session)%>"/>
+<c:set var="hasSubstationControl" value="<%=CBCWebUtils.hasSubstationControlRights(session)%>"/>
+<c:set var="hasSubstationBusControl" value="<%=CBCWebUtils.hasSubstationBusControlRights(session)%>"/>
+<c:set var="hasSubstationFeederControl" value="<%=CBCWebUtils.hasFeederControlRights(session)%>"/>
+<c:set var="hasCapbankControl" value="<%=CBCWebUtils.hasCapbankControlRights(session)%>"/>
 <c:set var="areaId" value="<%=areaId%>"/>
 <c:set var="subStationId" value="<%=subStationId%>"/>
 
@@ -224,7 +228,7 @@ String css = "tableCell";
                     
                     <td>
                         <a id="substation_state_${thisSubStationId}"
-                            <% if (hasControl) { %>
+                            <% if (hasSubstationControl) { %>
                                 href="javascript:void(0);"
                                 <%=popupEvent%>="getSubstationMenu('${thisSubStationId}');">
                             <% } %>
@@ -304,7 +308,7 @@ for( SubBus subBus: subBuses ) {
 				
 				<td>
 					<a id="subbus_state_${thisSubBusId}"
-    				    <% if (hasControl) { %>
+    				    <% if (hasSubBusControl) { %>
 						  href="javascript:void(0);"
 						  <%=popupEvent%>="getSubBusMenu('${thisSubBusId}');" 
 				        <% } %> >
@@ -468,7 +472,7 @@ for (int i = 0; i < feeders.size(); i++ ) {
 					
 					<td>
                         <a id="feeder_state_${thisFeederId}"    
-                            <% if (hasControl) { %>
+                            <% if (hasFeederControl) { %>
                                 href="javascript:void(0);"
                                 <%=popupEvent%>="getFeederMenu('${thisFeederId}');" 
                             <% } %> >
@@ -597,7 +601,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 				</td>
 				
                 <td>
-				    <% if (hasControl) { %>
+				    <% if (hasCapbankControl) { %>
                         <!--2-way device designator-->
                         <input id="2_way_${thisCapBankId}" type="hidden" value="<%=CBCUtils.isTwoWay(obj)%>"/>
                         <input id="showFlip_${thisCapBankId}" type="hidden" value="<%=showFlip%>"/>
@@ -643,7 +647,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                     
                     <cti:capBankStateColor paoId="${thisCapBankId}" type="CAPBANK" format="CB_STATUS_COLOR">
                         <a id="capbank_status_${thisCapBankId}"
-                            <c:if test="${hasControl}">
+                            <c:if test="${hasCapbankControl}">
                                 href="javascript:void(0);"
                                 onclick ="getCapBankSystemMenu('${thisCapBankId}');"
                             </c:if> 
@@ -675,7 +679,7 @@ for( int i = 0; i < capBanks.size(); i++ ) {
                 
                 <td>
                     <a href="javascript:void(0);"
-                    <% if (hasControl) { %>
+                    <% if (hasCapbankControl) { %>
 	                    <% if (capBank.isBankMoved()) { %>
 		                    class="warning" 
 		                    <%=popupEvent%>="getCapBankTempMoveBack('${thisCapBankId}');" 

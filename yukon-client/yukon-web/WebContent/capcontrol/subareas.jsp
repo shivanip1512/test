@@ -99,7 +99,7 @@ if (allowCtlVal!=null) {
                 </td>
                 
                 <td>
-                	<cti:checkProperty property="CBCSettingsRole.ALLOW_CONTROLS">
+                	<cti:checkProperty property="CBCSettingsRole.ALLOW_AREA_CONTROLS">
 					    <a id="area_state_${thisAreaId}"
 	                       name="area_state"
 	                       class="<%=css%>"
@@ -108,7 +108,7 @@ if (allowCtlVal!=null) {
 							<cti:capControlValue paoId="${thisAreaId}" type="CBCAREA" format="STATE" />
 						</a>
 					 </cti:checkProperty>
-					 <cti:checkNoProperty propertyid="<%=CBCSettingsRole.ALLOW_CONTROLS%>">
+					 <cti:checkNoProperty propertyid="<%=CBCSettingsRole.ALLOW_AREA_CONTROLS%>">
 						<a id="area_state_${thisAreaId}"
 	                       name="area_state"
 	                       class="<%=css%>"

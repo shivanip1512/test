@@ -119,17 +119,21 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
             int specialAreaId = ParamUtil.getInteger(req, "specialAreaId", -1);
             int commentID = ParamUtil.getInteger(req, "selectedComment", 0);
             //be sure we have a valid user and that user has the rights to control
-            if( user != null && CBCWebUtils.hasControlRights(session) ) {
+            if( user != null ) {
                 try {
                     if (areaId != -1){
-                        updateSubAreaMenu(areaId, resp, user);
+                        if (CBCWebUtils.hasAreaControlRights(session)) {
+                            updateSubAreaMenu(areaId, resp, user);
+                        }
                     }else if(specialAreaId != -1){
-                        updateSubSpecialAreaMenu(specialAreaId, resp, user);
+                        if (CBCWebUtils.hasAreaControlRights(session)) {
+                            updateSubSpecialAreaMenu(specialAreaId, resp, user);
+                        }
                     }else if( commentID != 0){
                         processComment(commentID,req,user);
                     } else {
                         //send the command with the id, type, paoid
-                        executeCommand( req, resp, user );
+                        executeCommand( req, resp, user, session );
                     }
                 } catch( Exception e ) {
                     CTILogger.warn( "Servlet request was attempted but failed for the following reason:", e );
@@ -551,7 +555,7 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
      * @throws ServletRequestBindingException 
      * @throws IOException 
      */
-    private synchronized void executeCommand( HttpServletRequest req, HttpServletResponse resp,  LiteYukonUser user) throws ServletRequestBindingException {
+    private synchronized void executeCommand( HttpServletRequest req, HttpServletResponse resp,  LiteYukonUser user, HttpSession session) throws ServletRequestBindingException {
         int cmdID = ServletRequestUtils.getIntParameter(req, "cmdID", 0);
         int paoID = ServletRequestUtils.getIntParameter(req, "paoID", 0);
         String controlTypeParam = ServletRequestUtils.getStringParameter(req, "controlType");
@@ -560,67 +564,76 @@ public class CBCServlet extends ErrorAwareInitializingServlet {
         List<String> subsInConflict = new ArrayList<String>();
 
         if (controlType.equals(CapControlType.SPECIAL_AREA) && cmdID == CapControlCommand.ENABLE_AREA) {
-            // Check for other special areas with this special area's subIds that are enabled.
-            List<SubStation> subs = cbcCache.getSubstationsBySpecialArea(paoID);
-            for(SubStation sub : subs) {
-                boolean alreadyUsed = sub.getSpecialAreaEnabled();
-                if(alreadyUsed) {
-                    CCSpecialArea otherArea = cbcCache.getCBCSpecialArea(sub.getSpecialAreaId());
-                    if(!otherArea.getCcDisableFlag()) {
-                        String areaName = otherArea.getCcName();
-                        String value = areaName + " : " + sub.getCcName();
-                        subsInConflict.add(value);
-                    }
-                }
-            }
+            if (CBCWebUtils.hasAreaControlRights(session)) {
+            	// Check for other special areas with this special area's subIds that are enabled.
+            	List<SubStation> subs = cbcCache.getSubstationsBySpecialArea(paoID);
+            	for(SubStation sub : subs) {
+                	boolean alreadyUsed = sub.getSpecialAreaEnabled();
+                	if(alreadyUsed) {
+                    	CCSpecialArea otherArea = cbcCache.getCBCSpecialArea(sub.getSpecialAreaId());
+                    	if(!otherArea.getCcDisableFlag()) {
+                        	String areaName = otherArea.getCcName();
+                        	String value = areaName + " : " + sub.getCcName();
+                        	subsInConflict.add(value);
+                    	}
+                	}
+            	}
 
-            boolean success = subsInConflict.isEmpty();
-            if(success) {
-                float[] optParams = StringUtils.toFloatArray(ServletRequestUtils.getStringParameters(req, "opt"));
-                String operationalState = ServletRequestUtils.getStringParameter(req, "operationalState");
-                CTILogger.debug(req.getServletPath() +
+            	boolean success = subsInConflict.isEmpty();
+           	 	if(success) {
+                	float[] optParams = StringUtils.toFloatArray(ServletRequestUtils.getStringParameters(req, "opt"));
+                	String operationalState = ServletRequestUtils.getStringParameter(req, "operationalState");
+                	CTILogger.debug(req.getServletPath() +
                                 "     cmdID = " + cmdID +
                                 ", controlType = " + controlType +
                                 ", paoID = " + paoID +
                                 ", opt = " + optParams +
                                 ", operationalState = " + operationalState);
                 
-                final CapControlCommandExecutor cbcExecutor = new CapControlCommandExecutor(cbcCache, user);
+                	final CapControlCommandExecutor cbcExecutor = new CapControlCommandExecutor(cbcCache, user);
                 
-                //send the command
-                cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState);
-            }
+                	//send the command
+                	cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState);
+            	}
             
             
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.put("success", success);
-            jsonObject.put("errMessage", "Error: Some substation/s in this area are already on another enabled special area:\n\n" 
+            	JSONObject jsonObject = new JSONObject();
+            	jsonObject.put("success", success);
+            	jsonObject.put("errMessage", "Error: Some substation/s in this area are already on another enabled special area:\n\n" 
                            + org.apache.commons.lang.StringUtils.join(subsInConflict, ",\n") 
                            + "\n\nRemove them from the other area or disable the other area first.");
-            String jsonStr = jsonObject.toString();
-            resp.addHeader("X-JSON", jsonStr);
+            	String jsonStr = jsonObject.toString();
+            	resp.addHeader("X-JSON", jsonStr);
+            }
         }else {
-            float[] optParams = StringUtils.toFloatArray(ServletRequestUtils.getStringParameters(req, "opt"));
-            String operationalState = ServletRequestUtils.getStringParameter(req, "operationalState");
-            CTILogger.debug(req.getServletPath() +
+            if((controlType.equals(CapControlType.SPECIAL_AREA) && CBCWebUtils.hasAreaControlRights(session)) ||
+                (controlType.equals(CapControlType.SUBSTATION) && CBCWebUtils.hasSubstationControlRights(session)) ||
+                (controlType.equals(CapControlType.SUBBUS) && CBCWebUtils.hasSubstationBusControlRights(session)) ||
+                (controlType.equals(CapControlType.FEEDER) && CBCWebUtils.hasFeederControlRights(session)) ||
+                (controlType.equals(CapControlType.CAPBANK) && CBCWebUtils.hasCapbankControlRights(session)) ||
+                (controlType.equals(CapControlType.CBC) && CBCWebUtils.hasCapbankControlRights(session))) {
+            	float[] optParams = StringUtils.toFloatArray(ServletRequestUtils.getStringParameters(req, "opt"));
+            	String operationalState = ServletRequestUtils.getStringParameter(req, "operationalState");
+            	CTILogger.debug(req.getServletPath() +
                             "	  cmdID = " + cmdID +
                             ", controlType = " + controlType +
                             ", paoID = " + paoID +
                             ", opt = " + optParams +
                             ", operationalState = " + operationalState);
             
-            final CapControlCommandExecutor cbcExecutor = new CapControlCommandExecutor(cbcCache, user);
+            	final CapControlCommandExecutor cbcExecutor = new CapControlCommandExecutor(cbcCache, user);
             
-            if(controlType.equals(CapControlType.SPECIAL_AREA)) {
-                JSONObject jsonObject = new JSONObject();
-                Boolean success = true;
-                jsonObject.put("success", success);
-                String jsonStr = jsonObject.toString();
-                resp.addHeader("X-JSON", jsonStr);
+            	if(controlType.equals(CapControlType.SPECIAL_AREA)) {
+                	JSONObject jsonObject = new JSONObject();
+                	Boolean success = true;
+                	jsonObject.put("success", success);
+                	String jsonStr = jsonObject.toString();
+                	resp.addHeader("X-JSON", jsonStr);
+            	}
+            
+            	//send the command
+            	cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState);
             }
-            
-            //send the command
-            cbcExecutor.execute(controlType, cmdID, paoID, optParams, operationalState);
         }
     }
 }

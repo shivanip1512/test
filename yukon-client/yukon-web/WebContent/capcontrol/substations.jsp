@@ -49,7 +49,7 @@
 	}else{
 		areaSubs = capControlCache.getSubstationsByArea(areaId);
 	}
-    boolean hasControl = CBCWebUtils.hasControlRights(session);
+    boolean hasSubstationControl = CBCWebUtils.hasSubstationControlRights(session);
     
 %>
 
@@ -153,7 +153,7 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 				<td>
                     <a id="substation_state_${thisSubStationId}" 
                        style="<%=css%>"
-                    <% if( hasControl ) { %>
+                    <% if( hasSubstationControl ) { %>
 					   href="javascript:void(0);"
 					   <%=popupEvent%>="getSubstationMenu('${thisSubStationId}');"
                     <% } %> >
