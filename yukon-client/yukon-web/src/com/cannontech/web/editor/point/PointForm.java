@@ -311,24 +311,19 @@ public class PointForm extends DBEditorForm
         
     }
     
-    
     /**
      * Restores the object from the database
      *
      */
     public void initItem( int id ) {
 
-        PointBase pointDB =
-            (PointBase)LiteFactory.createDBPersistent( DaoFactory.getPointDao().getLitePoint(id) );
+        PointBase pointDB = (PointBase)LiteFactory.createDBPersistent( DaoFactory.getPointDao().getLitePoint(id) );
         setDbPersistent( pointDB );
-        
+        resetForm();
         initItem();
-        staleData = null;
         getStaleData();
     }
 
-
-    
     protected void initItem() {
 
         if( retrieveDBPersistent() == null )
