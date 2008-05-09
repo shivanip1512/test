@@ -82,6 +82,29 @@ function validateInput()
 		alert('Unable to determine a valid stop time.  Stop time should be in the form HH:mm.');
 		return false;
 	}
+	
+	//Check length so as to prevent accidental control stops or incorrect control times
+    if( document.cmdForm.startTime1 != null && !document.cmdForm.startTime1.disabled ) {
+        var time = document.cmdForm.startTime1.value.split(':');
+        if(parseInt(time[0]) > 24 ||
+            parseInt(time[0]) < 0){
+            alert('Unable to determine a valid start time.  Start time should be in the form HH:mm.');
+            return false;
+        }
+        
+    }
+	
+	//Check length so as to prevent accidental control stops or incorrect control times
+    if( document.cmdForm.stopTime1 != null && !document.cmdForm.stopTime1.disabled ) {
+        
+        var time = document.cmdForm.stopTime1.value.split(':');
+        if(parseInt(time[0]) > 24 ||
+            parseInt(time[0]) < 0){
+            alert('Unable to determine a valid stop time.  Stop time should be in the form HH:mm.');
+            return false;
+        }
+        
+    }
 
 	opener.setTimeout("window.location.reload(true)", 2000);
 	self.close();
