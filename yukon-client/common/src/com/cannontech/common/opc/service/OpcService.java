@@ -226,9 +226,9 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
 			}
         }
 		
-        if(serviceEnabled) {
+        if (serviceEnabled) {
             dataSource.addDBChangeListener(this);
-        }else {
+        } else {
             refresh = false;
         }
         dataSource.registerForPointData(this, outOpcPointIdToServer.keySet() );
@@ -240,7 +240,10 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
     private synchronized void setupService() {
         shutdownAll();
 
-        dataSource.unRegisterForPointData(this);
+        if(serviceEnabled){
+    		dataSource.unRegisterForPointData(this);
+        }
+        
         outOpcPointIdToServer.clear();
         inOpcPointIdToServer.clear();
 
@@ -258,7 +261,9 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
             }
         }
         
-        dataSource.registerForPointData(this, outOpcPointIdToServer.keySet());
+        if(serviceEnabled){
+    		dataSource.registerForPointData(this, outOpcPointIdToServer.keySet());
+        }
         
         startupAll();
         refresh = false;

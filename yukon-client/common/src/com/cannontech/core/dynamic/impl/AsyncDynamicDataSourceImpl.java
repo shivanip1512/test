@@ -11,6 +11,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.tags.AlarmUtils;
 import com.cannontech.clientutils.tags.TagUtils;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -18,6 +19,7 @@ import com.cannontech.core.dynamic.DynamicDataSource;
 import com.cannontech.core.dynamic.PointDataListener;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.dynamic.SignalListener;
+import com.cannontech.core.dynamic.exception.DispatchNotConnectedException;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.lite.LiteBase;
@@ -67,8 +69,11 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
         //First register with dispatch point ids as necessary
         //If it throws then we won't have changed any of our state
-        dispatchProxy.registerForPointIds(pointIds);
-        
+        try{
+        	dispatchProxy.registerForPointIds(pointIds);
+        } catch (DispatchNotConnectedException e) {
+        	CTILogger.info("Registration failed temporarily because Dispatch wasn't connected");
+        }
         //Associate the point ids with the listener
         // and associate the listener with each of the points ids
         HashSet<Integer> listenerPointIds = pointDataListenerPointIds.get(l);
@@ -123,8 +128,11 @@ public class AsyncDynamicDataSourceImpl implements AsyncDynamicDataSource, Messa
 
         //First register with dispatch point ids as necessary
         //If it throws then we won't have changed any of our state
-        dispatchProxy.registerForPointIds(pointIds);
-        
+        try{
+	    	dispatchProxy.registerForPointIds(pointIds);
+	    } catch (DispatchNotConnectedException e) {
+	    	CTILogger.info("Registration failed temporarily because Dispatch wasn't connected");
+	    } 
         //Associate the point ids with the listener
         // and associate the listener with each of the points ids
         HashSet<Integer> listenerPointIds = signalListenerPointIds.get(l);

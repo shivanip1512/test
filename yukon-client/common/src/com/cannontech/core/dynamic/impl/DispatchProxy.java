@@ -125,7 +125,7 @@ class DispatchProxy {
      * Registers a set of point ids with dispatch
      * @param pointIds
      */
-    public void registerForPointIds(Set<Integer> pointIds) {
+    public void registerForPointIds(Set<Integer> pointIds) throws DispatchNotConnectedException{
         validateDispatchConnection();
         PointRegistration pReg = new PointRegistration();
         pReg.setRegFlags(PointRegistration.REG_ADD_POINTS);
@@ -171,7 +171,7 @@ class DispatchProxy {
         return resp.getPayload();
     }
 
-    private void validateDispatchConnection() {
+    private void validateDispatchConnection() throws DispatchNotConnectedException {
         if(!dispatchConnection.isValid()) {
             throw new DispatchNotConnectedException();
         }
