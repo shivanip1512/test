@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2008/02/07 23:33:55 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/05/09 22:00:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1435,6 +1435,10 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
                                           parse.getiValue("xcdeleteid", -1) );
 
     }
+    else if(parse.isKeyValid("xccold"))
+    {
+        status = configureColdLoad(parse);
+    }
 
     if(parse.isKeyValid("ovuv"))
     {
@@ -1991,6 +1995,45 @@ INT CtiProtocolExpresscom::extendedTierCommand(int level, int rate, int cmd, int
     return status;
 }
 
+INT CtiProtocolExpresscom::configureColdLoad(CtiCommandParser &parse)
+{
+    INT status = NoError;
+    BYTE config[3];
+    USHORT time; 
+
+    if(parse.isKeyValid("xccoldload_r"))
+    {
+        time = parse.getiValue("xccoldload_r");
+        time = time*2;//half seconds!
+        config[0] = 0;
+        config[1] = time>>8;
+        config[2] = time;
+        status = configuration( cfgColdLoad, 
+                                3,  //length of data
+                                config );
+    }
+    else
+    {
+        for(int i = 1; i<=15; i++)
+        {
+            string coldLoadStr = "xccoldload_r";
+            coldLoadStr += CtiNumStr(i);
+            if(parse.isKeyValid(coldLoadStr))
+            {
+                time = parse.getiValue(coldLoadStr);
+                time = time*2;//half seconds!
+                config[0] = i;
+                config[1] = time>>8;
+                config[2] = time;
+                status = configuration( cfgColdLoad, 
+                                        3,  //length of data
+                                        config );
+            }
+        }
+    }
+
+    return status;
+}
 
 
 INT CtiProtocolExpresscom::priority(BYTE priority)

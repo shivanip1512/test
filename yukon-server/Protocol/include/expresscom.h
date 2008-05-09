@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2007/09/11 18:14:59 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/05/09 22:00:32 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,6 +91,7 @@ public:
     typedef enum
     {                                          
         cfgThermostatConfig               = 0x24,
+        cfgColdLoad                       = 0x30,
         cfgDisplayMessages                = 0x5D,
         cfgUtilityInformation             = 0x5F
 
@@ -223,6 +224,7 @@ private:
 
     INT configureGeoAddressing(CtiCommandParser &parse);
     INT configureLoadAddressing(CtiCommandParser &parse);
+    INT configureColdLoad(CtiCommandParser &parse);
     INT priority(BYTE priority);
     unsigned short addCRC(unsigned short crc, unsigned char data);
     void calcCRC(std::vector< BYTE >::iterator data, unsigned char len);

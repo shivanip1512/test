@@ -4463,6 +4463,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
     CHAR        tbuf[80];
 
     CtiString   str;
+    CtiString   strnum;
     CtiString   temp;
     CtiString   valStr;
     CtiString   token;
@@ -5093,7 +5094,146 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
             }
         }
     }
+    else if(CmdStr.contains(" cold"))
+    {
+        if(!(token = CmdStr.match("cold[ a-z_]*" \
+                                  "(( *r[0-9]+[=][0-9]+[hms]?)|( *r[=][0-9]+[hms]?))" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?" \
+                                  "( *r[0-9]+[=][0-9]+[hms]?)?")).empty())
+        {
+            //This code is this way to match what verscom does.
+            _cmd["xccold"] = CtiParseValue(TRUE);
 
+            if(!(strnum = token.match("r[=][0-9]+[hms]?")).empty())
+            {
+                strnum.replace(0, 2, " "); // Blank the r1 to prevent matches on the 1
+                // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                _num = convertTimeInputToSeconds(strnum);
+                _cmd["xccoldload_r"] = CtiParseValue( _num );
+            }
+            else 
+            {
+                if(!(strnum = token.match("r1[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 3, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r1"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r2[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 3, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r2"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r3[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 3, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r3"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r4[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 3, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r4"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r5[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 3, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r5"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r6[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 3, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r6"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r7[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 3, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r7"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r8[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 3, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r8"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r9[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 3, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r9"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r10[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 4, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r10"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r11[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 4, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r11"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r12[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 4, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r12"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r13[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 4, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r13"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r14[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 4, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r14"] = CtiParseValue( _num );
+                }
+                if(!(strnum = token.match("r15[=][0-9]+[hms]?")).empty())
+                {
+                    strnum.replace(0, 4, " "); // Blank the r1 to prevent matches on the 1
+                    // _num = strtol(strnum.match(re_anynum).data(), &p, 0);
+                    _num = convertTimeInputToSeconds(strnum);
+                    _cmd["xccoldload_r15"] = CtiParseValue( _num );
+                }
+            }
+        }
+    }
 }
 
 void  CtiCommandParser::doParsePutStatusExpresscom(const string &_CmdStr)
