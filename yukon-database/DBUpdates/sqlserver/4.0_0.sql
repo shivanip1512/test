@@ -2547,6 +2547,10 @@ INSERT INTO YukonRoleProperty VALUES(-70024,-700,'Allow Feeder Control','true','
 INSERT INTO YukonRoleProperty VALUES(-70025,-700,'Allow Capbank/CBC Control','true','Enables or disables field and local Capbank/CBC controls for the given user'); 
 /* End YUK-5875 */
 
+/* Start YUK-5823 */
+UPDATE FDRInterface SET PossibleDirections = 'Receive,Send' WHERE InterfaceId = 25;
+/* End YUK-5823 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

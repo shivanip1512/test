@@ -544,6 +544,10 @@ INSERT INTO YukonRoleProperty VALUES(-70025,-700,'Allow Capbank/CBC Control','tr
 /* @error ignore-end */
 /* End YUK-5875 */
 
+/* Start YUK-5823 */
+UPDATE FDRInterface SET PossibleDirections = 'Receive,Send' WHERE InterfaceId = 25;
+/* End YUK-5823 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
