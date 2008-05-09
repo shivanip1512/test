@@ -665,7 +665,12 @@ public class YC extends Observable implements MessageListener
 		String tempCommand = command_;
 
 		int begIndex = 0;
+		int firstQuote = tempCommand.indexOf("'");
+		int secondQuote = tempCommand.indexOf("'", firstQuote+1);
 		int sepIndex = tempCommand.indexOf(SEPARATOR);
+		if(sepIndex > firstQuote && sepIndex < secondQuote) {
+		    sepIndex = tempCommand.indexOf(SEPARATOR, secondQuote);
+		}
 
 		while(sepIndex > -1)
 		{
