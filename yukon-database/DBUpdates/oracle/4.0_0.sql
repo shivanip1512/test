@@ -2322,6 +2322,16 @@ INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Group', 2, 'Text', '(none)');
 INSERT INTO FDRInterfaceOption VALUES(26, 'OPC Item', 3, 'Text', '(none)');
 /* End YUK-5567 */
 
+/* Start YUK-5875 */
+DELETE FROM YukonGroupRole WHERE RolePropertyId = -70001;
+DELETE FROM YukonRoleProperty WHERE RolePropertyId = -70001;
+
+INSERT INTO YukonRoleProperty VALUES(-70021,-700,'Allow Area Control','true','Enables or disables field and local Area controls for the given user'); 
+INSERT INTO YukonRoleProperty VALUES(-70022,-700,'Allow Substation Control','true','Enables or disables field and local Substation controls for the given user'); 
+INSERT INTO YukonRoleProperty VALUES(-70023,-700,'Allow SubBus Control','true','Enables or disables field and local Substation Bus controls for the given user'); 
+INSERT INTO YukonRoleProperty VALUES(-70024,-700,'Allow Feeder Control','true','Enables or disables field and local Feeder controls for the given user'); 
+INSERT INTO YukonRoleProperty VALUES(-70025,-700,'Allow Capbank/CBC Control','true','Enables or disables field and local Capbank/CBC controls for the given user'); 
+/* End YUK-5875 */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

@@ -531,6 +531,19 @@ ALTER TABLE PointPropertyValue rename column FloatValue to FltValue;
 /* @error ignore-end */
 /* End YUK-5395 */
 
+/* Start YUK-5875 */
+DELETE FROM YukonGroupRole WHERE RolePropertyId = -70001;
+DELETE FROM YukonRoleProperty WHERE RolePropertyId = -70001;
+
+/* @error ignore-begin */
+INSERT INTO YukonRoleProperty VALUES(-70021,-700,'Allow Area Control','true','Enables or disables field and local Area controls for the given user'); 
+INSERT INTO YukonRoleProperty VALUES(-70022,-700,'Allow Substation Control','true','Enables or disables field and local Substation controls for the given user'); 
+INSERT INTO YukonRoleProperty VALUES(-70023,-700,'Allow SubBus Control','true','Enables or disables field and local Substation Bus controls for the given user'); 
+INSERT INTO YukonRoleProperty VALUES(-70024,-700,'Allow Feeder Control','true','Enables or disables field and local Feeder controls for the given user'); 
+INSERT INTO YukonRoleProperty VALUES(-70025,-700,'Allow Capbank/CBC Control','true','Enables or disables field and local Capbank/CBC controls for the given user'); 
+/* @error ignore-end */
+/* End YUK-5875 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
