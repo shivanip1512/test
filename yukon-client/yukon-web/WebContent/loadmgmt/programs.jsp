@@ -182,7 +182,7 @@ YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageCon
                           <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.AREA_NAME, userContext) %></div>
                       </td>
                       <td width="47" class="TableCell">
-                      <div name = "areastatus" class="lm_tip_cell" onMouseOver="itemid=<%= lmCntrArea.getYukonID() %>;menuAppear(event, 'areaMenu')" onMouseOut="menuDisappear(event, 'areaMenu')" >
+                      <div name = "areastatus" class="lm_tip_cell" onMouseOver="itemid=<%= lmCntrArea.getYukonID() %>;controlAreaMenuAppear(event, 'areaMenu', <%=lmCntrArea.getControlAreaState() %>)" onMouseOut="menuDisappear(event, 'areaMenu')" >
                       	<font color="<%= LCUtils.getFgColor(lmCntrArea) %>"> 
                         <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.CURRENT_STATE, userContext) %> 
                        </font></div></td>
@@ -313,7 +313,7 @@ YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageCon
 				</td>
                 
                 <td width="84" class="TableCell"><font color="<%= LCUtils.getFgColor(prg) %>">
-                  <div name = "prgstatus" class="lm_tip_cell" onMouseOver="itemid=<%= prg.getYukonID() %>;menuAppear(event, 'progMenu')" onMouseOut="menuDisappear(event, 'progMenu')" >
+                  <div name = "prgstatus" class="lm_tip_cell" onMouseOver="itemid=<%= prg.getYukonID() %>;programMenuAppear(event, 'progMenu', <%=prg.getProgramStatus() %>)" onMouseOut="menuDisappear(event, 'progMenu')" >
                   <%= LCUtils.getProgramValueAt(prg, ProgramTableModel.CURRENT_STATUS, userContext) %>
 				  </div></font>
                 </td>

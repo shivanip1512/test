@@ -171,7 +171,7 @@ if( DaoFactory.getAuthDao().hasPAOAccess((LiteYukonUser) session.getAttribute(Se
                           <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.AREA_NAME, userContext) %></div></a>
                       </td>
                       <td width="47" class="TableCell">
-                      	<div name = "areastatus" class="lm_tip_cell" onMouseOver="itemid=<%= lmCntrArea.getYukonID() %>;menuAppear(event, 'areaMenu')" onMouseOut="menuDisappear(event, 'areaMenu')">
+                      	<div name = "areastatus" class="lm_tip_cell" onMouseOver="itemid=<%= lmCntrArea.getYukonID() %>;controlAreaMenuAppear(event, 'areaMenu', <%=lmCntrArea.getControlAreaState() %>)" onMouseOut="menuDisappear(event, 'areaMenu')">
                       	<font color="<%= LCUtils.getFgColor(lmCntrArea) %>"> 
                         <%= LCUtils.getControlAreaValueAt(lmCntrArea, ControlAreaTableModel.CURRENT_STATE, userContext) %> 
                         </font></div>
