@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2008/03/03 21:57:13 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/05/12 15:16:40 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -361,11 +361,11 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
         RWDBConnection conn = getConnection();
 
         RWDBDatabase  db = conn.database();
-        RWDBSelector  base_selector_accum  = db.selector(), selector_accum,
-                      base_selector_analog = db.selector(), selector_analog,
-                      base_selector_calc   = db.selector(), selector_calc,
-                      base_selector_status = db.selector(), selector_status,
-                      base_selector_system = db.selector(), selector_system;
+        RWDBSelector  base_selector_accum  = db.selector(), selector_accum  = db.selector(),
+                      base_selector_analog = db.selector(), selector_analog = db.selector(),
+                      base_selector_calc   = db.selector(), selector_calc   = db.selector(),
+                      base_selector_status = db.selector(), selector_status = db.selector(),
+                      base_selector_system = db.selector(), selector_system = db.selector();
         RWDBTable     key_table_system,
                       key_table_status,
                       key_table_analog,
@@ -374,33 +374,32 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
         RWDBReader    rdr;
 
         //  ACCUMULATOR points
-        CtiPointAccumulator().getSQL(db, key_table_accum, base_selector_accum);
+        CtiPointAccumulator().getSQL(db, key_table_accum, selector_accum);
 
         //  ANALOG points
-        CtiPointAnalog().getSQL(db, key_table_analog, base_selector_analog);
+        CtiPointAnalog().getSQL(db, key_table_analog, selector_analog);
 
         //  CALC points
-        CtiPointNumeric().getSQL(db, key_table_calc, base_selector_calc);
-        base_selector_calc.where(base_selector_calc.where()     && (rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCULATED") ||
+        CtiPointNumeric().getSQL(db, key_table_calc, selector_calc);
+        selector_calc.where(selector_calc.where()     && (rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCULATED") ||
                                                                     rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCANALOG")));
 
         //  STATUS points
-        CtiPointStatus().getSQL(db, key_table_status, base_selector_status );
-        base_selector_status.where(base_selector_status.where() && (rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("STATUS") ||
+        CtiPointStatus().getSQL(db, key_table_status, selector_status );
+        selector_status.where(selector_status.where() && (rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("STATUS") ||
                                                                     rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("CALCSTATUS")));
 
         //  SYSTEM points
-        CtiPointBase().getSQL(db, key_table_system, base_selector_system );
-        base_selector_system.where(base_selector_system.where() && rwdbUpper(key_table_system["pointtype"]) == RWDBExpr("SYSTEM"));
+        CtiPointBase().getSQL(db, key_table_system, selector_system );
+        selector_system.where(selector_system.where() && rwdbUpper(key_table_system["pointtype"]) == RWDBExpr("SYSTEM"));
+
+        base_selector_accum .where(selector_accum.where());
+        base_selector_analog.where(selector_analog.where());
+        base_selector_calc  .where(selector_calc.where());
+        base_selector_status.where(selector_status.where());
+        base_selector_system.where(selector_system.where());
 
         int paoids_per_select = gConfigParms.getValueAsInt("MAX_PAOIDS_PER_SELECT", 256);
-
-        //  I was going to turn these into a collection, but it's more obvious if I keep them seperate
-        selector_accum  = base_selector_accum;
-        selector_analog = base_selector_analog;
-        selector_calc   = base_selector_calc;
-        selector_status = base_selector_status;
-        selector_system = base_selector_system;
 
         if( paoids_per_select > paoids.size() )
         {
@@ -492,12 +491,6 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
         //  catch the remaining few - no need to RWDBBoundExpr, since we're only going to be using this once
         if( distance(paoid_itr, paoid_itr_end) > 0 )
         {
-            selector_accum  = base_selector_accum;
-            selector_analog = base_selector_analog;
-            selector_calc   = base_selector_calc;
-            selector_status = base_selector_status;
-            selector_system = base_selector_system;
-
             RWDBCriterion paoid_list_criterion;
 
             string in_list;
