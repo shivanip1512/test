@@ -46,6 +46,8 @@
   	<property name="databaseCache" ref="databaseCache"/>
   	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
      <property name="nextValueHelper" ref="nextValueHelper" />
+     <property name="dbPersistantDao" ref="dbPersistentDao" />
+     <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
   </bean>
   <bean id="contactNotificationDao" class="com.cannontech.core.dao.impl.ContactNotificationDaoImpl" >
     <property name="databaseCache" ref="databaseCache"/>

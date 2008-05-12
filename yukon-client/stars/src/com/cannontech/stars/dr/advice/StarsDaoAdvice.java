@@ -21,28 +21,39 @@ public class StarsDaoAdvice {
     private CustomerAccountDao customerAccountDao;
 
     @Pointcut("execution(* *.update(..)) || execution(* *.remove(..))")
-    public void updateMethodNamePointCut() {}
-    
+    public void updateMethodNamePointCut() {
+    }
+
     @Pointcut("execution(* *.save(..))")
-    public void saveMethodNamePointCut() {}
+    public void saveMethodNamePointCut() {
+    }
     
+    @Pointcut("execution(* *.addAdditionalContact(..))")
+    public void additionalContactMethodNamePointCut() {}
+    
+    @Pointcut("execution(* *.removeAdditionalContact(..))")
+    public void removeAdditionalContactMethodNamePointCut() {}
+
     @Around("bean(customerAccountDao) && updateMethodNamePointCut() && args(account)")
-    public Object doCustomerAccountAction(ProceedingJoinPoint pjp, CustomerAccount account) throws Throwable {
+    public Object doCustomerAccountAction(ProceedingJoinPoint pjp,
+            CustomerAccount account) throws Throwable {
         // get Energy Company before the mapping is removed by pjp.proceed()
         LiteStarsEnergyCompany energyCompany = mappingDao.getCustomerAccountEC(account);
 
-        Object returnValue = pjp.proceed(); //required
+        Object returnValue = pjp.proceed(); // required
 
-        LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(account.getAccountId(), false);
+        LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(account.getAccountId(),
+                                                                                               false);
         if (liteAcctInfo != null) {
             energyCompany.deleteCustAccountInformation(liteAcctInfo);
         }
 
-        return returnValue; //required
+        return returnValue; // required
     }
-    
+
     @After("bean(customerEventDao) && saveMethodNamePointCut() && args(event)")
-    public void doManualEventAction(ThermostatManualEvent event) throws Throwable {
+    public void doManualEventAction(ThermostatManualEvent event)
+            throws Throwable {
 
         Integer thermostatId = event.getThermostatId();
         LiteStarsEnergyCompany energyCompany = mappingDao.getInventoryEC(thermostatId);
@@ -51,35 +62,42 @@ public class StarsDaoAdvice {
         CustomerAccount account = customerAccountDao.getAccountByInventoryId(thermostatId);
         int accountId = account.getAccountId();
 
+        LiteStarsCustAccountInformation custAccountInformation = energyCompany.getCustAccountInformation(accountId,
+                                                                                                         false);
+        energyCompany.deleteCustAccountInformation(custAccountInformation);
         energyCompany.deleteStarsCustAccountInformation(accountId);
 
         // Clear inventory cache entry
         energyCompany.deleteInventory(thermostatId);
 
     }
-    
+
     @After("bean(thermostatScheduleDao) && saveMethodNamePointCut() && args(schedule)")
-    public void doThermostatScheduleAction(ThermostatSchedule schedule) throws Throwable {
-        
+    public void doThermostatScheduleAction(ThermostatSchedule schedule)
+            throws Throwable {
+
         Integer accountId = schedule.getAccountId();
         LiteStarsEnergyCompany energyCompany = mappingDao.getCustomerAccountEC(accountId);
-        
+
         // Clear account info cache entry
+        LiteStarsCustAccountInformation custAccountInformation = energyCompany.getCustAccountInformation(accountId,
+                                                                                                         false);
+        energyCompany.deleteCustAccountInformation(custAccountInformation);
         energyCompany.deleteStarsCustAccountInformation(accountId);
-        
+
         // Clear inventory cache entry
         Integer inventoryId = schedule.getInventoryId();
-        if(inventoryId != 0) {
+        if (inventoryId != 0) {
             energyCompany.deleteInventory(inventoryId);
         }
-        
+
     }
 
     @Autowired
     public void setMappingDao(ECMappingDao mappingDao) {
         this.mappingDao = mappingDao;
     }
-    
+
     @Autowired
     public void setCustomerAccountDao(CustomerAccountDao customerAccountDao) {
         this.customerAccountDao = customerAccountDao;

@@ -29,4 +29,13 @@ public interface ECMappingDao {
      */
     public LiteStarsEnergyCompany getInventoryEC(int inventoryId);
 
+    /**
+     * Method to get the energy company for a given contact id
+     * @param contactId - Id of contact to get ec for
+     * @return Energy company
+     */
+    public LiteStarsEnergyCompany getContactEC(int contactId);
+    
+    
+
 }

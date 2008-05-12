@@ -23,8 +23,10 @@ import com.cannontech.common.util.SqlGenerator;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.ContactNotificationDao;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.dynamic.impl.AsyncDynamicDataSourceImpl;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -33,6 +35,7 @@ import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.incrementer.NextValueHelper;
+import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -50,6 +53,8 @@ public final class ContactDaoImpl implements ContactDao {
     private NextValueHelper nextValueHelper;
     private final ParameterizedRowMapper<LiteContact> rowMapper = new LiteContactRowMapper();
 
+    private DBPersistentDao dbPersistantDao;
+    private AsyncDynamicDataSourceImpl asyncDynamicDataSource; 
     
 	/**
 	 * ContactFuncs constructor comment.
@@ -566,6 +571,15 @@ public final class ContactDaoImpl implements ContactDao {
 
         contactNotificationDao.saveNotificationsForContact(contactId,
                                                            contact.getLiteContactNotifications());
+        
+        DBChangeMsg changeMsg = new DBChangeMsg(contactId,
+                                                DBChangeMsg.CHANGE_CONTACT_DB,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                DBChangeMsg.CHANGE_TYPE_UPDATE);
+        
+        dbPersistantDao.processDBChange(changeMsg);
+        asyncDynamicDataSource.handleDBChange(changeMsg);
 
     }
     
@@ -584,6 +598,14 @@ public final class ContactDaoImpl implements ContactDao {
         sql.append(" WHERE ContactId = ?");
         simpleJdbcTemplate.update(sql.toString(), contactId);
         
+        DBChangeMsg changeMsg = new DBChangeMsg(contactId,
+                                                DBChangeMsg.CHANGE_CONTACT_DB,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                DBChangeMsg.CHANGE_TYPE_DELETE);
+        
+        dbPersistantDao.processDBChange(changeMsg);
+        asyncDynamicDataSource.handleDBChange(changeMsg);
     }
     
 
@@ -604,6 +626,15 @@ public final class ContactDaoImpl implements ContactDao {
         int order = simpleJdbcTemplate.queryForInt(orderSql.toString(), customerId);
         
         simpleJdbcTemplate.update(sql.toString(), customerId, contactId, order);
+        
+        DBChangeMsg changeMsg = new DBChangeMsg(contactId,
+                                                DBChangeMsg.CHANGE_CONTACT_DB,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                DBChangeMsg.CAT_CUSTOMERCONTACT,
+                                                DBChangeMsg.CHANGE_TYPE_ADD);
+        
+        dbPersistantDao.processDBChange(changeMsg);
+        asyncDynamicDataSource.handleDBChange(changeMsg);
         
     }
 
@@ -668,6 +699,15 @@ public final class ContactDaoImpl implements ContactDao {
     
     public void setNextValueHelper(NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
+    }
+    
+    public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
+        this.dbPersistantDao = dbPersistantDao;
+    }
+    
+    public void setAsyncDynamicDataSource(
+            AsyncDynamicDataSourceImpl asyncDynamicDataSource) {
+        this.asyncDynamicDataSource = asyncDynamicDataSource;
     }
 
 }

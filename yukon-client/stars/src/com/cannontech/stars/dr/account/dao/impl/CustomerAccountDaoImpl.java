@@ -149,6 +149,26 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         return account;
     }
 
+    @Override
+    public CustomerAccount getAccountByContactId(int contactId) {
+        
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT *");
+        sql.append("FROM CustomerAccount");
+        sql.append("WHERE CustomerId = ");
+        sql.append("    (SELECT CustomerId");
+        sql.append("     FROM Customer");
+        sql.append("     WHERE PrimaryContactId = ?");
+        sql.append("     OR CustomerId = ");
+        sql.append("        (SELECT CustomerId");
+        sql.append("         FROM CustomerAdditionalContact");
+        sql.append("         WHERE ContactId = ?))");
+        
+        CustomerAccount account = simpleJdbcTemplate.queryForObject(sql.toString(), rowMapper, contactId, contactId);
+        
+        return account;
+    }
+
     public void setSimpleJdbcTemplate(final SimpleJdbcTemplate simpleJdbcTemplate) {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
