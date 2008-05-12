@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2008/05/12 15:16:40 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2008/05/12 21:48:09 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -375,29 +375,25 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
 
         //  ACCUMULATOR points
         CtiPointAccumulator().getSQL(db, key_table_accum, selector_accum);
+        base_selector_accum.where(selector_accum.where());
 
         //  ANALOG points
         CtiPointAnalog().getSQL(db, key_table_analog, selector_analog);
+        base_selector_analog.where(selector_analog.where());
 
         //  CALC points
         CtiPointNumeric().getSQL(db, key_table_calc, selector_calc);
-        selector_calc.where(selector_calc.where()     && (rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCULATED") ||
+        base_selector_calc.where(selector_calc.where()     && (rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCULATED") ||
                                                                     rwdbUpper(key_table_calc["pointtype"]) == RWDBExpr("CALCANALOG")));
 
         //  STATUS points
         CtiPointStatus().getSQL(db, key_table_status, selector_status );
-        selector_status.where(selector_status.where() && (rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("STATUS") ||
+        base_selector_status.where(selector_status.where() && (rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("STATUS") ||
                                                                     rwdbUpper(key_table_status["pointtype"]) == RWDBExpr("CALCSTATUS")));
 
         //  SYSTEM points
         CtiPointBase().getSQL(db, key_table_system, selector_system );
-        selector_system.where(selector_system.where() && rwdbUpper(key_table_system["pointtype"]) == RWDBExpr("SYSTEM"));
-
-        base_selector_accum .where(selector_accum.where());
-        base_selector_analog.where(selector_analog.where());
-        base_selector_calc  .where(selector_calc.where());
-        base_selector_status.where(selector_status.where());
-        base_selector_system.where(selector_system.where());
+        base_selector_system.where(selector_system.where() && rwdbUpper(key_table_system["pointtype"]) == RWDBExpr("SYSTEM"));
 
         int paoids_per_select = gConfigParms.getValueAsInt("MAX_PAOIDS_PER_SELECT", 256);
 
