@@ -306,7 +306,7 @@ Meter meter = new Meter();
 				new ColumnProperties(260, 1, 80, null),
 				new ColumnProperties(340, 1, 80, null),
 				new ColumnProperties(420, 1, 120, null),
-				new ColumnProperties(540, 1, 100, "dd MMM yyyy  HH:mm:ss"),
+				new ColumnProperties(540, 1, 100, "MM/dd/yyyy HH:mm:ss"),
 				new ColumnProperties(640, 1, 80, null)
 			};
 		}
