@@ -10,15 +10,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.consumer.contactus.ContactUs;
 import com.cannontech.web.stars.dr.consumer.contactus.ContactUsDao;
 
+@CheckRole(roleId = ResidentialCustomerRole.ROLEID)
 @Controller
 @RequestMapping("/consumer/contactus")
 public class ContactUsController extends AbstractConsumerController {
     private ContactUsDao contactUsDao;
     
+    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
     @RequestMapping(method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             HttpServletRequest request, HttpServletResponse response, ModelMap map) {

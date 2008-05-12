@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableOptOut;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram;
 
@@ -22,6 +24,7 @@ import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram
 public class GeneralController extends AbstractConsumerController {
     private static final String viewName = "consumer/general.jsp";
 
+    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
     @RequestMapping(method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             HttpServletRequest request, HttpServletResponse response, ModelMap map) {

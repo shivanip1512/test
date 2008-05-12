@@ -9,13 +9,16 @@ import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.web.login.ChangeLoginController;
 import com.cannontech.web.login.LoginError;
+import com.cannontech.web.security.annotation.CheckRole;
 
 @Controller
 @RequestMapping("/consumer/changelogin")
 public class ConsumerChangeLoginController extends AbstractConsumerController {
 
+    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
     @RequestMapping(method = RequestMethod.GET)
     public String view(HttpServletRequest request, HttpServletResponse response, ModelMap map) throws Exception {
         

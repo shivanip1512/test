@@ -15,8 +15,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
 
 @Controller
 @RequestMapping("/consumer/faq")
@@ -28,6 +30,7 @@ public class ConsumerFAQController extends AbstractConsumerController {
     
     private YukonUserContextMessageSourceResolver messageSourceResolver;
 
+    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
     @RequestMapping(method = RequestMethod.GET)
     public String view(HttpServletRequest request, HttpServletResponse response, ModelMap map) {
         
