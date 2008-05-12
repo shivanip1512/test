@@ -11,10 +11,6 @@
     
     <bean name="/success" class="org.springframework.web.servlet.mvc.UrlFilenameViewController" />
     
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
-	    <property name="maxUploadSize" value="100000"/>
-	</bean> 
-    
     <bean name="/*" class="com.cannontech.web.amr.device.configuration.DeviceConfigurationController">
         <property name="cacheSeconds">
             <value type="int">0</value>

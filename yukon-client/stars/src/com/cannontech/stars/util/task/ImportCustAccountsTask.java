@@ -302,13 +302,23 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			Date now = new Date();
             String logFileName = null; 
             String custFileName = null;
+            String hwFileName = null;
             if (custFile != null && custFile.length() > 4){
                 custFileName = custFile.getName();
                 logFileName = custFileName.substring(0, custFileName.length()-4)+"-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
-            } else {
-                logFileName = "Prescan-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
-
+                if(preScan){
+                    logFileName = "Prescan-"+logFileName;
+                }
             }
+            
+            if (hwFile != null && hwFile.length() > 4){
+                hwFileName = hwFile.getName();
+                logFileName = hwFileName.substring(0, custFileName.length()-4)+"-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
+                if(preScan){
+                    logFileName = "Prescan-"+logFileName;
+                }
+            }
+            
 			logFile = new File(importFailsDir, logFileName);
 			
 			importLog = new PrintWriter(new FileWriter(logFile), true);
@@ -792,7 +802,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 				Integer lineNoKey;
 				
                 // Sets up the archive file
-                String archiveFileName = hwFile.getName()+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".csv";
+                String archiveFileName = hwFileName+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".csv";
                 File archiveFile = new File(archiveDir, archiveFileName);
                 PrintWriter archive = new PrintWriter(new FileWriter(archiveFile), true);
 

@@ -22,8 +22,6 @@
         <property name="prefix" value="/WEB-INF/pages/amr/"/>
     </bean>
     
-    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
-    
     <bean id="BulkImporterUploadController" class="com.cannontech.web.bulkimporter.BulkImporterUploadController">
     
         <property name="bulkImportDataDao" ref="bulkImportDataDao"/>

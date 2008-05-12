@@ -185,7 +185,7 @@ public class ActivityLog extends DBPersistent {
 	 * @param string
 	 */
 	public void setDescription(String string) {
-        if (string.length() > DESCRIPTION_LENGTH) {
+        if (string != null && string.length() > DESCRIPTION_LENGTH) {
             CTILogger.warn("Truncation description '" + string + "' to " + DESCRIPTION_LENGTH + " characters");
             string = string.substring(0, DESCRIPTION_LENGTH - 5);
             string += "...";
