@@ -195,12 +195,14 @@ public class YukonJEasyOpc extends JOpc {
             }
             ;
         }
-
-        try {
-            unregisterGroups();
-            log.info(Translate.getString("JEASYOPC_GRP_UNREG"));
-        } catch (UnableRemoveGroupException e) {
-            log.error(e);
+        
+        if(connected) {
+	        try {
+	            unregisterGroups();
+	            log.info(Translate.getString("JEASYOPC_GRP_UNREG"));
+	        } catch (UnableRemoveGroupException e) {
+	            log.error(e);
+	        }
         }
         
         sendConnectionStatus(false);

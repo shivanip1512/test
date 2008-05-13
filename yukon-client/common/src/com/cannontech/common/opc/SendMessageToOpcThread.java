@@ -17,9 +17,9 @@ import com.cannontech.core.dynamic.PointValueQualityHolder;
 import com.cannontech.database.data.point.PointTypes;
 
 public class SendMessageToOpcThread implements Runnable {
-	private PointValueQualityHolder pointData;
-	private OpcConnection conn;
-	private Set<PointQuality> goodQualitiesSet;
+	private final PointValueQualityHolder pointData;
+	private final OpcConnection conn;
+	private final Set<PointQuality> goodQualitiesSet;
 	private Logger log = YukonLogManager.getLogger(OpcService.class);
 	
 	public SendMessageToOpcThread(PointValueQualityHolder pointData, OpcConnection conn, Set<PointQuality> qualities) {
@@ -82,7 +82,7 @@ public class SendMessageToOpcThread implements Runnable {
 		item.setQuality(qual);
 		
 		try {
-			if (conn.isConnected()) {
+			if (conn != null && conn.isConnected()) {
 				conn.writeOutPointData(group, item);
 			}
 		} catch (SynchWriteException e) {

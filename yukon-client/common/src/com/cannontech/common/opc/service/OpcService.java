@@ -75,7 +75,6 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
 	
     private boolean refresh = true;
     private boolean serviceEnabled = false;
-    private boolean deadConnection = false;
 	
     Logger log = YukonLogManager.getLogger(OpcService.class);
     
@@ -129,52 +128,33 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
 	                dataSource.removeDBChangeListener(this);
 	                shutdownAll();
 	                refresh = false;
-	                deadConnection = false;
 	            }
 	        }
 	        
 	        /* Reset the Good Qualities List*/
-	        goodQualitiesSet.clear();
-	        String qualName = "";
-	        String goodQualitiesString = config.getString("OPC_GOODQUALITY");
-	        if (goodQualitiesString.equals("")) {
-	        	log.debug("Good Qualities not defined in Master.cfg. Defaulting to Normal and Manual");
-	        	goodQualitiesSet.add(PointQuality.Normal);
-	        	goodQualitiesSet.add(PointQuality.Manual);
-	        } else {
-		        StringTokenizer tokens = new StringTokenizer(goodQualitiesString,",",false);
-				while(tokens.hasMoreTokens()) {
-		        	try{
-				    	qualName = tokens.nextToken(); 
-						int qualityId = PointQualities.getQuality(qualName);
-						PointQuality quality = PointQuality.getPointQuality(qualityId);
-						goodQualitiesSet.add(quality);
-				    } catch ( CTIPointQuailtyException e) {
-				    	log.error( qualName + " is not a Yukon Point Quality.");
-				    }
-				}
-	        }
+	        loadGoodQualities();
+	        
 	        /* Refresh the OPC connections or Kill a bad connection */
-	        if( refresh || deadConnection ) {
+	        if (refresh) {
 	            setupService();
-	            deadConnection = false;
-	        }else {
+	        } else {
 	            List<OpcConnection> notConnectedConnectionList = new ArrayList<OpcConnection>();
 	            for( OpcConnection conn : opcServerMap.values() ) {
 	                if(!conn.isConnected()) {
 	                    notConnectedConnectionList.add(conn);
 	                }
 	            }
-	            if(notConnectedConnectionList.size() > 0) {
+	            if (notConnectedConnectionList.size() > 0) {
 	                log.error("Stopping Reconnects to OPC server until the configuration is fixed.");
-	                deadConnection = true;
 	                for(OpcConnection conn : notConnectedConnectionList) {
+	                	conn.stop();
 	                    opcServerMap.remove(conn.getServerName());
-	                    conn.stop();
+	                    break;
 	                }
+	                notConnectedConnectionList.clear();
 	            }
 	        }
-        }catch(Exception e) {
+        } catch (Exception e) {
             log.error("Exception in OPC Run Thread: ",e);
             return;
         }
@@ -192,7 +172,7 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
                 String[] value = tokens.nextToken().split(":");
                 serverAddressMap.put(value[0], value[1]);
             }            
-        }catch( UnknownKeyException e) {
+        } catch ( UnknownKeyException e) {
             log.error("OPC: Opc Server address's are not in the Master.cfg file. Defaulting to localhost");
         }
         
@@ -211,21 +191,9 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
             log.error("OPC: Enabled flag is not setup, defaulting to disabled. ");
         }
         
-        String qualName = "";
-        String goodQualitiesString = config.getString("OPC_GOODQUALITY");
-        if (goodQualitiesString.equals("")) {
-        	log.warn("Good Qualities not defined in Master.cfg. Defaulting to Normal and Manual");
-        	goodQualitiesSet.add(PointQuality.Normal);
-        	goodQualitiesSet.add(PointQuality.Manual);
-        } else {
-	        StringTokenizer tokens = new StringTokenizer(goodQualitiesString,",",false);
-			while(tokens.hasMoreTokens()) {
-		    	qualName = tokens.nextToken(); 	
-				PointQuality quality = PointQuality.valueOf(qualName);
-				goodQualitiesSet.add(quality);
-			}
-        }
-		
+        /* Reset the Good Qualities List*/
+        loadGoodQualities();
+        
         if (serviceEnabled) {
             dataSource.addDBChangeListener(this);
         } else {
@@ -263,9 +231,9 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
         
         if(serviceEnabled){
     		dataSource.registerForPointData(this, outOpcPointIdToServer.keySet());
+    		startupAll();
         }
         
-        startupAll();
         refresh = false;
     }
 	
@@ -371,6 +339,29 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
 		
 	}
 
+	private void loadGoodQualities() {
+		goodQualitiesSet.clear();
+        String qualName = "";
+        String goodQualitiesString = config.getString("OPC_GOODQUALITY");
+        if (goodQualitiesString.equals("")) {
+        	log.debug("Good Qualities not defined in Master.cfg. Defaulting to Normal and Manual");
+        	goodQualitiesSet.add(PointQuality.Normal);
+        	goodQualitiesSet.add(PointQuality.Manual);
+        } else {
+	        StringTokenizer tokens = new StringTokenizer(goodQualitiesString,",",false);
+			while(tokens.hasMoreTokens()) {
+	        	try{
+			    	qualName = tokens.nextToken(); 
+					int qualityId = PointQualities.getQuality(qualName);
+					PointQuality quality = PointQuality.getPointQuality(qualityId);
+					goodQualitiesSet.add(quality);
+			    } catch ( CTIPointQuailtyException e) {
+			    	log.error( qualName + " is not a Yukon Point Quality.");
+			    }
+			}
+        }
+	}
+	
     /* Thread Control */
 	/**
 	 * Starts all OPC connections that are configured. Also initializes the DLL
@@ -555,7 +546,7 @@ public class OpcService implements Runnable, OpcAsynchGroupListener, OpcConnecti
 		OpcConnection conn = outOpcPointIdToServer.get(id);		
 
 		if (conn != null) {
-			globalScheduledExecutor.schedule( new SendMessageToOpcThread(pointData,conn,goodQualitiesSet), 0, TimeUnit.SECONDS );
+			globalScheduledExecutor.execute(new SendMessageToOpcThread(pointData,conn,goodQualitiesSet));
 		} else {
 			log.error("Opc Connection not found for id " + id);
 			return;
