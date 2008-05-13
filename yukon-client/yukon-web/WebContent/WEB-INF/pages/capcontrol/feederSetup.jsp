@@ -153,7 +153,7 @@
 							<x:inputHidden id="varPhaseBPoint" forceId="true"
 								value="#{capControlForm.PAOBase.capControlFeeder.phaseB }" />
 							<x:outputLabel for="feederVarPhaseBDevice"
-								value="Selected PhaseB Point: "
+								value="Selected Phase B Point: "
 								title="Data Point used for the current phase B VAR value"
 								styleClass="medStaticLabel" />
 							<x:outputText id="feederVarPhaseBDevice" forceId="true"
@@ -176,7 +176,7 @@
 							<x:inputHidden id="varPhaseCPoint" forceId="true"
 								value="#{capControlForm.PAOBase.capControlFeeder.phaseC }" />
 							<x:outputLabel for="feederVarPhaseCDevice"
-								value="Selected PhaseC Point: "
+								value="Selected Phase C Point: "
 								title="Data Point used for the current phase B VAR value"
 								styleClass="medStaticLabel" />
 							<x:outputText id="feederVarPhaseCDevice" forceId="true"
