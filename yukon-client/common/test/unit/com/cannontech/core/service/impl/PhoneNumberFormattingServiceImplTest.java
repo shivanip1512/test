@@ -36,6 +36,19 @@ public class PhoneNumberFormattingServiceImplTest {
     }
     
     @Test
+    public void test_format_nonDigits() {
+        String phoneNumber = "not a valid phone number";
+        String expectedPhoneNumber = "";
+        
+        String formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
+        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+        
+        phoneNumber = "";
+        formattedNumber = formattingService.formatPhoneNumber(phoneNumber, null);
+        Assert.assertEquals(expectedPhoneNumber, formattedNumber);
+    }
+    
+    @Test
     public void test_format_7_Digits() {
         String phoneNumber = "1234567";
         String expectedPhoneNumber = "123-4567";

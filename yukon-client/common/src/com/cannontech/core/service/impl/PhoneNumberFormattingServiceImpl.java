@@ -1,5 +1,6 @@
 package com.cannontech.core.service.impl;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
@@ -16,6 +17,8 @@ public class PhoneNumberFormattingServiceImpl implements PhoneNumberFormattingSe
     public String formatPhoneNumber(final String phoneNumber, final YukonUserContext yukonUserContext) {
         String cleanPhoneNumber = removeNonDigits(phoneNumber);
 
+        if (StringUtils.isBlank(cleanPhoneNumber)) return "";
+        
         MessageSourceAccessor messageSourceAccessor = 
             messageSourceResolver.getMessageSourceAccessor(yukonUserContext);
         
