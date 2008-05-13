@@ -57,7 +57,7 @@ public class CapBankUpdatableStats extends LxAbstractView implements
     private void initPropLabelMap() {
         propLabelMap.put(CBCOnelineSettingsRole.CAP_TIMESTAMP, "Updated:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_BANK_SIZE, "Bank Size");
-        propLabelMap.put(CBCOnelineSettingsRole.CAP_OPCNT, "Op Count:");
+        propLabelMap.put(CBCOnelineSettingsRole.CAP_OPCNT, "Total Op:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_DAILY_TOTAL_OPCNT, "D/T Op:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_DAILY_MAX_TOTAL_OPCNT, "D/M/T Op:");
         propLabelMap.put(CBCOnelineSettingsRole.CAP_CBC_NAME, "CBC:");
