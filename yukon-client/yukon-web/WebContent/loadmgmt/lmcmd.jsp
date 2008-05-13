@@ -723,22 +723,9 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 
 	if( ILCCmds.AREA_DAILY_CHG.equals(cmd) )
 	{
-		LMControlArea cntrlArea = lcCache.getControlArea( new Integer(itemid) );
-		int winStartInt = LCUtils.decodeStartWindow(cntrlArea);
-		int winStopInt = LCUtils.decodeStopWindow(cntrlArea);
-
-		String winStart = (winStartInt == LMControlArea.INVALID_INT ? "08:00" : CtiUtilities.decodeSecondsToTime(winStartInt) );
-		String[] split = winStart.split(":");
-		String hours = split[0];
-		if(hours.length() < 2){
-		    winStart = "0" + winStart;
-		}
-		String winStop = (winStopInt == LMControlArea.INVALID_INT ? "15:00" : CtiUtilities.decodeSecondsToTime(winStopInt) );
-		String[] splitStop = winStop.split(":");
-        String hoursStop = splitStop[0];
-        if(hoursStop.length() < 2){
-            winStop = "0" + winStop;
-        }
+	    LMControlArea cntrlArea = lcCache.getControlArea( new Integer(itemid) );
+        String winStart = (String)LCUtils.getControlAreaValueAt(cntrlArea, ControlAreaTableModel.START_TIME, userContext);
+        String winStop = (String)LCUtils.getControlAreaValueAt(cntrlArea, ControlAreaTableModel.STOP_TIME, userContext);
 %>
 	<div class="TableCell"> 
 	  <div align="center">Select the new window Start and Stop times:</div>

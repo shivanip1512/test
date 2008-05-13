@@ -24,6 +24,8 @@ public class ControlAreaTableModel extends com.cannontech.tdc.observe.Observable
 	public static final int ATKU						= 4;
 	public static final int PRIORITY					= 5;
 	public static final int TIME_WINDOW				= 6;
+	public static final int START_TIME                = 7;
+	public static final int STOP_TIME                = 8;
   	
 	//The column names based on their column index
 	public static final String[] COLUMN_NAMES =

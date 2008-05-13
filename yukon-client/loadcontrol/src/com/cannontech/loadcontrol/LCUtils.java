@@ -36,6 +36,7 @@ import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.common.device.commands.CommandDateFormatFactory;
 
 
 /**
@@ -431,35 +432,101 @@ public class LCUtils
 					
 			case ControlAreaTableModel.TIME_WINDOW:
             {
-			    String timeString = null;
+                String timeString = null;
 			    DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
-		        
-			    GregorianCalendar startDate = new GregorianCalendar();               
-			    GregorianCalendar stopDate = new GregorianCalendar();
-
-			    startDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
-			    startDate.set(GregorianCalendar.MINUTE, 0);
-			    startDate.set(GregorianCalendar.SECOND, lmCntrArea.getDefDailyStartTime());
-			    stopDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
-			    stopDate.set(GregorianCalendar.MINUTE, 0);
-			    stopDate.set(GregorianCalendar.SECOND, lmCntrArea.getDefDailyStopTime());
+			    CommandDateFormatFactory.createServerCalendar();
+                Calendar startDate = CommandDateFormatFactory.createServerCalendar();
+                Calendar stopDate = CommandDateFormatFactory.createServerCalendar();
+                String winStart = CtiUtilities.STRING_DASH_LINE;
+                String winStop = CtiUtilities.STRING_DASH_LINE;
+                
+			    int winStartInt = lmCntrArea.getCurrentDailyStartTime();
+			    int winStopInt = lmCntrArea.getCurrentDailyStopTime();
 			    
-			    // returns the time displayed in the time window
-				if (lmCntrArea.getDefDailyStartTime() >= 0){
-				    timeString = dateFormattingService.formatDate(startDate.getTime(), DateFormatEnum.TIME, userContext);
-				} else {
-				    timeString = CtiUtilities.STRING_DASH_LINE;
-				}
-				timeString += " - ";
-                if (lmCntrArea.getDefDailyStartTime() >= 0){
-                    timeString += dateFormattingService.formatDate(stopDate.getTime(), DateFormatEnum.TIME, userContext);
-                } else {
-                    timeString += CtiUtilities.STRING_DASH_LINE;
+			    if(winStartInt < 0) {
+			        if(lmCntrArea.getDefDailyStartTime() > -1) {
+			            winStartInt = lmCntrArea.getDefDailyStartTime();
+			        }
                 }
+                
+                if(winStopInt < 0) {
+                    if(lmCntrArea.getDefDailyStopTime() > -1) {
+                        winStopInt = lmCntrArea.getDefDailyStopTime();
+                    }
+                }
+                
+                if(winStartInt > -1) {
+                    startDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
+                    startDate.set(GregorianCalendar.MINUTE, 0);
+                    startDate.set(GregorianCalendar.SECOND, winStartInt);
+                    
+                    winStart = dateFormattingService.formatDate(startDate.getTime(), DateFormatEnum.TIME_TZ, userContext);
+                }
+                
+                if(winStopInt > -1) {
+                    stopDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
+                    stopDate.set(GregorianCalendar.MINUTE, 0);
+                    stopDate.set(GregorianCalendar.SECOND, winStopInt);
+                    
+                    winStop = dateFormattingService.formatDate(stopDate.getTime(), DateFormatEnum.TIME_TZ, userContext);
+                }
+			    
+			    
+                timeString = winStart + " - " + winStop;
                 
                 return timeString;
 
 			}
+            
+			case ControlAreaTableModel.START_TIME:
+            {
+                DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
+                CommandDateFormatFactory.createServerCalendar();
+                Calendar startDate = CommandDateFormatFactory.createServerCalendar();
+                String winStart = CtiUtilities.STRING_DASH_LINE;
+                
+                int winStartInt = lmCntrArea.getCurrentDailyStartTime();
+                
+                if(winStartInt < 0) {
+                    if(lmCntrArea.getDefDailyStartTime() > -1) {
+                        winStartInt = lmCntrArea.getDefDailyStartTime();
+                    }
+                }
+                
+                if(winStartInt > -1) {
+                    startDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
+                    startDate.set(GregorianCalendar.MINUTE, 0);
+                    startDate.set(GregorianCalendar.SECOND, winStartInt);
+                    
+                    winStart = dateFormattingService.formatDate(startDate.getTime(), DateFormatEnum.TIME, userContext);
+                }
+                return winStart;
+            }
+            
+			case ControlAreaTableModel.STOP_TIME:
+            {
+                DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
+                CommandDateFormatFactory.createServerCalendar();
+                Calendar stopDate = CommandDateFormatFactory.createServerCalendar();
+                String winStop = CtiUtilities.STRING_DASH_LINE;
+                
+                int winStopInt = lmCntrArea.getCurrentDailyStopTime();
+                
+                if(winStopInt < 0) {
+                    if(lmCntrArea.getDefDailyStopTime() > -1) {
+                        winStopInt = lmCntrArea.getDefDailyStopTime();
+                    }
+                }
+                
+                if(winStopInt > -1) {
+                    stopDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
+                    stopDate.set(GregorianCalendar.MINUTE, 0);
+                    stopDate.set(GregorianCalendar.SECOND, winStopInt);
+                    
+                    winStop = dateFormattingService.formatDate(stopDate.getTime(), DateFormatEnum.TIME, userContext);
+                }
+                return winStop;
+            }
 			
 			case ControlAreaTableModel.PEAK_PROJECTION:
 			{
