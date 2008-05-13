@@ -616,6 +616,30 @@ public class YukonSwitchCommandAction implements ActionBase {
 				if (load != null)
 					cmd += " P " + program + " R " + splinter + " Load " + load;
 				commands.add( cmd );
+                
+                //cold load pickup needs to be in a separate command for each individual value
+                for(int j = 0; j < coldLoads.length; j++)
+                {
+                    /* defaulting to minutes since the fields on the page also seem to make that assumption.
+                     *   putconfig xcom coldload rx=Z....
+                     *   r=Z sets all cold load times out to Z
+                     *   r1=Z sets relay 1 to Z.
+                     *   r1 to r15 are valid for the 15 possible relays, and multiple may be in the same message. r= and rx= may not be used at the same time.
+                     *   
+                     *   putconfig xcom coldload r1=3 r2=33 r4=333. //This sets relay 1, 2, and 4.
+                     *   Z may be in minutes, hours or seconds. so the following four commands are identical. Minutes is the default.
+                     *   r1=1h, r1=60m, r1=3600s, r1=60
+                     *   
+                     *   Expresscom can send at most:
+                     *   32767 seconds or 546 minutes or 9 hours.
+                     **/
+                    if(coldLoads[j].length() > 0)
+                    {
+                        String clCmd = "putconfig xcom serial " + liteHw.getManufacturerSerialNumber() +
+                            " coldload r" + (j+1) + "=" + coldLoads[j];
+                        commands.add(clCmd);
+                    }
+                }
 			}
 			else if (liteHw.getLMConfiguration().getVersaCom() != null) {
 				String cmd = "putconfig vcom serial " + liteHw.getManufacturerSerialNumber() + " assign" +
