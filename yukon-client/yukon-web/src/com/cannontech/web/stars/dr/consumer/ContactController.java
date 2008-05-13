@@ -31,6 +31,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
 
 @Controller
@@ -39,7 +40,8 @@ public class ContactController extends AbstractConsumerController {
     private CustomerDao customerDao;
     private YukonListDao yukonListDao;
 
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
     public String view(HttpServletRequest request, ModelMap map) {
         // Get the primary contact
@@ -77,7 +79,8 @@ public class ContactController extends AbstractConsumerController {
         return "consumer/contacts.jsp";
     }
 
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
     @RequestMapping(value = "/consumer/contacts/newContact", method = RequestMethod.POST)
     public String newContact(HttpServletRequest request) {
 
@@ -97,7 +100,8 @@ public class ContactController extends AbstractConsumerController {
         return "redirect:/spring/stars/consumer/contacts";
     }
 
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
     @RequestMapping(value = "/consumer/contacts/updateContact", method = RequestMethod.POST)
     public String updateContact(int contactId, String firstName,
             String lastName, HttpServletRequest request) {

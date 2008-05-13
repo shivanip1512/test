@@ -28,6 +28,7 @@ import com.cannontech.stars.dr.program.service.ProgramEnrollmentRequest;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableEnrollmentDao;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment;
 
@@ -41,7 +42,8 @@ public class EnrollmentController extends AbstractConsumerController {
     private DisplayableEnrollmentDao displayableEnrollmentDao;
     private AuthDao authDao;
     
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)
     @RequestMapping(method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             HttpServletRequest request, HttpServletResponse response, ModelMap map) {
@@ -58,7 +60,8 @@ public class EnrollmentController extends AbstractConsumerController {
         return "consumer/enrollment/enrollment.jsp";
     }
     
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)
     @SuppressWarnings("unchecked")
     @RequestMapping(method = RequestMethod.POST)
     public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,

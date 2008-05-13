@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * Controller for Thermostat operations
@@ -24,6 +27,8 @@ public class ThermostatController extends AbstractThermostatController {
 
     private InventoryDao inventoryDao;
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL)
     @RequestMapping(value = "/consumer/thermostat/view/all", method = RequestMethod.GET)
     public String viewAll(HttpServletRequest request, ModelMap map,
             @ModelAttribute("customerAccount") CustomerAccount account) {
@@ -34,6 +39,8 @@ public class ThermostatController extends AbstractThermostatController {
         return "consumer/allThermostats.jsp";
     }
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL)
     @RequestMapping(value = "/consumer/thermostat/view/allSelected", method = RequestMethod.POST)
     public String allSelected(HttpServletRequest request, ModelMap map,
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
@@ -48,10 +55,9 @@ public class ThermostatController extends AbstractThermostatController {
 
         if (scheduleClicked) {
             return "redirect:/spring/stars/consumer/thermostat/schedule/view";
-        } else {
-            return "redirect:/spring/stars/consumer/thermostat/view";
         }
-
+        
+        return "redirect:/spring/stars/consumer/thermostat/view";
     }
 
     @Autowired

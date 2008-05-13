@@ -26,6 +26,7 @@ import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableOptOut;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram;
 
@@ -35,7 +36,8 @@ public class ControlHistoryController extends AbstractConsumerController {
     private ControlHistoryService controlHistoryService;
     private ControlHistoryEventDao controlHistoryEventDao;
     
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
     @RequestMapping(value = "/consumer/controlhistory", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             HttpServletRequest request, HttpServletResponse response, ModelMap map) {
@@ -67,7 +69,8 @@ public class ControlHistoryController extends AbstractConsumerController {
         return viewName;
     }
     
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
     @RequestMapping(value = "/consumer/controlhistory/completeHistoryView", method = RequestMethod.GET)
     public String completeHistoryView(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             int programId, HttpServletRequest request, HttpServletResponse response, ModelMap map) {
@@ -91,7 +94,8 @@ public class ControlHistoryController extends AbstractConsumerController {
         return "consumer/controlhistory/completeControlHistory.jsp";
     }
     
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
     @RequestMapping(value = "/consumer/controlhistory/innerCompleteHistoryView")
     public String innerCompleteHistoryView(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             int programId, String controlPeriod, HttpServletRequest request, 

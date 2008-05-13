@@ -25,6 +25,7 @@ import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -40,6 +41,8 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatSeasonEntry;
 import com.cannontech.stars.dr.thermostat.model.TimeOfWeek;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * Controller for Thermostat schedule operations
@@ -52,6 +55,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     private CustomerDao customerDao;
     private ThermostatService thermostatService;
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/view", method = RequestMethod.GET)
     public String view(HttpServletRequest request, ModelMap map,
             Integer scheduleId, @ModelAttribute("thermostatIds")
@@ -133,6 +138,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         return "consumer/thermostatSchedule.jsp";
     }
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/save", method = RequestMethod.POST)
     public String save(HttpServletRequest request, ModelMap map, String mode,
             String timeOfWeek, String temperatureUnit, Integer scheduleId,
@@ -239,6 +246,8 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         return "redirect:/spring/stars/consumer/thermostat/schedule/complete";
     }
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/complete", method = RequestMethod.GET)
     public String updateComplete(ModelMap map, String message,
             @ModelAttribute("thermostatIds")
@@ -270,11 +279,15 @@ public class ThermostatScheduleController extends AbstractThermostatController {
         return "consumer/actionComplete.jsp";
     }
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/hints", method = RequestMethod.GET)
     public String hints(ModelMap map) {
         return "consumer/scheduleHints.jsp";
     }
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/view/saved", method = RequestMethod.GET)
     public String viewSaved(ModelMap map, @ModelAttribute("thermostatIds")
     List<Integer> thermostatIds, @ModelAttribute("customerAccount")

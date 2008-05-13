@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
@@ -28,6 +29,8 @@ import com.cannontech.stars.dr.thermostat.model.ThermostatManualEventResult;
 import com.cannontech.stars.dr.thermostat.model.ThermostatMode;
 import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
+import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 /**
  * Controller for Manual thermostat operations
@@ -39,6 +42,8 @@ public class ThermostatManualController extends AbstractThermostatController {
     private CustomerEventDao customerEventDao;
     private ThermostatService thermostatService;
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/view", method = RequestMethod.GET)
     public String view(ModelMap map, @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
 
@@ -70,6 +75,8 @@ public class ThermostatManualController extends AbstractThermostatController {
         return "consumer/thermostat.jsp";
     }
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
     public String saveLabel(ModelMap map, String displayLabel,
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
@@ -90,6 +97,8 @@ public class ThermostatManualController extends AbstractThermostatController {
         return "redirect:/spring/stars/consumer/thermostat/view";
     }
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/manual", method = RequestMethod.POST)
     public String manual(HttpServletRequest request, ModelMap map, String mode,
             String fan, String temperatureUnit,
@@ -167,6 +176,8 @@ public class ThermostatManualController extends AbstractThermostatController {
         return "redirect:/spring/stars/consumer/manualComplete";
     }
 
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/manualComplete", method = RequestMethod.GET)
     public String manualComplete(ModelMap map, String message,
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {

@@ -19,6 +19,7 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 
 @Controller
 @RequestMapping("/consumer/faq")
@@ -30,7 +31,8 @@ public class ConsumerFAQController extends AbstractConsumerController {
     
     private YukonUserContextMessageSourceResolver messageSourceResolver;
 
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ)
     @RequestMapping(method = RequestMethod.GET)
     public String view(HttpServletRequest request, HttpServletResponse response, ModelMap map) {
         

@@ -16,6 +16,7 @@ import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
+import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableOptOut;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram;
 
@@ -24,7 +25,8 @@ import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram
 public class GeneralController extends AbstractConsumerController {
     private static final String viewName = "consumer/general.jsp";
 
-    @CheckRole(roleId = ResidentialCustomerRole.ROLEID)
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_ACCOUNT_GENERAL)
     @RequestMapping(method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             HttpServletRequest request, HttpServletResponse response, ModelMap map) {
