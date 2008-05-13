@@ -9,6 +9,8 @@ import java.util.Vector;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.point.PointTypes;
 
 public class PointAnalogPhysicalSettingsEditorPanel extends com.cannontech.common.gui.util.DataInputPanel implements java.awt.event.ActionListener, java.awt.event.ItemListener, javax.swing.event.CaretListener, com.klg.jclass.util.value.JCValueListener
@@ -115,7 +117,7 @@ private void connEtoC3(java.awt.event.ItemEvent arg1) {
 			getPointOffsetSpinner().setValue(new Integer(0));
 			getPointOffsetLabel().setEnabled(false);
 			getDeadbandCheckBox().setSelected(false);
-			getDeadbandSpinner().setValidator(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(-1), new Integer(-1), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)));
+			getDeadbandSpinner().setValidator(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(-1), new Integer(-1), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(-1)));
 			getDeadbandSpinner().setValue(new Integer(-1));
 			getTransducerTypeLabel().setEnabled(false);
 			getTransducerTypeComboBox().setSelectedItem("Pseudo");
@@ -278,7 +280,7 @@ private javax.swing.JPanel getDeadbandPanel() {
 			com.cannontech.common.gui.util.TitleBorder ivjLocalBorder;
 			ivjLocalBorder = new com.cannontech.common.gui.util.TitleBorder();
 			ivjLocalBorder.setTitleFont(new java.awt.Font("dialog.bold", 1, 14));
-			ivjLocalBorder.setTitle("Deadband (Welco RTUs Only)");
+			ivjLocalBorder.setTitle("Deadband");
 			ivjDeadbandPanel = new javax.swing.JPanel();
 			ivjDeadbandPanel.setName("DeadbandPanel");
 			ivjDeadbandPanel.setBorder(ivjLocalBorder);
@@ -320,7 +322,7 @@ private com.klg.jclass.field.JCSpinField getDeadbandSpinner() {
 			ivjDeadbandSpinner.setMinimumSize(new java.awt.Dimension(60, 22));
 			// user code begin {1}
 			ivjDeadbandSpinner.setDataProperties(new com.klg.jclass.field.DataProperties(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(-1), new Integer(1000), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)), new com.klg.jclass.util.value.MutableValueModel(java.lang.Integer.class, new Integer(0)), new com.klg.jclass.field.JCInvalidInfo(true, 2, new java.awt.Color(0, 0, 0, 255), new java.awt.Color(255, 255, 255, 255))));
-			ivjDeadbandSpinner.setValidator(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(-1), new Integer(100000), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(0)));
+			ivjDeadbandSpinner.setValidator(new com.klg.jclass.field.validate.JCIntegerValidator(null, new Integer(-1), new Integer(100000), null, true, null, new Integer(1), "#,##0.###;-#,##0.###", false, false, false, null, new Integer(-1)));
 
 			//ivjDeadbandSpinner.setValue( new Integer(-1) );
 
@@ -939,6 +941,12 @@ public void setValue(Object val)
 	{
 		getDeadbandCheckBox().setSelected( deadband.intValue() > -1 );
 		getDeadbandSpinner().setValue( new Integer(deadband.intValue()) );
+		
+		//Only display the Deadband panel for RTU Welco device types.
+        LiteYukonPAObject pao = DaoFactory.getPaoDao().getLiteYukonPAO(point.getPoint().getPaoID());
+        if (pao.getType() != DeviceTypes.RTUWELCO) {
+            getDeadbandPanel().setVisible(false);
+        }
 	}
 
 	if( transducerType != null )

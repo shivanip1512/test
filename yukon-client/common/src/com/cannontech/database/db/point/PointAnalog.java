@@ -7,7 +7,7 @@ import com.cannontech.database.data.point.PointTypes;
  */
 public class PointAnalog extends com.cannontech.database.db.DBPersistent {
 	private Integer pointID = null;
-	private Double deadband = new Double(0.0);
+	private Double deadband = new Double(-1);
 	private String transducerType = PointTypes.getType(PointTypes.TRANSDUCER_NONE);
 	private Double multiplier = new Double(1.0);
 	private Double dataOffset = new Double(0.0);
