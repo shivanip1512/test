@@ -88,6 +88,10 @@ public class EnrollmentController extends AbstractConsumerController {
                 int applianceCategoryId = value.getInt(KEY_APPLIANCECATEGORYID);
                 boolean enroll = value.getBoolean(KEY_ENROLL);
 
+                // Can't check programId's during enrollment.
+                accountCheckerService.checkInventory(user, inventoryId);
+                accountCheckerService.checkApplianceCategory(user, applianceCategoryId);
+                
                 ProgramEnrollmentRequest enrollmentRequest = new ProgramEnrollmentRequest();
                 enrollmentRequest.setProgramId(programId);
                 enrollmentRequest.setInventoryId(inventoryId);

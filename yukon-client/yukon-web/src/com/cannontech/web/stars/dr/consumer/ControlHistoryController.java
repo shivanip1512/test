@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import com.cannontech.common.exception.NotAuthorizedException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -76,11 +76,12 @@ public class ControlHistoryController extends AbstractConsumerController {
             int programId, HttpServletRequest request, HttpServletResponse response, ModelMap map) {
         
         YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+        LiteYukonUser user = yukonUserContext.getYukonUser();
+        accountCheckerService.checkProgram(user, programId);
         
         List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
 
         Program program = programDao.getByProgramId(programId);
-        checkProgramAccess(customerAccount, program);
         map.addAttribute("program", program);
         
         Map<Integer, List<ControlHistory>> controlHistoryMap = 
@@ -102,9 +103,8 @@ public class ControlHistoryController extends AbstractConsumerController {
             HttpServletResponse response, ModelMap map) {
         
         YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
-        
-        Program program = programDao.getByProgramId(programId);
-        checkProgramAccess(customerAccount, program);
+        LiteYukonUser user = yukonUserContext.getYukonUser();
+        accountCheckerService.checkProgram(user, programId);
         
         ControlPeriod controlPeriodEnum = ControlPeriod.valueOf(controlPeriod);
         
@@ -116,13 +116,6 @@ public class ControlHistoryController extends AbstractConsumerController {
         map.addAttribute("controlHistoryEventMap", controlHistoryEventMap);
         
         return "consumer/controlhistory/innerCompleteControlHistory.jsp";
-    }
-    
-    private void checkProgramAccess(CustomerAccount customerAccount, Program program) throws NotAuthorizedException {
-        boolean hasProgramAccess = programService.hasProgramAccess(customerAccount, program);
-        if (hasProgramAccess) return;
-        throw new NotAuthorizedException("CustomerAccount " + customerAccount.getAccountId() +
-                                         " not authorized for Program " + program.getProgramId());
     }
     
     @Autowired

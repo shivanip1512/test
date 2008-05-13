@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <c:url var="actionUrl" value="/spring/stars/consumer/enrollment"/>
@@ -100,7 +101,7 @@ function submitEnrollment() {
                                                 <cti:msg key="${enrollmentProgram.program.displayName}"/>
                                             </td>
                                             <td class="${programClass}" rowspan="${inventoryRowspan}">
-                                                ${enrollmentProgram.program.description}
+                                                <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
                                             </td>
                                             <td class="${programClass}" style="padding-bottom: 0.5em;">
                                                 <c:forEach var="enrollmentInventory" items="${inventories}">
@@ -117,7 +118,7 @@ function submitEnrollment() {
                                                         </script>
                                                                                                                        
                                                         <c:if test="${inventorySize > 1}">
-                                                            ${enrollmentInventory.displayName}
+                                                            <spring:escapeBody htmlEscape="true">${enrollmentInventory.displayName}</spring:escapeBody>
                                                         </c:if>    
                                                     </label>
                                                     <br>

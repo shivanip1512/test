@@ -4,6 +4,7 @@
 <jsp:useBean id="accountBean" class="com.cannontech.stars.web.bean.AccountBean" scope="page"/>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -222,7 +223,7 @@ function setCommercial() {
                           <div align="right">Last Name:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="LastName" maxlength="30" size="24" value="<%= primContact.getLastName() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="LastName" maxlength="30" size="24" value="<%= StringEscapeUtils.escapeHtml(primContact.getLastName()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -230,7 +231,7 @@ function setCommercial() {
                           <div align="right">First Name:</div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="FirstName" maxlength="30" size="24" value="<%= primContact.getFirstName() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="FirstName" maxlength="30" size="24" value="<%= StringEscapeUtils.escapeHtml(primContact.getFirstName()) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -254,7 +255,7 @@ function setCommercial() {
 	String workPhoneNo = (workPhone != null)? ServletUtils.formatPhoneNumberForDisplay(workPhone.getNotification()) : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="WorkPhone" maxlength="20" size="20" value="<%= workPhoneNo %>" onchange="setContentChanged(true)">
+                          <input type="text" name="WorkPhone" maxlength="20" size="20" value="<%= StringEscapeUtils.escapeHtml(workPhoneNo) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -266,7 +267,7 @@ function setCommercial() {
 	String emailAddr = (email != null)? email.getNotification() : "";
 %>
                         <td width="210"> 
-                          <input type="text" name="Email" maxlength="50" size="24" value="<%= emailAddr %>" onchange="setContentChanged(true)">
+                          <input type="text" name="Email" maxlength="50" size="24" value="<%= StringEscapeUtils.escapeHtml(emailAddr) %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                        <tr> 
@@ -274,7 +275,7 @@ function setCommercial() {
                           <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LABEL_ALT_TRACK_NUM %>" defaultvalue="Alt Tracking #"/> </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="AltTrackNum" maxlength="30" size="24" value="<%= account.getCustomerNumber().compareTo("(none)") != 0 ? account.getAltTrackingNumber() : "" %>" onchange="setContentChanged(true)">
+                          <input type="text" name="AltTrackNum" maxlength="30" size="24" value="<%= account.getCustomerNumber().compareTo("(none)") != 0 ? StringEscapeUtils.escapeHtml(account.getAltTrackingNumber()) : "" %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
@@ -293,7 +294,7 @@ function setCommercial() {
                           <div align="right">Notes:</div>
                         </td>
                         <td width="210"> 
-                          <textarea name="AcctNotes" rows="3" wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= account.getAccountNotes().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                          <textarea name="AcctNotes" rows="3" wrap="soft" cols="28" class = "TableCell" onchange="setContentChanged(true)"><%= StringEscapeUtils.escapeHtml(account.getAccountNotes().replaceAll("<br>", System.getProperty("line.separator"))) %></textarea>
                         </td>
                       </tr>
                     </table>

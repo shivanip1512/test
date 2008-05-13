@@ -20,7 +20,7 @@
             <td class="leftColumn">
                 <h3>
                     <cti:msg key="yukon.dr.consumer.thermostat.header" /><br>
-                    <cti:msg var="label" key="${thermostatLabel}" /><br>
+                    <cti:msg var="label" key="${thermostatLabel}" htmlEscape="true"/><br>
                     ${label}
                 </h3>
                 

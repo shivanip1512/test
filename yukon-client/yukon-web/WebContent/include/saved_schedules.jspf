@@ -7,11 +7,12 @@
 	StarsThermostatTypes thermostatType = thermostat.getLMHardware().getStarsThermostatSettings().getStarsThermostatProgram().getThermostatType();
 %>
 
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <script language="JavaScript">
 var scheduleNames = new Array(<%= thermSchedules.getStarsThermostatProgramCount() + 1 %>);
 scheduleNames[0] = "";
 <% for (int i = 0; i < thermSchedules.getStarsThermostatProgramCount(); i++) { %>
-scheduleNames[<%= i+1 %>]="<%= thermSchedules.getStarsThermostatProgram(i).getScheduleName() %>";
+scheduleNames[<%= i+1 %>]="<%= StringEscapeUtils.escapeJavaScript(thermSchedules.getStarsThermostatProgram(i).getScheduleName()) %>";
 <% } %>
 
 function selectSchedule(form) {
@@ -65,7 +66,7 @@ function deleteSchedule(form) {
 		if (thermSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == thermostatType.getType()) {
 			StarsThermostatProgram schedule = thermSchedules.getStarsThermostatProgram(i);
 %>
-                  <option value="<%= schedule.getScheduleID() %>"><%= schedule.getScheduleName() %></option>
+                <option value="<%= schedule.getScheduleID() %>"><%= StringEscapeUtils.escapeHtml(schedule.getScheduleName()) %></option>
 <%
 		}
 	}

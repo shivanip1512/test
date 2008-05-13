@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.servlet.YukonUserContextUtils;
@@ -31,6 +32,7 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.SpringWebUtil;
 
 /**
  * Controller for Manual thermostat operations
@@ -45,8 +47,13 @@ public class ThermostatManualController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/view", method = RequestMethod.GET)
-    public String view(ModelMap map, @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
-
+    public String view(ModelMap map, @ModelAttribute("thermostatIds") List<Integer> thermostatIds) 
+            throws Exception {
+        
+        LiteYukonUser user = SpringWebUtil.getYukonUser();
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
         // Get the first (or only) thermostat and add to model
         Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
         map.addAttribute("thermostat", thermostat);
@@ -54,7 +61,7 @@ public class ThermostatManualController extends AbstractThermostatController {
         
         ThermostatManualEvent event;
         if (thermostatIds.size() == 1) {
-            // single thermsotat selected
+            // single thermostat selected
             int thermostatId = thermostatIds.get(0);
 
             YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.dr.consumer.thermostat.label",
@@ -79,8 +86,12 @@ public class ThermostatManualController extends AbstractThermostatController {
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
     public String saveLabel(ModelMap map, String displayLabel,
-            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
+            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) throws Exception {
 
+        LiteYukonUser user = SpringWebUtil.getYukonUser();
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
         if (thermostatIds.size() != 1) {
             throw new IllegalArgumentException("You can only change the label of 1 thermostat at a time.");
         }
@@ -102,8 +113,12 @@ public class ThermostatManualController extends AbstractThermostatController {
     @RequestMapping(value = "/consumer/thermostat/manual", method = RequestMethod.POST)
     public String manual(HttpServletRequest request, ModelMap map, String mode,
             String fan, String temperatureUnit,
-            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
+            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) throws Exception {
 
+        LiteYukonUser user = SpringWebUtil.getYukonUser();
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
         ThermostatManualEventResult message = null;
         boolean failed = false;
 
@@ -180,8 +195,12 @@ public class ThermostatManualController extends AbstractThermostatController {
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/manualComplete", method = RequestMethod.GET)
     public String manualComplete(ModelMap map, String message,
-            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) {
+            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) throws Exception {
 
+        LiteYukonUser user = SpringWebUtil.getYukonUser();
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
         ThermostatManualEventResult resultMessage = ThermostatManualEventResult.valueOf(message);
         String key = resultMessage.getDisplayKey();
 

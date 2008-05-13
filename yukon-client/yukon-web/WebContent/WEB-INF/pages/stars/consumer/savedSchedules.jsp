@@ -1,5 +1,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
@@ -21,7 +22,7 @@
                     <cti:msg key="yukon.dr.consumer.savedSchedules.chooseSchedule" />
                     <select name="scheduleId">
                         <c:forEach var="schedule" items="${schedules}">
-                            <option value="${schedule.id}">${schedule.name}</option>
+                            <option value="${schedule.id}"><spring:escapeBody htmlEscape="true">${schedule.name}</spring:escapeBody></option>
                         </c:forEach>
                     </select>
                     

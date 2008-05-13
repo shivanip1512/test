@@ -50,6 +50,7 @@ import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
 import com.cannontech.web.stars.service.SwitchContextService;
 
@@ -69,7 +70,8 @@ public class SOAPClientController implements Controller {
 
         HttpSession session = request.getSession(false);
         if (session == null) {
-            response.sendRedirect( request.getContextPath() + LOGIN_URL );
+            String location = ServletUtil.createSafeUrl(request, LOGIN_URL);
+            response.sendRedirect(location);
             return null;
         }
         
@@ -83,7 +85,8 @@ public class SOAPClientController implements Controller {
         
         StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
         if (user == null) {
-            response.sendRedirect( request.getContextPath() + LOGIN_URL );
+            String location = ServletUtil.createSafeUrl(request, LOGIN_URL);
+            response.sendRedirect(location);
             return null;
         }
         
@@ -95,7 +98,8 @@ public class SOAPClientController implements Controller {
             }
             catch (WebClientException e) {
                 session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
-                response.sendRedirect( referer );
+                String location = ServletUtil.createSafeRedirectUrl(request, referer);
+                response.sendRedirect(location);
                 return null;
             }
         }
@@ -133,7 +137,8 @@ public class SOAPClientController implements Controller {
             if (request.getParameter("Wizard") != null) {
                 SOAPMessage msg = clientAction.build( request, session );
                 if (msg == null) {
-                    response.sendRedirect( errorURL + "?Wizard=true" );
+                    String location = ServletUtil.createSafeRedirectUrl(request, errorURL + "?Wizard=true");
+                    response.sendRedirect(location);
                     return null;
                 }
                 
@@ -149,7 +154,8 @@ public class SOAPClientController implements Controller {
                     clientAction = actions;
                 }
                 else {
-                    response.sendRedirect( request.getParameter(ServletUtils.ATT_REDIRECT2) );
+                    String location = ServletUtil.createSafeRedirectUrl(request, ServletUtils.ATT_REDIRECT2);
+                    response.sendRedirect(location);
                     return null;
                 }
             }
@@ -163,7 +169,8 @@ public class SOAPClientController implements Controller {
             if (request.getParameter("Wizard") != null) {
                 SOAPMessage msg = clientAction.build( request, session );
                 if (msg == null) {
-                    response.sendRedirect( errorURL + "?Wizard=true" );
+                    String location = ServletUtil.createSafeRedirectUrl(request, errorURL + "?Wizard=true");
+                    response.sendRedirect(location);
                     return null;
                 }
                 
@@ -171,19 +178,20 @@ public class SOAPClientController implements Controller {
                 actions.addAction( clientAction, msg );
                 
                 if (needMoreInfo) {
-                    response.sendRedirect( request.getParameter(ServletUtils.ATT_REDIRECT2) + "?Wizard=true" );
+                    String location = ServletUtil.createSafeRedirectUrl(request, request.getParameter(ServletUtils.ATT_REDIRECT2) + "?Wizard=true");
+                    response.sendRedirect(location);
                     return null;
                 }
-                else {
-                    destURL = errorURL = request.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
-                    session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
-                    clientAction = actions;
-                }
+                
+                destURL = errorURL = request.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
+                session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
+                clientAction = actions;
             }
             else if (needMoreInfo) {
                 SOAPMessage msg = clientAction.build( request, session );
                 if (msg == null) {
-                    response.sendRedirect( errorURL );
+                    String location = ServletUtil.createSafeRedirectUrl(request, errorURL);
+                    response.sendRedirect(location);
                     return null;
                 }
                 
@@ -191,7 +199,8 @@ public class SOAPClientController implements Controller {
                 actions.addAction( clientAction, msg );
                 session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
                 
-                response.sendRedirect( request.getParameter(ServletUtils.ATT_REDIRECT2) );
+                String location = ServletUtil.createSafeRedirectUrl(request, request.getParameter(ServletUtils.ATT_REDIRECT2));
+                response.sendRedirect(location);
                 return null;
             }
         }
@@ -210,7 +219,9 @@ public class SOAPClientController implements Controller {
                     session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
                 else
                     session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, "Failed to set additional enrollment information" );
-                response.sendRedirect( errorURL );
+                
+                String location = ServletUtil.createSafeRedirectUrl(request, errorURL);
+                response.sendRedirect(location);
                 return null;
             }
             
@@ -263,7 +274,8 @@ public class SOAPClientController implements Controller {
             clientAction = new ProgramOptOutAction();
             SOAPMessage msg = clientAction.build( request, session );
             if (msg == null) {
-                response.sendRedirect( errorURL );
+                String location = ServletUtil.createSafeRedirectUrl(request, errorURL);
+                response.sendRedirect(location);
                 return null;
             }
             
@@ -272,14 +284,16 @@ public class SOAPClientController implements Controller {
             
             if (request.getParameter(ServletUtils.NEED_MORE_INFORMATION) != null) {
                 session.setAttribute( ServletUtils.ATT_MULTI_ACTIONS, actions );
-                response.sendRedirect( request.getParameter(ServletUtils.ATT_REDIRECT2) );
+                String location = ServletUtil.createSafeRedirectUrl(request, request.getParameter(ServletUtils.ATT_REDIRECT2));
+                response.sendRedirect(location);
                 return null;
             }
             
             SendOptOutNotificationAction action2 = new SendOptOutNotificationAction();
             SOAPMessage msg2 = action2.build( request, session );
             if (msg2 == null) {
-                response.sendRedirect( errorURL );
+                String location = ServletUtil.createSafeRedirectUrl(request, errorURL);
+                response.sendRedirect(location);
                 return null;
             }
             
@@ -290,7 +304,8 @@ public class SOAPClientController implements Controller {
             clientAction = new SendOptOutNotificationAction();
             SOAPMessage msg = clientAction.build( request, session );
             if (msg == null) {
-                response.sendRedirect( errorURL );
+                String location = ServletUtil.createSafeRedirectUrl(request, errorURL);
+                response.sendRedirect(location);
                 return null;
             }
             
@@ -352,7 +367,8 @@ public class SOAPClientController implements Controller {
             if (request.getParameter("Wizard") != null) {
                 SOAPMessage msg = clientAction.build( request, session );
                 if (msg == null) {
-                    response.sendRedirect( errorURL + "?Wizard=true" );
+                    String location = ServletUtil.createSafeRedirectUrl(request, errorURL + "?Wizard=true");
+                    response.sendRedirect(location);
                     return null;
                 }
                 
@@ -360,14 +376,15 @@ public class SOAPClientController implements Controller {
                 actions.addAction( clientAction, msg );
                 
                 if (request.getParameter("Done") == null) {
-                    response.sendRedirect( request.getParameter(ServletUtils.ATT_REDIRECT2) );
+                    String location = ServletUtil.createSafeRedirectUrl(request, request.getParameter(ServletUtils.ATT_REDIRECT2));
+                    response.sendRedirect(location);
                     return null;
                 }
-                else {  // Wizard terminated and submitted in the middle
-                    destURL = errorURL = request.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
-                    session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
-                    clientAction = actions;
-                }
+                
+                // Wizard terminated and submitted in the middle
+                destURL = errorURL = request.getContextPath() + "/operator/Consumer/NewFinal.jsp?Wizard=true";
+                session.setAttribute( ServletUtils.ATT_REDIRECT, destURL );
+                clientAction = actions;
             }
         }
         else if (action.equalsIgnoreCase("UpdateLMHardware")) {
@@ -383,11 +400,13 @@ public class SOAPClientController implements Controller {
         else if (action.equalsIgnoreCase("GeneratePassword")) {
             try {
                 UpdateLoginAction.generatePassword( request, session );
-                response.sendRedirect( destURL );
+                String location = ServletUtil.createSafeRedirectUrl(request, destURL);
+                response.sendRedirect(location);
             }
             catch (WebClientException e) {
                 session.setAttribute( ServletUtils.ATT_ERROR_MESSAGE, e.getMessage() );
-                response.sendRedirect( errorURL );
+                String location = ServletUtil.createSafeRedirectUrl(request, errorURL);
+                response.sendRedirect(location);
             }
             return null;
         }
@@ -423,7 +442,8 @@ public class SOAPClientController implements Controller {
         else {
             CTILogger.info( "SOAPClient: Invalid action type '" + action + "'");
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, "Invalid action type '" + action + "'");
-            response.sendRedirect( referer );
+            String location = ServletUtil.createSafeRedirectUrl(request, referer);
+            response.sendRedirect(location);
             return null;
         }
         
@@ -463,7 +483,8 @@ public class SOAPClientController implements Controller {
             }
         }
 
-        response.sendRedirect( nextURL );
+        String location = ServletUtil.createSafeRedirectUrl(request, nextURL);
+        response.sendRedirect(location);
         return null;
     }
     

@@ -1,5 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ page language="java" %>
+
+<cti:verifyRolesAndProperties value="DirectLoadcontrolRole.THREE_TIER_DIRECT"/>
 
 <%@ include file="js/lm_funcs.js" %>
 <%@ include file="js/configwin.js" %>

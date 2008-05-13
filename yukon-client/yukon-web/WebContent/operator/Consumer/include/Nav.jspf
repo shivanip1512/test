@@ -53,6 +53,7 @@
 	
 %>
 
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <table width="101" border="0" cellspacing="0" cellpadding="5">
 <cti:checkMultiProperty propertyid="<%= Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_GENERAL) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_RESIDENCE) + ',' + Integer.toString(ConsumerInfoRole.CONSUMER_INFO_ACCOUNT_CALL_TRACKING) %>">
   <tr> 
@@ -252,7 +253,7 @@
 	for (int i = 0; i < inventories.getStarsInventoryCount(); i++) {
 		StarsInventory inv = inventories.getStarsInventory(i);
 		
-		String linkLabel = ServletUtils.getInventoryLabel(inv);
+		String linkLabel = StringEscapeUtils.escapeHtml(ServletUtils.getInventoryLabel(inv));
 		String linkHtml = null;
 		String linkImgExp = null;
 		

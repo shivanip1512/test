@@ -17,6 +17,8 @@
             ref="asyncDynamicDataSource" />
     </bean>
 
+    <bean id="accountCheckerService" class="com.cannontech.stars.core.service.impl.AccountCheckerServiceImpl"/>
+
     <bean id="deviceActivationService"
         class="com.cannontech.stars.dr.hardware.service.impl.DeviceActivationServiceImpl">
         <property name="customerAccountDao" ref="customerAccountDao" />

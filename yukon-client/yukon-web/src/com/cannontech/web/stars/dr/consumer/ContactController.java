@@ -106,6 +106,10 @@ public class ContactController extends AbstractConsumerController {
     public String updateContact(int contactId, String firstName,
             String lastName, HttpServletRequest request) {
 
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        LiteYukonUser user = userContext.getYukonUser();
+        accountCheckerService.checkContact(user, contactId);
+        
         LiteContact contact = contactDao.getContact(contactId);
         contact.setContFirstName(firstName);
         contact.setContLastName(lastName);

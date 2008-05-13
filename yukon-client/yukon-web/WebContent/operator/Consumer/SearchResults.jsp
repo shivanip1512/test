@@ -22,6 +22,7 @@
 	List<LiteStarsEnergyCompany> descendants = null;
 	if (showEnergyCompany) descendants = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
 %>
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -189,13 +190,13 @@ function navPage()
 <%                
                 if (searchByDefID == YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_COMPANY_NAME) {  
 %>
-                  <td width="18%" class="TableCell"><%= LiteStarsCustAccountInformation.getCompanyName(customer.getLiteID()) %> 
+                  <td width="18%" class="TableCell"><%= StringEscapeUtils.escapeHtml(LiteStarsCustAccountInformation.getCompanyName(customer.getLiteID())) %>  
                   </td>
 <% } else if (customer instanceof LiteCICustomer) { %>                 
-                  <td width="30%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() + " (" + ((LiteCICustomer)customer).getCompanyName() + ")"%>  
+                  <td width="30%" class="TableCell"><%= StringEscapeUtils.escapeHtml(contact.getContLastName()) + ", " + StringEscapeUtils.escapeHtml(contact.getContFirstName()) + " (" + StringEscapeUtils.escapeHtml(((LiteCICustomer)customer).getCompanyName()) + ")"%>    
                   </td>
 <% } else { %>                 
-                  <td width="18%" class="TableCell"><%= contact.getContLastName() + ", " + contact.getContFirstName() %> 
+                  <td width="18%" class="TableCell"><%= StringEscapeUtils.escapeHtml(contact.getContLastName()) + ", " + StringEscapeUtils.escapeHtml(contact.getContFirstName()) %>  
                   </td>
 <% } %>
                   <td width="17%" class="TableCell">

@@ -8,6 +8,22 @@
 
 <%@ include file="Consumer/include/StarsHeader.jsp" %>
 
+<cti:verifyRolesAndProperties value="
+    ConsumerInfoRole, 
+    operator.MeteringRole,
+    application.BillingRole,
+    TrendingRole,
+    WebClientRole.JAVA_WEB_START_LAUNCHER_ENABLED,
+    DirectLoadcontrolRole,
+    OddsForControlRole,
+    CICurtailmentRole,
+    CBCSettingsRole,
+    InventoryRole,
+    WorkOrderRole,
+    ReportingRole, 
+    CommanderRole,
+    operator.AdministratorRole"/>
+
 <cti:standardPage title="Energy Services Operations Center" module="operations">
 <cti:standardMenu/>
 

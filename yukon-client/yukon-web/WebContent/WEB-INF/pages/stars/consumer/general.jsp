@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <cti:standardPage module="consumer" title="Consumer Energy Services">
@@ -53,7 +54,7 @@
                                                                 </c:when>
                                                                 
                                                                 <c:when test="${displayableControlHistory.deviceLabelControlStatusDisplay}">
-                                                                    <td>${displayableControlHistory.controlHistory.displayName}</td>
+                                                                    <td><spring:escapeBody htmlEscape="true">${displayableControlHistory.controlHistory.displayName}</spring:escapeBody></td>
                                                                     <td>-</td>
                                                                     <td><cti:msg key="${displayableControlHistory.controlHistory.currentStatus}"/></td>
                                                                 </c:when>

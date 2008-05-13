@@ -26,13 +26,18 @@ public class FriendlyExceptionResolver {
             String friendlyExceptionPropertyKey = knownExceptionType.getFriendlyExceptionPropertyKey();
             friendlyExceptionMessage = exceptionStrings.getProperty(friendlyExceptionPropertyKey);
         }
-        if (friendlyExceptionMessage == null) {
-            friendlyExceptionMessage = exception.getMessage();
-        }
 
         return friendlyExceptionMessage;
     }
 
+    public String getExceptionMessage(Throwable exception, Locale locale) {
+        String exceptionMessage = getFriendlyExceptionMessage(exception, locale);
+        if (exceptionMessage == null) {
+            exceptionMessage = exception.getMessage();
+        }
+        return exceptionMessage;
+    }
+    
     // find matching KnownExceptionType
     private KnownExceptionType getKnownExceptionType(Throwable exception){
 

@@ -1153,10 +1153,15 @@ public static Date roundToMinute(Date toRound) {
         Matcher matcher = Pattern.compile("^\\w{3,}://.+?(/.*)$").matcher(url);
         boolean matches = matcher.matches();
         
+        Matcher matcher2 = Pattern.compile("^\\w{3,}://.+$").matcher(url);
+        boolean matches2 = !matches && matcher2.matches();
+
         String safeUrl;
         if (matches) {
             String matchedUrl = matcher.group(1);
             safeUrl = (matchedUrl != null) ? matchedUrl : "/";
+        } else if (matches2) {
+            safeUrl = "/";
         } else {
             safeUrl = url;
         }

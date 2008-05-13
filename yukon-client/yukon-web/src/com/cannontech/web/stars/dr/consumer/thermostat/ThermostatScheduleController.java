@@ -43,6 +43,7 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
+import com.cannontech.web.util.SpringWebUtil;
 
 /**
  * Controller for Thermostat schedule operations
@@ -63,6 +64,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             List<Integer> thermostatIds, @ModelAttribute("customerAccount")
             CustomerAccount account) {
 
+        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+        LiteYukonUser user = yukonUserContext.getYukonUser();
+        accountCheckerService.checkThermostatSchedule(user, scheduleId);
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
         ThermostatSchedule schedule = null;
         ThermostatSchedule defaultSchedule = null;
         int accountId = account.getAccountId();
@@ -124,8 +131,6 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                          defaultScheduleJSON.toString());
 
         // Add the mode and temperature unit to model
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteYukonUser user = yukonUserContext.getYukonUser();
         LiteCustomer customer = customerDao.getCustomerForUser(user.getUserID());
         String temperatureUnit = customer.getTemperatureUnit();
         map.addAttribute("temperatureUnit", temperatureUnit);
@@ -147,6 +152,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
             List<Integer> thermostatIds, @ModelAttribute("customerAccount")
             CustomerAccount account) throws ServletRequestBindingException {
 
+        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+        LiteYukonUser user = yukonUserContext.getYukonUser();
+        accountCheckerService.checkThermostatSchedule(user, scheduleId);
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
         String scheduleString = ServletRequestUtils.getRequiredStringParameter(request,
                                                                                "schedules");
         Boolean applyToAll = ServletRequestUtils.getBooleanParameter(request,
@@ -251,8 +262,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @RequestMapping(value = "/consumer/thermostat/schedule/complete", method = RequestMethod.GET)
     public String updateComplete(ModelMap map, String message,
             @ModelAttribute("thermostatIds")
-            List<Integer> thermostatIds) {
+            List<Integer> thermostatIds) throws Exception {
 
+        LiteYukonUser user = SpringWebUtil.getYukonUser();
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
         ThermostatScheduleUpdateResult resultMessage = ThermostatScheduleUpdateResult.valueOf(message);
         String key = resultMessage.getDisplayKey();
 
@@ -291,8 +306,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @RequestMapping(value = "/consumer/thermostat/schedule/view/saved", method = RequestMethod.GET)
     public String viewSaved(ModelMap map, @ModelAttribute("thermostatIds")
     List<Integer> thermostatIds, @ModelAttribute("customerAccount")
-    CustomerAccount account) {
+    CustomerAccount account) throws Exception {
 
+        LiteYukonUser user = SpringWebUtil.getYukonUser();
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
         int accountId = account.getAccountId();
         List<ScheduleDropDownItem> schedules = thermostatScheduleDao.getSavedThermostatSchedulesByAccountId(accountId);
         map.addAttribute("schedules", schedules);

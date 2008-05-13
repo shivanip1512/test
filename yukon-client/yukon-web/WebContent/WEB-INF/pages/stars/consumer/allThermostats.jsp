@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
@@ -83,7 +84,7 @@
                                         <input type="checkbox" onclick="checkboxChanged(this, ${thermostat.id}, '${thermostat.type}')" ${(fn:contains(param.thermostatIds, thermostat.id))? 'checked':''}>
                                     </td>
                                     <td style="text-align: left; padding-left: 10px;">
-                                        ${thermostat.label}
+                                        <spring:escapeBody htmlEscape="true">${thermostat.label}</spring:escapeBody>
                                     </td>
                                     <td style="text-align: left; padding-left: 10px;">
                                         <cti:msg key="${thermostat.type.displayKey}" />

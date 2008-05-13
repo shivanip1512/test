@@ -12,10 +12,13 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -46,6 +49,11 @@ public class ThermostatController extends AbstractThermostatController {
             @ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
             @ModelAttribute("customerAccount") CustomerAccount account) {
 
+        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+        LiteYukonUser user = yukonUserContext.getYukonUser();
+        accountCheckerService.checkInventory(user, 
+                                             thermostatIds.toArray(new Integer[thermostatIds.size()]));
+        
         // Manually put thermsotatIds into model for redirect
         map.addAttribute("thermostatIds", thermostatIds.toString());
 

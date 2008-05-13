@@ -3,6 +3,7 @@
 <%@ attribute name="options" required="true" type="java.util.List"%>
 <%@ attribute name="primary" required="true" type="java.lang.Boolean"%>
 
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
@@ -21,11 +22,11 @@
             <td class="contactLeft">
                 <div>
                     <cti:msg key="yukon.dr.consumer.contacts.firstName" />
-                    <input type="text" name="firstName" value="${contact.contFirstName}" /><br>
+                    <input type="text" name="firstName" value="<spring:escapeBody htmlEscape="true">${contact.contFirstName}</spring:escapeBody>"/><br>
                 </div>
                 <div>
                     <cti:msg key="yukon.dr.consumer.contacts.lastName" />
-                    <input type="text" name="lastName" value="${contact.contLastName}" />
+                    <input type="text" name="lastName" value="<spring:escapeBody htmlEscape="true">${contact.contLastName}</spring:escapeBody>" />
                 </div>
             </td>
             <td class="contactRight">

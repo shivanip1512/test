@@ -1,5 +1,7 @@
 package com.cannontech.web.widget.support;
 
+import java.util.Locale;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,7 +21,8 @@ public class WidgetExceptionHandler implements HandlerExceptionResolver {
                                          Object handler, Exception ex) {
         log.warn("Error processing this widget", ex);
         ModelAndView mav = new ModelAndView("widgetError.jsp");
-        String friendlyExceptionMessage = friendlyExceptionResolver.getFriendlyExceptionMessage(ex);
+        
+        String friendlyExceptionMessage = friendlyExceptionResolver.getExceptionMessage(ex, Locale.US);
         mav.addObject("errorMessage", friendlyExceptionMessage);
         return mav;
     }

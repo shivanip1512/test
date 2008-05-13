@@ -870,6 +870,17 @@
     <dynamic-attributes>true</dynamic-attributes>
   </tag>
   
+  <tag>
+    <name>verifyRolesAndProperties</name>
+    <tag-class>com.cannontech.web.util.VerifyRolesAndPropertiesTag</tag-class>
+    <body-content>empty</body-content>
+    <attribute>
+      <name>value</name>
+      <required>true</required>
+      <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+  
     <tag>
         <name>msg</name>
         <tag-class>com.cannontech.web.i18n.MsgTag</tag-class>

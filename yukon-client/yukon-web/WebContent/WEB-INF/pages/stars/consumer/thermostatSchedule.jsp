@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
@@ -73,7 +74,7 @@
 
                 <h3>
                     <cti:msg key="yukon.dr.consumer.thermostatSchedule.header" /><br>
-                    <cti:msg key="${thermostatLabel}" /><br>
+                    <cti:msg key="${thermostatLabel}" htmlEscape="true"/><br>
                 </h3>
                 
                 <br>
@@ -571,7 +572,7 @@
                                 <td width="85%" align="center"> 
                                     <c:if test="${!multipleThermostatsSelected}">
                                         <cti:msg key="yukon.dr.consumer.thermostatSchedule.name"></cti:msg>
-                                        <input type="text" id="scheduleName" name="scheduleName" value="${schedule.name}" ></input>
+                                        <input type="text" id="scheduleName" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${schedule.name}</spring:escapeBody>" ></input>
                                     </c:if>
                                     <input type="hidden" name="scheduleId" value="${schedule.id}" ></input>
                                 </td>

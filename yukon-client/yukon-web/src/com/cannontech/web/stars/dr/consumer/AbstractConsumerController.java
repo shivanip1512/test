@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
@@ -31,6 +32,7 @@ public abstract class AbstractConsumerController {
     protected DisplayableProgramDao displayableProgramDao;
     protected DisplayableOptOutDao displayableOptOutDao;
     protected ControlHistoryDao controlHistoryDao;
+    protected AccountCheckerService accountCheckerService;
     
     @ModelAttribute("customerAccount")
     public CustomerAccount getCustomerAccount(HttpServletRequest request) {
@@ -87,6 +89,12 @@ public abstract class AbstractConsumerController {
     @Autowired
     public void setControlHistoryDao(ControlHistoryDao controlHistoryDao) {
         this.controlHistoryDao = controlHistoryDao;
+    }
+    
+    @Autowired
+    public void setAccountCheckerService(
+            AccountCheckerService accountCheckerService) {
+        this.accountCheckerService = accountCheckerService;
     }
     
 }

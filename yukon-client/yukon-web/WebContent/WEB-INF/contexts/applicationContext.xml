@@ -507,6 +507,10 @@
         <property name="reportDefinitionFactory" ref="yukonReportModelDefinitionFactory"/>
     </bean>
     
+    <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyRolesAndPropertiesTag">
+        <property name="authDao" ref="authDao"/>
+    </bean>
+    
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
         <property name="maxCacheSize" value="50" />
         <property name="accessOrder" value="true" />

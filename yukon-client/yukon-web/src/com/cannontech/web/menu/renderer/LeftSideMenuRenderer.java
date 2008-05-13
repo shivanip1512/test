@@ -125,8 +125,8 @@ public class LeftSideMenuRenderer implements MenuRenderer {
             optionDiv.setClass("menuOption" + level + selectedClass);
 
             // Get the menu text from the message source (user specific)
-            String menuText = messageSource.getMessage(option.getMenuText());
-
+            String menuText = StringEscapeUtils.escapeHtml(messageSource.getMessage(option.getMenuText()));
+            
             if (option instanceof SimpleMenuOption) {
 
                 // Menu option has no children - javascript or link menu option

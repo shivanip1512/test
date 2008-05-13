@@ -8,6 +8,7 @@
 			DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LABEL_THERM_MANUAL);
 %>
 
+<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <script language="JavaScript">
 function selectAll(checked) {
 	var checkboxes = document.getElementsByName("InvID");
@@ -78,7 +79,7 @@ function goToManual() {
 	for (int i = 0; i < thermostats.getStarsInventoryCount(); i++) {
 		StarsInventory thermostat = thermostats.getStarsInventory(i);
 		String checked = (invIDs != null && Arrays.binarySearch(invIDs, thermostat.getInventoryID()) >= 0)? "checked" : "";
-		String label = thermostat.getDeviceLabel();
+		String label = StringEscapeUtils.escapeHtml(thermostat.getDeviceLabel());
 		if (label.equals(""))
 			label= thermostat.getLMHardware().getManufacturerSerialNumber();
 %>
