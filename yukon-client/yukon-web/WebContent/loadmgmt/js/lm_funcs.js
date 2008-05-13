@@ -151,15 +151,17 @@ function controlAreaMenuAppear(event, divId, state)
     var startDiv = divs[0];
     var stopDiv = divs[1];
     if(state == 4){
-        startDiv.style.color = 'gray';
-        startDiv.setAttribute('onclick', 'javascript:void(0);');
+        $(startDiv).hide();
     }else{
-        startDiv.style.color = 'black';
-        startDiv.setAttribute('onclick', 'showConfirmWin(this)');
+        $(startDiv).show();
     }
     
     element.style.visibility = 'visible';
     
+}
+
+function foo(){
+    alert('word');
 }
 
 function programMenuAppear(event, divId, state)
