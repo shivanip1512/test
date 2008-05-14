@@ -24,6 +24,7 @@ import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOption;
 import com.cannontech.web.menu.option.SubMenuOption;
 import com.cannontech.web.menu.option.producer.MenuOptionProducer;
+import com.cannontech.web.widget.support.WidgetUtils;
 
 /**
  * MenuRenderer which renders the menu along the left side of the page
@@ -162,7 +163,7 @@ public class LeftSideMenuRenderer implements MenuRenderer {
 
                     // Set child div id for hide/show
 
-                    childDivId = option.getId() + "_children";
+                    childDivId = WidgetUtils.generateSafeJsString(option.getId()) + "_children";
 
                     link.setHref("#");
                     link.setOnClick("$('" + childDivId + "').toggle()");
