@@ -1058,6 +1058,21 @@
             <description>A ResolvableTemplate</description>
         </attribute>
     </tag>
+
+    <tag>
+        <name>logo</name>
+        <tag-class>com.cannontech.web.i18n.LogoTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Outputs the logo for the given key or nothing if the key is not found
+        </description>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The logo's I18N key</description>
+        </attribute>
+    </tag>
     
   
   <function>

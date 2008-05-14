@@ -5,7 +5,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<cti:standardPage module="consumer" title="Consumer Energy Services">
+<cti:standardPage module="consumer" page="allThermostats">
 <cti:standardMenu/>
 
 <cti:msg var="twoTypes" key="yukon.dr.consumer.allThermostats.twoTypes" />
@@ -52,62 +52,50 @@
 
 </script>
 
-    <table class="contentTable">
-        <tr>
-            <td class="leftColumn">
-                <h3>
-                    <cti:msg key="yukon.dr.consumer.allThermostats.header" /><br>
-                </h3>
-                
-                <div class="message">
-                    <form method="post" action="/spring/stars/consumer/thermostat/view/allSelected">
-                        
-                        <input type="hidden" id="thermostatIds" name="thermostatIds" value="${param.thermostatIds}">
-                        
-                        <cti:msg key="yukon.dr.consumer.allThermostats.chooseThermostats" /><br><br>
+    <h3>
+        <cti:msg key="yukon.dr.consumer.allThermostats.header" /><br>
+    </h3>
     
-                        <table style="margin-left: auto; margin-right: auto; border: 1px solid gray;">
-                            <tr>
-                                <th>
-                                    <cti:msg key="yukon.dr.consumer.allThermostats.select" />
-                                </th>
-                                <th>
-                                    <cti:msg key="yukon.dr.consumer.allThermostats.name" />
-                                </th>
-                                <th>
-                                    <cti:msg key="yukon.dr.consumer.allThermostats.type" />
-                                </th>
-                            </tr>
-                            <c:forEach var="thermostat" items="${thermostats}">
-                                <tr>
-                                    <td>
-                                        <input type="checkbox" onclick="checkboxChanged(this, ${thermostat.id}, '${thermostat.type}')" ${(fn:contains(param.thermostatIds, thermostat.id))? 'checked':''}>
-                                    </td>
-                                    <td style="text-align: left; padding-left: 10px;">
-                                        <spring:escapeBody htmlEscape="true">${thermostat.label}</spring:escapeBody>
-                                    </td>
-                                    <td style="text-align: left; padding-left: 10px;">
-                                        <cti:msg key="${thermostat.type.displayKey}" />
-                                    </td>
-                                </tr>
-                            </c:forEach>
-                        </table>
-                        <br><br>
-                        
-                        <cti:msg var="scheduleText" key="yukon.dr.consumer.allThermostats.schedule" />
-                        <input type="submit" name="schedule" value="${scheduleText}">
-                        <cti:msg var="manualText" key="yukon.dr.consumer.allThermostats.manual" />
-                        <input type="submit" name="manual" value="${manualText}">
-                    </form>
-                </div>
-    
-            </td>
-            <td class="rightColumn">
-                <div id="rightDiv">
-                    <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}"/>
-                </div>
-            </td>
-        </tr>
-    </table>
+    <div class="message">
+        <form method="post" action="/spring/stars/consumer/thermostat/view/allSelected">
+            
+            <input type="hidden" id="thermostatIds" name="thermostatIds" value="${param.thermostatIds}">
+            
+            <cti:msg key="yukon.dr.consumer.allThermostats.chooseThermostats" /><br><br>
+
+            <table style="margin-left: auto; margin-right: auto; border: 1px solid gray;">
+                <tr>
+                    <th>
+                        <cti:msg key="yukon.dr.consumer.allThermostats.select" />
+                    </th>
+                    <th>
+                        <cti:msg key="yukon.dr.consumer.allThermostats.name" />
+                    </th>
+                    <th>
+                        <cti:msg key="yukon.dr.consumer.allThermostats.type" />
+                    </th>
+                </tr>
+                <c:forEach var="thermostat" items="${thermostats}">
+                    <tr>
+                        <td>
+                            <input type="checkbox" onclick="checkboxChanged(this, ${thermostat.id}, '${thermostat.type}')" ${(fn:contains(param.thermostatIds, thermostat.id))? 'checked':''}>
+                        </td>
+                        <td style="text-align: left; padding-left: 10px;">
+                            <spring:escapeBody htmlEscape="true">${thermostat.label}</spring:escapeBody>
+                        </td>
+                        <td style="text-align: left; padding-left: 10px;">
+                            <cti:msg key="${thermostat.type.displayKey}" />
+                        </td>
+                    </tr>
+                </c:forEach>
+            </table>
+            <br><br>
+            
+            <cti:msg var="scheduleText" key="yukon.dr.consumer.allThermostats.schedule" />
+            <input type="submit" name="schedule" value="${scheduleText}">
+            <cti:msg var="manualText" key="yukon.dr.consumer.allThermostats.manual" />
+            <input type="submit" name="manual" value="${manualText}">
+        </form>
+    </div>
 
 </cti:standardPage>

@@ -2,9 +2,8 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 
-<cti:standardPage module="consumer" title="Consumer Energy Services">
+<cti:standardPage module="consumer" page="contacts">
 <cti:standardMenu/>
-
 
     <h3><cti:msg key="yukon.dr.consumer.contacts.header" /></h3>
     

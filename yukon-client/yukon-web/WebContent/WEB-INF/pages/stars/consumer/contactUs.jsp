@@ -3,30 +3,19 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
-<cti:standardPage module="consumer" title="Consumer Energy Services">
+<cti:standardPage module="consumer" page="contactus">
     <cti:standardMenu />
 
-    <table class="contentTable">
-        <tr>
-            <td class="leftColumn">
-                <h3><cti:msg key="yukon.dr.consumer.contactus.header" /></h3>
-                <div style="border: 1px solid #ccc;"></div>
-                <br>
-                <div align="center">
-                    <spring:escapeBody htmlEscape="true">${contactUs.companyName}</spring:escapeBody><br>
-                    <ct:formattedAddress address="${contactUs.address}"/><br>
-                    <br>
-                    <div><cti:msg key="yukon.dr.consumer.contactus.phonenumber"/> <cti:formatPhoneNumber value="${contactUs.phoneNumber}"/></div>
-                    <div><cti:msg key="yukon.dr.consumer.contactus.faxnumber"/> <cti:formatPhoneNumber value="${contactUs.faxNumber}"/></div>
-                     <div><a href="mailto:${contactUs.email}"><spring:escapeBody htmlEscape="true">${contactUs.email}</spring:escapeBody></a></div>
-                </div>    
-            </td>
-            <td class="rightColumn">
-                <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}" />
-                <br>
-                <img src="<cti:theme key="yukon.dr.consumer.general.rightColumnLogo" default="/WebConfig/yukon/Family.jpg" url="true"/>"></img>
-            </td>
-        </tr>
-    </table>
+    <h3><cti:msg key="yukon.dr.consumer.contactus.header" /></h3>
+    <div style="border: 1px solid #ccc;"></div>
+    <br>
+    <div align="center">
+        <spring:escapeBody htmlEscape="true">${contactUs.companyName}</spring:escapeBody><br>
+        <ct:formattedAddress address="${contactUs.address}"/><br>
+        <br>
+        <div><cti:msg key="yukon.dr.consumer.contactus.phonenumber"/> <cti:formatPhoneNumber value="${contactUs.phoneNumber}"/></div>
+        <div><cti:msg key="yukon.dr.consumer.contactus.faxnumber"/> <cti:formatPhoneNumber value="${contactUs.faxNumber}"/></div>
+         <div><a href="mailto:${contactUs.email}"><spring:escapeBody htmlEscape="true">${contactUs.email}</spring:escapeBody></a></div>
+    </div>    
     
 </cti:standardPage>    

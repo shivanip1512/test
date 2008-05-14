@@ -3,35 +3,23 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<cti:standardPage module="consumer" title="Consumer Energy Services">
+<cti:standardPage module="consumer" title="actionComplete">
 <cti:standardMenu/>
 
-<table class="contentTable">
-    <tr>
-        <td class="leftColumn">
-            <h3>
-                <cti:msg key="yukon.dr.consumer.actionComplete.header" /><br>
-            </h3>
-            
-            <div class="message">
-                <div style="text-align: left;">
-                    <cti:msg key="${message}" />
-                </div>
-                
-                <c:url var="viewUrl" value="${viewUrl}">
-                    <c:param name="thermostatIds" value="${thermostatIds}" />
-                </c:url>
-                <br><br>
-                <a href="${viewUrl}"><cti:msg key="yukon.dr.consumer.actionComplete.ok" /></a>
-            </div>
-
-        </td>
-        <td class="rightColumn">
-            <div id="rightDiv">
-                <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}"/>
-            </div>
-        </td>
-    </tr>
-</table>
+    <h3>
+        <cti:msg key="yukon.dr.consumer.actionComplete.header" /><br>
+    </h3>
+    
+    <div class="message">
+        <div style="text-align: left;">
+            <cti:msg key="${message}" />
+        </div>
+        
+        <c:url var="viewUrl" value="${viewUrl}">
+            <c:param name="thermostatIds" value="${thermostatIds}" />
+        </c:url>
+        <br><br>
+        <a href="${viewUrl}"><cti:msg key="yukon.dr.consumer.actionComplete.ok" /></a>
+    </div>
 
 </cti:standardPage>

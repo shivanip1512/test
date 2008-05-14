@@ -480,6 +480,10 @@
         <property name="registrationService" ref="pointDataUpdateRegistrationService"/>
     </bean>
 
+    <bean id="logoTagPrototype" class="com.cannontech.web.i18n.LogoTag">
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver"/>
+    </bean>
+
     <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag">
         <property name="meterDao" ref="meterDao"/>
         <property name="paoDao" ref="paoDao" />

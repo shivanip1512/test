@@ -49,19 +49,18 @@
                     <cti:outputContent writable="${menuRenderer}"/>
                 </td>
                 <td id="Content" style="vertical-align: top;">
-                Page Key: ${pageKey}<br>
-    <table class="contentTable">
-        <tr>
-            <td class="leftColumn">
-                    <cti:outputContent writable="${bodyContent}"/>
-            </td>
-            <td class="rightColumn">
-                <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}" />
-                <br>
-                <img src="<cti:theme key="yukon.dr.consumer.general.rightColumnLogo" default="/WebConfig/yukon/Family.jpg" url="true"/>"></img>
-            </td>
-        </tr>
-    </table>
+                    <table class="contentTable">
+                        <tr>
+                            <td class="leftColumn">
+                                    <cti:outputContent writable="${bodyContent}"/>
+                            </td>
+                            <td class="rightColumn">
+                                <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}" />
+                                <br>
+                                <cti:logo key="yukon.dr.${pageKey}.rightColumnLogo"/>
+                            </td>
+                        </tr>
+                    </table>
                 </td>
             </tr>
             <tr>
