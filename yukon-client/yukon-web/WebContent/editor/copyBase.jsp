@@ -2,6 +2,7 @@
 <%@ page import="com.cannontech.util.ParamUtil" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 <%@ page import="com.cannontech.web.util.JSFParamUtil" %>
+<%@ page import="com.cannontech.web.editor.*" %>
 <jsp:directive.page import="com.cannontech.web.util.JSFUtil"/>
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
@@ -23,7 +24,10 @@
         JSFUtil.resetBackingBean("cbcCopyForm");
         cbcCopyForm = (DBCopyForm)JSFParamUtil.getJSFVar( "cbcCopyForm" );
         cbcCopyForm.init(id, type);
-
+        
+        //This is needed because this was handled in the CBCSerlvet before entering faces pages.
+        //Since the servlet bypass, this static method will need to be called entering any faces page.
+        CapControlForm.setupFacesNavigation();
     }
 %>
 
