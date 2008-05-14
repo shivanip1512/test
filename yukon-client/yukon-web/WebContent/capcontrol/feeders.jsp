@@ -541,8 +541,8 @@ for (int i = 0; i < feeders.size(); i++ ) {
                 <td width="2%"></td>    
                 <td>State 
                     <img class="rAlign popupImg" 
-                        src="images\question.gif" 
-                        onmouseover="statusMsgAbove(this,'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column.<br> -V : Auto Volt Control (ovUv) is Disabled.<br> -U: CBC reported unsolicited state change.<br> -Q: CapBank state reflects abnormal data quality.<br> -CF: Communications Failure.<br> -P: Partial - phase imbalance.<br> -S: Questionable var response on all phases.');"/> 
+                        src="images\question.gif"
+                        onmouseover="statusMsgAbove(this,'System Commands, those commands that do NOT send out a message to a field device, can be initiated from this column.<br> -V : Auto Volt Control (ovUv) is Disabled.<br> -U: CBC reported unsolicited state change.<br> -Q: CapBank state reflects abnormal data quality.<br> -CF: Communications Failure.<br> -P: Partial - phase imbalance.<br> -S: Significant - questionable var response on all phases.');"/>  
                         <span id="cb_state_td_hdr2" style="display:none" >[Op Count Value]</span> 
                 </td>
                 
