@@ -449,6 +449,17 @@ function statusMsg(elem, msgStr) {
 // -------------------------------------------
 // Shows a popup of the given message string.
 // Uses the overlib library for display purposes.
+// -------------------------------------------
+function statusMsgAbove(elem, msgStr) {
+    elem.onmouseout = function (e) {
+        nd();
+    };
+    overlib( msgStr, WIDTH, 260, CSSCLASS, TEXTFONTCLASS, 'flyover', ABOVE );
+}
+
+// -------------------------------------------
+// Shows a popup of the given message string.
+// Uses the overlib library for display purposes.
 // Leaves the closing of the popup to the caller.
 // -------------------------------------------
 function showDynamicPopup(elem) {
