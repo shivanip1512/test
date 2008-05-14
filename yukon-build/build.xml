@@ -250,6 +250,7 @@
        	<mkdir dir="${client.dir}/Log"/>
         
         <copy todir="${client.bin}" preservelastmodified="true">
+        	<fileset dir="${module.name}/yukon-install/resources/client_common_dlls" />
             <fileset dir="${client.bag}" excludes="*.txt,*.xml,*.properties,*.debug,images/**,commands/**"/>
             <fileset file="${module.name}/yukon-client/monitor/resource/YukonNoAlarm.ico" />
             <fileset file="${module.name}/yukon-client/monitor/resource/AlarmMonitor.ico" />
