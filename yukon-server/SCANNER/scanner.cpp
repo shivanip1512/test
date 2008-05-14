@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.69 $
-* DATE         :  $Date: 2008/01/21 19:52:59 $
+* REVISION     :  $Revision: 1.70 $
+* DATE         :  $Date: 2008/05/14 19:24:25 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1581,8 +1581,11 @@ INT MakePorterRequests(list< OUTMESS* > &outList)
             {
                 if(ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID))
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " OutMessage to " << ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID)->getName() << endl;
+                    string name = ScannerDeviceManager.RemoteGetEqual(OutMessage->TargetID)->getName();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " OutMessage to " << name << endl;
+                    }
                 }
                 else
                 {
