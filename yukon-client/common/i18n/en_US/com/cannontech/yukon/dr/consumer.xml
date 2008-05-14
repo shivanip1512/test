@@ -26,12 +26,12 @@
     <entry key="yukon.dr.consumer.general.description">Thank you for participating in our Consumer Energy Services programs. By participating, you have helped to optimize our delivery of energy, stabilize rates, and reduce energy costs. Best of all, you are saving energy dollars!&lt;br&gt;&lt;br&gt;This site is designed to help manage your programs online from anywhere with access to a Web browser.</entry>
     <entry key="yukon.dr.consumer.general.enrolledProgramsTitle">Your Enrolled Programs</entry>
     <entry key="yukon.dr.consumer.general.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
-    <entry key="yukon.dr.consumer.general.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.general.scheduledoptout.forMessage">You have an opt out event scheduled for {0}.</entry>
     <entry key="yukon.dr.consumer.general.scheduledoptout.fromMessage">You have an opt out event scheduled from {0} to {1}.</entry>
     
     <!--  contacts.jsp -->
     <entry key="yukon.dr.consumer.contacts.header">Account - Contacts</entry>
+    <entry key="yukon.dr.consumer.contacts.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.contacts.primaryContact">Contact (Primary)</entry>
     <entry key="yukon.dr.consumer.contacts.contact">Contact</entry>
     <entry key="yukon.dr.consumer.contacts.firstName">First Name:</entry>
@@ -46,8 +46,8 @@
     
     <!-- controlHistory.jsp -->
     <entry key="yukon.dr.consumer.controlhistory.header">Programs - Control History</entry>
-    <entry key="yukon.dr.consumer.controlhistory.enrolledProgramsTitle">Your Enrolled Programs</entry>
     <entry key="yukon.dr.consumer.controlhistory.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.consumer.controlhistory.enrolledProgramsTitle">Your Enrolled Programs</entry>
     <entry key="yukon.dr.consumer.controlhistory.programLabel">Programs</entry>
     <entry key="yukon.dr.consumer.controlhistory.startLabel">Start</entry>
     <entry key="yukon.dr.consumer.controlhistory.stopLabel">Stop</entry>
@@ -77,6 +77,7 @@
     
     <!--  thermostat.jsp -->
     <entry key="yukon.dr.consumer.thermostat.header">Thermostat - Manual</entry>
+    <entry key="yukon.dr.consumer.thermostat.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.thermostat.label">{0}</entry>
     <entry key="yukon.dr.consumer.thermostat.changeSelected">Change selected thermostats</entry>
     <entry key="yukon.dr.consumer.thermostat.multipleLabel">Multiple Thermostats</entry>
@@ -158,6 +159,7 @@
     <entry key="yukon.dr.consumer.scheduleUpdate.result.CONSUMER_MULTIPLE_ERROR">There was a problem sending the schedule to one or more of the thermostats you selected. Please contact your utility company to report this problem.</entry>
                 
     <entry key="yukon.dr.consumer.actionComplete.header">Message</entry>
+    <entry key="yukon.dr.consumer.actionComplete.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.actionComplete.ok">Ok</entry>
     
     <!--  thermostatSchedule.jsp -->
@@ -176,6 +178,7 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.degreesFahrenheit">&amp;deg;F</entry>
     
     <entry key="yukon.dr.consumer.thermostatSchedule.header">Thermostat - Schedule</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.label">{0}</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.multipleLabel">Multiple Thermostats</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.changeSelected">Change selected thermostats</entry>
@@ -207,13 +210,14 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.name">Thermsotat Schedule Name:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
     
-    <!-- scheduleHints.jsp -->
+    <!-- savedSchedules.jsp -->
     <entry key="yukon.dr.consumer.savedSchedules.header">Thermostat - Saved Schedules</entry>
     <entry key="yukon.dr.consumer.savedSchedules.chooseSchedule">Select a schedule to view:</entry>
     <entry key="yukon.dr.consumer.savedSchedules.viewSchedule">View Schedule</entry>
 
     <!-- allThermostats.jsp -->
     <entry key="yukon.dr.consumer.allThermostats.header">Thermostat - All</entry>
+    <entry key="yukon.dr.consumer.allThermostats.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.allThermostats.chooseThermostats">Select the thermostats you want to set:</entry>
     <entry key="yukon.dr.consumer.allThermostats.schedule">Schedule</entry>
     <entry key="yukon.dr.consumer.allThermostats.manual">Manual</entry>
@@ -256,6 +260,7 @@
     <!-- enrollment.jsp -->
     <entry key="yukon.dr.consumer.enrollment.header">Programs - Enrollment</entry>
     <entry key="yukon.dr.consumer.enrollment.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
+    <entry key="yukon.dr.consumer.enrollmentComplete.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.enrollment.enrollmentTitle">Program Enrollment</entry>
     <entry key="yukon.dr.consumer.enrollment.category">Category</entry>
     <entry key="yukon.dr.consumer.enrollment.programName">Program Name</entry>
@@ -264,7 +269,6 @@
     <entry key="yukon.dr.consumer.enrollment.save">Save</entry>
     <entry key="yukon.dr.consumer.enrollment.reset">Reset</entry>
     <entry key="yukon.dr.consumer.enrollment.back">Back</entry>
-    <entry key="yukon.dr.consumer.enrollment.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.enrollment.result.SUCCESS">&lt;i&gt;** Program enrollment updated successfully.&lt;/i&gt;</entry>
     <entry key="yukon.dr.consumer.enrollment.result.SUCCESS_HARDWARE_CONFIG">&lt;i&gt;** Program enrollment updated successfully. Please go to the hardware configuration page and update the addressing information.&lt;/i&gt;</entry>
     <entry key="yukon.dr.consumer.enrollment.result.FAILURE">&lt;i&gt;** Failed to update the program enrollment.&lt;/i&gt;</entry>
