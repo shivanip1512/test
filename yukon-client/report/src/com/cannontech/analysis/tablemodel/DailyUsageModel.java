@@ -1,5 +1,6 @@
 package com.cannontech.analysis.tablemodel;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -42,10 +43,13 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
     private static String title = "Daily Usage";
     private List<ModelRow> data = new ArrayList<ModelRow>();
     
+    // skipping the usual format using the DailyUsageReportLayoutData so that we can get ricky
+    // and display "---" for no value days for this report
+    private DecimalFormat valueFormatter = new DecimalFormat("#.### kW");
     
     static public class ModelRow {
         public Date date;
-        public Double value;
+        public String value;
     }
     
     public void doLoadData() {
@@ -62,32 +66,37 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         Integer intervalsPerHour = 60 / intervalRate;
         
         // truncate date range to nearest dates
-        Date d1 = startDate;
-        d1 = DateUtils.truncate(d1, Calendar.DATE);
+        Date d1 = DateUtils.truncate(startDate, Calendar.DATE);
         
-        Date d2 = stopDate;
-        d2 = DateUtils.truncate(d2, Calendar.DATE);
+        Date d2 = DateUtils.truncate(stopDate, Calendar.DATE);
         d2 = DateUtils.addDays(d2, 1);
+        d2 = DateUtils.addHours(d2, -1);
         
         Date todayDay = d1;
         Date prevDay = d1;
         
         // loop creating 1 hour ranges within the total date range
         Map<Date, Double> dayValues = new LinkedHashMap<Date, Double>();
-        List<Double> hourValues = new ArrayList<Double>();
+        List<Double> hourValues = null;
         while (d1.compareTo(d2) <= 0) {
         	
         	// if new day, average the hour values, add to days list, reset the hours array
         	todayDay = DateUtils.truncate(d1, Calendar.DATE);
         	if(todayDay.compareTo(prevDay) > 0) {
         		
-        		Double dayValue = 0.0;
-        		for (Double hourVal : hourValues) {
-        			dayValue += hourVal;
-        		}
-        		dayValues.put(prevDay, dayValue);
+        	    if (hourValues != null) {
+        	    
+            		Double dayValue = 0.0;
+            		for (Double hourVal : hourValues) {
+            			dayValue += hourVal;
+            		}
+            		dayValues.put(prevDay, dayValue);
+        	    }
+        	    else {
+        	        dayValues.put(prevDay, null);
+        	    }
         		
-        		hourValues = new ArrayList<Double>();
+        		hourValues = null;
         	}
         	
         	// create a 1 hour range
@@ -95,7 +104,7 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         	Date range2 = DateUtils.addHours(d1, 1);
         	
         	// get rph data for range
-        	List<PointValueHolder> pvhList = rphDao.getPointData(pointId, range1, range2);
+        	List<PointValueHolder> pvhList = rphDao.getPointData(pointId, range1, range2, true);
         	
         	Integer rphCount = pvhList.size();
         	Double hourTotal = 0.0;
@@ -109,13 +118,20 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         	// calculate the "avg" hour value, add to hours list
         	// there should be as many rph values found as there are intervals per hour
         	// if not, create a fake hour value by dividing by what we have
-        	if (rphCount < intervalsPerHour && rphCount > 0) {
-    			hourAvg = hourTotal / (double)rphCount;
+        	if (pvhList.size() > 0) {
+            
+        	    if (hourValues == null) {
+        	        hourValues = new ArrayList<Double>();
+        	    }
+        	    
+        	    if (rphCount < intervalsPerHour && rphCount > 0) {
+        			hourAvg = hourTotal / (double)rphCount;
+            	}
+            	else if (intervalsPerHour > 0) {
+        			hourAvg = hourTotal / (double)intervalsPerHour;
+            	}
+            	hourValues.add(hourAvg);
         	}
-        	else if (intervalsPerHour > 0) {
-    			hourAvg = hourTotal / (double)intervalsPerHour;
-        	}
-        	hourValues.add(hourAvg);
         	
         	// advance counter
         	prevDay = DateUtils.truncate(d1, Calendar.DATE);
@@ -128,7 +144,14 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         	
         	DailyUsageModel.ModelRow row = new DailyUsageModel.ModelRow();
             row.date = date;
-            row.value = dayValues.get(date);
+            
+            Double dayValue = dayValues.get(date);
+            if (dayValue != null) {
+                row.value = valueFormatter.format(dayValues.get(date));
+            }
+            else {
+                row.value="---";
+            }
             data.add(row);
         }
 

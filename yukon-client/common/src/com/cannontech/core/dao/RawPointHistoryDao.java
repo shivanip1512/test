@@ -38,6 +38,7 @@ public interface RawPointHistoryDao {
      * Method to get a list of point values for a given time period.
      * 
      * See note about start and stop order.
+     * Always excludes start date, and includes end date.
      * 
      * @param pointId - Id of point to get values for
      * @param startDate - Start of time period
@@ -47,12 +48,30 @@ public interface RawPointHistoryDao {
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate);
     
     /**
+     * Method to get a list of point values for a given time period.
+     * Same as getPointData(int pointId, Date startDate, Date stopDate) but allows
+     * startInclusive parameter to be specificed explicitly which defaults to false in 
+     * getPointData(int pointId, Date startDate, Date stopDate).
+     * 
+     * See note about start and stop order.
+     * 
+     * 
+     * @param pointId - Id of point to get values for
+     * @param startDate - Start of time period
+     * @param stopDate - End of time period
+     * @param startInclusive - if set to true, start date is included, end date is excluded
+     * @return List of values for the point
+     */
+    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive);
+    
+    /**
      * Method to get a list of point values for a given time period, but only returning
      * up to maxRows rows. If startDate.before(stopDate) is true, the returned list
      * will contain the maxRows closset to startDate.  If stopDate.before(startDate) 
      * is true, the returned list will contain the maxRows closset to stopDate. 
      *
      * See note about start and stop order.
+     * Always excludes start date, and includes end date.
      * 
      * @param pointId - Id of point to get values for
      * @param startDate - Start of time period
@@ -73,6 +92,7 @@ public interface RawPointHistoryDao {
      *   Mode.LAST - The point data with the largest timestamp for the period will be returned
      *   
      * See note about start and stop order.
+     * Always excludes start date, and includes end date.
      * 
      * @param pointId
      * @param startDate

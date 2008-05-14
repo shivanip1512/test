@@ -55,19 +55,27 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
         "       point p                                                         " + 
         "   WHERE                                                               " + 
         "       rph.pointid IN (?)                                              " + 
-        "       AND (rph.timestamp > ? AND rph.timestamp <= ? )                 " + 
         "       AND rph.pointid = p.pointid                                     ";
     
-    private static final String sqlForward = 
-        sqlBase + 
-        "   ORDER BY " + 
-        "       rph.timestamp";
-
-    private static final String sqlBackward = 
-        sqlBase + 
-        "   ORDER BY " + 
-        "       rph.timestamp DESC";
-
+    private String buildSql(boolean startInclusive, boolean orderForward) {
+        
+        String sql = sqlBase;
+        
+        if (startInclusive) {
+            sql += " AND (rph.timestamp >= ? AND rph.timestamp < ? ) ";
+        }
+        else {
+            sql += " AND (rph.timestamp > ? AND rph.timestamp <= ? ) ";
+        }
+        
+        sql += " ORDER BY rph.timestamp ";
+        
+        if (!orderForward) {
+            sql += "DESC";
+        }
+        
+        return sql;
+    }
     
     public PointValueHolder getPointData(int pointId, Date date) {
         PointValueHolder result;
@@ -82,27 +90,43 @@ public class RawPointHistoryDaoImpl implements RawPointHistoryDao {
     }
     
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate) {
-        List<PointValueHolder> result;
+        
         if (startDate.before(stopDate)) {
-            result = jdbcTemplate.query(sqlForward, new LiteRPHRowMapper(), pointId, startDate, stopDate);
-        } else {
-            result = jdbcTemplate.query(sqlBackward, new LiteRPHRowMapper(), pointId, stopDate, startDate);
+            return doGetPointData(buildSql(false, true), pointId, startDate, stopDate);
         }
+        else {
+            return doGetPointData(buildSql(false, false), pointId, stopDate, startDate);
+        }
+    }
+    
+    public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, boolean startInclusive) {
+        
+        if (startDate.before(stopDate)) {
+            return doGetPointData(buildSql(startInclusive, true), pointId, startDate, stopDate);
+        }
+        else {
+            return doGetPointData(buildSql(startInclusive, false), pointId, stopDate, startDate);
+        }
+    }
+    
+    private List<PointValueHolder> doGetPointData(String sql, int pointId, Date startDate, Date stopDate) {
+        
+        List<PointValueHolder> result = jdbcTemplate.query(sql, new LiteRPHRowMapper(), pointId, startDate, stopDate);
         return result;
     }
-
+    
     public List<PointValueHolder> getPointData(int pointId, Date startDate, Date stopDate, int maxRows) {
         MaxListResultSetExtractor<PointValueHolder> rse = new MaxListResultSetExtractor<PointValueHolder>(new LiteRPHRowMapper(), maxRows);
         if (startDate.before(stopDate)) {
             // do forward query
             Object[] arguments = new Object[] {pointId, startDate, stopDate};
             JdbcOperations oldTemplate = jdbcTemplate.getJdbcOperations();
-            oldTemplate.query(sqlForward, arguments, rse);
+            oldTemplate.query(buildSql(false, true), arguments, rse);
         } else {
             // do backward query
             Object[] arguments = new Object[] {pointId, stopDate, startDate};
             JdbcOperations oldTemplate = jdbcTemplate.getJdbcOperations();
-            oldTemplate.query(sqlBackward, arguments, rse);
+            oldTemplate.query(buildSql(false, false), arguments, rse);
         }
         List<PointValueHolder> result = rse.getResult();
         return result;

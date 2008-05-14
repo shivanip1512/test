@@ -10,7 +10,7 @@ public class DailyUsageReportLayoutData implements ReportLayoutData{
         
         this.bodyColumns = new ColumnLayoutData[] {
             new ColumnLayoutData("Date", "date", 150, "MM/dd/yyyy"),
-            new ColumnLayoutData("Value", "value", 500, "#.### kW"),
+            new ColumnLayoutData("Value", "value", 500, null),
         };
     }
     
