@@ -2,13 +2,6 @@
 <%@ page import="com.cannontech.util.*" %>
 <%@ page import="com.cannontech.web.util.*" %>
 <%@ page import="com.cannontech.web.editor.*" %>
-<%@ page import="com.cannontech.database.cache.DefaultDatabaseCache" %>
-
-<jsp:directive.page import="com.cannontech.core.dao.DaoFactory"/>
-<jsp:directive.page import="com.cannontech.database.data.lite.LiteYukonUser"/>
-<jsp:directive.page import="com.cannontech.common.constants.LoginController"/>
-<jsp:directive.page import="com.cannontech.roles.application.WebClientRole"/>
-<jsp:directive.page import="com.cannontech.servlet.nav.CBCNavigationUtil"/>
 
 <%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
