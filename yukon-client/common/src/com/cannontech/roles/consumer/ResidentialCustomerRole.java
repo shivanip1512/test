@@ -75,6 +75,6 @@ public interface ResidentialCustomerRole {
 	public static final int CONTACTS_ACCESS = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 197;
     public static final int OPT_OUT_TODAY_ONLY = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 198;
     public static final int SIGN_OUT_ENABLED = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 199;
-    
+    public static final int CREATE_LOGIN_FOR_ACCOUNT = ConsumerRoleDefs.RESIDENTIAL_CUSTOMER_PROPERTYID_BASE - 200;
 
 }

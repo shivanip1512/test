@@ -28,6 +28,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.database.db.customer.CustomerAdditionalContact;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
@@ -106,7 +107,8 @@ public class UpdateContactsAction implements ActionBase {
 					 * this is part of the whole HECO development rush...some day we will pay
 					 */
 					//ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT needs to be true for this to happen
-                    if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT))
+                    if(DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ConsumerInfoRole.CREATE_LOGIN_FOR_ACCOUNT) || 
+                            DaoFactory.getAuthDao().checkRoleProperty(user.getUserID(), ResidentialCustomerRole.CREATE_LOGIN_FOR_ACCOUNT))
                     {
     					com.cannontech.database.data.user.YukonUser login = new com.cannontech.database.data.user.YukonUser();
     					LiteStarsEnergyCompany liteEC = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
