@@ -2038,6 +2038,12 @@ INSERT INTO YukonRoleProperty VALUES(-70025,-700,'Allow Capbank/CBC Control','tr
 UPDATE FDRInterface SET PossibleDirections = 'Receive,Send' WHERE InterfaceId = 25;
 /* End YUK-5823 */
 
+/* Start Yuk-5900 */
+/* @error ignore-begin */
+INSERT INTO YukonRoleProperty VALUES(-40200,-400,'Create Login For Account','false','Allows a new login to be automatically created for each contact on a customer account.');
+/* @error ignore-end */
+/* End Yuk-5900 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
