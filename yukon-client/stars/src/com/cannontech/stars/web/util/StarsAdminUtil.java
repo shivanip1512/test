@@ -112,21 +112,60 @@ public class StarsAdminUtil {
             }
 		    else if (energyCompany.getDefaultRouteID() == LiteStarsEnergyCompany.INVALID_ROUTE_ID) {
 				// Assign the default route to the energy company
-				LMGroupExpressCom grpDftRoute = (LMGroupExpressCom) LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
-				grpDftRoute.setPAOName( energyCompany.getName() + " Default Route" );
-				grpDftRoute.setRouteID( new Integer(routeID) );
-				grpDftRoute = (LMGroupExpressCom) Transaction.createTransaction( Transaction.INSERT, grpDftRoute ).execute();
-				ServerUtils.handleDBChangeMsg( grpDftRoute.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+		        // Checks to see if the LMGroupExpressCom exists
+		        LMGroupExpressCom grpExpresscom = new LMGroupExpressCom();
+				grpExpresscom.setPAOName( energyCompany.getName() + " Default Route" );
+				String sqlLMGE = "SELECT PAO.PAObjectId "+
+				                 "FROM YukonPAObject PAO "+
+				                 "WHERE PAO.Category = 'DEVICE' "+
+				                 "AND PAO.PAOClass = 'GROUP' "+
+				                 "AND PAO.PAOName = '"+grpExpresscom.getPAOName()+"'";
 				
-				MacroGroup grpSerial = (MacroGroup) LMFactory.createLoadManagement( DeviceTypes.MACRO_GROUP );
+                SqlStatement stmtLMGE = new SqlStatement( sqlLMGE, CtiUtilities.getDatabaseAlias() );
+                stmtLMGE.execute();
+
+                if (stmtLMGE.getRowCount() > 0) {
+                    int deviceID = ((java.math.BigDecimal) stmtLMGE.getRow(0)[0]).intValue();
+                    grpExpresscom.setDeviceID(deviceID);
+                    grpExpresscom = (LMGroupExpressCom) Transaction.createTransaction( Transaction.RETRIEVE, grpExpresscom ).execute();
+                } else {
+                    //  Creates the expresscom if it doesn't exist.
+                    grpExpresscom = (LMGroupExpressCom) LMFactory.createLoadManagement( DeviceTypes.LM_GROUP_EXPRESSCOMM );
+                    grpExpresscom.setPAOName( energyCompany.getName() + " Default Route" );  
+                    grpExpresscom.setRouteID( new Integer(routeID) );  
+                    grpExpresscom = (LMGroupExpressCom) Transaction.createTransaction( Transaction.INSERT, grpExpresscom ).execute();
+                    ServerUtils.handleDBChangeMsg( grpExpresscom.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+                }
+
+
+                // Checks to see if the MacroGroup Exists
+                MacroGroup grpSerial = new MacroGroup();
+                grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
+                String sqlMG = "SELECT PAO.PAObjectId "+
+                               "FROM YukonPAObject PAO "+
+                               "WHERE PAO.Category = 'DEVICE' "+
+                               "AND PAO.PAOClass = 'GROUP' "+
+                               "AND PAO.PAOName = '"+grpSerial.getPAOName()+"'";
+                
+                SqlStatement stmtMG = new SqlStatement( sqlMG, CtiUtilities.getDatabaseAlias() );
+                stmtMG.execute();
+
+                if (stmtMG.getRowCount() > 0) {
+                    int deviceID = ((java.math.BigDecimal) stmtMG.getRow(0)[0]).intValue();
+                    grpSerial.setDeviceID(deviceID);
+                    grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.RETRIEVE, grpSerial ).execute();
+                } else {
+                    // Creates a macrogroup if it doesn't exist.
+                    grpSerial = (MacroGroup) LMFactory.createLoadManagement( DeviceTypes.MACRO_GROUP );  
 				grpSerial.setPAOName( energyCompany.getName() + " Serial Group" );
 				GenericMacro macro = new GenericMacro();
-				macro.setChildID( grpDftRoute.getPAObjectID() );
+                    macro.setChildID( grpExpresscom.getPAObjectID() );  
 				macro.setChildOrder( new Integer(0) );
 				macro.setMacroType( MacroTypes.GROUP );
 				grpSerial.getMacroGroupVector().add( macro );
 				grpSerial = (MacroGroup) Transaction.createTransaction( Transaction.INSERT, grpSerial ).execute();
 				ServerUtils.handleDBChangeMsg( grpSerial.getDBChangeMsgs(DBChangeMsg.CHANGE_TYPE_ADD)[0] );
+                }
                 
                 PaoPermissionService pService = (PaoPermissionService) YukonSpringHook.getBean("paoPermissionService");
                 pService.addPermission(new LiteYukonUser(energyCompany.getUserID()), new LiteYukonPAObject(grpSerial.getPAObjectID().intValue()), Permission.DEFAULT_ROUTE, true);
