@@ -16,16 +16,23 @@ import javax.servlet.jsp.tagext.BodyContent;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import com.cannontech.common.exception.BadConfigurationException;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.common.version.VersionTools;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.MessageCodeGenerator;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.application.WebClientRole;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.menu.CommonModuleBuilder;
 import com.cannontech.web.menu.ModuleBase;
@@ -68,6 +75,38 @@ public class LayoutController {
         
         StandardPageInfo info = StandardPageTag.getStandardPageInfo(request);
         map.addAttribute("info", info);
+        
+        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        MessageSourceAccessor messageSourceAccessor = messageSourceResolver.getMessageSourceAccessor(userContext);
+        
+        // determine title and page key
+        String title = null;
+        String pageKey = null;
+        if (StringUtils.isNotBlank(info.getTitle()) && StringUtils.isBlank(info.getPageName())) {
+            // this is what all of the pages created before today look like
+            // generate page name from title
+            pageKey = MessageCodeGenerator.generateCode(info.getModuleName(), info.getTitle());
+            String titleKey = "yukon.web.modules." + pageKey + ".pageTitle";
+            MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createDefault(titleKey, info.getTitle());
+            title = messageSourceAccessor.getMessage(messageSourceResolvable);
+        } else if (StringUtils.isBlank(info.getTitle()) && StringUtils.isNotBlank(info.getPageName())) {
+            // this will be a common pairing for new pages
+            pageKey = info.getModuleName() + "." + info.getPageName();
+            String titleKey = "yukon.web.modules." + pageKey + ".pageTitle";
+            String defaultModuleTitle = "yukon.web.modules." + info.getModuleName() + ".pageTitle";
+            String defaultTitle = "yukon.web.defaults.pageTitle";
+            MessageSourceResolvable messageSourceResolvable = YukonMessageSourceResolvable.createMultipleCodes(titleKey, defaultModuleTitle, defaultTitle);
+            title = messageSourceAccessor.getMessage(messageSourceResolvable);
+        } else if (StringUtils.isNotBlank(info.getTitle()) && StringUtils.isNotBlank(info.getPageName())) {
+            // specifying both is a special case, but may be required for generated titles
+            pageKey = info.getModuleName() + "." + info.getPageName();
+            title = info.getTitle();
+        } else {
+            throw new BadConfigurationException("At least one of 'page' or 'title' must be set on the standardPage element");
+        }
+        
+        map.addAttribute("title", title);
+        map.addAttribute("pageKey", pageKey);
         
         ModuleBase moduleBase = getModuleBase(info.getModuleName());
         map.addAttribute("module", moduleBase);
@@ -121,7 +160,7 @@ public class LayoutController {
 
         return skin;
     }
-    
+
     @ModelAttribute("yukonVersion")
     public String getYukonVersion() {
         return VersionTools.getYUKON_VERSION();

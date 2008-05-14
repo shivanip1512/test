@@ -26,6 +26,7 @@ public class StandardPageTag extends BodyTagSupport {
     private List<String> cssFiles;
     private List<String> scriptFiles;
     private String module = "";
+    private String page = "";
     private String breadCrumbData = "";
     private boolean showMenu = false;
     private String menuSelection = null;
@@ -65,6 +66,7 @@ public class StandardPageTag extends BodyTagSupport {
             model.setScriptFiles(scriptFiles);
             model.setHtmlLevel(getHtmlLevel());
             model.setModuleName(getModule());
+            model.setPageName(getPage());
             model.setBreadCrumbs(getBreadCrumb());
             model.setShowMenu(isShowMenu());
             model.setMenuSelection(menuSelection);
@@ -150,6 +152,14 @@ public class StandardPageTag extends BodyTagSupport {
         this.module = module;
     }
 
+    public String getPage() {
+        return page;
+    }
+    
+    public void setPage(String page) {
+        this.page = page;
+    }
+    
     public void setBreadCrumbs(String breadCrumbData) {
         this.breadCrumbData = breadCrumbData;
     }

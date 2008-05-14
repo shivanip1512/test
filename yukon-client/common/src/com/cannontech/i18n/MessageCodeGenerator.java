@@ -1,11 +1,14 @@
 package com.cannontech.i18n;
 
+import org.apache.commons.lang.Validate;
+
 public final class MessageCodeGenerator {
 
     public static final String generateCode(final String prefix, String input) {
         if (prefix.endsWith(".")) {
             throw new IllegalArgumentException("Invalid prefix format ending with . " + prefix);
         }
+        Validate.notEmpty(input, "input String must not be empty or null");
         
         final StringBuilder sb = new StringBuilder();
         sb.append(prefix);

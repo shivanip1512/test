@@ -12,6 +12,7 @@ public class StandardPageInfo {
     private List<String> scriptFiles;
     private boolean showMenu;
     private String title;
+    private String pageName;
 
     public String getBreadCrumbs() {
         return breadCrumbs;
@@ -44,6 +45,10 @@ public class StandardPageInfo {
     public boolean isShowMenu() {
         return showMenu;
     }
+    
+    public String getPageName() {
+        return pageName;
+    }
 
     public void setBreadCrumbs(String breadCrumbs) {
         this.breadCrumbs = breadCrumbs;
@@ -75,5 +80,9 @@ public class StandardPageInfo {
 
     public void setTitle(String title) {
         this.title = title;
+    }
+
+    public void setPageName(String pageName) {
+        this.pageName = pageName;
     }
 }

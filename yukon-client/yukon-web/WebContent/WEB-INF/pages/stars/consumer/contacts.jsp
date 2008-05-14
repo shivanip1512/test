@@ -6,28 +6,18 @@
 <cti:standardMenu/>
 
 
-<table class="contentTable">
-    <tr>
-        <td class="leftColumn">
-            <h3><cti:msg key="yukon.dr.consumer.contacts.header" /></h3>
-            
-            <!-- Display primary contact and notifications -->
-            <dr:contact contact="${primaryContact}" titleKey="yukon.dr.consumer.contacts.primaryContact" options="${notificationOptionList}" primary="true" />
-
-            <!-- Display additional contacts and notifications -->
-            <c:forEach var="contact" items="${additionalContacts}">
-                <dr:contact contact="${contact}" titleKey="yukon.dr.consumer.contacts.contact" options="${notificationOptionList}"  primary="false" />
-            </c:forEach>
-            
-            <form action="/spring/stars/consumer/contacts/newContact" method="post">
-                <input type="submit" value="Create New Contact" />
-            </form>
-        
-        </td>
-        <td class="rightColumn">
-            <cti:customerAccountInfoTag accountNumber="${customerAccount.accountNumber}"/>
-        </td>
-    </tr>
-</table>
+    <h3><cti:msg key="yukon.dr.consumer.contacts.header" /></h3>
+    
+    <!-- Display primary contact and notifications -->
+    <dr:contact contact="${primaryContact}" titleKey="yukon.dr.consumer.contacts.primaryContact" options="${notificationOptionList}" primary="true" />
+  
+    <!-- Display additional contacts and notifications -->
+    <c:forEach var="contact" items="${additionalContacts}">
+        <dr:contact contact="${contact}" titleKey="yukon.dr.consumer.contacts.contact" options="${notificationOptionList}"  primary="false" />
+    </c:forEach>
+    
+    <form action="/spring/stars/consumer/contacts/newContact" method="post">
+        <input type="submit" value="Create New Contact" />
+    </form>
 
 </cti:standardPage>
