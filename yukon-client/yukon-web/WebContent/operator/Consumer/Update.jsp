@@ -4,7 +4,6 @@
 <jsp:useBean id="accountBean" class="com.cannontech.stars.web.bean.AccountBean" scope="page"/>
 <% if (accountInfo == null) { response.sendRedirect("../Operations.jsp"); return; } %>
 
-<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
 <html>
 <head>
 <title>Energy Services Operations Center</title>

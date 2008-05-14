@@ -22,7 +22,7 @@
 	List<LiteStarsEnergyCompany> descendants = null;
 	if (showEnergyCompany) descendants = com.cannontech.stars.util.ECUtils.getAllDescendants(liteEC);
 %>
-<%@page import="org.apache.commons.lang.StringEscapeUtils"%>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>

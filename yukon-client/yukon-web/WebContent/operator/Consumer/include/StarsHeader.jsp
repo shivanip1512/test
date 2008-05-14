@@ -2,6 +2,7 @@
 
 <%@ page import="java.util.*" %>
 <%@ page import="javax.xml.soap.SOAPMessage" %>
+<%@ page import="org.apache.commons.lang.StringEscapeUtils"%>
 <%@ page import="com.cannontech.core.dao.DaoFactory" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntry" %>
 <%@ page import="com.cannontech.common.constants.YukonListEntryTypes" %>
@@ -41,7 +42,8 @@
 <%@ page import="com.cannontech.stars.xml.serialize.types.*" %>
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
-<%@page import="com.cannontech.clientutils.CTILogger"%>
+<%@ page import="com.cannontech.clientutils.CTILogger"%>
+
 <jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
 <jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
