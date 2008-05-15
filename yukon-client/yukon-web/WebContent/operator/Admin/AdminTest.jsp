@@ -615,16 +615,12 @@ function deleteWarehouse(form, warehouseId) {
                                   </td>
                                   <td class="TableCell" width="55%"> 
 <%
-		if (faqLink != null) {
+        boolean isInherited = ServletUtils.isCustomerFAQInherited(liteEC);
+        if (isInherited) {
+            out.print("(Inherited)");    
+        } else if (faqLink != null) {
 			out.print(faqLink);
-		}
-		else if (liteEC.getCustomerFAQs() == null) {
-			out.print("(Inherited)");
-		}
-		else {
-			for (int i = 0; i < customerFAQs.getStarsCustomerFAQGroupCount(); i++)
-				out.print(customerFAQs.getStarsCustomerFAQGroup(i).getSubject() + "<br>");
-		}
+        }
 %>
                                   </td>
                                   <td width="25%" class="TableCell"> 

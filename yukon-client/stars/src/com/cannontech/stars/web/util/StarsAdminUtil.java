@@ -44,7 +44,6 @@ import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteCustomerFAQ;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
 import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
@@ -586,82 +585,6 @@ public class StarsAdminUtil {
 		for (int i = substations.size() - 1; i >= 0; i--) {
 			LiteSubstation liteSub = substations.get(i);
 			deleteSubstation( liteSub.getSubstationID(), energyCompany );
-		}
-	}
-	
-	public static void deleteFAQSubject(int subjectID, LiteStarsEnergyCompany energyCompany)
-		throws TransactionException
-	{
-		com.cannontech.database.db.stars.CustomerFAQ.deleteCustomerFAQs( subjectID );
-		
-        List<LiteCustomerFAQ> liteFAQs = energyCompany.getCustomerFAQs();
-		synchronized (liteFAQs) {
-			Iterator<LiteCustomerFAQ> it = liteFAQs.iterator();
-			while (it.hasNext()) {
-				LiteCustomerFAQ liteFAQ = it.next();
-				if (liteFAQ.getSubjectID() == subjectID) it.remove();
-			}
-		}
-		
-		YukonListEntry cEntry = DaoFactory.getYukonListDao().getYukonListEntry( subjectID );
-		com.cannontech.database.db.constants.YukonListEntry entry = StarsLiteFactory.createYukonListEntry( cEntry );
-		Transaction.createTransaction( Transaction.DELETE, entry ).execute();
-		
-		YukonSelectionList cList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP );
-		cList.getYukonListEntries().remove( cEntry );
-		DaoFactory.getYukonListDao().getYukonListEntries().remove( entry.getEntryID() );
-		
-        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = descendants.get(i);
-			company.updateStarsCustomerFAQs();
-		}
-	}
-	
-	public static void deleteAllFAQSubjects(LiteStarsEnergyCompany energyCompany, boolean removeList)
-		throws Exception
-	{
-		YukonSelectionList cList = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP, false, false );
-		if (cList == null) return;
-		
-		com.cannontech.database.db.stars.CustomerFAQ.deleteAllCustomerFAQs( cList.getListID() );
-		
-		if (removeList) {
-			energyCompany.resetCustomerFAQs();
-			
-			com.cannontech.database.data.constants.YukonSelectionList list =
-					new com.cannontech.database.data.constants.YukonSelectionList();
-			list.setListID( new Integer(cList.getListID()) );
-			Transaction.createTransaction( Transaction.DELETE, list ).execute();
-			
-			energyCompany.deleteYukonSelectionList( cList );
-		}
-		else {
-			energyCompany.getCustomerFAQs().clear();
-			
-			java.sql.Connection conn = null;
-			try {
-				conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-				com.cannontech.database.db.constants.YukonListEntry.deleteAllListEntries( new Integer(cList.getListID()), conn );
-			}
-			finally {
-				if (conn != null) conn.close();
-			}
-			
-            Map<Integer,YukonListEntry> entries = DaoFactory.getYukonListDao().getYukonListEntries();
-			synchronized (entries) {
-				for (int i = 0; i < cList.getYukonListEntries().size(); i++) {
-					YukonListEntry entry = cList.getYukonListEntries().get(i);
-					entries.remove( new Integer(entry.getEntryID()) );
-				}
-			}
-			cList.getYukonListEntries().clear();
-		}
-		
-        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = descendants.get(i);
-			company.updateStarsCustomerFAQs();
 		}
 	}
 	

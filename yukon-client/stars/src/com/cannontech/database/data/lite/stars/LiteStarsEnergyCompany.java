@@ -189,7 +189,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     private List<LiteSubstation> substations = null;
     private List<YukonSelectionList> selectionLists = null;
     private List<LiteInterviewQuestion> interviewQuestions = null;
-    private List<LiteCustomerFAQ> customerFAQs = null;    
     
     private List<Integer> operatorLoginIDs = null;
     private List<Integer> routeIDs = null;
@@ -638,7 +637,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         substations = null;
         selectionLists = null;
         interviewQuestions = null;
-        customerFAQs = null;
         
         operatorLoginIDs = null;
         routeIDs = null;
@@ -1255,40 +1253,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         }
         
         return interviewQuestions;
-    }
-    
-    public synchronized List<LiteCustomerFAQ> getCustomerFAQs() {
-        if (customerFAQs == null) {
-            YukonSelectionList list = getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP, false, false );
-            if (list != null) {
-                customerFAQs = new ArrayList<LiteCustomerFAQ>();
-                
-                com.cannontech.database.db.stars.CustomerFAQ[] faqs =
-                        com.cannontech.database.db.stars.CustomerFAQ.getAllCustomerFAQs( list.getListID() );
-                for (int i = 0; i < faqs.length; i++) {
-                    LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) StarsLiteFactory.createLite( faqs[i] );
-                    customerFAQs.add( liteFAQ );
-                }
-                
-                CTILogger.info( "All customer FAQs loaded for energy company #" + getEnergyCompanyID() );
-            }
-        }
-        
-        return customerFAQs;
-    }
-    
-    public synchronized void resetCustomerFAQs() {
-        customerFAQs = null;
-    }
-    
-    public List<LiteCustomerFAQ> getAllCustomerFAQs() {
-        List<LiteCustomerFAQ> faqs = getCustomerFAQs();
-        if (faqs != null) return faqs;
-        
-        if (getParent() != null)
-            return getParent().getAllCustomerFAQs();
-
-        return StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getAllCustomerFAQs();
     }
     
     /**
@@ -2921,7 +2885,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 starsOperECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user) );
                 starsOperECSettings.setStarsServiceCompanies( getStarsServiceCompanies() );
                 starsOperECSettings.setStarsSubstations( getStarsSubstations() );
-                starsOperECSettings.setStarsCustomerFAQs( getStarsCustomerFAQs() );
                 starsOperECSettings.setStarsExitInterviewQuestions( getStarsExitInterviewQuestions() );
                 starsOperECSettings.setStarsDefaultThermostatSchedules( getStarsDefaultThermostatSchedules() );
             }
@@ -2935,7 +2898,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 starsCustECSettings.setStarsEnergyCompany( getStarsEnergyCompany() );
                 starsCustECSettings.setStarsEnrollmentPrograms( getStarsEnrollmentPrograms() );
                 starsCustECSettings.setStarsCustomerSelectionLists( getStarsCustomerSelectionLists(user) );
-                starsCustECSettings.setStarsCustomerFAQs( getStarsCustomerFAQs() );
                 starsCustECSettings.setStarsExitInterviewQuestions( getStarsExitInterviewQuestions() );
                 starsCustECSettings.setStarsDefaultThermostatSchedules( getStarsDefaultThermostatSchedules() );
             }
@@ -3039,22 +3001,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
             updateStarsEnrollmentPrograms();
         }
         return starsEnrPrograms;
-    }
-    
-    public synchronized void updateStarsCustomerFAQs() {
-        if (starsCustFAQs == null) return;
-        
-        starsCustFAQs.removeAllStarsCustomerFAQGroup();
-        StarsLiteFactory.setStarsCustomerFAQs( starsCustFAQs, this );
-    }
-    
-    public synchronized StarsCustomerFAQs getStarsCustomerFAQs() {
-        if (starsCustFAQs == null) {
-            starsCustFAQs = new StarsCustomerFAQs();
-            updateStarsCustomerFAQs();
-        }
-        
-        return starsCustFAQs;
     }
     
     public synchronized void updateStarsServiceCompanies() {

@@ -52,15 +52,6 @@
 	<bean id="adminUpdateFAQSource" class="com.cannontech.web.stars.action.admin.UpdateFAQSourceController" 
           parent="starsAdminActionController"/>
 	
-	<bean id="adminUpdateFAQSubjectList" class="com.cannontech.web.stars.action.admin.UpdateFAQSubjectListController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminUpdateFAQSubject" class="com.cannontech.web.stars.action.admin.UpdateFAQSubjectController" 
-          parent="starsAdminActionController"/>
-	
-	<bean id="adminDeleteFAQSubject" class="com.cannontech.web.stars.action.admin.DeleteFAQSubjectController" 
-          parent="starsAdminActionController"/>
-	
 	<bean id="adminUpdateInterviewQuestions" class="com.cannontech.web.stars.action.admin.UpdateInterviewQuestionsController" 
           parent="starsAdminActionController"/>
 	

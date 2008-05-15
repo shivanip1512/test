@@ -312,9 +312,6 @@
    		   </links>
    		</option>
 		<option id="programs">
-		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />
-		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
-		  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT" />
 		  <links>
 		    <option id="controlHistory">
 			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY" />

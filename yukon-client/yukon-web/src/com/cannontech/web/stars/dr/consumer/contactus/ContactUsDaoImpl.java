@@ -1,6 +1,7 @@
 package com.cannontech.web.stars.dr.consumer.contactus;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.AddressDao;
@@ -12,6 +13,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 
+@Repository
 public class ContactUsDaoImpl implements ContactUsDao {
     private ECMappingDao ecMappingDao;
     private ContactDao contactDao;

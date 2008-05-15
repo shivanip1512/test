@@ -13,7 +13,6 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
-import com.cannontech.common.constants.YukonSelectionListDefs;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
@@ -2601,39 +2600,6 @@ public class StarsLiteFactory {
         for (final LiteApplianceCategory liteAppCat : liteAppCats) {
             starsAppCats.addStarsApplianceCategory(StarsLiteFactory.createStarsApplianceCategory(liteAppCat, energyCompany) );
         }
-	}
-	
-	public static void setStarsCustomerFAQs(StarsCustomerFAQs starsCustFAQs, LiteStarsEnergyCompany energyCompany) {
-        List<LiteCustomerFAQ> liteFAQs = energyCompany.getAllCustomerFAQs();
-		YukonSelectionList subjects = energyCompany.getYukonSelectionList( YukonSelectionListDefs.YUK_LIST_NAME_CUSTOMER_FAQ_GROUP );
-		
-		for (int i = 0; i < subjects.getYukonListEntries().size(); i++) {
-			YukonListEntry subject = (YukonListEntry) subjects.getYukonListEntries().get(i);
-			ArrayList faqs = new ArrayList();
-			
-			for (int j = 0; j < liteFAQs.size(); j++) {
-				LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) liteFAQs.get(j);
-				if (liteFAQ.getSubjectID() == subject.getEntryID())
-					faqs.add( liteFAQ );
-			}
-			
-			if (faqs.size() > 0) {
-				StarsCustomerFAQGroup starsGrp = new StarsCustomerFAQGroup();
-				starsGrp.setSubjectID( subject.getEntryID() );
-				starsGrp.setSubject( subject.getEntryText() );
-				
-				for (int j = 0; j < faqs.size(); j++) {
-					LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) faqs.get(j);
-					StarsCustomerFAQ starsFAQ = new StarsCustomerFAQ();
-					starsFAQ.setQuestionID( liteFAQ.getQuestionID() );
-					starsFAQ.setQuestion( liteFAQ.getQuestion() );
-					starsFAQ.setAnswer( liteFAQ.getAnswer() );
-					starsGrp.addStarsCustomerFAQ( starsFAQ );
-				}
-				
-				starsCustFAQs.addStarsCustomerFAQGroup( starsGrp );
-			}
-		}
 	}
 	
 	public static StarsLMProgramEvent createStarsOptOutEvent(OptOutEventQueue.OptOutEvent event, LiteStarsEnergyCompany energyCompany) {

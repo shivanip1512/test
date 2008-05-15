@@ -2,6 +2,8 @@ package com.cannontech.web.stars.dr.consumer.displayable.dao.impl;
 
 import java.util.Date;
 
+import org.springframework.stereotype.Repository;
+
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.model.ScheduledOptOut;
@@ -11,6 +13,7 @@ import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableOptOutDao
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableOptOut;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableOptOut.DisplayableOptOutType;
 
+@Repository
 public class DisplayableOptOutDaoImpl extends AbstractDisplayableDao implements DisplayableOptOutDao {
     
     @Override

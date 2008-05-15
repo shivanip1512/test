@@ -129,6 +129,8 @@ public class ServletUtils {
 	public static final String UTIL_FAX_NUMBER = "<<FAX_NUMBER>>";
 	public static final String UTIL_EMAIL = "<<EMAIL>>";
 
+	public static final String INHERITED_FAQ = "INHERITED_FAQ";
+	
 	private static java.text.DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
 	
 	private static final java.text.SimpleDateFormat[] timeFormat =
@@ -608,6 +610,13 @@ public class ServletUtils {
 		return null;
 	}
 	
+	public static boolean isCustomerFAQInherited(LiteStarsEnergyCompany energyCompany) {
+	    if (energyCompany == null) return false;
+	    String faqLink = ServletUtils.getCustomerFAQLink(energyCompany);
+	    boolean isInherited = ServletUtils.INHERITED_FAQ.equals(faqLink);
+	    return isInherited;
+	}
+	
 	/**
 	 * Get the FAQ link (usually a URL to the customer's website rather than using the default FAQ page).
 	 * It will search in the first operator group, then in the first customer group.
@@ -663,7 +672,7 @@ public class ServletUtils {
 		if (StarsUtils.forceNotNone(faqLink).length() == 0)
 			faqLink = null;
 		
-		if (faqLink != null || energyCompany.getCustomerFAQs() != null)
+		if (faqLink != null)
 			return faqLink;
 		else if (energyCompany.getParent() != null)
 			return getCustomerFAQLink( user, energyCompany.getParent() );

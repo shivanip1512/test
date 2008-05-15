@@ -5,6 +5,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.stereotype.Repository;
+
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
@@ -16,6 +18,7 @@ import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableControl
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableControlHistory.DisplayableControlHistoryType;
 
+@Repository
 public class DisplayableProgramDaoImpl extends AbstractDisplayableDao implements DisplayableProgramDao {
     
     @Override

@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
@@ -22,6 +23,7 @@ import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollm
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment.DisplayableEnrollmentInventory;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment.DisplayableEnrollmentProgram;
 
+@Repository
 public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao implements DisplayableEnrollmentDao {
     private InventoryBaseDao inventoryBaseDao;
     

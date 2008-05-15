@@ -96,18 +96,4 @@
 		</property>
 	</bean>
 
-    <bean id="abstractDisplayableDao" class="com.cannontech.web.stars.dr.consumer.displayable.dao.AbstractDisplayableDao"
-          abstract="true"/>
-
-    <bean id="displayableProgramDao" class="com.cannontech.web.stars.dr.consumer.displayable.dao.impl.DisplayableProgramDaoImpl"
-          parent="abstractDisplayableDao"/>
-
-    <bean id="displayableOptOutDao" class="com.cannontech.web.stars.dr.consumer.displayable.dao.impl.DisplayableOptOutDaoImpl"
-          parent="abstractDisplayableDao"/>
-
-    <bean id="displayableEnrollmentDao" class="com.cannontech.web.stars.dr.consumer.displayable.dao.impl.DisplayableEnrollmentDaoImpl"
-          parent="abstractDisplayableDao"/>
-
-    <bean id="contactUsDao" class="com.cannontech.web.stars.dr.consumer.contactus.ContactUsDaoImpl"/>
-
 </beans>

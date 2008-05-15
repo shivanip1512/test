@@ -16,7 +16,6 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteCustomerFAQ;
 import com.cannontech.database.data.lite.stars.LiteInterviewQuestion;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
 import com.cannontech.database.data.lite.stars.LiteServiceCompany;
@@ -280,20 +279,6 @@ public class DeleteEnergyCompanyTask extends TimeConsumingTask {
 				question.setQuestionID( new Integer(liteQuestion.getQuestionID()) );
 				
 				Transaction.createTransaction( Transaction.DELETE, question ).execute();
-			}
-			
-			// Delete all customer FAQs
-			if (energyCompany.getCustomerFAQs() != null) {
-				currentAction = "Deleting customer FAQs";
-				
-				for (int i = 0; i < energyCompany.getCustomerFAQs().size(); i++) {
-					LiteCustomerFAQ liteFAQ = (LiteCustomerFAQ) energyCompany.getCustomerFAQs().get(i);
-					com.cannontech.database.db.stars.CustomerFAQ faq =
-							new com.cannontech.database.db.stars.CustomerFAQ();
-					faq.setQuestionID( new Integer(liteFAQ.getQuestionID()) );
-					
-					Transaction.createTransaction( Transaction.DELETE, faq ).execute();
-				}
 			}
 			
 			// Delete customer selection lists
