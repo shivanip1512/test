@@ -41,7 +41,7 @@ com.cannontech.esub.element.StaticText
 ! 110101100 208;168;546.357422;11.265625 5 0 $ ! ! 0 0
 A "NCS" 0 0 0 0 $ 1 C ffffffff 0 0
 0 0
-"Arial Bold" 0 12 "You can normally find this file on the Yukon server in c:\yukon\server\web\webapps\yukon\esub"
+"Arial Bold" 0 12 "You can normally find this file on the Yukon server in c:\yukon\server\web\webapps\ROOT\esub"
 1 "Arial Bold" 12 255 255 255 !
 
 
