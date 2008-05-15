@@ -34,8 +34,14 @@
 		    <fileset dir="src">
 		    	<exclude name="**/*.java"/>
 			</fileset>
-		    <fileset dir="i18n/en_us"/>
        	</jar>
+   	
+        <jar destfile="${yukon.lib}/i18n-en_US.jar" basedir="i18n/en_us" includes="**/*.xml">
+            <manifest>
+                <attribute name="Yukon-Version" value="${yukon.build.version}"/>
+                <attribute name="Yukon-Details" value="${yukon.build.details}"/>
+            </manifest> 
+        </jar>
 
    </target>
 
