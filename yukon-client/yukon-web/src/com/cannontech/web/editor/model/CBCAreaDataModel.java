@@ -40,20 +40,22 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
 
     private void init() {
         List<CCSubAreaAssignment> allAreaSubs = CCSubAreaAssignment.getAllAreaSubStations(area.getPAObjectID());
-        for (CCSubAreaAssignment assignment : allAreaSubs) {
-            Integer subId = assignment.getSubstationBusID();
-            String subName = paoDao.getYukonPAOName(subId);
-            Integer displayOrder = assignment.getDisplayOrder();
-            CBCAreaData data = new CBCAreaData(subId, subName, displayOrder + 1);
-            assignedSubstations.add(data);
-        }
-        
-        List<Integer> availableSubs = substationDao.getAllUnassignedSubstationIds();
-        for(Integer subId : availableSubs) {
-            String subName = paoDao.getYukonPAOName(subId);
-            Integer displayOrder = 0;
-            CBCAreaData data = new CBCAreaData(subId, subName, displayOrder);
-            unassingedSubstations.add(data);
+        synchronized (allAreaSubs) {
+            for (CCSubAreaAssignment assignment : allAreaSubs) {
+                Integer subId = assignment.getSubstationBusID();
+                String subName = paoDao.getYukonPAOName(subId);
+                Integer displayOrder = assignment.getDisplayOrder();
+                CBCAreaData data = new CBCAreaData(subId,subName,displayOrder + 1);
+                assignedSubstations.add(data);
+            }
+
+            List<Integer> availableSubs = substationDao.getAllUnassignedSubstationIds();
+            for (Integer subId : availableSubs) {
+                String subName = paoDao.getYukonPAOName(subId);
+                Integer displayOrder = 0;
+                CBCAreaData data = new CBCAreaData(subId, subName, displayOrder);
+                unassingedSubstations.add(data);
+            }
         }
     }
 
@@ -128,21 +130,23 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
         handleAssignedIds(assignedIds, connection);
         handleUnassignedIds(unassignedIds, connection);
         assignNewSubs(getAssigned(), connection);
+        CBCDBUtil.closeConnection(connection);
     }
 
     public void assignNewSubs(List<CBCAreaData> assignedSubs, Connection connection) {
         ArrayList<CCSubAreaAssignment> newAssignments = new ArrayList<CCSubAreaAssignment>();
-        for(CBCAreaData data : assignedSubs) {
-            CCSubAreaAssignment assignment = new CCSubAreaAssignment(area.getPAObjectID(), data.getSubID(), data.getDisplayOrder() - 1);
-            newAssignments.add(assignment);
+        synchronized (newAssignments) {
+            for (CBCAreaData data : assignedSubs) {
+                CCSubAreaAssignment assignment = new CCSubAreaAssignment(area.getPAObjectID(), data.getSubID(), data.getDisplayOrder() - 1);
+                newAssignments.add(assignment);
+            }
+            area.setAreaSubs(newAssignments);
         }
-        area.setAreaSubs(newAssignments);
     }
 
     public void handleUnassignedIds(List<Integer> unassignedIDs, Connection connection) {
         // see if it belongs to the current area
         // delete it from sub assignment
-
         Integer areaID = area.getPAObjectID();
         List<CCSubAreaAssignment> childList = CCSubAreaAssignment.getAllAreaSubStations(areaID);
         ArrayList<Integer> idsToRemove = CCSubAreaAssignment.getAsIntegerList(childList);
@@ -150,24 +154,24 @@ public class CBCAreaDataModel extends EditorDataModelImpl {
         CCSubAreaAssignment.deleteSubs(idsToRemove, areaID);
     }
 
-    public void handleAssignedIds(List<Integer> assignedIDs,
-            Connection connection) {
-        for (Integer id : assignedIDs) {
-            // see if it belongs to a different area than current
-            // if yes - delete assignment from the old sub
-            Integer areaID = CCSubAreaAssignment.getAreaIDForSubStation(id);
-            if ((areaID != null || areaID > 0) && !areaID.equals(area.getPAObjectID())) {
-                CCSubAreaAssignment objToDelete = new CCSubAreaAssignment();
-                objToDelete.setAreaID(areaID);
-                objToDelete.setSubstationBusID(id);
-                objToDelete.setDbConnection(connection);
-                try {
-                    objToDelete.delete();
-                } catch (SQLException e) {
-                    CTILogger.error(e);
+    public void handleAssignedIds(List<Integer> assignedIDs, Connection connection) {
+        synchronized (assignedIDs) {
+            for (Integer id : assignedIDs) {
+                // see if it belongs to a different area than current
+                // if yes - delete assignment from the old sub
+                Integer areaID = CCSubAreaAssignment.getAreaIDForSubStation(id);
+                if ((areaID != null || areaID > 0) && !areaID.equals(area.getPAObjectID())) {
+                    CCSubAreaAssignment objToDelete = new CCSubAreaAssignment();
+                    objToDelete.setAreaID(areaID);
+                    objToDelete.setSubstationBusID(id);
+                    objToDelete.setDbConnection(connection);
+                    try {
+                        objToDelete.delete();
+                    } catch (SQLException e) {
+                        CTILogger.error(e);
+                    }
                 }
             }
         }
     }
-
 }

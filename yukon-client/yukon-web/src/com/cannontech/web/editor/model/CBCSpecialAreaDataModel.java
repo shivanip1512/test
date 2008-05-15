@@ -38,20 +38,24 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
 
     private void init() {
         List<CCSubSpecialAreaAssignment> allAreaSubs = CCSubSpecialAreaAssignment.getAllSpecialAreaSubs(area.getPAObjectID());
-        for (CCSubSpecialAreaAssignment assignment : allAreaSubs) {
-            Integer subId = assignment.getSubstationBusID();
-            String subName = paoDao.getYukonPAOName(subId);
-            Integer displayOrder = assignment.getDisplayOrder();
-            CBCSpecialAreaData data = new CBCSpecialAreaData(subId, subName, displayOrder + 1);
-            assignedSubstations.add(data);
+        synchronized (allAreaSubs) {
+            for (CCSubSpecialAreaAssignment assignment : allAreaSubs) {
+                Integer subId = assignment.getSubstationBusID();
+                String subName = paoDao.getYukonPAOName(subId);
+                Integer displayOrder = assignment.getDisplayOrder();
+                CBCSpecialAreaData data = new CBCSpecialAreaData(subId, subName, displayOrder + 1);
+                assignedSubstations.add(data);
+            }
         }
         
         List<Integer> availableSubs = substationDao.getAllSpecialAreaUnassignedSubstationIds(area.getPAObjectID());
-        for(Integer subId : availableSubs) {
-            String subName = paoDao.getYukonPAOName(subId);
-            Integer displayOrder = 0;
-            CBCSpecialAreaData data = new CBCSpecialAreaData(subId, subName, displayOrder);
-            unassingedSubstations.add(data);
+        synchronized (availableSubs) {
+            for(Integer subId : availableSubs) {
+                String subName = paoDao.getYukonPAOName(subId);
+                Integer displayOrder = 0;
+                CBCSpecialAreaData data = new CBCSpecialAreaData(subId, subName, displayOrder);
+                unassingedSubstations.add(data);
+            }
         }
     }
 
@@ -92,14 +96,15 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
                 break;
             }
         }
-        
         reOrderAssignedSubs(getAssigned());
     }
     
     private void reOrderAssignedSubs(List<CBCSpecialAreaData> list) {
-        for(int i = 0; i < list.size(); i++) {
-            CBCSpecialAreaData data = list.get(i);
-            data.setDisplayOrder(i+1);
+        synchronized (list) {
+            for(int i = 0; i < list.size(); i++) {
+                CBCSpecialAreaData data = list.get(i);
+                data.setDisplayOrder(i+1);
+            }
         }
     }
 
@@ -124,15 +129,18 @@ public class CBCSpecialAreaDataModel extends EditorDataModelImpl {
         Connection connection = CBCDBUtil.getConnection();
         handleUnassignedIds(unassignedIds, connection);
         assignNewSubs(getAssigned(), connection);
+        CBCDBUtil.closeConnection(connection);
     }
 
     public void assignNewSubs(List<CBCSpecialAreaData> assignedSubs, Connection connection) {
         ArrayList<CCSubSpecialAreaAssignment> newAssignments = new ArrayList<CCSubSpecialAreaAssignment>();
-        for(CBCSpecialAreaData data : assignedSubs) {
-            CCSubSpecialAreaAssignment assignment = new CCSubSpecialAreaAssignment(area.getPAObjectID(), data.getSubID(), data.getDisplayOrder() - 1);
-            newAssignments.add(assignment);
+        synchronized (newAssignments) {
+            for(CBCSpecialAreaData data : assignedSubs) {
+                CCSubSpecialAreaAssignment assignment = new CCSubSpecialAreaAssignment(area.getPAObjectID(), data.getSubID(), data.getDisplayOrder() - 1);
+                newAssignments.add(assignment);
+            }
+            area.setSpecialAreaSubs(newAssignments);
         }
-        area.setSpecialAreaSubs(newAssignments);
     }
 
     public void handleUnassignedIds(List<Integer> unassignedIDs, Connection connection) {
