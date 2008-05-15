@@ -71,7 +71,7 @@
     boolean showFlip = Boolean.valueOf(authDao.getRolePropertyValue(user, CBCSettingsRole.SHOW_FLIP_COMMAND)).booleanValue();
     if (popupEvent == null) popupEvent = "onmouseover";
     
-	String specialParam = ServletRequestUtils.getStringParameter(request, "specialArea", ccSession.getLastSpecialAreaFlag());
+	String specialParam = ServletRequestUtils.getStringParameter(request, "specialArea", "false");
 	boolean special = false;
 	if("true".equalsIgnoreCase(specialParam)) {
 		special = true;
