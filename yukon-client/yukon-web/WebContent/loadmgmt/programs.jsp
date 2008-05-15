@@ -241,7 +241,7 @@ YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageCon
 					<td class="HeaderCell">
 					<div align="right">
 					  Control Scenario:
-					  <select name="scen_box" >
+					  <select name="scen_box" id="scen_box">
 <%
 						LiteYukonPAObject[] scenarios = DaoFactory.getLmDao().getAllMemberLMScenarios( (LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
 						for( int j = 0; j < scenarios.length; j++ )
