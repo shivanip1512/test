@@ -26,8 +26,8 @@ public class BaseMeterRowMapper {
         meter.setType(deviceType);
         String meterNumber = rs.getString("meterNumber");
         meter.setMeterNumber(meterNumber);
-        String disabledStr = rs.getString("disableFlag");
-        boolean disabled = CtiUtilities.isTrue(disabledStr);
+        char disabledChar = rs.getString("disableFlag").charAt(0);
+        boolean disabled = CtiUtilities.isTrue(disabledChar);
         meter.setDisabled(disabled);
         String route = rs.getString("route");
         meter.setRoute(route);
