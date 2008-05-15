@@ -773,7 +773,7 @@ public class YukonToCRSFuncs
     		accountSite.getStreetAddress().setZipCode(zipCode);
     		isChanged = true;
     	}
-    	if( StringUtils.isNotBlank(presenceReq.toString()) && !presenceReq.toString().equalsIgnoreCase(accountSite.getAccountSite().getCustAtHome()))
+    	if( presenceReq != null && StringUtils.isNotBlank(presenceReq.toString()) && !presenceReq.toString().equalsIgnoreCase(accountSite.getAccountSite().getCustAtHome()))
     	{
     		accountSite.getAccountSite().setCustAtHome(presenceReq.toString());
     		isChanged = true;
