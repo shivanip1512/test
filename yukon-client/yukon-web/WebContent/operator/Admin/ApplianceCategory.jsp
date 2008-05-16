@@ -370,6 +370,7 @@ function resetConfig() {
     $('iconNameSavings').value = '';
     $('iconNameControl').value = '';
     $('iconNameEnvrn').value = '';
+    $('i18nKey').innerHTML = '';
     
     $('saveButton').disabled = true;
     
@@ -420,6 +421,10 @@ function showProgramConfig(element) {
     } else {
         $('displayNameCheckBox').disabled = true;    
     }
+    
+    var code = (isSameAsProgramName) ? 
+        generateMessageCode(program.getProgramName()) : generateMessageCode(displayName);
+    $('i18nKey').innerHTML = code;
     
     var shortName = program.getShortName();
     var isSameAsDisplayName = (!(shortName) || shortName == '');
@@ -523,6 +528,20 @@ function init() {
 	changeIcon(document.form1);
 	removeWarned = false;
 }
+
+function generateMessageCode(programName) {
+    var prefix = 'yukon.dr.program.displayname.'; 
+    /* This pattern must match MessageCodeGenerator.java */
+    var pattern = /[\.|\"|\s+|&|<]/g;
+    var code = prefix + programName.replace(pattern, '');
+    return code;
+}
+
+function updateMessageCode(input) {
+    var programName = input.value;
+    var code = generateMessageCode(programName);
+    $('i18nKey').innerHTML = code;
+}
 </script>
 </head>
 
@@ -573,7 +592,7 @@ function init() {
                         <td width="15%" align="right" class="TableCell">Display 
                           Name:</td>
                         <td width="85%" class="TableCell"> 
-                          <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>" onchange="setContentChanged(true)">
+                          <input type="text" name="DispName" value="<%= category.getStarsWebConfig().getAlternateDisplayName() %>" onchange="setContentChanged(true);">
                           <input type="checkbox" name="SameAsName" value="true" onclick="sameAsName(this.form, this.checked);setContentChanged(true);" <%= viewOnly %>>
                           Same as category name </td>
                       </tr>
@@ -662,17 +681,21 @@ function init() {
                       <tr> 
                         <td width="15%" align="right">Program:</td>
                         <td width="85%">
-                          <select id="Program" onchange="showProgramConfig(this)">
-                            <option value="-1">&lt;Select a program&gt;</option>
-                          </select>
+                            <div>
+                                <select id="Program" onchange="showProgramConfig(this)">
+                                    <option value="-1">&lt;Select a program&gt;</option>
+                                </select>
+                                <span style="vertical-align: top;"><b>(Key) : <span id="i18nKey"></span></b></span> 
+                            </div>
                         </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right">Display Name:</td>
-                        <td width="85%"> 
-                          <input id="displayName" type="text" size="20" onchange="setProgramChanged()" <%=viewOnly%>>
-                          <input id="displayNameCheckBox" type="checkbox" value="true" onclick="sameAsProgramName(this.checked);" <%= viewOnly %>>
-                          Same as program name</td>
+                        <td width="85%">
+                            <input id="displayName" type="text" size="20" onchange="setProgramChanged(); updateMessageCode(this);" <%=viewOnly%>>
+                            <input id="displayNameCheckBox" type="checkbox" value="true" onclick="sameAsProgramName(this.checked);" <%= viewOnly %>>
+                            Same as program name
+                        </td>
                       </tr>
                       <tr> 
                         <td width="15%" align="right">Short Name:</td>

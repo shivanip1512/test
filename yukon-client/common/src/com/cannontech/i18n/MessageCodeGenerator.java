@@ -20,6 +20,7 @@ public final class MessageCodeGenerator {
     }
     
     public static final String generateCode(final String input) {
+        /* This pattern must match ApplianceCategory.jsp generateMessageCode() */
         String output = input.replaceAll("[\\.|\\\"|\\s+|&|<]", "");
         if ("".equals(output)) throw new UnsupportedOperationException("Unable to generate key: " + input);
         return output;
