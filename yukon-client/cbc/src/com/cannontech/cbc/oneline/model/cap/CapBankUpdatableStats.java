@@ -139,12 +139,11 @@ public class CapBankUpdatableStats extends LxAbstractView implements
         if (allStats.size() > 1) {
             for (int i = 1; i < allStats.size(); i++) {
                 UpdatableTextList prevEl = copy.get(i - 1);
-                String componentName = ( prevEl == totalMaxDailyOpCount) ? CommandPopups.VAR_CHANGE_POPUP : null;
                 UpdatableTextList pair = manager.adjustPosition(allStats,
                                                                 prevEl.getFirstElement(),
                                                                 i,
                                                                 getStreamable(),
-                                                                user, componentName);
+                                                                user);
                 copy.add(pair);
             }
         }

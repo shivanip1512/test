@@ -82,14 +82,8 @@ public class OnelineDisplayManager {
             return "(none)";
         }    
     }
-    
-    public UpdatableTextList adjustPosition(List<UpdatableTextList> allStats,
-            LxComponent prevComp, int pos, StreamableCapObject stream, LiteYukonUser user) {
-        return this.adjustPosition(allStats, prevComp, pos, stream, user, null);
-    }
 
-    public UpdatableTextList adjustPosition(List<UpdatableTextList> allStats,
-            LxComponent prevComp, int pos, StreamableCapObject stream, LiteYukonUser user, String componentName) {
+    public UpdatableTextList adjustPosition(List<UpdatableTextList> allStats, LxComponent prevComp, int pos, StreamableCapObject stream, LiteYukonUser user) {
         UpdatableTextList temp = allStats.get(pos);
 
         UpdatableStats stats = temp.getStats();
@@ -135,8 +129,8 @@ public class OnelineDisplayManager {
         int type = OnelineUtil.getYukonType(stream);
         Integer paoID = stream.getCcId();
         content.setName(propPrefixMap.get(type) + paoID + "_" + labelName);
-        if( componentName != null) {
-            content.setName(componentName+"_"+paoID);
+        if(labelName.equalsIgnoreCase("Updated:")) {
+            content.setName(CommandPopups.VAR_CHANGE_POPUP+"_"+paoID);
             content.setLinkTo("javascript:void(0)");
         }
         temp.setFirstElement(label);
