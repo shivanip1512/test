@@ -117,7 +117,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         areaQuery += ", yu.username ";
         areaQuery += "from ";
         areaQuery += "(select * from yukonpaobject where type = 'CCAREA' and disableflag = 'Y') yp ";
-        areaQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        areaQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         areaQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         
         String substationQuery = "select yp.paoname devicename ";
@@ -130,7 +130,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         substationQuery += "join (select ypa.paoname PARENT , yps.paobjectid from yukonpaobject ypa , yukonpaobject yps, ";
         substationQuery += "ccsubareaassignment sa, ccsubstationsubbuslist ss where yps.paobjectid = ss.substationid ";
         substationQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and yps.type like 'CCSUBSTATION') pInfo on yp.paobjectid = pInfo.paobjectid ";
-        substationQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        substationQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         substationQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         substationQuery += "order by yp.type ";
         
@@ -145,7 +145,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         subBusQuery += "yukonpaobject ypsb, ccsubareaassignment sa, ccsubstationsubbuslist ss where ypsb.paobjectid = ss.substationbusid ";
         subBusQuery += "and yps.paobjectid = ss.substationid and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid ";
         subBusQuery += "and ypsb.type like 'CCSUBBUS') pInfo on yp.paobjectid = pInfo.paobjectid ";
-        subBusQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        subBusQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         subBusQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         subBusQuery += "order by yp.type ";
         
@@ -161,7 +161,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         feederQuery += "ccfeedersubassignment fs where ypf.paobjectid = fs.feederid and ypsb.paobjectid = fs.substationbusid ";
         feederQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
         feederQuery += "and sa.areaid = ypa.paobjectid and ypf.type like 'CCFEEDER') pInfo on yp.paobjectid = pInfo.paobjectid ";
-        feederQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        feederQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         feederQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         feederQuery += "order by yp.type ";
         
@@ -178,7 +178,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         capBankQuery += "where ypc.paobjectid = c.deviceid and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid ";
         capBankQuery += "and ypsb.paobjectid = fs.substationbusid and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid ";
         capBankQuery += "and sa.substationbusid = ss.substationid and sa.areaid = ypa.paobjectid and ypc.type like 'CAP BANK') pInfo on pInfo.paobjectid = yp.paobjectid ";
-        capBankQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        capBankQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         capBankQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         capBankQuery += "order by yp.type ";
         
@@ -196,7 +196,7 @@ public class CapControlDisabledDevicesModel extends BareReportModelBase<CapContr
         cbcQuery += "and fb.deviceid = c.deviceid and fb.feederid = fs.feederid and ypf.paobjectid = fb.feederid and ypsb.paobjectid = fs.substationbusid ";
         cbcQuery += "and yps.paobjectid = ss.substationid and fs.substationbusid = ss.substationbusid and sa.substationbusid = ss.substationid ";
         cbcQuery += "and sa.areaid = ypa.paobjectid and yp.type like 'CBC%') pInfo on yp.paobjectid = pInfo.paobjectid ";
-        cbcQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'disabled' ";
+        cbcQuery += "left outer join capcontrolcomment c on c.paoId = yp.paobjectid and c.action = 'DISABLED' ";
         cbcQuery += "left outer join yukonuser yu on yu.userid = c.userid ";
         cbcQuery += "order by yp.type ";
         

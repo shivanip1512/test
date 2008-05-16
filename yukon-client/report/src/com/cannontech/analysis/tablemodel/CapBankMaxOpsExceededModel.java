@@ -114,8 +114,8 @@ public class CapBankMaxOpsExceededModel extends BareDatedReportModelBase<CapBank
         sql.append("and c.deviceid = fb.deviceid ");
         sql.append("and sl.pointid = p.pointid ");
         sql.append("and p.paobjectid = c.deviceid ");
-        sql.append("and p.pointoffset = 1 and p.pointtype = 'analog' ");
-        sql.append("and sl.description like '%capbank exceeded%' ");
+        sql.append("and p.pointoffset = 1 and p.pointtype = 'Analog' ");
+        sql.append("and sl.description like '%CapBank Exceeded%' ");
         sql.append("and (sl.datetime >= ? and sl.datetime < ?)");
         
         String result = null;

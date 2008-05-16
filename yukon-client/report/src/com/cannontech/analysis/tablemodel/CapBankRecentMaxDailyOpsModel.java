@@ -74,7 +74,7 @@ public class CapBankRecentMaxDailyOpsModel extends ReportModelBase {
         sql.append( "slTemp.currentWeekCount, slTemp1.prevWeek1Count, slTemp2.prevWeek2Count, slTemp3.prevWeek3Count, slTemp4.prevWeek4Count, ");
         sql.append( "slTemp5.prevWeek5Count, slTemp6.prevWeek6Count ");
         sql.append( "from capbank cb ");
-        sql.append( "join point p on p.paobjectid = cb.deviceid and p.pointname = 'operation' " );
+        sql.append( "join point p on p.paobjectid = cb.deviceid and p.pointname = 'OPERATION' " );
         sql.append( "left outer join (select pointid, count(*) currentWeekCount " );
         sql.append( "from systemlog where description like '%CapBank Exceeded Max%' " );
         sql.append( "and (datetime <= ? and datetime > ?) group by pointid) slTemp on slTemp.pointid = p.pointid ");

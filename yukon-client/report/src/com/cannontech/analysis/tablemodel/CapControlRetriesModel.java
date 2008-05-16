@@ -110,7 +110,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append(", el2.ct numAttempts ");
         sql.append(", el3.ct success ");
         sql.append("from (select pointid, count(*) ct from cceventlog ");
-        sql.append("where text like '%resending%' ");
+        sql.append("where text like '%Resending%' ");
         sql.append("and datetime > ? ");
         sql.append("and datetime <= ? ");
         sql.append("group by pointid) el ");
@@ -121,7 +121,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("and datetime <= ? ");
         sql.append("group by pointid) el2 on el2.pointid = el.pointid ");
         sql.append("join (select pointid, count(*) ct from cceventlog ");
-        sql.append("where (text like 'Var:%, Open' or text like 'Var:%, Closed' ");
+        sql.append("where (text like 'Var:%, Open' or text like 'Var:%, Close' ");
         sql.append("or text like 'Var:%Questionable') ");
         sql.append("and datetime > ? ");
         sql.append("and datetime <= ? ");
@@ -138,7 +138,7 @@ public class CapControlRetriesModel extends BareDatedReportModelBase<CapControlR
         sql.append("join ccsubstationsubbuslist ssb on ssb.substationbusid = fs.substationbusid ");
         sql.append("join ccsubareaassignment sa on sa.substationbusid = ssb.substationid ");
         sql.append("join yukonpaobject yp on yp.paobjectid = sa.areaid ");
-        sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = sa.areaid ");
+        sql.append("left outer join (select paobjectid from yukonpaobject where type ='CCAREA' ) ca on ca.paobjectid = sa.areaid ");
         
         String result = null;
         
