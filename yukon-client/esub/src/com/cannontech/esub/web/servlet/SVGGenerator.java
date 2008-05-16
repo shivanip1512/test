@@ -47,6 +47,9 @@ public class SVGGenerator extends HttpServlet {
         String jlxPath= uri.replaceFirst(conPath, "");
 		jlxPath = sc.getRealPath(jlxPath);
         jlxPath = StringUtils.remove(jlxPath, "\\svgGenerator");
+        int esubPathIndex = jlxPath.lastIndexOf("\\");
+        String rejectedPath = jlxPath.substring(0, esubPathIndex);
+        rejectedPath += "\\rejected.jlx";
 		//Assume this ends with .svg or .svgz		
 		if(jlxPath.toLowerCase().endsWith(".svg")) {
 			jlxPath = jlxPath.substring(0, jlxPath.length()-4) + ".jlx";
@@ -91,6 +94,17 @@ public class SVGGenerator extends HttpServlet {
 				svgOptions.setAudioEnabled(true); // TODO set to role property value
 				ISVGGenerator gen = new ESubSVGGenerator (svgOptions);
                 gen.generate(w, d);	
+			} else {
+			    d = new Drawing();
+	            d.load(rejectedPath);
+	            SVGOptions svgOptions = new SVGOptions();
+                svgOptions.setStaticSVG(true);
+                svgOptions.setScriptingEnabled(true);
+                svgOptions.setEditEnabled(false);
+                svgOptions.setControlEnabled(false);
+                svgOptions.setAudioEnabled(false);
+	            ISVGGenerator gen = new ESubSVGGenerator (svgOptions);
+                gen.generate(w, d);
 			}
 		}
 		catch(Exception e ) {
