@@ -10,8 +10,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -35,7 +33,7 @@ public class TextPointPanel extends DataInputPanel implements ActionListener, Tr
     private javax.swing.JPanel buttonGroup = null;
     private PointSelectionPanel pointSelectionPanel = null;
     private DynamicText dynamicText;
-    private HashMap map = new HashMap();
+    private HashMap<Integer, String> map = new HashMap<Integer, String>();
     private JButton okButton;
     private JLabel previewLabel;
     private JLabel rawStateLabel;
@@ -66,8 +64,6 @@ public class TextPointPanel extends DataInputPanel implements ActionListener, Tr
     private JLabel rawState10;
     private JTextField[] textFields = new JTextField[12];
     private JLabel[] stateLabels = new JLabel[12];
-    private JCheckBox controlCheckBox;
-    
     
 /**
  * ArrowPointPanel constructor comment.
@@ -88,16 +84,8 @@ private javax.swing.JPanel getPointPanel() {
             pointPanel.setLayout(new java.awt.GridBagLayout());
             pointPanel.setBorder(new TitleBorder("Point Selection:"));
 
-            java.awt.GridBagConstraints constraintsControlCheckBox = new java.awt.GridBagConstraints();
-            constraintsControlCheckBox.gridx = 0; constraintsControlCheckBox.gridy = 0;
-            constraintsControlCheckBox.fill = java.awt.GridBagConstraints.HORIZONTAL;
-            constraintsControlCheckBox.gridwidth = 1;
-            constraintsControlCheckBox.anchor = java.awt.GridBagConstraints.WEST;
-            constraintsControlCheckBox.insets = new java.awt.Insets(4, 4, 4, 4);
-            pointPanel.add(getControlCheckBox(), constraintsControlCheckBox);
-             
             java.awt.GridBagConstraints constraintsPointSelectionPanel = new java.awt.GridBagConstraints();
-            constraintsPointSelectionPanel.gridx = 0; constraintsPointSelectionPanel.gridy = 1;
+            constraintsPointSelectionPanel.gridx = 0; constraintsPointSelectionPanel.gridy = 0;
             constraintsPointSelectionPanel.fill = java.awt.GridBagConstraints.BOTH;
             constraintsPointSelectionPanel.weightx = 1.0;
             constraintsPointSelectionPanel.weighty = 1.0;
@@ -257,25 +245,6 @@ public PointSelectionPanel getPointSelectionPanel() {
         }
     }
     return pointSelectionPanel;
-}
-
-private JCheckBox getControlCheckBox()
-{
-    if (controlCheckBox == null) {
-        try {
-            controlCheckBox = new JCheckBox("Enable Control");   
-            controlCheckBox.setName("ControlCheckBox");
-            controlCheckBox.setSelected(true);
-
-        } catch (java.lang.Throwable ivjExc) {
-            handleException(ivjExc);
-        }
-    }
-    return controlCheckBox;
-}
-
-public HashMap getCustomArrowMap() {
-    return map;
 }
 
 /**
@@ -470,22 +439,21 @@ public void resetPreviewPanelValues(LitePoint p)
     }
 }
 
-@SuppressWarnings("unchecked")
 public void setPreviewPanelValues(LitePoint p) 
 {
-    List values = new ArrayList(12);
+    List<JTextField> values = new ArrayList<JTextField>(12);
     LiteStateGroup lsg = DaoFactory.getStateDao().getLiteStateGroup(p.getStateGroupID());
-    List states = lsg.getStatesList();
+    List<LiteState> states = lsg.getStatesList();
     
     for(int i = 0; i < states.size(); i++) 
     {
         
-        LiteState state = (LiteState)states.get(i);
+        LiteState state = states.get(i);
         int rawStateNumber = state.getStateRawState();
         
         if(!(map.get(rawStateNumber) == null))
         {
-            textFields[rawStateNumber].setText((String)map.get(rawStateNumber));
+            textFields[rawStateNumber].setText(map.get(rawStateNumber));
             
         }else {
        
