@@ -1,6 +1,7 @@
 package com.cannontech.web.taglib;
 
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspContext;
 import javax.servlet.jsp.PageContext;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
@@ -37,6 +38,11 @@ public class YukonTagSupport extends SimpleTagSupport {
     protected YukonUserContext getUserContext() {
         YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(getJspContext());
         return userContext;
+    }
+    
+    protected HttpServletRequest getRequest() {
+        PageContext pageContext = (PageContext) this.getJspContext();
+        return (HttpServletRequest) pageContext.getRequest();
     }
     
     @Override
