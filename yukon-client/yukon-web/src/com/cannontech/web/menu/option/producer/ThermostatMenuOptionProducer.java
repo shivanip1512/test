@@ -13,6 +13,7 @@ import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.SimpleMenuOptionLink;
 import com.cannontech.web.menu.option.SubMenuOption;
+import com.cannontech.web.widget.support.WidgetUtils;
 
 /**
  * Dynamic MenuOptionProducer for thermostats
@@ -48,7 +49,8 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
                 YukonMessageSourceResolvable resolvable = new YukonMessageSourceResolvable("yukon.web.menu.config.consumer.thermostat.name",
                                                                                            label);
 
-                SubMenuOption option = new SubMenuOption("thermostat_" + label, resolvable);
+                String safeLabel = WidgetUtils.generateSafeJsString(label);
+                SubMenuOption option = new SubMenuOption("thermostat_" + safeLabel, resolvable);
                 List<MenuOptionProducer> subOptions = createSubMenu(thermostat);
                 option.setSubOptions(subOptions);
                 optionList.add(option);
