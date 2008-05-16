@@ -12,6 +12,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.TimeZone;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -23,7 +24,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.loadcontrol.LCUtils;
 import com.cannontech.loadcontrol.LoadControlClientConnection;
 import com.cannontech.loadcontrol.data.LMControlArea;
@@ -53,6 +56,7 @@ public class LCConnectionServlet extends ErrorAwareInitializingServlet implement
 	private com.cannontech.web.loadcontrol.LoadcontrolCache cache = null;
     
     private DateFormattingService dateFormattingService = null;
+    private YukonUserDao yukonUserDao = null;
     private AuthDao authDao = null;
 
 /**
@@ -97,6 +101,7 @@ public void doInit(ServletConfig config) throws ServletException {
 	int lcPort = 1920;
 
     dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
+    yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
     authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
 
     lcHost = DaoFactory.getRoleDao().getGlobalPropertyValue( SystemRole.LOADCONTROL_MACHINE );
@@ -426,11 +431,35 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 		gcStart.set( GregorianCalendar.HOUR, 0 );
 		gcStart.set( GregorianCalendar.MINUTE, 0 );
 		gcStart.set( GregorianCalendar.SECOND, secs );
-
 		optionalProps.put( "startdate", gcStart.getTime() );
-	}
-	else
-	{
+	} else if ((req.getParameter("cmd") != null) && (req.getParameter("cmd").equalsIgnoreCase(ILCCmds.AREA_DAILY_CHG))) {
+
+	    int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") );
+
+        Calendar tempCal = Calendar.getInstance();
+        
+        TimeZone userTimeZone = yukonUserDao.getUserTimeZone(userContext.getYukonUser());
+        tempCal.set( GregorianCalendar.HOUR, 0 );
+        tempCal.set( GregorianCalendar.MINUTE, 0 );
+        tempCal.set( GregorianCalendar.SECOND, 0 );
+        tempCal.setTimeZone(userTimeZone);
+        
+        String dateFormat = dateFormattingService.formatDate(tempCal.getTime(), DateFormatEnum.DATE, userContext);
+
+        try {
+            gcStart.setTime( dateFormattingService.flexibleDateParser(dateFormat, userContext));
+        } catch (ParseException e1) {
+            String formatDate = dateFormattingService.formatDate(tempCal.getTime(), DateFormatEnum.DATE, userContext);
+            gcStart.setTime( ServletUtil.parseDateStringLiberally(formatDate));
+        }
+        
+        gcStart.set( GregorianCalendar.HOUR, 0 );
+        gcStart.set( GregorianCalendar.MINUTE, 0 );
+        gcStart.set( GregorianCalendar.SECOND, secs );
+        
+        optionalProps.put( "startdate", gcStart.getTime() );
+        
+	} else 	{
 		//assume they want to start now
         gcStart = CtiUtilities.get1990GregCalendar();
 		optionalProps.put( "startdate", gcStart.getTime() );
@@ -462,9 +491,33 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 		//assume they want to stop now
         gcStop = CtiUtilities.get1990GregCalendar();
 		optionalProps.put( "stopdate", gcStop.getTime() );
-	}
-	else
-	{
+	} else if ((req.getParameter("cmd") != null) && (req.getParameter("cmd").equalsIgnoreCase(ILCCmds.AREA_DAILY_CHG))) {
+        int secs = CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") );
+
+        Calendar tempCal = Calendar.getInstance();
+        
+        TimeZone userTimeZone = yukonUserDao.getUserTimeZone(userContext.getYukonUser());
+        tempCal.set( GregorianCalendar.HOUR, 0 );
+        tempCal.set( GregorianCalendar.MINUTE, 0 );
+        tempCal.set( GregorianCalendar.SECOND, 0 );
+        tempCal.setTimeZone(userTimeZone);
+	        
+        String dateFormat = dateFormattingService.formatDate(tempCal.getTime(), DateFormatEnum.DATE, userContext);
+
+        try {
+            gcStop.setTime( dateFormattingService.flexibleDateParser(dateFormat, userContext));
+	    } catch (ParseException e1) {
+	        String formatDate = dateFormattingService.formatDate(tempCal.getTime(), DateFormatEnum.DATE, userContext);
+	        gcStop.setTime( ServletUtil.parseDateStringLiberally(formatDate));
+	    }
+	        
+	    gcStop.set( GregorianCalendar.HOUR, 0 );
+	    gcStop.set( GregorianCalendar.MINUTE, 0 );
+	    gcStop.set( GregorianCalendar.SECOND, secs );
+	        
+	    optionalProps.put( "stopdate", gcStop.getTime() );
+
+	} else {
 		//set the stop time to 1 year from now if no stop selected
 		Calendar c = dateFormattingService.getCalendar(userContext);
 		c.add( c.YEAR, 1 );
@@ -499,25 +552,23 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 	
 	if( req.getParameter("startTime1") != null )
 	{
-		if( req.getParameter("startTime1").length() <= 0 )
-			optionalProps.put("starttime", new Integer(LMControlArea.INVALID_INT));
-		else
-		{
-			optionalProps.put("starttime",
-				new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") )) );
-		}
+        if( req.getParameter("startTime1").length() <= 0 ) {
+            optionalProps.put("starttime", new Integer(LMControlArea.INVALID_INT));
+        } else {
+            optionalProps.put("starttime",
+                              new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("startTime1") )) );
+        }
 	}
 	
 	
 	if( req.getParameter("stopTime1") != null )
 	{
-		if( req.getParameter("stopTime1").length() <= 0 )
-			optionalProps.put( "stoptime", new Integer(LMControlArea.INVALID_INT) );
-		else
-		{
-			optionalProps.put( "stoptime",
-				new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") )) );
-		}
+        if( req.getParameter("stopTime1").length() <= 0 ) {
+		    optionalProps.put( "stoptime", new Integer(LMControlArea.INVALID_INT) );
+        } else {
+		    optionalProps.put( "stoptime",
+		                       new Integer( CtiUtilities.decodeStringToSeconds( req.getParameter("stopTime1") )) );
+	    }
 	}
     
     if( req.getParameter("stopGearNum") != null) {

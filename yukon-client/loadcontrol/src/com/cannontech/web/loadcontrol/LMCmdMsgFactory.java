@@ -371,28 +371,36 @@ public final class LMCmdMsgFactory
 				Multi multi = new Multi();
 				
 				//send a message to the server telling it to change the START time
-				if( starttime.intValue() != LMControlArea.INVALID_INT )
+				if( startdate != null ){
+			        double startSecondsAfterMidnight = startdate.getHours()*60*60+
+		                                               startdate.getMinutes()*60+
+		                                               startdate.getSeconds();
+
 					multi.getVector().add(
 							new LMCommand( LMCommand.CHANGE_CURRENT_START_TIME,
-											lmCntrArea.getYukonID().intValue(),
-											0, 
-											(double)starttime.intValue()) );
+							               lmCntrArea.getYukonID().intValue(),
+							               0, 
+							               startSecondsAfterMidnight) );
 
 				//send a message to the server telling it to change the STOP time
-				if( stoptime.intValue() != LMControlArea.INVALID_INT )
-					multi.getVector().add(
-								new LMCommand( LMCommand.CHANGE_CURRENT_STOP_TIME,
-											lmCntrArea.getYukonID().intValue(),
-											0,
-											(double)stoptime.intValue()) );
+				}
 				
-				if( multi.getVector().size() > 0 )
+				if( stopdate != null ){
+		            double stopSecondsAfterMidnight = stopdate.getHours()*60*60+
+                                                      stopdate.getMinutes()*60+
+                                                      stopdate.getSeconds();
+
+				    multi.getVector().add(
+							new LMCommand( LMCommand.CHANGE_CURRENT_STOP_TIME,
+										   lmCntrArea.getYukonID().intValue(),
+										   0,
+										   stopSecondsAfterMidnight ) );
+				}
+				if( multi.getVector().size() > 0 ) {
 					cmdMsg.setGenLCMsg( multi );
+				}
 			}
-			
-
 		}
-
 	}
 
 
