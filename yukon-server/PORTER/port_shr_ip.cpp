@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/port_shr_ip.cpp-arc  $
-* REVISION     :  $Revision: 1.27 $
-* DATE         :  $Date: 2007/10/05 14:13:05 $
+* REVISION     :  $Revision: 1.28 $
+* DATE         :  $Date: 2008/05/16 19:32:54 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -441,7 +441,7 @@ int CtiPortShareIP::determineTimeout(unsigned char *message, unsigned int len)
         {
             int stages    =  message[PREIDLEN + 1] & 0x0f,
                 wordcount = (message[PREIDLEN + PREAMLEN + 4] & 0x30) >> 4;
-             
+
             timeout += stages * (wordcount + 1);
         }
     }
@@ -559,23 +559,9 @@ void CtiPortShareIP::outThread()
                             dout << endl;
                         }
 
-                        if(InMessage.IDLCStat[2] == HDLC_UD)
-                        {
-                            if(_scadaNexus.CTINexusWrite((char*)(InMessage.IDLCStat + 11), InMessage.InLength, &BytesWritten, 10) || (BytesWritten != InMessage.InLength))
-                            {
-                                {
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                    dout << CtiTime() << " " << getIDString() << " - SCADA Nexus send Failed" << FILELINE << endl;
-                                }
-                                _scadaNexus.CTINexusClose();
-                            }
-                            else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
-                            {
-                                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                                dout << CtiTime() << " " << getIDString() << " - Successful write back to SCADA " << FILELINE << endl;
-                            }
-                        }
-                        else
+                        //  is this a CCU-711?  This is shaky, since there's no guarantee that this should be set to 0...
+                        //    the good news is that we generally don't scan RTUs and CCU-711s on the same shared port
+                        if( InMessage.IDLCStat[0] == 0x7e )
                         {
                             unsigned char address = InMessage.IDLCStat[1] >> 1;
 
@@ -593,6 +579,22 @@ void CtiPortShareIP::outThread()
                             }
 
                             if(_scadaNexus.CTINexusWrite((char*)InMessage.IDLCStat, InMessage.InLength, &BytesWritten, 10) || (BytesWritten != InMessage.InLength))
+                            {
+                                {
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                    dout << CtiTime() << " " << getIDString() << " - SCADA Nexus send Failed" << FILELINE << endl;
+                                }
+                                _scadaNexus.CTINexusClose();
+                            }
+                            else if( getDebugLevel(DEBUG_OUTPUT_TO_SCADA) )
+                            {
+                                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                                dout << CtiTime() << " " << getIDString() << " - Successful write back to SCADA " << FILELINE << endl;
+                            }
+                        }
+                        else  // if InMessage.IDLCStat[11] == 0x7e OR InMessage.IDLCStat[13] == HDLC_UD
+                        {
+                            if(_scadaNexus.CTINexusWrite((char*)(InMessage.IDLCStat + 11), InMessage.InLength, &BytesWritten, 10) || (BytesWritten != InMessage.InLength))
                             {
                                 {
                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
