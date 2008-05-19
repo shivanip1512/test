@@ -104,7 +104,7 @@ function showStack( chkBox ) {
 <body>
 <div id="error">
 <div id="errorImg"><a href="<%=homeUrl%>"><img style="border:none;" src="<%=request.getContextPath()%><%= logo %>"></a></div>
-<% if (friendlyExceptionMessage != null) { %>
+<% if (friendlyExceptionMessage != null && showStack) { %>
 <br/>
 <div id="errorFriendly"><%=friendlyExceptionMessage %></div>
 <br/>

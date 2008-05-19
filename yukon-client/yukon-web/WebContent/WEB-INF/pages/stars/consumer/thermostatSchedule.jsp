@@ -565,7 +565,7 @@
             
             <table width="80%" border="0" cellpadding="5">
                 <tr>
-                    <td width="85%" align="center"> 
+                    <td style="text-align: center; font-size: .9em;"> 
                         <c:if test="${!multipleThermostatsSelected}">
                             <cti:msg key="yukon.dr.consumer.thermostatSchedule.name"></cti:msg>
                             <input type="text" id="scheduleName" name="scheduleName" value="<spring:escapeBody htmlEscape="true">${schedule.name}</spring:escapeBody>" ></input>
@@ -574,13 +574,13 @@
                     </td>
                 </tr>
                 <tr>
-                    <td width="85%" align="center"> 
+                    <td style="text-align: center;"> 
+                        <cti:msg var="saveApply" key="yukon.dr.consumer.thermostatSchedule.saveApply"></cti:msg>
+                        <input type="button" name="saveApply" value="${saveApply}" onclick="saveSchedule('saveApply')"></input>
                         <c:if test="${!multipleThermostatsSelected}">
                             <cti:msg var="save" key="yukon.dr.consumer.thermostatSchedule.save"></cti:msg>
                             <input type="button" name="save" value="${save}" onclick="saveSchedule('save');"></input>
                         </c:if>
-                        <cti:msg var="saveApply" key="yukon.dr.consumer.thermostatSchedule.saveApply"></cti:msg>
-                        <input type="button" name="saveApply" value="${saveApply}" onclick="saveSchedule('saveApply')"></input>
                         <cti:msg var="recommend" key="yukon.dr.consumer.thermostatSchedule.recommend"></cti:msg>
                         <input type="button" id="Default" value="${recommend}" onclick="setToDefault();"></input>
                     </td>
