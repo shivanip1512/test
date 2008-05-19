@@ -519,6 +519,10 @@ BOOL CtiCCCapBank::getReEnableOvUvFlag() const
     return _reEnableOvUvFlag;
 }
 
+BOOL CtiCCCapBank::getSendAllCommandFlag() const
+{
+    return _sendAllCommandFlag;
+}
 
 /*---------------------------------------------------------------------------
     getVCtrlIndex
@@ -1590,6 +1594,11 @@ CtiCCCapBank& CtiCCCapBank::setPercentChangeString(const string& percent)
     return *this;
 }
 
+CtiCCCapBank& CtiCCCapBank::setSendAllCommandFlag(BOOL flag)
+{
+    _sendAllCommandFlag = flag;
+    return *this;
+}
 
 
 BOOL CtiCCCapBank::updateVerificationState(void)
@@ -2210,6 +2219,8 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _localControlFlag = right._localControlFlag;
         _controlRecentlySentFlag = right._controlRecentlySentFlag;
         _porterRetFailFlag = right._porterRetFailFlag;
+
+        _sendAllCommandFlag = right._sendAllCommandFlag;
         
         _ipAddress = right._ipAddress;
         _udpPortNumber = right._udpPortNumber;
@@ -2330,6 +2341,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setAfterVarsString("none");
     setPercentChangeString("none");
 
+    _sendAllCommandFlag = FALSE;
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;
 

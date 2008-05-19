@@ -45,6 +45,8 @@ ULONG _VOLT_REDUCTION_COMMAND_DELAY;
 bool _RATE_OF_CHANGE;
 unsigned long _RATE_OF_CHANGE_DEPTH;
 BOOL _TIME_OF_DAY_VAR_CONF;
+string _MAXOPS_ALARM_CAT;
+LONG _MAXOPS_ALARM_CATID;
 
 ULONG _OP_STATS_USER_DEF_PERIOD;
 ULONG _OP_STATS_REFRESH_RATE;
@@ -546,6 +548,28 @@ void CtiCCService::Init()
     {
         _OP_STATS_REFRESH_RATE = atoi(str.data());
         if( _CC_DEBUG & CC_DEBUG_STANDARD )
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+
+    _MAXOPS_ALARM_CAT = "(NONE)";
+    _MAXOPS_ALARM_CATID = 1;
+
+    strcpy(var, "CAP_CONTROL_MAXOPS_ALARM_CAT");
+    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        _MAXOPS_ALARM_CAT = "%"+str+"%";
+        
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - " << var << ":  " << str << endl;

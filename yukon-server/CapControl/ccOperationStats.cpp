@@ -429,28 +429,6 @@ CtiCCOperationStats& CtiCCOperationStats::incrementDailyOpFails()
     return *this;
 }
 
-CtiCCOperationStats& CtiCCOperationStats::incrementUserDefOpCounts()
-{  
-    setUserDefOpCount(_userDefOpCount+1);
-    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
-
-    return *this;
-}
-
-CtiCCOperationStats& CtiCCOperationStats::incrementUserDefOpFails()
-{
-    setUserDefConfFail(_userDefConfFail+1);
-    _userDefOpSuccessPercent = calculateSuccessPercent(_userDefOpCount, _userDefConfFail);
-
-    return *this;
-}
-
-
-
-
-
-
-
 
 
 
@@ -549,13 +527,11 @@ void CtiCCOperationStats::dumpDynamicData(RWDBConnection& conn, CtiTime& current
 }
 DOUBLE CtiCCOperationStats::calculateSuccessPercent(LONG opCount, LONG failCount)
 {
-    DOUBLE retVal = 0;
+    DOUBLE retVal = 100;
     if (opCount > 0 && opCount >= failCount)
     {
         retVal = ((DOUBLE) (opCount - failCount) /(DOUBLE) opCount) * 100;
     }
-    else 
-        retVal = 0;
 
     return retVal;
 }

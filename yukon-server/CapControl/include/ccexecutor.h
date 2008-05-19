@@ -90,6 +90,8 @@ private:
     void Flip7010Device();
     void SendSystemStatus();
     void SendAllCapBankCommands();
+    void ControlAllCapBanksByFeeder(LONG feederId, int control, CtiMultiMsg_vec& pilMessages,
+                                   CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents);
     void SendTimeSync();
     void changeBankOperationalState();
     void AutoEnableOvUv();
@@ -99,6 +101,7 @@ private:
     void AutoControlOvUvBySubstation(BOOL disableFlag);
     void AutoControlOvUvBySubBus(BOOL disableFlag);
     bool checkForCommandRefusal(CtiCCFeeder* feeder);
+    void ControlAllCapBanks(LONG paoId, int control);
 
     CtiCCCommand* _command;
 };

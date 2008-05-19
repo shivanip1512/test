@@ -262,6 +262,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setDailyOperationsAnalogPointId(LONG opspointid);
     CtiCCFeeder& setPowerFactorPointId(LONG pfpointid);
     CtiCCFeeder& setEstimatedPowerFactorPointId(LONG epfpointid);
+    CtiCCFeeder& setCurrentDailyOperationsAndSendMsg(LONG operations, CtiMultiMsg_vec& pointChanges);
     CtiCCFeeder& setCurrentDailyOperations(LONG operations);
     CtiCCFeeder& setRecentlyControlledFlag(BOOL recentlycontrolled);
     CtiCCFeeder& setLastOperationTime(const CtiTime& lastoperation);

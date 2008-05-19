@@ -52,7 +52,8 @@ extern ULONG _MAX_KVAR;
 extern ULONG _MAX_KVAR_TIMEOUT;
 extern ULONG _OP_STATS_USER_DEF_PERIOD;
 extern ULONG _OP_STATS_REFRESH_RATE;
-
+extern string _MAXOPS_ALARM_CAT;
+extern LONG _MAXOPS_ALARM_CATID;
 
 using namespace std;
 
@@ -993,6 +994,9 @@ void CtiCCSubstationBusStore::reset()
             {
                reloadClientLinkStatusPointFromDatabase();
             } 
+            {
+                reloadAlarmCategoryFromDatabase();
+            }
 
             /************************************************************
              ********    Loading Operation Statistics            ********
@@ -1125,10 +1129,6 @@ void CtiCCSubstationBusStore::reset()
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
             }
-
-            resetAllOperationStats();
-            reCalculateOperationStatsFromDatabase( );
-
             if ( _CC_DEBUG )
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2780,6 +2780,9 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
 void CtiCCSubstationBusStore::resetDailyOperations()
 {
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    CtiMultiMsg* multiPointMsg = new CtiMultiMsg();
+    CtiMultiMsg_vec& pointChanges = multiPointMsg->getData();
+
 
     for(int i=0;i<_ccSubstationBuses->size();i++)
     {
@@ -2791,17 +2794,24 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             text += tempchar;
             string additional("Sub Bus: ");
             additional += currentSubstationBus->getPAOName();
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalEvent, "cap control"));
+
+            if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
+                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentSubstationBus->getDailyOperationsAnalogPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control",
+                                                                                        0,0,0, currentSubstationBus->getCurrentDailyOperations() ));
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
                 dout << CtiTime() << " - " << text << ", " << additional << endl;
             }
             LONG stationId, areaId, spAreaId;
             getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
-            CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
+            if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
+               CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, currentSubstationBus->getDailyOperationsAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
+            else
+                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), 0, capControlSetOperationCount, 1, currentSubstationBus->getCurrentDailyOperations(), text, "cap control"));
+
               
         }
-        currentSubstationBus->setCurrentDailyOperations(0);
+        currentSubstationBus->setCurrentDailyOperationsAndSendMsg(0, pointChanges);
         currentSubstationBus->setMaxDailyOpsHitFlag(FALSE);
         currentSubstationBus->setBusUpdatedFlag(TRUE);
         CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
@@ -2809,16 +2819,8 @@ void CtiCCSubstationBusStore::resetDailyOperations()
         for(int j=0;j<ccFeeders.size();j++)
         {
             CtiCCFeeder* currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-            /*{
-                char tempchar[64] = "";
-                string text("Daily Operations were ");
-                _ltoa(currentFeeder->getCurrentDailyOperations(),tempchar,10);
-                text += tempchar;
-                string additional("Feeder: ");
-                additional += currentFeeder->getPAOName();
-                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
-            }*/
-            currentFeeder->setCurrentDailyOperations(0);
+            
+            currentFeeder->setCurrentDailyOperationsAndSendMsg(0, pointChanges);
             currentFeeder->setMaxDailyOpsHitFlag(FALSE);
 
             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
@@ -2829,16 +2831,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             for(int k=0;k<ccCapBanks.size();k++)
             {
                 CtiCCCapBank* currentCapBank = (CtiCCCapBank*)ccCapBanks[k];
-                /*{
-                    char tempchar[64] = "";
-                    string text("Daily Operations were ");
-                    _ltoa(currentCapBank->getCurrentDailyOperations(),tempchar,10);
-                    text += tempchar;
-                    string additional("Cap Bank: ");
-                    additional += currentCapBank->getPAOName();
-                    CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,GeneralLogType,SignalEvent));
-                }*/
-                currentCapBank->setCurrentDailyOperations(0);
+                                currentCapBank->setCurrentDailyOperations(0);
                 currentCapBank->setMaxDailyOpsHitFlag(FALSE);
                 currentCapBank->setRetryCloseFailedFlag(FALSE);
                 currentCapBank->setRetryOpenFailedFlag(FALSE);
@@ -2852,6 +2845,11 @@ void CtiCCSubstationBusStore::resetDailyOperations()
     if (CtiHolidayManager::getInstance().isHolidayForAnySchedule(CtiDate()) )
     {
         setValid(FALSE);
+    }
+    if( pointChanges.size() > 0 )
+    {
+        multiPointMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
+        CtiCapController::getInstance()->sendMessageToDispatch(multiPointMsg);
     }
 
 }
@@ -3275,6 +3273,7 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
 
         if (conn.isValid()) 
         {
+
             RWDBTable ccEventLogTable = getDatabase().table("cceventlog");
             RWDBInserter inserter = ccEventLogTable.inserter();
             inserter << logId
@@ -3308,10 +3307,15 @@ bool CtiCCSubstationBusStore::InsertCCEventLogInDB(CtiCCEventLogMsg* msg)
             
             inserter.execute( conn );
 
-            if(inserter.status().errorCode() == RWDBStatus::ok)    // No error occured!
-            {
+            if(inserter.status().errorCode() != RWDBStatus::ok)    // No error occured!
+            {  
+                if( _CC_DEBUG & CC_DEBUG_DATABASE )
+                {
+                    CtiLockGuard<CtiLogger> logger_guard(dout);
+                    dout << CtiTime() << " **** ERROR **** inserting entry into CCEventLog Table" << endl;
+                }
             }
-
+            
             return inserter.status().isValid();
         }
     }
@@ -3537,7 +3541,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year())  )
+                                 today <= CtiDate(endDay, endMon, today.year())  )
                              { 
                                  long areaId, stratId;
                                  rdr["paobjectid"] >> areaId;
@@ -3602,7 +3606,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year())  )
+                                 today <= CtiDate(endDay, endMon, today.year())  )
                              { 
                                  long busId, stratId;
                                  rdr["paobjectid"] >> busId;
@@ -3689,7 +3693,7 @@ void CtiCCSubstationBusStore::reloadStrategyFromDatabase(long strategyId, map< l
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year()) )
+                                 today <= CtiDate(endDay, endMon, today.year()) )
                              { 
                                  long feedId, stratId;
                                  rdr["paobjectid"] >> feedId;
@@ -4132,7 +4136,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
 {
 
     RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-
+                                                               
 
     CtiCCStrategyPtr strategyToUpdate = NULL;
     try
@@ -4254,7 +4258,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year())  )
+                                 today <= CtiDate(endDay, endMon, today.year())  )
                              { 
                                  long areaId, stratId;
                                  rdr["paobjectid"] >> areaId;
@@ -4318,7 +4322,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year())  )
+                                 today <= CtiDate(endDay, endMon, today.year())  )
                              { 
                                  long areaId, stratId;
                                  rdr["paobjectid"] >> areaId;
@@ -4383,7 +4387,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year())  )
+                                 today <= CtiDate(endDay, endMon, today.year())  )
                              { 
                                  long busId, stratId;
                                  rdr["paobjectid"] >> busId;
@@ -4467,7 +4471,7 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year()) )
+                                 today <= CtiDate(endDay, endMon, today.year()) )
                              { 
                                  long feedId, stratId;
                                  rdr["paobjectid"] >> feedId;
@@ -4614,7 +4618,7 @@ void CtiCCSubstationBusStore::reloadSubstationFromDatabase(long substationId,
                             if (currentCCSubstation->getVoltReductionControlId() > 0 )
                             {
                                 pointid_station_map->insert(make_pair(currentCCSubstation->getVoltReductionControlId(), currentCCSubstation));
-                                //currentCCSubstation->getPointIds()->push_back(currentCCSubstation->getVoltReductionControlId());
+                                currentCCSubstation->getPointIds()->push_back(currentCCSubstation->getVoltReductionControlId());
                             }
                         }
 
@@ -5043,7 +5047,7 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year())  )
+                                 today <= CtiDate(endDay, endMon, today.year())  )
                              { 
                                  long currentAreaId, stratId;
                                  rdr["paobjectid"] >> currentAreaId;
@@ -5251,6 +5255,14 @@ void CtiCCSubstationBusStore::reloadAreaFromDatabase(long areaId, map< long, Cti
                                             currentArea->getPointIds()->push_back(tempPointId);
                                         }
                                     }
+                                    else if ( tempPointOffset >= 10010  && tempPointOffset <=10013)
+                                    {//op stats point ids.
+                                        if (currentArea->getConfirmationStats().setSuccessPercentPointId(tempPointId, tempPointOffset))
+                                        {
+                                            pointid_area_map->insert(make_pair(tempPointId,currentArea));
+                                            currentArea->getPointIds()->push_back(tempPointId);
+                                        }
+                                    }
                                     else
                                     {//undefined area point
                                         CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -5451,7 +5463,7 @@ void CtiCCSubstationBusStore::reloadSpecialAreaFromDatabase(long areaId, map< lo
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year())  )
+                                 today <= CtiDate(endDay, endMon, today.year())  )
                              { 
                                  long currentAreaId, stratId;
                                  rdr["paobjectid"] >> currentAreaId;
@@ -6003,7 +6015,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                  CtiDate today = CtiDate();
 
                                  if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                      today < CtiDate(endDay, endMon, today.year())  )
+                                      today <= CtiDate(endDay, endMon, today.year())  )
                                  { 
                                      long busId, stratId;
                                      rdr["paobjectid"] >> busId;
@@ -6013,11 +6025,11 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
 
                                      if (subBusId > 0)
                                          currentCCSubstationBus = findSubBusByPAObjectID(busId);
-                                      else
-                                      {
-                                          if (paobject_subbus_map->find(busId) != paobject_subbus_map->end())
-                                              currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
-                                      }
+                                     else
+                                     {
+                                         if (paobject_subbus_map->find(busId) != paobject_subbus_map->end())
+                                             currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
+                                     }
                                       if (currentCCSubstationBus != NULL) 
                                       {
                                           CtiCCStrategyPtr currentCCStrategy = NULL;
@@ -6113,16 +6125,26 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                                  }
                                  else
                                      tempYear = holYear;
-                            
+
                                  if (today == CtiDate(holDay, holMon, tempYear) )
                                  { 
+                                     {
+                                         CtiLockGuard<CtiLogger> logger_guard(dout);
+                                         dout << CtiTime() << " TODAY is: " << today << " HOLIDAY is: "<<CtiDate(holDay, holMon, tempYear)  << endl;
+                                     }
                                      long busId, stratId;
                                      rdr["paobjectid"] >> busId;
                                      rdr["strategyid"] >> stratId;
                             
                                      CtiCCSubstationBusPtr currentCCSubstationBus = NULL; 
-                            
-                                     currentCCSubstationBus = findSubBusByPAObjectID(busId);
+
+                                     if (subBusId > 0)
+                                         currentCCSubstationBus = findSubBusByPAObjectID(busId);
+                                     else
+                                     {
+                                         if (paobject_subbus_map->find(busId) != paobject_subbus_map->end())
+                                             currentCCSubstationBus = paobject_subbus_map->find(busId)->second;
+                                     }
                                      if (currentCCSubstationBus != NULL) 
                                      {
                                          CtiCCStrategyPtr currentCCStrategy = NULL;
@@ -6724,7 +6746,7 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                              CtiDate today = CtiDate();
 
                              if (today  >= CtiDate(startDay, startMon, today.year()) &&
-                                 today < CtiDate(endDay, endMon, today.year()) )
+                                 today <= CtiDate(endDay, endMon, today.year()) )
                              { 
                                  long feedId, stratId;
                                  rdr["paobjectid"] >> feedId;
@@ -8171,6 +8193,54 @@ void CtiCCSubstationBusStore::reloadCapBankStatesFromDatabase()
     }
 }
 
+
+void CtiCCSubstationBusStore::reloadAlarmCategoryFromDatabase()
+{
+    try
+    {
+        RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+        {
+            CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+            RWDBConnection conn = getConnection();
+            {
+                if ( conn.isValid() )
+                {   
+                    RWDBDatabase db = getDatabase();
+                    RWDBTable alarmTable = db.table("alarmcategory");
+
+                    RWDBSelector selector = db.selector();
+                    selector << alarmTable["alarmcategoryid"]
+                    << alarmTable["categoryname"];
+
+                    selector.from(alarmTable);
+
+
+                    selector.where(alarmTable["categoryname"].like(RWDBExpr(_MAXOPS_ALARM_CAT.c_str())) );
+
+                    if ( _CC_DEBUG & CC_DEBUG_DATABASE )
+                    {
+                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                        dout << CtiTime() << " - " << selector.asString().data() << endl;
+                    }
+
+                    RWDBReader rdr = selector.reader(conn);
+
+                    while ( rdr() )
+                    {
+                        rdr["alarmcategoryid"] >> _MAXOPS_ALARM_CATID;
+                    }
+                }
+            }
+        
+        }
+
+    }
+    catch(...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+}
 
 void CtiCCSubstationBusStore::reloadClientLinkStatusPointFromDatabase()
 {
@@ -10751,8 +10821,8 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                              << ccEventLog["feederid"];
 
                     selector.from(ccEventLog);
-                    selector.where((ccEventLog["text"].like("Close Sent,%") ||
-                                   ccEventLog["text"].like("Open Sent,%") ||
+                    selector.where((ccEventLog["text"].like("%Close Sent,%") ||
+                                   ccEventLog["text"].like("%Open Sent,%") ||
                                    ccEventLog["text"].like("Flip Sent,%")) &&
                                    ccEventLog["datetime"] > toRWDBDT(CtiTime(oneMonthAgo))  );
                     
@@ -10874,7 +10944,7 @@ void CtiCCSubstationBusStore::reCalculateOperationStatsFromDatabase( )
                             if (station != NULL)
                                 station->getOperationStats().incrementMonthlyOpCounts();
                             if (area != NULL)
-                                area->getOperationStats().incrementAllOpCounts();
+                                area->getOperationStats().incrementMonthlyOpCounts();
                             if (spArea != NULL)
                                 spArea->getOperationStats().incrementMonthlyOpCounts();
                         }
@@ -11023,7 +11093,7 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
             {   
 
                 CtiTime currentDateTime;
-                CtiTime userDefWindow = currentDateTime.seconds() - (_OP_STATS_USER_DEF_PERIOD * 60);
+                CtiTime userDefWindow = currentDateTime.seconds() - ((_OP_STATS_USER_DEF_PERIOD * 60 ) + 3600);
                 INT capCount = 0;
 
 
@@ -11219,15 +11289,25 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                         }
                         else if (stringContainsIgnoreCase(statisticType, "Hour"))
                         {
+                            if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
+                            {
+                                CtiLockGuard<CtiLogger> logger_guard(dout);
+                                dout << CtiTime() << " Start Time: " << CtiTime(start) <<"  *** UserDefined Window: "
+                                    << CtiTime(userDefWindow) << endl;
+                            }
                             if (start > userDefWindow)
                             {
                             
                                 if (cap != NULL)
                                 {
-                                    cap->getConfirmationStats().setUserDefCommCount(attempts);
+                                    /*cap->getConfirmationStats().setUserDefCommCount(attempts);
                                     cap->getConfirmationStats().setUserDefCommFail(errorTotal);
                                     successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);
                                     cap->getConfirmationStats().setUserDefCommSuccessPercent(successPercent);
+                                    */
+                                    cap->getConfirmationStats().incrementUserDefCommCounts(attempts);
+                                    cap->getConfirmationStats().incrementUserDefCommFails(errorTotal);
+
                                     //getCapBankParents(cap, spArea, area, station, bus, feeder);
 
                                 

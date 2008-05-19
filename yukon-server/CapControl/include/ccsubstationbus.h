@@ -246,6 +246,7 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     CtiCCSubstationBus& setPowerFactorPointId(LONG pfpointid);
     CtiCCSubstationBus& setEstimatedPowerFactorPointId(LONG epfpointid);
     CtiCCSubstationBus& setCurrentDailyOperations(LONG operations);
+    CtiCCSubstationBus& setCurrentDailyOperationsAndSendMsg(LONG operations, CtiMultiMsg_vec& pointChanges);
     CtiCCSubstationBus& setPeakTimeFlag(LONG peaktime);
     CtiCCSubstationBus& setRecentlyControlledFlag(BOOL recentlycontrolled);
     CtiCCSubstationBus& setLastOperationTime(const CtiTime& lastoperation);

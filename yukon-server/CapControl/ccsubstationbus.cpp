@@ -30,6 +30,7 @@
 #include "mgr_holiday.h"
 #include "mgr_paosched.h"
 #include "utility.h"
+#include "tbl_pt_alarm.h"
 
 extern ULONG _CC_DEBUG;
 extern BOOL _IGNORE_NOT_NORMAL_FLAG;
@@ -44,6 +45,7 @@ extern ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 extern bool _RATE_OF_CHANGE;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
 extern BOOL _TIME_OF_DAY_VAR_CONF;
+extern LONG _MAXOPS_ALARM_CATID;
 
 
 RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
@@ -2327,6 +2329,32 @@ CtiCCSubstationBus& CtiCCSubstationBus::setEstimatedPowerFactorPointId(LONG epfp
     return *this;
 }
 
+
+/*---------------------------------------------------------------------------
+    setCurrentDailyOperations
+
+    Sets the current daily operations of the substation
+---------------------------------------------------------------------------*/
+CtiCCSubstationBus& CtiCCSubstationBus::setCurrentDailyOperationsAndSendMsg(LONG operations, CtiMultiMsg_vec& pointChanges)
+{
+    if( _currentdailyoperations != operations )
+    {
+        if( getDailyOperationsAnalogPointId() > 0 )
+        {
+            pointChanges.push_back(new CtiPointDataMsg(getDailyOperationsAnalogPointId(),operations,NormalQuality,AnalogPointType));
+        }
+        /*{
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " - _dirty = TRUE  " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        }*/
+        _dirty = TRUE;
+    }
+    _currentdailyoperations = operations;
+    
+    return *this;
+}
+
+
 /*---------------------------------------------------------------------------
     setCurrentDailyOperations
 
@@ -2797,8 +2825,6 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
         (_currentdailyoperations == getMaxDailyOperation()  ||
          (!getMaxDailyOpsHitFlag() && _currentdailyoperations > getMaxDailyOperation()) ) )//only send once
     {
-        setMaxDailyOpsHitFlag(TRUE);
-
         string text = string("Substation Bus Exceeded Max Daily Operations");
         string additional = string("Substation Bus: ");
         additional += getPAOName();
@@ -2810,9 +2836,15 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
             additional += getPAODescription();
             additional += ")";
         }
-        CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
-
+        if (getDailyOperationsAnalogPointId() > 0 && !getMaxDailyOpsHitFlag())
+        {
+            CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
+                                                                                TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, getCurrentDailyOperations() );
+            pSig->setCondition(CtiTablePointAlarming::highReasonability);
+            CtiCapController::getInstance()->sendMessageToDispatch(pSig);  
+        }
         setSolution(text);
+        setMaxDailyOpsHitFlag(TRUE);
 
     }
     if( getMaxOperationDisableFlag() && getMaxDailyOpsHitFlag() )
@@ -2834,8 +2866,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                 additional += getPAODescription();
                 additional += ")";            
             }
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
-            
+            if (getDailyOperationsAnalogPointId() > 0)
+            {
+                CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
+                                                                                    TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, getCurrentDailyOperations() );
+                pSig->setCondition(CtiTablePointAlarming::highReasonability);
+                CtiCapController::getInstance()->sendMessageToDispatch(pSig);  
+            }
             keepGoing = FALSE;
         }
         else
@@ -2880,7 +2917,13 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                     additional += getPAODescription();
                     additional += ")";            
                 }
-                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,0,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+                if (getDailyOperationsAnalogPointId() > 0)
+                {
+                    CtiSignalMsg* pSig = new CtiSignalMsg(getDailyOperationsAnalogPointId(),5,text,additional,CapControlLogType, _MAXOPS_ALARM_CATID, "cap control",
+                                                                                        TAG_ACTIVE_ALARM /*tags*/, 0 /*pri*/, 0 /*millis*/, getCurrentDailyOperations() );
+                    pSig->setCondition(CtiTablePointAlarming::highReasonability);
+                    CtiCapController::getInstance()->sendMessageToDispatch(pSig);  
+                }
 
                 keepGoing = FALSE;
             }
@@ -2922,7 +2965,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededControl(const Ct
                         {
                             setLastOperationTime(currentDateTime);
                             setRecentlyControlledFlag(TRUE);
-                            setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                            setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                         }
                         setBusUpdatedFlag(TRUE);
                     }
@@ -3171,7 +3214,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
         if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
             !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) )
         {
-            if( !getMaxDailyOpsHitFlag() &&  //end day on a trip.
+            if( !(getMaxDailyOpsHitFlag() && getMaxOperationDisableFlag()) &&//end day on a trip.
                 ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
                 lagLevel <  getIVControl() ) ||
                 ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) &&
@@ -3420,7 +3463,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
         else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
                  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
         {
-            if( getKVARSolution() < 0 && !getMaxDailyOpsHitFlag() ) //end day on a trip.
+            if( getKVARSolution() < 0 && !(getMaxDailyOpsHitFlag() && getMaxOperationDisableFlag()) ) //end day on a trip.
             {
                 //if( _CC_DEBUG )
                 {
@@ -3658,7 +3701,7 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
             setLastFeederControlledPosition(currentPosition);
             ((CtiCCFeeder*)_ccfeeders.at(currentPosition))->setLastOperationTime(currentDateTime);
             setVarValueBeforeControl( getCurrentVarLoadPointValue() ); 
-            setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+            setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
             {
@@ -3704,7 +3747,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
         if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
             !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
         {
-            if( !getMaxDailyOpsHitFlag() &&  //end day on a trip.
+            if( !(getMaxDailyOpsHitFlag()  && getMaxOperationDisableFlag()) &&//end day on a trip.
                 ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
                 lagLevel <  getIVControl() ) ||
                 ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) &&
@@ -3946,7 +3989,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
         else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
                  !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
         {
-            if( getKVARSolution() < 0 && !getMaxDailyOpsHitFlag() )  //end day on a trip.
+            if( getKVARSolution() < 0 && !(getMaxDailyOpsHitFlag()  && getMaxOperationDisableFlag() ))  //end day on a trip.
             {
                 //if( _CC_DEBUG )
                 {
@@ -4187,7 +4230,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
             setLastFeederControlledPosition(positionLastFeederControlled);
             lastFeederControlled->setLastOperationTime(currentDateTime);
             setVarValueBeforeControl( getCurrentVarLoadPointValue() );
-            setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+            setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
             {
@@ -5020,6 +5063,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                                                            currentCapBank->getIpAddress(), actionId, stateInfo,
                                                                            getPhaseAValue(), getPhaseBValue(), getPhaseCValue()));
                                }
+                               else
+                                   currentCapBank->setPorterRetFailFlag(FALSE);
                                    
                            }
                            else
@@ -5543,6 +5588,8 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                                                     actionId, stateInfo,
                                                                    getPhaseAValue(), getPhaseBValue(), getPhaseCValue()));
                        }
+                       else
+                           currentCapBank->setPorterRetFailFlag(FALSE);
 
                    }
                    else
@@ -5631,7 +5678,7 @@ BOOL CtiCCSubstationBus::isVarCheckNeeded(const CtiTime& currentDateTime)
                     returnBoolean = (getNextCheckTime().seconds() <= currentDateTime.seconds());
                 }
             }
-            if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+            else if( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
             {
                 if( _ccfeeders.size() > 0 )
                 {
@@ -6593,7 +6640,7 @@ BOOL CtiCCSubstationBus::sendNextCapBankVerificationControl(const CtiTime& curre
                         currentFeeder->setLastOperationTime(currentDateTime);
                        ((CtiCCFeeder*)_ccfeeders.at(i))->setLastOperationTime(currentDateTime);
                         setVarValueBeforeControl(getCurrentVarLoadPointValue());
-                        setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                        setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                         figureEstimatedVarLoadPointValue();
                         if( getEstimatedVarLoadPointId() > 0 )
                         {
@@ -6707,7 +6754,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::startVerificationOnCapBank(const CtiTime
                         currentFeeder->setLastCapBankControlledDeviceId( currentCapBank->getPAOId());
                         currentFeeder->setLastOperationTime(currentDateTime);
                         setVarValueBeforeControl(getCurrentVarLoadPointValue());
-                        setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                        setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                         figureEstimatedVarLoadPointValue();
                         if( getEstimatedVarLoadPointId() > 0 )
                         {
@@ -8348,7 +8395,7 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
                                 currentFeeder->setOperationSentWaitFlag(TRUE);
                                 currentFeeder->setLastOperationTime(currentDateTime);
                                 currentFeeder->setRecentlyControlledFlag(TRUE);
-                                setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                                setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                                 setRecentlyControlledFlag(TRUE);
                                 setBusUpdatedFlag(TRUE);
                             }
@@ -9238,7 +9285,7 @@ BOOL CtiCCSubstationBus::voltControlBankSelectProcess(CtiCCMonitorPoint* point, 
             parentFeeder->setRecentlyControlledFlag(TRUE);
             parentFeeder->setVarValueBeforeControl(parentFeeder->getCurrentVarLoadPointValue());
             setVarValueBeforeControl(getCurrentVarLoadPointValue());
-            setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+            setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
             figureEstimatedVarLoadPointValue();
             if( getEstimatedVarLoadPointId() > 0 )
             {
@@ -9593,7 +9640,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                                 setLastFeederControlledPAOId(currentFeeder->getPAOId());
                                 currentFeeder->setLastOperationTime(currentDateTime);
                                 setLastFeederControlledPosition(currentPosition);
-                                setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                                setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                             }
                             catch(...)
                             {
@@ -9701,7 +9748,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                                     setLastFeederControlledPAOId(currentFeeder->getPAOId());
                                     setLastFeederControlledPosition(currentPosition);
                                     currentFeeder->setLastOperationTime(currentDateTime);
-                                    setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                                    setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                                 }
                                 catch(...)
                                 {
@@ -9816,7 +9863,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededFallBackControl(
                                     setLastFeederControlledPAOId(feed->getPAOId());
                                     //setLastFeederControlledPosition(currentPosition);
                                     feed->setLastOperationTime(currentDateTime);
-                                    setCurrentDailyOperations(getCurrentDailyOperations() + 1);
+                                    setCurrentDailyOperationsAndSendMsg(getCurrentDailyOperations() + 1, pointChanges);
                                 }
                                 setBusUpdatedFlag(TRUE);
                             }

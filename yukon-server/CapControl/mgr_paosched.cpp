@@ -342,7 +342,7 @@ bool CtiPAOScheduleManager::checkSchedules(const CtiTime& currentTime, std::list
                                 additional += " did not run at: ";
                                 additional += tempNextTime.asString();
 
-                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+                                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalEvent, "cap control"));
                                 while (tempNextTime < currentTime) 
                                 {
                                     tempNextTime = CtiTime(tempNextTime.seconds() + (*iter)->getIntervalRate());
@@ -538,7 +538,7 @@ void CtiPAOScheduleManager::updateRunTimes(CtiPAOSchedule *schedule)
             additional += " did not run at: ";
             additional += tempNextTime.asString();
         
-            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalAlarm0, "cap control"));
+            CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(SYS_PID_CAPCONTROL,5,text,additional,CapControlLogType,SignalEvent, "cap control"));
             while (tempNextTime < currentTime) 
             {
                 tempNextTime = CtiTime(tempNextTime.seconds() + schedule->getIntervalRate());

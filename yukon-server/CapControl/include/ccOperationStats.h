@@ -83,8 +83,6 @@ public:
     CtiCCOperationStats& incrementWeeklyOpFails();
     CtiCCOperationStats& incrementDailyOpCounts();
     CtiCCOperationStats& incrementDailyOpFails();
-    CtiCCOperationStats& incrementUserDefOpCounts();
-    CtiCCOperationStats& incrementUserDefOpFails();
     CtiCCOperationStats& setUserDefOpSuccessPercentId(LONG pointId);
     CtiCCOperationStats& setUserDefOpSuccessPercent(DOUBLE value);
     CtiCCOperationStats& setDailyOpSuccessPercentId(LONG pointId);

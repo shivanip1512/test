@@ -249,6 +249,7 @@ public:
     void reloadCapBankStatesFromDatabase();
     void reloadGeoAreasFromDatabase();
     void reloadClientLinkStatusPointFromDatabase();
+    void reloadAlarmCategoryFromDatabase();
     void reloadMapOfBanksToControlByLikeDay(long subbusId, long feederId,  
                                       map< long, long> *controlid_action_map,
                                       CtiTime &lastSendTime, int fallBackConstant);
@@ -386,7 +387,6 @@ private:
 
     BOOL _voltReductionSystemDisabled;
     int  _voltDisabledCount;
-
 
 
     //The singleton instance of CtiCCSubstationBusStore

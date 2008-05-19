@@ -137,6 +137,7 @@ public:
     const string& getBeforeVarsString() const;
     const string& getAfterVarsString() const;
     const string& getPercentChangeString() const;
+    BOOL getSendAllCommandFlag() const;
 
 
     int  getVCtrlIndex() const;
@@ -215,6 +216,7 @@ public:
     CtiCCCapBank& setBeforeVarsString(const string& before);
     CtiCCCapBank& setAfterVarsString(const string& after);
     CtiCCCapBank& setPercentChangeString(const string& percent);
+    CtiCCCapBank& setSendAllCommandFlag(BOOL flag);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
@@ -360,6 +362,8 @@ private:
     string _sAfterVars;
     string _sPercentChange;
     LONG _controlStatusQuality;
+
+    BOOL _sendAllCommandFlag;
 
     
     CtiCCOperationStats _operationStats;
