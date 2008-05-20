@@ -72,6 +72,8 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
     _DSTActive = 0;
     _neutralLockoutId = 0;
     _neutralLockout = 0;
+    _ignoredIndicatorId = 0;
+    _ignoredIndicator = 0;
 
     //analog inputs
     _voltageId = 0;
@@ -2342,7 +2344,9 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _DSTActive = right._DSTActive;
         _neutralLockoutId = right._neutralLockoutId;
         _neutralLockout = right._neutralLockout;
-
+        _ignoredIndicatorId = right._ignoredIndicatorId;
+        _ignoredIndicator = right._ignoredIndicator;
+        
         _voltageId = right._voltageId;
         _voltage = right._voltage;
         _highVoltageId = right._highVoltageId;

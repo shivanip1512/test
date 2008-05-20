@@ -3159,7 +3159,8 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         {   
                             if (twoWayPts->getCapacitorBankStateId() == pointID) 
                             {
-                                if (currentCapBank->getReportedCBCState() != value) 
+                                if (currentCapBank->getReportedCBCState() != value &&
+                                    currentCapBank->getReportedCBCState() >= 0) 
                                 {
                                     currentCapBank->setReportedCBCStateTime(timestamp);
 
