@@ -76,6 +76,8 @@
     <property name="meterDao" ref="meterDao"/>
     <property name="mspObjectDao" ref="mspObjectDao"/>
     <property name="transactionTemplate" ref="transactionTemplate"/>
+    <property name="deviceDefinitionDao" ref="deviceDefinitionDao"/>
+    <property name="deviceDefinitionService" ref="deviceService"/>
   </bean>   
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">

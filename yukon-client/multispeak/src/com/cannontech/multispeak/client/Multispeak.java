@@ -19,12 +19,16 @@ import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.springframework.dao.DataRetrievalFailureException;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallbackWithoutResult;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
+import com.cannontech.common.device.definition.model.DeviceDefinition;
+import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -35,7 +39,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.core.dao.RoleDao;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
@@ -73,7 +77,6 @@ import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
-import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yukon.BasicServerConnection;
 
@@ -97,6 +100,8 @@ public class Multispeak implements MessageListener {
     private MeterDao meterDao;
     private SystemLogHelper _systemLogHelper = null;
     private TransactionTemplate transactionTemplate = null;
+    private DeviceDefinitionDao deviceDefinitionDao = null;
+    private DeviceDefinitionService deviceDefinitionService  = null;
     
     private String DEFAULT_GROUPNAME = "Default";
 
@@ -151,6 +156,14 @@ public class Multispeak implements MessageListener {
     @Required
     public void setTransactionTemplate(TransactionTemplate transactionTemplate) {
         this.transactionTemplate = transactionTemplate;
+    }
+    @Required
+    public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
+        this.deviceDefinitionDao = deviceDefinitionDao;
+    }
+    @Required
+    public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
+        this.deviceDefinitionService = deviceDefinitionService;
     }
     
     /**
@@ -579,7 +592,7 @@ public class Multispeak implements MessageListener {
                                         } else { //Disabled Meter found
                                             addExistingMeter(mspMeter, meter, mspVendor, paoAlias);
                                         }
-                                    } else {    //Address is different!
+                                    } else {    //Same Meter, Address is different!
                                         ErrorObject err = isMeterDisabled(meter, mspVendor);
                                         if (err != null) { //Meter is currently enabled in Yukon
                                             errorObjects.add(err);
@@ -587,13 +600,9 @@ public class Multispeak implements MessageListener {
                                             //Lookup meter by mspAddress
                                             List<LiteYukonPAObject> liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
                                             
-                                            if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
-                                                // Add meter to Inventory, "remove" it
-                                                addToGroup(meter, SystemGroupEnum.INVENTORY, "MeterAddNotification", mspVendor);
-                                                
-                                                List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
-                                                errorObjects.addAll(addMeterErrors);
-                                                
+                                            if (liteYukonPaoByAddressList.isEmpty()) {  //Address not in Yukon, update existing Meter
+                                                addExistingMeter(mspMeter, meter, mspVendor, paoAlias);
+
                                             } else {    //Meter Number and Address both exist...on different objects! 
                                                 LiteYukonPAObject liteYukonPaoByAddress = liteYukonPaoByAddressList.get(0);
                                                 com.cannontech.amr.meter.model.Meter meterByAddress = meterDao.getForId(liteYukonPaoByAddress.getYukonID());
@@ -630,6 +639,7 @@ public class Multispeak implements MessageListener {
                                                         logTemp = "; PAOName(" + paoAliasStr + ") No change in value.";
                                                     else {
                                                         logTemp = "; PAOName(" + paoAliasStr + ") - Old:" + currentPaoName + " New:" + newPaoName;
+                                                        newPaoName = getNewPaoName(newPaoName);
                                                         yukonPaobject.setPAOName(newPaoName);
                                                     }
                 
@@ -642,6 +652,7 @@ public class Multispeak implements MessageListener {
                                                                    "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp, 
                                                                    mspVendor.getCompanyName());
                 
+                                                    changeDeviceType(mspMeter, meter, mspVendor, "MeterAddNotification");
                                                     //TODO Read the Meter.
                                                                                         
                                                 }
@@ -655,9 +666,23 @@ public class Multispeak implements MessageListener {
                                 //Meter Number not currently found in Yukon
                                 //Lookup meter by mspAddress
                                 List<LiteYukonPAObject> liteYukonPaoByAddressList = paoDao.getLiteYukonPaobjectsByAddress(new Integer(mspAddress).intValue());
-                                if (liteYukonPaoByAddressList.isEmpty()) {  //New Hardware
-                                    List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
-                                    errorObjects.addAll(addMeterErrors);
+                                if (liteYukonPaoByAddressList.isEmpty()) {  //Not found in Yukon
+                                    
+                                    //Lookup meter by PaoName
+                                    String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null);
+                                    if (paoName != null) {
+                                        //We have a meter with the same deviceName as the meter being added.
+                                        com.cannontech.amr.meter.model.Meter meterByDeviceName = meterDao.getForPaoName(paoName);
+                                        ErrorObject err = isMeterDisabled(meterByDeviceName, mspVendor);
+                                        if (err != null) {
+                                            errorObjects.add(err);
+                                        } else { //Disabled Meter found
+                                            addExistingMeter(mspMeter, meterByDeviceName, mspVendor, paoAlias);
+                                        }
+                                    } else { //Add New Hardware
+                                        List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
+                                        errorObjects.addAll(addMeterErrors);
+                                    }
                                     
                                 } else { // mspAddress already exists in Yukon 
                                     LiteYukonPAObject liteYukonPaoByAddress = liteYukonPaoByAddressList.get(0);
@@ -684,6 +709,7 @@ public class Multispeak implements MessageListener {
                                             logTemp = "; PAOName(" + paoAliasStr + ") No change in value.";
                                         else {
                                             logTemp = "; PAOName(" + paoAliasStr + ") - Old:" + currentPaoName + " New:" + newPaoName;
+                                            newPaoName = getNewPaoName(newPaoName);
                                             yukonPaobjectByAddress.setPAOName(newPaoName);
                                         }
                 
@@ -702,6 +728,8 @@ public class Multispeak implements MessageListener {
                                         logMSPActivity("MeterAddNotification",
                                                        "MeterNumber(" + meterNo + " Old:" +oldMeterNo + "); Meter Enabled" + logTemp,
                                                        mspVendor.getCompanyName());
+
+                                        changeDeviceType(mspMeter, meterByAddress, mspVendor, "MeterAddNotification");
                                         //TODO Read the Meter.
                                                                             
                                     }
@@ -807,7 +835,7 @@ public class Multispeak implements MessageListener {
                             try {
                                 com.cannontech.amr.meter.model.Meter meter = meterDao.getForPaoName(newPaoName);
                                 String currentPaoName = meter.getName();
-                                //Meter exits in Yukon with newPaoName
+                                //Meter exists in Yukon with newPaoName
                                 if( newPaoName == null) {
                                     logMSPActivity("ServiceLocationChangedNotification",
                                                    "MeterNumber(" + meter.getMeterNumber()+ ") - PAOName(" + paoAliasStr + ") NO CHANGE - MSP " + paoAliasStr + " IS EMPTY.",
@@ -820,6 +848,7 @@ public class Multispeak implements MessageListener {
                                     LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
                                     YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
                                     if (yukonPaobject instanceof MCTBase) {
+                                        newPaoName = getNewPaoName(newPaoName);
                                         yukonPaobject.setPAOName(newPaoName);
                                         dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
                                         logMSPActivity("ServiceLocationChangedNotification",
@@ -1403,6 +1432,8 @@ public class Multispeak implements MessageListener {
         LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
         String logString = "";
+
+        //Update PaoName
         String currentPaoName = meter.getName();
         String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName);
         
@@ -1411,8 +1442,29 @@ public class Multispeak implements MessageListener {
         } else if (currentPaoName.equalsIgnoreCase(newPaoName)) {
             logString = "; PAOName(" + paoAliasStr + ") No change in value.";
         } else {
+            newPaoName = getNewPaoName(newPaoName);
             yukonPaobject.setPAOName(newPaoName);
             logString = "PAOName(" + paoAliasStr + ")(OLD:" + currentPaoName + " NEW:" + newPaoName + ").";
+        }
+        
+        //Update MeterNumber
+        String currentMeterNumber = meter.getMeterNumber();
+        String newMeterNumber = mspMeter.getMeterNo();
+        
+        if (!currentMeterNumber.equalsIgnoreCase(newMeterNumber)) {
+            DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
+            deviceMeterGroup.setMeterNumber(newMeterNumber);
+            logString += " (MeterNumber - OLD:" + currentMeterNumber + " NEW:" + newMeterNumber + ").";
+        }
+
+        //Update Address
+        String currentAddress = meter.getAddress();
+        String newAddress = mspMeter.getNameplate().getTransponderID();
+        
+        if (!currentAddress.equalsIgnoreCase(newAddress)) {
+            DeviceCarrierSettings deviceCarrierSettings = ((MCTBase)yukonPaobject).getDeviceCarrierSettings();
+            deviceCarrierSettings.setAddress(Integer.valueOf(newAddress));
+            logString += " (Address - OLD:" + currentAddress + " NEW:" + newAddress + ").";
         }
         
         //Enable the meter
@@ -1422,6 +1474,8 @@ public class Multispeak implements MessageListener {
         logMSPActivity("MeterAddNotification",
                        "MeterNumber(" + meter.getMeterNumber()+ ") - Meter Enabled; " + logString,
                        mspVendor.getCompanyName());
+
+        changeDeviceType(mspMeter, meter, mspVendor, "MeterAddNotification");
         //TODO Read the Meter.
     }
 
@@ -1434,7 +1488,6 @@ public class Multispeak implements MessageListener {
         boolean dbChange = false;
         LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
-        DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
             
         String paoNameLog = "";
         String meterNumberLog = "";
@@ -1446,6 +1499,7 @@ public class Multispeak implements MessageListener {
         } else if (currentPaoName.equalsIgnoreCase(newPaoName)) {
             paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAliasStr + ") No change in PaoName.";
         } else {
+            newPaoName = getNewPaoName(newPaoName);
             yukonPaobject.setPAOName(newPaoName);
             dbChange = true;
             paoNameLog = "Address (" + meter.getAddress() + ") PAOName(" + paoAliasStr + ") PaoName Changed(OLD:" + currentPaoName + " NEW:" + newPaoName + ").";
@@ -1457,11 +1511,16 @@ public class Multispeak implements MessageListener {
         if (currentMeterNumber.equalsIgnoreCase(newMeterNumber)) {
             meterNumberLog = "Address (" + meter.getAddress() + ") No change in MeterNumber.";
         } else {
+            DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
             deviceMeterGroup.setMeterNumber(newMeterNumber);
             dbChange = true;
             meterNumberLog = "Address (" + meter.getAddress() + ") MeterNumber Changed(OLD:" + currentMeterNumber + " NEW:" + newMeterNumber + ").";
         }
 
+        if (yukonPaobject.isDisabled()) {
+            yukonPaobject.setDisabled(false);
+            dbChange = true;
+        }
         //Update the meter
         if(dbChange) {
             dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
@@ -1474,5 +1533,61 @@ public class Multispeak implements MessageListener {
                        mspVendor.getCompanyName());
 
         //TODO Read the Meter.
+    }
+    
+    /**
+     * Helper method to check if the deviceType of meter is different than the deviceType of the template meter.
+     * If different types of meters, then the deviceType will be changed for meter.
+     * @param mspMeter
+     * @param meter
+     * @param mspVendor
+     * @param method
+     */
+    private void changeDeviceType(Meter mspMeter, com.cannontech.amr.meter.model.Meter meter, MultispeakVendor mspVendor, String method) {
+        
+        String templateName = getMeterTemplate(mspMeter, mspVendor.getTemplateNameDefault());
+        try {
+            com.cannontech.amr.meter.model.Meter templateMeter = meterDao.getForPaoName(templateName);
+            if( templateMeter.getType() != meter.getType()) {   //different types of meters...change type
+                try {
+                    DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(templateMeter.getType());
+                    deviceDefinitionService.changeDeviceType(meter, deviceDefinition);
+                    logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + templateMeter.getTypeStr() + " to:" + meter.getTypeStr() + ").", mspVendor.getCompanyName());
+                } catch (DataRetrievalFailureException e) {
+                    CTILogger.warn(e);
+                } catch (PersistenceException e) {
+                    CTILogger.warn(e);
+                }
+            }
+        } catch (NotFoundException e) {
+            //No template found to compare to
+            CTILogger.warn("No TemplateName found in Yukon for ChangeDeviceType method, Device Type not checked.");
+        }
+    }
+    /**
+     * Returns an "unused" paoName for newPaoName.
+     * If a meter already exists with newPaoName, then a numeric incremented value will be appended to the newPaoName.
+     * @param newPaoName
+     * @return 
+     */
+    private String getNewPaoName(String newPaoName) {
+        int maxRetries = 10;
+        int retryCount = 0;
+        String tempPaoName = newPaoName;
+        do {
+            try {
+                if (retryCount > 0) {
+                    tempPaoName = newPaoName + " (" + retryCount + ")";
+                }
+                //Try to find if a meter already exists with this paoName
+                meterDao.getForPaoName(tempPaoName);
+                retryCount++;
+            } catch (NotFoundException e) {
+                //this is good!
+                retryCount = maxRetries; //DONE!
+            }
+        } while (retryCount < maxRetries);
+
+        return tempPaoName;
     }
 }
