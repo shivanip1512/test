@@ -3,6 +3,7 @@ package com.cannontech.web.login.impl;
 import java.security.GeneralSecurityException;
 
 import org.apache.commons.lang.RandomStringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import com.cannontech.core.authentication.service.CryptoService;
 import com.cannontech.web.login.LoginCookieHelper;
@@ -36,10 +37,20 @@ public class LoginCookieHelperImpl implements LoginCookieHelper {
         }
 
         String username = split[1];
-        String password = split[2];
+        String password = getPassword(2, split);
 
         UserPasswordHolder holder = new UserPasswordHolder(username, password);
         return holder;
+    }
+    
+    private String getPassword(int startIndex, String[] split) {
+        int length = split.length - startIndex;
+        String[] tempSplit = new String[length];
+        
+        System.arraycopy(split, startIndex, tempSplit, 0, length);
+
+        String result = StringUtils.join(tempSplit, delimiter);
+        return result;
     }
 
     public void setCryptoService(CryptoService cryptoService) {
