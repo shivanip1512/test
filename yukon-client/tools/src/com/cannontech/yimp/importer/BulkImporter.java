@@ -386,98 +386,95 @@ public void runImport(List<ImportData> imps) {
         /*New 400 series MCTs will each need a clause added above if address range
          * validation is desired
          */
-        if (notUpdate) {
-            if(StringUtils.isBlank(meterNumber)) {
-                String error = "Has no meter number.  ";
-                log.error(logMsgPrefix + error);
-                errorMsg.add(error);
-            }
-            
-            // COLLECTION GROUP
-            if(StringUtils.isBlank(collectionGrp)) {
-                String error = "Has no collection group.  ";
-                log.warn(logMsgPrefix + error);
-                errorMsg.add(error);
-            } 
-            else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(collectionGrp)) {
-                String error = "Collection group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
-                log.warn(logMsgPrefix + error);
-                errorMsg.add(error);
-            } 
-            else {
-                try {
-                    String fullGrpName = collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp();
-                    collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
-                    if(!fullGrpName.equals(collectionGroup.getFullName())) {
-                        String error = logMsgPrefix + "Has an incorrect collection group name (check case).  ";
-                        log.warn(error);
-                        errorMsg.add(error);
-                    }
-                } catch (NotFoundException nfe) {
-                    String error = "Has a collection group that does not exist.  Creating device group.  ";
-                    log.warn(logMsgPrefix + error);
-                    deviceGroupEditorDao.addGroup(collectionGroupBase, DeviceGroupType.STATIC, currentEntry.getCollectionGrp());
-                    collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp());
-                }
-            }
-            
-            // ALTERNATE GROUP
-            if(StringUtils.isBlank(altGrp)) {
-                String error = "Has no alternate group.  ";
-                log.warn(logMsgPrefix + error);
-                errorMsg.add(error);
-            } 
-            else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(altGrp)) {
-                String error = "Alternate group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
-                log.warn(logMsgPrefix + error);
-                errorMsg.add(error);
-            } 
-            else {
-                try {
-                    String fullGrpName = alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp();
-                    alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
-                    if(!fullGrpName.equals(alternateGroup.getFullName())) {
-                        String error = logMsgPrefix + "Has an incorrect alternate group name (check case).  ";
-                        log.warn(error);
-                        errorMsg.add(error);
-                    }
-                } catch (NotFoundException nfe) {
-                    String error = "Has an alternate group that does not exist.  Creating device group.  ";
-                    log.warn(logMsgPrefix + error);
-                    deviceGroupEditorDao.addGroup(alternateGroupBase, DeviceGroupType.STATIC, currentEntry.getAltGrp());
-                    alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp());
-                }
-                
-            }
-            
-            // BILLING GROUP
-            if(StringUtils.isBlank(billGrp)) {
-                String warning = "Has no billing group.  ";
-                log.warn(logMsgPrefix + warning);
-                //This is not an error.  Otherwise we could not be backwards compatible, but we should note it anyways in the log file.
-            }
-            else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(billGrp)) {
-                String error = "Billing group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
-                log.warn(logMsgPrefix + error);
-                errorMsg.add(error);
-            } 
-            else {
-                try {
-                    String fullGrpName = billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup();
-                    billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
-                    if(!fullGrpName.equals(billingGroup.getFullName())) {
-                        String error = logMsgPrefix + "Has an incorrect billing group name (check case).  ";
-                        log.warn(error);
-                        errorMsg.add(error);
-                    }
-                } catch (NotFoundException nfe) {
-                    String error = "Has a billing group that does not exist.  Creating device group.  ";
-                    log.warn(logMsgPrefix + error);
-                    deviceGroupEditorDao.addGroup(billingGroupBase, DeviceGroupType.STATIC, currentEntry.getBillingGroup());
-                    billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup());
-                }
-            }
+        if(StringUtils.isBlank(meterNumber) && notUpdate) {
+            String error = "Has no meter number.  ";
+            log.error(logMsgPrefix + error);
+            errorMsg.add(error);
         }
+        
+        // COLLECTION GROUP
+        if(StringUtils.isBlank(collectionGrp) && notUpdate) {
+            String error = "Has no collection group.  ";
+            log.warn(logMsgPrefix + error);
+            errorMsg.add(error);
+        } 
+        else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(collectionGrp)) {
+            String error = "Collection group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
+            log.warn(logMsgPrefix + error);
+            errorMsg.add(error);
+        } 
+        else if(StringUtils.isNotBlank(collectionGrp)){
+            try {
+                String fullGrpName = collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp();
+                collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
+                if(!fullGrpName.equals(collectionGroup.getFullName())) {
+                    String error = logMsgPrefix + "Has an incorrect collection group name (check case).  ";
+                    log.warn(error);
+                    errorMsg.add(error);
+                }
+            } catch (NotFoundException nfe) {
+                String error = "Has a collection group that does not exist.  Creating device group.  ";
+                log.warn(logMsgPrefix + error);
+                deviceGroupEditorDao.addGroup(collectionGroupBase, DeviceGroupType.STATIC, currentEntry.getCollectionGrp());
+                collectionGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(collectionGroupBase.getFullName()+"/"+currentEntry.getCollectionGrp());
+            }
+        } // else...is blank and !notUpdate which is okay.
+        
+        // ALTERNATE GROUP
+        if(StringUtils.isBlank(altGrp) && notUpdate) {
+            String error = "Has no alternate group.  ";
+            log.warn(logMsgPrefix + error);
+            errorMsg.add(error);
+        } 
+        else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(altGrp)) {
+            String error = "Alternate group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
+            log.warn(logMsgPrefix + error);
+            errorMsg.add(error);
+        } 
+        else if(StringUtils.isNotBlank(altGrp)){
+            try {
+                String fullGrpName = alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp();
+                alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
+                if(!fullGrpName.equals(alternateGroup.getFullName())) {
+                    String error = logMsgPrefix + "Has an incorrect alternate group name (check case).  ";
+                    log.warn(error);
+                    errorMsg.add(error);
+                }
+            } catch (NotFoundException nfe) {
+                String error = "Has an alternate group that does not exist.  Creating device group.  ";
+                log.warn(logMsgPrefix + error);
+                deviceGroupEditorDao.addGroup(alternateGroupBase, DeviceGroupType.STATIC, currentEntry.getAltGrp());
+                alternateGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(alternateGroupBase.getFullName()+"/"+currentEntry.getAltGrp());
+            }
+        } // else...is blank and !notUpdate which is okay.
+        
+        // BILLING GROUP
+        if(StringUtils.isBlank(billGrp) && notUpdate) {
+            String warning = "Has no billing group.  ";
+            log.warn(logMsgPrefix + warning);
+            //This is not an error.  Otherwise we could not be backwards compatible, but we should note it anyways in the log file.
+        }
+        else if (CtiUtilities.isContainsInvalidDeviceGroupNameCharacters(billGrp)) {
+            String error = "Billing group name has invalid characters " + Arrays.toString(TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME) + ".  ";
+            log.warn(logMsgPrefix + error);
+            errorMsg.add(error);
+        } 
+        else if(StringUtils.isNotBlank(billGrp)){
+            try {
+                String fullGrpName = billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup();
+                billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(fullGrpName);
+                if(!fullGrpName.equals(billingGroup.getFullName())) {
+                    String error = logMsgPrefix + "Has an incorrect billing group name (check case).  ";
+                    log.warn(error);
+                    errorMsg.add(error);
+                }
+            } catch (NotFoundException nfe) {
+                String error = "Has a billing group that does not exist.  Creating device group.  ";
+                log.warn(logMsgPrefix + error);
+                deviceGroupEditorDao.addGroup(billingGroupBase, DeviceGroupType.STATIC, currentEntry.getBillingGroup());
+                billingGroup = (StoredDeviceGroup) deviceGroupService.resolveGroupName(billingGroupBase.getFullName()+"/"+currentEntry.getBillingGroup());
+            }
+        } // else...is blank and !notUpdate which is okay.
         
         if(StringUtils.isBlank(routeName)) {
             if(StringUtils.isBlank(substationName)) {
