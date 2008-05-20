@@ -19,6 +19,7 @@ public class CapBankOperationsPerformanceController extends CapControlReportCont
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.CAPCONTROLSUBSTATION,
             ReportFilter.CAPBANK,
             ReportFilter.CAPCONTROLFEEDER,
             ReportFilter.AREA};
@@ -94,22 +95,32 @@ public class CapBankOperationsPerformanceController extends CapControlReportCont
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setAreaIdsFilter(null);
             filterableModel.setFeederIdsFilter(idsSet);
+            filterableModel.setSubstationIdsFilter(null);
         } else if (filterModelType == ReportFilter.CAPBANK.ordinal()) {
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setAreaIdsFilter(null);
             filterableModel.setCapBankIdsFilter(idsSet);
+            filterableModel.setSubstationIdsFilter(null);
         } else if (filterModelType == ReportFilter.CAPCONTROLSUBBUS.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setAreaIdsFilter(null);
             filterableModel.setSubbusIdsFilter(idsSet);
+            filterableModel.setSubstationIdsFilter(null);
         } else if (filterModelType == ReportFilter.AREA.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setAreaIdsFilter(idsSet);
-        }
+            filterableModel.setSubstationIdsFilter(null);
+        } else if (filterModelType == ReportFilter.CAPCONTROLSUBSTATION.ordinal()) {
+            filterableModel.setCapBankIdsFilter(null);
+            filterableModel.setFeederIdsFilter(null);
+            filterableModel.setAreaIdsFilter(null);
+            filterableModel.setSubbusIdsFilter(null);
+            filterableModel.setSubstationIdsFilter(idsSet);
+        } 
         
         String param = request.getParameter(ReportModelBase.ATT_START_DATE);
         if( param != null) {

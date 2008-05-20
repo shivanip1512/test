@@ -17,7 +17,7 @@ public class CapControlStateComparisonReport extends SimpleYukonReportBase {
         new ColumnLayoutData("Cap Bank Status", "capBankStatus", 60),
         new ColumnLayoutData("CBC Status", "cbcStatus", 60),
         new ColumnLayoutData("CBC Change Time", "cbcChangeTime", 90),
-        new ColumnLayoutData("Cap Bank ChangeTime", "capBankChangeTime", 90),
+        new ColumnLayoutData("Cap Bank Change Time", "capBankChangeTime", 90),
     };
 
     public CapControlStateComparisonReport(BareReportModel bareModel) {

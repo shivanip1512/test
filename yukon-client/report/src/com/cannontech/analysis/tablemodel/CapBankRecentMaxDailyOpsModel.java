@@ -47,7 +47,7 @@ public class CapBankRecentMaxDailyOpsModel extends ReportModelBase {
     public final static String PREV_WEEK_6_STRING = "Prev Week 6";
     
     /** A string for the title of the data */
-    private static String title = "Maximum Daily Operations Report";
+    private static String title = "Cap Bank Recent Max Daily Operations Report";
 
     /**
      * Default Constructor
@@ -57,6 +57,7 @@ public class CapBankRecentMaxDailyOpsModel extends ReportModelBase {
         super();
         setFilterModelTypes(new ReportFilter[]{
         		ReportFilter.CAPCONTROLSUBBUS,
+        		ReportFilter.CAPCONTROLSUBSTATION,
         		ReportFilter.CAPBANK,
         		ReportFilter.CAPCONTROLFEEDER,
         		ReportFilter.AREA}
@@ -135,6 +136,14 @@ public class CapBankRecentMaxDailyOpsModel extends ReportModelBase {
         
             if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) {
                 sql.append( "where yp3.paobjectid in ('" + getPaoIDs()[0]);
+                for (int i = 1; i < getPaoIDs().length; i++) {
+                    sql.append("', '" + getPaoIDs()[i]);
+                }
+                sql.append("') ");
+            }
+            
+            if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) {
+                sql.append( "where ssb.substationid in ('" + getPaoIDs()[0]);
                 for (int i = 1; i < getPaoIDs().length; i++) {
                     sql.append("', '" + getPaoIDs()[i]);
                 }

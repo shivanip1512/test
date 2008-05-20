@@ -10,9 +10,11 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.capcontrol.CapControlStatusData;
+import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LiteState;
@@ -65,6 +67,7 @@ public class CapControlEventLogModel extends ReportModelBase
 		    CapControlStatusData data2 = (CapControlStatusData)o2;
 	        
 		    //Order by Sub Bus first
+		    try {
 		    String thisValStr = DaoFactory.getPaoDao().getYukonPAOName(data1.getSubBusPaoID().intValue());
 		    String anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getSubBusPaoID().intValue());
 			
@@ -81,7 +84,11 @@ public class CapControlEventLogModel extends ReportModelBase
 					anotherValStr = DaoFactory.getPaoDao().getYukonPAOName(data2.getCapBankPaoID().intValue());
 				}
 			}
+		    
 			return (thisValStr.compareToIgnoreCase(anotherValStr));
+		    }catch(NotFoundException nfe) {
+                return -1;
+            }
 		}
 		public boolean equals(Object obj){
 			return false;
@@ -95,7 +102,10 @@ public class CapControlEventLogModel extends ReportModelBase
 	{
 		super();
 		setFilterModelTypes(new ReportFilter[]{
-		        ReportFilter.CAPCONTROLSUBBUS}
+		        ReportFilter.AREA,
+		        ReportFilter.CAPCONTROLSUBSTATION,
+		        ReportFilter.CAPCONTROLSUBBUS,
+		        ReportFilter.CAPCONTROLFEEDER,}
 			);
 	}
 
@@ -122,11 +132,31 @@ public class CapControlEventLogModel extends ReportModelBase
 												" AND CCLOG2.DATETIME <= ?");
 												if (getPaoIDs() != null && getPaoIDs().length > 0)
 												{
-												    sql.append(" AND CCLOG2.SUBID IN ( " + getPaoIDs()[0] +" ");
-												    for (int i = 1; i < getPaoIDs().length; i++)
-												        sql.append(" , " + getPaoIDs()[i]);
-												            
-												    sql.append(")");
+												    if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) { //fix
+    												    sql.append(" AND CCLOG2.SUBID IN ( " + getPaoIDs()[0] +" ");
+    												    for (int i = 1; i < getPaoIDs().length; i++)
+    												        sql.append(" , " + getPaoIDs()[i]);
+    												            
+    												    sql.append(")");
+												    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) { //fix
+                                                        sql.append(" AND CCLOG2.StationId IN ( " + getPaoIDs()[0] +" ");
+                                                        for (int i = 1; i < getPaoIDs().length; i++)
+                                                            sql.append(" , " + getPaoIDs()[i]);
+                                                                
+                                                        sql.append(")");
+                                                    }else if(getFilterModelType().equals(ReportFilter.AREA)) { //fix
+                                                        sql.append(" AND CCLOG2.areaId IN ( " + getPaoIDs()[0] +" ");
+                                                        for (int i = 1; i < getPaoIDs().length; i++)
+                                                            sql.append(" , " + getPaoIDs()[i]);
+                                                                
+                                                        sql.append(")");
+                                                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) { //fix
+                                                        sql.append(" AND CCLOG2.feederId IN ( " + getPaoIDs()[0] +" ");
+                                                        for (int i = 1; i < getPaoIDs().length; i++)
+                                                            sql.append(" , " + getPaoIDs()[i]);
+                                                                
+                                                        sql.append(")");
+                                                    }
 												}
 												sql.append(" ) ");	//ending paren for IN statement
 												

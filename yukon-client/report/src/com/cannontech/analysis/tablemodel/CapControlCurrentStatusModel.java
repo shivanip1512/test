@@ -133,6 +133,7 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 		super();
 		setFilterModelTypes(new ReportFilter[]{
 		        ReportFilter.CAPCONTROLSUBBUS,
+		        ReportFilter.CAPCONTROLSUBSTATION,
                 ReportFilter.CAPCONTROLFEEDER,
                 ReportFilter.AREA}
 			);
@@ -200,6 +201,12 @@ public class CapControlCurrentStatusModel extends ReportModelBase
                         sql.append(")");
                     }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) { //fix
                         sql.append(" AND CCF.SUBSTATIONBUSID IN ( " + getPaoIDs()[0] +" ");
+                        for (int i = 1; i < getPaoIDs().length; i++)
+                            sql.append(" , " + getPaoIDs()[i]);
+                                
+                        sql.append(")");
+                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) { //fix
+                        sql.append(" AND ssb.substationid IN ( " + getPaoIDs()[0] +" ");
                         for (int i = 1; i < getPaoIDs().length; i++)
                             sql.append(" , " + getPaoIDs()[i]);
                                 

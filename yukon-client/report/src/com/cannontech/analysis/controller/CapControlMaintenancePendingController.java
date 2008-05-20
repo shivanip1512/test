@@ -10,6 +10,7 @@ public class CapControlMaintenancePendingController extends CapControlReportCont
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.CAPCONTROLSUBSTATION,
             ReportFilter.CAPBANK,
             ReportFilter.CAPCONTROLFEEDER,
             ReportFilter.AREA};

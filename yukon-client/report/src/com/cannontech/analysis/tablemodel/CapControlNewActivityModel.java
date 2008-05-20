@@ -70,6 +70,7 @@ public class CapControlNewActivityModel extends ReportModelBase {
 	{
 		super(start_, stop_);
         setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.CAPCONTROLSUBSTATION,
                 ReportFilter.CAPCONTROLSUBBUS,
                 ReportFilter.CAPCONTROLFEEDER,
                 ReportFilter.CAPBANK,
@@ -149,6 +150,12 @@ public class CapControlNewActivityModel extends ReportModelBase {
                 sql.append(")");
             }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) {
                 sql.append(" AND el.subid IN ( " + getPaoIDs()[0] +" ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+                        
+                sql.append(")");
+            }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) {
+                sql.append(" AND sbl.substationid IN ( " + getPaoIDs()[0] +" ");
                 for (int i = 1; i < getPaoIDs().length; i++)
                     sql.append(" , " + getPaoIDs()[i]);
                         

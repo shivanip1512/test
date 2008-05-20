@@ -128,7 +128,7 @@ public class CapControlNewActivityReport extends YukonReportBase
 		GroupHeader header = ReportFactory.createGroupHeaderDefault();
 		
 		LabelElementFactory factory = ReportFactory.createGroupLabelElementDefault(getModel(), CapControlNewActivityModel.SUB_NAME_COLUMN);
-		factory.setText("Substation: ");
+		factory.setText("Substation Bus: ");
 		header.addElement(factory.createElement());
 		
 		TextFieldElementFactory tfactory = ReportFactory.createGroupTextFieldElementDefault(getModel(), CapControlNewActivityModel.SUB_NAME_COLUMN);

@@ -51,10 +51,11 @@ public class CapBankListModel extends ReportModelBase
 	{
 		super();
         setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.AREA,
+                ReportFilter.CAPCONTROLSUBSTATION,
                 ReportFilter.CAPCONTROLSUBBUS,
                 ReportFilter.CAPCONTROLFEEDER,
-         	 	ReportFilter.CAPBANK,
-         	 	ReportFilter.AREA}
+         	 	ReportFilter.CAPBANK}
             );
 	}	
 		
@@ -139,7 +140,15 @@ public class CapBankListModel extends ReportModelBase
 					sql.append(" , " + getPaoIDs()[i]);
 
 				sql.append(")");
-			}
+			} else if (getFilterModelType().equals(
+                    ReportFilter.CAPCONTROLSUBSTATION)) {
+                sql.append(" WHERE ssb.substationid IN ( " + getPaoIDs()[0]
+                        + " ");
+                for (int i = 1; i < getPaoIDs().length; i++)
+                    sql.append(" , " + getPaoIDs()[i]);
+
+                sql.append(")");
+            }
 		}
         
 		if( CBCOrderByTreeModel.ORDER_TYPE_STRINGS[1].equals(getOrderBy()) )

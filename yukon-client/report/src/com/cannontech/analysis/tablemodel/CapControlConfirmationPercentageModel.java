@@ -146,14 +146,14 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         sql.append("from ccoperations_view where Optime between ? and ? ");
         sql.append("and (ConfStatus like '%Close' or ConfStatus like '%Open') and ConfStatus not like '%rejected%' ");
         sql.append("group by CBCName ) SS on T.CBCName = SS.CBCName )S ");
-        sql.append("inner join (Select Region , OpCenter, TA, SubbusName ");
-        sql.append(", subID, FeederName, FdrId, CBCName ");
+        sql.append("inner join (Select Region, AREAID, OpCenter, TA, SubbusName ");
+        sql.append(", subID, subbusId, FeederName, FdrId, CBCName ");
         sql.append(", cbcId, capbankname, bankID ");
-        sql.append("from ccinventory_view ) rs on S.CBCName = RS.CBCName ");
+        sql.append("from ccinventory_view ) rs on S.CBCName = rs.CBCName ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = rs.subID ");
         sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
         sql.append("left outer join (select paobjectid ");
-        sql.append("from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid  ");
+        sql.append("from yukonpaobject where type ='CCAREA' ) ca on ca.paobjectid = saa.areaid  ");
         
         String result = null;
         
@@ -170,19 +170,19 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
             result += " ) ";
         }
         if(subbusIds != null && !subbusIds.isEmpty()) {
-            result = "rs.subId in ( ";
+            result = "rs.subbusId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
             result += wheres;
             result += " ) ";
         }
         if(substationIds != null && !substationIds.isEmpty()) {
-            result = "ssb.substationid in ( ";
+            result = "rs.subid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
             result += wheres;
             result += " ) ";
         }
         if(areaIds != null && !areaIds.isEmpty()) {
-            result = "ca.paobjectid in ( ";
+            result = "rs.areaid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";

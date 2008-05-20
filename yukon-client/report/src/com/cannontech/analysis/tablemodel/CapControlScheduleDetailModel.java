@@ -149,7 +149,7 @@ public class CapControlScheduleDetailModel extends BareDatedReportModelBase<CapC
             result += wheres;
             result += " ) ";
         }else if(substationIds != null && !substationIds.isEmpty()) {
-            result = "yp.paobjectid in ( ";
+            result = "yp2.paobjectid in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
             result += wheres;
             result += " ) ";

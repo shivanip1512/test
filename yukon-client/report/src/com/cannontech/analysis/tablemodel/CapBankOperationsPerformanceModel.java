@@ -34,7 +34,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
         public String bankName;
         public String cbcName;
         public String feederName;
-        public String subName;
+        public String subbusName;
         public String region;
         public String text;
         public String qCount;
@@ -76,7 +76,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
                 row.bankName = rs.getString("capbankName");
                 row.cbcName = rs.getString("cbcName");
                 row.feederName = rs.getString("feederName");
-                row.subName = rs.getString("subName");
+                row.subbusName = rs.getString("subbusName");
                 row.region = rs.getString("region");
                 row.text = rs.getString("text");
                 row.qCount = rs.getString("qCount");
@@ -91,7 +91,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
     
     public StringBuffer buildSQLStatement()
     {
-        StringBuffer sql = new StringBuffer ("select d.capbankname, cbcname,  feedername, subname, region, '" + queryType+"' as text, qCount, totCount, qPercent from (select tot.capbankname, q.qCount, tot.totCount, cast(q.qCount as float) / cast(tot.totCount as float) * 100 as qPercent from ");
+        StringBuffer sql = new StringBuffer ("select d.capbankname, cbcname,  feedername, subbusName, region, '" + queryType+"' as text, qCount, totCount, qPercent from (select tot.capbankname, q.qCount, tot.totCount, cast(q.qCount as float) / cast(tot.totCount as float) * 100 as qPercent from ");
         sql.append("(select capbankname, count(*) as totCount from ccoperations_view where operation like '%Sent, %'  and opTime > ? and opTime <= ? group by capbankname) tot ");
         sql.append("left outer join (select capbankname, count(*) as qCount from ccoperations_view where ");
         if(queryType.equalsIgnoreCase("Success")) {
@@ -107,7 +107,7 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
         sql.append("left outer join (select yp.paoname, yp.paobjectid, s.text as text from dynamiccccapbank dcb ");
         sql.append("join state s on s.rawstate = dcb.controlstatus and s.stategroupid = 3 ");
         sql.append("join yukonpaobject yp on yp.paobjectid = dcb.capbankid) status on status.paoname = abc.capbankname ");
-        sql.append("join (select distinct (capbankname), cbcname, feedername, feederid, subname, subbusid, region from ccoperations_view ");
+        sql.append("join (select distinct (capbankname), cbcname, feedername, feederid, subbusname, substationid, subbusid, region from ccoperations_view ");
         sql.append("where  operation like '%Sent, %'  and opTime > ? and opTime <= ?) d on abc.capbankname = d.capbankname ");
         sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = d.subbusid ");
  	 	sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");

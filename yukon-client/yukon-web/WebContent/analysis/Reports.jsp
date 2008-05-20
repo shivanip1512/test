@@ -16,7 +16,8 @@
 <%@ page import="com.cannontech.stars.web.StarsYukonUser" %>
 <%@ page import="com.cannontech.roles.capcontrol.CBCSettingsRole" %>
 <%@ page import="com.cannontech.database.db.company.EnergyCompany" %>
-<%@ page import= "java.util.List;" %>
+<%@ page import= "java.util.List" %>
+<%@ page import= "java.util.ArrayList" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -332,9 +333,26 @@ function checkDates(){
         <%
         //Create a local instance of the map.
         Map<ReportFilter,List<? extends Object>> filterObjectsMap = REPORT_BEAN.getFilterObjectsMap();
-        for (ReportFilter filter : filterObjectsMap.keySet()) {%>
+        List<ReportFilter> filters = new ArrayList<ReportFilter>();
+        if(filterObjectsMap.keySet().contains(ReportFilter.AREA)){
+            filters.add(ReportFilter.AREA);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.CAPCONTROLSUBSTATION)){
+            filters.add(ReportFilter.CAPCONTROLSUBSTATION);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.CAPCONTROLSUBBUS)){
+            filters.add(ReportFilter.CAPCONTROLSUBBUS);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.CAPCONTROLFEEDER)){
+            filters.add(ReportFilter.CAPCONTROLFEEDER);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.CAPBANK)){
+            filters.add(ReportFilter.CAPBANK);
+        }
+        for (ReportFilter filter : filters) {%>
 				document.getElementById('Div<%=filter.getFilterTitle()%>').style.display = (filterBy == <%=filter.ordinal()%>)? "block" : "none";
-        <% }  %>
+        <% 
+        }%>
         }
     
         </SCRIPT>
@@ -344,7 +362,7 @@ function checkDates(){
             	<td class='main' style='padding-left:5; padding-top:5'>
 					<div id='DivFilterModelType' style='display:true'>
 						<select id='filterModelType' name='filterModelType' onChange='changeFilter(this.value)'>
-							<%for (ReportFilter filter : filterObjectsMap.keySet()) {%>
+							<%for (ReportFilter filter : filters) {%>
                     			<option value='<%=filter.ordinal()%>'>  <%=filter.getFilterTitle() %></option>
         					<% } %>
                 		</select>
@@ -355,7 +373,7 @@ function checkDates(){
           	<tr>
             	<td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>
         			<% int isFirst = 0; %>
-        			<%for(ReportFilter filter: filterObjectsMap.keySet()) {%>
+        			<%for(ReportFilter filter: filters) {%>
             			<%if( filter.equals(ReportFilter.METER ) ){%>
                     		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
                     		<input type='text' name="filterMeterValues" style='width:650px;'/>
