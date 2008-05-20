@@ -3020,8 +3020,10 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
             getCurrentWattPointQuality() == NormalQuality && getCurrentVoltPointQuality() == NormalQuality ) ) &&
         ( currentDateTime.seconds() >= getLastOperationTime().seconds() + getControlDelayTime() ) )
     {
-        if( !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) ||
-            !stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::VoltControlUnits) ) 
+        if( (!stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::KVARControlUnits) &&
+             getCurrentVarLoadPointId() > 0) ||
+            (!stringCompareIgnoreCase(feederControlUnits, CtiCCSubstationBus::VoltControlUnits) &&
+             getCurrentVarLoadPointId() > 0 && getCurrentVoltLoadPointId() > 0 ) ) 
         {
             if( (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::KVARControlUnits) &&
                 (getIVControl() > lagLevel || getIVControl() < leadLevel )) ||
@@ -3203,8 +3205,9 @@ BOOL CtiCCFeeder::checkForAndProvideNeededIndividualControl(const CtiTime& curre
                 }
             }
         }
-        else if( !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+        else if( (!stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
                  !stringCompareIgnoreCase(feederControlUnits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
+                 && getCurrentVarLoadPointId() > 0 && getCurrentWattLoadPointId() > 0 )
         {
             if( getKVARSolution() < 0 &&
                 !(dailyMaxOpsHitFlag && maxOpsDisableFlag) &&

@@ -3211,8 +3211,8 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
         CtiCCFeeder* currentFeeder = NULL;
         LONG currentPosition = getLastFeederControlledPosition();
         LONG iterations = 0;
-        if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
-            !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) )
+        if( ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) && getCurrentVarLoadPointId() > 0 ) ||
+            ( !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::VoltControlUnits) && getCurrentVoltLoadPointId() > 0 ) )
         {
             if( !(getMaxDailyOpsHitFlag() && getMaxOperationDisableFlag()) &&//end day on a trip.
                 ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
@@ -3460,8 +3460,9 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
 
             }
         }
-        else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
-                 !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
+        else if( (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+                 !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) ) &&
+                 getCurrentVarLoadPointId() > 0 && getCurrentWattLoadPointId() > 0 )
         {
             if( getKVARSolution() < 0 && !(getMaxDailyOpsHitFlag() && getMaxOperationDisableFlag()) ) //end day on a trip.
             {
@@ -3744,8 +3745,8 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
             varSortedFeeders.insert(currentFeeder);
         }
 
-        if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) ||
-            !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) )
+        if( ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) && getCurrentVarLoadPointId() > 0) ||
+            ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::VoltControlUnits) && getCurrentVoltLoadPointId() > 0 ) )
         {
             if( !(getMaxDailyOpsHitFlag()  && getMaxOperationDisableFlag()) &&//end day on a trip.
                 ( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::KVARControlUnits) &&
@@ -3986,8 +3987,9 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                 }
             }
         }
-        else if( !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
-                 !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits) )
+        else if( (!stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KVARControlUnits) ||
+                 !stringCompareIgnoreCase(_controlunits,CtiCCSubstationBus::PF_BY_KQControlUnits)) && 
+                 getCurrentVarLoadPointId() > 0 && getCurrentWattLoadPointId() > 0 )
         {
             if( getKVARSolution() < 0 && !(getMaxDailyOpsHitFlag()  && getMaxOperationDisableFlag() ))  //end day on a trip.
             {

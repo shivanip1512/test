@@ -182,7 +182,7 @@ public:
     CtiCCFeederPtr findFeederByPAObjectID(long paobject_id);
     CtiCCCapBankPtr findCapBankByPAObjectID(long paobject_id);
     CtiCCStrategyPtr findStrategyByStrategyID(long strategy_id);
-
+    
     long findAreaIDbySubstationID(long substationId);
     long findSpecialAreaIDbySubstationID(long substationId);
     long findSubstationIDbySubBusID(long subBusId);
@@ -264,6 +264,7 @@ public:
     void resetAllOperationStats();
     void resetAllConfirmationStats();
     void reCalculateConfirmationStatsFromDatabase( );
+    void cascadeStrategySettingsToChildren(LONG spAreaId, LONG areaId, LONG subBusId);
     
     
     void locateOrphans(list<long> *orphanCaps, list<long> *orphanFeeders, map<long, CtiCCCapBankPtr> paobject_capbank_map,
