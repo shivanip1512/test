@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <entry key="yukon.web.changelogin.changeUsername">Change Username</entry>
+    <entry key="yukon.web.changelogin.changePassword">Change Password</entry>
+
+    <entry key="yukon.web.changelogin.username">New Username:</entry>
+    <entry key="yukon.web.changelogin.oldPassword">Current Password:</entry>
+    <entry key="yukon.web.changelogin.newPassword">New Password:</entry>
+    <entry key="yukon.web.changelogin.confirm">(confirm password)</entry>
+    <entry key="yukon.web.changelogin.save">Save</entry>
+    <entry key="yukon.web.changelogin.cancel">Cancel</entry>
+    
+    <entry key="yukon.web.changelogin.error.NONE">&lt;i&gt;** Success&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.error.NO_CHANGE">&lt;i&gt;** No changes made&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.error.NO_PASSWORDMATCH">&lt;i&gt;** Passwords did not match&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.error.REQUIRED_FIELDS_MISSING">&lt;i&gt;** Required fields missing&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.error.INVALID_CREDENTIALS">&lt;i&gt;** Invalid Credentials&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.error.USER_EXISTS">&lt;i&gt;** Username already exists&lt;/i&gt;</entry>
+    <entry key="yukon.web.changelogin.error.PASSWORD_CHANGE_NOT_SUPPORTED">&lt;i&gt;** Password changes are not supported&lt;/i&gt;</entry>
+    
+</properties>    

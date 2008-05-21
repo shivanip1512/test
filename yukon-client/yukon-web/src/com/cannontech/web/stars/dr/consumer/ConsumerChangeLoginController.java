@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.web.login.ChangeLoginController;
-import com.cannontech.web.login.LoginError;
+import com.cannontech.web.login.ChangeLoginError;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -26,7 +26,7 @@ public class ConsumerChangeLoginController extends AbstractConsumerController {
         
         String loginErrorParam = ServletRequestUtils.getStringParameter(request, ChangeLoginController.LOGIN_ERROR_PARAM);
         if (loginErrorParam != null) {
-            LoginError loginError = LoginError.valueOf(loginErrorParam);
+            ChangeLoginError loginError = ChangeLoginError.valueOf(loginErrorParam);
             map.addAttribute(ChangeLoginController.LOGIN_ERROR_PARAM, loginError);
         }
         

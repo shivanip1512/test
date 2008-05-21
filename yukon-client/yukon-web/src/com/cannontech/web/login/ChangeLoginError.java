@@ -2,7 +2,7 @@ package com.cannontech.web.login;
 
 import com.cannontech.common.i18n.DisplayableEnum;
 
-public enum LoginError implements DisplayableEnum {
+public enum ChangeLoginError implements DisplayableEnum {
     NONE,
     NO_CHANGE,
     NO_PASSWORDMATCH,
@@ -11,7 +11,7 @@ public enum LoginError implements DisplayableEnum {
     USER_EXISTS,
     PASSWORD_CHANGE_NOT_SUPPORTED;
 
-    private static final String keyPrefix = "yukon.web.login.error.";
+    private static final String keyPrefix = "yukon.web.changelogin.error.";
     
     @Override
     public String getFormatKey() {

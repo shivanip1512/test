@@ -254,8 +254,7 @@
     <!-- contactus.jsp -->
     <entry key="yukon.dr.consumer.contactus.header">Questions - Utility</entry>
     <entry key="yukon.dr.consumer.contactus.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
-    <entry key="yukon.dr.consumer.contactus.phonenumber">Ph:</entry>
-    <entry key="yukon.dr.consumer.contactus.faxnumber">Fax:</entry>
+    <entry key="yukon.dr.consumer.contactus.main"></entry>
 
     <!-- enrollment.jsp -->
     <entry key="yukon.dr.consumer.enrollment.header">Programs - Enrollment</entry>

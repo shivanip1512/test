@@ -430,6 +430,7 @@ div.boxContainer .boxContainer_titleBar, table.boxContainer td.boxContainer_titl
 	background-image: url(../Icons/boxContainerBg26px.gif);
 	background-position: left bottom;
 	background-repeat:repeat-x;
+	text-align: left;
 }
 
 div.boxContainer .boxContainer_titleBar .boxContainer_title { 

@@ -16,7 +16,9 @@
         <ct:boxContainer title="${programsTitle}" hideEnabled="false">
             <c:choose>
                 <c:when test="${isNotEnrolled}">
-                    <cti:msg key="yukon.dr.consumer.general.notEnrolledMessage"></cti:msg>
+                    <span id="notEnrolledMessageSpan">
+                        <cti:msg key="yukon.dr.consumer.general.notEnrolledMessage"></cti:msg>
+                    </span>
                 </c:when>
                 <c:otherwise>
                     <c:set var="count" value="0"/>

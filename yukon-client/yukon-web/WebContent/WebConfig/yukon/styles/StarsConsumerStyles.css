@@ -223,3 +223,7 @@ div#controlEventsDiv table tr td {
 	white-space: nowrap;
 	padding-right: 1em;
 }
+
+span#notEnrolledMessageSpan {
+    font-size: 12px;
+}

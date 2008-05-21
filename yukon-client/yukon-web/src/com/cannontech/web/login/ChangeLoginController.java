@@ -22,13 +22,12 @@ import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 @Controller
-@RequestMapping("/changelogin")
 public class ChangeLoginController {
     public static final String LOGIN_ERROR_PARAM = "loginError";
     private YukonUserDao yukonUserDao; 
     private AuthenticationService authenticationService;
     
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/changelogin", method = RequestMethod.GET)
     public String view(String redirectUrl, HttpServletRequest request, HttpServletResponse response, ModelMap map) {
         
         YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
@@ -43,55 +42,69 @@ public class ChangeLoginController {
         return "changeLogin.jsp";
     }
     
-    @RequestMapping(method = RequestMethod.POST)
-    public String update(int userId, String username, String oldPassword, 
-            String newPassword, String confirm, String redirectUrl, 
-            HttpServletRequest request, ModelMap map) throws Exception {
+    @RequestMapping(value = "/changelogin/updatepassword", method = RequestMethod.POST)
+    public String updatePassword(String oldPassword, String newPassword, 
+            String confirm, String redirectUrl, HttpServletRequest request) 
+                throws Exception {
         
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteYukonUser loggedInUser = yukonUserContext.getYukonUser();
-        if (loggedInUser.getUserID() != userId) {
-            throw new NotAuthorizedException("Not authorized for userid: " + userId);
+        final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+        final LiteYukonUser user = yukonUserContext.getYukonUser();
+        final AuthType type = user.getAuthType();
+        
+        final boolean isValidPassword = isValidPassword(user.getUsername(), oldPassword);
+        boolean supportsPasswordChange = authenticationService.supportsPasswordChange(type);
+        boolean hasRequiredFields = hasRequiredFields(oldPassword, newPassword, confirm);
+
+        ChangeLoginError loginError;
+        
+        if (!isValidPassword) {
+            loginError = ChangeLoginError.INVALID_CREDENTIALS;
+        }
+        else if (!supportsPasswordChange) {
+            loginError =  ChangeLoginError.PASSWORD_CHANGE_NOT_SUPPORTED;
+        }
+        else if (!hasRequiredFields) {
+            loginError = ChangeLoginError.REQUIRED_FIELDS_MISSING;
+        }
+        else if (!newPassword.equals(confirm)) {
+            loginError = ChangeLoginError.NO_PASSWORDMATCH;
+        }
+        else {
+            authenticationService.changePassword(user, oldPassword, newPassword);
+            loginError = ChangeLoginError.NONE;
         }
         
-        LiteYukonUser user = yukonUserDao.getLiteYukonUser(userId);
-        AuthType type = user.getAuthType();
+        return sendRedirect(request, redirectUrl, loginError);
+    }
+    
+    @RequestMapping(value = "/changelogin/updateusername", method = RequestMethod.POST)
+    public String updateUsername(String username, String oldPassword,
+            String redirectUrl, HttpServletRequest request) throws Exception {
         
-        final boolean supportsPasswordChange = authenticationService.supportsPasswordChange(type);
+        final YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+        final LiteYukonUser user = yukonUserContext.getYukonUser();
+        
+        final boolean isValidPassword = isValidPassword(user.getUsername(), oldPassword);
         final boolean hasRequiredFields = hasRequiredFields(username, oldPassword);
-        final boolean isUsernameChange = isUsernameChange(user, username);
-        final boolean isPasswordChange = hasRequiredFields(newPassword, confirm);
         
-        if (!hasRequiredFields) {
-            return sendRedirect(request, redirectUrl, LoginError.REQUIRED_FIELDS_MISSING);
+        ChangeLoginError loginError;
+        
+        if (!isValidPassword) {
+            loginError = ChangeLoginError.INVALID_CREDENTIALS;
         }
-        
-        // Check for valid credentials before making any changes 
-        boolean success = isValidPassword(user.getUsername(), oldPassword);
-        if (!success) return sendRedirect(request, redirectUrl, LoginError.INVALID_CREDENTIALS);
-        
-        if (isUsernameChange) {
+        else if (!hasRequiredFields) {
+            loginError = ChangeLoginError.REQUIRED_FIELDS_MISSING;
+        }
+        else {
             try {
                 saveUsernameChange(request, user, username);
+                loginError = ChangeLoginError.NONE;
             } catch (NotAuthorizedException e) {
-                return sendRedirect(request, redirectUrl, LoginError.USER_EXISTS);
+                loginError = ChangeLoginError.USER_EXISTS;
             }
-            
-            if (!isPasswordChange) return sendRedirect(request, redirectUrl, LoginError.NONE);
         }
         
-        if (isPasswordChange) {
-            LoginError loginError = null;
-            if (!supportsPasswordChange) loginError = LoginError.PASSWORD_CHANGE_NOT_SUPPORTED;
-            if (!newPassword.equals(confirm)) loginError = LoginError.NO_PASSWORDMATCH;
-
-            if (loginError != null) return sendRedirect(request, redirectUrl, loginError);
-
-            authenticationService.changePassword(user, oldPassword, newPassword);
-            return sendRedirect(request, redirectUrl, LoginError.NONE);
-        }
-
-        return sendRedirect(request, redirectUrl, LoginError.NO_CHANGE);
+        return sendRedirect(request, redirectUrl, loginError);
     }
     
     private boolean hasRequiredFields(String... fields) {
@@ -109,12 +122,6 @@ public class ChangeLoginController {
             return false;
         }
     }
-
-    private boolean isUsernameChange(LiteYukonUser user, String newUsername) {
-        String oldUsername = user.getUsername();
-        boolean result = !oldUsername.equals(newUsername);
-        return result;
-    }
     
     private void saveUsernameChange(HttpServletRequest request, LiteYukonUser user, String username) 
         throws NotAuthorizedException {
@@ -126,7 +133,7 @@ public class ChangeLoginController {
         session.setAttribute(LoginController.YUKON_USER, user);
     }
     
-    private String sendRedirect(HttpServletRequest request, String redirectUrl, LoginError loginError) {
+    private String sendRedirect(HttpServletRequest request, String redirectUrl, ChangeLoginError loginError) {
         String safeRedirectUrl = ServletUtil.createSafeRedirectUrl(request, redirectUrl);
         if (loginError != null) {
             String errorParam = new StringBuilder()
