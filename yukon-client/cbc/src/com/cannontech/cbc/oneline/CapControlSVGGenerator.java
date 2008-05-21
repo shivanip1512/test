@@ -102,10 +102,12 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
 
         } else if (comp instanceof LxAbstractImage && getGenOptions().isScriptingEnabled() && !isCapBankImage(comp)) {
             if (comp instanceof StateImage) {
-                StateImage newImage = (StateImage) comp;
-                if (isSub(newImage)) {
-                    String id = OnelineUtil.extractObjectIdFromString(comp.getName());
-                    addDynamicAttributes(elem, CommandPopups.SUB_COMMAND + "_" + id);
+                StateImage stateImage = (StateImage)comp;
+                if(stateImage.getControlEnabled()) {
+                    if (isSub(stateImage)) {
+                        String id = OnelineUtil.extractObjectIdFromString(comp.getName());
+                        addDynamicAttributes(elem, CommandPopups.SUB_COMMAND + "_" + id);
+                    }
                 }
             }
         } else if (isFeeder(comp) && getGenOptions().isScriptingEnabled()) {

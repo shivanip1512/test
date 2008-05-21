@@ -137,8 +137,11 @@ public class OnelineSub extends OnelineObject {
             OneLineParams layoutParams = drawing.getLayoutParams();
             transformerImg.setCenter(20, layoutParams.getHeight() / 3 + 50);
             transformerImg.setName(createSubName());
+            transformerImg.setLinkTo("javascript:void(0)");
             if(isCommandsFlag()) {
-            	transformerImg.setLinkTo("javascript:void(0)");
+            	transformerImg.setControlEnabled(true);
+            }else {
+                transformerImg.setControlEnabled(false);
             }
         }
         return transformerImg;
