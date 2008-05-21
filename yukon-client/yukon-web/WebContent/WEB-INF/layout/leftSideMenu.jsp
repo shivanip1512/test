@@ -33,8 +33,9 @@
     
 	<body class="<c:out value="${module.moduleName}"/>_module">
 		<div id="Header">
-		    <div class="stdhdr_left"><div id="TopLeftLogo"></div><div id="TopLeftLogo2"></div></div>
-		    <div class="stdhdr_right"><img src="<cti:theme key="yukon.web.layout.standard.upperrightlogo" default="/WebConfig/yukon/YukonBW.gif" url="true"/>"></div>
+		    <div class="stdhdr_left"><div id="TopLeftLogo"><cti:logo key="yukon.web.layout.standard.upperleftlogo"/></div></div>
+		    <div class="stdhdr_middle"><div id="TopMiddleLogo"><cti:logo key="yukon.web.layout.standard.uppermiddlelogo"/></div></div>
+		    <div class="stdhdr_right"><div id="TopRightLogo"><cti:logo key="yukon.web.layout.standard.upperrightlogo"/></div></div>
 		    <div class="stdhdr_clear"></div>
 		</div>
 

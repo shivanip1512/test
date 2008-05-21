@@ -14,6 +14,8 @@
         <link rel="stylesheet"
             href="WebConfig/yukon/styles/loginStyles.css"
             type="text/css">
+            
+        <cti:css key="yukon.web.login.loginStyles"/>
     </head>
 
     <body class="blank_module"
@@ -21,11 +23,11 @@
 
         <div id="Header">
             <div class="stdhdr_left">
-                <div id="TopLeftLogo"></div>
-                <div id="TopLeftLogo2"></div>
+                <div id="TopLeftLogo"><cti:logo key="yukon.web.layout.standard.upperleftlogo"></cti:logo></div>
+                <div id="TopLeftLogo2"><cti:logo key="yukon.web.layout.standard.uppermiddlelogo"></cti:logo></div>
             </div>
             <div class="stdhdr_right">
-                <div id="TopRightLogo"></div>
+                <div id="TopRightLogo"><cti:logo key="yukon.web.layout.standard.upperrightlogo"></cti:logo></div>
             </div>
             <div class="stdhdr_clear"></div>
         </div>
@@ -49,22 +51,24 @@
         <div class="loginMain">
 
             <div class="loginTopSection">
+                <div class="formTopLogo">
+                    <cti:logo key="yukon.web.login.formTopLogo"></cti:logo>
+                </div>
                 <div class="loginTitleText">
-                    <img src="/WebConfig/yukon/CannonPlain.gif" />
+                    <cti:msg key="yukon.web.login.titleText"></cti:msg>
                 </div>
             </div>
 
             <div class="loginMainSection">
-                <ct:abstractContainer title="Login"
-                    type="rounded">
+                <ct:abstractContainer title="Login" type="rounded">
                     <c:if test="${!empty param.failed}">
                         <div class="loginErrorMsg">
-                            * Invalid username/password
+	                        <cti:msg key="yukon.web.login.invalidLogin"></cti:msg>
                         </div>
                     </c:if>
 
                     <div class="loginIntroText">
-                        Please enter your username and password below.
+                        <cti:msg key="yukon.web.login.enterLogin"></cti:msg>
                     </div>
 
                     <form name="form1" method="post"
@@ -72,54 +76,50 @@
                         <table class="loginTable">
                             <tr>
                                 <td align="right">
-                                    Username:
+			                        <cti:msg key="yukon.web.login.username"></cti:msg>
                                 </td>
                                 <td align="left" valign="bottom">
-                                    <input type="text" id="USERNAME"
-                                        name="USERNAME"
-                                        class="loginTextInput">
+                                    <input type="text" id="USERNAME" name="USERNAME" class="loginTextInput">
                                 </td>
                             </tr>
                             <tr>
                                 <td align="right">
-                                    Password:
+			                        <cti:msg key="yukon.web.login.password"></cti:msg>
                                 </td>
                                 <td align="left" valign="bottom">
-                                    <input type="password"
-                                        name="PASSWORD">
+                                    <input type="password" name="PASSWORD">
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2" align="center">
-                                    <input type="checkbox"
-                                        name="rememberme">
-                                    Remember me
+                                    <input type="checkbox" name="rememberme">
+			                        <cti:msg key="yukon.web.login.rememberMe"></cti:msg>
                                 </td>
                             </tr>
                             <tr>
                                 <td colspan="2" align="center">
-                                    <input type="submit" name="login"
-                                        value="Submit">
+			                        <cti:msg var="submitText" key="yukon.web.login.submit"></cti:msg>
+                                    <input type="submit" name="login" value="${submitText}">
                                 </td>
                             </tr>
                         </table>
 
                         <cti:isStarsExist>
                             <div class="loginHelp">
-                                <a href="<c:url value="/pwordreq.jsp"/>">Forgot
-                                    your password?</a>
+                                <a href="<c:url value="/pwordreq.jsp"/>">
+			                        <cti:msg key="yukon.web.login.forgotPassword"></cti:msg>
+                                </a>
                             </div>
                         </cti:isStarsExist>
-                        <input type="hidden" name="REDIRECTED_FROM"
-                            value="${param.REDIRECTED_FROM}">
+                        <input type="hidden" name="REDIRECTED_FROM" value="${param.REDIRECTED_FROM}">
                         <input type="hidden" name="ACTION" value="LOGIN">
                     </form>
 
                 </ct:abstractContainer>
             </div>
             <div class="loginTopSection">
-                <div class="loginTitleText">
-                    <img src="/WebConfig/yukon/CooperTransparent.gif" />
+                <div class="formBottomLogo">
+                    <cti:logo key="yukon.web.login.formBottomLogo"></cti:logo>
                 </div>
             </div>
             

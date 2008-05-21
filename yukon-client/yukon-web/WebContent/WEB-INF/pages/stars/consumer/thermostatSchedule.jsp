@@ -133,7 +133,7 @@
 
             <table width="80%" border="1" cellspacing="0" cellpadding="2">
                 <tr> 
-                    <td align="center"  valign="bottom" class="Background"> 
+                    <td align="center" valign="bottom" class="Background"> 
                         <table width="478" border="0" height="8">
                             <tr> 
                                 <td align="left"> 
@@ -149,7 +149,7 @@
                                 <td align="right"> 
                                     <span style="visibility:${(timeOfWeek == 'WEEKDAY')? 'visible' : 'hidden'}" id="applyToWeekendSpan"> 
                                         <input type="checkbox" id="applyToWeekend" name="applyToWeekend" value="true" onclick="applySettingsToWeekend(this)">
-                                        <span class="timePeriodText"><cti:msg key="yukon.dr.consumer.thermostatSchedule.saturdayAndSunday" /></span>
+                                        <span class="saturdaySundayText"><cti:msg key="yukon.dr.consumer.thermostatSchedule.saturdayAndSunday" /></span>
                                     </span>
                                 </td>
                             </tr>

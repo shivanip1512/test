@@ -39,6 +39,10 @@
             value="org.springframework.web.servlet.view.JstlView" />
         <property name="prefix" value="/WEB-INF/pages/login/" />
     </bean>
+    
+    <bean id="themeResolver" class="com.cannontech.web.i18n.YukonUrlThemeResolver">
+        <property name="defaultThemeName" value="default"/>
+    </bean>
 
     <bean id="indexController" class="com.cannontech.web.login.IndexController">
         <property name="authDao" ref="authDao"/>

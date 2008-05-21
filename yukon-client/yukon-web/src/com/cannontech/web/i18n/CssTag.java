@@ -13,9 +13,9 @@ import com.cannontech.util.ServletUtil;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 /**
- * Tag used to output the right side logo for a page if one exists
+ * Tag used to include a css file by I18N key
  */
-public class LogoTag extends YukonTagSupport {
+public class CssTag extends YukonTagSupport {
 
     private String key;
 
@@ -26,32 +26,19 @@ public class LogoTag extends YukonTagSupport {
     @Override
     public void doTag() throws JspException, IOException {
 
-		MessageSourceAccessor messageSourceAccessor = getMessageSource();
+    	MessageSourceAccessor messageSourceAccessor = getMessageSource();
     	
-        try {
+    	try {
             String url = messageSourceAccessor.getMessage(key);
             if(!StringUtils.isBlank(url)){
 	            String safeUrl = ServletUtil.createSafeUrl(getRequest(), url);
 	            JspWriter out = getJspContext().getOut();
 	
-	            // Create image html
+	            // Create include css html
 	            StringBuilder sb = new StringBuilder();
-	            sb.append("<img src=\"");
+	            sb.append("<link rel=\"stylesheet\" type=\"text/css\" href=\"");
 	            sb.append(safeUrl);
-	            sb.append("\"");
-	
-	            // Add alt text if it exists
-	            try {
-	                String altText = messageSourceAccessor.getMessage(key + ".alt");
-	
-	                sb.append(" alt=\"");
-	                sb.append(altText);
-	                sb.append("\"");
-	            } catch (NoSuchMessageException e) {
-	                // no alt text
-	            }
-	
-	            sb.append(">");
+	            sb.append("\">");
 	
 	            out.write(sb.toString());
             }

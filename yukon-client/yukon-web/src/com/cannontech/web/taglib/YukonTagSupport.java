@@ -1,5 +1,7 @@
 package com.cannontech.web.taglib;
 
+import java.util.Locale;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.jsp.JspContext;
@@ -13,10 +15,14 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.wiring.BeanWiringInfo;
 import org.springframework.beans.factory.wiring.BeanWiringInfoResolver;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
+import org.springframework.ui.context.Theme;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.springframework.web.servlet.support.RequestContextUtils;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
@@ -45,6 +51,15 @@ public class YukonTagSupport extends SimpleTagSupport {
         return (HttpServletRequest) pageContext.getRequest();
     }
     
+    protected MessageSourceAccessor getMessageSource() {
+    	HttpServletRequest request = getRequest();
+		Theme theme = RequestContextUtils.getTheme(request);
+		MessageSource messageSource = theme.getMessageSource();
+		Locale locale = RequestContextUtils.getLocale(request);
+		MessageSourceAccessor messageSourceAccessor = new MessageSourceAccessor(messageSource, locale);
+		
+		return messageSourceAccessor;
+    }
     @Override
     public void setJspContext(JspContext pc) {
         super.setJspContext(pc);

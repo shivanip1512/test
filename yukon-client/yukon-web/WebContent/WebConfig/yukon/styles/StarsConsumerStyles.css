@@ -188,6 +188,11 @@ div.movingBar {
     color: #FFFFFF;
 }
 
+.saturdaySundayText {
+    font-size: 11px;
+    color: #FFFFFF;
+}
+
 table.programTitle {
 	border: 1px solid #ccc;
 	white-space: nowrap;

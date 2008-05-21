@@ -1073,6 +1073,21 @@
             <description>The logo's I18N key</description>
         </attribute>
     </tag>
+
+    <tag>
+        <name>css</name>
+        <tag-class>com.cannontech.web.i18n.CssTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Outputs the css include for the given key or nothing if the key is not found
+        </description>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+            <description>The css file's I18N key</description>
+        </attribute>
+    </tag>
     
   
   <function>

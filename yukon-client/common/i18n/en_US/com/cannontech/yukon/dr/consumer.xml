@@ -130,6 +130,7 @@
     
     <!--  scheduleHints.jsp -->
     <entry key="yukon.dr.consumer.scheduleHints.header">Thermostat Schedule - Hints and Details</entry>
+    <entry key="yukon.dr.consumer.scheduleHints.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.scheduleHints.back">Back to Schedule</entry>
     <entry key="yukon.dr.consumer.scheduleHints.hint"><![CDATA[
         <p>The schedule page allows you to set your ongoing temperature schedule. Four time frames are available for weekdays (Monday through Friday), Saturdays, and Sundays. Within each of these time frames, you may select your cooling and heating temperatures. Simply use the following procedures.</p>
@@ -207,11 +208,12 @@
     <entry key="yukon.dr.consumer.thermostatSchedule.save">Save Schedule</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.saveApply">Save and Send Schedule</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.recommend">Recommended Settings</entry>
-    <entry key="yukon.dr.consumer.thermostatSchedule.name">Thermsotat Schedule Name:</entry>
+    <entry key="yukon.dr.consumer.thermostatSchedule.name">Thermostat Schedule Name:</entry>
     <entry key="yukon.dr.consumer.thermostatSchedule.noScheduleName">You must provide a schedule name.</entry>
     
     <!-- savedSchedules.jsp -->
     <entry key="yukon.dr.consumer.savedSchedules.header">Thermostat - Saved Schedules</entry>
+    <entry key="yukon.dr.consumer.savedSchedules.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.savedSchedules.chooseSchedule">Select a schedule to view:</entry>
     <entry key="yukon.dr.consumer.savedSchedules.viewSchedule">View Schedule</entry>
 
