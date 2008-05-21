@@ -1462,8 +1462,12 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		if (parentID == CtiUtilities.NONE_ZERO_ID) {
 			return CtiUtilities.STRING_NONE;
         } else {
-			LiteYukonPAObject parentPAO = paoDao.getLiteYukonPAO(parentID);
-			return parentPAO.getPaoName() + "   (" + PAOGroups.getPAOTypeString(parentPAO.getType()) + ",  id: " + parentPAO.getLiteID() + ")";
+            try {
+    			LiteYukonPAObject parentPAO = paoDao.getLiteYukonPAO(parentID);
+    			return parentPAO.getPaoName() + "   (" + PAOGroups.getPAOTypeString(parentPAO.getType()) + ",  id: " + parentPAO.getLiteID() + ")";
+            }catch (NotFoundException nfe) {
+                return CtiUtilities.STRING_NONE;
+            }
 		}
 	}
 
