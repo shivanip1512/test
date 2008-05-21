@@ -131,9 +131,12 @@ public class CapControlSVGGenerator extends BaseSVGGenerator {
 
         }
         else if (isCapBankImage(comp) && getGenOptions().isScriptingEnabled()) {
-            String str = comp.getName();
-            String id = OnelineUtil.extractObjectIdFromString(str);
-            addDynamicAttributes(elem, CommandPopups.CAP_COMMAND + "_" + id);
+            StateImage stateImage = (StateImage)comp;
+            if(stateImage.getControlEnabled()) {
+                String str = comp.getName();
+                String id = OnelineUtil.extractObjectIdFromString(str);
+                addDynamicAttributes(elem, CommandPopups.CAP_COMMAND + "_" + id);
+            }
         }
         if (isWarningImage(comp) && getGenOptions().isScriptingEnabled()) {
         	String str = comp.getName();

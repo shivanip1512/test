@@ -143,8 +143,11 @@ public class OnelineCap extends OnelineObject {
         stateImage.setX(imgXPos);
         stateImage.setName(getName());
         stateImage.setCenterY(xImgYPos + 30);
+        stateImage.setLinkTo("javascript:void(0)");
         if (isCommandsFlag()) {
-        	stateImage.setLinkTo("javascript:void(0)");
+            stateImage.setControlEnabled(true);
+        } else { 
+            stateImage.setControlEnabled(false);
         }
     }
     
