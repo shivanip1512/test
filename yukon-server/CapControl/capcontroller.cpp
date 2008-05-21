@@ -3149,7 +3149,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 getCCEventMsgQueueHandle().write(multiCCEventMsg);
 
                                 currentCapBank->setLastStatusChangeTime(CtiTime());
-
+                                currentCapBank->setControlRecentlySentFlag(FALSE);
                                 
                                 //SYNC with what CBC is reporting.
                                 currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
@@ -3213,9 +3213,9 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 if ( !currentFeeder->getRecentlyControlledFlag() && 
                                      !currentSubstationBus->getRecentlyControlledFlag() &&
                                      currentCapBank->getControlRecentlySentFlag() &&
-                                     currentCapBank->getLastStatusChangeTime() <= CtiTime(CtiTime().seconds() - 30) &&
-                                     (currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
-                                     currentCapBank->getControlStatus() == CtiCCCapBank::Close) )
+                                     ( (currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
+                                        currentCapBank->getControlStatus() == CtiCCCapBank::Close ) &&
+                                       value ==  currentCapBank->getControlStatus()) )
                                 {
                                     currentCapBank->setControlRecentlySentFlag(FALSE);
                                 }
@@ -3469,7 +3469,7 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                     CtiLockGuard<CtiLogger> logger_guard(dout);
                     dout << CtiTime() << " - Porter Return May Indicate a Comm Failure!!  Bus: " << currentSubstationBus->getPAOName() << ", Feeder: " << currentFeeder->getPAOName()<< ", CapBank: " << currentCapBank->getPAOName() << endl;
                 }
-
+                currentCapBank->setControlRecentlySentFlag(FALSE);
                 if( currentCapBank->getStatusPointId() > 0 )
                 {
                     string additional = ("Sub: ");
