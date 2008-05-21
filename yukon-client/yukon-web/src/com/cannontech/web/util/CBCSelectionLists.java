@@ -123,13 +123,13 @@ public class CBCSelectionLists {
 	private static final SelectItem[] scheduleCmds =  {
 		//value, label
 		new SelectItem("(none)", "Please Select A Command" ),
-		new SelectItem("Verify ALL CapBanks", "ALL CapBanks" ),
-		new SelectItem("Verify Failed CapBanks", "Failed CapBanks" ),
-		new SelectItem("Verify Failed and Questionable CapBanks", "Failed and Questionable..." ),
-		new SelectItem("Verify Standalone CapBanks", "Standalone CapBanks" ),
-		new SelectItem("Verify Questionable CapBanks", "Questionable CapBanks" ),
+		new SelectItem("Verify ALL CapBanks", "Verify ALL CapBanks" ),
+		new SelectItem("Verify Failed CapBanks", "Verify Failed CapBanks" ),
+		new SelectItem("Verify Failed and Questionable CapBanks", "Verify Failed and Questionable..." ),
+		new SelectItem("Verify Standalone CapBanks", "Verify Standalone CapBanks" ),
+		new SelectItem("Verify Questionable CapBanks", "Verify Questionable CapBanks" ),
+		new SelectItem("Verify CapBanks that have not operated in 0 min 0 hr 0 day 0 wk", "Verify Cap Banks Not operated in..." ),
         new SelectItem("Confirm Sub", "Confirm Sub" ),
-        new SelectItem("Verify Cap Banks that have not operated in 0 min 0 hr 0 day 0 wk", "Not operated in..." ),
         new SelectItem("Send Time Syncs","Send Time Syncs")
 	};
 
