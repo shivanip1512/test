@@ -48,7 +48,17 @@ public class YukonLoginController extends MultiActionController {
             }
         } else {
             ServletUtil.deleteAllCookies(request, response);
-            redirect = ServletUtil.createSafeUrl(request, LoginController.INVALID_URI);
+
+            String referer = request.getHeader("Referer");
+            referer = (referer != null) ? referer : LoginController.INVALID_URI;
+            
+            redirect = ServletUtil.createSafeRedirectUrl(request, referer);
+            
+            if(redirect.contains("?")){
+            	redirect = redirect + "&failed=true";
+            } else {
+            	redirect = redirect + "?failed=true";
+            }
         }
         return new ModelAndView("redirect:" + redirect);
     }
