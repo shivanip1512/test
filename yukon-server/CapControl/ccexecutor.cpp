@@ -2850,7 +2850,15 @@ void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(LONG feederId, int control
         CtiCCSubstationBusPtr currentSubstationBus = store->findSubBusByPAObjectID(currentFeeder->getParentId());
         if (currentSubstationBus != NULL)
         {
-
+            CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
+            for(LONG j=0;j<ccFeeders.size();j++)
+            {
+                currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                if( currentFeeder->getPAOId() == feederId )
+                {
+                    currentSubstationBus->setLastFeederControlledPosition(j);
+                }
+            }
             CtiCCCapBank_SVector& ccCapBanks = currentFeeder->getCCCapBanks();
             
             for(LONG k=0;k<ccCapBanks.size();k++)
@@ -2869,6 +2877,7 @@ void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(LONG feederId, int control
                         if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                             currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
                         currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
+                        currentSubstationBus->setLastFeederControlledPosition(0);
                         currentSubstationBus->setLastOperationTime(CtiTime());
                         currentFeeder->setLastOperationTime(CtiTime());
                         if (control == CtiCCCapBank::Close || control == CtiCCCapBank::CloseQuestionable || 
@@ -4651,7 +4660,7 @@ void CtiCCCommandExecutor::ConfirmSub()
                             {
                                 text += "Open Sent, Sub VarLoad = ";
                                 //currentCapBank->setControlStatus(CtiCCCapBank::Open);
-                                store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Open, 
+                                store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::OpenPending, 
                                                                        currentCapBank, TRUE);
 
 
@@ -4663,7 +4672,7 @@ void CtiCCCommandExecutor::ConfirmSub()
                             {
                                 text += "Close Sent, Sub VarLoad = ";
                                 //currentCapBank->setControlStatus(CtiCCCapBank::Close);
-                                store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::Close, 
+                                store->setControlStatusAndIncrementOpCount(pointChanges, CtiCCCapBank::ClosePending, 
                                                                        currentCapBank, TRUE);
                             }
                             currentCapBank->setControlStatusQuality(CC_Normal);
@@ -4691,7 +4700,7 @@ void CtiCCCommandExecutor::ConfirmSub()
                             
                             if( controlID > 0 )
                             {
-                                if (currentCapBank->getControlStatus() == CtiCCCapBank::Open) 
+                                if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending) 
                                 {
                                     CtiRequestMsg* reqMsg = new CtiRequestMsg(controlID,"control open");
                                     reqMsg->setSOE(2);

@@ -5034,7 +5034,13 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                            setSolution(text);
                            if( currentCapBank->getStatusPointId() > 0 )
                            {
-                               if (!currentCapBank->getPorterRetFailFlag())
+                               if (currentCapBank->getPorterRetFailFlag() && currentCapBank->getIgnoreFlag())
+                               {
+                                     currentCapBank->setVCtrlIndex(5);
+                                     currentCapBank->setVerificationDoneFlag(TRUE);
+                                     currentCapBank->setIgnoreFlag(FALSE);
+                               }
+                               else
                                {
                                    if( text.length() > 0 )
                                    {//if control failed or questionable, create event to be sent to dispatch
@@ -5065,9 +5071,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                                                            currentCapBank->getIpAddress(), actionId, stateInfo,
                                                                            getPhaseAValue(), getPhaseBValue(), getPhaseCValue()));
                                }
-                               else
-                                   currentCapBank->setPorterRetFailFlag(FALSE);
-                                   
+                               currentCapBank->setPorterRetFailFlag(FALSE);
+                               
+                                
                            }
                            else
                            {
@@ -5554,9 +5560,15 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                    setSolution(text);
                    if( currentCapBank->getStatusPointId() > 0 )
                    {
-                       if (!currentCapBank->getPorterRetFailFlag())
+
+                       if (currentCapBank->getPorterRetFailFlag() && currentCapBank->getIgnoreFlag())
                        {
-                                   
+                             currentCapBank->setVCtrlIndex(5);
+                             currentCapBank->setVerificationDoneFlag(TRUE);
+                             currentCapBank->setIgnoreFlag(FALSE);
+                       }
+                       else
+                       {
                            if( text.length() > 0 )
                            {//if control failed or questionable, create event to be sent to dispatch
                                long tempLong = currentCapBank->getStatusPointId();
@@ -5590,8 +5602,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                                                                     actionId, stateInfo,
                                                                    getPhaseAValue(), getPhaseBValue(), getPhaseCValue()));
                        }
-                       else
-                           currentCapBank->setPorterRetFailFlag(FALSE);
+                       currentCapBank->setPorterRetFailFlag(FALSE);
 
                    }
                    else

@@ -4300,7 +4300,13 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
         
                if( currentCapBank->getStatusPointId() > 0 )
                {
-                   if (!currentCapBank->getPorterRetFailFlag())
+                   if (currentCapBank->getPorterRetFailFlag() && currentCapBank->getIgnoreFlag())
+                   {
+                         currentCapBank->setVCtrlIndex(5);
+                         currentCapBank->setVerificationDoneFlag(TRUE);
+                         currentCapBank->setIgnoreFlag(FALSE);
+                   }
+                   else
                    {
                        if( text.length() > 0 )
                        {//if control failed or questionable, create event to be sent to dispatch
@@ -4330,8 +4336,7 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
                                                                getCurrentVarLoadPointValue(), change, currentCapBank->getIpAddress(), actionId, 
                                                                stateInfo, varAValue, varBValue, varCValue));
                    }
-                   else
-                       currentCapBank->setPorterRetFailFlag(FALSE);
+                   currentCapBank->setPorterRetFailFlag(FALSE);
                }
                else
                {
@@ -4705,7 +4710,13 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
 
            if( currentCapBank->getStatusPointId() > 0 )
            {
-               if (!currentCapBank->getPorterRetFailFlag())
+               if (currentCapBank->getPorterRetFailFlag() && currentCapBank->getIgnoreFlag())
+               {
+                     currentCapBank->setVCtrlIndex(5);
+                     currentCapBank->setVerificationDoneFlag(TRUE);
+                     currentCapBank->setIgnoreFlag(FALSE);
+               }
+               else
                {
                    if( text.length() > 0 )
                    {//if control failed or questionable, create event to be sent to dispatch
@@ -4736,9 +4747,9 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
                                                                    changeA+changeB+changeC, 
                                                                    currentCapBank->getIpAddress(), actionId, 
                                                            stateInfo, varAValue, varBValue, varCValue));
+                   
                }
-               else
-                   currentCapBank->setPorterRetFailFlag(FALSE);
+               currentCapBank->setPorterRetFailFlag(FALSE);
            }
            else
            {

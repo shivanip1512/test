@@ -3128,14 +3128,16 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 {
                                     currentCapBank->setPorterRetFailFlag(TRUE);
                                     userName += " verification";
+                                    currentCapBank->setPercentChangeString(" verify set to CBC state ");
                                 }
-
+                                
                                 sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
                                 LONG stationId, areaId, spAreaId;
                                 int actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
                                 store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
-
+                                
                                 ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
+                                
                                 
                                 if( currentCapBank->getOperationAnalogPointId() > 0 )
                                 {
@@ -3486,22 +3488,26 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                     string userName = "cap control";
                     if (currentCapBank->getVerificationFlag())
                     {
-                        currentCapBank->setPorterRetFailFlag(TRUE);
                         userName += " verification";
 
-                        if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
-                            currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                        if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702"))
                         {
-                            currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                            currentCapBank->setPorterRetFailFlag(TRUE);
+                            
+                            if (currentCapBank->getControlStatus() == CtiCCCapBank::CloseQuestionable ||
+                                currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
+                            {
+                                currentCapBank->setControlStatus(CtiCCCapBank::CloseFail);
+                            }
+                            else if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
+                                     currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
+                            {
+                                currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
+                            }  
+                            currentFeeder->setPorterRetFailFlag(TRUE);
+                            currentSubstationBus->checkAndUpdateRecentlyControlledFlag();
                         }
-                        else if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenQuestionable ||
-                                 currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending)
-                        {
-                            currentCapBank->setControlStatus(CtiCCCapBank::OpenFail);
-                        }
-                        currentFeeder->setPorterRetFailFlag(TRUE);
-                        currentSubstationBus->checkAndUpdateRecentlyControlledFlag();
-
+                        
                     }
 
                     else if (!stringContainsIgnoreCase(currentCapBank->getControlDeviceType(),"CBC 702") ) 
