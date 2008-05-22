@@ -233,29 +233,29 @@ public class CapControlCommandController extends MultiActionController {
 
         if (cmdId == CapControlCommand.BANK_ENABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_ENABLE_OVUV) {
             
-            updatedReason = "PaoID " + paoId + " Enabled OVUV by " + userName;
+            updatedReason = "Device with Id " + paoId + " Enabled OVUV by " + userName;
             
         } else if (cmdId == CapControlCommand.BANK_DISABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_DISABLE_OVUV) {
             
-            updatedReason = "PaoID " + paoId + " Disabled OVUV by " + userName;
+            updatedReason = "Device with Id " + paoId + " Disabled OVUV by " + userName;
 
         } else if ( cmdId == CapControlCommand.ENABLE_CAPBANK || 
         			cmdId == CapControlCommand.ENABLE_AREA || 
         			cmdId == CapControlCommand.ENABLE_FEEDER ||
         			cmdId == CapControlCommand.ENABLE_SUBBUS) {
 
-        	updatedReason = "PaoID " + paoId + " Enabled by " + userName;
+        	updatedReason = "Device with Id " + paoId + " Enabled by " + userName;
 
         } else if ( cmdId == CapControlCommand.DISABLE_CAPBANK || 
     			cmdId == CapControlCommand.DISABLE_AREA || 
     			cmdId == CapControlCommand.DISABLE_FEEDER ||
     			cmdId == CapControlCommand.DISABLE_SUBBUS) {
 
-        	updatedReason = "PaoID " + paoId + " Disabled by " + userName;
+        	updatedReason = "Device with Id " + paoId + " Disabled by " + userName;
 
         } else if (cmdId == CapControlCommand.OPERATIONAL_STATECHANGE) {
 
-        	updatedReason = "PaoID " + paoId + " Operational State updated by " + userName;
+        	updatedReason = "Device with Id " + paoId + " Operational State updated by " + userName;
 
         }
         
