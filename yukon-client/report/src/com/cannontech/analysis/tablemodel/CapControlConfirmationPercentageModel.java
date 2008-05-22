@@ -22,9 +22,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
     
     static public class ModelRow {
         public String Region;
-        public String OpCenter;
-        public String TA;
-        public String SubName;
+       public String SubName;
         public String FeederName;
         public String BankName;
         public String CBCName;
@@ -79,8 +77,6 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
                     try {
                         CapControlConfirmationPercentageModel.ModelRow row = new CapControlConfirmationPercentageModel.ModelRow();
                         row.Region = rs.getString("Region");
-                        row.OpCenter = rs.getString("OpCenter");
-                        row.TA = rs.getString("TA");
                         row.SubName = rs.getString("SubBusName");
                         row.FeederName = rs.getString("FeederName");
                         row.BankName = rs.getString("capBankName");
@@ -90,7 +86,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
                         row.Questionable = rs.getInt("Questionable");
                         row.Failure = rs.getInt("Failure");
                         row.Refusals = rs.getInt("Refusals");
-                        double successRate = (((row.Success.doubleValue() + row.Questionable.doubleValue()) / row.Attempts.doubleValue() - row.Refusals.doubleValue())* 100.0);
+                        double successRate = ((row.Success.doubleValue() + row.Questionable.doubleValue()) / (row.Attempts.doubleValue() - row.Refusals.doubleValue())* 100.0);
                         
                         String successString = twoPlaces.format(successRate);
                         successString += "%";
