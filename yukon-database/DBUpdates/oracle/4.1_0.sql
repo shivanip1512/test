@@ -554,6 +554,12 @@ INSERT INTO YukonRoleProperty VALUES(-40200,-400,'Create Login For Account','fal
 /* @error ignore-end */
 /* End Yuk-5900 */
 
+/* Start Yuk-5872 */
+INSERT INTO DeviceGroup (DeviceGroupId, GroupName, ParentDeviceGroupId, Permission, Type) 
+SELECT MAX(DeviceGroupID)+1,'Temporary',12,'HIDDEN','STATIC' 
+FROM DeviceGroup; 
+/* End Yuk-5872 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
