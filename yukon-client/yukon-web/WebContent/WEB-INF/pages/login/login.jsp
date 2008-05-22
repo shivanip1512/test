@@ -127,7 +127,7 @@
         </div>
 
         <div class="loginCopyright">
-            <jsp:include page="/include/full_copyright.jsp" />
+            <cti:msg key="yukon.web.layout.standard.copyrightFull"></cti:msg>
         </div>
 
     </body>

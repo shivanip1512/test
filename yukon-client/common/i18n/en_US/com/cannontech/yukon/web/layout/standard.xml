@@ -4,6 +4,7 @@
 <entry key="yukon.web.layout.standard.upperrightlogo">/WebConfig/yukon/YukonBW.gif</entry>
 <entry key="yukon.web.layout.standard.yukonVersion">Yukon Version {0}</entry>
 <entry key="yukon.web.layout.standard.copyright">Copyright © 2002-2008, Cannon Technologies. All rights reserved.</entry>
+<entry key="yukon.web.layout.standard.copyrightFull">Copyright © 2002-2008, Cooper Industries, Ltd.  Yukon is a valuable trademark of Cooper Industries, Ltd. In the U.S. and other countries. You are not permitted to use the Cooper Industries trademarks without prior written consent of Cooper Industries.</entry>
 
 
 </properties>
