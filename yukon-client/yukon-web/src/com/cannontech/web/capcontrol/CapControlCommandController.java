@@ -20,6 +20,8 @@ import com.cannontech.cbc.web.CapControlCommandExecutor;
 import com.cannontech.cbc.web.CapControlType;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.AuthDao;
+import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
@@ -57,7 +59,11 @@ public class CapControlCommandController extends MultiActionController {
 	    if (reason != null) {
 	        insertComment(paoId, user.getUserID(), reason, cmdId);
 	    }else if(forceComment.equalsIgnoreCase("true")) {
-	        insertComment(paoId, user.getUserID(), CapControlCommand.getCommandString(cmdId), cmdId);
+	        String commandName = CapControlCommand.getCommandString(cmdId);
+	        if(cmdId == 22 || cmdId == 23) {
+	            commandName = commandName +" "+ controlTypeString;
+	        }
+	        insertComment(paoId, user.getUserID(), commandName, cmdId);
 	    }
 	    
 	    String redirectURL = ServletRequestUtils.getStringParameter(request, "redirectURL");
@@ -202,7 +208,9 @@ public class CapControlCommandController extends MultiActionController {
         if (operationalStateChange) {
 	        int cmdId = getOperationalStateCommandId();
         	String reason = ServletRequestUtils.getStringParameter(request, "operationalStateReason", defaultReason);
-        	if (reason.equals(emptyString) || reason.equals(defaultReason)) reason = generateUpdateReason(cmdId, paoId, user.getUsername());
+        	if (reason.equals(emptyString) || reason.equals(defaultReason)) {
+        	    reason = generateUpdateReason(cmdId, paoId, user.getUsername());
+        	}
 
         	insertComment(paoId, user.getUserID(), reason, cmdId);
             exec.execute(controlType, cmdId, paoId, null, operationalStateValue);
@@ -230,32 +238,34 @@ public class CapControlCommandController extends MultiActionController {
     private String generateUpdateReason(final int cmdId, final int paoId, final String userName) {
         //Check what the empty case will be
     	String updatedReason = defaultReason;
+    	PaoDao paoDao = DaoFactory.getPaoDao();
+    	String paoName = paoDao.getYukonPAOName(paoId);
 
         if (cmdId == CapControlCommand.BANK_ENABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_ENABLE_OVUV) {
             
-            updatedReason = "Device with Id " + paoId + " Enabled OVUV by " + userName;
+            updatedReason = paoName + " Enabled OVUV by " + userName;
             
         } else if (cmdId == CapControlCommand.BANK_DISABLE_OVUV || cmdId == CapControlCommand.SEND_ALL_DISABLE_OVUV) {
             
-            updatedReason = "Device with Id " + paoId + " Disabled OVUV by " + userName;
+            updatedReason = paoName + " Disabled OVUV by " + userName;
 
         } else if ( cmdId == CapControlCommand.ENABLE_CAPBANK || 
         			cmdId == CapControlCommand.ENABLE_AREA || 
         			cmdId == CapControlCommand.ENABLE_FEEDER ||
         			cmdId == CapControlCommand.ENABLE_SUBBUS) {
 
-        	updatedReason = "Device with Id " + paoId + " Enabled by " + userName;
+        	updatedReason = paoName + " Enabled by " + userName;
 
         } else if ( cmdId == CapControlCommand.DISABLE_CAPBANK || 
     			cmdId == CapControlCommand.DISABLE_AREA || 
     			cmdId == CapControlCommand.DISABLE_FEEDER ||
     			cmdId == CapControlCommand.DISABLE_SUBBUS) {
 
-        	updatedReason = "Device with Id " + paoId + " Disabled by " + userName;
+        	updatedReason = paoName + " Disabled by " + userName;
 
         } else if (cmdId == CapControlCommand.OPERATIONAL_STATECHANGE) {
 
-        	updatedReason = "Device with Id " + paoId + " Operational State updated by " + userName;
+        	updatedReason =paoName + " Operational State updated by " + userName;
 
         }
         
