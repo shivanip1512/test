@@ -5355,7 +5355,7 @@ BOOL CtiCCFeeder::isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxC
 BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long quality, DOUBLE varAValueBeforeControl, 
                              DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl, 
                              DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, 
-                             double oldVarValue, double newVarValue)
+                             double oldVarValue, double newVarValue,  BOOL usePhaseData, BOOL useTotalizedControl)
 {
     BOOL returnBoolean = FALSE;
     BOOL found = FALSE;
@@ -5378,7 +5378,7 @@ BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
                     if( currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending ||
                         currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending)
                     {
-                        if ( getUsePhaseData() && !getTotalizedControlFlag() )
+                        if ( usePhaseData && !useTotalizedControl )
                         {
                             double ratioA;
                             double ratioB;
@@ -5455,7 +5455,7 @@ BOOL CtiCCFeeder::isVerificationAlreadyControlled(long minConfirmPercent, long q
                     if (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending || 
                         currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                     {
-                        if ( getUsePhaseData() && !getTotalizedControlFlag() )
+                        if ( usePhaseData && !useTotalizedControl )
                         {
                             double ratioA;
                             double ratioB;

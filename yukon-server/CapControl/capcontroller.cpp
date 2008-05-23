@@ -3300,8 +3300,10 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                             }
                             else if (twoWayPts->getVoltageId() == pointID)
                             {
-                                if( twoWayPts->getVoltage() > twoWayPts->getOvSetPoint() ||  
-                                    twoWayPts->getVoltage() < twoWayPts->getUvSetPoint())
+                                if( ( twoWayPts->getVoltage() > twoWayPts->getOvSetPoint() &&
+                                      twoWayPts->getCapacitorBankState() == CtiCCCapBank::Open ) ||  
+                                    ( twoWayPts->getVoltage() < twoWayPts->getUvSetPoint() &&
+                                      twoWayPts->getCapacitorBankState() == CtiCCCapBank::Close ))
                                 {
                                     if (!currentCapBank->getOvUvSituationFlag())
                                     {

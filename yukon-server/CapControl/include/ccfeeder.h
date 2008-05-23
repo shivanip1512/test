@@ -395,7 +395,8 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
 
     BOOL isVerificationAlreadyControlled(long minConfirmPercent, long quality, DOUBLE varAValueBeforeControl, 
                              DOUBLE varBValueBeforeControl, DOUBLE varCValueBeforeControl, 
-                             DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, double oldVarValue, double newVarValue);
+                             DOUBLE varAValue, DOUBLE varBValue, DOUBLE varCValue, double oldVarValue, double newVarValue,
+                             BOOL usePhaseData, BOOL useTotalizedControl);
     
 
 

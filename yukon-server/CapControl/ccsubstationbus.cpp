@@ -4696,7 +4696,7 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
     BOOL vResult = FALSE; //fail
 
 
-    if (getUsePhaseData() && !getTotalizedControlFlag())
+    if (getUsePhaseData() && !getTotalizedControlFlag() ) 
     {
         returnBoolean = capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents);
     }
@@ -4716,9 +4716,10 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                     failPercent = currentFeeder->getFailurePercent();
                 }
 
-                if( (!stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                     !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod)) &&
-                    currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag() )
+                if( ((!stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) ||
+                     !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
+                     !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod)) &&
+                     currentFeeder->getUsePhaseData() && !currentFeeder->getTotalizedControlFlag() ) )
                 {
                     returnBoolean = currentFeeder->capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents,
                                                                                            minConfirmPercent, failPercent);
@@ -4741,7 +4742,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    getCurrentVarPointQuality() == NormalQuality )
                                {    
                                    if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                       !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                       !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
+                                       (!stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod) &&
+                                       currentFeeder->getCurrentVarLoadPointId() > 0 ) )
                                    {
                                        newValue =  currentFeeder->getCurrentVarLoadPointValue();
                                        if( _RATE_OF_CHANGE && currentFeeder->getRegression().depthMet() )
@@ -4873,7 +4876,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                    getCurrentVarPointQuality() == NormalQuality )
                                {
                                    if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                                       !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                                       !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
+                                       (!stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod) &&
+                                       currentFeeder->getCurrentVarLoadPointId() > 0 ))
                                    {
                                        newValue =  currentFeeder->getCurrentVarLoadPointValue();
                                        if( _RATE_OF_CHANGE && currentFeeder->getRegression().depthMet() )
@@ -5181,7 +5186,10 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            getCurrentVarPointQuality() == NormalQuality )
                        {    
                            if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                               !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                               !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
+                              (!stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod) &&
+                                currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 && 
+                                currentFeeder->getPhaseCId() > 0 )  )
                            {
                                varAValue = currentFeeder->getPhaseAValue(); 
                                varBValue = currentFeeder->getPhaseBValue(); 
@@ -5361,7 +5369,10 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                            getCurrentVarPointQuality() == NormalQuality )
                        {
                            if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                               !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) )
+                               !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
+                              (!stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod) &&
+                                currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 && 
+                                currentFeeder->getPhaseCId() > 0 )  )
                            {
                                varAValue = currentFeeder->getPhaseAValue(); 
                                varBValue = currentFeeder->getPhaseBValue(); 
@@ -6827,7 +6838,9 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                                                                    currentFeeder->getPhaseCValueBeforeControl(),currentFeeder->getPhaseAValue(),
                                                                    currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue(),
                                                                    currentFeeder->getVarValueBeforeControl(), 
-                                                                   currentFeeder->getCurrentVarLoadPointValue()) )
+                                                                   currentFeeder->getCurrentVarLoadPointValue(), 
+                                                                   currentFeeder->getUsePhaseData(), 
+                                                                   currentFeeder->getTotalizedControlFlag() )  )
                 {
                     returnBoolean = TRUE;
                     break;
@@ -6858,6 +6871,8 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
             DOUBLE phaseAValue  = getPhaseAValue(); 
             DOUBLE phaseBValue  = getPhaseBValue(); 
             DOUBLE phaseCValue  = getPhaseCValue();
+            BOOL usePhaseData   = getUsePhaseData();
+            BOOL totalizedControlFlag = getTotalizedControlFlag();
 
             for(LONG i=0;i<_ccfeeders.size();i++)
             {
@@ -6873,7 +6888,12 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                     minConfirmPercent = currentFeeder->getMinConfirmPercent();
                 }
                 if( !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::IndividualFeederControlMethod) ||
-                    !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod))
+                    !stringCompareIgnoreCase(_controlmethod, CtiCCSubstationBus::BusOptimizedFeederControlMethod) ||
+                    ( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod) && 
+                      currentFeeder->getCurrentVarLoadPointId() > 0 && !currentFeeder->getUsePhaseData() ) ||
+                    ( !stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod) && 
+                      currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 && 
+                      currentFeeder->getPhaseCId() > 0 && currentFeeder->getUsePhaseData() ) )
                 {
 
                     quality = currentFeeder->getCurrentVarPointQuality();
@@ -6884,9 +6904,13 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                     beforeCValue = currentFeeder->getPhaseCValueBeforeControl(); 
                     phaseAValue = currentFeeder->getPhaseAValue();               
                     phaseBValue = currentFeeder->getPhaseBValue();               
-                    phaseCValue = currentFeeder->getPhaseCValue();               
+                    phaseCValue = currentFeeder->getPhaseCValue(); 
+                    usePhaseData = currentFeeder->getUsePhaseData();
+                    totalizedControlFlag = currentFeeder->getTotalizedControlFlag();
 
                 }
+                 
+
                 if( currentFeeder->isVerificationAlreadyControlled(minConfirmPercent,quality,
                                                                    beforeAValue,
                                                                    beforeBValue, 
@@ -6894,7 +6918,10 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                                                                    phaseAValue, 
                                                                    phaseBValue, 
                                                                    phaseCValue, 
-                                                                   oldCalcValue,newCalcValue) )
+                                                                   oldCalcValue,
+                                                                   newCalcValue,
+                                                                   usePhaseData, 
+                                                                   totalizedControlFlag) )
                 {
                     returnBoolean = TRUE;
                 }
@@ -6942,7 +6969,9 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
                                                                    currentCCFeeder->getPhaseBValue(), 
                                                                    currentCCFeeder->getPhaseCValue(), 
                                                                    currentCCFeeder->getVarValueBeforeControl(), 
-                                                                   currentCCFeeder->getCurrentVarLoadPointValue())
+                                                                   currentCCFeeder->getCurrentVarLoadPointValue(),
+                                                                   currentCCFeeder->getUsePhaseData(), 
+                                                                   currentCCFeeder->getTotalizedControlFlag())
                  || currentCCFeeder->isPastMaxConfirmTime(currentDateTime,maxConfirmTime,sendRetries))
             {
 
@@ -6955,7 +6984,10 @@ CtiCCSubstationBus& CtiCCSubstationBus::analyzeVerificationByFeeder(const CtiTim
                                                                        currentCCFeeder->getPhaseAValue(), 
                                                                        currentCCFeeder->getPhaseBValue(), 
                                                                        currentCCFeeder->getPhaseCValue(),
-                                                                       currentCCFeeder->getVarValueBeforeControl(), currentCCFeeder->getCurrentVarLoadPointValue()) && 
+                                                                       currentCCFeeder->getVarValueBeforeControl(), 
+                                                                       currentCCFeeder->getCurrentVarLoadPointValue(),
+                                                                       currentCCFeeder->getUsePhaseData(), 
+                                                                       currentCCFeeder->getTotalizedControlFlag()) && 
                     currentDateTime.seconds() < currentCCFeeder->getLastOperationTime().seconds() + maxConfirmTime)
                 {
                     if(currentCCFeeder->checkForAndPerformVerificationSendRetry(currentDateTime, pointChanges, ccEvents, pilMessages, maxConfirmTime, sendRetries))
@@ -9610,8 +9642,19 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                             else
                             {
                                 text = currentFeeder->createTextString(getControlMethod(), CtiCCCapBank::Close, getCurrentVarLoadPointValue(),  getCurrentVarLoadPointValue());
-                                request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue(),
+                                if ( (currentFeeder->getCurrentVarLoadPointId() > 0 && !currentFeeder->getUsePhaseData() )  ||
+                                     (currentFeeder->getCurrentVarLoadPointId() > 0 && currentFeeder->getPhaseBId() > 0 
+                                      && currentFeeder->getPhaseCId() > 0 && currentFeeder->getUsePhaseData() ) )
+                                {
+                                    request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  currentFeeder->getCurrentVarLoadPointValue(),
+                                                                                      currentFeeder->getPhaseAValue(), currentFeeder->getPhaseBValue(), currentFeeder->getPhaseCValue());
+                                }
+                                else
+                                {
+                                    //assume substation points...
+                                    request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue(),
                                                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
+                                }
                             }
                         }
                         catch(...)
