@@ -4,7 +4,7 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<cti:standardPage module="consumer" title="thermostat">
+<cti:standardPage module="consumer" page="thermostat">
     <cti:standardMenu/>
     
     <cti:includeScript link="/JavaScript/temp_conversion.js" />
