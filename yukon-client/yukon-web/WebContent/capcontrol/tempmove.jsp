@@ -5,6 +5,7 @@
 <%@ page import="com.cannontech.spring.YukonSpringHook" %>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache" %>
 <%@ page import="com.cannontech.cbc.cache.FilterCacheFactory" %>
+<%@ page import="com.cannontech.core.dao.PaoDao" %>
 
 <!-- Layout CSS files -->
 <link rel="stylesheet" type="text/css" href="/WebConfig/yukon/CannonStyle.css" >
@@ -34,7 +35,9 @@
 	LiteYukonUser user = (LiteYukonUser) session.getAttribute(LoginController.YUKON_USER);
 	final CBCDisplay cbcDisplay = new CBCDisplay(user);
 	CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
-
+	CapControlCache capControlCache = YukonSpringHook.getBean("capControlCache", CapControlCache.class);
+	PaoDao paoDao = YukonSpringHook.getBean("paoDao", PaoDao.class);
+	
 	int bankid = ParamUtil.getInteger(request, "bankid");
 	int subbusID = 0;
 	boolean oneline = ParamUtil.getBoolean(request,"oneline",false);
@@ -48,6 +51,15 @@
 	{
 		oldfdrid = capBank.getParentID();
 	}
+	String path = capBank.getCcName(); 
+    path += " > ";
+    path += paoDao.getYukonPAOName(capBank.getParentID());
+    path += " > ";
+    path += paoDao.getYukonPAOName(capControlCache.getFeeder(capBank.getParentID()).getParentID());
+    path += " > ";
+    path += paoDao.getYukonPAOName(capControlCache.getSubBus(capControlCache.getFeeder(capBank.getParentID()).getParentID()).getParentID());
+    path += " > ";
+    path += paoDao.getYukonPAOName(capControlCache.getSubstation(capControlCache.getSubBus(capControlCache.getFeeder(capBank.getParentID()).getParentID()).getParentID()).getParentID());
 %>
 
 <c:url var="controlOrderPage" value="/capcontrol/feederBankInfo.jsp"/>
@@ -104,30 +116,22 @@ Event.observe(window, 'load', updateFeederBankInfo );
 	<input type="hidden" name="selectedFeeder" value=<%=oldfdrid%> id="selectedFeeder">
 
    <table id="innerTable" style="margin-left: 5%; margin-right: 5%;" border="0" cellspacing="0" cellpadding="0">
-<tr class="columnHeader lAlign">
-	<td>Select Feeder Below</td>
-	<td></td>
-	<td class="rAlign">Display Order:
-	<input type="text" id="txtDisplayOrder" class="tableCell" size="1" maxlength="3" value="1.5">
-	</td>
-	<td class="rAlign">Close Order:
-	<input type="text" id="txtCloseOrder" class="tableCell" size="1" maxlength="3" value="1.5">
-	</td>
-	<td class="rAlign">Trip Order:
-	<input type="text" id="txtTripOrder" class="tableCell" size="1" maxlength="3" value="1.5">
-	</td>
-	<td class="rAlign"><input id="submitOne" type="button" value="Submit" onclick="setFeederIDinRedirectURL(getSelectedFeeder(),<%=oneline %>,<%=subbusID %>);postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip') );" />
-	</td>
-</tr>
-
-</table>   
+        <tr><td class="columnHeader" colspan="4">Temp Move for: <%=path %></td></tr>
+        <tr height="5px"/>
+		<tr class="columnHeader lAlign">
+            <td class="rAlign"><input id="submitOne" type="button" value="Submit" onclick="setFeederIDinRedirectURL(getSelectedFeeder(),<%=oneline %>,<%=subbusID %>);postMany('frmCapBankMove', 'opt[1]', getSelectedFeeder(), 'opt[2]', getOrder('Display'), 'opt[3]', getOrder('Close'), 'opt[4]', getOrder('Trip') );" /></td>
+			<td class="rAlign">Display Order: <input type="text" id="txtDisplayOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
+			<td class="rAlign">Close Order: <input type="text" id="txtCloseOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
+			<td class="rAlign">Trip Order: <input type="text" id="txtTripOrder" class="tableCell" size="1" maxlength="3" value="1.5"></td>
+		</tr>
+    </table>   
 
 <div id="ControlOrders" style="margin-left: 5%; margin-right: 5%;height:25%;max-height:25%;margin-bottom:2%;margin-top:2%;">
 
 </div>
 
       <div style="margin-left: 5%; margin-right: 5%;" >
-<cti:titledContainer title="Feeders Eligible for the Move" >
+<cti:titledContainer title="Feeders Eligible for the Move | Select a feeder below:" >
 
 <div style=" height: 275px; overflow: auto">
 <%

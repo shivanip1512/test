@@ -684,20 +684,10 @@ for( int i = 0; i < capBanks.size(); i++ ) {
 	                    <% if (capBank.isBankMoved()) { %>
 		                    class="warning" 
 		                    <%=popupEvent%>="getCapBankTempMoveBack('${thisCapBankId}');" 
-	                    <% } else { 
-	                        String path = capBank.getCcName(); 
-	                        path += "-";
-	                        path += paoDao.getYukonPAOName(capBank.getParentID());
-	                        path += "-";
-                            path += paoDao.getYukonPAOName(capControlCache.getFeeder(capBank.getParentID()).getParentID());
-                            path += "-";
-                            path += paoDao.getYukonPAOName(capControlCache.getSubBus(capControlCache.getFeeder(capBank.getParentID()).getParentID()).getParentID());
-                            path += "-";
-                            path += paoDao.getYukonPAOName(capControlCache.getSubstation(capControlCache.getSubBus(capControlCache.getFeeder(capBank.getParentID()).getParentID()).getParentID()).getParentID());
-	                    %>
+	                    <% } else { %>
 	                        onmouseover="statusMsg(this, 'Click here to temporarily move this CapBank from it\'s current parent feeder');"
 	                        onmouseout="nd();"
-	                        onclick="return GB_show('CapBank Temp Move for <%=path%> (Pick feeder by clicking on name)',
+	                        onclick="return GB_show('CapBank Temp Move for <%=capBank.getCcName()%> (Pick feeder by clicking on name)',
 	                            'tempmove.jsp?bankid=<%=capBank.getCcId()%>', 500, 710, onGreyBoxClose);"
 	                    <% } %>
 	                <% } %>
