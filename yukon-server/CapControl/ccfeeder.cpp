@@ -2413,7 +2413,7 @@ CtiRequestMsg* CtiCCFeeder::createDecreaseVarVerificationRequest(CtiCCCapBank* c
     setCurrentDailyOperationsAndSendMsg(_currentdailyoperations+1, pointChanges);
     capBank->setTotalOperations(capBank->getTotalOperations() + 1);
     capBank->setCurrentDailyOperations(capBank->getCurrentDailyOperations() + 1);
-    //setRecentlyControlledFlag(TRUE);
+
     setVarValueBeforeControl(getCurrentVarLoadPointValue());
 
     capBank->setBeforeVarsString(createVarText(kvarBefore, 1.0));
@@ -3420,6 +3420,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                   additional += ")";
               }
 
+    
     for(LONG i=0;i<_cccapbanks.size();i++)
     {
         CtiCCCapBank* currentCapBank = (CtiCCCapBank*)_cccapbanks[i];
@@ -3434,13 +3435,13 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     {
                         //This will only be called if we intend to do rate of change and the regression depth is met.
                         varValueBC = reg.regression( CtiTime().seconds() );
-
+    
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
                             dout << CtiTime() << " - Rate of Change Value: " << varValueBC << endl;
                         }
-
+    
                         // is estimated within Percent of currentVar?
                         change = currentVarLoadPointValue - varValueBC;
                     }
@@ -3503,11 +3504,11 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                         }
                     }
                     text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue,ratio);
-
+    
                     currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
-
+    
                 }
                 else
                 {
@@ -3519,12 +3520,12 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     text += " Var: ";
                     text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                     text += ", OpenQuestionable";
-
+    
                     currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                     currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
-
+    
                 }
             }
             else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -3536,7 +3537,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     {
                         //This will only be called if we intend to do rate of change and the regression depth is met.
                         varValueBC = reg.regression( CtiTime().seconds() );
-
+    
                         if(_CC_DEBUG & CC_DEBUG_RATE_OF_CHANGE)
                         {
                             CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3603,9 +3604,9 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                                 dout << CtiTime() << " - CapBank Control Status: Close: "<<currentCapBank->getPAOName() << endl;
                         }
                     }
-
+    
                     text = createControlStatusUpdateText(currentCapBank->getControlStatus(), currentVarLoadPointValue, ratio);
-
+    
                     currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
@@ -3620,12 +3621,12 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                     text += " Var: ";
                     text += CtiNumStr(currentVarLoadPointValue, getDecimalPlaces()).toString();
                     text += ", CloseQuestionable";
-
+    
                     currentCapBank->setBeforeVarsString(createVarText(varValueBC, 1.0));
                     currentCapBank->setAfterVarsString(createVarText(currentVarLoadPointValue, 1.0));
                     currentCapBank->setPercentChangeString(createVarText(ratio, 100.0));
                     currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
-
+    
                 }
                 if ( (currentCapBank->getRetryOpenFailedFlag() || currentCapBank->getRetryCloseFailedFlag() )  && 
                     (currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail && currentCapBank->getControlStatus() != CtiCCCapBank::OpenFail)) 
@@ -3641,8 +3642,8 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
                 dout << CtiTime() << " - Last Cap Bank controlled not in pending status in: " << __FILE__ << " at: " << __LINE__ << endl;
                 returnBoolean = FALSE;
             }
-
-
+    
+    
             if( currentCapBank->getStatusPointId() > 0 )
             {
                 if( text.length() > 0 )
@@ -3678,6 +3679,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
             
         }
     }
+    
     if (found == FALSE)
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);

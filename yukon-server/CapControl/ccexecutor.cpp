@@ -2853,8 +2853,8 @@ void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(LONG feederId, int control
             CtiFeeder_vec& ccFeeders = currentSubstationBus->getCCFeeders();
             for(LONG j=0;j<ccFeeders.size();j++)
             {
-                currentFeeder = (CtiCCFeeder*)ccFeeders.at(j);
-                if( currentFeeder->getPAOId() == feederId )
+                CtiCCFeederPtr tempFeeder = (CtiCCFeeder*)ccFeeders.at(j);
+                if( tempFeeder->getPAOId() == feederId )
                 {
                     currentSubstationBus->setLastFeederControlledPosition(j);
                 }
@@ -2877,7 +2877,6 @@ void CtiCCCommandExecutor::ControlAllCapBanksByFeeder(LONG feederId, int control
                         if (!stringCompareIgnoreCase(currentCapBank->getOperationalState(),CtiCCCapBank::SwitchedOperationalState)) 
                             currentFeeder->setLastCapBankControlledDeviceId(currentCapBank->getPAOId());
                         currentSubstationBus->setLastFeederControlledPAOId(currentFeeder->getPAOId());
-                        currentSubstationBus->setLastFeederControlledPosition(0);
                         currentSubstationBus->setLastOperationTime(CtiTime());
                         currentFeeder->setLastOperationTime(CtiTime());
                         if (control == CtiCCCapBank::Close || control == CtiCCCapBank::CloseQuestionable || 
