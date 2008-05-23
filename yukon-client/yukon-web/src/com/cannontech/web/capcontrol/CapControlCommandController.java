@@ -64,7 +64,10 @@ public class CapControlCommandController extends MultiActionController {
 	    }else if(forceComment.equalsIgnoreCase("true")) {
 	        String commandName = CapControlCommand.getCommandString(cmdId);
 	        if(cmdId == 22 || cmdId == 23) {
-	            commandName = commandName +" "+ controlTypeString;
+	            String firstChar = controlTypeString.substring(0,1);
+	            String niceString = firstChar.toUpperCase();
+	            niceString += controlTypeString.substring(1).toLowerCase();
+	            commandName = commandName +" "+ niceString;
 	        }else if ( cmdId == 30 && controlType.equals(CapControlType.CBC)) {
                 Double rawState = new Double(opt[0]);
                 int ccStateGroup = 3;
