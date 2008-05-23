@@ -22,6 +22,8 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.core.dao.StateDao;
+import com.cannontech.database.data.lite.LiteState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.capcontrol.CBCSettingsRole;
 import com.cannontech.util.ServletUtil;
@@ -34,6 +36,7 @@ public class CapControlCommandController extends MultiActionController {
     private static final String emptyString = "";
     private CapControlCommentDao commentDao;
     private AuthDao authDao;
+    private StateDao stateDao;
     private CapControlCache capControlCache;
 	
     //4-Tier Version of the command executor
@@ -62,7 +65,12 @@ public class CapControlCommandController extends MultiActionController {
 	        String commandName = CapControlCommand.getCommandString(cmdId);
 	        if(cmdId == 22 || cmdId == 23) {
 	            commandName = commandName +" "+ controlTypeString;
-	        }
+	        }else if ( cmdId == 30 && controlType.equals(CapControlType.CBC)) {
+                Double rawState = new Double(opt[0]);
+                int ccStateGroup = 3;
+                LiteState state = stateDao.getLiteState(ccStateGroup, rawState.intValue());
+                commandName = state.getStateText() + " " + controlTypeString;
+            }
 	        insertComment(paoId, user.getUserID(), commandName, cmdId);
 	    }
 	    
@@ -412,6 +420,10 @@ public class CapControlCommandController extends MultiActionController {
     
     public void setCommentDao(CapControlCommentDao commentDao) {
         this.commentDao = commentDao;
+    }
+    
+    public void setStateDao(StateDao stateDao) {
+        this.stateDao = stateDao;
     }
     
     public void setAuthDao(AuthDao authDao) {
