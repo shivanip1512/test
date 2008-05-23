@@ -61,36 +61,36 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
     public static final int CMD_BANK_TEMP_MOVE  = 31;
 
 	public static final String[] COMMAND_STRINGS = {
-		"ENABLE SUBSTATION BUS",
-		"DISABLE SUBSTATION BUS",
-		"ENABLE FEEDER",
-		"DISABLE FEEDER",
+		"Enable Substation Bus",
+		"Disable Substation Bus",
+		"Enable Feeder",
+		"Disable Feeder",
 		
-		"ENABLE CAPBANK",
-		"DISABLE CAPBANK",  //5		
-		"OPEN CAPBANK",
-		"CLOSE CAPBANK",
-		"CONFIRM OPEN",
-		"CONFIRM CLOSE",
-		"REQUEST ALL SUBSTATION BUSES",
-		"RETURN BANK TO FEEDER",   //11
-		"UPDATE OPCOUNT",
-		"WAIVE SUB",
-		"UNWAIVE SUB",
-		"WAIVE FEEDER",  //15
-		"UNWAIVE FEEDER",
-		"ENABLE OV/UV",
-		"DISABLE OV/UV",
-		"DELETE ITEM", //19
-		"CONFIRM SUB",
-        "CONFIRM AREA", //21
-        "ENABLE AREA", //22
-        "DISABLE AREA", //23
-        "SCAN 2WAY DEV",//24
-        "ENABLE SYTEM",
-        "DISABLE SYSTEM",
-        "FLIP 7010 CAPBANK",
-		"SYSTEM STATUS",
+		"Enable Cap Bank",
+		"Disable Cap Bank",  //5		
+		"Open Cap Bank",
+		"Close Cap Bank",
+		"Confirm Open",
+		"Confirm Close",
+		"Request All Substation Buses",
+		"Return Bank to Feeder",   //11
+		"Update Op Count",
+		"Waive Sub",
+		"Unwaive Sub",
+		"Waive Feeder",  //15
+		"Unwaive Feeder",
+		"Enalbe OV/UV",
+		"Disable OV/UV",
+		"Delete Item", //19
+		"Confirm Substation Bus",
+        "Confirm Area", //21
+        "Enable", //22
+        "Disable", //23
+        "Scan 2Way Device",//24
+        "Enable System",
+        "Disable System",
+        "Flip 7010 Cap Bank",
+		"System Status",
 		"Send All Open", //29
 		"Send All Close", //30
 		"Send All Enable OVUV", //31
@@ -109,7 +109,7 @@ public class CapControlCommand extends com.cannontech.yukon.cbc.CapControlMessag
 		"Verify Disabled Banks", //44
         "",
         "VerifyStandaloneBanks",
-        "Confirm Substations"
+        "Confirm Substation"
         };
 	
 
