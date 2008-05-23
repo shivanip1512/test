@@ -114,7 +114,9 @@ public class CapControlCommandController extends MultiActionController {
 	            if (reason != null) {
 	                insertComment(paoId, user.getUserID(), reason, cmdId);
 	            }else if(forceComment.equalsIgnoreCase("true")) {
-	                insertComment(paoId, user.getUserID(), CapControlCommand.getCommandString(cmdId), cmdId);
+					String commandName = CapControlCommand.getCommandString(cmdId);
+                    commandName += " Special Area";
+                    insertComment(paoId, user.getUserID(), commandName, cmdId);
 	            }
 	        }
 
@@ -127,7 +129,16 @@ public class CapControlCommandController extends MultiActionController {
 	        response.addHeader("X-JSON", jsonStr);
 	    } else {
 	        executor.execute(CapControlType.SPECIAL_AREA, cmdId, paoId, opt, null);
-	        if (reason != null) insertComment(paoId, user.getUserID(), reason, cmdId);
+	        String forceComment = authDao.getRolePropertyValue(user,CBCSettingsRole.FORCE_COMMENTS);
+	        if (reason != null) {
+	            insertComment(paoId, user.getUserID(), reason, cmdId);
+	        }else if(forceComment.equalsIgnoreCase("true")) {
+	            String commandName = CapControlCommand.getCommandString(cmdId);
+	            if(cmdId == CapControlCommand.DISABLE_AREA) {
+	                commandName += " Special Area";
+	            }
+                insertComment(paoId, user.getUserID(), commandName, cmdId);
+            }
 	        
 	        JSONObject jsonObject = new JSONObject();
 	        Boolean success = true;
