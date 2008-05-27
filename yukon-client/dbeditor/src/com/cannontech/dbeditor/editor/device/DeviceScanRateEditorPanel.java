@@ -88,7 +88,7 @@ public class DeviceScanRateEditorPanel extends com.cannontech.common.gui.util.Da
 		"2 hour",
 		"6 hour",
 		"12 hour",
-		"1 day"		
+		"Daily"		
 	};
 
 
@@ -541,10 +541,10 @@ private javax.swing.JComboBox getAccumulatorRateComboBox() {
 			ivjAccumulatorRateComboBox.addItem("2 hour");
 			ivjAccumulatorRateComboBox.addItem("6 hour");
 			ivjAccumulatorRateComboBox.addItem("12 hour");
-			ivjAccumulatorRateComboBox.addItem("1 day");
+			ivjAccumulatorRateComboBox.addItem("Daily");
 			
 			//default value
-			ivjAccumulatorRateComboBox.setSelectedItem("1 day");
+			ivjAccumulatorRateComboBox.setSelectedItem("Daily");
 			
 			// user code end
 		} catch (java.lang.Throwable ivjExc) {
@@ -637,7 +637,7 @@ private javax.swing.JComboBox getIntegrityRateComboBox() {
 			ivjIntegrityRateComboBox.addItem("2 hour");
 			ivjIntegrityRateComboBox.addItem("6 hour");
 			ivjIntegrityRateComboBox.addItem("12 hour");
-			ivjIntegrityRateComboBox.addItem("1 day");
+			ivjIntegrityRateComboBox.addItem("Daily");
 
 			//default value
 			ivjIntegrityRateComboBox.setSelectedItem("5 minute");
@@ -1505,7 +1505,7 @@ private javax.swing.JComboBox getPeriodicHealthIntervalComboBox() {
 			ivjPeriodicHealthIntervalComboBox.addItem("2 hour");
 			ivjPeriodicHealthIntervalComboBox.addItem("6 hour");
 			ivjPeriodicHealthIntervalComboBox.addItem("12 hour");
-			ivjPeriodicHealthIntervalComboBox.addItem("1 day");
+			ivjPeriodicHealthIntervalComboBox.addItem("Daily");
 
 			//default value
 			ivjPeriodicHealthIntervalComboBox.setSelectedItem("30 minute");
@@ -1863,7 +1863,7 @@ private void initComboBoxValues( int type )
       getPeriodicHealthIntervalComboBox().addItem("2 hour");
       getPeriodicHealthIntervalComboBox().addItem("6 hour");
       getPeriodicHealthIntervalComboBox().addItem("12 hour");
-      getPeriodicHealthIntervalComboBox().addItem("1 day");    
+      getPeriodicHealthIntervalComboBox().addItem("Daily");    
       
       //default value
       getPeriodicHealthIntervalComboBox().setSelectedItem("5 minute");
@@ -1882,7 +1882,7 @@ private void initComboBoxValues( int type )
       getPeriodicHealthIntervalComboBox().addItem("2 hour");
       getPeriodicHealthIntervalComboBox().addItem("6 hour");
       getPeriodicHealthIntervalComboBox().addItem("12 hour");
-      getPeriodicHealthIntervalComboBox().addItem("1 day");    
+      getPeriodicHealthIntervalComboBox().addItem("Daily");    
       
       //default value
       getPeriodicHealthIntervalComboBox().setSelectedItem("5 minute");
