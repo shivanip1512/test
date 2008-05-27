@@ -670,7 +670,7 @@ public javax.swing.JComboBox getJComboBoxConstraints() {
  * @return javax.swing.JComboBox
  */
 /* WARNING: THIS METHOD WILL BE REGENERATED. */
-private javax.swing.JComboBox getJComboBoxScenario() {
+    private javax.swing.JComboBox getJComboBoxScenario() {
 	if (ivjJComboBoxScenario == null) {
 		try {
 			ivjJComboBoxScenario = new javax.swing.JComboBox();
@@ -1083,31 +1083,12 @@ private javax.swing.JLabel getJLabelScenario() {
 				getJPanelMultiSelect().setTableModel( getMultiSelectPrgModel() );
 				
 				// Do any column specific initialization here				
-				javax.swing.table.TableColumn gearColumn = 
-						getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
+				javax.swing.table.TableColumn gearColumn = getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
 			
-				//gearColumn.setMaxWidth(45);
-				//gearColumn.setWidth(45);
 				gearColumn.setPreferredWidth(90);
                 gearColumn.setCellEditor( new DefaultCellEditor(new JComboBox()) );
                 gearColumn.setCellRenderer( new ComboBoxTableRenderer() );
 				
-				// Create and add the column renderers	
-//				ComboBoxTableRenderer comboBxRender = new ComboBoxTableRenderer();
-				//comboBxRender.setBackground( Color.WHITE );	
-//				for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
-//					comboBxRender.addItem( new Integer(i+1) );
-//				
-//				gearColumn.setCellRenderer( comboBxRender );
-				
-				
-				// Create and add the column editors
-//			 	javax.swing.JComboBox combo = new javax.swing.JComboBox();
-				//combo.setBackground( Color.WHITE );
-//				for( int i = 0; i < IlmDefines.MAX_GEAR_COUNT; i++ )
-//					combo.addItem( new Integer(i+1) );
-//			
-//				gearColumn.setCellEditor( new DefaultCellEditor(combo) );				
 
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
@@ -1790,7 +1771,6 @@ private void initialize() {
 
         boolean showMulti = rows.length  > 1;
         
-        
         if( isScenario )
         {
             getJPanelMultiSelect().setSelectableData( rows );
@@ -1822,23 +1802,22 @@ private void initialize() {
                     getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
         
             DefaultComboBoxModel[] models = new DefaultComboBoxModel[ rows.length ];
-            for( int i = 0; i < rows.length; i++ )
-            {
-                if( rows[i].getBaseProgram() instanceof IGearProgram )
-                {
-                    IGearProgram progGear =
-                        (IGearProgram)rows[i].getBaseProgram();
+            for( int i = 0; i < rows.length; i++ ) {
+                if( rows[i].getBaseProgram() instanceof IGearProgram ) {
+                    LMProgramBase base = rows[i].getBaseProgram();
+                    IGearProgram progGear =(IGearProgram)rows[i].getBaseProgram();
+                    LiteYukonPAObject litePao = (LiteYukonPAObject) getJComboBoxScenario().getSelectedItem();
+                    int startGear = DaoFactory.getLmDao().getStartingGearForScenarioAndProgram(base.getYukonID(), litePao.getLiteID());
 
                     DefaultComboBoxModel combModel = new DefaultComboBoxModel();
-                    for( int j = 0; j < progGear.getDirectGearVector().size(); j++ )
-                    {
-                        combModel.addElement( 
-                                progGear.getDirectGearVector().get(j) );
+                    for( int j = 0; j < progGear.getDirectGearVector().size(); j++ ) {
+                        combModel.addElement(progGear.getDirectGearVector().get(j) );
 
-                        if( j == rows[i].getGearNum()-1 ) {
-                            combModel.setSelectedItem(progGear.getDirectGearVector().get(j) );
-                        }
+//                        if( j == rows[i].getGearNum()-1 ) {
+//                            combModel.setSelectedItem(progGear.getDirectGearVector().get(j) );
+//                        }
                     }
+                    combModel.setSelectedItem(progGear.getDirectGearVector().get(startGear-1));
                     models[i] = combModel;
                 }
 
@@ -1853,6 +1832,9 @@ private void initialize() {
 			setGearList( ((IGearProgram)msp.getBaseProgram()).getDirectGearVector() );
 			TableColumn gearColumn = getJPanelMultiSelect().getTableColumn( MultiSelectPrgModel.COL_GEAR );
 			DefaultComboBoxModel[] models = new DefaultComboBoxModel[ rows.length ];
+			LMProgramBase base = rows[0].getBaseProgram();
+			LiteYukonPAObject litePao = (LiteYukonPAObject) getJComboBoxScenario().getSelectedItem();
+			int startGear = DaoFactory.getLmDao().getStartingGearForScenarioAndProgram(base.getYukonID(), litePao.getLiteID());
 			if( msp.getBaseProgram() instanceof IGearProgram ) {
                 IGearProgram progGear = (IGearProgram)msp.getBaseProgram();
 
@@ -1864,6 +1846,7 @@ private void initialize() {
                         combModel.setSelectedItem(progGear.getDirectGearVector().get(j) );
                     }
                 }
+                combModel.setSelectedItem(progGear.getDirectGearVector().get(startGear-1));
                 models[0] = combModel;
             }
 			gearColumn.setCellRenderer( new MultiJComboCellRenderer(models) );

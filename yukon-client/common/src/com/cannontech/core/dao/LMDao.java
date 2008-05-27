@@ -18,5 +18,7 @@ public interface LMDao {
     public Set<LiteYukonPAObject> getAllLMDirectPrograms();
     
     public List<Integer> getProgramsForControlArea(int areaID);
+    
+    public int getStartingGearForScenarioAndProgram(int programId, int scenarioId);
 
 }

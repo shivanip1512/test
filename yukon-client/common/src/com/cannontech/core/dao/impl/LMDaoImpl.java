@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.LMDao;
 import com.cannontech.core.dao.PaoDao;
+import com.cannontech.database.JdbcTemplateHelper;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteLMProgScenario;
 import com.cannontech.database.data.lite.LiteUnitMeasure;
@@ -55,6 +56,28 @@ public final class LMDaoImpl implements LMDao {
      * @see com.cannontech.core.dao.LMDao#getAllLMScenarios()
      */
     public LiteYukonPAObject[] getAllLMScenarios() {
+        // Get an instance of the cache.
+        ArrayList scenarioList = new ArrayList(32);
+        synchronized (databaseCache) {
+            List lmScenarios = databaseCache.getAllLMScenarios();
+            Collections.sort(lmScenarios, LiteComparators.liteStringComparator);
+
+            for (int i = 0; i < lmScenarios.size(); i++) {
+                LiteYukonPAObject litePao = (LiteYukonPAObject) lmScenarios.get(i);
+                scenarioList.add(litePao);
+            }
+        }
+
+        LiteYukonPAObject retVal[] = new LiteYukonPAObject[scenarioList.size()];
+        scenarioList.toArray(retVal);
+        return retVal;
+    }
+    
+    /*
+     * (non-Javadoc)
+     * @see com.cannontech.core.dao.LMDao#getAllLMScenarios()
+     */
+    public LiteYukonPAObject[] getAllLMScenario(Integer scenarioId) {
         // Get an instance of the cache.
         ArrayList scenarioList = new ArrayList(32);
         synchronized (databaseCache) {
@@ -128,6 +151,12 @@ public final class LMDaoImpl implements LMDao {
 
     public Set<LiteYukonPAObject> getAllLMDirectPrograms() {
         return new HashSet<LiteYukonPAObject>(paoDao.getLiteYukonPAObjectByType(DeviceTypes.LM_DIRECT_PROGRAM));
+    }
+    
+    public int getStartingGearForScenarioAndProgram(int programId, int scenarioId) {
+        String sql = "select startgear from lmcontrolscenarioprogram where programid = ? and scenarioid = ?";
+        JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
+        return jdbcOps.queryForInt(sql, new Integer[] {programId, scenarioId});
     }
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {
