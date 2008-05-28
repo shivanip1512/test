@@ -45,7 +45,7 @@ public class CustomerAccountInfoTag extends YukonTagSupport {
         if (!isAccountNumberSet) throw new JspException("accountNumber is not set.");
         
         MessageSourceAccessor messageSource = messageSourceResolver.getMessageSourceAccessor(getUserContext());
-        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber);
+        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, getYukonUser());
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteAddress address = addressDao.getByAddressId(accountSite.getStreetAddressId());
         LiteCustomer customer = customerDao.getLiteCustomer(account.getCustomerId());

@@ -260,6 +260,12 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 		return starsYukonUsers;
 	}
 
+	public LiteStarsEnergyCompany getEnergyCompanyByUser(final LiteYukonUser user) {
+		StarsYukonUser starsYukonUser = getStarsYukonUser(user);
+		LiteStarsEnergyCompany energyCompany = getEnergyCompany(starsYukonUser.getEnergyCompanyID());
+		return energyCompany;
+	}
+	
 	public LiteStarsEnergyCompany getEnergyCompany(int energyCompanyID) {
         List<LiteStarsEnergyCompany> companies = getAllEnergyCompanies();
 		synchronized (companies) {

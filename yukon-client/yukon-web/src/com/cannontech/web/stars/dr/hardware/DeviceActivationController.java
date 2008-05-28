@@ -15,6 +15,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.dr.account.dao.AccountSiteDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -23,6 +24,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.service.DeviceActivationService;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
+import com.cannontech.util.ServletUtil;
 
 public class DeviceActivationController extends MultiActionController {
     private DeviceActivationService deviceActivationService;
@@ -40,6 +42,7 @@ public class DeviceActivationController extends MultiActionController {
     }
     
     public ModelAndView confirmation(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	final LiteYukonUser user = ServletUtil.getYukonUser(request);
         final String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "accountnumber");
         final String serialNumber = ServletRequestUtils.getRequiredStringParameter(request, "serialnumber");
 
@@ -49,14 +52,16 @@ public class DeviceActivationController extends MultiActionController {
             return mav;
         }
         
-        final boolean result = this.deviceActivationService.isValidActivation(accountNumber, serialNumber);
+        final boolean result = this.deviceActivationService.isValidActivation(accountNumber, 
+        																      serialNumber,
+        																      user);
         if (!result) {
             String message = "FAILED";
             ModelAndView mav = createStatusView(message);
             return mav;
         }
         
-        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber);
+        CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
         AccountSite accountSite = accountSiteDao.getByAccountSiteId(account.getAccountSiteId());
         LiteAddress address = addressDao.getByAddressId(accountSite.getStreetAddressId());
         LiteCustomer customer = customerDao.getLiteCustomer(account.getCustomerId());
@@ -75,12 +80,16 @@ public class DeviceActivationController extends MultiActionController {
     }
     
     public ModelAndView activate(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    	final LiteYukonUser liteYukonUser = ServletUtil.getYukonUser(request);
         final String accountNumber = ServletRequestUtils.getRequiredStringParameter(request, "accountnumber");
         final String serialNumber = ServletRequestUtils.getRequiredStringParameter(request, "serialnumber");
         final StarsYukonUser user = ServletUtils.getStarsYukonUser(request);
         final LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompany(user.getEnergyCompanyID());
         
-        final boolean result = this.deviceActivationService.activate(energyCompany, accountNumber, serialNumber);
+        final boolean result = this.deviceActivationService.activate(energyCompany, 
+        															 accountNumber,
+        															 serialNumber,
+        															 liteYukonUser);
         if (!result) {
             String message = "FAILED";
             ModelAndView mav = createStatusView(message);

@@ -11,7 +11,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.util.SqlStatementBuilder;
+import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.incrementer.NextValueHelper;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -23,13 +25,13 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private static final String updateSql;
     private static final String selectSql;
     private static final String selectByIdSql;
-    private static final String selectByAccountNumberSql;
     private static final String selectAllUsefulAccountInfoFromECSql;
     private static final ParameterizedRowMapper<CustomerAccount> rowMapper;
     private static final ParameterizedRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper;
     
     private SimpleJdbcTemplate simpleJdbcTemplate;
     private NextValueHelper nextValueHelper;
+    private StarsDatabaseCache starsDatabaseCache;
     
     static {
         
@@ -42,8 +44,6 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         selectSql = "SELECT AccountId,AccountSiteId,AccountNumber,CustomerAccount.CustomerId,BillingAddressId,AccountNotes FROM CustomerAccount";
         
         selectByIdSql = selectSql + " WHERE AccountId = ?";
-        
-        selectByAccountNumberSql = selectSql + " WHERE AccountNumber = ?";
         
         selectAllUsefulAccountInfoFromECSql = "SELECT ca.AccountId, ca.AccountNumber, cont.ContLastName, cont.ContFirstName" +
                 " FROM CustomerAccount ca, Contact cont, Customer cust WHERE AccountId IN" +
@@ -98,8 +98,22 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     }
     
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
-    public CustomerAccount getByAccountNumber(final String accountNumber) {
-        CustomerAccount account = simpleJdbcTemplate.queryForObject(selectByAccountNumberSql, rowMapper, accountNumber);
+    public CustomerAccount getByAccountNumber(final String accountNumber, final LiteYukonUser user) {
+    	final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+    	sqlBuilder.append("SELECT ca.AccountId,AccountSiteId,AccountNumber,ca.CustomerId,BillingAddressId,AccountNotes");
+    	sqlBuilder.append("FROM CustomerAccount ca, ECToAccountMapping ecta");
+    	sqlBuilder.append("WHERE ca.AccountID = ecta.AccountID");
+    	sqlBuilder.append("AND ca.AccountNumber = ?");
+    	sqlBuilder.append("AND ecta.EnergyCompanyID = ?");
+    	final String sql = sqlBuilder.toString();
+    	
+    	LiteStarsEnergyCompany energyCompany = starsDatabaseCache.getEnergyCompanyByUser(user);
+    	int engergyCompanyId = energyCompany.getEnergyCompanyID();
+    	
+        CustomerAccount account = simpleJdbcTemplate.queryForObject(sql, 
+        															rowMapper,
+        															accountNumber,
+        															engergyCompanyId);
         return account;
     }
     
@@ -176,6 +190,10 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     public void setNextValueHelper(final NextValueHelper nextValueHelper) {
         this.nextValueHelper = nextValueHelper;
     }
+    
+    public void setStarsDatabaseCache(StarsDatabaseCache starsDatabaseCache) {
+		this.starsDatabaseCache = starsDatabaseCache;
+	}
     
     private static final ParameterizedRowMapper<CustomerAccount> createRowMapper() {
         final ParameterizedRowMapper<CustomerAccount> rowMapper = new ParameterizedRowMapper<CustomerAccount>() {

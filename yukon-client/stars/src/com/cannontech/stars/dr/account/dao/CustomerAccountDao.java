@@ -16,7 +16,7 @@ public interface CustomerAccountDao {
     
     public CustomerAccount getById(int accountId);
     
-    public CustomerAccount getByAccountNumber(String accountNumber);
+    public CustomerAccount getByAccountNumber(String accountNumber, LiteYukonUser user);
     
     public List<CustomerAccount> getByUser(LiteYukonUser user);
     

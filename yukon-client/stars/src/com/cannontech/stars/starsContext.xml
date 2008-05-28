@@ -47,6 +47,7 @@
         class="com.cannontech.stars.dr.account.dao.impl.CustomerAccountDaoImpl">
         <property name="nextValueHelper" ref="nextValueHelper" />
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
     </bean>
 
     <bean id="accountSiteDao" class="com.cannontech.stars.dr.account.dao.impl.AccountSiteDaoImpl"/>

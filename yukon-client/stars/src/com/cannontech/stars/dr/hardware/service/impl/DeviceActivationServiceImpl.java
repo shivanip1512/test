@@ -7,6 +7,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataRetrievalFailureException;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.service.StarsCacheService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -27,12 +28,13 @@ public class DeviceActivationServiceImpl implements DeviceActivationService {
     private StarsCacheService cacheService;
     
     @SuppressWarnings("unused")
-    public boolean isValidActivation(String accountNumber, String serialNumber) {
+    public boolean isValidActivation(String accountNumber, String serialNumber,
+    		LiteYukonUser user) {
         Validate.notNull(accountNumber, "AccountNumber cannot be null");
         Validate.notNull(serialNumber, "SerialNumber cannot be null");
         
         try {
-            CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber);
+            CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
             LMHardwareBase hardware = hardwareBaseDao.getBySerialNumber(serialNumber);
             InventoryBase inventoryBase = inventoryBaseDao.getById(hardware.getInventoryId());
             return true;
@@ -41,13 +43,14 @@ public class DeviceActivationServiceImpl implements DeviceActivationService {
         }
     }
     
-    public boolean activate(LiteStarsEnergyCompany energyCompany, String accountNumber, String serialNumber) {
+    public boolean activate(LiteStarsEnergyCompany energyCompany, String accountNumber, 
+    		String serialNumber, LiteYukonUser user) {
         Validate.notNull(energyCompany, "EnergyCompany cannot be null");
         Validate.notNull(accountNumber, "AccountNumber cannot be null");
         Validate.notNull(serialNumber, "SerialNumber cannot be null");
         
         try {
-            CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber);
+            CustomerAccount account = customerAccountDao.getByAccountNumber(accountNumber, user);
             LMHardwareBase hardware = hardwareBaseDao.getBySerialNumber(serialNumber);
         
             InventoryBase inventoryBase = inventoryBaseDao.getById(hardware.getInventoryId());
