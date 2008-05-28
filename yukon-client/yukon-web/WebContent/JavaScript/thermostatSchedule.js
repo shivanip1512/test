@@ -11,6 +11,7 @@ var thermMode = 'C';	// Thermostat mode flag, 'C'/'H'
 var tempUnit = 'F';     // Temperature mode, 'F'/'C'
 var lowerLimit = 45;  //always specified in fahrenheit
 var upperLimit = 88;  //always specified in fahrenheit
+var defaultTemp = 72;
 
 var thermostats = ['', 'MovingLayer1', 'MovingLayer2', 'MovingLayer3', 'MovingLayer4'];
 var tempCArrows = ['', 'div1C', 'div2C', 'div3C', 'div4C'];
@@ -252,6 +253,7 @@ function timeChange(t, idx) {
 
 function tempChange(idx) {
   var fields = (thermMode == 'C') ? tempCArrows : tempHArrows;
+  validateTemp(tempInputFields[idx]);
   var temp = getFahrenheitTemp($(tempInputFields[idx]).value, tempUnit);
   moveTempArrow(fields[idx], temp);
   showTemp(idx, temp);
@@ -502,5 +504,30 @@ function applySettingsToWeekend(input) {
         $('saturdayLink').show();
         $('sundayLink').show();
     }
+}
+
+function validateTemp(input) {
+    
+    var currentTemp = $F(input);
+    var currentTempUnit = tempUnit;
+    
+    if(isNaN(currentTemp)){
+        currentTemp = defaultTemp;
+    }
+        
+    // Convert current temp to fahrenheit if needed for validation
+    var fTemp = getFahrenheitTemp(currentTemp, currentTempUnit);
+    
+    if(fTemp < lowerLimit) {
+        fTemp = lowerLimit; 
+    } else if(fTemp > upperLimit) {
+        fTemp = upperLimit; 
+    }
+    
+    // Convert current temp to celsius if needed
+    fTemp = getConvertedTemp(fTemp, currentTempUnit);
+    
+    $(input).value = fTemp;
+    
 }
     
