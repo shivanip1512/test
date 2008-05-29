@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/22/2008 11:32:56 AM                        */
+/* Created on:     5/29/2008 11:29:40 AM                        */
 /*==============================================================*/
 
 
@@ -6990,7 +6990,8 @@ create table SequenceNumber  (
    constraint PK_SEQUENCENUMBER primary key (SequenceName)
 );
 
-insert into sequenceNumber values (100, 'BillingFileFormats');
+INSERT INTO SequenceNumber VALUES (100, 'BillingFileFormats');
+INSERT INTO SequenceNumber VALUES (100, 'DeviceGroup');
 
 /*==============================================================*/
 /* Table: ServiceCompany                                        */
