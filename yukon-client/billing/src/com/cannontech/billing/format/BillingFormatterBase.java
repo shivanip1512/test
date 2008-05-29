@@ -38,7 +38,7 @@ public abstract class BillingFormatterBase implements BillingFormatter {
 
     public int writeBillingFile( List<BillableDevice> deviceList)
             throws IOException {
-
+        this.readingCount = 0;  //reset the count
         StringBuffer output = getBillingFileString(deviceList);
 
         FileWriter outputFileWriter = new FileWriter(getBillingFileDefaults().getOutputFileDir(),

@@ -7,7 +7,6 @@ package com.cannontech.billing.mainprograms;
  */ 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 import javax.swing.JOptionPane;
 import javax.swing.tree.DefaultTreeSelectionModel;
@@ -77,12 +76,7 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 {
 	if( event.getSource() == getDateComboBox() )
 	{
-		java.util.GregorianCalendar  tempCal = new java.util.GregorianCalendar();
-		tempCal.setTime(getDateComboBox().getSelectedDate());
-//		tempCal.add(java.util.Calendar.DATE,1);
-//		java.util.Date newEndDate = getDateComboBox().getSelectedDate();
-		java.util.Date newEndDate = tempCal.getTime();
-		getBillingDefaults().setEndDate(newEndDate);
+		getBillingDefaults().setEndDate(getDateComboBox().getSelectedDate());
 
 		getDemandStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getDemandStartDate()));
 		getEnergyStartDateLabel().setText(startDateFormat.format(getBillingDefaults().getEnergyStartDate()));
@@ -1138,14 +1132,6 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 
     DeviceGroupTreeFactory modelFactory = YukonSpringHook.getBean("deviceGroupTreeFactory", DeviceGroupTreeFactory.class);
 
-    java.util.GregorianCalendar  tempCal = new java.util.GregorianCalendar();
-	tempCal.setTime(getDateComboBox().getSelectedDate());
-	tempCal.add(java.util.Calendar.DATE,1);
-	java.util.Date newEndDate = tempCal.getTime();	
-//	java.util.Date newEndDate = null;
-//	Date tempDate = getDateComboBox().getSelectedDate();
-//	newEndDate = tempDate;
-
 	// Get all selected collection groups from the groupList scroll panel.
     List<String> deviceGroups = new ArrayList<String>(getGroupList().getSelectionCount());
     TreePath[] selectedPaths = getGroupList().getSelectionPaths();
@@ -1181,7 +1167,7 @@ public BillingFileDefaults retrieveBillingDefaultsFromGui()
 	                                                          getOutputFileTextField().getText(),
 	                                                          getRemoveMultiplierCheckBox().isSelected(),
 	                                                          getInputFileText(),
-	                                                          newEndDate,
+	                                                          getDateComboBox().getSelectedDate(),
 	                                                          getIsAppendingCheckBox().isSelected());
 	return newDefaults;
 }

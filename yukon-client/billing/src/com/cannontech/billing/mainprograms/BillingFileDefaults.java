@@ -7,8 +7,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Properties;
+import java.util.TimeZone;
 
 import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.ObjectUtils;
@@ -80,7 +82,7 @@ public class BillingFileDefaults
 		this.outputFileDir = outputFileDir;
 		this.removeMultiplier = removeMultiplier;
 		this.inputFileDir = inputFile;
-		this.endDate = endDate;
+		setEndDate(endDate);
 		this.appendToFile = appendToFile;
 	}
 	/**
@@ -98,9 +100,8 @@ public class BillingFileDefaults
         this.deviceGroups = deviceGroups;
 		this.outputFileDir = outputFileDir;
 		this.removeMultiplier = removeMultiplier;
-		
 		this.inputFileDir = inputFileDir;
-		this.endDate = endDate;
+		setEndDate(endDate);
 		this.appendToFile = appendToFile;
 	}
 	
@@ -121,26 +122,12 @@ public class BillingFileDefaults
 	 */
 	public java.util.Date getDemandStartDate()
 	{
-//		if( demandStartDate == null)
-		{
-			demandStartDate = new java.util.Date();
-			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-			
-			//Need to subtract one day because start date is at least one date value less than endDate.
-			//Ex.  0 days previous is >= today 00:00:00 and < tomorrow 00:00:00
-			long daysPrev = 86400000  * new Integer(getDemandDaysPrev()  + 1 ).longValue();
-			long time = getEndDate().getTime() - daysPrev;
-		
-			demandStartDate.setTime(time);
-			cal.setTime(demandStartDate);
-		
-			cal.set(java.util.Calendar.HOUR_OF_DAY,0);
-			cal.set(java.util.Calendar.MINUTE,0);
-			cal.set(java.util.Calendar.SECOND,0);
-			cal.set(java.util.Calendar.MILLISECOND,0);
-	
-			demandStartDate = cal.getTime();
-		}
+		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+		cal.setTime(getEndDate());
+		//Need to subtract one day because start date is at least one date value less than endDate.
+		//Ex.  0 days previous is >= today 00:00:00 and < tomorrow 00:00:00
+        cal.add(Calendar.DATE, -(getDemandDaysPrev()  + 1) );
+		demandStartDate = cal.getTime();
 		return demandStartDate;
 	}
 	
@@ -161,25 +148,12 @@ public class BillingFileDefaults
 	 */	
 	public java.util.Date getEnergyStartDate()
 	{
-//		if( energyStartDate == null)
-		{
-			energyStartDate = new java.util.Date();
-			java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
-			
-			//Need to subtract one day because start date is at least one date value less than endDate.
-			//Ex.  0 days previous is >= today 00:00:00 and < tomorrow 00:00:00
-			long daysPrev = 86400000  * new Integer(getEnergyDaysPrev() + 1).longValue();
-			long time = getEndDate().getTime() - daysPrev;
-		
-			energyStartDate.setTime(time);
-			cal.setTime(energyStartDate);
-		
-			cal.set(java.util.Calendar.HOUR_OF_DAY,0);
-			cal.set(java.util.Calendar.MINUTE,0);
-			cal.set(java.util.Calendar.SECOND,0);
-			cal.set(java.util.Calendar.MILLISECOND,0);
-			energyStartDate = cal.getTime();
-		}	
+        java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
+        cal.setTime(getEndDate());
+		//Need to subtract one day because start date is at least one date value less than endDate.
+		//Ex.  0 days previous is >= today 00:00:00 and < tomorrow 00:00:00
+        cal.add(Calendar.DATE, -(getEnergyDaysPrev()  + 1) );           
+		energyStartDate = cal.getTime();
 		return energyStartDate;
 	}
 
@@ -207,7 +181,7 @@ public class BillingFileDefaults
 	{
 		if( endDate == null)
 		{
-			endDate = ServletUtil.getTomorrow();
+			endDate = ServletUtil.getToday();
 		}
 		return endDate;
 	}
@@ -297,16 +271,8 @@ public class BillingFileDefaults
 	{
 		java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 		// add a whole day to now so we can increment the Date field
-//		long day = 86400000;
-//		long time = endDate.getTime() + day;
-	
-//		this.endDate = new java.util.Date();
 		cal.setTime(endDate);
 		cal.add(java.util.Calendar.DATE,1);
-		cal.set(java.util.Calendar.HOUR_OF_DAY,0);
-		cal.set(java.util.Calendar.MINUTE,0);
-		cal.set(java.util.Calendar.SECOND,0);
-		cal.set(java.util.Calendar.MILLISECOND,0);
 	
 		this.endDate = cal.getTime();
 		endDate = cal.getTime();
