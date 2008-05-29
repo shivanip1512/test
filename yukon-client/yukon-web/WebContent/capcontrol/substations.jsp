@@ -140,10 +140,9 @@ for( int i = 0; i < areaSubs.size(); i++ ) {
 				        <%=substation.getCcName()%>
 				    </a>
 				    <% } %>
-				    <% if (substation.getSpecialAreaEnabled()){
-				        String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId()); %>
-					   <font color="red">SA <%=spcAreaName%></font>
-				    <% } %>
+				    <font color="red">
+                        <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="SA_ENABLED" />
+                    </font>
 				</td>
                 
                 <td>

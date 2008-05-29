@@ -8,6 +8,7 @@ import com.cannontech.cbc.util.CBCUtils;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.yukon.cbc.CapBankDevice;
 import com.cannontech.yukon.cbc.SubStation;
+import com.cannontech.core.dao.DaoFactory;;
 
 public class SubStationFormattingService extends AbstractAreaFormatingService<SubStation> {
 
@@ -32,6 +33,17 @@ public class SubStationFormattingService extends AbstractAreaFormatingService<Su
         String state = (latestValue.getCcDisableFlag()) ? "DISABLED" : "ENABLED";
         if (latestValue.getOvuvDisableFlag()) state += "-V";
         return state;
+    }
+    
+    @Override
+    protected String getSpecialAreaEnabled(final SubStation latestValue, final CBCDisplay cbcDisplay) {
+        boolean saEnabled = latestValue.getSpecialAreaEnabled();
+        if (saEnabled) {
+            return " SA Enabled: " + DaoFactory.getPaoDao().getYukonPAOName(latestValue.getSpecialAreaId());
+            
+        } else {
+            return " ";
+        }
     }
     
     @Override

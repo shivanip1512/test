@@ -216,11 +216,9 @@ String css = "tableCell";
 		                    </a>
 	                    </cti:checkProperty>
                         <%=substation.getCcName()%>
-                        <% if (substation.getSpecialAreaEnabled()) {
-                            String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId());
-                        %>
-                        <font color="red">Special Area Enabled: <%=spcAreaName%></font>
-                        <% } %>
+                        <font color="red">
+                            <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="SA_ENABLED" />
+                        </font>
                     </td>
                     
                     <td>
@@ -358,57 +356,56 @@ for( SubBus subBus: subBuses ) {
 				<table id="subSnapShot${thisSubBusId}">
 				
 					<%
-					if (subBus != null) {
-					    String areaName = "(none)";
-					    if(!special){
-					        try{
-					            areaName = CBCUtils.getAreaNameForSubStationBusIdFromCache(subBus.getCcId().intValue());
-					        }catch (NotFoundException nfe){
-					            // perhaps special should have been true?
-					        }
-					    }
+				if (subBus != null) {
+				    String areaName = "";
+			        try{
+			            areaName = CBCUtils.getAreaNameForSubStationBusIdFromCache(subBus.getCcId().intValue());
+			        }catch (NotFoundException nfe){
+			            areaName = "(none)";
+			        }
 					int varPoint = subBus.getCurrentVarLoadPointID().intValue();
 					int wattPoint = subBus.getCurrentWattLoadPointID().intValue();
-					int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();
-					%>
+					int voltPoint = subBus.getCurrentVoltLoadPointID().intValue();%>
 			        <tr class="tableCellSnapShot" style="display: none;">
-			        <td>
-			        <b><u>Substation Info</u></b>
-			        </td>	
+				        <td colspan="2">
+				        <b><u>Substation Info</u></b>
+				        </td>	
 			        </tr>
 			        <tr class="tableCellSnapShot" style="display: none;">
-			        <td><font  class="lIndent">Area:<%=areaName%></font>
-			        <% if(substation.getSpecialAreaEnabled()){
-					 	String spcAreaName = paoDao.getYukonPAOName(substation.getSpecialAreaId());
-					 %>
-						 <font color="red"><%=spcAreaName%> IS ENABLED</font>
-					<%}%>
-			        </td>
+				        <td><b><font class="lIndent">Area: </font></b></td>
+	                    <td><b><font class="lIndent"><%=areaName%></font>
+					        <font color="red">
+		                        <cti:capControlValue paoId="${thisSubStationId}" type="SUBSTATION" format="SA_ENABLED" />
+		                    </font></b>
+				        </td>
 					</tr>
 			        <tr class="tableCellSnapShot" style="display: none;">
-			        <td><b><font  class="lIndent">Control Method: <%=subBus.getControlMethod()%> (<%=subBus.getControlUnits()%>)</font></b></td>
+				        <td><b><font class="lIndent">Control Method: </font></b></td>
+				        <td><b><font class="lIndent"><%=subBus.getControlMethod()%> (<%=subBus.getControlUnits()%>)</font></b></td>
 					</tr>
 			        <tr class="tableCellSnapShot" style="display: none;">
 			     	<%
 			   	        String vrPoint = "(none)";
 			   	        if (varPoint != 0) vrPoint = pointDao.getPointName(varPoint);
 			     	%>
-			        <td><b><font  class="lIndent">Var Point: <%=vrPoint%></font></b></td>
+				        <td><b><font class="lIndent">Var Point: </font></b></td>
+				        <td><b><font class="lIndent"><%=vrPoint%></font></b></td>
 					</tr>
 				    <tr class="tableCellSnapShot" style="display: none;">
 			      	<%
 			    	        String wPoint = "(none)";
 			    	        if (wattPoint != 0) wPoint = pointDao.getPointName(wattPoint);
 			      	%>
-			        <td><b><font  class="lIndent">Watt Point: <%=wPoint%></font></b></td>
+                        <td><b><font class="lIndent">Watt Point: </font></b></td>
+                        <td><b><font class="lIndent"><%=wPoint%></font></b></td>
 					</tr>
 				    <tr class="tableCellSnapShot" style="display: none;">
 			        <%
 			 		        String vPoint = "(none)";
 			 		        if (voltPoint != 0) vPoint = pointDao.getPointName(voltPoint);
 			        %>
-			        <td><b><font  class="lIndent">Volt Point: <%=vPoint%>
-			        </font></b></td>
+                        <td><b><font class="lIndent">Volt Point: </font></b></td>
+                        <td><b><font class="lIndent"><%=vPoint%></font></b></td>
 			        </tr>
 			<%	 }%>
 				
