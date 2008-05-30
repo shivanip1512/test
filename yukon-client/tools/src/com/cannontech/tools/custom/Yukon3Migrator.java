@@ -217,7 +217,7 @@ public class Yukon3Migrator extends MessageFrameAdaptor
 			throw new IllegalArgumentException("Found no (null) old properties to exist");
 
 		LiteYukonGroup yukGrp =
-			DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
+			DaoFactory.getRoleDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
 			
 		YukonGroup yukGrpPersist = 
 				(YukonGroup)LiteFactory.createDBPersistent( yukGrp );

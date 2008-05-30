@@ -13,7 +13,7 @@
 		Properties savedReq = new Properties();
 		savedReq.setProperty("DeviceType", String.valueOf(liteHw.getLmHardwareTypeID()));
 		savedReq.setProperty("DeviceLabel", liteHw.getDeviceLabel());
-		savedReq.setProperty("ReceiveDate", ServletUtils.formatDate(new Date(liteHw.getReceiveDate()), datePart));
+		savedReq.setProperty("ReceiveDate", dateFormattingService.formatDate(new Date(liteHw.getReceiveDate()), DateFormatEnum.DATE, userContext));
 		savedReq.setProperty("Voltage", String.valueOf(liteHw.getVoltageID()));
 		savedReq.setProperty("ServiceCompany", String.valueOf(liteHw.getInstallationCompanyID()));
 		savedReq.setProperty("Notes", liteHw.getNotes().replaceAll("<br>", System.getProperty("line.separator")));

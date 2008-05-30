@@ -31,6 +31,7 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.operator.InventoryRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService;
@@ -58,6 +59,7 @@ import com.cannontech.stars.xml.serialize.StarsProgramOptOut;
 import com.cannontech.stars.xml.serialize.StarsProgramOptOutResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 /**
@@ -77,11 +79,8 @@ public class ProgramOptOutAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
         try {
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			if (user == null) return null;
-			
-			LiteStarsEnergyCompany energyCompany = StarsDatabaseCache.getInstance().getEnergyCompany( user.getEnergyCompanyID() );
-			TimeZone tz = energyCompany.getDefaultTimeZone();
+            YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(req);
+			TimeZone tz = yukonUserContext.getTimeZone();
             
 			StarsProgramOptOut optOut = new StarsProgramOptOut();
 			

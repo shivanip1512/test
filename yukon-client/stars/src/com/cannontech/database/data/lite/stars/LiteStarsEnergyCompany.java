@@ -396,12 +396,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public TimeZone getDefaultTimeZone() {
-        TimeZone dftTimeZone = TimeZone.getDefault();
-        String tz = getEnergyCompanySetting(EnergyCompanyRole.DEFAULT_TIME_ZONE);
-        if (tz != null)
-            dftTimeZone = TimeZone.getTimeZone( tz );
-        
-        return dftTimeZone;
+        LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser(getUserID());
+        return DaoFactory.getAuthDao().getUserTimeZone(liteYukonUser);
     }
     
     public String getAdminEmailAddress() {
@@ -715,7 +711,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         for (int i = 0; i < custGroupIDs.length; i++) {
             String groupID = custGroupIDs[i].trim();
             if (groupID.equals("")) continue;
-            LiteYukonGroup liteGroup = DaoFactory.getAuthDao().getGroup( Integer.parseInt(groupID) );
+            LiteYukonGroup liteGroup = DaoFactory.getRoleDao().getGroup( Integer.parseInt(groupID) );
             if (liteGroup != null) custGroupList.add( liteGroup );
         }
         
@@ -731,7 +727,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         for (int i = 0; i < operGroupIDs.length; i++) {
             String groupID = operGroupIDs[i].trim();
             if (groupID.equals("")) continue;
-            LiteYukonGroup liteGroup = DaoFactory.getAuthDao().getGroup( Integer.parseInt(groupID) );
+            LiteYukonGroup liteGroup = DaoFactory.getRoleDao().getGroup( Integer.parseInt(groupID) );
             if (liteGroup != null) operGroupList.add( liteGroup );
         }
         
@@ -749,7 +745,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 List<LiteYukonGroup> groups = cache.getYukonUserGroupMap().get( dftUser );
                 for (int i = 0; i < groups.size(); i++) {
                     LiteYukonGroup group = groups.get(i);
-                    if (DaoFactory.getAuthDao().getRolePropValueGroup(group, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, null) != null) {
+                    if (DaoFactory.getRoleDao().getRolePropValueGroup(group, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, null) != null) {
                         operDftGroupID = group.getGroupID();
                         return group;
                     }
@@ -757,7 +753,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             }
         }
         
-        return DaoFactory.getAuthDao().getGroup( operDftGroupID );
+        return DaoFactory.getRoleDao().getGroup( operDftGroupID );
     }
     
     /**

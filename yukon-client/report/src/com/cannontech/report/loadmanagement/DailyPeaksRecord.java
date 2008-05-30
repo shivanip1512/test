@@ -51,7 +51,7 @@ public String dataToString()
 {
 	StringBuffer returnBuffer = new StringBuffer();
 
-	java.text.SimpleDateFormat dateTimeFormatter = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+	java.text.SimpleDateFormat dateTimeFormatter = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss z");
 	java.text.DecimalFormat doubleFormatter = new java.text.DecimalFormat();
 	doubleFormatter.applyPattern("###,###,##0.00");
 

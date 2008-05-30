@@ -25,6 +25,7 @@ import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -446,8 +447,10 @@ public class NewCustAccountAction implements ActionBase {
 			}
         	
 			String timeZone = starsAccount.getTimeZone();
-			if (timeZone == null)
-				timeZone = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.DEFAULT_TIME_ZONE );
+			if (timeZone == null) {
+	            LiteYukonUser liteYukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser( userID );
+				timeZone = DaoFactory.getAuthDao().getUserTimeZone(liteYukonUser).getID();
+			}
 			if (timeZone == null)
 				timeZone = "(none)";
 			customerDB.setTimeZone( timeZone );

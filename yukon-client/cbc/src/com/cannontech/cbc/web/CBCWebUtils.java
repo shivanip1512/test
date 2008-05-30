@@ -269,7 +269,7 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
 		LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
 		
 		LiteYukonRoleProperty liteProp =
-			DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_AREA_CONTROLS);
+			DaoFactory.getRoleDao().getRoleProperty(CBCSettingsRole.ALLOW_AREA_CONTROLS);
 
 		if( yukUser != null && liteProp != null )
 		{
@@ -295,7 +295,7 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
         LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
         
         LiteYukonRoleProperty liteProp =
-            DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_SUBSTATION_CONTROLS);
+            DaoFactory.getRoleDao().getRoleProperty(CBCSettingsRole.ALLOW_SUBSTATION_CONTROLS);
 
         if( yukUser != null && liteProp != null )
         {
@@ -321,7 +321,7 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
         LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
         
         LiteYukonRoleProperty liteProp =
-            DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_SUBBUS_CONTROLS);
+            DaoFactory.getRoleDao().getRoleProperty(CBCSettingsRole.ALLOW_SUBBUS_CONTROLS);
 
         if( yukUser != null && liteProp != null )
         {
@@ -347,7 +347,7 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
         LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
         
         LiteYukonRoleProperty liteProp =
-            DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_FEEDER_CONTROLS);
+            DaoFactory.getRoleDao().getRoleProperty(CBCSettingsRole.ALLOW_FEEDER_CONTROLS);
 
         if( yukUser != null && liteProp != null )
         {
@@ -373,7 +373,7 @@ public static synchronized String genGraphWattURL(int id, CapControlCache capCon
         LiteYukonUser yukUser = ServletUtil.getYukonUser(session);
         
         LiteYukonRoleProperty liteProp =
-            DaoFactory.getAuthDao().getRoleProperty(CBCSettingsRole.ALLOW_CAPBANK_CONTROLS);
+            DaoFactory.getRoleDao().getRoleProperty(CBCSettingsRole.ALLOW_CAPBANK_CONTROLS);
 
         if( yukUser != null && liteProp != null )
         {

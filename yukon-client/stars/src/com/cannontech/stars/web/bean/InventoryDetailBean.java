@@ -1,13 +1,10 @@
 package com.cannontech.stars.web.bean;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
-import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
@@ -32,12 +29,6 @@ public class InventoryDetailBean
     private int currentInventoryID;
     private Warehouse currentWarehouse;
     private List<EventInventory> currentEvents;
-    private String currentInstallDate;
-    private String currentReceiveDate;
-    private String currentRemoveDate;
-    private String currentFieldInstallDate;
-    private String currentFieldReceiveDate;
-    private String currentFieldRemoveDate;
     
     public LiteStarsEnergyCompany getEnergyCompany()
     {
@@ -123,63 +114,6 @@ public class InventoryDetailBean
         this.currentEvents = currentEvents;
     }
 
-    public String getCurrentInstallDate() 
-    {
-        if(currentInstallDate == null)
-        {
-            SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-            Date installDate = getDateOfInventoryEvent(YukonListEntryTypes.EVENT_ACTION_INV_INSTALLED);
-            if(installDate != null)
-                currentInstallDate = datePart.format(installDate);
-            else
-                currentInstallDate = CtiUtilities.STRING_NONE;
-        }
- 
-        return currentInstallDate;
-    }
-
-    public void setCurrentInstallDate(String currentInstallDate) {
-        this.currentInstallDate = currentInstallDate;
-    }
-
-    public String getCurrentReceiveDate() 
-    {
-        if(currentReceiveDate == null)
-        {
-            SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-            Date receiveDate = getDateOfInventoryEvent(YukonListEntryTypes.EVENT_ACTION_INV_RECEIVED);
-            if(receiveDate != null)
-                currentReceiveDate = datePart.format(receiveDate);
-            else
-                currentReceiveDate = CtiUtilities.STRING_NONE;
-        }
- 
-        return currentReceiveDate;
-    }
-
-    public void setCurrentReceiveDate(String currentReceiveDate) {
-        this.currentReceiveDate = currentReceiveDate;
-    }
-
-    public String getCurrentRemoveDate() 
-    {
-        if(currentRemoveDate == null)
-        {
-            SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-            Date removeDate = getDateOfInventoryEvent(YukonListEntryTypes.EVENT_ACTION_INV_REMOVED);
-            if(removeDate != null)
-                currentRemoveDate = datePart.format(removeDate);
-            else
-                currentRemoveDate = CtiUtilities.STRING_NONE;
-        }
- 
-        return currentRemoveDate;
-    }
-
-    public void setCurrentRemoveDate(String currentRemoveDate) {
-        this.currentRemoveDate = currentRemoveDate;
-    }
-   
     public Date getDateOfInventoryEvent( int deviceStateDefID )
     {
         /*
@@ -202,26 +136,5 @@ public class InventoryDetailBean
     public void setCurrentInventoryID(int currentInventoryID) {
         this.currentInventoryID = currentInventoryID;
         currentInventory = energyCompany.getInventory( currentInventoryID, true );
-    }
-    
-    public String getFieldInstallDate() {
-        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-        currentFieldInstallDate = datePart.format(new Date(currentInventory.getInstallDate()));
-        if(currentFieldInstallDate.endsWith("1969")) currentFieldInstallDate = "";
-        return currentFieldInstallDate;
-    }
-    
-    public String getFieldReceiveDate() {
-        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-        currentFieldReceiveDate = datePart.format(new Date(currentInventory.getReceiveDate()));
-        if(currentFieldReceiveDate.endsWith("1969")) currentFieldReceiveDate = "";
-        return currentFieldReceiveDate;
-    }
-    
-    public String getFieldRemoveDate() {
-        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-        currentFieldRemoveDate = datePart.format(new Date(currentInventory.getRemoveDate()));
-        if(currentFieldRemoveDate.endsWith("1969")) currentFieldRemoveDate = "";
-        return currentFieldRemoveDate;
     }
 }

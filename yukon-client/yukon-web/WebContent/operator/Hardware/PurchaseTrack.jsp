@@ -95,7 +95,7 @@
 	                  <div align="right">Created on:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <div align="left" class="fieldinfo"><c:out value="${purchaseBean.currentPlan.timePeriod}"/></div>
+	                  <div align="left" class="fieldinfo"><cti:formatDate value="${purchaseBean.currentPlan.timePeriod}" type="BOTH"/></div>
 	                </td>
 		     	</tr>
 	        </table>

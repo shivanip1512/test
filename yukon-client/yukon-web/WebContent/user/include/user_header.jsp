@@ -9,8 +9,9 @@
 <%@ page import="com.cannontech.database.data.lite.LiteContact" %>
 <%@ page import="com.cannontech.database.db.customer.DeviceCustomerList"%>
 <%@ page import="com.cannontech.database.db.graph.GraphRenderers" %>
+<%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
+<%@page import="com.cannontech.user.YukonUserContext"%>
 
-<%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.analysis.*"%> 	
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -30,16 +31,9 @@
 	if (liteCICustomer != null)
 		customerID = liteCICustomer.getCustomerID();
 	
-	//Default energycompany properties in case we can't find one?
-	int energyCompanyID = -1;	//default?
-	LiteYukonUser ecUser = null;
-	TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
-	if( DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser) != null)
-	{
-		energyCompanyID = DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser).getEnergyCompanyID();
-		ecUser = DaoFactory.getEnergyCompanyDao().getEnergyCompanyUser(energyCompanyID);
-		tz = TimeZone.getTimeZone(DaoFactory.getAuthDao().getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
-	}
+	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
+    TimeZone tz = userContext.getTimeZone();
+
 	java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");

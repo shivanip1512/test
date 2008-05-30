@@ -141,7 +141,7 @@ public class DumpRoles {
 		System.out.println("\nProperties defined but not in the database");
 		for(Iterator i = propIDList.iterator(); i.hasNext();) {
 			Integer id = (Integer) i.next();
-			if(DaoFactory.getAuthDao().getRoleProperty(id.intValue()) == null) {
+			if(DaoFactory.getRoleDao().getRoleProperty(id.intValue()) == null) {
 				System.out.println(propIDMap.get(id));
 			}
 		}

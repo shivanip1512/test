@@ -326,10 +326,10 @@ function sendWorkOrder() {
                         <table width="100%" border="0" cellspacing="0" cellpadding="1">
                           <tr> 
                             <td width="30%" align="right" class="TableCell">Event Date:</td>
-                            <td width="70%"> 
-                              <input type="text" name="DateEventTimestamp" size="14" value="<%= ServletUtils.formatDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp(), datePart) %>" disabled onchange="setContentChanged(true)">
+                            <td width="70%" class="TableCell"> 
+                              <input type="text" name="DateEventTimestamp" size="10" value="<cti:formatDate value="<%=eventWorkOrderList.get(0).getEventBase().getEventTimestamp()%>" type="DATE"/>" disabled onchange="setContentChanged(true)">
                               - 
-                              <input type="text" name="TimeEventTimestamp" size="8" value="<%= ServletUtils.formatDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp(), timeFormat) %>" disabled onchange="setContentChanged(true)">
+                              <input type="text" name="TimeEventTimestamp" size="6" value="<cti:formatDate value="<%=eventWorkOrderList.get(0).getEventBase().getEventTimestamp()%>" type="TIME"/>" disabled onchange="setContentChanged(true)">&nbsp;<cti:formatDate value="<%=eventWorkOrderList.get(0).getEventBase().getEventTimestamp()%>" type="TIMEZONE"/>
                             </td>
                           </tr>
                         </table>
@@ -339,11 +339,11 @@ function sendWorkOrder() {
 	                      <tr> 
 	                        <td width="30%" align="right" valign="top" class="TableCell">Event History:
 	                        <td width="70%">
-						      <table width="95%" border="1" cellspacing="0" cellpadding="1" align="left" valign="top">
+						      <table width="100%" border="1" cellspacing="0" cellpadding="1" align="left" valign="top">
 	                            <% for (int i = 0; i < eventWorkOrderList.size(); i++) { %>
 	                            <tr> 
-	                              <td width="40%" class="TableCell">&nbsp;<%=DaoFactory.getYukonListDao().getYukonListEntry(eventWorkOrderList.get(i).getEventBase().getActionID()).getEntryText()%>&nbsp;</td>
-	                              <td width="60%" class="TableCell">&nbsp;<%= ServletUtils.formatDate(eventWorkOrderList.get(i).getEventBase().getEventTimestamp(), dateTimeExtFormat ) %></td>
+	                              <td width="35%" class="TableCell">&nbsp;<%=DaoFactory.getYukonListDao().getYukonListEntry(eventWorkOrderList.get(i).getEventBase().getActionID()).getEntryText()%>&nbsp;</td>
+	                              <td width="65%" class="TableCell">&nbsp;<cti:formatDate value="<%=eventWorkOrderList.get(i).getEventBase().getEventTimestamp()%>" type="BOTH"/></td>
 	                            </tr>
 	                            <%}%>
 	                          </table>                                
@@ -354,7 +354,7 @@ function sendWorkOrder() {
                         <tr>
                           <td width="30%" align="right" class="TableCell">Action Taken:</td>
                           <td width="70%"> 
-                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="35" class = "TableCell" onchange="setContentChanged(true)"><%= liteOrder.getActionTaken().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
+                            <textarea name="ActionTaken" rows="3" wrap="soft" cols="37" class = "TableCell" onchange="setContentChanged(true)"><%= liteOrder.getActionTaken().replaceAll("<br>", System.getProperty("line.separator")) %></textarea>
                           </td>
                         </tr>
                       </table>

@@ -118,18 +118,6 @@ public String getEnergyCompanyProperty(LiteEnergyCompany ec, int rolePropertyID)
     return authDao.getRolePropertyValue(getEnergyCompanyUser(ec), rolePropertyID);
 }
 
-/* (non-Javadoc)
- * @see com.cannontech.core.dao.EnergyCompanyDao#getEnergyCompanyTimeZone(com.cannontech.database.data.lite.LiteEnergyCompany)
- */
-public TimeZone getEnergyCompanyTimeZone(LiteEnergyCompany ec) {
-    String tz = getEnergyCompanyProperty(ec, EnergyCompanyRole.DEFAULT_TIME_ZONE);
-    if (StringUtils.isBlank(tz)) {
-        return TimeZone.getDefault();
-    } else {
-        return TimeZone.getTimeZone(tz);
-    }
-}
-
 public void setDatabaseCache(IDatabaseCache databaseCache) {
     this.databaseCache = databaseCache;
 }

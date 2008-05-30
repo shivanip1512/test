@@ -16,12 +16,13 @@ import com.cannontech.cc.service.enums.NotificationStatus;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface EconomicStrategy extends CICurtailmentStrategy {
 
-    public EconomicBuilder createBuilder(Program program);
+    public EconomicBuilder createBuilder(Program program, YukonUserContext yukonUserContext);
 
-    public EconomicBuilder createExtensionBuilder(EconomicEvent previous);
+    public EconomicBuilder createExtensionBuilder(EconomicEvent previous, YukonUserContext yukonUserContext);
 
     public int getWindowLengthMinutes();
 

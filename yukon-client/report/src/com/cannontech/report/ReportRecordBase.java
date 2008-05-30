@@ -9,7 +9,7 @@ import java.text.SimpleDateFormat;
  */
 public interface ReportRecordBase {
     //Date formatter (used in pageHeaders)
-    public SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    public SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm:ss z");
     
 /**
  * dataToString method comment.

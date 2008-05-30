@@ -130,10 +130,11 @@ function changeStatus(form) {
                         </tr>
                         <tr> 
                           <td width="30%" align="right" class="TableCell">Event Date:</td>
-                          <td width="70%"> 
-                            <input type="text" name="DateEventTimestamp" size="14" value="<%= ServletUtils.formatDate(new Date(), datePart) %>" onchange="setContentChanged(true)">
+                          <td width="70%">
+                          	<% final Date newDate = new Date(); %> 
+                            <input type="text" name="DateEventTimestamp" size="10" value="<cti:formatDate value="<%=newDate%>" type="DATE"/>" onchange="setContentChanged(true)">
                             - 
-                            <input type="text" name="TimeEventTimestamp" size="8" value="<%= ServletUtils.formatDate(new Date(), timeFormat) %>" onchange="setContentChanged(true)">
+                            <input type="text" name="TimeEventTimestamp" size="6" value="<cti:formatDate value="<%=newDate%>" type="TIME"/>" onchange="setContentChanged(true)">&nbsp;<cti:formatDate value="<%=newDate%>" type="TIMEZONE"/>
                           </td>
                         </tr>
                         <tr> 

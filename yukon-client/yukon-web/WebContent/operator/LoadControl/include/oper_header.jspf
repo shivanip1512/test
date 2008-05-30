@@ -3,7 +3,6 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%@ page import="com.cannontech.servlet.LCConnectionServlet" %>
 <%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
-<%@ page import="com.cannontech.web.loadcontrol.LoadcontrolCache" %>
 <%@ page import="com.cannontech.common.util.CtiUtilities" %> 
 <%@ page import="com.cannontech.util.ServletUtil" %>
 
@@ -16,6 +15,8 @@
 <%@ page import="java.util.GregorianCalendar" %>
 <%@ page import="java.util.Calendar" %>
 <%@ page import="java.util.Date" %>
+<%@page import="com.cannontech.user.YukonUserContext"%>
+<%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
  
@@ -28,12 +29,12 @@
 	LiteYukonUser user = YUKON_USER;	
     int energyCompanyID = 1;
     LiteYukonUser ecUser = null;
-    TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
-    if( DaoFactory.getEnergyCompanyDao().getEnergyCompany(user) != null)
-    { 
+	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
+    TimeZone tz = userContext.getTimeZone();
+    
+    if( DaoFactory.getEnergyCompanyDao().getEnergyCompany(user) != null) { 
     	energyCompanyID = DaoFactory.getEnergyCompanyDao().getEnergyCompany(user).getEnergyCompanyID();
 	    ecUser = DaoFactory.getEnergyCompanyDao().getEnergyCompanyUser(energyCompanyID);
-		tz = TimeZone.getTimeZone(DaoFactory.getAuthDao().getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
 	}
     LCConnectionServlet cs = (LCConnectionServlet) application.getAttribute(LCConnectionServlet.SERVLET_CONTEXT_ID);
     LoadcontrolCache cache = cs.getCache();

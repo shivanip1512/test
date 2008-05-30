@@ -399,7 +399,7 @@ function confirmCancel() {
                                   <div align="right">Field Receive Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= (savedRecvDate != null)? savedRecvDate : ServletUtils.formatDate(inventory.getReceiveDate(), datePart) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= (savedRecvDate != null)? savedRecvDate : dateFormattingService.formatDate(new Date(inventory.getReceiveDate()), DateFormattingService.DateFormatEnum.DATE, userContext) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 

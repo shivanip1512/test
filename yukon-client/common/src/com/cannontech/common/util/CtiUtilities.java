@@ -46,6 +46,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.springframework.util.FileCopyUtils;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.version.VersionTools;
@@ -1788,6 +1789,19 @@ public static double convertTemperature(double temperature, String fromUnit, Str
          return !StringUtils.containsNone(name, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME);
      }
      
+     /**
+      * Compares the timeZone is the correctly generated timeZone from timeZoneStr
+      * Throws BadConfigurationException if TimeZone ID does not match the timeZoneStr 
+      * @param timeZone
+      * @param timeZoneStr
+      * @return
+      */
+     public static void validate(TimeZone timeZone, String timeZoneStr) throws BadConfigurationException {
+         //Verify the timezone ID is the same as the timeZoneStr to validate valid string was used (GMT is returned by default).
+         if (!timeZone.getID().equals(timeZoneStr)) {// Invalid TimeZone string
+             throw new BadConfigurationException("Invalid TimeZone Id value: " + timeZoneStr);
+         }
+     }
 }
 
 

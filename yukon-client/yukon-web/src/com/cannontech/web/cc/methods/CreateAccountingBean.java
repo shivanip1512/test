@@ -18,7 +18,7 @@ public class CreateAccountingBean extends EventCreationBase {
     
     @Override
     public void initialize() {
-        setBuilder(getMyStrategy().createBuilder(getProgram()));
+        setBuilder(getMyStrategy().createBuilder(getProgram(), JSFUtil.getYukonUserContext()));
     }
 
     public String doAfterParameterEntry() {

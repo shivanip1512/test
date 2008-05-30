@@ -24,6 +24,7 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.util.AbstractFilter;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.FilterWrapper;
@@ -37,13 +38,13 @@ import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsCreateServiceRequestResponse;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsSuccess;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * <p>Title: CreateServiceRequestAction.java</p>
@@ -60,13 +61,8 @@ public class CreateServiceRequestAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			if (user == null) return null;
-			
-			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
-			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
-			if (tz == null) tz = TimeZone.getDefault();
+			YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(req);
+			TimeZone tz = yukonUserContext.getTimeZone();
 			
 			StarsOperation operation = (StarsOperation) session.getAttribute(WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ);
 			session.removeAttribute( WorkOrderManagerUtil.STARS_WORK_ORDER_OPER_REQ );

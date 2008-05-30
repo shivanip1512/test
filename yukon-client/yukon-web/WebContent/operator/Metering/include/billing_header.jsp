@@ -11,6 +11,7 @@
     java.text.SimpleDateFormat datePart = new java.text.SimpleDateFormat("MM/dd/yyyy");	  
     java.text.SimpleDateFormat timePart = new java.text.SimpleDateFormat("HH:mm");
     java.text.SimpleDateFormat dateFormat = new java.text.SimpleDateFormat("MM:dd:yyyy:HH:mm:ss");
+    java.text.SimpleDateFormat tzFormat = new java.text.SimpleDateFormat("z");
     String dbAlias = com.cannontech.common.util.CtiUtilities.getDatabaseAlias();
 
 	LiteYukonUser liteYukonUser = null;

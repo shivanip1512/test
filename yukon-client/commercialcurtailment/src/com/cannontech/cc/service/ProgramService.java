@@ -3,7 +3,6 @@ package com.cannontech.cc.service;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,8 +43,6 @@ public interface ProgramService {
     public List<Program> getProgramList(ProgramType programType);
 
     public List<AvailableProgramGroup> getAvailableProgramGroups(Program program);
-
-    public TimeZone getTimeZone(Program program);
 
     public Set<LiteNotificationGroup> getAssignedNotificationGroups(Program program);
 

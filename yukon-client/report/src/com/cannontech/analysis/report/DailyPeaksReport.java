@@ -2,6 +2,7 @@ package com.cannontech.analysis.report;
 
 import java.awt.BasicStroke;
 import java.awt.geom.Point2D;
+import java.util.Calendar;
 import java.util.Date;
 
 import org.jfree.report.ElementAlignment;

@@ -53,7 +53,8 @@ public class CBCSelectionLists {
 	private static final String dateTimeNoSeconds = "MM-dd-yyyy HH:mm";
 	
 	private LiteYukonUser yukonUser;
-
+	private AuthDao authDao;
+	
     private static final SelectItem[] pTypes = {
       new SelectItem(new Integer (PointTypes.ANALOG_POINT), "Analog"),
       new SelectItem(new Integer (PointTypes.STATUS_POINT), "Status"),
@@ -567,8 +568,7 @@ public class CBCSelectionLists {
     }
     
     public TimeZone getTimeZone () {
-        TimeZone timeZone = TimeZone.getDefault();
-        return timeZone;
+        return authDao.getUserTimeZone(getYukonUser());
     }
     
     public LiteYukonUser getYukonUser() {
@@ -577,5 +577,12 @@ public class CBCSelectionLists {
 
     public void setYukonUser(LiteYukonUser yukonUser) {
         this.yukonUser = yukonUser;
+    }
+    
+    public AuthDao getAuthDao() {
+        return authDao;
+    }
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
 }

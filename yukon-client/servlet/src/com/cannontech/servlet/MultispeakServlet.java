@@ -232,7 +232,7 @@ public class MultispeakServlet extends HttpServlet
             try
             {
                 boolean breakTime = false;
-                LiteYukonGroup yukGrp = DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
+                LiteYukonGroup yukGrp = DaoFactory.getRoleDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
                 YukonGroup yukGrpPersist = (YukonGroup)LiteFactory.createDBPersistent( yukGrp );
                 //fill out the DB Persistent with data
                 yukGrpPersist = (YukonGroup)Transaction.createTransaction( Transaction.RETRIEVE, yukGrpPersist ).execute();

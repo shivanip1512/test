@@ -1,7 +1,5 @@
 package com.cannontech.stars.web.bean;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.common.constants.YukonListEntry;
@@ -39,13 +37,9 @@ public class PurchaseBean
     
     private List<ScheduleTimePeriod> availableTimePeriods;
     private ScheduleTimePeriod currentTimePeriod;
-    private String currentPredictedShipDate;
     
     private List<Shipment> availableShipments;
     private Shipment currentShipment;
-    private String currentShipDate;
-    private String currentOrderingDate;
-    private String currentReceivingDate;
     private String currentActualPricePerUnit;
     private String currentSalesTax;
     private String currentShippingCharges;
@@ -62,8 +56,6 @@ public class PurchaseBean
     private List<Shipment> assignedInvoiceShipments;
     private List<Shipment> allUnassignedInvoiceShipments;
     private Invoice currentInvoice;
-    private String currentSubmittedDate;
-    private String currentPaidDate;
     private boolean isCurrentlyAuthorized;
     private boolean hasCurrentlyPaid;
     
@@ -185,17 +177,6 @@ public class PurchaseBean
         this.currentTimePeriod = currentTimePeriod;
     }
 
-    public String getCurrentPredictedShipDate() 
-    {
-        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-        currentPredictedShipDate = datePart.format(currentTimePeriod.getPredictedShipDate());
-        return currentPredictedShipDate;
-    }
-
-    public void setCurrentPredictedShipDate(String currentPredictedShipDate) {
-        this.currentPredictedShipDate = currentPredictedShipDate;
-    }
-
     public List<Shipment> getAvailableShipments() {
         availableShipments = Shipment.getAllShipmentsForDeliverySchedule(currentSchedule.getScheduleID());
         return availableShipments;
@@ -218,31 +199,10 @@ public class PurchaseBean
         return currentQuotedPricePerUnit;
     }
     
-    public String getCurrentShipDate() 
-    {
-        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-        currentShipDate = datePart.format(currentShipment.getShipDate());
-        return currentShipDate;
-    }
-
     public List<Warehouse> getAvailableWarehouses()
     {
         availableWarehouses = energyCompany.getAllWarehousesDownward();
         return availableWarehouses;
-    }
-    
-    public String getCurrentOrderingDate() 
-    {
-        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-        currentOrderingDate = datePart.format(currentShipment.getOrderedDate());
-        return currentOrderingDate;
-    }
-    
-    public String getCurrentReceivingDate() 
-    {
-        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-        currentReceivingDate = datePart.format(currentShipment.getReceivedDate());
-        return currentReceivingDate;
     }
     
     public String getCurrentActualPricePerUnit() {
@@ -288,18 +248,6 @@ public class PurchaseBean
         return availableInvoices;
     }
 
-    public String getCurrentSubmittedDate() {
-        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-        currentSubmittedDate = datePart.format(currentInvoice.getDateSubmitted());
-        return currentSubmittedDate;
-    }
-
-    public String getCurrentPaidDate() {
-        SimpleDateFormat datePart = new SimpleDateFormat("MM/dd/yyyy");
-        currentPaidDate = datePart.format(currentInvoice.getDatePaid());
-        return currentPaidDate;
-    }
-    
     public boolean getIsCurrentlyAuthorized() {
         isCurrentlyAuthorized = currentInvoice.getAuthorized().compareTo("Y") == 0;
         return isCurrentlyAuthorized;

@@ -102,4 +102,7 @@
         </property>
     </bean>
 
+	<bean id="systemDateFormattingService" class="com.cannontech.core.service.impl.SystemDateFormattingServiceImpl">
+  		<property name="roleDao" ref="roleDao"/>
+  	</bean>
 </beans>

@@ -3,14 +3,16 @@ package com.cannontech.core.dao.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.TimeZone;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.authentication.service.AuthenticationService;
@@ -20,12 +22,12 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.UnknownRolePropertyException;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteContactNotification;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
-import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.UserUtils;
 import com.cannontech.yukon.IDatabaseCache;
@@ -42,6 +44,7 @@ public class AuthDaoImpl implements AuthDao {
     private ContactDao contactDao;
     private IDatabaseCache databaseCache;
     private AuthenticationService authenticationService;
+    private SystemDateFormattingService systemDateFormattingService;
     
 	public LiteYukonUser login(String username, String password) {
         try {
@@ -104,43 +107,13 @@ public class AuthDaoImpl implements AuthDao {
         return getRolePropertyValue(liteYukonUser, rolePropertyID);
     }
 	
-	public String getRolePropValueGroup(LiteYukonGroup group,
-                                        int rolePropertyID,
-                                        String defaultValue) {
-        synchronized (databaseCache) {
-            LiteYukonRoleProperty roleProperty = getRoleProperty(rolePropertyID);
-
-            Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> lookupMap =
-                databaseCache.getYukonGroupRolePropertyMap();
-
-            Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>> roleMap = lookupMap.get(group);
-
-            if (roleMap != null) {
-                for (Map<LiteYukonRoleProperty, String> propMap : roleMap.values()) {
-                    String val = propMap.get(roleProperty);
-                    if (val != null) {
-                        return val;
-                    }
-                }
-            }
-        }
-        // I'm not sure when this would happen as the loader seems to take care of the default
-        return defaultValue;
-    }
-
-	public String getRolePropValueGroup(int groupId, int rolePropertyId, String defaultValue) {
-        LiteYukonGroup liteYukonGroup = getGroup(groupId);
-        Validate.notNull(liteYukonGroup, "Could not find a valid LiteYukonGroup for groupId=" + groupId);
-        return getRolePropValueGroup(liteYukonGroup, rolePropertyId, defaultValue);
-	}
-	
 	public List<LiteYukonRole> getRoles(String category) {
 		List<LiteYukonRole> retList = new ArrayList<LiteYukonRole>(100);
 				
 		synchronized(databaseCache) {
-			Iterator i = databaseCache.getAllYukonRoles().iterator();
+			Iterator<LiteYukonRole> i = databaseCache.getAllYukonRoles().iterator();
 			while(i.hasNext()) {
-				LiteYukonRole r = (LiteYukonRole) i.next();
+				LiteYukonRole r = i.next();
 				if(r.getCategory().equalsIgnoreCase(category)) {
 					retList.add(r);
 				}
@@ -152,57 +125,15 @@ public class AuthDaoImpl implements AuthDao {
 	public LiteYukonRole getRole(int roleid) {		
 				
 		synchronized(databaseCache) {
-			Iterator i = databaseCache.getAllYukonRoles().iterator();
+			Iterator<LiteYukonRole> i = databaseCache.getAllYukonRoles().iterator();
 			while(i.hasNext()) {
-				LiteYukonRole r = (LiteYukonRole) i.next();
+				LiteYukonRole r = i.next();
 				if(r.getRoleID() == roleid) {
 					return r;
 				}
 			}
 		}		
 		return null;
-	}
-	
-	public LiteYukonRoleProperty getRoleProperty(int propid) {
-		
-		synchronized(databaseCache) {
-			for(Iterator i = databaseCache.getAllYukonRoleProperties().iterator(); i.hasNext();) {
-				LiteYukonRoleProperty p = (LiteYukonRoleProperty) i.next();
-				if(p.getRolePropertyID() == propid) {
-					return p;
-				}
-			}
-		}
-		return null;
-	}
-	
-	public LiteYukonGroup getGroup(String groupName) {
-        
-        synchronized (databaseCache) {
-        	java.util.Iterator it = databaseCache.getAllYukonGroups().iterator();
-        	while (it.hasNext()) {
-        		LiteYukonGroup group = (LiteYukonGroup) it.next();
-        		if (group.getGroupName().equalsIgnoreCase( groupName ))
-        			return group;
-        	}
-        }
-        
-        return null;
-	}
-
-	public LiteYukonGroup getGroup(int grpID_) 
-	{
-		  synchronized (databaseCache) 
-		  {
-			java.util.Iterator it = databaseCache.getAllYukonGroups().iterator();
-			while (it.hasNext()) {
-				LiteYukonGroup group = (LiteYukonGroup) it.next();
-				if (group.getGroupID() == grpID_ )
-					return group;
-			}
-		  }
-        
-		  return null;
 	}
 	
 	public boolean isAdminUser(String username_)
@@ -363,6 +294,26 @@ public class AuthDaoImpl implements AuthDao {
         }
     }
 
+    public TimeZone getUserTimeZone(LiteYukonUser user) {
+        
+        if (user == null)
+            throw new IllegalArgumentException("User cannot be null.");
+
+        TimeZone timeZone;
+        String timeZoneStr = getRolePropertyValue( user, WebClientRole.DEFAULT_TIMEZONE);
+        
+        if (StringUtils.isNotBlank(timeZoneStr)) {
+            timeZone = TimeZone.getTimeZone(timeZoneStr);
+            try {
+                CtiUtilities.validate(timeZone, timeZoneStr);
+            } catch (BadConfigurationException e) {
+                throw new BadConfigurationException (e.getMessage() + ".  Invalid value in WebClientRole Default TimeZone property.");
+            }
+        } else {
+            timeZone = systemDateFormattingService.getSystemTimeZone();
+        }
+        return timeZone;
+    }
 
     @Required
     public void setContactDao(ContactDao contactDao) {
@@ -381,5 +332,10 @@ public class AuthDaoImpl implements AuthDao {
 
     public void setAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
+    }
+    
+    @Required
+    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
+        this.systemDateFormattingService = systemDateFormattingService;
     }
 }

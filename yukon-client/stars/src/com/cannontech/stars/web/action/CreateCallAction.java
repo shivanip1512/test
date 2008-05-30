@@ -12,6 +12,7 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.db.stars.report.CallReportBase;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -21,11 +22,11 @@ import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCreateCallReport;
 import com.cannontech.stars.xml.serialize.StarsCreateCallReportResponse;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * <p>Title: CreateCallAction.java</p>
@@ -42,13 +43,8 @@ public class CreateCallAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-			StarsYukonUser user = (StarsYukonUser) session.getAttribute( ServletUtils.ATT_STARS_YUKON_USER );
-			if (user == null) return null;
-			
-			StarsEnergyCompanySettings ecSettings =
-					(StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
-			TimeZone tz = TimeZone.getTimeZone( ecSettings.getStarsEnergyCompany().getTimeZone() );
-			if (tz == null) tz = TimeZone.getDefault();
+		    YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(req);
+		    TimeZone tz = yukonUserContext.getTimeZone();
 			
 			StarsCreateCallReport createCall = new StarsCreateCallReport();
 			if (req.getParameter("CallNo") != null)

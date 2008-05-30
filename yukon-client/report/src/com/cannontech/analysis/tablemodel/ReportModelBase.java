@@ -80,8 +80,8 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
 	private String fieldSeparator = ",";
 	
 	public String NULL_STRING = "---";
-	private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
-	protected String columnDateTimeFormat = "MM/dd/yyyy HH:mm:ss";
+	private SimpleDateFormat dateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm z");
+	protected String columnDateTimeFormat = "MM/dd/yyyy HH:mm:ss z";
 	protected String columnValueFormat = "#,##0.000";
 	private TimeZone timeZone = TimeZone.getDefault();		
 	

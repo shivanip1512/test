@@ -1,7 +1,5 @@
 package com.cannontech.core.dao;
 
-import java.util.TimeZone;
-
 import com.cannontech.database.data.lite.LiteEnergyCompany;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -64,13 +62,4 @@ public interface EnergyCompanyDao {
      */
     public String getEnergyCompanyProperty(LiteEnergyCompany ec,
             int rolePropertyID);
-
-    /**
-     * Returns the time zone stored in the DEFAULT_TIME_ZONE role property
-     * associated with the company's user.
-     * @param ec
-     * @return String
-     */
-    public TimeZone getEnergyCompanyTimeZone(LiteEnergyCompany ec);
-
 }

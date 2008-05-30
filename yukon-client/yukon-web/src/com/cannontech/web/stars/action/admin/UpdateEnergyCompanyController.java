@@ -155,12 +155,8 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
             int routeID = Integer.parseInt(request.getParameter("Route"));
             StarsAdminUtil.updateDefaultRoute( energyCompany, routeID );
 
-            // Update energy company role DEFAULT_TIME_ZONE if necessary
             LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
             boolean adminGroupUpdated = false;
-
-            adminGroupUpdated |= StarsAdminUtil.updateGroupRoleProperty(
-                                                                        adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.DEFAULT_TIME_ZONE, request.getParameter("TimeZone") );
 
             String[] operGroupNames = request.getParameter("OperatorGroup").split(",");
             String operGroupIDs = "";
@@ -168,7 +164,7 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
                 String groupName = operGroupNames[i].trim();
                 if (groupName.equals("")) continue;
 
-                LiteYukonGroup group = DaoFactory.getAuthDao().getGroup( groupName );
+                LiteYukonGroup group = DaoFactory.getRoleDao().getGroup( groupName );
                 if (group == null)
                     throw new WebClientException( "Operator group '" + groupName + "' doesn't exist");
 
@@ -190,7 +186,7 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
                 String groupName = custGroupNames[i].trim();
                 if (groupName.equals("")) continue;
 
-                LiteYukonGroup group = DaoFactory.getAuthDao().getGroup( groupName );
+                LiteYukonGroup group = DaoFactory.getRoleDao().getGroup( groupName );
                 if (group == null)
                     throw new WebClientException( "Customer group '" + groupName + "' doesn't exist");
 

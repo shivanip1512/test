@@ -52,6 +52,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
 import com.cannontech.enums.EconomicEventAction;
 import com.cannontech.enums.NotificationState;
+import com.cannontech.user.YukonUserContext;
 
 public abstract class BaseEconomicStrategy extends StrategyBase implements EconomicStrategy {
     private EconomicEventDao economicEventDao;
@@ -68,11 +69,11 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
     private final int UNSTOPPABLE_WINDOW_MINUTES = 2;
     
     @Transactional
-    public EconomicBuilder createBuilder(Program program) {
+    public EconomicBuilder createBuilder(Program program, YukonUserContext yukonUserContext) {
         EconomicBuilder builder = new EconomicBuilder();
         builder.setProgram(program);
-        
-        TimeZone tz = getProgramService().getTimeZone(program);
+
+        TimeZone tz = yukonUserContext.getTimeZone();
         builder.setTimeZone(tz);
         
         EconomicEvent event = new EconomicEvent();
@@ -108,12 +109,12 @@ public abstract class BaseEconomicStrategy extends StrategyBase implements Econo
         return builder;
     }
 
-    public EconomicBuilder createExtensionBuilder(EconomicEvent previous) {
+    public EconomicBuilder createExtensionBuilder(EconomicEvent previous, YukonUserContext yukonUserContext) {
         EconomicBuilder builder = new EconomicBuilder();
         Program program = previous.getProgram();
         builder.setProgram(program);
         
-        TimeZone tz = getProgramService().getTimeZone(program);
+        TimeZone tz = yukonUserContext.getTimeZone();
         builder.setTimeZone(tz);
         
         EconomicEvent event = new EconomicEvent();

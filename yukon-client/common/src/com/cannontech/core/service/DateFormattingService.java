@@ -22,6 +22,7 @@ public interface DateFormattingService {
     static public enum DateFormatEnum {
         TIME, 
         TIME_TZ,
+        TIMEZONE,
         DATE, 
         BOTH, 
         DATEHM, 

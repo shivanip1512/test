@@ -22,6 +22,7 @@
 	
 	<c:set var="formatMap" value="<%=FileFormatTypes.getValidFormats()%>"></c:set>
 	<c:set var="origEndDate" value="<%= datePart.format(billingBean.getEndDate()) %>"></c:set>
+	<c:set var="systemTimezone" value="<%= tzFormat.format(billingBean.getEndDate()) %>"></c:set>
 
 	<form name = "MForm" action="<c:url value="/servlet/BillingServlet" />" method="post">
 	
@@ -37,6 +38,7 @@
 				</tags:nameValue>
 				<tags:nameValue name="Billing End Date">
 		        	<tags:dateInputCalendar fieldName="endDate" fieldValue="${origEndDate}"></tags:dateInputCalendar>
+		        	* All times are <c:out value="${systemTimezone}"></c:out>
 				</tags:nameValue>
 				<tags:nameValue name="Demand Days Previous">
 		        	<input type="text" name="demandDays" value="${BILLING_BEAN.demandDaysPrev}" size = "8">

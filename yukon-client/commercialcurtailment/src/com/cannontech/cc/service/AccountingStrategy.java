@@ -10,10 +10,11 @@ import com.cannontech.cc.model.Program;
 import com.cannontech.cc.service.builder.AccountingBuilder;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface AccountingStrategy extends CICurtailmentStrategy {
 
-    public AccountingBuilder createBuilder(Program program);
+    public AccountingBuilder createBuilder(Program program, YukonUserContext yukonUserContext);
 
     public AccountingEvent createEvent(final AccountingBuilder builder)
         throws EventCreationException;

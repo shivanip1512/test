@@ -56,7 +56,7 @@ public abstract class SimpleYukonReportBase extends YukonReportBase {
 
     protected Map<ColumnLayoutData,Point2D> columnProperties = new HashMap<ColumnLayoutData, Point2D>();
     protected Map<String,Integer> columIndexLookup = new HashMap<String, Integer>();
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm");
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("MMM dd, yyyy HH:mm z");
 
 
     public SimpleYukonReportBase(BareReportModel bareModel) {

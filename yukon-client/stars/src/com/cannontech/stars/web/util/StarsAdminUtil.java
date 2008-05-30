@@ -249,7 +249,7 @@ public class StarsAdminUtil {
 	}
 	
 	public static boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyID, String newVal) throws Exception {
-		String oldVal = DaoFactory.getAuthDao().getRolePropValueGroup( group, rolePropertyID, null );
+		String oldVal = DaoFactory.getRoleDao().getRolePropValueGroup( group, rolePropertyID, null );
 		if (oldVal != null && oldVal.equals(newVal)) return false;
 		
 		if (oldVal != null) {
@@ -1164,7 +1164,7 @@ public class StarsAdminUtil {
 		LiteYukonGroup liteGroup = new LiteYukonGroup( newGroup.getGroupID().intValue() );
 		ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_ADD );
 		
-		return DaoFactory.getAuthDao().getGroup( liteGroup.getGroupID() );
+		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
 	
 	public static LiteYukonGroup createOperatorAdminGroup(final String grpName, final Map<Integer,String> rolePropMap)
@@ -1212,7 +1212,7 @@ public class StarsAdminUtil {
 		LiteYukonGroup liteGroup = new LiteYukonGroup( adminGrp.getGroupID().intValue() );
 		ServerUtils.handleDBChange( liteGroup, DBChangeMsg.CHANGE_TYPE_ADD );
 		
-		return DaoFactory.getAuthDao().getGroup( liteGroup.getGroupID() );
+		return DaoFactory.getRoleDao().getGroup( liteGroup.getGroupID() );
 	}
 	
 	public static LiteYukonUser createOperatorLogin(String username, String password, String status, LiteYukonGroup[] operGroups,

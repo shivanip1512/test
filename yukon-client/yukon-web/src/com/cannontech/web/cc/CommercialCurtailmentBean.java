@@ -25,9 +25,7 @@ public class CommercialCurtailmentBean {
     }
     
     public TimeZone getTimeZone() {
-        LiteEnergyCompany energyCompany = DaoFactory.getEnergyCompanyDao().getEnergyCompany(getYukonUser());
-        TimeZone timeZone = DaoFactory.getEnergyCompanyDao().getEnergyCompanyTimeZone(energyCompany);
-        return timeZone;
+        return authDao.getUserTimeZone(getYukonUser());
     }
     
     public String getTimeFormat() {

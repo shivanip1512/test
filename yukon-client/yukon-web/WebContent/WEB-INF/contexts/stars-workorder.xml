@@ -4,6 +4,7 @@
 <beans>
 
     <bean id="starsWorkOrderActionController" class="com.cannontech.web.stars.action.StarsWorkorderActionController" abstract="true">
+        <property name="roleDao" ref="roleDao"/>
         <property name="authDao" ref="authDao"/>
         <property name="contactDao" ref="contactDao"/>
         <property name="energyCompanyDao" ref="energyCompanyDao"/>

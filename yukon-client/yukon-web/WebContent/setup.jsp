@@ -148,8 +148,8 @@
 								</td>
 						        <td valign="bottom" class="MainText"> 
 						        	<input type="text" name="<%= p.getKeyName() %>" 
-											value="<%= DaoFactory.getAuthDao().getRolePropValueGroup(
-											DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON ),p.getRolePropertyID(), p.getDefaultValue()) %>" />
+											value="<%= DaoFactory.getRoleDao().getRolePropValueGroup(
+											DaoFactory.getRoleDao().getGroup( YukonGroupRoleDefs.GRP_YUKON ),p.getRolePropertyID(), p.getDefaultValue()) %>" />
 									<span class="defaultText"> <%= p.getDefaultValue()%></span> 
 								</td>
 							</tr>

@@ -175,7 +175,6 @@ public class ECActivityDetailReport extends YukonReportBase
 			expressions.add(hideItem);
 
 			expressions.add(getActionString());
-	//		expressions.add(getDateExpression(getModel().getColumnProperties(5).getValueFormat(), getModel().getColumnName(5)));
 		}
 		return expressions;
 	}

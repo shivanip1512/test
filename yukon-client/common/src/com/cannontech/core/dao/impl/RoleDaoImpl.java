@@ -2,11 +2,15 @@ package com.cannontech.core.dao.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
-import com.cannontech.core.dao.AuthDao;
+import org.apache.commons.lang.Validate;
+
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.roles.YukonGroupRoleDefs;
@@ -18,7 +22,6 @@ import com.cannontech.yukon.IDatabaseCache;
  */
 public class RoleDaoImpl implements RoleDao
 {
-    private AuthDao authDao;
     private IDatabaseCache databaseCache;
 
 	/* (non-Javadoc)
@@ -41,25 +44,32 @@ public class RoleDaoImpl implements RoleDao
         return list.toArray(retVal);
     }
 
-
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.RoleDao#getGlobalPropertyValue(int)
-     */
 	public String getGlobalPropertyValue( int rolePropertyID_ )
 	{
-		LiteYukonRoleProperty p =
-			authDao.getRoleProperty( rolePropertyID_ );
+		LiteYukonRoleProperty p = getRoleProperty( rolePropertyID_ );
 
 		String val = null;
 		if( p != null )
-			val = authDao.getRolePropValueGroup(
-				authDao.getGroup(YukonGroupRoleDefs.GRP_YUKON),
+			val = getRolePropValueGroup(
+				getGroup(YukonGroupRoleDefs.GRP_YUKON),
 				p.getRolePropertyID(),
 				p.getDefaultValue() );
 
 		return val;
 	}
 
+	public LiteYukonRoleProperty getRoleProperty(int propid) {
+        
+        synchronized(databaseCache) {
+            for(Iterator<LiteYukonRoleProperty> i = databaseCache.getAllYukonRoleProperties().iterator(); i.hasNext();) {
+                LiteYukonRoleProperty p = i.next();
+                if(p.getRolePropertyID() == propid) {
+                    return p;
+                }
+            }
+        }
+        return null;
+    }
 
     public LiteYukonRole getLiteRole(Integer rolePropID) {
         List<LiteYukonRoleProperty> roleProps = Collections.emptyList();
@@ -80,8 +90,62 @@ public class RoleDaoImpl implements RoleDao
         throw new NotFoundException("Role ID Could not be found");
     }
 
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+    public String getRolePropValueGroup(LiteYukonGroup group, int rolePropertyID, String defaultValue) {
+        synchronized (databaseCache) {
+            LiteYukonRoleProperty roleProperty = getRoleProperty(rolePropertyID);
+
+            Map<LiteYukonGroup, Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>>> lookupMap = databaseCache.getYukonGroupRolePropertyMap();
+
+            Map<LiteYukonRole, Map<LiteYukonRoleProperty, String>> roleMap = lookupMap.get(group);
+
+            if (roleMap != null) {
+                for (Map<LiteYukonRoleProperty, String> propMap : roleMap.values()) {
+                    String val = propMap.get(roleProperty);
+                    if (val != null) {
+                        return val;
+                    }
+                }
+            }
+        }
+        // I'm not sure when this would happen as the loader seems to take care
+        // of the default
+        return defaultValue;
+    }
+
+    public String getRolePropValueGroup(int groupId, int rolePropertyId, String defaultValue) {
+        LiteYukonGroup liteYukonGroup = getGroup(groupId);
+        Validate.notNull(liteYukonGroup, "Could not find a valid LiteYukonGroup for groupId=" + groupId);
+        return getRolePropValueGroup(liteYukonGroup, rolePropertyId, defaultValue);
+    }
+    
+    
+    public LiteYukonGroup getGroup(String groupName) {
+        
+        synchronized (databaseCache) {
+            java.util.Iterator<LiteYukonGroup> it = databaseCache.getAllYukonGroups().iterator();
+            while (it.hasNext()) {
+                LiteYukonGroup group = it.next();
+                if (group.getGroupName().equalsIgnoreCase( groupName ))
+                    return group;
+            }
+        }
+        
+        return null;
+    }
+
+    public LiteYukonGroup getGroup(int grpID_) 
+    {
+          synchronized (databaseCache) 
+          {
+            java.util.Iterator<LiteYukonGroup> it = databaseCache.getAllYukonGroups().iterator();
+            while (it.hasNext()) {
+                LiteYukonGroup group = it.next();
+                if (group.getGroupID() == grpID_ )
+                    return group;
+            }
+          }
+        
+          return null;
     }
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {

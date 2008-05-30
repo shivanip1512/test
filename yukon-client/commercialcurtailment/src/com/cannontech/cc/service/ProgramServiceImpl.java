@@ -7,7 +7,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.TreeSet;
 
 import org.apache.commons.lang.builder.CompareToBuilder;
@@ -217,13 +216,6 @@ public class ProgramServiceImpl implements ProgramService {
         return allForProgram;
     }
 
-    public TimeZone getTimeZone(Program program) {
-        int energyCompanyId = program.getProgramType().getEnergyCompanyId();
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(energyCompanyId);
-        
-        return energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
-    }
-    
     public Set<LiteNotificationGroup> getAssignedNotificationGroups(Program program) {
         return programNotificationGroupDao.getNotificationGroupsForProgram(program);
     }

@@ -734,6 +734,32 @@
 	</attribute>
   </tag>
   
+    <tag>
+  	<name>formatMillis</name>
+  	<tag-class>com.cannontech.web.taglib.FormatMillisTag</tag-class>
+  	<body-content>empty</body-content>
+	<attribute>
+ 		<name>value</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>	
+	</attribute>
+ 	<attribute>
+ 		<name>var</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+	<attribute>
+ 		<name>type</name>
+  		<required>true</required>
+  		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+ 	<attribute>
+ 		<name>invalidStr</name>
+  		<required>false</required>
+  		<rtexprvalue>true</rtexprvalue>
+	</attribute>
+  </tag>
+  
   <tag>
     <name>formatDuration</name>
     <tag-class>com.cannontech.web.taglib.FormatDurationTag</tag-class>

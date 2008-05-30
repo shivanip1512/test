@@ -20,7 +20,6 @@ import org.springframework.web.servlet.view.RedirectView;
 
 import com.cannontech.amr.macsscheduler.service.MACSScheduleService;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.macs.message.Schedule;
@@ -41,7 +40,6 @@ public class MACSScheduleController extends MultiActionController {
     private static final Comparator<Schedule> reverseSortByStartDate;
     private static final Comparator<Schedule> reverseSortByStopDate;
     private MACSScheduleService<Schedule> service;
-    private YukonUserDao userDao;
     private AuthDao authDao;
     private DateFormattingService dateFormattingService;
     
@@ -190,7 +188,7 @@ public class MACSScheduleController extends MultiActionController {
     }
     
     public ModelAndView action(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
+        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final ModelAndView mav = new ModelAndView();
         final String sortBy = ServletRequestUtils.getRequiredStringParameter(request, "sortBy");
         final Boolean descending = ServletRequestUtils.getRequiredBooleanParameter(request, "descending");
@@ -198,26 +196,26 @@ public class MACSScheduleController extends MultiActionController {
         final String time = ServletRequestUtils.getRequiredStringParameter(request, "time");
         final String stopTime = ServletRequestUtils.getRequiredStringParameter(request, "stoptime");
         final String stopDate = ServletRequestUtils.getRequiredStringParameter(request, "stopdate");
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        final TimeZone zone = userDao.getUserTimeZone(user);
+        final LiteYukonUser liteYukonUser = yukonUserContext.getYukonUser();
+        final TimeZone timeZone = yukonUserContext.getTimeZone();
         //i18n this isn't legit, the time and date must be parsed separately
-        Date stop = dateFormattingService.flexibleDateParser(stopDate + " " + stopTime, userContext);
+        Date stop = dateFormattingService.flexibleDateParser(stopDate + " " + stopTime, yukonUserContext);
         Date start = null;
         
-        if (!isEditable(user, SchedulerRole.ROLEID)) return mav;
+        if (!isEditable(liteYukonUser, SchedulerRole.ROLEID)) return mav;
         
         if (time.equals("startnow")) {
-            start = Calendar.getInstance(zone).getTime();
+            start = Calendar.getInstance(timeZone).getTime();
         }
         
         if (time.equals("starttime")) {
             String startTime = ServletRequestUtils.getStringParameter(request, "starttime");
             String startDate = ServletRequestUtils.getStringParameter(request, "startdate");
             //i18n this isn't legit, the time and date must be parsed separately
-            start = dateFormattingService.flexibleDateParser(startDate + " " + startTime, userContext);
+            start = dateFormattingService.flexibleDateParser(startDate + " " + startTime, yukonUserContext);
         }
         
-        if (time.equals("stopnow")) stop = Calendar.getInstance(zone).getTime();
+        if (time.equals("stopnow")) stop = Calendar.getInstance(timeZone).getTime();
 
         if (time.equals("stopnow") || time.equals("stoptime")) start = stop;
             
@@ -309,10 +307,6 @@ public class MACSScheduleController extends MultiActionController {
     
     public void setAuthDao(final AuthDao authDao) {
         this.authDao = authDao;
-    }
-    
-    public void setYukonUserDao(final YukonUserDao userDao) {
-        this.userDao = userDao;
     }
 
     public void setDateFormattingService(DateFormattingService dateFormattingService) {

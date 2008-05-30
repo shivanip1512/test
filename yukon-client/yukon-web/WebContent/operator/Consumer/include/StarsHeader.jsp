@@ -43,8 +43,12 @@
 <%@ page import="com.cannontech.stars.xml.util.SOAPUtil" %>
 <%@ page import="com.cannontech.util.ServletUtil" %>
 <%@ page import="com.cannontech.clientutils.CTILogger"%>
+<%@page import="com.cannontech.user.YukonUserContext"%>
+<%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
+<%@page import="com.cannontech.core.service.DateFormattingService"%>
+<%@page import="com.cannontech.spring.YukonSpringHook"%>
+<%@page import="com.cannontech.core.service.DateFormattingService.DateFormatEnum"%>
 
-<jsp:directive.page import="com.cannontech.spring.YukonSpringHook"/>
 <jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/>
@@ -55,6 +59,8 @@
 <%
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtils.ATT_YUKON_USER);
 	StarsYukonUser user = (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
+	DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
+	YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
 	
 	if (user != null)
 	{

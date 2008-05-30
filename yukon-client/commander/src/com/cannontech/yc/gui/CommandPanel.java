@@ -138,7 +138,7 @@ public class CommandPanel extends javax.swing.JPanel
                 
                 // Check property to see if manual commands are allowed
                 LiteYukonRoleProperty liteProp =
-                    DaoFactory.getAuthDao().getRoleProperty(CommanderRole.EXECUTE_MANUAL_COMMAND);
+                    DaoFactory.getRoleDao().getRoleProperty(CommanderRole.EXECUTE_MANUAL_COMMAND);
 
                 String val = DaoFactory.getAuthDao().getRolePropertyValue(
                     ClientSession.getInstance().getUser(),

@@ -25,6 +25,7 @@ import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public class BaseAccountingStrategy extends StrategyBase implements AccountingStrategy {
     private TransactionTemplate transactionTemplate;
@@ -32,7 +33,7 @@ public class BaseAccountingStrategy extends StrategyBase implements AccountingSt
     private AccountingEventParticipantDao accountingEventParticipantDao;
     
     @Transactional
-    public AccountingBuilder createBuilder(Program program) {
+    public AccountingBuilder createBuilder(Program program, YukonUserContext yukonUserContext) {
         AccountingBuilder builder = new AccountingBuilder();
         AccountingEvent event = new AccountingEvent();
         builder.setEvent(event);
@@ -40,7 +41,7 @@ public class BaseAccountingStrategy extends StrategyBase implements AccountingSt
         event.setIdentifier(identifier);
         event.setProgram(program);
         
-        TimeZone tz = getProgramService().getTimeZone(program);
+        TimeZone tz = yukonUserContext.getTimeZone();
         builder.setTimeZone(tz);
         
         Date now = new Date();

@@ -133,7 +133,7 @@ public class SetupServlet extends HttpServlet
 	private DBChangeMsg[] writeYukonProperties( final HttpServletRequest req ) throws Exception
 	{
 		LiteYukonGroup yukGrp =
-			DaoFactory.getAuthDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
+			DaoFactory.getRoleDao().getGroup( YukonGroupRoleDefs.GRP_YUKON );
 			
 		YukonGroup yukGrpPersist = 
 				(YukonGroup)LiteFactory.createDBPersistent( yukGrp );

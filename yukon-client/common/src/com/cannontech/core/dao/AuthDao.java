@@ -1,11 +1,11 @@
 package com.cannontech.core.dao;
 
 import java.util.List;
+import java.util.TimeZone;
 
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
-import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface AuthDao {
@@ -80,26 +80,6 @@ public interface AuthDao {
     public String getRolePropertyValue(int userID, int rolePropertyID);
 
     /**
-     * Returns the value for a given group and role property.
-     * If no value is found then defaultValue is returned for convenience.
-     * @param group
-     * @param roleProperty
-     * @return String
-     */
-    public String getRolePropValueGroup(LiteYukonGroup group_,
-            int rolePropertyID, String defaultValue);
-
-    /**
-     * Returns the value for a given group and role property.
-     * If no value is found then defaultValue is returned for convenience.
-     * @param groupId
-     * @param roleProperty
-     * @return String
-     */
-    public String getRolePropValueGroup(int groupId,
-                                        int rolePropertyId, String defaultValue);
-
-    /**
      * Returns a list of roles that are in the given category.
      * @param category
      * @return List
@@ -112,27 +92,6 @@ public interface AuthDao {
      * @return
      */
     public LiteYukonRole getRole(int roleid);
-
-    /**
-     * Return a particular role property given a role property id.
-     * @param propid
-     * @return
-     */
-    public LiteYukonRoleProperty getRoleProperty(int propid);
-
-    /**
-     * Return a particular lite yukon group given the group name
-     * @param groupName
-     * @return LiteYukonGroup
-     */
-    public LiteYukonGroup getGroup(String groupName);
-
-    /**
-     * Return a particular lite yukon group given the group ID
-     * @param groupName
-     * @return LiteYukonGroup
-     */
-    public LiteYukonGroup getGroup(int grpID_);
 
     /**
      * Return true if username_ is the admin user.
@@ -199,5 +158,15 @@ public interface AuthDao {
     public void verifyFalseProperty(LiteYukonUser user, int rolePropertyId) throws NotAuthorizedException;
     public void verifyAdmin(LiteYukonUser user) throws NotAuthorizedException;
 
-
+    /**
+     * This method returns the TimeZone for the given user.  
+     * First, the WebClientRole.TIMEZONE role property is checked, if found return
+     * else if isBlank, then the ConfigurationRole.DEFAULT_TIMEZONE role property is checked, if found return
+     * else if isBlank, then return the server timezone.
+     * Throws BadConfigurationException when timeZone string value is not valid.
+     * Throws IllegalArgumentException when user is null.
+     * @param user
+     * @return
+     */
+    public TimeZone getUserTimeZone(LiteYukonUser user) throws BadConfigurationException, IllegalArgumentException;
 }

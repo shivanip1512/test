@@ -106,7 +106,7 @@ function selectAccount(accountID, memberID) {
 				serialNo = ((LiteStarsLMHardware) company.getInventoryBrief(events[j].getInventoryID(), true)).getManufacturerSerialNumber();
 %>
                 <tr> 
-                  <td width="22%" class="TableCell"><%= dateTimeFormat.format(new Date(events[j].getStartDateTime())) %></td>
+                  <td width="22%" class="TableCell"><cti:formatMillis value="<%=events[j].getStartDateTime()%>" type="DATE"/></td>
                   <td width="17%" class="TableCell"><%= ServletUtils.getDurationFromHours(events[j].getPeriod()) %></td>
                   <td width="22%" class="TableCell">
 				    <a href="" class="Link1" onclick="selectAccount(<%= liteAccount.getAccountID() %>, <%= company.getLiteID() %>); return false;"><%= liteAccount.getAccountNumber() %></a>

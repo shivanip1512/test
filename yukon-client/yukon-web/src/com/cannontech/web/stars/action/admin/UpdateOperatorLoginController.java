@@ -34,7 +34,7 @@ public class UpdateOperatorLoginController extends StarsAdminActionController {
             
             if (userID == -1) {
                 // Create new operator login
-                LiteYukonGroup liteGroup = this.authDao.getGroup( operGroupID );
+                LiteYukonGroup liteGroup = this.roleDao.getGroup( operGroupID );
                 LiteYukonUser liteUser = StarsAdminUtil.createOperatorLogin(
                         username, password, status, new LiteYukonGroup[] {liteGroup}, energyCompany );
                 
@@ -45,7 +45,7 @@ public class UpdateOperatorLoginController extends StarsAdminActionController {
             }
 
             LiteYukonUser liteUser = this.yukonUserDao.getLiteYukonUser( userID );
-            LiteYukonGroup loginGroup = this.authDao.getGroup( operGroupID );
+            LiteYukonGroup loginGroup = this.roleDao.getGroup( operGroupID );
             StarsAdminUtil.updateLogin( liteUser, username, password, status, loginGroup, energyCompany, false );
 
             session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Operator login updated successfully" );

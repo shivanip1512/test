@@ -438,7 +438,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 
         Calendar tempCal = Calendar.getInstance();
         
-        TimeZone userTimeZone = yukonUserDao.getUserTimeZone(userContext.getYukonUser());
+        TimeZone userTimeZone = userContext.getTimeZone();
         tempCal.set( GregorianCalendar.HOUR, 0 );
         tempCal.set( GregorianCalendar.MINUTE, 0 );
         tempCal.set( GregorianCalendar.SECOND, 0 );
@@ -496,7 +496,7 @@ private Hashtable getOptionalParams( HttpServletRequest req )
 
         Calendar tempCal = Calendar.getInstance();
         
-        TimeZone userTimeZone = yukonUserDao.getUserTimeZone(userContext.getYukonUser());
+        TimeZone userTimeZone = userContext.getTimeZone();
         tempCal.set( GregorianCalendar.HOUR, 0 );
         tempCal.set( GregorianCalendar.MINUTE, 0 );
         tempCal.set( GregorianCalendar.SECOND, 0 );

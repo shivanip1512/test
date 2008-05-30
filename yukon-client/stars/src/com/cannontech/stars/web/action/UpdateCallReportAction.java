@@ -10,6 +10,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.db.stars.report.CallReportBase;
+import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
@@ -18,13 +19,13 @@ import com.cannontech.stars.xml.serialize.CallType;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
 import com.cannontech.stars.xml.serialize.StarsCallReportHistory;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsFailure;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsUpdateCallReport;
 import com.cannontech.stars.xml.serialize.StarsUpdateCallReportResponse;
 import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
+import com.cannontech.user.YukonUserContext;
 
 /**
  * @author yao
@@ -41,20 +42,8 @@ public class UpdateCallReportAction implements ActionBase {
 	 */
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
-			StarsYukonUser user =
-				(StarsYukonUser) session.getAttribute(
-					ServletUtils.ATT_STARS_YUKON_USER);
-			if (user == null)
-				return null;
-
-			StarsEnergyCompanySettings ecSettings =
-				(StarsEnergyCompanySettings) session.getAttribute(
-					ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
-			TimeZone tz =
-				TimeZone.getTimeZone(
-					ecSettings.getStarsEnergyCompany().getTimeZone());
-			if (tz == null)
-				tz = TimeZone.getDefault();
+			YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(req);
+			TimeZone tz = yukonUserContext.getTimeZone();
 
 			StarsUpdateCallReport updateCall = new StarsUpdateCallReport();
 			updateCall.setCallID(Integer.parseInt(req.getParameter("CallID")));

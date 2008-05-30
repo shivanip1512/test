@@ -86,9 +86,9 @@ public class PointDataSummaryReport extends YukonReportBase
 		cal.set(java.util.Calendar.MINUTE, 0);
 		cal.set(java.util.Calendar.SECOND, 0);
 		cal.set(java.util.Calendar.MILLISECOND, 0);
-		cal.add(Calendar.DATE, -10);		
+		cal.add(Calendar.DATE, -100);		
 		Date stop = cal.getTime();
-		cal.add(Calendar.DATE, -3);
+		cal.add(Calendar.DATE, -30);
 		Date start = cal.getTime();
 		
 		PointDataSummaryModel reportModel = new PointDataSummaryModel(start, stop, PointDataSummaryModel.LOAD_PROFILE_POINT_TYPE);

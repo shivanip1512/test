@@ -117,7 +117,7 @@ public class PointDataIntervalModel extends ReportModelBase
 	public PointDataIntervalModel(Date start_, Date stop_, int intervalPointType, int orderBy_, int sortOrder_)
 	{
 		super(start_, stop_);
-		setDateFormat(new SimpleDateFormat("MMM dd, yyyy HH:mm:ss"));
+		setDateFormat(new SimpleDateFormat("MMM dd, yyyy HH:mm:ss z"));
 		setPointType(intervalPointType);
 		setOrderBy(orderBy_);
 		setSortOrder(sortOrder_);
@@ -556,6 +556,7 @@ public class PointDataIntervalModel extends ReportModelBase
 			if( param != null && param2 != null)	//hmmm, maybe we shouldn't be so judgemental and not require both to be set
 			{
 				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTimeZone(getTimeZone());
 				cal.setTime(getStartDate());
 				cal.set(Calendar.HOUR_OF_DAY, Integer.valueOf(param.trim()).intValue());
 				cal.set(Calendar.MINUTE, Integer.valueOf(param2.trim()).intValue());
@@ -566,6 +567,7 @@ public class PointDataIntervalModel extends ReportModelBase
 			if( param != null && param2 != null)	//hmmm, maybe we shouldn't be so judgemental and not require both to be set
 			{
 				GregorianCalendar cal = new GregorianCalendar();
+				cal.setTimeZone(getTimeZone());
 				cal.setTime(getStopDate());
 				cal.set(Calendar.HOUR_OF_DAY, Integer.valueOf(param.trim()).intValue());
 				cal.set(Calendar.MINUTE, Integer.valueOf(param2.trim()).intValue());

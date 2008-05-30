@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.jobs.model.YukonJob;
@@ -25,6 +26,7 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
 
     private JdbcTemplate jdbcTemplate;
     private YukonUserDao yukonUserDao;
+    private AuthDao authDao;
     private YukonJobDefinitionFactory<? extends YukonTask> beanDefinitionFactory;
 
     @Override
@@ -56,7 +58,7 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
         if (StringUtils.isBlank(timezoneStr)) {
             // To replicate the old behavior, we must 
             // look up the timezone for the user.
-            timezone = yukonUserDao.getUserTimeZone(liteYukonUser);
+            timezone = authDao.getUserTimeZone(liteYukonUser);
         } else {
             timezone = TimeZone.getTimeZone(timezoneStr);
         }
@@ -86,5 +88,8 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
     public void setYukonUserDao(YukonUserDao yukonUserDao) {
         this.yukonUserDao = yukonUserDao;
     }
-
+    @Required
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
+    }
 }

@@ -599,7 +599,7 @@ function deleteWarehouse(form, warehouseId) {
 					</cti:checkProperty>
                     <%
 	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_ADMIN_FAQ) ||
-		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ, "false")))
+		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getRoleDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ, "false")))
 	{
 %>
                     <tr> 
@@ -638,7 +638,7 @@ function deleteWarehouse(form, warehouseId) {
 	}
 	
 	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_PROGRAMS_OPT_OUT) ||
-		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT, "false")))
+		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getRoleDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT, "false")))
 	{
 %>
                     <tr> 
@@ -676,7 +676,7 @@ function deleteWarehouse(form, warehouseId) {
 	}
 	
 	if (DaoFactory.getAuthDao().checkRoleProperty(lYukonUser, ConsumerInfoRole.CONSUMER_INFO_HARDWARES_THERMOSTAT) ||
-		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, "false")))
+		custGroups.length > 0 && !CtiUtilities.isFalse(DaoFactory.getRoleDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT, "false")))
 	{
 %>
                     <tr> 

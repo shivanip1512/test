@@ -92,7 +92,7 @@ function init() {
                       </div>
                     </td>
                     <td class="TableCell" width="15%"><%= call.getCallNumber() %></td>
-                    <td class="TableCell" width="15%"><%= ServletUtils.formatDate(call.getCallDate(), dateTimeFormat) %></td>
+                    <td class="TableCell" width="15%"><cti:formatDate value="<%= call.getCallDate() %>" type="BOTH"/></td>
                     <td class="TableCell" width="15%"> 
                       <select name="CallType_" class="TableCell" onchange="setContentChanged(true)">
 <%

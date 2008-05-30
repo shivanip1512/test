@@ -10,6 +10,7 @@ import javax.faces.component.UIComponent;
 import javax.faces.context.ExternalContext;
 import javax.faces.context.FacesContext;
 import javax.faces.model.SelectItem;
+import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.LoginController;
@@ -17,6 +18,8 @@ import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.editor.DBEditorForm;
 
 public abstract class JSFUtil {
@@ -114,7 +117,11 @@ public abstract class JSFUtil {
             throw new RuntimeException("Could not get Current Instance of FacesContext, returning null user");
         }
     }
-
+    public static YukonUserContext getYukonUserContext() {
+        ExternalContext context = FacesContext.getCurrentInstance().getExternalContext();
+        HttpServletRequest request = (HttpServletRequest)context.getRequest();
+        return YukonUserContextUtils.getYukonUserContext(request);
+    }
     public static void resetForm(String name) {
         Object bean =  JSFParamUtil.getJSFVar(name);
         if (bean instanceof DBEditorForm) {

@@ -48,7 +48,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                 String groupName = operGroupNames[i].trim();
                 if (groupName.equals("")) continue;
 
-                LiteYukonGroup group = this.authDao.getGroup( groupName );
+                LiteYukonGroup group = this.roleDao.getGroup( groupName );
                 if (group == null)
                     throw new WebClientException( "Operator group '" + groupName + "' does not exist");
 
@@ -68,7 +68,7 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                 String groupName = custGroupNames[i].trim();
                 if (groupName.equals("")) continue;
 
-                LiteYukonGroup group = this.authDao.getGroup( groupName );
+                LiteYukonGroup group = this.roleDao.getGroup( groupName );
                 if (group == null)
                     throw new WebClientException( "Customer group '" + groupName + "' does not exist");
 

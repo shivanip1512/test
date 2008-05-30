@@ -28,7 +28,7 @@
     <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver"/>
     
     <bean id="userContextResolver" class="com.cannontech.web.util.YukonUserContextConstructor">
-        <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="authDao" ref="authDao"/>
     </bean>
 
     <bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
@@ -601,6 +601,10 @@
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
 
+    <bean id="formatMillisDateTagPrototype" class="com.cannontech.web.taglib.FormatMillisTag">
+        <property name="dateFormattingService" ref="dateFormattingService"/>
+    </bean>
+    
     <bean id="formatDurationTagPrototype" class="com.cannontech.web.taglib.FormatDurationTag"/>
     
     <bean id="pointStatusColorTagPrototype" class="com.cannontech.web.taglib.PointStatusColorTag">
@@ -725,7 +729,7 @@
     <bean id="trendingMenuOption" class="com.cannontech.web.menu.option.producer.TrendingMenuOptionProducer">
         <property name="graphDao" ref="graphDao" />
     </bean>
-    
+
     <bean id="deviceGroupSelectorTagPrototype" class="com.cannontech.web.taglib.DeviceGroupSelectorTag">
         <property name="deviceGroupService" ref="deviceGroupService"/>
     </bean>

@@ -53,7 +53,7 @@
 	                  	<div align="right">Date Submitted:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="dateSubmitted" type="text" name="dateSubmitted" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentSubmittedDate}"/>' onchange="setContentChanged(true)">
+	                  <input id="dateSubmitted" type="text" name="dateSubmitted" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.dateSubmitted}" type="DATE"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:openCalendar(document.getElementById('dateSubmitted'))"
 							onMouseOver="window.status='Date Submitted Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
@@ -91,7 +91,7 @@
 								checked="checked"
 							</c:if>
 						/>
-						<input id="datePaid" type="text" name="datePaid" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentPaidDate}"/>' onchange="setContentChanged(true)">
+						<input id="datePaid" type="text" name="datePaid" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentInvoice.datePaid}" type="DATE"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:openCalendar(document.getElementById('datePaid'))"
 							onMouseOver="window.status='Date Paid Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 

@@ -627,12 +627,12 @@ public class ServletUtils {
 		
 		LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
 		if (operGroups.length > 0)
-			faqLink = DaoFactory.getAuthDao().getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
+			faqLink = DaoFactory.getRoleDao().getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
 		
 		if (StarsUtils.forceNotNone(faqLink).length() == 0) {
 			LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
 			if (custGroups.length > 0)
-				faqLink = DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
+				faqLink = DaoFactory.getRoleDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
 		}
 		
 		if (StarsUtils.forceNotNone(faqLink).length() == 0)
@@ -660,12 +660,12 @@ public class ServletUtils {
 			if (StarsUtils.isOperator(user.getYukonUser())) {
 				LiteYukonGroup[] operGroups = energyCompany.getWebClientOperatorGroups();
 				if (operGroups.length > 0)
-					faqLink = DaoFactory.getAuthDao().getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
+					faqLink = DaoFactory.getRoleDao().getRolePropValueGroup( operGroups[0], ConsumerInfoRole.WEB_LINK_FAQ, null );
 			}
 			else {
 				LiteYukonGroup[] custGroups = energyCompany.getResidentialCustomerGroups();
 				if (custGroups.length > 0)
-					faqLink = DaoFactory.getAuthDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
+					faqLink = DaoFactory.getRoleDao().getRolePropValueGroup(custGroups[0], ResidentialCustomerRole.WEB_LINK_FAQ, null);
 			}
 		}
 		

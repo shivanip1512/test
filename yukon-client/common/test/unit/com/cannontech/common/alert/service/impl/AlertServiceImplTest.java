@@ -14,6 +14,7 @@ import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.TimeSourceImpl;
 import com.cannontech.common.util.TimeSourceMock;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.user.checker.NullUserChecker;
@@ -106,7 +107,30 @@ public class AlertServiceImplTest {
         public LiteYukonRoleProperty[] getRoleProperties(int roleID_) {
             throw new UnsupportedOperationException();
         }
-        
-    }
 
+        @Override
+        public LiteYukonGroup getGroup(String groupName) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public LiteYukonGroup getGroup(int grpID_) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getRolePropValueGroup(LiteYukonGroup group_, int rolePropertyID, String defaultValue) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getRolePropValueGroup(int groupId, int rolePropertyId, String defaultValue) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public LiteYukonRoleProperty getRoleProperty(int propid) {
+            throw new UnsupportedOperationException();
+        }
+    }
 }

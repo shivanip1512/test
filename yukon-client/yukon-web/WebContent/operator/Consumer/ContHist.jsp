@@ -89,17 +89,17 @@
 		Date stopTime = new Date(hist.getStartDateTime().getTime() + durationSec * 1000);
 %>
                           <tr> 
-                            <td class="TableCell" width="120"><%= histDateFormat.format(hist.getStartDateTime()) %></td>
-                            <td class="TableCell" width="120"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
+                            <td class="TableCell" width="200"><cti:formatDate value="<%=hist.getStartDateTime()%>" type="BOTH"/></td>
+                            <td class="TableCell" width="200"><%= ServletUtils.getDurationFromSeconds(durationSec) %></td>
                           </tr>
                           <%
 	}
 %>
                           <tr> 
-                            <td class="TableCell" colspan="1"> 
+                            <td class="TableCell"> 
                               <div align="right">Total:</div>
                             </td>
-                            <td class="TableCell" width="120"><%= ServletUtils.getDurationFromSeconds(totalSec) %></td>
+                            <td class="TableCell" width="200"><%= ServletUtils.getDurationFromSeconds(totalSec) %></td>
                           </tr>
                         </table>
                       </td>

@@ -12,7 +12,6 @@
     This file defines beans that live under the com.cannontech.core.dao
     package.
   </description>
-
   <bean id="alarmCatDao" class="com.cannontech.core.dao.impl.AlarmCatDaoImpl" >
   	<property name="databaseCache" ref="databaseCache"/>
   </bean>
@@ -25,6 +24,7 @@
   	<property name="contactDao" ref="contactDao" />
   	<property name="databaseCache" ref="databaseCache" />
   	<property name="authenticationService" ref="authenticationService" />
+  	<property name="systemDateFormattingService" ref="systemDateFormattingService"/>
   </bean>
    <bean id="cbcDao" class="com.cannontech.core.dao.impl.CapControlDaoImpl" >
     <property name="pointDao" ref="pointDao" />
@@ -114,7 +114,6 @@
     <property name="nextValueHelper" ref="nextValueHelper"/>
   </bean>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" >
-  	<property name="authDao" ref="authDao"/>
     <property name="databaseCache" ref="databaseCache"/>        	
   </bean>
   <bean id="standaloneRoleDao" class="com.cannontech.core.dao.impl.StandaloneRoleDaoImpl" >
@@ -146,7 +145,6 @@
   <bean id="yukonUserDao" class="com.cannontech.core.dao.impl.YukonUserDaoImpl" >
      <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>
      <property name="databaseCache" ref="databaseCache"/>
-     <property name="energyCompanyDao" ref="energyCompanyDao" />
   </bean>
   <bean id="yukonGroupDao" class="com.cannontech.core.dao.impl.YukonGroupDaoImpl" >
       <property name="jdbcOps" ref="jdbcTemplate"/>

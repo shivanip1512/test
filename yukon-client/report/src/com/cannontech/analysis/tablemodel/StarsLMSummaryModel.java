@@ -275,7 +275,7 @@ public class StarsLMSummaryModel extends ReportModelBase
 	@Override
 	 public String getDateRangeString()
 	 {
-	     SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMM dd, yyyy  HH:mm:ss");
+	     SimpleDateFormat dateTimeFormat = new SimpleDateFormat("MMM dd, yyyy  HH:mm:ss z");
 		 return (dateTimeFormat.format(new Date()));
 	 }
 	 

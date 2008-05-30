@@ -234,7 +234,7 @@ function revealLog() {
 				                  	<div align="right">Field Install Date:</div>
 				                </td>
 				                <td width="210"> 
-				                  <input id="fieldInstallDate" type="text" name="fieldInstallDate" maxlength="30" size="24" value='<c:out value="${detailBean.fieldInstallDate}"/>' onchange="setContentChanged(true)">
+				                  <input id="fieldInstallDate" type="text" name="fieldInstallDate" maxlength="30" size="24" value='<cti:formatMillis value="${detailBean.currentInventory.installDate}" type="DATE"/>' onchange="setContentChanged(true)">
 				   				  	<a href="javascript:openCalendar(document.getElementById('fieldInstallDate'))"
 										onMouseOver="window.status='Field Install Calendar';return true;"
 										onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
@@ -246,7 +246,7 @@ function revealLog() {
 				                  	<div align="right">Field Receive Date:</div>
 				                </td>
 				                <td width="210"> 
-				                  <input id="fieldReceiveDate" type="text" name="fieldReceiveDate" maxlength="30" size="24" value='<c:out value="${detailBean.fieldReceiveDate}"/>' onchange="setContentChanged(true)">
+				                  <input id="fieldReceiveDate" type="text" name="fieldReceiveDate" maxlength="30" size="24" value='<cti:formatMillis value="${detailBean.currentInventory.receiveDate}" type="DATE"/>' onchange="setContentChanged(true)">
 				   				  	<a href="javascript:openCalendar(document.getElementById('fieldReceiveDate'))"
 										onMouseOver="window.status='Field Receive Calendar';return true;"
 										onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
@@ -258,7 +258,7 @@ function revealLog() {
 				                  	<div align="right">Field Remove Date:</div>
 				                </td>
 				                <td width="210"> 
-				                  <input id="fieldRemoveDate" type="text" name="fieldRemoveDate" maxlength="30" size="24" value='<c:out value="${detailBean.fieldRemoveDate}"/>' onchange="setContentChanged(true)">
+				                  <input id="fieldRemoveDate" type="text" name="fieldRemoveDate" maxlength="30" size="24" value='<cti:formatMillis value="${detailBean.currentInventory.removeDate}" type="DATE"/>' onchange="setContentChanged(true)">
 				   				  	<a href="javascript:openCalendar(document.getElementById('fieldRemoveDate'))"
 										onMouseOver="window.status='Field Remove Calendar';return true;"
 										onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
@@ -304,30 +304,6 @@ function revealLog() {
                                             </select>
                                         </td>
                                     </tr>
-                                    <!-- <tr> 
-                                        <td width="88" class="TableCell"> 
-                                          <div align="right">Date Installed:</div>
-                                        </td>
-                                        <td width="210"> 
-                                            <c:out value="${detailBean.currentInstallDate}"/>
-                                        </td>
-                                    </tr>
-                                    <tr> 
-                                        <td width="88" class="TableCell"> 
-                                            <div align="right">Date Received:</div>
-                                        </td>
-                                        <td width="210"> 
-                                            <c:out value="${detailBean.currentReceiveDate}"/> 
-                                        </td>
-                                    </tr>
-                                    <tr> 
-                                        <td width="88" class="TableCell"> 
-                                            <div align="right">Date Removed:</div>
-                                        </td>
-                                        <td width="210"> 
-                                            <c:out value="${detailBean.currentRemoveDate}"/>
-                                        </td>
-                                    </tr>-->
                                     <tr> 
                                         <td width="88" class="TableCell"> 
                                             <div align="right">Status History:</div>
@@ -482,7 +458,7 @@ function revealLog() {
                             <tr>
                                 <td class='TableCell' width='200'><c:out value="${event.actionText}"/></td>
                                 <td class='TableCell' width='200'><c:out value="${event.userName}"/></td>
-                                <td class='TableCell' width='200'><c:out value="${event.eventBase.eventTimestamp}"/></td>
+                                <td class='TableCell' width='200'><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
                             </tr>
                         </c:forEach>
                     </table>
@@ -525,7 +501,7 @@ function revealLog() {
 			StarsLMHardwareEvent event = hwHist.getStarsLMHardwareEvent(i);
 %>
                 <tr valign="top"> 
-                  <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= ServletUtils.formatDate(event.getEventDateTime(), datePart, "----") %></td>
+                  <td width="50%" class="TableCell" bgcolor="#FFFFFF"><cti:formatDate value="<%=event.getEventDateTime()%>" type="DATE" /></td>
                   <td width="50%" class="TableCell" bgcolor="#FFFFFF"><%= event.getEventAction() %></td>
                 </tr>
 <%

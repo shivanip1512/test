@@ -8,6 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
+import org.springframework.beans.factory.annotation.Required;
+
 import com.cannontech.cc.model.CICustomerStub;
 import com.cannontech.cc.model.EconomicEvent;
 import com.cannontech.cc.model.EconomicEventParticipant;
@@ -19,14 +21,13 @@ import com.cannontech.cc.service.builder.VerifiedCustomer;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.PointException;
-import com.cannontech.core.dao.EnergyCompanyDao;
-import com.cannontech.database.data.lite.LiteEnergyCompany;
+import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.db.customer.CICustomerPointType;
 
 public class IsocEconomicStrategy extends BaseEconomicStrategy {
     private IsocCommonStrategy isocCommonStrategy;
-    private EnergyCompanyDao energyCompanyDao;
+    private AuthDao authDao;
     
     public IsocEconomicStrategy() {
         super();
@@ -66,8 +67,7 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
 
     protected void checkPropossedSelections(EconomicEventParticipantSelection selection, 
                                             LiteYukonUser user, Date time) throws EventModificationException {
-        LiteEnergyCompany energyCompany = energyCompanyDao.getEnergyCompany(user);
-        TimeZone timeZone = energyCompanyDao.getEnergyCompanyTimeZone(energyCompany);
+        TimeZone timeZone = authDao.getUserTimeZone(user);
         DateFormat dateFormat = SimpleDateFormat.getTimeInstance(SimpleDateFormat.SHORT);
         dateFormat.setTimeZone(timeZone);
         List<EconomicEventParticipantSelectionWindow> selectionWindows = selection.getSortedSelectionWindows();
@@ -112,14 +112,12 @@ public class IsocEconomicStrategy extends BaseEconomicStrategy {
         return getPointValue(customer, CICustomerPointType.AdvBuyThrough$);
     }
 
-
     public BigDecimal getCustomerElectionBuyThrough(EconomicEventParticipant customer) throws PointException {
         return getPointValue(customer, CICustomerPointType.AdvBuyThroughKw);
     }
 
-
-    public void setEnergyCompanyDao(EnergyCompanyDao energyCompanyDao) {
-        this.energyCompanyDao = energyCompanyDao;
+    @Required
+    public void setAuthDao(AuthDao authDao) {
+        this.authDao = authDao;
     }
-
 }

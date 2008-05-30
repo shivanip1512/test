@@ -24,6 +24,7 @@
         <property name="beanDefinitionFactory" ref="yukonJobDefinitionFactory"/>
         <property name="jdbcTemplate" ref="jdbcTemplate"/>
         <property name="yukonUserDao" ref="yukonUserDao"/>
+        <property name="authDao" ref="authDao"/>
     </bean>
     
     <bean id="yukonJobDao" class="com.cannontech.jobs.dao.impl.YukonJobDaoImpl">

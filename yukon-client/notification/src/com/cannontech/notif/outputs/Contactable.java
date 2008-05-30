@@ -35,17 +35,16 @@ public class Contactable {
      * Customer, Contact of NotifDestination.
      * 
      * If the Contactable doesn't have an associated Customer, the default TimeZone
-     * for the Energy Company will be returned.
+     * for the YukonUserContext will be returned.
      * 
      * @return a TimeZone object
      */
     public TimeZone getTimeZone() {
         try {
-            String tzString = _contactableBase.getContactableCustomer()
-                    .getTimeZone();
+            String tzString = _contactableBase.getContactableCustomer().getTimeZone();
             return TimeZone.getTimeZone(tzString);
         } catch (UnknownCustomerException e) {
-            return DaoFactory.getEnergyCompanyDao().getEnergyCompanyTimeZone(getEnergyCompany());
+            return getYukonUserContext().getTimeZone();
         }
     }
 

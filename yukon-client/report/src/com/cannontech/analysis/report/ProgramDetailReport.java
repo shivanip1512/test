@@ -172,7 +172,6 @@ public class ProgramDetailReport extends YukonReportBase
 		action.setElement(ProgramDetailModel.STATUS_STRING +" Element");
 		expressions.add(action);
 
-//		expressions.add(getDateExpression(getModel().getColumnProperties(5).getValueFormat(), getModel().getColumnName(5)));
 		return expressions;
 	}
 

@@ -181,22 +181,6 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		backgroundTrigger.setElement("background");
 		return backgroundTrigger;
 	}
-
-	/**
-	 * Return a date expression formatted using dateFormat and 
-	 *  data coming from columnName.
-	 * @param dateFormat - SimpleDateFormat
-	 * @param columnName - String, MUST be a column name from data AbstractTableModel
-	 * @return TextFormatExpression 
-	 */
-	protected TextFormatExpression getDateExpression(String dateFormat, String columnName)
-	{
-		final TextFormatExpression dateExpression = new TextFormatExpression();
-		dateExpression.setName(DATE_EXPRESSION);
-		dateExpression.setPattern("{0, date, " + dateFormat + "}");
-		dateExpression.setField(0, columnName);
-		return dateExpression;
-	}
 	
 	/**
 	 * Return a PageNumber function.
@@ -265,7 +249,7 @@ public abstract class YukonReportBase extends java.awt.event.WindowAdapter
 		factory.setHorizontalAlignment(ElementAlignment.RIGHT);
 		factory.setVerticalAlignment(ElementAlignment.BOTTOM);
 		factory.setNullString("<null>");
-		factory.setFormatString("d-MMM-yyyy HH:mm:ss  ");
+		factory.setFormatString("d-MMM-yyyy HH:mm:ss z");
 		factory.setFieldname("report.date");
 		pageFooter.addElement(factory.createElement());
 

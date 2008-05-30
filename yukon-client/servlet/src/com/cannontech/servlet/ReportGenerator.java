@@ -45,7 +45,7 @@ import com.cannontech.analysis.tablemodel.MeterReadModel;
 import com.cannontech.analysis.tablemodel.WorkOrderModel;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 
 public class ReportGenerator extends javax.servlet.http.HttpServlet
@@ -80,16 +80,14 @@ public class ReportGenerator extends javax.servlet.http.HttpServlet
             System.out.println(" --" + ele + "  " + req.getParameter(ele));
         }
 
-        LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
+        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(req);
+        TimeZone tz = yukonUserContext.getTimeZone();
+
         //Default energycompany properties in case we can't find one?
         Integer energyCompanyID = null;	//default?
-        TimeZone tz = TimeZone.getDefault();	//init to the timezone of the running program
-        if( DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser) != null)
-        {
+        LiteYukonUser liteYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
+        if( DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser) != null) {
             energyCompanyID = new Integer(DaoFactory.getEnergyCompanyDao().getEnergyCompany(liteYukonUser).getEnergyCompanyID());
-            //Get the EnergyCompany user to find the TimzeZone
-            LiteYukonUser ecUser = DaoFactory.getEnergyCompanyDao().getEnergyCompanyUser(energyCompanyID.intValue());
-            tz = TimeZone.getTimeZone(DaoFactory.getAuthDao().getRolePropertyValue(ecUser, EnergyCompanyRole.DEFAULT_TIME_ZONE));
         }
 
         File tempDir = WebUtils.getTempDir(getServletContext());

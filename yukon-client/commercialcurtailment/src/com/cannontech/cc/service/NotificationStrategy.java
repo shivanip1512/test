@@ -9,10 +9,11 @@ import com.cannontech.cc.service.builder.CurtailmentChangeBuilder;
 import com.cannontech.cc.service.exception.EventCreationException;
 import com.cannontech.cc.service.exception.EventModificationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.YukonUserContext;
 
 public interface NotificationStrategy extends CICurtailmentStrategy {
 
-    public CurtailmentBuilder createBuilder(Program program);
+    public CurtailmentBuilder createBuilder(Program program, YukonUserContext yukonUserContext);
 
     public CurtailmentChangeBuilder createChangeBuilder(CurtailmentEvent event);
 

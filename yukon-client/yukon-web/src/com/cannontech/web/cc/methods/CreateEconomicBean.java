@@ -20,11 +20,11 @@ public class CreateEconomicBean extends EventCreationBase {
     
     @Override
     public void initialize() {
-        setBuilder(getMyStrategy().createBuilder(getProgram()));
+        setBuilder(getMyStrategy().createBuilder(getProgram(), JSFUtil.getYukonUserContext()));
     }
     
     public String initExtension(EconomicEvent oldEvent) {
-        setBuilder(getMyStrategy().createExtensionBuilder(oldEvent));
+        setBuilder(getMyStrategy().createExtensionBuilder(oldEvent, JSFUtil.getYukonUserContext()));
         return getStartPage();
     }
 

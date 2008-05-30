@@ -96,7 +96,7 @@ function checkOrderNo(form) {
 %>
               <tr valign="middle"> 
                 <td width="12%" class="TableCell"><a href="SOHistory.jsp?OrderNo=<%= i %>" class="Link1"><%= liteOrder.getOrderNumber() %></a></td>
-                <td width="12%" class="TableCell"><%= ServletUtils.formatDate(eventWorkOrderList.get(0).getEventBase().getEventTimestamp(), dateTimeFormat) %></td>
+                <td width="12%" class="TableCell"><cti:formatDate value="<%=eventWorkOrderList.get(0).getEventBase().getEventTimestamp()%>" type="BOTH"/></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getWorkTypeID()).getEntryText()) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(DaoFactory.getYukonListDao().getYukonListEntry(liteOrder.getCurrentStateID()).getEntryText()) %></td>
                 <td width="12%" class="TableCell"><%= ServletUtils.forceNotEmpty(liteOrder.getOrderedBy()) %></td>

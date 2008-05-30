@@ -97,7 +97,7 @@
 	                  	<div align="right">Date Ordered:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="orderingDate" type="text" name="orderingDate" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentOrderingDate}"/>' onchange="setContentChanged(true)">
+	                  <input id="orderingDate" type="text" name="orderingDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.orderedDate}" type="DATE"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:openCalendar(document.getElementById('orderingDate'))"
 							onMouseOver="window.status='Date Ordered Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
@@ -109,7 +109,7 @@
 	                  	<div align="right">Ship Date:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentShipDate}"/>' onchange="setContentChanged(true)">
+	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.shipDate}" type="DATE"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:openCalendar(document.getElementById('shipDate'))"
 							onMouseOver="window.status='Ship Date Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 
@@ -121,7 +121,7 @@
 	                  	<div align="right">Date Received:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="receivingDate" type="text" name="receivingDate" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentReceivingDate}"/>' onchange="setContentChanged(true)">
+	                  <input id="receivingDate" type="text" name="receivingDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentShipment.receivedDate}" type="DATE"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:openCalendar(document.getElementById('receivingDate'))"
 							onMouseOver="window.status='Date Received Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 

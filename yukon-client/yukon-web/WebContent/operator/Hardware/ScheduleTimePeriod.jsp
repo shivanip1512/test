@@ -61,7 +61,7 @@
 	                  	<div align="right">Expected Ship Date:</div>
 	                </td>
 	                <td width="80%"> 
-	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<c:out value="${purchaseBean.currentPredictedShipDate}"/>' onchange="setContentChanged(true)">
+	                  <input id="shipDate" type="text" name="shipDate" maxlength="40" size="24" value='<cti:formatDate value="${purchaseBean.currentTimePeriod.predictedShipDate}" type="DATE"/>' onchange="setContentChanged(true)">
 	   				  	<a href="javascript:openCalendar(document.getElementById('shipDate'))"
 							onMouseOver="window.status='Ship Date Calendar';return true;"
 							onMouseOut="window.status='';return true;"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/Icons/StartCalendar.gif" width="20" height="15" align="absmiddle" border="0"> 

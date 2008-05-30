@@ -29,6 +29,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.enums.CurtailmentEventAction;
+import com.cannontech.user.YukonUserContext;
 
 public abstract class BaseNotificationStrategy extends StrategyBase implements NotificationStrategy {
     private CurtailmentEventDao curtailmentEventDao;
@@ -42,7 +43,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
     }
 
     @Transactional
-    public CurtailmentBuilder createBuilder(Program program) {
+    public CurtailmentBuilder createBuilder(Program program, YukonUserContext yukonUserContext) {
         CurtailmentBuilder builder = new CurtailmentBuilder();
         CurtailmentEvent event = new CurtailmentEvent();
         Integer identifier = programDao.incrementAndReturnIdentifier(program);
@@ -51,7 +52,7 @@ public abstract class BaseNotificationStrategy extends StrategyBase implements N
         event.setProgram(program);
         builder.setEvent(event);
         
-        TimeZone tz = getProgramService().getTimeZone(program);
+        TimeZone tz = yukonUserContext.getTimeZone();
         builder.setTimeZone(tz);
         
         Date now = new Date();

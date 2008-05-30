@@ -321,7 +321,7 @@ public Vector getOutputStringsVector()
     	double currentPeakValue = 0.0;
     	double currentThreshold = 0.0;
     	java.util.GregorianCalendar currentPeakTimestamp = null;
-    	java.text.SimpleDateFormat dateTimeFormatter = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss");
+    	java.text.SimpleDateFormat dateTimeFormatter = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss z");
 
 		//Get some lines anyway!!
 		if( getRecordVector().isEmpty())

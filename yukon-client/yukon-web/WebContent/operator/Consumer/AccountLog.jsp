@@ -36,7 +36,7 @@
 	        	<tr>
 	        		<td class='TableCell' width='200'><c:out value="${event.actionText}"/></td>
 	        		<td class='TableCell' width='200'><c:out value="${event.userName}"/></td>
-	        		<td class='TableCell' width='200'><c:out value="${event.eventBase.eventTimestamp}"/></td>
+	        		<td class='TableCell' width='200'><cti:formatDate value="${event.eventBase.eventTimestamp}" type="BOTH"/></td>
 	        	</tr>
 	        </c:forEach>
         </table>

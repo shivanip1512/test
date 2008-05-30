@@ -27,6 +27,10 @@
             <property-name>yukonUser</property-name>
             <value>#{sessionScope.YUKON_USER}</value>
         </managed-property>
+		<managed-property>
+            <property-name>authDao</property-name>
+            <value>#{authDao}</value>
+        </managed-property>
     </managed-bean>
 
 
