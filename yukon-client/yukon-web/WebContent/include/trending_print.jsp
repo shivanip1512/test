@@ -6,7 +6,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteYukonUser" %>
 <%	
 	LiteYukonUser lYukonUser = (LiteYukonUser) session.getAttribute(ServletUtil.ATT_YUKON_USER);
-	if (DaoFactory.getYukonUserDao().getLiteYukonUser(lYukonUser.getUserID()) != lYukonUser)
+	if (!DaoFactory.getYukonUserDao().getLiteYukonUser(lYukonUser.getUserID()).equals(lYukonUser))
 	{
 		// User login no longer valid
 		response.sendRedirect(request.getContextPath() + "/servlet/LoginController?ACTION=LOGOUT");

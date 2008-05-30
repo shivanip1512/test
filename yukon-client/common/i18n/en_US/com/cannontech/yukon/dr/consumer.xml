@@ -284,4 +284,8 @@
     <entry key="yukon.dr.consumer.faq.question.1.question">Question 1</entry>
     <entry key="yukon.dr.consumer.faq.question.1.answer">Answer 1</entry>
     -->
+
+    <!-- trending.jsp -->
+    <entry key="yukon.dr.consumer.trending.header">Trending</entry>
+    
 </properties>    

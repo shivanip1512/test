@@ -10,7 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.core.dao.ContactDao;
+import com.cannontech.core.dao.GraphDao;
 import com.cannontech.database.data.lite.LiteContact;
+import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -36,6 +38,7 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     private ApplianceCategoryDao applianceCategoryDao;
     private ApplianceDao applianceDao;
     private ProgramDao programDao;
+    private GraphDao graphDao;
     
     @Override
     public void checkInventory(final LiteYukonUser user, final Integer... inventoryIds)
@@ -89,6 +92,16 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         final List<Integer> actualCustomerAccountIds = getCustomerAccountIdsByUser(user);
         doCheck(user, actualCustomerAccountIds, customerAccountIds, "CustomerAccount");
     }
+    
+
+	@Override
+	public void checkGraph(LiteYukonUser user, Integer... graphDefinitionIds)
+			throws NotAuthorizedException {
+		final List<Integer> actualDefinitionIds = getGraphDefinitionIdsByUser(user);
+		doCheck(user, actualDefinitionIds, graphDefinitionIds, "Graph");
+		
+	}
+    
     
     @Override
     public void haltOnCheckInventory(final LiteYukonUser user, final Integer... inventoryIds)
@@ -289,6 +302,18 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         
         return customerAccountIds;
     }
+
+    private List<Integer> getGraphDefinitionIdsByUser(LiteYukonUser user) {
+
+		final List<LiteGraphDefinition> definitions = graphDao.getGraphDefinitionsForUser(user.getUserID());
+		final List<Integer> definitionIds = new ArrayList<Integer>();
+		for(final LiteGraphDefinition definition : definitions) {
+			int graphDefinitionID = definition.getGraphDefinitionID();
+			definitionIds.add(graphDefinitionID);
+		}
+    	
+    	return definitionIds;
+    }
     
     private int getCustomerAccountId(LiteYukonUser user) {
         List<Integer> customerAccountIdsList = getCustomerAccountIdsByUser(user);
@@ -346,4 +371,9 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
         this.programDao = programDao;
     }
     
+    @Autowired
+    public void setGraphDao(GraphDao graphDao) {
+		this.graphDao = graphDao;
+	}
+
 }

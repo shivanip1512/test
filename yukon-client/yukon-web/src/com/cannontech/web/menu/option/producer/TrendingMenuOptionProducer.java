@@ -43,7 +43,7 @@ public class TrendingMenuOptionProducer extends DynamicMenuOptionProducer {
 
             SimpleMenuOptionLink optionLink = new SimpleMenuOptionLink(optionId, resolvable);
 
-            optionLink.setLinkUrl("/user/ConsumerStat/stat/Metering.jsp?gdefid=" + id);
+            optionLink.setLinkUrl("/spring/stars/consumer/trending/view?gdefid=" + id);
 
             optionList.add(optionLink);
         }
