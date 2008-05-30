@@ -2375,6 +2375,7 @@ go
 DELETE FROM SequenceNumber 
 WHERE SequenceName = 'DeviceGroup'; 
 
+/* @start-block */
 DECLARE @dGSequenceNumber INT; 
 SET @dGSequenceNumber = CAST((SELECT CASE  
                                   WHEN (MAX(DeviceGroupId) IS NULL)
@@ -2387,9 +2388,43 @@ SET @dGSequenceNumber = CAST((SELECT CASE
 
 
 INSERT INTO SequenceNumber 
-VALUES (@dGSequenceNumber, 'DeviceGroup'); 
+VALUES (@dGSequenceNumber, 'DeviceGroup');
+/* @end-block */
+go
 /* End YUK-5961 */
 
+/* Start YUK-5963 */
+/* @start-block */
+IF NOT EXISTS(SELECT * 
+              FROM INFORMATION_SCHEMA.COLUMNS
+              WHERE TABLE_NAME = 'CCurtProgram' AND COLUMN_NAME = 'lastIdentifier')
+    ALTER TABLE CCurtProgram ADD lastIdentifier NUMERIC;
+go
+/* @end-block */
+
+UPDATE CCurtProgram 
+SET lastIdentifier = 0
+WHERE lastIdentifier IS NULL;
+go
+
+ALTER TABLE CCurtProgram ALTER COLUMN lastIdentifier NUMERIC NOT NULL;
+go
+
+/* @start-block */
+IF NOT EXISTS(SELECT * 
+              FROM INFORMATION_SCHEMA.COLUMNS
+              WHERE TABLE_NAME = 'CCurtProgram' AND COLUMN_NAME = 'identifierPrefix')
+ALTER TABLE CCurtProgram ADD identifierPrefix VARCHAR(32);
+go
+/* @end-block */
+
+UPDATE CCurtProgram 
+SET identifierPrefix = 'PROG-'
+WHERE identifierPrefix IS NULL;
+
+ALTER TABLE CCurtProgram ALTER COLUMN identifierPrefix VARCHAR(32) NOT NULL;
+go
+/* End YUK-5963 */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */
