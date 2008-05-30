@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/05/12 21:48:09 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2008/05/30 20:19:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -411,24 +411,6 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
                       paoid_list_criterion_status,
                       paoid_list_criterion_system;
 
-/*
-        for( selector_paoid_itr  = selector_paoids.begin();
-             selector_paoid_itr != selector_paoids.end();
-             selector_paoid_itr++ )
-        {
-            paoid_list_criterion_accum  = paoid_list_criterion_accum  || (key_table_accum ["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
-            paoid_list_criterion_analog = paoid_list_criterion_analog || (key_table_analog["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
-            paoid_list_criterion_calc   = paoid_list_criterion_calc   || (key_table_calc  ["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
-            paoid_list_criterion_status = paoid_list_criterion_status || (key_table_status["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
-            paoid_list_criterion_system = paoid_list_criterion_system || (key_table_system["paobjectid"] == RWDBBoundExpr(selector_paoid_itr));
-        }
-
-        selector_accum .where(selector_accum .where() && paoid_list_criterion_accum);
-        selector_analog.where(selector_analog.where() && paoid_list_criterion_analog);
-        selector_calc  .where(selector_calc  .where() && paoid_list_criterion_calc);
-        selector_status.where(selector_status.where() && paoid_list_criterion_status);
-        selector_system.where(selector_system.where() && paoid_list_criterion_system);
-*/
         bool rowFound = false;
 
         vector<long>::const_iterator paoid_itr, paoid_itr_end;
@@ -436,16 +418,13 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
         paoid_itr     = paoids.begin();
         paoid_itr_end = paoids.end();
 
-        while( distance(paoid_itr, paoid_itr_end) >= paoids_per_select )
+        while( distance(paoid_itr, paoid_itr_end) > 0 )
         {
             string in_list;
 
-            /*for( selector_paoid_itr  = selector_paoids.begin();
-                 selector_paoid_itr != selector_paoids.end();
-                 selector_paoid_itr++, paoid_itr++ )*/
             in_list.erase();
 
-            for( int i = 0; i < paoids_per_select; i++, paoid_itr++ )
+            for( int i = 0; (i < paoids_per_select) && (paoid_itr != paoid_itr_end); i++, paoid_itr++ )
             {
                 if( !in_list.empty() )
                 {
@@ -454,8 +433,6 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
 
                 in_list += CtiNumStr(*paoid_itr);
 
-                //*selector_paoid_itr = *paoid_itr;
-
                 _paoids_loaded.insert(*paoid_itr);
             }
 
@@ -466,70 +443,6 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
             selector_calc  .where(base_selector_calc  .where() && key_table_calc  ["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
             selector_status.where(base_selector_status.where() && key_table_status["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
             selector_system.where(base_selector_system.where() && key_table_system["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
-
-            if( DebugLevel & 0x00010000 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << selector_accum .asString() << endl;
-                dout << selector_analog.asString() << endl;
-                dout << selector_calc  .asString() << endl;
-                dout << selector_status.asString() << endl;
-                dout << selector_system.asString() << endl;
-            }
-
-            refreshPoints(rowFound, selector_accum .reader(conn), testFunc, arg);
-            refreshPoints(rowFound, selector_analog.reader(conn), testFunc, arg);
-            refreshPoints(rowFound, selector_calc  .reader(conn), testFunc, arg);
-            refreshPoints(rowFound, selector_status.reader(conn), testFunc, arg);
-            refreshPoints(rowFound, selector_system.reader(conn), testFunc, arg);
-        }
-
-        //  catch the remaining few - no need to RWDBBoundExpr, since we're only going to be using this once
-        if( distance(paoid_itr, paoid_itr_end) > 0 )
-        {
-            RWDBCriterion paoid_list_criterion;
-
-            string in_list;
-
-            for( ; paoid_itr != paoid_itr_end; paoid_itr++ )
-            {
-                if( !in_list.empty() )
-                {
-                    in_list += ",";
-                }
-
-                //*selector_paoid_itr = *paoid_itr;
-
-                _paoids_loaded.insert(*paoid_itr);
-            }
-
-            in_list += CtiNumStr(*paoid_itr);
-
-            in_list = "(" + in_list + ")";
-
-            selector_accum .where(base_selector_accum .where() && key_table_accum ["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
-            selector_analog.where(base_selector_analog.where() && key_table_analog["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
-            selector_calc  .where(base_selector_calc  .where() && key_table_calc  ["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
-            selector_status.where(base_selector_status.where() && key_table_status["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
-            selector_system.where(base_selector_system.where() && key_table_system["paobjectid"].in(RWDBExpr(in_list.c_str(), false)));
-            /*
-            for( ; paoid_itr != paoid_itr_end; paoid_itr++ )
-            {
-                paoid_list_criterion_accum  = paoid_list_criterion_accum  || (key_table_accum ["paobjectid"] == RWDBExpr(*paoid_itr));
-                paoid_list_criterion_analog = paoid_list_criterion_analog || (key_table_analog["paobjectid"] == RWDBExpr(*paoid_itr));
-                paoid_list_criterion_calc   = paoid_list_criterion_calc   || (key_table_calc  ["paobjectid"] == RWDBExpr(*paoid_itr));
-                paoid_list_criterion_status = paoid_list_criterion_status || (key_table_status["paobjectid"] == RWDBExpr(*paoid_itr));
-                paoid_list_criterion_system = paoid_list_criterion_system || (key_table_system["paobjectid"] == RWDBExpr(*paoid_itr));
-
-                _paoids_loaded.insert(*paoid_itr);
-            }
-
-            selector_accum .where(selector_accum .where() && paoid_list_criterion_accum);
-            selector_analog.where(selector_analog.where() && paoid_list_criterion_analog);
-            selector_calc  .where(selector_calc  .where() && paoid_list_criterion_calc);
-            selector_status.where(selector_status.where() && paoid_list_criterion_status);
-            selector_system.where(selector_system.where() && paoid_list_criterion_system);
-            */
 
             if( DebugLevel & 0x00010000 )
             {
