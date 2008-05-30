@@ -399,7 +399,7 @@ function confirmCancel() {
                                   <div align="right">Field Receive Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= (savedRecvDate != null)? savedRecvDate : dateFormattingService.formatDate(new Date(inventory.getReceiveDate()), DateFormattingService.DateFormatEnum.DATE, userContext) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldReceiveDate" maxlength="30" size="24" value="<%= (savedRecvDate != null)? savedRecvDate : dateFormattingService.formatDate(inventory.getReceiveDate(), DateFormattingService.DateFormatEnum.DATE, userContext) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -407,7 +407,7 @@ function confirmCancel() {
                                   <div align="right">Field Remove Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="fieldRemoveDate" maxlength="30" size="24" value="<%= (savedRemvDate != null)? savedRemvDate : ServletUtils.formatDate(inventory.getRemoveDate(), datePart) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldRemoveDate" maxlength="30" size="24" value="<%= (savedRemvDate != null)? savedRemvDate : dateFormattingService.formatDate(inventory.getRemoveDate(), DateFormattingService.DateFormatEnum.DATE, userContext), datePart) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
@@ -457,7 +457,7 @@ function confirmCancel() {
                                   <div align="right">Field Date Installed: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="fieldInstallDate" maxlength="30" size="24" value="<%= (savedInstDate != null)? savedInstDate : ServletUtils.formatDate(inventory.getInstallDate(), datePart) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldInstallDate" maxlength="30" size="24" value="<%= (savedInstDate != null)? savedInstDate : dateFormattingService.formatDate(inventory.getInstallDate(), DateFormattingService.DateFormatEnum.DATE, userContext)%>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 

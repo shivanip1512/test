@@ -15,6 +15,7 @@
 
 <%@page import="com.cannontech.core.dao.YukonUserDao"%>
 <%@page import="com.cannontech.core.dao.AuthDao"%>
+<%@page import="com.cannontech.core.dao.RoleDao"%>
 
 <%@page import="com.cannontech.database.data.lite.LiteYukonUser"%>
 <%@page import="com.cannontech.util.ServletUtil"%>
@@ -39,6 +40,7 @@
     CapControlCommentDao commentDao = YukonSpringHook.getBean("capCommentDao", CapControlCommentDao.class);
     YukonUserDao yukonUserDao = YukonSpringHook.getBean("yukonUserDao", YukonUserDao.class);
     AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
+    RoleDao roleDao = YukonSpringHook.getBean("roleDao", RoleDao.class);
     
     LiteYukonUser user = ServletUtil.getYukonUser(request);
     CapControlCache filterCapControlCache = cacheFactory.createUserAccessFilteredCache(user);
@@ -59,8 +61,8 @@
     SimpleDateFormat formatter = new SimpleDateFormat ("dd/MM/yyyy HH:mm:ss");
     
     //role property   'database editing' determines this.
-    LiteYukonRoleProperty modifyProp = authDao.getRoleProperty(CBCSettingsRole.MODIFY_COMMENTS);
-    LiteYukonRoleProperty addProp = authDao.getRoleProperty(CBCSettingsRole.ADD_COMMENTS);
+    LiteYukonRoleProperty modifyProp = roleDao.getRoleProperty(CBCSettingsRole.MODIFY_COMMENTS);
+    LiteYukonRoleProperty addProp = roleDao.getRoleProperty(CBCSettingsRole.ADD_COMMENTS);
 
     String modValue = authDao.getRolePropertyValue(user, modifyProp.getRolePropertyID() );
     boolean modifyPermission = Boolean.parseBoolean(modValue);
