@@ -407,7 +407,7 @@ function confirmCancel() {
                                   <div align="right">Field Remove Date: </div>
                                 </td>
                                 <td width="200"> 
-                                  <input type="text" name="fieldRemoveDate" maxlength="30" size="24" value="<%= (savedRemvDate != null)? savedRemvDate : dateFormattingService.formatDate(inventory.getRemoveDate(), DateFormattingService.DateFormatEnum.DATE, userContext), datePart) %>" onchange="setContentChanged(true)">
+                                  <input type="text" name="fieldRemoveDate" maxlength="30" size="24" value="<%= (savedRemvDate != null)? savedRemvDate : dateFormattingService.formatDate(inventory.getRemoveDate(), DateFormattingService.DateFormatEnum.DATE, userContext) %>" onchange="setContentChanged(true)">
                                 </td>
                               </tr>
                               <tr> 
