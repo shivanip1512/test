@@ -723,6 +723,19 @@ INSERT INTO YukonRoleProperty VALUES(-10819, -108, 'Default TimeZone',' ','Defau
 INSERT INTO YukonRoleProperty VALUES(-1703, -8, 'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 /* End YUK-5923 */
 
+/* Start YUK-5904 */
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type) 
+SELECT MAX(DeviceGroupID)+1,'Meters',12,'NOEDIT_NOMOD','STATIC' 
+FROM DeviceGroup 
+WHERE DeviceGroupId<100; 
+go
+
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type) 
+SELECT MAX(DeviceGroupID)+1,'Disabled',MAX(DeviceGroupID),'NOEDIT_NOMOD','DISABLED' 
+FROM DeviceGroup 
+WHERE DeviceGroupId<100; 
+/* End YUK-5904 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

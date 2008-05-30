@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     5/30/2008 10:53:07 AM                        */
+/* Created on:     5/30/2008 11:37:10 AM                        */
 /*==============================================================*/
 
 
@@ -5080,6 +5080,8 @@ INSERT INTO DeviceGroup values (17,'Voltage Profile',15,'NOEDIT_NOMOD','SCANNING
 INSERT INTO DeviceGroup values (18,'Integrity',15,'NOEDIT_NOMOD','SCANNING_INTEGRITY');
 INSERT INTO DeviceGroup values (19,'Accumulator',15,'NOEDIT_NOMOD','SCANNING_ACCUMULATOR');
 INSERT INTO DeviceGroup VALUES (20,'Temporary',12,'HIDDEN','STATIC'); 
+INSERT INTO DeviceGroup VALUES (21,'Meters',12,'NOEDIT_NOMOD','STATIC'); 
+INSERT INTO DeviceGroup VALUES (22,'Disabled',21,'NOEDIT_NOMOD','DISABLED');
 
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)
