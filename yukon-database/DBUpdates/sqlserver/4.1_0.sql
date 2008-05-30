@@ -736,6 +736,12 @@ FROM DeviceGroup
 WHERE DeviceGroupId<100; 
 /* End YUK-5904 */
 
+/* Start YUK-5269 */
+UPDATE YukonRoleProperty 
+SET description = 'Defines a Yukon Pao (Device) Name field alias. Valid values(0-4): [0=Device Name, 1=Account Number, 2=Service Location, 3=Customer, 4=EA Location]' 
+WHERE rolePropertyId = -1600;
+/* End YUK-5269 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/
