@@ -4265,6 +4265,10 @@
         		<cmd text="getvalue demand"/>
         		<pointRef name="kW"/>
         	</command>
+			<command name="Read Disconnect Status">
+        		<cmd text="getstatus disconnect"/>
+        		<pointRef name="Disconnect Status"/>
+        	</command>
        	</commands>
        	<attributes>
 	        <attribute name="USAGE">
@@ -4349,6 +4353,10 @@
 			<command name="Read Current Demand">
         		<cmd text="getvalue demand"/>
         		<pointRef name="kW"/>
+        	</command>
+			<command name="Read Disconnect Status">
+        		<cmd text="getstatus disconnect"/>
+        		<pointRef name="Disconnect Status"/>
         	</command>
        	</commands>
        	<attributes>
@@ -5046,6 +5054,10 @@
 			<command name="Read Current Demand">
         		<cmd text="getvalue demand"/>
         		<pointRef name="kW"/>
+        	</command>
+			<command name="Read Disconnect Status">
+        		<cmd text="getstatus disconnect"/>
+        		<pointRef name="Disconnect Status"/>
         	</command>
        	</commands>
         <attributes>
