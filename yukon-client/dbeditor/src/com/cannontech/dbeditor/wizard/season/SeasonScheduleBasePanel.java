@@ -671,11 +671,28 @@ public boolean isInputValid()
 				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
 				return false;
 			}
-			if((endMonth == nextStartMonth && endDay >= nextStartDay )
-				|| (nextEndMonth == startMonth && startDay >= nextEndDay))
-			{
+			if(endMonth == nextStartMonth && endDay >= nextStartDay ){
 				setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
 				return false;
+			}
+			
+			if(nextEndMonth == startMonth && startDay <= nextEndDay) {
+			    /* Check to see if one of these seasons is jumping the end of the year.
+			    We need to because the 'if(nextEndMonth == startMonth && startDay <= nextEndDay)'
+			    is valid for one scenario and invalid for another.
+			    
+			    Valid Example: this should be allowed
+			    Season 1: 1-1 to 1-2
+			    Season 2: 1-3 to 1-4
+			    
+			    Invalid Example: this should not be allowed
+			    Season 1: 1-5 to 12-something
+			    Season 2: 12-something + 1 to 1-6 */
+			    
+			    if(endMonth < startMonth || nextEndMonth < nextStartMonth) {
+			        setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
+			        return false;
+			    }
 			}
 		}
 		
