@@ -91,61 +91,23 @@ public class CapControlCommandController extends MultiActionController {
 
 	    LiteYukonUser user = ServletUtil.getYukonUser(request);
 	    
-	    if (cmdId == CapControlCommand.ENABLE_AREA) {
-	        final List<String> subsInConflict = new ArrayList<String>();
-	        // Check for other special areas with this special area's subIds that are enabled.
-	        List<SubStation> subs = capControlCache.getSubstationsBySpecialArea(paoId);
-	        for (final SubStation sub : subs) {
-	            boolean alreadyUsed = sub.getSpecialAreaEnabled();
-	            if (alreadyUsed) {
-	                CCSpecialArea otherArea = capControlCache.getCBCSpecialArea(sub.getSpecialAreaId());
-	                if (!otherArea.getCcDisableFlag()) {
-	                    String areaName = otherArea.getCcName();
-	                    String value = areaName + " : " + sub.getCcName();
-	                    subsInConflict.add(value);
-	                }
-	            }
-	        }
-
-	        boolean success = subsInConflict.isEmpty();
-	        if (success) {
-	            executor.execute(CapControlType.SPECIAL_AREA, cmdId, paoId, opt, null);
-	            String forceComment = authDao.getRolePropertyValue(user,CBCSettingsRole.FORCE_COMMENTS);
-	            if (reason != null) {
-	                insertComment(paoId, user.getUserID(), reason, cmdId);
-	            }else if(forceComment.equalsIgnoreCase("true")) {
-					String commandName = CapControlCommand.getCommandString(cmdId);
-                    commandName += " Special Area";
-                    insertComment(paoId, user.getUserID(), commandName, cmdId);
-	            }
-	        }
-
-	        JSONObject jsonObject = new JSONObject();
-	        jsonObject.put("success", success);
-	        jsonObject.put("errMessage", "Error: Some substation/s in this area are already on another enabled special area:\n\n" 
-	                       + org.apache.commons.lang.StringUtils.join(subsInConflict, ",\n") 
-	                       + "\n\nRemove them from the other area or disable the other area first.");
-	        String jsonStr = jsonObject.toString();
-	        response.addHeader("X-JSON", jsonStr);
-	    } else {
-	        executor.execute(CapControlType.SPECIAL_AREA, cmdId, paoId, opt, null);
-	        String forceComment = authDao.getRolePropertyValue(user,CBCSettingsRole.FORCE_COMMENTS);
-	        if (reason != null) {
-	            insertComment(paoId, user.getUserID(), reason, cmdId);
-	        }else if(forceComment.equalsIgnoreCase("true")) {
-	            String commandName = CapControlCommand.getCommandString(cmdId);
-	            if(cmdId == CapControlCommand.DISABLE_AREA) {
-	                commandName += " Special Area";
-	            }
-                insertComment(paoId, user.getUserID(), commandName, cmdId);
+        executor.execute(CapControlType.SPECIAL_AREA, cmdId, paoId, opt, null);
+        String forceComment = authDao.getRolePropertyValue(user,CBCSettingsRole.FORCE_COMMENTS);
+        if (reason != null) {
+            insertComment(paoId, user.getUserID(), reason, cmdId);
+        }else if(forceComment.equalsIgnoreCase("true")) {
+            String commandName = CapControlCommand.getCommandString(cmdId);
+            if(cmdId == CapControlCommand.DISABLE_AREA || cmdId == CapControlCommand.ENABLE_AREA) {
+                commandName += " Special Area";
             }
-	        
-	        JSONObject jsonObject = new JSONObject();
-	        Boolean success = true;
-	        jsonObject.put("success", success);
-	        String jsonStr = jsonObject.toString();
-	        response.addHeader("X-JSON", jsonStr);
-	    }
+            insertComment(paoId, user.getUserID(), commandName, cmdId);
+        }
+        
+        JSONObject jsonObject = new JSONObject();
+        Boolean success = true;
+        jsonObject.put("success", success);
+        String jsonStr = jsonObject.toString();
+        response.addHeader("X-JSON", jsonStr);
 	}
 	
 	public void executeTempMoveBack(HttpServletRequest request, HttpServletResponse response) throws Exception {
