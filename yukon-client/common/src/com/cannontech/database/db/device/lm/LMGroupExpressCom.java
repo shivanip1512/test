@@ -20,6 +20,7 @@ public class LMGroupExpressCom extends com.cannontech.database.db.DBPersistent
 	private Integer splinterID = IlmDefines.NONE_ADDRESS_ID;
 	private String addressUsage = " "; //default none
 	private String relayUsage = " "; //default none
+	private Integer protocolPriority = 3; //default priority
 
 	public static final String SETTER_COLUMNS[] = 
 	{ 
@@ -46,7 +47,7 @@ public void add() throws java.sql.SQLException
 		getSerialNumber(), getServiceProviderID(), getGeoID(),
 		getSubstationID(), getFeederID(), getZipID(), 
 		getUserID(), getProgramID(), getSplinterID(),
-		getAddressUsage(), getRelayUsage() };
+		getAddressUsage(), getRelayUsage(), getProtocolPriority() };
 
 	add( TABLE_NAME, addValues );
 }
@@ -395,4 +396,12 @@ public void update() throws java.sql.SQLException
 
 	update( TABLE_NAME, SETTER_COLUMNS, setValues, CONSTRAINT_COLUMNS, constraintValues );
 }
+
+	public void setProtocolPriority(Integer protocolPriority) {
+		this.protocolPriority = protocolPriority;
+	}
+	
+	public Integer getProtocolPriority() {
+		return protocolPriority;
+	}
 }
