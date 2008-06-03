@@ -283,16 +283,29 @@ void CtiFDRClientServerConnection::threadFunctionSendDataTo( void )
                 {
                     clock_t currentTime = clock();
                     //don't call sleep routine if nothing is set
-                    int intervalClocks = 
-                        _parentInterface->getOutboundSendInterval() * CLOCKS_PER_SEC;
+                    int sendInterval = _parentInterface->getOutboundSendInterval();
+                    int intervalClocks = sendInterval * CLOCKS_PER_SEC;
                     if (currentTime < intervalStartTime + intervalClocks)
                     {
-                        int clocksLeftInInterval = intervalClocks 
-                            - (currentTime - intervalStartTime);
+                        int clocksLeftInInterval = intervalClocks - (currentTime - intervalStartTime);
                         int millisToSleep = clocksLeftInInterval * (1000.0 / CLOCKS_PER_SEC);
 
                         unsigned long elementCount = 0;
                         QueryQueue(_outboundQueue, &elementCount);
+
+                        //Do not let wait time be negative.
+                        if (millisToSleep < 0)
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            logNow() << " Sleep Time:    " << millisToSleep << endl
+                                     << " Send Interval: " << sendInterval << endl
+                                     << " CPS:           " << CLOCKS_PER_SEC << endl
+                                     << " Start Time:    " << intervalStartTime << endl
+                                     << " Current Teim:  " << currentTime << endl
+                                     << " Resetting Sleep Time to 1 second to prevent infinite lock on send thread." << endl;
+                            millisToSleep = 1000;//default to 1 second.  prevents an infinite sleep. (negative value)
+                        }
+
                         if (getDebugLevel () & MIN_DETAIL_FDR_DEBUGLEVEL)
                         {
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
