@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -427,11 +428,82 @@ public class OnelinePopupMenuController extends MultiActionController {
         
         mav.addObject("paoId", id);
         mav.addObject("returnUrl", returnUrl);
-        Map<String,Object> varChangeMap = new LinkedHashMap<String,Object>(3);
-        varChangeMap.put("Before:", capBank.getBeforeVars());
-        varChangeMap.put("After:", capBank.getAfterVars());
-        varChangeMap.put("% Change:", capBank.getPercentChange());
-        mav.addObject("varChangeMap", varChangeMap);
+        
+        String before = capBank.getBeforeVars().trim();
+        String beforeRow = "";
+        String after = capBank.getAfterVars().trim();
+        String afterRow = "";
+        String change = capBank.getPercentChange().trim();
+        String changeRow = "";
+        if(before.contains(":")) {
+            StringTokenizer st = new StringTokenizer(before, ":");
+            String phaseA = st.nextToken();
+            String phaseB = "";
+            String phaseC = "";
+            String total = "";
+            if(st.hasMoreTokens()) {
+                phaseB = st.nextToken();
+                phaseC = st.nextToken();
+                total = st.nextToken();
+                beforeRow = "<td align='left' style='color:white; font-size: 14;'>Before:</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + phaseA + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + phaseB + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + phaseC + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + total + "</td>";
+            }else {
+                beforeRow = "<td align='left' style='color:white; font-size: 14;'>Before:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + phaseA + "</td>";
+            }
+        }else {
+            beforeRow = "<td align='left' style='color:white; font-size: 14;'>Before:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + before + "</td>";
+        }
+        
+        if(after.contains(":")) {
+            StringTokenizer st = new StringTokenizer(after, ":");
+            String phaseA = st.nextToken();
+            String phaseB = "";
+            String phaseC = "";
+            String total = "";
+            if(st.hasMoreTokens()) {
+                phaseB = st.nextToken();
+                phaseC = st.nextToken();
+                total = st.nextToken();
+                afterRow = "<td align='left' style='color:white; font-size: 14;'>After:</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + phaseA + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + phaseB + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + phaseC + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + total + "</td>";
+            }else {
+                afterRow = "<td align='left' style='color:white; font-size: 14;'>After:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + phaseA + "</td>";
+            }
+        }else {
+            afterRow = "<td align='left' style='color:white; font-size: 14;'>After:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + after + "</td>";
+        }
+        
+        if(change.contains(":")) {
+            StringTokenizer st = new StringTokenizer(change, ":");
+            String phaseA = st.nextToken();
+            String phaseB = "";
+            String phaseC = "";
+            String total = "";
+            if(st.hasMoreTokens()) {
+                phaseB = st.nextToken();
+                phaseC = st.nextToken();
+                total = st.nextToken();
+                changeRow = "<td align='left' style='color:white; font-size: 14;'>% Change:</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + phaseA + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + phaseB + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + phaseC + "</td><td align='left' style='color:white; font-size: 14;'>" 
+                    + total + "</td>";
+            }else {
+                changeRow = "<td align='left' style='color:white; font-size: 14;'>% Change:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + phaseA + "</td>";
+            }
+        }else {
+            changeRow = "<td align='left' style='color:white; font-size: 14;'>% Change:</td><td colspan='4' align='left' style='color:white; font-size: 14;'>" + change + "</td>";
+        }
+        
+        mav.addObject("beforeRow", beforeRow);
+        mav.addObject("afterRow", afterRow);
+        mav.addObject("changeRow", changeRow);
         mav.setViewName("oneline/popupmenu/varChangePopup");
         return mav;
     }
