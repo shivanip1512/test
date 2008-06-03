@@ -72,8 +72,7 @@ public class OnelineCBCServlet extends HttpServlet {
                 CapControlOnelineCanvas emptyCanvas = new CapControlOnelineCanvas(d);
                 emptyCanvas.setUser(user);
                 emptyCanvas.setLayoutParams(param);
-                emptyCanvas.createDrawing(subBusMsg,
-                                          CBCWebUtils.ONE_LINE_DIR + subName.trim() + ".html");
+                emptyCanvas.createDrawing(subBusMsg, CBCWebUtils.ONE_LINE_DIR + subName.trim() + ".html");
                 
                 String dirAndFileExt = absPath + separator + subName;
                 OnelineUtil.createHTMLFile(dirAndFileExt, emptyCanvas);
@@ -81,6 +80,7 @@ public class OnelineCBCServlet extends HttpServlet {
             } catch (RuntimeException e) {
                 if (count < MAX_RETRY) {
                     CTILogger.warn("Failure generating OneLine drawing: " + e.getClass());
+                    e.printStackTrace(System.out);
                     CTILogger.debug(e.getStackTrace());
                     continue; 
                 }

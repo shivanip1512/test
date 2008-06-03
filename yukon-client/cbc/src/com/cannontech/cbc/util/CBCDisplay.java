@@ -104,6 +104,7 @@ public class CBCDisplay {
     public static final int SUB_VAR_LOAD_POPUP = 23;
     public static final int SUB_WARNING_IMAGE = 24;
     public static final int SUB_WARNING_POPUP = 25;
+    public static final int SUB_ONELINE_THREE_PHASE_COLUMN = 26;
 
     public static final int AREA_POWER_FACTOR_COLUMN = 0;
 
@@ -446,7 +447,7 @@ public class CBCDisplay {
                 state += "-V";
             return state;
         }
-
+        
         case SUB_TARGET_COLUMN: {
             // decide which set Point we are to use
             NumberFormat num = NumberFormat.getNumberInstance();
@@ -606,7 +607,7 @@ public class CBCDisplay {
         }
 
         default:
-            return null;
+            return "---";
         }
 
     }
@@ -1065,6 +1066,15 @@ public class CBCDisplay {
 
             return retStr;
         }
+        
+        case SUB_ONELINE_THREE_PHASE_COLUMN: {
+            StringBuilder str = new StringBuilder();
+            str.append(CommonUtils.formatDecimalPlaces(subBus.getPhaseA(),decPlaces) + "/");
+            str.append(CommonUtils.formatDecimalPlaces(subBus.getPhaseB(),decPlaces) + "/");
+            str.append(CommonUtils.formatDecimalPlaces(subBus.getPhaseC(),decPlaces));
+            return str.toString();
+        }
+        
         case SUB_ONELINE_KVAR_LOAD_COLUMN: {
             String retVal = DASH_LINE; //default just in case
 
@@ -1136,7 +1146,7 @@ public class CBCDisplay {
                 return new ModifiedDate(subBus.getLastCurrentVarPointUpdateTime().getTime(),shortTimeFormat).toString();
         }
         default:
-            return null;
+            return "---";
         }
 
     }

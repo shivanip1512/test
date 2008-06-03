@@ -20,6 +20,7 @@ public interface CBCOnelineSettingsRole {
     public static final int SUB_CTL_METHOD = SUB_ONELINE_PROPID_BASE - 10;
     public static final int SUB_DAILY_MAX_OPCNT = SUB_ONELINE_PROPID_BASE - 11;
     public static final int SUB_TIMESTAMP = SUB_ONELINE_PROPID_BASE - 12;
+    public static final int SUB_THREE_PHASE = SUB_ONELINE_PROPID_BASE - 13;
     
     //FEEDER
     public static final int FDR_ONELINE_PROPID_BASE = SUB_ONELINE_PROPID_BASE - 100;
