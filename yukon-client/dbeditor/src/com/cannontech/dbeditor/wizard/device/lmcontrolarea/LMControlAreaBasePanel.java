@@ -417,7 +417,6 @@ private javax.swing.JLabel getJLabelOperationalState() {
  * Return the JLabelDailyStartTime property value.
  * @return javax.swing.JLabel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 private javax.swing.JLabel getJLabelStartTime() {
 	if (ivjJLabelStartTime == null) {
 		try {
@@ -425,11 +424,9 @@ private javax.swing.JLabel getJLabelStartTime() {
 			ivjJLabelStartTime.setName("JLabelStartTime");
 			ivjJLabelStartTime.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelStartTime.setText("Start Time:");
-			// user code begin {1}
-			// user code end
+			ivjJLabelStartTime.setMinimumSize(new Dimension(70,20));
+			ivjJLabelStartTime.setPreferredSize(new Dimension(70,20));
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -447,11 +444,9 @@ private javax.swing.JLabel getJLabelStopTime() {
 			ivjJLabelStopTime.setName("JLabelStopTime");
 			ivjJLabelStopTime.setFont(new java.awt.Font("dialog", 0, 14));
 			ivjJLabelStopTime.setText("Stop Time:");
-			// user code begin {1}
-			// user code end
+			ivjJLabelStopTime.setMinimumSize(new Dimension(70,20));
+			ivjJLabelStopTime.setPreferredSize(new Dimension(70,20));
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -469,11 +464,9 @@ private javax.swing.JLabel getJLabelTime1() {
 			ivjJLabelTime1.setName("JLabelTime1");
 			ivjJLabelTime1.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjJLabelTime1.setText("(HH:mm)");
-			// user code begin {1}
-			// user code end
+			ivjJLabelTime1.setMinimumSize(new Dimension(60,20));
+			ivjJLabelTime1.setPreferredSize(new Dimension(60,20));
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -491,11 +484,9 @@ private javax.swing.JLabel getJLabelTime2() {
 			ivjJLabelTime2.setName("JLabelTime2");
 			ivjJLabelTime2.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjJLabelTime2.setText("(HH:mm)");
-			// user code begin {1}
-			// user code end
+			ivjJLabelTime2.setMinimumSize(new Dimension(60,20));
+			ivjJLabelTime2.setPreferredSize(new Dimension(60,20));
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -513,11 +504,9 @@ private javax.swing.JLabel getJLabelWarning() {
 			ivjJLabelWarning.setName("JLabelWarning");
 			ivjJLabelWarning.setFont(new java.awt.Font("dialog", 0, 12));
 			ivjJLabelWarning.setText("Control Window changes take effect at midnight");
-			// user code begin {1}
-			// user code end
+			ivjJLabelTime2.setMinimumSize(new Dimension(100,10));
+            ivjJLabelTime2.setPreferredSize(new Dimension(100,10));
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -539,70 +528,51 @@ private javax.swing.JPanel getJPanelOptional() {
 			ivjJPanelOptional.setName("JPanelOptional");
 			ivjJPanelOptional.setBorder(ivjLocalBorder);
 			ivjJPanelOptional.setLayout(new java.awt.GridBagLayout());
-			
 				
 			java.awt.GridBagConstraints constraintsJLabelStartTime = new java.awt.GridBagConstraints();
-			constraintsJLabelStartTime.gridx = 1; constraintsJLabelStartTime.gridy = 1;
+			constraintsJLabelStartTime.gridx = 0; constraintsJLabelStartTime.gridy = 0;
 			constraintsJLabelStartTime.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelStartTime.ipadx = 6;
-			constraintsJLabelStartTime.ipady = 2;
-			constraintsJLabelStartTime.insets = new java.awt.Insets(26, 17, 9, 0);
+			constraintsJLabelStartTime.insets = new java.awt.Insets(5, 5, 5, 5);
 			getJPanelOptional().add(getJLabelStartTime(), constraintsJLabelStartTime);
 
 			java.awt.GridBagConstraints constraintsJLabelStopTime = new java.awt.GridBagConstraints();
-			constraintsJLabelStopTime.gridx = 1; constraintsJLabelStopTime.gridy = 2;
+			constraintsJLabelStopTime.gridx = 0; constraintsJLabelStopTime.gridy = 1;
 			constraintsJLabelStopTime.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelStopTime.ipadx = 7;
-			constraintsJLabelStopTime.insets = new java.awt.Insets(10, 17, 34, 0);
+			constraintsJLabelStopTime.insets = new java.awt.Insets(5, 5, 5, 5);
 			getJPanelOptional().add(getJLabelStopTime(), constraintsJLabelStopTime);
+			
+			java.awt.GridBagConstraints constraintsJLabelWarning = new java.awt.GridBagConstraints();
+            constraintsJLabelWarning.gridx = 0; constraintsJLabelWarning.gridy = 2;
+            constraintsJLabelWarning.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJLabelWarning.gridwidth = 3;
+            constraintsJLabelWarning.insets = new java.awt.Insets(5, 5, 5, 5);
+            getJPanelOptional().add(getJLabelWarning(), constraintsJLabelWarning);
+			
+			java.awt.GridBagConstraints constraintsJTextFieldTimeEntryStart = new java.awt.GridBagConstraints();
+            constraintsJTextFieldTimeEntryStart.gridx = 1; constraintsJTextFieldTimeEntryStart.gridy = 0;
+            constraintsJTextFieldTimeEntryStart.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJTextFieldTimeEntryStart.insets = new java.awt.Insets(5, 5, 5, 5);
+            getJPanelOptional().add(getJTextFieldTimeEntryStart(), constraintsJTextFieldTimeEntryStart);
+            
+            java.awt.GridBagConstraints constraintsJTextFieldTimeEntryStop = new java.awt.GridBagConstraints();
+            constraintsJTextFieldTimeEntryStop.gridx = 1; constraintsJTextFieldTimeEntryStop.gridy = 1;
+            constraintsJTextFieldTimeEntryStop.anchor = java.awt.GridBagConstraints.WEST;
+            constraintsJTextFieldTimeEntryStop.insets = new java.awt.Insets(5, 5, 5, 5);
+            getJPanelOptional().add(getJTextFieldTimeEntryStop(), constraintsJTextFieldTimeEntryStop);
 
 			java.awt.GridBagConstraints constraintsJLabelTime1 = new java.awt.GridBagConstraints();
-			constraintsJLabelTime1.gridx = 3; constraintsJLabelTime1.gridy = 1;
+			constraintsJLabelTime1.gridx = 2; constraintsJLabelTime1.gridy = 0;
 			constraintsJLabelTime1.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelTime1.ipadx = 6;
-			constraintsJLabelTime1.ipady = -2;
-			constraintsJLabelTime1.insets = new java.awt.Insets(29, 5, 13, 53);
+			constraintsJLabelTime1.insets = new java.awt.Insets(5, 5, 5, 5);
 			getJPanelOptional().add(getJLabelTime1(), constraintsJLabelTime1);
 
 			java.awt.GridBagConstraints constraintsJLabelTime2 = new java.awt.GridBagConstraints();
-			constraintsJLabelTime2.gridx = 3; constraintsJLabelTime2.gridy = 2;
+			constraintsJLabelTime2.gridx = 2; constraintsJLabelTime2.gridy = 1;
 			constraintsJLabelTime2.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelTime2.ipadx = 6;
-			constraintsJLabelTime2.ipady = -2;
-			constraintsJLabelTime2.insets = new java.awt.Insets(12, 5, 37, 53);
+			constraintsJLabelTime2.insets = new java.awt.Insets(5, 5, 5, 5);
 			getJPanelOptional().add(getJLabelTime2(), constraintsJLabelTime2);
 
-			java.awt.GridBagConstraints constraintsJTextFieldTimeEntryStop = new java.awt.GridBagConstraints();
-			constraintsJTextFieldTimeEntryStop.gridx = 2; constraintsJTextFieldTimeEntryStop.gridy = 2;
-			constraintsJTextFieldTimeEntryStop.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsJTextFieldTimeEntryStop.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJTextFieldTimeEntryStop.weightx = 1.0;
-			constraintsJTextFieldTimeEntryStop.ipadx = 131;
-			constraintsJTextFieldTimeEntryStop.insets = new java.awt.Insets(9, 0, 34, 4);
-			getJPanelOptional().add(getJTextFieldTimeEntryStop(), constraintsJTextFieldTimeEntryStop);
-
-			java.awt.GridBagConstraints constraintsJTextFieldTimeEntryStart = new java.awt.GridBagConstraints();
-			constraintsJTextFieldTimeEntryStart.gridx = 2; constraintsJTextFieldTimeEntryStart.gridy = 1;
-			constraintsJTextFieldTimeEntryStart.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsJTextFieldTimeEntryStart.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJTextFieldTimeEntryStart.weightx = 1.0;
-			constraintsJTextFieldTimeEntryStart.ipadx = 131;
-			constraintsJTextFieldTimeEntryStart.insets = new java.awt.Insets(26, 0, 10, 4);
-			getJPanelOptional().add(getJTextFieldTimeEntryStart(), constraintsJTextFieldTimeEntryStart);
-			
-			java.awt.GridBagConstraints constraintsJLabelWarning = new java.awt.GridBagConstraints();
-			constraintsJLabelWarning.gridx = 1; constraintsJLabelWarning.gridy = 3;
-			constraintsJLabelWarning.fill = java.awt.GridBagConstraints.HORIZONTAL;
-			constraintsJLabelWarning.anchor = java.awt.GridBagConstraints.WEST;
-			constraintsJLabelWarning.weightx = 1.0;
-			constraintsJLabelWarning.gridwidth = 3;
-			constraintsJLabelWarning.ipadx = 131;
-			constraintsJLabelWarning.insets = new java.awt.Insets(10, 17, 34, 0);
-            getJPanelOptional().add(getJLabelWarning(), constraintsJLabelWarning);
-            
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -646,11 +616,9 @@ private com.cannontech.common.gui.util.JTextFieldTimeEntry getJTextFieldTimeEntr
 		try {
 			ivjJTextFieldTimeEntryStart = new com.cannontech.common.gui.util.JTextFieldTimeEntry();
 			ivjJTextFieldTimeEntryStart.setName("JTextFieldTimeEntryStart");
-			// user code begin {1}
-			// user code end
+			ivjJTextFieldTimeEntryStart.setMinimumSize(new Dimension(40,20));
+			ivjJTextFieldTimeEntryStart.setPreferredSize(new Dimension(40,20));
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -666,11 +634,9 @@ private com.cannontech.common.gui.util.JTextFieldTimeEntry getJTextFieldTimeEntr
 		try {
 			ivjJTextFieldTimeEntryStop = new com.cannontech.common.gui.util.JTextFieldTimeEntry();
 			ivjJTextFieldTimeEntryStop.setName("JTextFieldTimeEntryStop");
-			// user code begin {1}
-			// user code end
+			ivjJTextFieldTimeEntryStop.setMinimumSize(new Dimension(40,20));
+			ivjJTextFieldTimeEntryStop.setPreferredSize(new Dimension(40,20));
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -838,9 +804,7 @@ private void initialize() {
 		constraintsJPanelOptional.anchor = java.awt.GridBagConstraints.WEST;
 		constraintsJPanelOptional.weightx = 1.0;
 		constraintsJPanelOptional.weighty = 1.0;
-		constraintsJPanelOptional.ipadx = -10;
-		constraintsJPanelOptional.ipady = -26;
-		constraintsJPanelOptional.insets = new java.awt.Insets(11, 10, 58, 19);
+		constraintsJPanelOptional.insets = new java.awt.Insets(5, 5, 5, 5);
 		add(getJPanelOptional(), constraintsJPanelOptional);
 
 		java.awt.GridBagConstraints constraintsJComboBoxControlInterval = new java.awt.GridBagConstraints();
