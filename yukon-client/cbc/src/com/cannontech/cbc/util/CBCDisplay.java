@@ -2,6 +2,7 @@ package com.cannontech.cbc.util;
 
 import java.awt.Color;
 import java.text.NumberFormat;
+import java.util.StringTokenizer;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.CommonUtils;
@@ -276,18 +277,76 @@ public class CBCDisplay {
 
         case CB_STATUS_POPUP: {
             String before = capBank.getBeforeVars().trim();
+            String beforeRow = "";
             String after = capBank.getAfterVars().trim();
+            String afterRow = "";
             String change = capBank.getPercentChange().trim();
+            String changeRow = "";
+            if(before.contains(":")) {
+                StringTokenizer st = new StringTokenizer(before, ":");
+                String phaseA = st.nextToken();
+                String phaseB = "";
+                String phaseC = "";
+                String total = "";
+                if(st.hasMoreTokens()) {
+                    phaseB = st.nextToken();
+                    phaseC = st.nextToken();
+                    total = st.nextToken();
+                    beforeRow = "<tr><td>Before:</td><td>" + phaseA + "</td><td>" + phaseB + "</td><td>" + phaseC + "</td><td>" + total + "</td></tr>";
+                }else {
+                    beforeRow = "<tr><td>Before:</td><td colspan='4'>" + phaseA + "</td></tr>";
+                }
+                    
+            }else {
+                beforeRow = "<tr><td>Before:</td><td colspan='4'>" + before + "</td></tr>";
+            }
+            
+            if(after.contains(":")) {
+                StringTokenizer st = new StringTokenizer(after, ":");
+                String phaseA = st.nextToken();
+                String phaseB = "";
+                String phaseC = "";
+                String total = "";
+                if(st.hasMoreTokens()) {
+                    phaseB = st.nextToken();
+                    phaseC = st.nextToken();
+                    total = st.nextToken();
+                    afterRow = "<tr><td>After:</td><td>" + phaseA + "</td><td>" + phaseB + "</td><td>" + phaseC + "</td><td>" + total + "</td></tr>";
+                }else {
+                    afterRow = "<tr><td>After:</td><td colspan='4'>" + phaseA + "</td></tr>";
+                }
+                    
+            }else {
+                afterRow = "<tr><td>After:</td><td colspan='4'>" + after + "</td></tr>";
+            }
+            
+            if(change.contains(":")) {
+                StringTokenizer st = new StringTokenizer(change, ":");
+                String phaseA = st.nextToken();
+                String phaseB = "";
+                String phaseC = "";
+                String total = "";
+                if(st.hasMoreTokens()) {
+                    phaseB = st.nextToken();
+                    phaseC = st.nextToken();
+                    total = st.nextToken();
+                    changeRow = "<tr><td>% Change:</td><td>" + phaseA + "</td><td>" + phaseB + "</td><td>" + phaseC + "</td><td>" + total + "</td></tr>";
+                }else {
+                    changeRow = "<tr><td>% Change:</td><td colspan='4'>" + phaseA + "</td></tr>";
+                }
+                    
+            }else {
+                changeRow = "<tr><td>% Change:</td><td colspan='4'>" + change + "</td></tr>";
+            }
+            
             final StringBuilder sb = new StringBuilder();
-            sb.append("<b>kVAR PhaseA PhaseB PhaseC Total</b><br><hr><br>");
-            sb.append("Before: ");
-            sb.append(before);
-            sb.append("<br>");
-            sb.append("After: ");
-            sb.append(after);
-            sb.append("<br>");
-            sb.append("% Change: ");
-            sb.append(change);
+            sb.append("<table align='center'><tr><td>");
+            sb.append("<b>kVAR</b></td><td><b>PhaseA</b></td><td><b>PhaseB</b></td><td><b>PhaseC</b></td><td><b>Total</b></td></tr>");
+            sb.append("<tr><td colspan='5'><hr></td></tr>");
+            sb.append(beforeRow);
+            sb.append(afterRow);
+            sb.append(changeRow);
+            sb.append("</table>");
             String message = sb.toString();
             return message;
         }
