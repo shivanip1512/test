@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.28 $
-* DATE         :  $Date: 2008/01/14 17:23:09 $
+* REVISION     :  $Revision: 1.29 $
+* DATE         :  $Date: 2008/06/03 15:41:18 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -141,13 +141,31 @@ void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void
 
     Inherited::refreshList(testFunc, arg, pntID, paoID);                // Load all points in the system
     Inherited::refreshAlarming(pntID, paoID);
-    Inherited::apply(ApplyInitialDynamicConditions, NULL);     // Make sure everyone has been initialized with Dynamic data.
 
-    if((pTempPoint = Inherited::find(findNonUpdatedDynamicData, NULL))) // If there is at least one nonupdated dynamic entry.
+    if(pntID != 0)
     {
-        RefreshDynamicData(pntID);
-        Inherited::apply(ApplyInsertNonUpdatedDynamicData, NULL);
+        //Lets be smart about handling a single point.
+        pTempPoint = getEqual(pntID);
+        if(pTempPoint)
+        {
+            ApplyInitialDynamicConditions(0,pTempPoint,NULL);
+
+            //This will probably always be true, but why not check.
+            if(findNonUpdatedDynamicData(0,pTempPoint,NULL))
+            {
+                RefreshDynamicData(pntID);
+            }
+        }
     }
+    else
+    {
+        Inherited::apply(ApplyInitialDynamicConditions, NULL);     // Make sure everyone has been initialized with Dynamic data.
+        if((pTempPoint = Inherited::find(findNonUpdatedDynamicData, NULL))) // If there is at least one nonupdated dynamic entry.
+        {
+            RefreshDynamicData(pntID);
+            Inherited::apply(ApplyInsertNonUpdatedDynamicData, NULL);
+        }
+    }  
 }
 
 
