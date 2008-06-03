@@ -742,6 +742,31 @@ SET description = 'Defines a Yukon Pao (Device) Name field alias. Valid values(0
 WHERE rolePropertyId = -1600;
 /* End YUK-5269 */
 
+/* Start YUK-5960 */
+ALTER TABLE State DROP CONSTRAINT SYS_C0013342;
+go 
+
+/* @error ignore-begin */
+INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status' );
+/* @error ignore-end */
+
+UPDATE Point
+SET stateGroupId = -9
+WHERE stateGroupId = 2;
+
+UPDATE State
+SET stateGroupId = -9
+WHERE stateGroupId = 2;
+
+DELETE FROM StateGroup WHERE stateGroupId = 2;
+go
+
+ALTER TABLE State
+    ADD CONSTRAINT SYS_C0013342 FOREIGN KEY (stateGroupId)
+        REFERENCES StateGroup (stateGroupId);
+go
+/* End YUK-5960 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

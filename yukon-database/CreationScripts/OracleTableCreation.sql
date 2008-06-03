@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     5/30/2008 11:48:36 AM                        */
+/* Created on:     6/2/2008 4:08:04 PM                          */
 /*==============================================================*/
 
 
@@ -6887,21 +6887,21 @@ create table STATEGROUP  (
    constraint SYS_C0013128 primary key (STATEGROUPID)
 );
 
-insert into stategroup values(-7, 'Thread Monitor', 'Status');
-insert into stategroup values(-6, '410 Disconnect', 'Status');
+INSERT INTO StateGroup VALUES(-9, 'ThreeStateStatus', 'Status' );
+INSERT INTO StateGroup VALUES(-8, 'TwoStateActive', 'Status');
+INSERT INTO stategroup VALUES(-7, 'Thread Monitor', 'Status');
+INSERT INTO stategroup VALUES(-6, '410 Disconnect', 'Status');
 INSERT INTO StateGroup VALUES(-5, 'Event Priority', 'System' );
 INSERT INTO StateGroup VALUES(-2, 'DefaultAccumulator', 'Accumulator' );
 INSERT INTO StateGroup VALUES(-3, 'DefaultCalculated', 'Calculated' );
 INSERT INTO StateGroup VALUES(-1, 'DefaultAnalog', 'Analog' );
 INSERT INTO StateGroup VALUES( 0, 'SystemState', 'System' );
 INSERT INTO StateGroup VALUES( 1, 'TwoStateStatus', 'Status' );
-INSERT INTO StateGroup VALUES( 2, 'ThreeStateStatus', 'Status' );
 INSERT INTO StateGroup VALUES( 3, 'CapBankStatus', 'Status' );
 INSERT INTO StateGroup VALUES( 4, 'TrueFalse', 'Status' );
 INSERT INTO stategroup VALUES( 5, 'RemoteLocal', 'Status' );
 INSERT INTO StateGroup VALUES( 6, '1LNSUBSTATE', 'Status' );
 INSERT INTO StateGroup VALUES( 7, '1LNVERIFY', 'Status' );
-insert into StateGroup values (-8, 'TwoStateActive', 'Status');
 
 /*==============================================================*/
 /* Index: Indx_STATEGRP_Nme                                     */
