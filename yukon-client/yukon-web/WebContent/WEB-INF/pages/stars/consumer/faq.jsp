@@ -6,7 +6,6 @@
     
     
     <h3><cti:msg key="yukon.dr.consumer.faq.header" /></h3>
-    <div style="border: 1px solid #ccc;"></div>
     <br>
     <c:set var="index" value="0"/>
     <c:forEach var="subject" items="${questions}">
@@ -23,7 +22,6 @@
     
     <br>
     <br>
-    <div style="border: 1px solid #ccc;"></div>
     
     <c:set var="index" value="0"/>
     <c:forEach var="subject" items="${questions}">

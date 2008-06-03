@@ -3,9 +3,6 @@ package com.cannontech.web.stars.dr.consumer;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -15,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.Appliance;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryEventDao;
@@ -40,9 +36,7 @@ public class ControlHistoryController extends AbstractConsumerController {
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
     @RequestMapping(value = "/consumer/controlhistory", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            HttpServletRequest request, HttpServletResponse response, ModelMap map) {
-
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+            YukonUserContext yukonUserContext, ModelMap map) {
         
         List<Appliance> applianceList = applianceDao.getByAccountId(customerAccount.getAccountId());
         List<Program> programs = programDao.getByAppliances(applianceList);
@@ -73,9 +67,8 @@ public class ControlHistoryController extends AbstractConsumerController {
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
     @RequestMapping(value = "/consumer/controlhistory/completeHistoryView", method = RequestMethod.GET)
     public String completeHistoryView(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            int programId, HttpServletRequest request, HttpServletResponse response, ModelMap map) {
+            int programId, YukonUserContext yukonUserContext, ModelMap map) {
         
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkProgram(user, programId);
         
@@ -99,10 +92,9 @@ public class ControlHistoryController extends AbstractConsumerController {
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_CONTROL_HISTORY)
     @RequestMapping(value = "/consumer/controlhistory/innerCompleteHistoryView")
     public String innerCompleteHistoryView(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            int programId, String controlPeriod, HttpServletRequest request, 
-            HttpServletResponse response, ModelMap map) {
+            int programId, String controlPeriod, YukonUserContext yukonUserContext,
+            ModelMap map) {
         
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkProgram(user, programId);
         

@@ -16,6 +16,19 @@
         <property name="maxUploadSize" value="-1"/> <!-- no limit -->
     </bean>
     
+    <bean id="userContextArgumentResolver" class="com.cannontech.web.login.UserContextArgumentResolver"/>
+    
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="customArgumentResolvers">
+            <list>
+                <ref bean="userContextArgumentResolver"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+
+    
     <bean id="themeResolver" class="com.cannontech.web.i18n.YukonGroupThemeResolver">
         <property name="defaultThemeName" value="default"/>
     </bean>

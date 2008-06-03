@@ -5,7 +5,6 @@
     <cti:standardMenu />
 
     <h3><cti:msg key="yukon.dr.consumer.contactus.header" /></h3>
-    <div style="border: 1px solid #ccc;"></div>
     <br>
     <div align="center">
         <cti:msg key="yukon.dr.consumer.contactus.main"/>

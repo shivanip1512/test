@@ -8,7 +8,7 @@
     <cti:standardMenu />
     
     <h3><cti:msg key="yukon.dr.consumer.changelogin.header" /></h3>
-    <div align="center" style="border-top: 1px solid #ccc;">
+    <div align="center">
         <br>
         <jsp:include page="${changeLoginUrl}?redirectUrl=${consumerChangeLoginUrl}"/>
     </div>

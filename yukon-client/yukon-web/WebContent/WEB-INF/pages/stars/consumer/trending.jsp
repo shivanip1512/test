@@ -41,12 +41,6 @@
             <td>
                 <table width="760" border="0" cellspacing="0" cellpadding="0" align="center" bordercolor="0">
                     <tr> 
-                        <td width="101" bgcolor="#000000" height="1"></td>
-                        <td width="1" bgcolor="#000000" height="1"></td>
-                        <td width="657" bgcolor="#000000" height="1"></td>
-                        <td width="1" bgcolor="#000000" height="1"></td> 
-                    </tr>
-                    <tr> 
                         <td width="657" valign="top" bgcolor="#FFFFFF" >
           
                             <table width="575" border="0" align="center" cellpadding="4" cellspacing="0">

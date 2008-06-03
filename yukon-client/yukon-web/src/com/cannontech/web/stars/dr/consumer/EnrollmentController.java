@@ -4,8 +4,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import net.sf.json.JSONObject;
@@ -21,7 +19,6 @@ import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.program.model.ProgramEnrollmentResult;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentRequest;
@@ -46,9 +43,7 @@ public class EnrollmentController extends AbstractConsumerController {
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)
     @RequestMapping(method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            HttpServletRequest request, HttpServletResponse response, ModelMap map) {
-        
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+            YukonUserContext yukonUserContext, ModelMap map) {
         
         List<DisplayableEnrollment> enrollments = 
             displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
@@ -65,11 +60,9 @@ public class EnrollmentController extends AbstractConsumerController {
     @SuppressWarnings("unchecked")
     @RequestMapping(method = RequestMethod.POST)
     public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            String json, HttpServletRequest request, HttpServletResponse response, ModelMap map) {
+            String json, YukonUserContext yukonUserContext, HttpSession session, ModelMap map) {
         
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         final LiteYukonUser user = yukonUserContext.getYukonUser();
-        final HttpSession session = request.getSession(false);
         
         JSONObject jsonObj = new JSONObject(json);
         List<ProgramEnrollmentRequest> requestList = new ArrayList<ProgramEnrollmentRequest>();

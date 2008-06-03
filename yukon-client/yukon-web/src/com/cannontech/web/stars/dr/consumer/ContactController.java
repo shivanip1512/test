@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.ServletRequestUtils;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -27,9 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.i18n.MessageCodeGenerator;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 import com.cannontech.web.stars.dr.consumer.model.ContactNotificationOption;
@@ -43,9 +42,10 @@ public class ContactController extends AbstractConsumerController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
     @RequestMapping(value = "/consumer/contacts", method = RequestMethod.GET)
-    public String view(HttpServletRequest request, ModelMap map) {
+    public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
+            ModelMap map) {
+
         // Get the primary contact
-        CustomerAccount customerAccount = getCustomerAccount(request);
         int customerAccountId = customerAccount.getAccountId();
         LiteContact contact = contactDao.getPrimaryContactForAccount(customerAccountId);
         map.addAttribute("primaryContact", contact);
@@ -82,10 +82,7 @@ public class ContactController extends AbstractConsumerController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
     @RequestMapping(value = "/consumer/contacts/newContact", method = RequestMethod.POST)
-    public String newContact(HttpServletRequest request) {
-
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteYukonUser user = userContext.getYukonUser();
+    public String newContact(LiteYukonUser user) {
 
         int userId = user.getUserID();
         LiteCustomer customer = customerDao.getCustomerForUser(userId);
@@ -104,10 +101,8 @@ public class ContactController extends AbstractConsumerController {
     @CheckRoleProperty(ResidentialCustomerRole.CONTACTS_ACCESS)
     @RequestMapping(value = "/consumer/contacts/updateContact", method = RequestMethod.POST)
     public String updateContact(int contactId, String firstName,
-            String lastName, HttpServletRequest request) {
+            String lastName, LiteYukonUser user, HttpServletRequest request) {
 
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteYukonUser user = userContext.getYukonUser();
         accountCheckerService.checkContact(user, contactId);
         
         LiteContact contact = contactDao.getContact(contactId);

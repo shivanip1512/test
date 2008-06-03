@@ -3,9 +3,6 @@ package com.cannontech.web.stars.dr.consumer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
@@ -16,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.i18n.MessageSourceAccessor;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
@@ -34,9 +30,7 @@ public class ConsumerFAQController extends AbstractConsumerController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ)
     @RequestMapping(method = RequestMethod.GET)
-    public String view(HttpServletRequest request, HttpServletResponse response, ModelMap map) {
-        
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
+    public String view(YukonUserContext yukonUserContext, ModelMap map) {
 
         Map<String, Map<String, String>> questions = getQuestionMap(yukonUserContext);
         map.addAttribute("questions", questions);

@@ -1,7 +1,6 @@
 package com.cannontech.web.stars.dr.consumer;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -14,8 +13,6 @@ import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.graph.GraphBean;
 import com.cannontech.roles.application.TrendingRole;
-import com.cannontech.servlet.YukonUserContextUtils;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.stars.dr.consumer.model.GraphViewType;
@@ -32,10 +29,8 @@ public class TrendingController extends AbstractConsumerController {
 
 	@CheckRole(TrendingRole.ROLEID)
 	@RequestMapping(value = "/consumer/trending/view", method = RequestMethod.GET)
-	public String view(HttpServletRequest request, HttpServletResponse response, ModelMap map, Integer gdefid) {
+	public String view(LiteYukonUser user, HttpSession session, ModelMap map, Integer gdefid) {
 
-		YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteYukonUser user = yukonUserContext.getYukonUser();
 		accountCheckerService.checkGraph(user, gdefid);
 		
 		LiteGraphDefinition graphDefinition = graphDao
@@ -43,7 +38,7 @@ public class TrendingController extends AbstractConsumerController {
 		map.addAttribute("graphDefinition", graphDefinition);
 
 		// Get graph bean from session if exists
-		Object sessionBean = request.getSession().getAttribute(
+		Object sessionBean = session.getAttribute(
 				ServletUtil.ATT_GRAPH_BEAN);
 
 		GraphBean bean = null;
@@ -57,7 +52,7 @@ public class TrendingController extends AbstractConsumerController {
 		bean.setPage(1);
 
 		// Add graph bean to session
-		request.getSession().setAttribute(ServletUtil.ATT_GRAPH_BEAN, bean);
+		session.setAttribute(ServletUtil.ATT_GRAPH_BEAN, bean);
 
 		int viewTypeInt = bean.getViewType();
 		GraphViewType viewType = GraphViewType.valueOf(viewTypeInt);
