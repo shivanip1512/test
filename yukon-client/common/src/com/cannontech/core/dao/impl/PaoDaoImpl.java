@@ -389,4 +389,17 @@ public final class PaoDaoImpl implements PaoDao {
         }
         return subList;
     }
+    
+    public Integer getRouteIdForRouteName(String routeName) {
+        
+        Integer routeId = null;
+        LiteYukonPAObject[] routes = getAllLiteRoutes();
+        for (LiteYukonPAObject route : routes) {
+            if (route.getPaoName().equals(routeName)) {
+                routeId = route.getLiteID();
+            }
+        }
+        
+        return routeId;
+    }
 }

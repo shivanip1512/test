@@ -3,6 +3,7 @@ package com.cannontech.core.dao;
 import java.util.List;
 
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.definition.service.SimpleDeviceDefinitionService;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
@@ -104,18 +105,11 @@ public interface DeviceDao {
     
     /**
      * Method to change the route of a given device based on a route id
+     * Higher level method exists in {@link SimpleDeviceDefinitionService} that takes a device
+     * name and checks if it is valid, then delegates here for update.
      * @param newRouteId
      */
     public void changeRoute(int deviceId, int newRouteId);
-    
-    /**
-     * Method to change route of givin device based on name.
-     * Name will be checked if it is valid route name else throw IllegalArgumentException
-     * @param deviceId
-     * @param newRouteName
-     * @throws IllegalArgumentException
-     */
-    public void changeRoute(int deviceId, String newRouteName) throws IllegalArgumentException;
     
     /**
      * Method to change the pao name of a given device
@@ -126,10 +120,12 @@ public interface DeviceDao {
     
     /**
      * Method to change the devicecarriersettings address for givin device
+     * Higher level method exists in {@link SimpleDeviceDefinitionService} that checks if address
+     * is in valid range for device.
      * @param deviceId
      * @param newAddress
      */
-    public void changeAddress(int deviceId, int type, int newAddress);
+    public void changeAddress(int deviceId, int newAddress);
     
     /**
      * Method to change the meter number of givin device

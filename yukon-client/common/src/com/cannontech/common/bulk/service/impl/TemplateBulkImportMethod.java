@@ -1,6 +1,8 @@
 package com.cannontech.common.bulk.service.impl;
 
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -11,7 +13,16 @@ import com.cannontech.common.device.creation.DeviceCreationService;
 
 public class TemplateBulkImportMethod extends BulkImportMethodBase {
     private DeviceCreationService deviceCreationService = null;
-
+    
+    @Override
+    public Set<BulkFieldColumnHeader> getRequiredColumns() {
+        
+        Set<BulkFieldColumnHeader> requiredColumns = new HashSet<BulkFieldColumnHeader>();
+        requiredColumns.add(BulkFieldColumnHeader.TEMPLATE);
+        requiredColumns.add(BulkFieldColumnHeader.NAME);
+        return requiredColumns;
+    }
+    
     @Override
     public YukonDevice initDevice(Map<BulkFieldColumnHeader, String> fields) throws DeviceCreationException {
         

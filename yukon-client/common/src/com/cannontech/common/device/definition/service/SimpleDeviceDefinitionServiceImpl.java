@@ -12,9 +12,12 @@ import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.model.PointTemplate;
 import com.cannontech.common.device.service.PointService;
+import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.point.PointBase;
+import com.cannontech.device.range.DeviceAddressRange;
 
 /**
  * Implementation class for DeviceDefinitionService
@@ -24,6 +27,8 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private PointService pointService = null;
     private PointDao pointDao = null;
+    private DeviceDao deviceDao = null;
+    private PaoDao paoDao = null;
 
     public void setDeviceDefinitionDao(DeviceDefinitionDao deviceDefinitionDao) {
         this.deviceDefinitionDao = deviceDefinitionDao;
@@ -36,6 +41,14 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
     public void setPointDao(PointDao pointDao) {
 		this.pointDao = pointDao;
 	}
+    
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
+    }
+    
+    public void setPaoDao(PaoDao paoDao) {
+        this.paoDao = paoDao;
+    }
 
     public List<PointBase> createDefaultPointsForDevice(YukonDevice device) {
 
@@ -227,5 +240,27 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
 			}
 		}
         return templates;
+    }
+    
+    public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
+        
+        boolean validAddressForType = DeviceAddressRange.isValidRange(device.getType(), newAddress);
+        
+        if (!validAddressForType) {
+            throw new IllegalArgumentException("Address not in valid range for device type: " + newAddress);
+        }
+        
+        deviceDao.changeAddress(device.getDeviceId(), newAddress);
+    }
+    
+    public void changeRoute(int deviceId, String newRouteName) throws IllegalArgumentException {
+        
+        Integer routeId = paoDao.getRouteIdForRouteName(newRouteName);
+        
+        if (routeId == null) {
+            throw new IllegalArgumentException("Invalid route name: " + newRouteName);
+        }
+        
+        deviceDao.changeRoute(deviceId, routeId);
     }
 }

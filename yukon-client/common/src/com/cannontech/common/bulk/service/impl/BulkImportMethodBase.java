@@ -21,11 +21,6 @@ public abstract class BulkImportMethodBase implements BulkImportMethod {
     }
     
     @Required
-    public void setRequiredColumns(Set<BulkFieldColumnHeader> requiredColumns) {
-        this.requiredColumns = requiredColumns;
-    }
-    
-    @Required
     public void setName(String name) {
         this.name = name;
     }

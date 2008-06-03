@@ -32,6 +32,8 @@
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
         <property name="pointDao" ref="pointDao" />
+        <property name="deviceDao" ref="deviceDao" />
+        <property name="paoDao" ref="paoDao" />
     </bean>
     
     <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" scope="singleton">

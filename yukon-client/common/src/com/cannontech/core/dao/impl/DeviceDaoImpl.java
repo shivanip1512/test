@@ -15,12 +15,10 @@ import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceCarrierSettings;
-import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -258,45 +256,7 @@ public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddres
     return devicesByAddress;
 }
 
-public void changeRoute(int deviceId, String newRouteName) throws  IllegalArgumentException{
-    
-    Integer newRouteId = null;;
-    LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
-    for (LiteYukonPAObject route : routes) {
-        
-        if (route.getPaoName().equals(newRouteName)) {
-            newRouteId = route.getLiteID();
-            break;
-        }
-    }
-    
-    if (newRouteId == null) {
-        throw new IllegalArgumentException("Invalid route name: " + newRouteName);
-    }
-    
-    doRouteChange(deviceId, newRouteId);
-}
-
-public void changeRoute(int deviceId, int newRouteId) throws IllegalArgumentException {
-    
-    boolean okRouteId = false;
-    LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
-    for (LiteYukonPAObject route : routes) {
-        
-        if (route.getLiteID() == newRouteId) {
-            okRouteId = true;
-            break;
-        }
-    }
-    
-    if (!okRouteId) {
-        throw new IllegalArgumentException("Invalid route id: " + newRouteId);
-    }
-    
-    doRouteChange(deviceId, newRouteId);
-}
-
-private void doRouteChange(int deviceId, int newRouteId) {
+public void changeRoute(int deviceId, int newRouteId) {
     
     // Updates the meter's meter number
     String sql = " UPDATE DeviceRoutes SET RouteID = ? WHERE DeviceID = ?";
@@ -325,13 +285,7 @@ public void changeName(int deviceId, String newName) {
     dbPersistantDao.processDBChange(msg);
 }
 
-public void changeAddress(int deviceId, int type, int newAddress) {
-    
-    boolean validAddressForType = DeviceAddressRange.isValidRange(type, newAddress);
-    
-    if (!validAddressForType) {
-        throw new IllegalArgumentException("Address not in valid range for device type: " + newAddress);
-    }
+public void changeAddress(int deviceId, int newAddress) {
     
     String sql = " UPDATE " + DeviceCarrierSettings.TABLE_NAME +
                  " SET ADDRESS = ? WHERE DeviceID = ?";

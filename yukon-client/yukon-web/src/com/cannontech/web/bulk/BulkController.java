@@ -23,7 +23,6 @@ import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
-import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -53,21 +52,9 @@ public class BulkController extends BulkControllerBase {
         // ADD RESULTS TO LISTS
         // -----------------------------------------------------------------------------------------
         
-        // completed
-        List<? extends Completable> completedList = recentResultsCache.getCompleted();
-        for (Completable result : completedList) {
-            if (result instanceof BulkOperationCallbackResults) {
-                bulkUpdateOperationResultsList.add((BulkOperationCallbackResults)result);
-            }
-        }
-        
-        // pending
-        List<? extends Completable> pendingList = recentResultsCache.getPending();
-        for (Completable result : pendingList) {
-            if (result instanceof BulkOperationCallbackResults) {
-                bulkUpdateOperationResultsList.add((BulkOperationCallbackResults)result);
-            }
-        }
+        // results
+        bulkUpdateOperationResultsList.addAll(recentResultsCache.getCompleted());
+        bulkUpdateOperationResultsList.addAll(recentResultsCache.getPending());
         
         // add lists to mav
         mav.addObject("bulkUpdateOperationResultsList", bulkUpdateOperationResultsList);

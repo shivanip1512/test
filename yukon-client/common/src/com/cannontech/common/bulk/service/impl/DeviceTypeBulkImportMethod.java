@@ -1,7 +1,9 @@
 package com.cannontech.common.bulk.service.impl;
 
 import java.sql.SQLException;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,7 +12,6 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
@@ -33,6 +34,17 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
+    
+    @Override
+    public Set<BulkFieldColumnHeader> getRequiredColumns() {
+        
+        Set<BulkFieldColumnHeader> requiredColumns = new HashSet<BulkFieldColumnHeader>();
+        requiredColumns.add(BulkFieldColumnHeader.DEVICE_TYPE);
+        requiredColumns.add(BulkFieldColumnHeader.NAME);
+        requiredColumns.add(BulkFieldColumnHeader.ADDRESS);
+        requiredColumns.add(BulkFieldColumnHeader.ROUTE);
+        return requiredColumns;
+    }
 
     @Override
     public YukonDevice initDevice(Map<BulkFieldColumnHeader, String> fields) throws DeviceCreationException {
@@ -47,13 +59,7 @@ public class DeviceTypeBulkImportMethod extends BulkImportMethodBase {
             int address = Integer.valueOf(fields.get(BulkFieldColumnHeader.ADDRESS));
             String routeStr = fields.get(BulkFieldColumnHeader.ROUTE);
             
-            Integer routeId = null;
-            LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
-            for (LiteYukonPAObject route : routes) {
-                if (route.getPaoName().equals(routeStr)) {
-                    routeId = route.getLiteID();
-                }
-            }
+            Integer routeId = paoDao.getRouteIdForRouteName(routeStr);
             if (routeId == null) {
                 throw new DeviceCreationException("Could not create device by type: Invalid route name.");
             }

@@ -77,7 +77,7 @@
 
     <bean id="addressBulkFieldProcessor" parent="bulkFieldProcessorBase"
         class="com.cannontech.common.bulk.field.processor.impl.AddressBulkFieldProcessor">
-        <property name="deviceDao" ref="deviceDao" />
+        <property name="simpleDeviceService" ref="simpleDeviceService" />
         <property name="updateableFields">
             <set>
                 <ref bean="addressBulkField" />
@@ -221,7 +221,7 @@
 
     <bean id="routeBulkFieldProcessor" parent="bulkFieldProcessorBase"
         class="com.cannontech.common.bulk.field.processor.impl.RouteBulkFieldProcessor">
-        <property name="deviceDao" ref="deviceDao" />
+        <property name="simpleDeviceService" ref="simpleDeviceService" />
         <property name="updateableFields">
             <set>
                 <ref bean="routeBulkField" />
@@ -351,24 +351,10 @@
     </bean>
     
     <bean id="templateBulkImportMethod" class="com.cannontech.common.bulk.service.impl.TemplateBulkImportMethod">
-        <property name="requiredColumns">
-            <set>
-                <value>TEMPLATE</value>
-                <value>NAME</value>
-            </set>
-        </property>
         <property name="name" value="TEMPLATE"/>
     </bean>
     
     <bean id="deviceTypeBulkImportMethod" class="com.cannontech.common.bulk.service.impl.DeviceTypeBulkImportMethod">
-        <property name="requiredColumns">
-            <set>
-                <value>DEVICE_TYPE</value>
-                <value>NAME</value>
-                <value>ADDRESS</value>
-                <value>ROUTE</value>
-            </set>
-        </property>
         <property name="name" value="DEVICE_TYPE"/>
     </bean>
     

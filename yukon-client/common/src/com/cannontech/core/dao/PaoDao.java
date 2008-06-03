@@ -96,4 +96,12 @@ public interface PaoDao {
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(String meterNumber);
     
     public List<LiteYukonPAObject> searchByName(String name, String paoClass);
+    
+    /**
+     * Searches known routes for matching name.
+     * Returns route's paoId if found, null otherwise.
+     * @param routeName
+     * @return
+     */
+    public Integer getRouteIdForRouteName(String routeName);
 }
