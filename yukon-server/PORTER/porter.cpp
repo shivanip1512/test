@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.116 $
-* DATE         :  $Date: 2008/02/13 16:12:52 $
+* REVISION     :  $Revision: 1.117 $
+* DATE         :  $Date: 2008/06/03 15:06:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -247,7 +247,7 @@ RWThreadFunction _kickerCCU711Thread;
 
 CtiPorterVerification PorterVerificationThread;
 
-static void LoadCommFailPoints();
+static void LoadCommFailPoints(LONG ptid = 0);
 static LONG GetCommFailPointID(LONG devid);
 typedef map< LONG, LONG > CtiCommFailPoints_t;              // pair< LONG deviceid, LONG pointid >
 static CtiCommFailPoints_t commFailDeviceIDToPointIDMap;
@@ -1451,7 +1451,18 @@ INT RefreshPorterRTDB(void *ptr)
     // Reload the globals used by the porter app too.
     InitYukonBaseGlobals();
     LoadPorterGlobals();
-    LoadCommFailPoints();
+
+    if(!PorterQuit && (pChg == NULL || pChg->getDatabase() == ChangePointDb))
+    {
+        if(pChg == NULL)
+        {
+            LoadCommFailPoints();
+        }
+        else
+        {
+            LoadCommFailPoints(pChg->getId());
+        }
+    }
 
     if( !PorterQuit && (pChg == NULL || (pChg->getDatabase() == ChangeStateGroupDb)) )
     {
@@ -1460,7 +1471,7 @@ INT RefreshPorterRTDB(void *ptr)
 
     if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_PORT)) )
     {
-        if(pChg != NULL)
+        //if(pChg != NULL)
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1510,6 +1521,19 @@ INT RefreshPorterRTDB(void *ptr)
                 {
                     DeviceManager.refreshGroupHierarchy(chgid);
                 }
+
+                if( pDev->getType() == TYPE_TAPTERM )
+                {
+                    try
+                    {
+                        PortManager.apply( applyNewLoad, NULL );
+                    }
+                    catch(...)
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
             }
         }
     }
@@ -1540,10 +1564,10 @@ INT RefreshPorterRTDB(void *ptr)
 
             RouteManager.RefreshList();
             // RouteManager.DumpList();
-        }
 
-        /* Make routes associate with devices */
-        attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
+            /* Make routes associate with devices */
+            attachTransmitterDeviceToRoutes(&DeviceManager, &RouteManager);
+        }
 
         if(autoRole)
         {
@@ -1596,10 +1620,33 @@ INT RefreshPorterRTDB(void *ptr)
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " Refreshing pointid (" << pChg->getId() << ")" << endl;
                 }
-            }
 
-            // We also need to reload all the point groups to make certain the control strings get updated.
-            DeviceManager.refreshPointGroups();
+                // We also need to reload all the point groups to make certain the control strings get updated.
+                if(pChg != NULL && pChg->getId() != 0 )
+                {
+                    if(pChg->getObjectType() == "Status") // only status points can be in point groups.
+                    {
+                        DeviceManager.refreshPointGroups();
+                    }
+                }
+                else
+                {
+                    DeviceManager.refreshPointGroups();
+                }
+            }
+        }
+
+        if(pChg == NULL)
+        {
+            try
+            {
+                PortManager.apply( applyNewLoad, NULL );
+            }
+            catch(...)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
         }
     }
     else
@@ -1622,16 +1669,6 @@ INT RefreshPorterRTDB(void *ptr)
                 _kickerCCU711Thread.start();
             }
         }
-    }
-
-    try
-    {
-        PortManager.apply( applyNewLoad, NULL );
-    }
-    catch(...)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
     if(pChg != NULL)
@@ -2447,12 +2484,13 @@ void commFail(CtiDeviceSPtr &Device)
     }
 }
 
-void LoadCommFailPoints()
+void LoadCommFailPoints(LONG ptid)
 {
     commFailDeviceIDToPointIDMap.clear();       // No more map.
 
     LONG did, pid;
     string sql = string("select paobjectid, pointid from point where pointoffset = ") + CtiNumStr(COMM_FAIL_OFFSET) + string(" and pointtype = 'Status'");
+    if(ptid) sql += string(" and pointid = " + CtiNumStr(ptid));
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
