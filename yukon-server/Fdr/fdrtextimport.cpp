@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrtextimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.25 $
-*    DATE         :  $Date: 2008/03/20 21:27:14 $
+*    REVISION     :  $Revision: 1.26 $
+*    DATE         :  $Date: 2008/06/03 17:42:04 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrtextimport.cpp,v $
+      Revision 1.26  2008/06/03 17:42:04  tspar
+      YUK-4360 FDR crashes when the comma separated txt file has an unrecognized format
+
+      Added error handling to the parsing function for text import. It will now state when it is not sending a point update, and leave clues in the log as to what caused it.
+
       Revision 1.25  2008/03/20 21:27:14  tspar
       YUK-5541 FDR Textimport and other interfaces incorrectly use the boost tokenizer.
 
@@ -284,18 +289,26 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string& aTime, CHAR aDstFlag)
                     &ts.tm_sec) != 6)
         {
             retVal = PASTDATE;
-        } else
+        }
+        else
         {
             ts.tm_year -= 1900;
             ts.tm_mon--;
 
-            if( aDstFlag == 'D' || aDstFlag == 'd' ){
+            if( aDstFlag == 'D' || aDstFlag == 'd' )
+            {
                 ts.tm_hour;
                 ts.tm_isdst = 1;//true
-            }else if( aDstFlag == 'S' || aDstFlag == 's' ){
+            }
+            else if( aDstFlag == 'S' || aDstFlag == 's' )
+            {
                 ts.tm_isdst = 0;//false
-            }else{
-                ts.tm_isdst = -1;// not available
+            }
+            else
+            {
+                //Error Case. No dst flag
+                retVal = PASTDATE;
+                return retVal;
             }
 
             try
@@ -312,13 +325,17 @@ CtiTime CtiFDR_TextImport::ForeignToYukonTime (string& aTime, CHAR aDstFlag)
                 {
                     retVal = PASTDATE;
                 }
-            } catch (...)
+            }
+            catch (...)
             {
                 retVal = PASTDATE;
             }
         }
-    } else
+    }
+    else
+    {
         retVal = PASTDATE;
+    }
     return retVal;
 }
 
@@ -346,7 +363,10 @@ USHORT CtiFDR_TextImport::ForeignToYukonQuality (char aQuality)
         return NonUpdatedQuality;
     if (aQuality == 'M' || aQuality == 'm')
         return ManualQuality;
-
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " WARNING: Quality not recognized. Defaulting to NonUpdated. Q: " << aQuality << endl;
+    }
     return NonUpdatedQuality;
 }
 
@@ -362,7 +382,7 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
     string action;
     string linetimestamp,translationName,desc;
     CtiTime pointtimestamp;
-
+    string tempString1;
 
     /****************************
     * function 1 is of the following format
@@ -371,10 +391,18 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
     */
     try{
         Tokenizer::iterator tok_iter = cmdLine.begin();
-        string tempString1 = string(*tok_iter); ++tok_iter;
-		tempString1 = string(*tok_iter); ++tok_iter;
+        ++tok_iter;
+        /** Error Check: unexpected end of input */
+        if (tok_iter == cmdLine.end())
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+            return retCode;
+        }
+		tempString1 = string(*tok_iter); 
+        ++tok_iter;
         //Param 2 - Point Name
-          translationName = tempString1;
+        translationName = tempString1;
         {
             CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());  
             std::transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
@@ -412,29 +440,74 @@ bool CtiFDR_TextImport::processFunctionOne (Tokenizer& cmdLine, CtiMessage **aRe
                 }
             }
             //Param 3 - Value
-            tempString1 = string(*tok_iter); ++tok_iter;
+            /** Error Check: unexpected end of input */
+            if (tok_iter == cmdLine.end())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+                return retCode;
+            }
+            tempString1 = string(*tok_iter);
+            ++tok_iter;
             value = atof(tempString1.c_str());
-    
+            //Test if the Value is Zero. if it is zero and tempString1[0] is not 0 then this could indicate a problem
+            if (value == 0 && tempString1[0] != '0')
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " WARNING: Possible bad input from import file. Received a 0.0 value from " << tempString1 << endl;
+            }
             //Param 4 - quality
-            tempString1 = string(*tok_iter); ++tok_iter;
+            /** Error Check: unexpected end of input */
+            if (tok_iter == cmdLine.end())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+                return retCode;
+            }
+            tempString1 = string(*tok_iter);
+            ++tok_iter;
             quality = ForeignToYukonQuality(tempString1[0]);
-    
-            //Param 5 - Timestamp
-            tempString1 = string(*tok_iter); ++tok_iter;
+            //Input check inside function call.
+
+            //Param 5 - Timestamp | Param 6 - DST Flag
+            /** Error Check: unexpected end of input */
+            if (tok_iter == cmdLine.end())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+                return retCode;
+            }
+            tempString1 = string(*tok_iter); 
+            ++tok_iter;
             linetimestamp = tempString1;
-    
-            //Param 6 - DST Flag
+            /** Error Check: unexpected end of input */
+            if (tok_iter == cmdLine.end())
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " ERROR: Incorrect number of parameters in input line from file." << endl;
+                return retCode;
+            }
             tempString1 = string(*tok_iter);   
             pointtimestamp = ForeignToYukonTime ( linetimestamp, tempString1[0] );
-            if (pointtimestamp != PASTDATE)
+
+            if (pointtimestamp != PASTDATE && pointValidFlag == true)
             {
                 retCode = buildAndAddPoint (point,value,pointtimestamp,quality,translationName,aRetMsg);
             }
+            else 
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                if (pointtimestamp == PASTDATE)
+                {
+                    dout << CtiTime() << " ERROR: Timestamp or DST Flag is incorrect: " << linetimestamp << " " << tempString1[0] << endl;
+                }
+                dout << CtiTime() << " ERROR: Input for point invalid, not sending the update. Check log for errors." << endl;
+           }
         }
     }catch(...)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " Error Parsing data. Likely bad input from the file.\n";
+        dout << CtiTime() << " Error Parsing data. Bad input from the file.\n";
     }
 
     return retCode;
