@@ -10,6 +10,21 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	
+	<tx:annotation-driven transaction-manager="transactionManager"/>
+    <context:annotation-config/>
+    <aop:aspectj-autoproxy/>
+    
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
+        <property name="customArgumentResolvers">
+            <list>
+                <ref bean="deviceCollectionFactory"/>
+            </list>
+        </property>
+    </bean>
+    
+    <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+
+    
     <bean id="webSecurityAdvice" class="com.cannontech.web.security.WebSecurityAdvice"/>
     
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -384,6 +399,9 @@
                 <entry key="CAPBANK">
                     <ref local="capBankUpdateBackingService"/>
                 </entry>
+                <entry key="BULKRESULT">
+                    <ref local="bulkResultBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -453,6 +471,12 @@
         <property name="formattingService" ref="capBankFormattingService"/>
     </bean>
     
+    <bean id="bulkResultBackingService" class="com.cannontech.web.updater.bulk.BulkResultBackingService">
+        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+    </bean>
+    
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
           abstract="true">
         <property name="filterCacheFactory" ref="filterCacheFactory"/>
@@ -489,6 +513,10 @@
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
     </bean>
     
+    <bean id="dataUpdaterValueTagPrototype" class="com.cannontech.web.taglib.DataUpdaterValueTag">
+        <property name="dataUpdaterService" ref="dataUpdaterService"/>
+    </bean>
+
     <bean id="pointValueTagPrototype" class="com.cannontech.web.updater.point.PointValueTag">
         <property name="registrationService" ref="pointDataUpdateRegistrationService"/>
     </bean>
@@ -746,23 +774,28 @@
     <bean id="deviceGroupSelectorTagPrototype" class="com.cannontech.web.taglib.DeviceGroupSelectorTag">
         <property name="deviceGroupService" ref="deviceGroupService"/>
     </bean>
+
+    <bean id="deviceFilterCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFilterCollectionProducer"/>
+    <bean id="deviceGroupCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer"/>
+
+    <bean id="deviceFileUploadCollectionProducer" class="com.cannontech.web.bulk.model.collection.DeviceFileUploadCollectionProducer" />
     
-    <!-- DEVICE COLLECTION FACTORY -->
-    <bean id="deviceCollectionFactory" class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl">
+    <bean id="deviceCollectionFactory"
+        class="com.cannontech.web.bulk.model.DeviceCollectionFactoryImpl">
         <property name="collectionProducerList">
             <list>
-                <bean class="com.cannontech.web.bulk.model.collection.DeviceAddressRangeCollectionProducer">
-                    <property name="paoDao" ref="paoDao" />
-                </bean>
-                <bean class="com.cannontech.web.bulk.model.collection.DeviceGroupCollectionProducer">
-                    <property name="deviceGroupService" ref="deviceGroupService" />
-                </bean>
-                <bean class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer">
-                    <property name="deviceDao" ref="deviceDao" />
-                </bean>
+                <ref bean="deviceGroupCollectionProducer" />
+                <bean class="com.cannontech.web.bulk.model.collection.DeviceAddressRangeCollectionProducer" />
+                <bean class="com.cannontech.web.bulk.model.collection.DeviceIdListCollectionProducer" />
+                <ref bean="deviceFileUploadCollectionProducer"/>
+                <ref bean="deviceFilterCollectionProducer"/>
             </list>
         </property>
     </bean>
+
+    <bean id="deviceCollectionDeviceGroupHelper" class="com.cannontech.web.group.DeviceCollectionDeviceGroupHelper">
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+    </bean>
     
-   
 </beans>

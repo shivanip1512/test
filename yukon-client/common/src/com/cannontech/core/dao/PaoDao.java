@@ -92,6 +92,7 @@ public interface PaoDao {
     public List<LiteYukonPAObject> getLiteYukonPaoByName(String name, boolean partialMatch);
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddress(int address);
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByAddressRange(int startAddress, int endAddress);
+    public long getObjectCountByAddressRange(int startAddress, int endAddress);
     public List<LiteYukonPAObject> getLiteYukonPaobjectsByMeterNumber(String meterNumber);
     
     public List<LiteYukonPAObject> searchByName(String name, String paoClass);

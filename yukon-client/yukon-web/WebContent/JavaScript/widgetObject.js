@@ -29,6 +29,15 @@ JsWidgetObject.prototype = {
     new Ajax.Updater(this.container, url, {'parameters': params, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
   },
   
+  doDirectActionContainerRefresh: function(cmd, container) {
+    $(container).getElementsBySelector('input').invoke('disable');
+    
+    params = this.getWidgetParameters();
+    
+    var url = "/spring/widget/" + this.shortName + "/" + cmd;
+    new Ajax.Updater(container, url, {'parameters': params, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+  },
+  
   doActionRefresh: function(cmd, actionButton, waitingLabel, key) {
     $(actionButton).getElementsByClassName('widgetAction_waiting').invoke('show');
     $(actionButton).getElementsBySelector('input').each(function(it) {it.value = waitingLabel});
@@ -74,7 +83,7 @@ JsWidgetObject.prototype = {
   	this.linkInfo[key] = jsonData;
   },
 
-  doActionLinkRefresh: function(cmd, actionSpan, waitingLabel, key) {
+  doActionLinkRefresh: function(cmd, actionSpan, waitingLabel, key, container) {
     $(actionSpan).getElementsByClassName('widgetAction_waiting').invoke('show');
     $(actionSpan).getElementsBySelector('span').innerHTML = waitingLabel;
     $(this.container).getElementsBySelector('input').invoke('disable');
@@ -84,7 +93,13 @@ JsWidgetObject.prototype = {
     oldParams.merge(newParams);
     
     var url = "/spring/widget/" + this.shortName + "/" + cmd;
-    new Ajax.Updater(this.container, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+    
+    var useContainer = container;
+    if (container == undefined || container == '') {
+        useContainer = this.container;
+    }
+    new Ajax.Updater(useContainer, url, {'parameters': oldParams, 'evalScripts': true, 'onSuccess': this.onSuccess.bind(this)});
+    $(this.container).getElementsBySelector('input').invoke('enable');
   },
   
   getWidgetParameters: function() {

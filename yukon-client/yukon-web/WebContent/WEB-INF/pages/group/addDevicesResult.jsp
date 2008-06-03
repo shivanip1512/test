@@ -23,7 +23,7 @@
 	</div>
 	
 	<div id="resultsDiv">
-		<c:url var="updateUrl" value="/spring/group/addDevicesResultUpdate" />
+		<c:url var="updateUrl" value="/spring/group/editor/addDevicesResultUpdate" />
 		<jsp:include flush="true" page="${updateUrl}" />
 	</div>
 	

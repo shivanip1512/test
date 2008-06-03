@@ -16,13 +16,13 @@ public class InputUtil {
     public static void applyProperties(InputRoot inputRoot, Object task, Map<String, String> properties) throws BeansException {
         Map<String, ? extends InputSource<?>> inputs = inputRoot.getInputMap();
         for (Entry<String, ? extends InputSource<?>> entry : inputs.entrySet()) {
-            String jobProperty = properties.get(entry.getKey());
-            if (jobProperty != null) {
+            String inputProperty = properties.get(entry.getKey());
+            if (inputProperty != null) {
                 BeanWrapper beanWrapper = new BeanWrapperImpl(task);
                 InputType<?> type = entry.getValue().getType();
                 PropertyEditor propertyEditor = type.getPropertyEditor();
                 beanWrapper.registerCustomEditor(type.getTypeClass(), propertyEditor);
-                beanWrapper.setPropertyValue(entry.getKey(), jobProperty);
+                beanWrapper.setPropertyValue(entry.getKey(), inputProperty);
             }
         }
     }
@@ -38,8 +38,8 @@ public class InputUtil {
             if (propertyValue != null) {
                 PropertyEditor propertyEditor = type.getPropertyEditor();
                 propertyEditor.setValue(propertyValue);
-                String jobProperty = propertyEditor.getAsText();
-                properties.put(field, jobProperty);
+                String inputProperty = propertyEditor.getAsText();
+                properties.put(field, inputProperty);
             }
         }
         return properties;

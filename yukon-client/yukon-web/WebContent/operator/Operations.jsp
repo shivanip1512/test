@@ -136,6 +136,11 @@
     	    	<a href="<c:url value="/spring/csr/search"/>">Metering</a>
 	        </tags:sectionLink>
         </cti:checkMultiRole>
+        
+        <tags:sectionLink>
+            <a href="<c:url value="/spring/bulk/bulkHome"/>">Bulk Operations</a>
+        </tags:sectionLink>
+        
 	</tags:operationSection>
 
 </cti:checkMultiRole>

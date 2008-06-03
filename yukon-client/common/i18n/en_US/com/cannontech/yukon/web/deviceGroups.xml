@@ -30,16 +30,21 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupLinkTitle">Click to move this group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupCancelText">cancel</entry>
 
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContentsToGroupText">Copy contents to another group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContentsToGroupLinkTitle">Click to copy this groups's contents to another group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContentsToGroupCancelText">cancel</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.selectGroupToCopyContentsToText">Select group to copy contents to</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContentsToGroupText">Copy contents to another group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkText">Copy contents to another group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkTitle">Click to copy this groups's contents to another group</entry>
+
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.title">Select Group To Copy Contents To</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.submitButtonText">Select Group To Selected Group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.cancelButtonText">Cancel</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.addGroupsLabel">Add Groups</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupText">Add Sub Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.addSubgroupLinkTitle">Click to add a sub group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.selectParentGroupText">Select Parent Group</entry>
+
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.title">Select Group To Move To</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.submitButtonText">Move Group To Selected Group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.cancelButtonText">Cancel</entry>
+
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.cannotEditGroupText">Cannot edit this group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.subgroupNameLabel">Sub Group Name</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.cannotAddSubgroupText">Cannot add sub groups to this group</entry>
@@ -50,6 +55,24 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.addDevicesLabel">Add Devices</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.generateReportsLabel">Generate Reports</entry>
+
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.collectionActionLabel">Collection Actions</entry>
+
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupLabel">Remove Devices From Another Group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupDescription">Remove devices in this group from a another Device Group.</entry>
+
+<entry key="yukon.web.deviceGroups.editor.membersContainer.membersLabel">Members:</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.noChildGroups">No child groups</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.noDevices">No devices</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.cannotDeleteGroupLinkTitle">Cannot Delete Group</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel">This group contains {0} devices.</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.showDeviceslabel">Show Devices</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.confirmRemoveText">Are you sure you want to remove all the devices from this group?</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupLabel">Remove All Devices</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.removeAllDevicesFromGroupDescription">Remove All Devices From This Group</entry>
+
+
+
 
 
 </properties>

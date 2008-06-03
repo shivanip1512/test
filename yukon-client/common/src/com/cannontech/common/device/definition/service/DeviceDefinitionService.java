@@ -58,6 +58,8 @@ public interface DeviceDefinitionService {
      *         (returns a new copy each time the method is called)
      */
     public abstract Set<DeviceDefinition> getChangeableDevices(DeviceBase device);
+    
+    public abstract Set<DeviceDefinition> getChangeableDevices(YukonDevice device);
 
     /**
      * Method to get a set of point templates that will be added to the given

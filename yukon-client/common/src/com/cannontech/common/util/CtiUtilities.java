@@ -6,6 +6,7 @@ import java.awt.AWTEvent;
 import java.awt.Component;
 import java.awt.EventQueue;
 import java.awt.MenuComponent;
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -1788,6 +1789,18 @@ public static double convertTemperature(double temperature, String fromUnit, Str
          
          return !StringUtils.containsNone(name, TextFieldDocument.INVALID_CHARS_DEVICEGROUPNAME);
      }
+    public static final void close(final Object... args) {
+        for (int x = 0; x < args.length; x++) {
+            Object o = args[x];
+            if (o instanceof Closeable) {
+                Closeable closeable = (Closeable) o;
+                try {
+                    closeable.close();
+                } catch (IOException e) {
+                }
+            }
+        }
+    }
      
      /**
       * Compares the timeZone is the correctly generated timeZone from timeZoneStr

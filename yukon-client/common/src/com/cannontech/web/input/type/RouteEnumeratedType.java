@@ -13,12 +13,12 @@ import com.cannontech.database.data.lite.LiteYukonPAObject;
  * Implementation of input type which represents a list input type. This class
  * gets it's property editor and type class from the input type member.
  */
-public class RouteEnumeratedType extends BaseEnumeratedType<Integer> {
+public class RouteEnumeratedType extends BaseEnumeratedType<String> {
 
     
     private PaoDao paoDao = null;
     private List<InputOption> optionList = new ArrayList<InputOption>();
-    private InputType<Integer> enumeratedType;
+    private InputType<String> enumeratedType;
     
     public List<InputOption> getOptionList() {
 
@@ -27,24 +27,26 @@ public class RouteEnumeratedType extends BaseEnumeratedType<Integer> {
         LiteYukonPAObject[] routes = paoDao.getAllLiteRoutes();
         for (LiteYukonPAObject route : routes) {
             
+            String routeName = route.getPaoName();
+            
             InputOption option = new InputOption();
-            option.setText(route.getPaoName());
-            option.setValue(String.valueOf(route.getLiteID()));
+            option.setText(routeName);
+            option.setValue(routeName);
             optionList.add(option);
         }
         
         return optionList;
     }
 
-    public InputType<Integer> getEnumeratedType() {
+    public InputType<String> getEnumeratedType() {
         return enumeratedType;
     }
 
-    public void setEnumeratedType(InputType<Integer> enumeratedType) {
+    public void setEnumeratedType(InputType<String> enumeratedType) {
         this.enumeratedType = enumeratedType;
     }
 
-    public Class<Integer> getTypeClass() {
+    public Class<String> getTypeClass() {
         return enumeratedType.getTypeClass();
     }
 

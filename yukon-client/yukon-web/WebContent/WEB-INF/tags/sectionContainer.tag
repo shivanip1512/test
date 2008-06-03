@@ -4,6 +4,7 @@
 <%@ attribute name="title" required="false" type="java.lang.String"%>
 <%@ attribute name="id" required="false" type="java.lang.String"%>
 <%@ attribute name="styleClass" required="false" type="java.lang.String"%>
+<%@ attribute name="titleClass" required="false" type="java.lang.String"%>
 <%@ attribute name="width" required="false" type="java.lang.String"%>
 <%@ attribute name="height" required="false" type="java.lang.String"%>
 
@@ -12,8 +13,13 @@
 <div class="titledContainer sectionContainer ${styleClass}" <c:if test="${not empty id}">id="${id}"</c:if>>
     
     <%-- TITLE BAR AND TITLE --%>
+    <c:set var="useTitleClass" value="sectionContainer_title"/>
+    <c:if test="${not empty titleClass}">
+        <c:set var="useTitleClass" value="${titleClass}"/>
+    </c:if>
+    
     <div class="titleBar sectionContainer_titleBar">
-        <div class="titleBar sectionContainer_title">
+        <div class="titleBar ${useTitleClass}">
             ${title}
         </div>
     </div>

@@ -8,5 +8,7 @@ public enum DataType {
     SUBSTATION,
     SUBBUS,
     FEEDER,
-    CAPBANK
+    CAPBANK,
+    BULKRESULT,
+    ;
 }

@@ -4,6 +4,8 @@
 
 <%@ attribute name="selected" required="false" type="java.lang.String"%>
 
+<%@ attribute name="container" required="false" type="java.lang.String"%>
+
 <%@ tag  dynamic-attributes="linkParameters" %>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
@@ -24,7 +26,7 @@
 				<jsp:doBody/>
 			</c:when>
 			<c:otherwise>
-				<a title="${title}" href="javascript:${widgetParameters.jsWidget}.doActionLinkRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}')"><jsp:doBody/></a>
+				<a title="${title}" href="javascript:${widgetParameters.jsWidget}.doActionLinkRefresh('${method}', '${thisId}', '${labelBusy}...', '${uniqueId}', '${container}')"><jsp:doBody/></a>
 			</c:otherwise>
 		</c:choose>
 	</span>

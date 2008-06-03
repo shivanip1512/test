@@ -271,10 +271,10 @@
           <requireRole value="CommanderRole.ROLEID"/> <!-- THIS ROLE will change when more group items are added -->
 		  <links>
 		    <option id="home">
-              <link>/spring/group/home</link>
+              <link>/spring/group/editor/home</link>
             </option>
 		    <option id="commander">
-              <link>/spring/group/groupProcessing</link>
+              <link>/spring/group/commander/groupProcessing</link>
               <requireRole value="CommanderRole.ROLEID"/>
             </option>
           </links>

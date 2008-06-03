@@ -1,6 +1,7 @@
 package com.cannontech.common.bulk;
 
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
@@ -8,33 +9,24 @@ import com.cannontech.common.bulk.processor.ProcessingException;
 /**
  * Interface which allows access to the results of a bulk processing operation
  */
-public interface BulkProcessingResultHolder {
+public interface BulkProcessingResultHolder<T> {
 
+    // EXCEPTION LISTS
     public List<ObjectMappingException> getMappingExceptionList();
-
     public List<ProcessingException> getProcessingExceptionList();
+    
+    // EXCEPTION ROW NUMBER MAPS
+    public Map<Integer, ObjectMappingException> getMappingExceptionRowNumberMap();
+    public Map<Integer, ProcessingException> getProcessingExceptionRowNumberMap();
 
-    /**
-     * Method to get the total number of objects processed regardless of
-     * processing or mapping errors
-     * @return Total number of objects processed
-     */
-    public int getTotalObjectsProcessedCount();
+    
+    // COUNT GETTERS
+    public int getSuccessCount();
+    public int getProcessingExceptionCount();
+    public int getMappingExceptionCount();
+    
 
-    /**
-     * Method to get the total number of objects processed excluding objects
-     * that had processing or mapping errors
-     * @return Number of objects successfully processed
-     */
-    public int getSuccessfulObjectsProcessedCount();
-
-    /**
-     * Method to get the total number of objects that were unsuccessfully
-     * processed because of processing or mapping errors
-     * @return Number of objects unsuccessfully processed
-     */
-    public int getUnsuccessfulObjectsProcessedCount();
-
+    // STATUS
     public boolean isComplete();
 
     public boolean isProcessingFailed();
@@ -42,5 +34,10 @@ public interface BulkProcessingResultHolder {
     public Exception getFailedException();
 
     public String getFailedMessage();
+    
+    
+    // SUCCESS AND FAIL (processing) OBJECTS
+    public List<T> getSuccessObjects();
+    public List<T> getProcesingExceptionObjects();
 
 }

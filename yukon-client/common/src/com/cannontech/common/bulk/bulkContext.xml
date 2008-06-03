@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-<beans>
 	<bean id="bulkMeterDeleterService" class="com.cannontech.common.bulk.service.impl.BulkMeterDeleterServiceImpl">
 		<property name="deviceDao" ref="deviceDao" />
 		<property name="paoDao" ref="paoDao" />
@@ -10,24 +18,387 @@
         
     <bean id="oneAtATimeProcessor" class="com.cannontech.common.bulk.impl.OneAtATimeProcessor">
     	<property name="scheduledExecutor" ref="globalScheduledExecutor" />
-    	<property name="mapperFactory" ref="objectMapperFactory" />
+    </bean>
+    
+    <bean id="transactionPerItemProcessor" class="com.cannontech.common.bulk.impl.TransactionPerItemProcessor">
+        <property name="scheduledExecutor" ref="globalScheduledExecutor" />
     </bean>
     
     <bean id="objectMapperFactory" class="com.cannontech.common.bulk.mapper.ObjectMapperFactoryImpl">
-    	<property name="paoDao" ref="paoDao" />
-    	<property name="deviceDao" ref="deviceDao" />
     </bean>
     
     <bean id="processorFactory" class="com.cannontech.common.bulk.processor.ProcessorFactoryImpl">
-    	<property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
-    	<property name="deviceConfigurationDao" ref="deviceConfigurationDao" />
-    	<property name="deviceDefinitionService" ref="deviceService" />
-    	<property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
-    	<property name="deviceDao" ref="deviceDao" />
+        <property name="deviceConfigurationDao" ref="deviceConfigurationDao" />
     </bean>
     
     <bean id="bulkImportDataDao" class="com.cannontech.common.bulk.importdata.dao.impl.BulkImportDataDaoImpl">
         <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
     </bean>
+    
+    <bean id="addressToYukonDeviceMapper" class="com.cannontech.common.bulk.mapper.AddressToYukonDeviceMapper"/>
+    <bean id="bulkImporterToYukonDeviceMapper" class="com.cannontech.common.bulk.mapper.BulkImporterToYukonDeviceMapper"/>
+    <bean id="liteYukonPAObjectToYukonDeviceMapper" class="com.cannontech.common.bulk.mapper.LiteYukonPAObjectToYukonDeviceMapper"/>
+    <bean id="meterNumberToYukonDeviceMapper" class="com.cannontech.common.bulk.mapper.MeterNumberToYukonDeviceMapper"/>
+    <bean id="paoIdToYukonDeviceMapper" class="com.cannontech.common.bulk.mapper.PaoIdToYukonDeviceMapper"/>
+    <bean id="paoNameToYukonDeviceMapper" class="com.cannontech.common.bulk.mapper.PaoNameToYukonDeviceMapper"/>
+    <bean id="stringToIntegerMapper" class="com.cannontech.common.bulk.mapper.StringToIntegerMapper"/>
+    <bean id="paoIdStrToYukonDeviceMapper"
+        class="com.cannontech.common.bulk.mapper.ChainingMapper">
+        <constructor-arg ref="stringToIntegerMapper" />
+        <constructor-arg ref="paoIdToYukonDeviceMapper" />
+    </bean>
+
+    <!-- BULK FIELD/PROCESSOR ABSTRACTS -->
+    <bean id="bulkFieldBase" abstract="true">
+        <property name="paoDao" ref="paoDao" />
+        <property name="objectMapperFactory" ref="objectMapperFactory" />
+    </bean>
+
+    <bean id="bulkFieldProcessorBase" abstract="true"></bean>
+
+    <!-- ADDRESS BULK FIELD -->
+    <bean id="addressBulkField" parent="bulkFieldBase"
+        class="com.cannontech.common.bulk.field.impl.AddressBulkField">
+
+        <property name="massChangable" value="false" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Address" />
+                <property name="field" value="address" />
+                <property name="description">
+                    <value>The address of the meter</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+
+    <bean id="addressBulkFieldProcessor" parent="bulkFieldProcessorBase"
+        class="com.cannontech.common.bulk.field.processor.impl.AddressBulkFieldProcessor">
+        <property name="deviceDao" ref="deviceDao" />
+        <property name="updateableFields">
+            <set>
+                <ref bean="addressBulkField" />
+            </set>
+        </property>
+    </bean>
+
+    <!-- ENABLE/DISABLE BULK FIELD -->
+    <bean id="enableBulkField" parent="bulkFieldBase"
+        class="com.cannontech.common.bulk.field.impl.EnableBulkField">
+
+        <property name="massChangable" value="true" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName"
+                    value="Enable/Disable Device" />
+                <property name="field" value="enable" />
+                <property name="description">
+                    <value>Enable/Disable meter</value>
+                </property>
+
+                <property name="type">
+                    <bean
+                        class="com.cannontech.web.input.type.RadioEnumeratedType">
+                        <property name="enumeratedType"
+                            ref="inputStringType" />
+                        <property name="optionList">
+                            <list>
+                                <bean
+                                    class="com.cannontech.web.input.type.InputOption">
+                                    <property name="text"
+                                        value="Enable" />
+                                    <property name="value" value="true" />
+                                </bean>
+                                <bean
+                                    class="com.cannontech.web.input.type.InputOption">
+                                    <property name="text"
+                                        value="Disable" />
+                                    <property name="value"
+                                        value="false" />
+                                </bean>
+                            </list>
+                        </property>
+                    </bean>
+                </property>
+
+            </bean>
+        </property>
+
+    </bean>
+
+
+    <bean id="enableBulkFieldProcessor" parent="bulkFieldProcessorBase"
+        class="com.cannontech.common.bulk.field.processor.impl.EnableBulkFieldProcessor">
+        <property name="deviceDao" ref="deviceDao" />
+        <property name="updateableFields">
+            <set>
+                <ref bean="enableBulkField" />
+            </set>
+        </property>
+    </bean>
+
+    <!-- METER NUMBER BULK FIELD -->
+    <bean id="meterNumberBulkField" parent="bulkFieldBase"
+        class="com.cannontech.common.bulk.field.impl.MeterNumberBulkField">
+
+        <property name="massChangable" value="false" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Meter Number" />
+                <property name="field" value="meterNumber" />
+                <property name="description">
+                    <value>Meter number</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+
+    <bean id="meterNumberBulkFieldProcessor"
+        parent="bulkFieldProcessorBase"
+        class="com.cannontech.common.bulk.field.processor.impl.MeterNumberBulkFieldProcessor">
+        <property name="deviceDao" ref="deviceDao" />
+        <property name="updateableFields">
+            <set>
+                <ref bean="meterNumberBulkField" />
+            </set>
+        </property>
+    </bean>
+
+    <!-- NAME BULK FIELD -->
+    <bean id="nameBulkField" parent="bulkFieldBase"
+        class="com.cannontech.common.bulk.field.impl.NameBulkField">
+
+        <property name="massChangable" value="false" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Device Name" />
+                <property name="field" value="name" />
+                <property name="description">
+                    <value>The name of the meter</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+
+    <bean id="nameBulkFieldProcessor" parent="bulkFieldProcessorBase"
+        class="com.cannontech.common.bulk.field.processor.impl.NameBulkFieldProcessor">
+        <property name="deviceDao" ref="deviceDao" />
+        <property name="updateableFields">
+            <set>
+                <ref bean="nameBulkField" />
+            </set>
+        </property>
+    </bean>
+
+    <!-- ROUTE BULK FIELD -->
+    <bean id="routeBulkField" parent="bulkFieldBase"
+        class="com.cannontech.common.bulk.field.impl.RouteBulkField">
+
+        <property name="massChangable" value="true" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Route Name" />
+                <property name="field" value="route" />
+                <property name="description">
+                    <value>The route the device is on</value>
+                </property>
+                <property name="type" ref="inputRouteEnumeratedType" />
+            </bean>
+        </property>
+
+    </bean>
+
+    <bean id="routeBulkFieldProcessor" parent="bulkFieldProcessorBase"
+        class="com.cannontech.common.bulk.field.processor.impl.RouteBulkFieldProcessor">
+        <property name="deviceDao" ref="deviceDao" />
+        <property name="updateableFields">
+            <set>
+                <ref bean="routeBulkField" />
+            </set>
+        </property>
+    </bean>
+
+    <!-- SUBSTATION BULK FIELD 
+        <bean id="substationBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.SubstationBulkField">
+        <property name="massChangable" value="true"/>
+        
+        <property name="inputSource">
+        <bean class="com.cannontech.web.input.InputBase">
+        <property name="displayName" value="Substation Name" />
+        <property name="field" value="substation" />
+        <property name="description">
+        <value>The device's substation</value>
+        </property>
+        <property name="type" ref="inputStringType" />
+        </bean>
+        </property>
+        
+        </bean>
+        
+        <bean id="substationBulkFieldProcessor" parent="bulkFieldProcessorBase" class="com.cannontech.common.bulk.field.processor.impl.SubstationBulkFieldProcessor">
+        <property name="updateableFields">
+        <set>
+        <ref bean="substationBulkField"/>
+        </set>
+        </property>
+        </bean> -->
+
+    <!-- TYPE BULK FIELD -->
+    <bean id="deviceTypeBulkField" parent="bulkFieldBase"
+        class="com.cannontech.common.bulk.field.impl.DeviceTypeBulkField">
+        <property name="massChangable" value="true" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Type" />
+                <property name="field" value="deviceType" />
+                <property name="description">
+                    <value>The type of device</value>
+                </property>
+                <property name="type"
+                    ref="inputDeviceTypeEnumeratedType" />
+            </bean>
+        </property>
+
+    </bean>
+
+    <bean id="deviceTypeBulkFieldProcessor"
+        parent="bulkFieldProcessorBase"
+        class="com.cannontech.common.bulk.field.processor.impl.DeviceTypeBulkFieldProcessor">
+        <property name="paoDao" ref="paoDao" />
+        <property name="deviceDefinitionService" ref="deviceService" />
+        <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
+        <property name="updateableFields">
+            <set>
+                <ref bean="deviceTypeBulkField" />
+            </set>
+        </property>
+    </bean>
+
+    <!-- DEVICE ID BULK FIELD -->
+    <bean id="deviceIdBulkField" parent="bulkFieldBase"
+        class="com.cannontech.common.bulk.field.impl.DeviceIdBulkField">
+        <property name="massChangable" value="false" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="ID" />
+                <property name="field" value="deviceId" />
+                <property name="description">
+                    <value>Internal ID for device</value>
+                </property>
+                <property name="type" ref="inputIntegerType" />
+            </bean>
+        </property>
+
+    </bean>
+    <!-- no processor for DeviceId field -->
+    
+    <!-- TEMPLATE BULK FIELD -->
+    <bean id="templateBulkField" parent="bulkFieldBase"
+        class="com.cannontech.common.bulk.field.impl.TemplateBulkField">
+        <property name="massChangable" value="false" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Template" />
+                <property name="field" value="template" />
+                <property name="description">
+                    <value>Name of device</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+    <!-- no processor for Template field -->
+
+    <!-- BULK FIELD FACTORY -->
+    <bean id="bulkFieldFactory"
+        class="com.cannontech.common.bulk.field.impl.BulkFieldFactoryImpl">
+    </bean>
+
+    <!-- BULK FIELD FACTORY (YukonDevice) -->
+    <bean id="bulkYukonDeviceFieldFactory"
+        class="com.cannontech.common.bulk.field.impl.BulkYukonDeviceFieldFactory">
+        <property name="bulkFields">
+            <list>
+                <ref bean="addressBulkField" />
+                <ref bean="enableBulkField" />
+                <ref bean="meterNumberBulkField" />
+                <ref bean="nameBulkField" />
+                <ref bean="routeBulkField" />
+                <ref bean="deviceTypeBulkField" />
+                <ref bean="deviceIdBulkField" />
+                <ref bean="templateBulkField" />
+            </list>
+        </property>
+    </bean>
+
+    <!-- BULK FIELD SERVICE -->
+    <bean id="bulkFieldService" class="com.cannontech.common.bulk.field.impl.BulkFieldServiceImpl">
+    </bean>
+    
+    <bean id="templateBulkImportMethod" class="com.cannontech.common.bulk.service.impl.TemplateBulkImportMethod">
+        <property name="requiredColumns">
+            <set>
+                <value>TEMPLATE</value>
+                <value>NAME</value>
+            </set>
+        </property>
+        <property name="name" value="TEMPLATE"/>
+    </bean>
+    
+    <bean id="deviceTypeBulkImportMethod" class="com.cannontech.common.bulk.service.impl.DeviceTypeBulkImportMethod">
+        <property name="requiredColumns">
+            <set>
+                <value>DEVICE_TYPE</value>
+                <value>NAME</value>
+                <value>ADDRESS</value>
+                <value>ROUTE</value>
+            </set>
+        </property>
+        <property name="name" value="DEVICE_TYPE"/>
+    </bean>
+    
+    <bean id="deviceGroupCollectionHelper" class="com.cannontech.common.bulk.collection.DeviceGroupCollectionHelperImpl"/>
+    
+    <bean id="recentBulkOperationResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
+    
+    <bean id="baseBulkService" class="com.cannontech.common.bulk.service.impl.BaseBulkService" abstract="true">
+    
+        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
+        <property name="bulkYukonDeviceFieldFactory" ref="bulkYukonDeviceFieldFactory" />
+        <property name="bulkFieldService" ref="bulkFieldService" />
+        <property name="temporaryDeviceGroupService" ref="temporaryDeviceGroupService" />
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+        <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
+        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        
+    </bean>
+    
+    <bean id="bulkUpdateService" class="com.cannontech.common.bulk.service.impl.BulkUpdateServiceImpl" parent="baseBulkService">
+    </bean>
+    
+    <bean id="bulkImportService" class="com.cannontech.common.bulk.service.impl.BulkImportServiceImpl" parent="baseBulkService">
+        <property name="supportedImportMethods">
+          <list>
+            <ref bean="templateBulkImportMethod"/>
+            <ref bean="deviceTypeBulkImportMethod"/>
+          </list>
+        </property>
+    </bean>
+    
     
 </beans>

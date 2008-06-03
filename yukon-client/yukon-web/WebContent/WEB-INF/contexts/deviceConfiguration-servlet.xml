@@ -44,11 +44,11 @@
 		<property name="deviceConfigurationDao" ref="deviceConfigurationDao"/>
 		
 		<property name="bulkProcessor" ref="oneAtATimeProcessor" />
-        <property name="objectMapperFactory" ref="objectMapperFactory" />
         <property name="processorFactory" ref="processorFactory" />
         <property name="paoDao" ref="paoDao" />
         <property name="deviceGroupDao" ref="deviceGroupDao" />
         <property name="deviceGroupService" ref="deviceGroupService"/>
+        <property name="paoIdToYukonDeviceMapper" ref="paoIdToYukonDeviceMapper"/>
         
     </bean>
     

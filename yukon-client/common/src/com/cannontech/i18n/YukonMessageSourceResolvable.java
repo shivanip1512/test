@@ -13,12 +13,12 @@ import org.springframework.context.support.DefaultMessageSourceResolvable;
 public class YukonMessageSourceResolvable extends DefaultMessageSourceResolvable {
     private static final long serialVersionUID = 3775006143046764578L;
 
-    public YukonMessageSourceResolvable(String code, String... args) {
+    public YukonMessageSourceResolvable(String code, Object... args) {
         super(new String[] { code }, args);
     }
 
-    public YukonMessageSourceResolvable(String code, Collection<String> args) {
-        super(new String[] { code }, args.toArray(new String[args.size()]));
+    public static MessageSourceResolvable createWithCollection(String code, Collection<String> args) {
+        return new DefaultMessageSourceResolvable(new String[] { code }, args.toArray(new String[args.size()]));
     }
 
     public static MessageSourceResolvable createDefault(String code, String defaultMessage) {

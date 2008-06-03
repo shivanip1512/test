@@ -1,8 +1,10 @@
 <%@ attribute name="orderBy" required="true" type="com.cannontech.amr.csr.model.OrderBy"%>
 <%@ attribute name="results" required="true" type="com.cannontech.common.search.SearchResult"%>
 <%@ attribute name="filterByList" required="false" type="java.util.List"%>
+<%@ attribute name="deviceCollection" required="false" type="com.cannontech.common.bulk.collection.DeviceCollection"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
 <c:url  var="url" scope="page" value="/spring/csr/search">
@@ -94,6 +96,15 @@
 				</c:forEach>
 			</select>
 		</td>
+        
+        <td>
+            <form method="post" action="/spring/bulk/collectionActions">
+            <input type="submit" name="submit" value="Perform Collection Action">
+    
+            <cti:deviceCollection deviceCollection="${deviceCollection}" />
+            </form>
+        </td>
+        
 		<td align="right">
 			Results per page:
 			<amr:searchNavigationLink 

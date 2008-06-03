@@ -16,6 +16,15 @@ public abstract class DeviceCollectionBase implements DeviceCollection {
      * @return List of yukon devices
      */
     protected abstract List<YukonDevice> getDevices();
+    
+    /**
+     * Method to get just the count of actual devices in group. Should be overridden with a more
+     * efficient method if possible that does not involve creating actual device objects.
+     * @return
+     */
+    public long getDeviceCount() {
+        return this.getDevices().size();
+    }
 
     public Iterator<YukonDevice> getDeviceIterator() {
         return this.getDevices().iterator();

@@ -6,7 +6,8 @@
         <property name="mappings">
             <value>
             	/addDevicesResultUpdate=addDevicesResultUpdate
-            	/*=GroupController
+            	/editor/*=groupEditorController
+            	/commander/*=groupCommanderController
             </value>
         </property>
     </bean>    
@@ -17,15 +18,9 @@
         <property name="prefix" value="/WEB-INF/pages/group/"/>
     </bean>
     
-    <bean id="GroupController" class="com.cannontech.web.group.GroupController" >
+    <bean id="groupEditorController" class="com.cannontech.web.group.GroupEditorController" >
         <property name="cacheSeconds">
             <value type="int">0</value>
-        </property>
-        <property name="validators">
-            <null />
-        </property>
-        <property name="methodNameResolver">
-           <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver"/>
         </property>
         <property name="requireSession">
             <value type="boolean">true</value>
@@ -39,16 +34,29 @@
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
         <property name="copyDeviceGroupService" ref="copyDeviceGroupService" />
+        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+        
+        <property name="meterDao" ref="meterDao" />
+        <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
+        <property name="deviceCollectionDeviceGroupHelper" ref="deviceCollectionDeviceGroupHelper" />
+        
+    </bean>
+    
+    <bean id="groupCommanderController" class="com.cannontech.web.group.GroupCommanderController" >
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        
+        <property name="deviceGroupService" ref="deviceGroupService"/>
+        <property name="deviceGroupDao" ref="deviceGroupDao" />
         <property name="commandDao" ref="commandDao" />
         <property name="groupCommandExecutor" ref="groupCommandExecutor" />
-        
-        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
-        <property name="objectMapperFactory" ref="objectMapperFactory" />
-        <property name="processorFactory" ref="processorFactory" />
-        
-        <property name="paoDao" ref="paoDao" />
-        <property name="meterDao" ref="meterDao" />
-        
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
     

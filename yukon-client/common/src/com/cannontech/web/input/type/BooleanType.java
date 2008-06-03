@@ -24,7 +24,7 @@ public class BooleanType extends DefaultValidatedType<Boolean> {
     }
 
     public PropertyEditor getPropertyEditor() {
-        return new CustomBooleanEditor(true);
+        return new CustomBooleanEditor(false);
     }
 
 }

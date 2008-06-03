@@ -92,6 +92,7 @@
     </bean>
     
     <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate">
+       <qualifier value="main"/>
        <property name="service">
 		    <bean class="java.util.concurrent.Executors"
 		    	factory-method="newScheduledThreadPool"

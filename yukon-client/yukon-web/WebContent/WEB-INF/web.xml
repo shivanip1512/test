@@ -418,6 +418,14 @@
 	</servlet>
 
 	<servlet>
+		<servlet-name>componentDispatcher</servlet-name>
+		<servlet-class>
+			com.cannontech.servlet.CannonDispatcherServlet
+		</servlet-class>
+		<load-on-startup>2</load-on-startup>
+	</servlet>
+
+	<servlet>
 		<servlet-name>dataUpdater</servlet-name>
 		<servlet-class>
 			com.cannontech.servlet.CannonDispatcherServlet
@@ -943,6 +951,11 @@
 	<servlet-mapping>
 		<servlet-name>widgetDispatcher</servlet-name>
 		<url-pattern>/spring/widget/*</url-pattern>
+	</servlet-mapping>
+
+	<servlet-mapping>
+		<servlet-name>componentDispatcher</servlet-name>
+		<url-pattern>/spring/component/*</url-pattern>
 	</servlet-mapping>
 
 	<servlet-mapping>

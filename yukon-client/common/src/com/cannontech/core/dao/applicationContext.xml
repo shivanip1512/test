@@ -70,6 +70,7 @@
     <property name="jdbcOps" ref="jdbcTemplate"/>
     <property name="databaseCache" ref="databaseCache"/>
     <property name="dbPersistantDao" ref="dbPersistentDao" />
+    <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
   </bean>
   <bean id="dynamicBillingFileDao" class="com.cannontech.common.dynamicBilling.dao.impl.DynamicBillingFileDaoImpl" >
    	<property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />

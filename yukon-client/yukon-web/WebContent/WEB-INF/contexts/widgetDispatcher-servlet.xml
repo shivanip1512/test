@@ -18,7 +18,7 @@
 
     <bean id="viewResolver"
       class="org.springframework.web.servlet.view.UrlBasedViewResolver">
-        <property name="viewClass" value="com.cannontech.web.widget.support.WidgetAwareJstlView"/>
+        <property name="viewClass" value="com.cannontech.web.widget.support.ErrorPreservingJstlView"/>
         <property name="prefix" value="/WEB-INF/pages/widget/"/>
         <property name="suffix" value=""/>
     </bean>

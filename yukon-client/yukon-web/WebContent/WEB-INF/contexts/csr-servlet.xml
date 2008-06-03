@@ -52,6 +52,7 @@
 		<property name="roleDao" ref="roleDao"/>
 		<property name="csrService" ref="csrService" />
 		<property name="attributeService" ref="attributeService" />
+		<property name="filterCollectionHelper" ref="deviceFilterCollectionProducer" />
     </bean>
     
     <bean id="MoveInMoveOutController" class="com.cannontech.web.moveInMoveOut.MoveInMoveOutController" >

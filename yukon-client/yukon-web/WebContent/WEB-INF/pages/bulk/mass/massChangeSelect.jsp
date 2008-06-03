@@ -1,0 +1,85 @@
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
+
+<cti:msg var="pageTitle" key="yukon.common.device.bulk.massChangeSelect.pageTitle"/>
+
+<cti:standardPage title="${pageTitle}" module="amr">
+
+    <cti:standardMenu menuSelection="" />
+
+    <%-- BREAD CRUMBS --%>
+    <cti:breadCrumbs>
+        
+        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+        
+        <%-- bulk home --%>
+        <cti:msg var="bulkOperationsPageTitle" key="yukon.common.device.bulk.bulkHome.pageTitle"/>
+        <cti:crumbLink url="/spring/bulk/bulkHome" title="${bulkOperationsPageTitle}" />
+        
+        <%-- device selection --%>
+        <cti:msg var="deviceSelectionPageTitle" key="yukon.common.device.bulk.deviceSelection.pageTitle"/>
+        <cti:crumbLink url="/spring/bulk/deviceSelection" title="${deviceSelectionPageTitle}"/>
+        
+        <%-- collection actions --%>
+        <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
+            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
+                <c:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
+            </c:forEach>
+        </c:url>
+        <cti:msg var="collectionActionsPageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
+        <cti:crumbLink url="${collectionActionsUrl}" title="${collectionActionsPageTitle}" />
+        
+        <%-- mass change options --%>
+        <cti:msg var="massChangePageTitle" key="yukon.common.device.bulk.massChangeSelect.pageTitle"/>
+        <cti:crumbLink>${massChangePageTitle}</cti:crumbLink>
+        
+    </cti:breadCrumbs>
+    
+    <script type="text/javascript">
+    
+        function submitForm(selectMassChangeField) {
+        
+            $('massChangeBulkFieldName').value = selectMassChangeField;
+            $('massChangeSelectForm').submit();
+        }
+    
+    </script>
+    
+    <h2>${pageTitle}</h2>
+    <br>
+    
+    
+    <tags:bulkActionContainer   titleKey="yukon.common.device.bulk.massChangeSelect.header" 
+                                noteLabelKey="yukon.common.device.bulk.massChangeSelect.noteLabel"
+                                noteTextKey="yukon.common.device.bulk.massChangeSelect.noteText"
+                                deviceCollection="${deviceCollection}">
+    
+        <form id="massChangeSelectForm" method="get" action="/spring/bulk/massChangeOptions">
+    
+            <%-- DEVICE COLLECTION --%>
+            <cti:deviceCollection deviceCollection="${deviceCollection}" /> 
+    
+            <%-- CHANGES BUTTONS --%>
+            <input type="hidden" id="massChangeBulkFieldName" name="massChangeBulkFieldName" value="">
+            <table cellspacing="10">
+        
+                <c:forEach var="bulkField" items="${massChangableBulkFields}">
+                
+                    <tr>
+                        <td>
+                        	<input type="button" id="massChangeTypeButton" value="<cti:msg key="${bulkField.displayKey}"/>" onclick="submitForm('${bulkField.inputSource.field}');" style="width:140px;"/>
+                        </td>
+                        <td><cti:msg key="${bulkField.displayKey}.description"/></td>
+                    </tr>
+                
+                </c:forEach>
+                
+            </table>
+    
+        </form>
+        
+    </tags:bulkActionContainer>
+    
+    
+</cti:standardPage>

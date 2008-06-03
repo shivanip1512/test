@@ -20,7 +20,12 @@ public interface DeviceDao {
 
     public YukonDevice getYukonDevice(int paoId);
     public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject);
-
+    
+    public YukonDevice getYukonDeviceObjectById(int deviceId);
+    public YukonDevice getYukonDeviceObjectByName(String name);
+    public YukonDevice getYukonDeviceObjectByMeterNumber(String meterNumber);
+    public YukonDevice getYukonDeviceObjectByAddress(String address);
+    
     public LiteDeviceMeterNumber getLiteDeviceMeterNumber(int deviceID);
     
     /**
@@ -96,5 +101,40 @@ public interface DeviceDao {
      * @param device - Device to remove
      */
     public void removeDevice(YukonDevice device);
-
+    
+    /**
+     * Method to change the route of a given device based on a route id
+     * @param newRouteId
+     */
+    public void changeRoute(int deviceId, int newRouteId);
+    
+    /**
+     * Method to change route of givin device based on name.
+     * Name will be checked if it is valid route name else throw IllegalArgumentException
+     * @param deviceId
+     * @param newRouteName
+     * @throws IllegalArgumentException
+     */
+    public void changeRoute(int deviceId, String newRouteName) throws IllegalArgumentException;
+    
+    /**
+     * Method to change the pao name of a given device
+     * @param device
+     * @param newName
+     */
+    public void changeName(int deviceId, String newName);
+    
+    /**
+     * Method to change the devicecarriersettings address for givin device
+     * @param deviceId
+     * @param newAddress
+     */
+    public void changeAddress(int deviceId, int type, int newAddress);
+    
+    /**
+     * Method to change the meter number of givin device
+     * @param deviceId
+     * @param newMeterNumber
+     */
+    public void changeMeterNumber(int deviceId, String newMeterNumber);
 }

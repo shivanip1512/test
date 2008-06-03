@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.editor.dao;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -52,7 +53,7 @@ public interface DeviceGroupMemberEditorDao {
      * @param group
      * @param deviceIds
      */
-    public void addDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds);
+    public void addDevicesById(StoredDeviceGroup group, Iterator<Integer> deviceIds);
 
     /**
      * Remove devices under group that are contained in the devices collection.

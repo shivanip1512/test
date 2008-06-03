@@ -19,6 +19,7 @@ import com.cannontech.amr.csr.model.FilterBy;
 import com.cannontech.amr.csr.model.FilterByGenerator;
 import com.cannontech.amr.csr.model.OrderBy;
 import com.cannontech.amr.csr.service.CsrService;
+import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
@@ -32,6 +33,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.operator.MeteringRole;
 import com.cannontech.roles.yukon.MultispeakRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.bulk.model.collection.DeviceFilterCollectionHelper;
 
 /**
  * Spring controller class for csr
@@ -43,6 +45,7 @@ public class CsrController extends MultiActionController {
     private CsrService csrService = null;
     private AttributeService attributeService = null;
     private DeviceDao deviceDao = null;
+    private DeviceFilterCollectionHelper filterCollectionHelper = null;
 
     public CsrController() {
         super();
@@ -66,6 +69,10 @@ public class CsrController extends MultiActionController {
 
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
+    }
+    
+    public void setFilterCollectionHelper(DeviceFilterCollectionHelper filterCollectionHelper) {
+        this.filterCollectionHelper = filterCollectionHelper;
     }
 
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
@@ -116,6 +123,7 @@ public class CsrController extends MultiActionController {
                                                                 orderBy,
                                                                 startIndex,
                                                                 count);
+        
 
         // Forward to device home page if only one result is found
         if (results.getResultCount() == 1) {
@@ -125,6 +133,11 @@ public class CsrController extends MultiActionController {
             mav.addObject("deviceId", meter.getDeviceId());
 
         } else {
+            // Create a device collection (only used to generate a link)
+            DeviceCollection deviceGroupCollection = filterCollectionHelper.createDeviceGroupCollection(queryFilter, orderBy);
+            
+            mav.addObject("deviceGroupCollection", deviceGroupCollection);
+            
             mav.addObject("filterByString", StringUtils.join(filterByString, " and "));
             mav.addObject("orderBy", orderBy);
             mav.addObject("results", results);

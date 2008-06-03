@@ -1,57 +1,59 @@
 package com.cannontech.web.bulk.model.collection;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.bulk.collection.ListBasedDeviceCollection;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.core.dao.DeviceDao;
-import com.cannontech.web.bulk.model.DeviceCollectionProducer;
+import com.cannontech.i18n.YukonMessageSourceResolvable;
 
 /**
  * Implementation of DeviceCollectionProducer for an address range
  */
-public class DeviceIdListCollectionProducer implements DeviceCollectionProducer {
+public class DeviceIdListCollectionProducer extends DeviceCollectionProducerBase {
 
-    private String supportedType = "idList";
 
     private DeviceDao deviceDao = null;
 
+    @Autowired
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
     }
 
     public String getSupportedType() {
-        return supportedType;
+        return "idList";
     }
 
     public DeviceCollection createDeviceCollection(HttpServletRequest request)
             throws ServletRequestBindingException {
 
         final String ids = ServletRequestUtils.getStringParameter(request,
-                                                                  supportedType + ".ids");
+                                                                  getParameterName("ids"));
 
-        return new DeviceCollectionBase() {
+        return new ListBasedDeviceCollection() {
 
             public Map<String, String> getCollectionParameters() {
 
                 Map<String, String> paramMap = new HashMap<String, String>();
 
-                paramMap.put("collectionType", supportedType);
-                paramMap.put(supportedType + ".ids", ids);
+                paramMap.put("collectionType", getSupportedType());
+                paramMap.put(getParameterName("ids"), ids);
 
                 return paramMap;
             }
 
-            protected List<YukonDevice> getDevices() {
+            public List<YukonDevice> getDeviceList() {
 
                 List<YukonDevice> deviceList = new ArrayList<YukonDevice>();
 
@@ -64,12 +66,9 @@ public class DeviceIdListCollectionProducer implements DeviceCollectionProducer 
                 return deviceList;
             }
 
-            public String getDescriptionKey() {
-                return collectionKeyBase + "idList";
-            }
-
-            public List<String> getParameterList() {
-                return Collections.emptyList();
+            @Override
+            public MessageSourceResolvable getDescription() {
+                return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.idList");
             }
 
         };

@@ -1,6 +1,7 @@
 package com.cannontech.common.device.definition.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -70,8 +71,7 @@ public class SimpleDeviceDefinitionServiceImpl implements SimpleDeviceDefinition
 
         // Make sure this device can be changed
         if (!this.isDeviceTypeChangeable(meter)) {
-            throw new IllegalArgumentException("Device " + meter
-                    + " is not changeable");
+            return Collections.emptySet();
         }
 
         DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(meter);

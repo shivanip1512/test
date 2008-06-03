@@ -15,7 +15,7 @@
  <bean id="inputBooleanType" class="com.cannontech.web.input.type.BooleanType" />
  <bean id="inputRouteEnumeratedType" class="com.cannontech.web.input.type.RouteEnumeratedType">
      <property name="paoDao" ref="paoDao" />
-     <property name="enumeratedType" ref="inputIntegerType" />
+     <property name="enumeratedType" ref="inputStringType" />
  </bean>
   <bean id="inputDeviceTypeEnumeratedType" class="com.cannontech.web.input.type.DeviceTypeEnumeratedType">
      <property name="deviceDefinitionService" ref="deviceService" />

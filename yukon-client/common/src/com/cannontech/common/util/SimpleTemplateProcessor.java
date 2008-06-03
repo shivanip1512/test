@@ -78,14 +78,19 @@ public class SimpleTemplateProcessor {
         CharSequence result = token;
         if (matcher.matches()) {
             String key = matcher.group(1);
-            Object value = values.get(key);
-            if (value != null) {
+            if (values.containsKey(key)) {
+                Object value = values.get(key);
                 String extra = matcher.group(3);
                 if (StringUtils.isNotBlank(extra)) {
                     result = formatValue(value, extra);
                     if (result == null) {
                         result = "???Unkown data type???";
-                        CTILogger.debug("Unknown data type: " + value.getClass());
+                        if (value != null) {
+                            CTILogger.debug("Unknown data type: " + value.getClass());
+                        }
+                        else {
+                            CTILogger.debug("Unknown data type: null value");
+                        }
                     }
                 } else {
                     result = value.toString();

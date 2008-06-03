@@ -44,11 +44,11 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Transactional(propagation=Propagation.REQUIRED)
     public void addDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices) {
         Collection<Integer> deviceIds = new MappingCollection<YukonDevice, Integer>(devices, new YukonDeviceToIdMapper());
-        addDevicesById(group, deviceIds);
+        addDevicesById(group, deviceIds.iterator());
     }
     
     @Override
-    public void addDevicesById(StoredDeviceGroup group, Collection<Integer> deviceIds) {
+    public void addDevicesById(StoredDeviceGroup group, Iterator<Integer> deviceIds) {
         
         if (!group.isModifiable()) {
             throw new UnsupportedOperationException("Cannot add devices to a non-modifiable group.");
@@ -59,7 +59,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("(DeviceGroupId, YukonPaoId)");
         sql.append("values");
         sql.append("(?, ?)");
-        for (Integer deviceId : deviceIds) {
+        while (deviceIds.hasNext()) {
+            Integer deviceId = deviceIds.next();
             try {
                 jdbcTemplate.update(sql.toString(), group.getId(), deviceId);
             } catch (DataIntegrityViolationException e) {
@@ -423,9 +424,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         } catch (EmptyResultDataAccessException e) {
             if (create) {
                 StoredDeviceGroup thisParentGroup = getOrCreateGroup(names.subList(0, names.size() - 1), create);
-                String thisName = names.get(names.size());
-                addGroup(thisParentGroup, DeviceGroupType.STATIC, thisName);
-                return null;
+                String thisName = names.get(names.size() - 1);
+                return addGroup(thisParentGroup, DeviceGroupType.STATIC, thisName);
             } else {
                 throw new NotFoundException("Group \"/" + StringUtils.join(names, "/") + "\" could not be found", e);
             }
@@ -434,7 +434,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     
     public StoredDeviceGroup getSystemGroup(SystemGroupEnum systemGroupEnum) throws NotFoundException {
         String groupName = systemGroupEnum.getFullPath();
-        StoredDeviceGroup storedGroup = getStoredGroup(groupName, false);
+        StoredDeviceGroup storedGroup = getStoredGroup(groupName, true);
         return storedGroup;
     }
 

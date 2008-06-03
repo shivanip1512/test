@@ -5,7 +5,7 @@
 <script type="text/javascript">
 	
 	function updateResults(){
-		new Ajax.Updater($('resultsDiv'), "/spring/group/updateBulkDeviceAdd", {"method":"get", "evalScripts":true});
+		new Ajax.Updater($('resultsDiv'), "/spring/group/editor/updateBulkDeviceAdd", {"method":"get", "evalScripts":true});
 	}
 
 	function checkUpdate(){		

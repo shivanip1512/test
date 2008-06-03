@@ -329,6 +329,29 @@ public final class PaoDaoImpl implements PaoDao {
         return liteYukonPaobects;
     }
     
+    public long getObjectCountByAddressRange(int startAddress, int endAddress) {
+
+       long count = 0;
+       
+       try {
+           String sqlString = 
+               "SELECT COUNT(pao.PAObjectID) " +
+               " FROM " + YukonPAObject.TABLE_NAME+ " pao " + 
+               " left outer join " + DeviceDirectCommSettings.TABLE_NAME + " d on pao.paobjectid = d.deviceid " +
+               " left outer join " + DeviceCarrierSettings.TABLE_NAME + " DCS ON pao.PAOBJECTID = DCS.DEVICEID " +        
+               " left outer join " + DeviceRoutes.TABLE_NAME + " dr on pao.paobjectid = dr.deviceid " +
+               " where address >= ? AND address <= ?" +
+               " ORDER BY pao.Category, pao.PAOClass, pao.PAOName";
+           
+               count = jdbcOps.queryForLong(sqlString, new Object[] { startAddress, endAddress });
+
+       } catch (IncorrectResultSizeDataAccessException e) {
+           throw new NotFoundException("No liteYukonPaobjects found in (carrier) address range(" + startAddress + " - " + endAddress + ")");
+       }
+
+       return count;
+   }
+    
     @SuppressWarnings("unchecked")
     public List<LiteYukonPAObject> searchByName(final String name, final String paoClass) {
         String sql = litePaoSql + " WHERE y.PAOClass = ? AND UPPER(y.PAOName) LIKE ?";

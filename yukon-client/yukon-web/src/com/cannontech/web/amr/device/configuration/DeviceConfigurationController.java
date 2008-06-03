@@ -2,8 +2,8 @@ package com.cannontech.web.amr.device.configuration;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -20,8 +21,16 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.common.bulk.BulkProcessor;
+import com.cannontech.common.bulk.iterator.CloseableIterator;
 import com.cannontech.common.bulk.iterator.InputStreamIterator;
-import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
+import com.cannontech.common.bulk.mapper.AddressToYukonDeviceMapper;
+import com.cannontech.common.bulk.mapper.BulkImporterToYukonDeviceMapper;
+import com.cannontech.common.bulk.mapper.ChainingMapper;
+import com.cannontech.common.bulk.mapper.LiteYukonPAObjectToYukonDeviceMapper;
+import com.cannontech.common.bulk.mapper.MeterNumberToYukonDeviceMapper;
+import com.cannontech.common.bulk.mapper.PaoIdToYukonDeviceMapper;
+import com.cannontech.common.bulk.mapper.PaoNameToYukonDeviceMapper;
+import com.cannontech.common.bulk.mapper.StringToIntegerMapper;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.ProcessorFactory;
 import com.cannontech.common.device.YukonDevice;
@@ -32,6 +41,7 @@ import com.cannontech.common.device.config.model.ConfigurationTemplate;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -45,12 +55,18 @@ public class DeviceConfigurationController extends MultiActionController {
 
     private BulkProcessor bulkProcessor = null;
     private ProcessorFactory processorFactory = null;
-    private ObjectMapperFactory objectMapperFactory = null;
+    private PaoIdToYukonDeviceMapper paoIdToYukonDeviceMapper = null;
 
     private PaoDao paoDao = null;
     private DeviceGroupProviderDao deviceGroupDao = null;
     private DeviceGroupService deviceGroupService = null;
-
+    
+    private LiteYukonPAObjectToYukonDeviceMapper liteYukonPAObjectToYukonDeviceMapper = null;
+    private PaoNameToYukonDeviceMapper paoNameToYukonDeviceMapper = null;
+    private MeterNumberToYukonDeviceMapper meterNumberToYukonDeviceMapper = null;
+    private AddressToYukonDeviceMapper addressToYukonDeviceMapper = null;
+    private BulkImporterToYukonDeviceMapper bulkImporterToYukonDeviceMapper = null;
+    
     public void setDeviceConfigurationDao(DeviceConfigurationDao deviceConfigurationDao) {
         this.deviceConfigurationDao = deviceConfigurationDao;
     }
@@ -63,10 +79,6 @@ public class DeviceConfigurationController extends MultiActionController {
         this.processorFactory = processorFactory;
     }
 
-    public void setObjectMapperFactory(ObjectMapperFactory objectMapperFactory) {
-        this.objectMapperFactory = objectMapperFactory;
-    }
-
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
     }
@@ -77,6 +89,11 @@ public class DeviceConfigurationController extends MultiActionController {
 
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
+    }
+    
+    @Required
+    public void setPaoIdToYukonDeviceMapper(PaoIdToYukonDeviceMapper paoIdToYukonDeviceMapper) {
+        this.paoIdToYukonDeviceMapper = paoIdToYukonDeviceMapper;
     }
 
     public ModelAndView home(HttpServletRequest request, HttpServletResponse response)
@@ -213,21 +230,14 @@ public class DeviceConfigurationController extends MultiActionController {
         String deviceIds = ServletRequestUtils.getStringParameter(request, "deviceIds");
 
         String[] ids = StringUtils.split(deviceIds, ",");
-
-        List<Integer> deviceIdList = new ArrayList<Integer>();
-        for (String id : ids) {
-            id = id.trim();
-
-            int paoId = Integer.parseInt(id);
-            deviceIdList.add(paoId);
-        }
+        List<String> deviceIdList = Arrays.asList(ids);
 
         Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
         mav.addObject("configuration", configId);
         ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
 
         Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
-        ObjectMapper<Integer, YukonDevice> mapper = objectMapperFactory.createPaoIdToYukonDeviceMapper();
+        ObjectMapper<String, YukonDevice> mapper = new ChainingMapper<String, YukonDevice>(new StringToIntegerMapper(), paoIdToYukonDeviceMapper);
 
         bulkProcessor.bulkProcess(deviceIdList.iterator(), mapper, processor);
 
@@ -263,7 +273,7 @@ public class DeviceConfigurationController extends MultiActionController {
         List<LiteYukonPAObject> litePaos = paoDao.getLiteYukonPaobjectsByAddressRange(startRange,
                                                                                       endRange);
 
-        ObjectMapper<LiteYukonPAObject, YukonDevice> mapper = objectMapperFactory.createLiteYukonPAObjectToYukonDeviceMapper();
+        ObjectMapper<LiteYukonPAObject, YukonDevice> mapper = liteYukonPAObjectToYukonDeviceMapper;
         Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
 
         bulkProcessor.bulkProcess(litePaos.iterator(), mapper, processor);
@@ -281,16 +291,15 @@ public class DeviceConfigurationController extends MultiActionController {
         // Get the group and then all the devices in the group
         DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
         mav.addObject("group", groupName);
-        Set<Integer> deviceIds = deviceGroupService.getDeviceIds(Collections.singletonList(group));
+        Set<YukonDevice> devices = deviceGroupService.getDevices(Collections.singletonList(group));
 
         Integer configId = ServletRequestUtils.getIntParameter(request, "configuration");
         mav.addObject("configuration", configId);
         ConfigurationBase configuration = deviceConfigurationDao.getConfiguration(configId);
 
-        ObjectMapper<Integer, YukonDevice> mapper = objectMapperFactory.createPaoIdToYukonDeviceMapper();
         Processor<YukonDevice> processor = processorFactory.createAssignConfigurationToYukonDeviceProcessor(configuration);
 
-        bulkProcessor.bulkProcess(deviceIds.iterator(), mapper, processor);
+        bulkProcessor.bulkProcess(devices.iterator(), processor);
 
         return mav;
     }
@@ -318,22 +327,23 @@ public class DeviceConfigurationController extends MultiActionController {
 
             ObjectMapper<String, YukonDevice> mapper = null;
 
+            CloseableIterator<String> iterator = null;
             try {
 
                 // Create an iterator to iterate through the file line by
                 // line
-                Iterator<String> iterator = new InputStreamIterator(dataFile.getInputStream());
+                iterator = new InputStreamIterator(dataFile.getInputStream());
 
                 // Create the mapper based on the type of file upload
                 String uploadType = ServletRequestUtils.getStringParameter(request, "uploadType");
                 if ("PAONAME".equalsIgnoreCase(uploadType)) {
-                    mapper = objectMapperFactory.createPaoNameToYukonDeviceMapper();
+                    mapper = paoNameToYukonDeviceMapper;
                 } else if ("METERNUMBER".equalsIgnoreCase(uploadType)) {
-                    mapper = objectMapperFactory.createMeterNumberToYukonDeviceMapper();
+                    mapper = meterNumberToYukonDeviceMapper;
                 } else if ("ADDRESS".equalsIgnoreCase(uploadType)) {
-                    mapper = objectMapperFactory.createAddressToYukonDeviceMapper();
+                    mapper = addressToYukonDeviceMapper;
                 } else if ("BULK".equalsIgnoreCase(uploadType)) {
-                    mapper = objectMapperFactory.createBulkImporterToYukonDeviceMapper();
+                    mapper = bulkImporterToYukonDeviceMapper;
                     // Skip the first line in the file for bulk import
                     // format - header line
                     iterator.next();
@@ -347,6 +357,8 @@ public class DeviceConfigurationController extends MultiActionController {
             } catch (IOException e) {
                 mav.addObject("errorMessage",
                               "There was a problem processing the file: " + e.getMessage());
+            } finally {
+                CtiUtilities.close(iterator);
             }
 
         }

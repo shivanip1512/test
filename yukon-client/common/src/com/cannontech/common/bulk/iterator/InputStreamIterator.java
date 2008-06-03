@@ -4,49 +4,38 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
 
 /**
- * Implementation of Iterator which iterates through an InputStream line by line
+ * Implementation of Iterator which iterates through an InputStream line by line.
+ * 
+ * This class is not trivial to use. Care must be taken to close the InputStream
+ * after the Iterator has been used. A close method on the CloseableIterator
+ * has been provided for this purpose.
  */
-public class InputStreamIterator implements Iterator<String> {
+public class InputStreamIterator extends ReadAheadIterator<String> {
 
     private BufferedReader reader = null;
-    private String currentLine = null;
 
     public InputStreamIterator(InputStream inputStream) throws IOException {
-
         reader = new BufferedReader(new InputStreamReader(inputStream));
-
-        // currentLine is always one step ahead of the iterator
-        currentLine = reader.readLine();
     }
 
-    public boolean hasNext() {
-        // null means we're at the end of the input stream
-        return currentLine != null;
-    }
-
-    public String next() {
-
-        // We've run of the end of the input stream
-        if (currentLine == null) {
-            throw new NoSuchElementException();
-        }
-
-        String returnString = currentLine;
+    protected String doNext() {
         try {
-            // keep currentLine ahead of iterator
-            currentLine = reader.readLine();
+            String currentLine = reader.readLine();
+            if (currentLine == null) {
+                // we must be done reading
+                reader.close();
+                reader = null;
+            }
+            return currentLine;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
-        return returnString;
     }
-
-    public void remove() {
-        throw new UnsupportedOperationException();
+    
+    @Override
+    public void close() throws IOException {
+        reader.close();
     }
 }

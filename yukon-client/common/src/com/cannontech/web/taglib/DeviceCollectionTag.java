@@ -7,6 +7,8 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.SimpleTagSupport;
 
+import org.apache.commons.lang.StringEscapeUtils;
+
 import com.cannontech.common.bulk.collection.DeviceCollection;
 
 /**
@@ -27,10 +29,12 @@ public class DeviceCollectionTag extends SimpleTagSupport {
         JspWriter out = getJspContext().getOut();
 
         // Write out all of the parameters as hidden fields
-        Map<String, String> collectionParameters = deviceCollection.getCollectionParameters();
-        for (String name : collectionParameters.keySet()) {
-            String value = collectionParameters.get(name);
-            out.write("<input type=\"hidden\" name=\"" + name + "\" value=\"" + value + "\" >");
+        if (deviceCollection != null) {
+            Map<String, String> collectionParameters = deviceCollection.getCollectionParameters();
+            for (String name : collectionParameters.keySet()) {
+                String value = collectionParameters.get(name);
+                out.write("<input type=\"hidden\" name=\"" + name + "\" value=\"" + StringEscapeUtils.escapeXml(value) + "\" >");
+            }
         }
 
     }

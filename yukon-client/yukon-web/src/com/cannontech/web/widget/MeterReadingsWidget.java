@@ -3,7 +3,6 @@ package com.cannontech.web.widget;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -60,10 +59,10 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         mav.addObject("device", meter);
         mav.addObject("attributes", attributesToShow);
         Set<Attribute> allSupportedAttributes = attributeService.getAvailableAttributes(meter);
-        Map<Attribute, Boolean> supportedAttributes = convertSetToMap(allSupportedAttributes);
+        Map<Attribute, Boolean> supportedAttributes = ServletUtil.convertSetToMap(allSupportedAttributes);
         mav.addObject("supportedAttributes", supportedAttributes);
         Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
-        Map<Attribute, Boolean> existingAttributes = convertSetToMap(allExistingAttributes);
+        Map<Attribute, Boolean> existingAttributes = ServletUtil.convertSetToMap(allExistingAttributes);
         mav.addObject("existingAttributes", existingAttributes);
         LitePoint lp = attributeService.getPointForAttribute(meter, BuiltInAttribute.USAGE);
         fillInPreviousReadings(mav, lp, "VALUE");
@@ -104,18 +103,7 @@ public class MeterReadingsWidget extends WidgetControllerBase {
         Meter meter = meterDao.getForId(deviceId);
         return meter;
     }
-    
-    private Map<Attribute, Boolean> convertSetToMap(Set<Attribute> allExistingAttributes) {
-        Map<Attribute, Boolean> existingMap = new HashMap<Attribute, Boolean>();
-        
-        // convert to a map of true's because JSP EL can use this to check "contains"
-        for (Attribute attribute : allExistingAttributes) {
-            existingMap.put(attribute, Boolean.TRUE);
-        }
-        
-        return existingMap;
-    }
-    
+
     @Required
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;

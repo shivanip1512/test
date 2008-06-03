@@ -1,7 +1,10 @@
 package com.cannontech.common.bulk;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
@@ -9,60 +12,89 @@ import com.cannontech.common.bulk.processor.ProcessingException;
 /**
  * Class which serves as a callback and result holder for bulk processing
  */
-public class CollectingBulkProcessorCallback implements BulkProcessorCallback,
-        BulkProcessingResultHolder {
+public class CollectingBulkProcessorCallback<T> implements BulkProcessorCallback<T>, BulkProcessingResultHolder<T> {
 
-    private int resultsProcessed = 0;
     private boolean complete = false;
     private Exception failedException = null;
 
-    private List<ObjectMappingException> mappingExceptionList = new ArrayList<ObjectMappingException>();
-    private List<ProcessingException> processingExceptionList = new ArrayList<ProcessingException>();
-
-    public List<ObjectMappingException> getMappingExceptionList() {
-        return mappingExceptionList;
+    // map of row number to success object
+    private Map<Integer, T> successObjectRowNumberMap = new LinkedHashMap<Integer, T>();
+    
+    // maps of row number to exception
+    private Map<Integer, ObjectMappingException> mappingExceptionRowNumberMap = new LinkedHashMap<Integer, ObjectMappingException>();
+    private Map<Integer, ProcessingException> processingExceptionRowNumberMap = new LinkedHashMap<Integer, ProcessingException>();
+    
+    // map of row number to the object that failed to process
+    private Map<Integer, T> processingExceptionObjectRowNumberMap = new HashMap<Integer, T>();
+    
+    
+    // CALL BACK METHODS
+    //----------------------------------------------------------------------------------------------
+    public void receivedObjectMappingException(int rowNumber, ObjectMappingException e) {
+        
+        this.mappingExceptionRowNumberMap.put(rowNumber, e);
     }
 
-    public void setMappingExceptionList(List<ObjectMappingException> mappingExceptionList) {
-        this.mappingExceptionList = mappingExceptionList;
+    public void receivedProcessingException(int rowNumber, T object, ProcessingException e) {
+        
+        this.processingExceptionRowNumberMap.put(rowNumber, e);
+        this.processingExceptionObjectRowNumberMap.put(rowNumber, object);
     }
 
-    public List<ProcessingException> getProcessingExceptionList() {
-        return processingExceptionList;
+    public void processedObject(int rowNumber, T object) {
+        
+        this.successObjectRowNumberMap.put(rowNumber, object);
     }
-
-    public void setProcessingExceptionList(List<ProcessingException> processingExceptionList) {
-        this.processingExceptionList = processingExceptionList;
-    }
-
-    public void receivedObjectMappingException(ObjectMappingException e) {
-        this.mappingExceptionList.add(e);
-    }
-
-    public void receivedProcessingException(ProcessingException e) {
-        this.processingExceptionList.add(e);
-    }
-
-    public void processedObject() {
-        this.resultsProcessed++;
-    }
-
-    public int getTotalObjectsProcessedCount() {
-        return this.resultsProcessed;
-    }
-
-    public int getSuccessfulObjectsProcessedCount() {
-        return this.resultsProcessed - this.mappingExceptionList.size() - this.processingExceptionList.size();
-    }
-
-    public int getUnsuccessfulObjectsProcessedCount() {
-        return this.mappingExceptionList.size() + this.processingExceptionList.size();
-    }
-
-    public void processingComplete() {
+    
+    public void processingSucceeded() {
         this.complete = true;
     }
+    
+    // is processing completely blows up, this is the exception
+    public void processingFailed(Exception e) {
+        failedException = e;
+    }
+    
+    
+    
+    // RESULTS HOLDER METHODS
+    //----------------------------------------------------------------------------------------------
+    
+    // EXCEPTION LISTS
+    public List<ObjectMappingException> getMappingExceptionList() {
+        return new ArrayList<ObjectMappingException>(this.mappingExceptionRowNumberMap.values());
+    }
+    
+    public List<ProcessingException> getProcessingExceptionList() {
+        return new ArrayList<ProcessingException>(this.processingExceptionRowNumberMap.values());
+    }
+    
+    
+    // EXCEPTION ROW NUMBER MAPS
+    public Map<Integer, ObjectMappingException> getMappingExceptionRowNumberMap() {
+        return this.mappingExceptionRowNumberMap;
+    }
+    
+    public Map<Integer, ProcessingException> getProcessingExceptionRowNumberMap() {
+        return this.processingExceptionRowNumberMap;
+    }
 
+    
+    // COUNT GETTERS
+    public int getSuccessCount() {
+        return this.successObjectRowNumberMap.size();
+    }
+    
+    public int getProcessingExceptionCount() {
+        return this.processingExceptionRowNumberMap.size();
+    }
+    
+    public int getMappingExceptionCount() {
+        return this.mappingExceptionRowNumberMap.size();
+    }
+
+    
+    // STATUS
     public boolean isComplete() {
         return this.complete;
     }
@@ -71,16 +103,22 @@ public class CollectingBulkProcessorCallback implements BulkProcessorCallback,
         return failedException != null;
     }
 
-    public void processingFailed(Exception e) {
-        failedException = e;
-    }
-
     public Exception getFailedException() {
         return failedException;
     }
 
     public String getFailedMessage() {
         return failedException.getMessage();
+    }
+
+    
+    // SUCCESS AND FAIL (processing) OBJECTS
+    public List<T> getSuccessObjects() {
+        return new ArrayList<T>(this.successObjectRowNumberMap.values());
+    }
+
+    public List<T> getProcesingExceptionObjects() {
+        return new ArrayList<T>(this.processingExceptionObjectRowNumberMap.values());
     }
 
 }

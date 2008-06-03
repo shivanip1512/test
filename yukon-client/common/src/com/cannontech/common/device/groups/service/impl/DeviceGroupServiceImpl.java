@@ -89,8 +89,18 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
             return devices;
         }        
     }
+    
+    @Override
+    public int getDeviceCount(Collection<? extends DeviceGroup> groups) {
+        int result = 0;
+        for (DeviceGroup group: groups) {
+            result += deviceGroupDao.getDeviceCount(group);
+        }
+        return result;
+    }
 
     public DeviceGroup resolveGroupName(String groupName) {
+        Validate.notNull(groupName, "groupName must not be null");
         Validate.isTrue(groupName.startsWith("/"), "Group name isn't valid, must start with '/': " + groupName);
         groupName = groupName.substring(1);
         

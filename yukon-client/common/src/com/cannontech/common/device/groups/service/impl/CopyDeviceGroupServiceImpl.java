@@ -32,7 +32,7 @@ public class CopyDeviceGroupServiceImpl implements CopyDeviceGroupService {
         for (Integer deviceId : deviceIdsInGroup) {
             deviceIdsToAdd.add(deviceId);
         }
-        deviceGroupMemberEditorDao.addDevicesById(toParent, deviceIdsToAdd);
+        deviceGroupMemberEditorDao.addDevicesById(toParent, deviceIdsToAdd.iterator());
         
         // loop over children groups of the fromGroup and recursively copy them to the newly copied group
         List<DeviceGroup> childGroups = deviceGroupDao.getChildGroups(fromGroup);

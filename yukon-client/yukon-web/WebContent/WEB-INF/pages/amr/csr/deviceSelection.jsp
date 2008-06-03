@@ -96,7 +96,8 @@
 		<amr:searchNavigation 
 			orderBy="${orderBy}" 
 			results="${results}" 
-			filterByList="${filterByList}">
+			filterByList="${filterByList}" 
+            deviceCollection="${deviceGroupCollection}">
 		</amr:searchNavigation>
 		
 		<table id="deviceTable" class="resultsTable activeResultsTable">
@@ -147,9 +148,10 @@
 		<amr:searchNavigation 
 			orderBy="${orderBy}" 
 			results="${results}" 
-			filterByList="${filterByList}">
+			filterByList="${filterByList}"
+            deviceCollection="${deviceGroupCollection}">
 		</amr:searchNavigation>
-
+    
 	</c:if>
 
 	

@@ -130,6 +130,14 @@
         <property name="nextValueHelper" ref="nextValueHelper"/>
     </bean>
     
+    <bean id="disabledGroupProvider"
+        class="com.cannontech.common.device.groups.dao.impl.providers.DisabledGroupProvider">
+        <property name="mainDelegator" ref="deviceGroupDao"/>
+        <property name="jdbcTemplate" ref="simpleJdbcTemplate"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
+    </bean>
+    
     <alias alias="deviceGroupMemberEditorDao" name="deviceGroupEditorDao"/>
     
     <bean id="deviceGroupDao"
@@ -144,6 +152,7 @@
                 <entry key="SCANNING_VOLTAGE_PROFILE" value-ref="voltageProfileScanningMetersGroupProvider"/>
                 <entry key="SCANNING_INTEGRITY" value-ref="integrityScanningMetersGroupProvider"/>
                 <entry key="SCANNING_ACCUMULATOR" value-ref="accumulatorScanningMetersGroupProvider"/>
+                <entry key="DISABLED" value-ref="disabledGroupProvider"/>
             </map>
         </property>
         <property name="staticProvider" ref="staticDeviceGroupProvider"/>
@@ -158,6 +167,11 @@
         <property name="deviceGroupDao" ref="deviceGroupDao" />
         <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
         <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+    </bean>
+    
+    <bean id="temporaryDeviceGroupService" class="com.cannontech.common.device.groups.service.impl.TemporaryDeviceGroupServiceImpl">
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
+        <property name="scheduledExecutor" ref="globalScheduledExecutor" />
     </bean>
     
     <bean id="fixedDeviceGroupingHack"
@@ -179,6 +193,16 @@
         class="com.cannontech.common.device.groups.service.DeviceGroupTreeFactory">
         <property name="deviceGroupDao" ref="deviceGroupDao"/>
 		<property name="deviceGroupService" ref="deviceGroupService"/>
+    </bean>
+    
+    <bean id="deviceCreationService"
+        class="com.cannontech.common.device.creation.impl.DeviceCreationServiceImpl">
+        <property name="deviceDao" ref="deviceDao"/>
+        <property name="paoDao" ref="paoDao"/>
+        <property name="pointDao" ref="pointDao"/>
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
+        <property name="deviceDefinitionService" ref="deviceService" />
+        <property name="dbPersistantDao" ref="dbPersistentDao" />
     </bean>
     
 </beans>

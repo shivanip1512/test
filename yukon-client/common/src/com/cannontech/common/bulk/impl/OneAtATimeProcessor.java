@@ -1,103 +1,27 @@
 package com.cannontech.common.bulk.impl;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.Iterator;
 
 import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.bulk.BulkProcessingResultHolder;
 import com.cannontech.common.bulk.BulkProcessor;
 import com.cannontech.common.bulk.BulkProcessorCallback;
-import com.cannontech.common.bulk.CollectingBulkProcessorCallback;
-import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.ScheduledExecutor;
 
 /**
  * Bulk Processor implementation which processes items one at a time
  */
-public class OneAtATimeProcessor implements BulkProcessor {
+public class OneAtATimeProcessor extends RunnableBasedBulkProcessor implements BulkProcessor {
 
     private Logger log = YukonLogManager.getLogger(OneAtATimeProcessor.class);
 
-    private ScheduledExecutor scheduledExecutor = null;
-    private ObjectMapperFactory mapperFactory = null;
 
-    public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
-        this.scheduledExecutor = scheduledExecutor;
-    }
-
-    public void setMapperFactory(ObjectMapperFactory mapperFactory) {
-        this.mapperFactory = mapperFactory;
-    }
-
-    public <I> BulkProcessingResultHolder bulkProcess(Iterator<I> iterator,
-            Processor<I> processor) {
-
-        CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
-
-        // Use a pass through mapper
-        ObjectMapper<I, I> passThroughMapper = mapperFactory.createPassThroughMapper();
-
-        // Get the bulk processor runnable and run it in this thread (will
-        // block)
-        Runnable runnable = getBulkProcessorRunnable(iterator,
-                                                     passThroughMapper,
-                                                     processor,
-                                                     callback);
-        runnable.run();
-
-        return callback;
-    }
-
-    public <I, O> BulkProcessingResultHolder bulkProcess(Iterator<I> iterator,
-            ObjectMapper<I, O> mapper, Processor<O> processor) {
-
-        CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
-
-        // Get the bulk processor runnable and run it in this thread (will
-        // block)
-        Runnable runnable = getBulkProcessorRunnable(iterator,
-                                                     mapper,
-                                                     processor,
-                                                     callback);
-        runnable.run();
-
-        return callback;
-    }
-
-    public <I> void backgroundBulkProcess(Iterator<I> iterator,
-            Processor<I> processor, BulkProcessorCallback callback) {
-
-        // Use a pass through mapper
-        ObjectMapper<I, I> passThroughMapper = mapperFactory.createPassThroughMapper();
-
-        // Get the bulk processor runnable and ask the ScheduledExecutor to
-        // run it in the background
-        Runnable runnable = getBulkProcessorRunnable(iterator,
-                                                     passThroughMapper,
-                                                     processor,
-                                                     callback);
-        scheduledExecutor.execute(runnable);
-
-    }
-
-    public <I, O> void backgroundBulkProcess(Iterator<I> iterator,
-            ObjectMapper<I, O> mapper, Processor<O> processor,
-            BulkProcessorCallback callback) {
-
-        // Get the bulk processor runnable and ask the ScheduledExecutor to run
-        // it in the background
-        Runnable runnable = getBulkProcessorRunnable(iterator,
-                                                     mapper,
-                                                     processor,
-                                                     callback);
-        scheduledExecutor.execute(runnable);
-
-    }
 
     /**
      * Helper method to get a runnable that will do bulk processing
@@ -110,36 +34,48 @@ public class OneAtATimeProcessor implements BulkProcessor {
      *            runs
      * @return The runnable
      */
-    private <I, O> Runnable getBulkProcessorRunnable(
+    protected <I, O> Runnable getBulkProcessorRunnable(
             final Iterator<I> iterator, final ObjectMapper<I, O> mapper,
-            final Processor<O> processor, final BulkProcessorCallback callback) {
+            final Processor<O> processor, final BulkProcessorCallback<O> callback) {
 
         return new Runnable() {
-
             public void run() {
-
                 try {
+                    int rowNumber = 0;
                     while (iterator.hasNext()) {
-                        try {
 
-                            I in = iterator.next();
-                            O out = mapper.map(in);
+                        I in = iterator.next();
+                        O out = null;
+                        
+                        try {
+                            
+//                            Thread.sleep(1000);
+                            
+                            out = mapper.map(in);
                             processor.process(out);
-                            callback.processedObject();
+                            callback.processedObject(rowNumber, out);
 
                         } catch (ObjectMappingException e) {
-                            callback.receivedObjectMappingException(e);
-                            callback.processedObject();
+                            callback.receivedObjectMappingException(rowNumber, e);
                         } catch (ProcessingException e) {
-                            callback.receivedProcessingException(e);
-                            callback.processedObject();
+                            callback.receivedProcessingException(rowNumber, out, e);
                         }
+                        
+                        rowNumber++;
                     }
-                    callback.processingComplete();
+                    callback.processingSucceeded();
                 } catch (Exception e) {
                     log.warn("Bulk Processing failed", e);
                     callback.processingFailed(e);
-                    callback.processingComplete();
+                }
+                finally {
+                    if (iterator instanceof Closeable) {
+                        try {
+                            ((Closeable)iterator).close();
+                        } catch (IOException e) {
+                            ;
+                        }
+                    }
                 }
             }
         };

@@ -34,7 +34,7 @@
 	
 	<br>
 	<div style="width: 700px;">
-		<form action="<c:url value="/spring/group/executeCommand" />">
+		<form action="<c:url value="/spring/group/commander/executeCommand" />">
 			
 			<ct:nameValueContainer altRowOn="true">
 				<ct:nameValue name="Select group">

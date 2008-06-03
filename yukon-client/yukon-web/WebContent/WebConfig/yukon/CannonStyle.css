@@ -15,6 +15,10 @@ a.Link4:visited {color: #0066CC}
 a.Link4:link {color: #0066CC}
 a.Link4:hover {color: #0066CC}
 
+a.small {
+    font-size:12px;
+}
+
 .MainText {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000}
 .defaultText {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #6666FF}
 .GeneralHeader {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #000000; font-weight:bold}
@@ -79,4 +83,18 @@ a.Link4:hover {color: #0066CC}
 .smallBoldLabel {
    font-size:11px;
    font-weight:bold;
+ }
+ 
+ .normalBoldLabel {
+   font-size:14px;
+   font-weight:bold;
+ }
+ 
+  .largeBoldLabel {
+   font-size:16px;
+   font-weight:bold;
+ }
+ 
+ .smallLink {
+   font-size:11px;
  }

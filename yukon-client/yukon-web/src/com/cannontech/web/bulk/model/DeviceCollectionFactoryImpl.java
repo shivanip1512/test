@@ -1,20 +1,22 @@
 package com.cannontech.web.bulk.model;
 
-import java.security.InvalidParameterException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.core.MethodParameter;
 import org.springframework.web.bind.ServletRequestBindingException;
+import org.springframework.web.bind.support.WebArgumentResolver;
+import org.springframework.web.context.request.NativeWebRequest;
 
 import com.cannontech.common.bulk.collection.DeviceCollection;
 
 /**
  * Implementation class for DeviceCollectionFactory
  */
-public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory {
+public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory, WebArgumentResolver {
 
     private Map<String, DeviceCollectionProducer> collectionProducerMap = new HashMap<String, DeviceCollectionProducer>();
 
@@ -36,7 +38,20 @@ public class DeviceCollectionFactoryImpl implements DeviceCollectionFactory {
             return producer.createDeviceCollection(request);
         }
 
-        throw new InvalidParameterException("collectionType: " + type + " is not supported.");
+        throw new IllegalArgumentException("collectionType: " + type + " is not supported.");
     }
+
+    @Override
+    public Object resolveArgument(MethodParameter methodParameter, NativeWebRequest webRequest)
+        throws Exception {
+        Class<?> parameterType = methodParameter.getParameterType();
+        if (parameterType.isAssignableFrom(DeviceCollection.class)) {
+            HttpServletRequest nativeRequest = (HttpServletRequest) webRequest.getNativeRequest();
+            return createDeviceCollection(nativeRequest);
+        }
+        return UNRESOLVED;
+    }
+    
+    
 
 }

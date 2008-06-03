@@ -88,6 +88,10 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     public Set<DeviceDefinition> getChangeableDevices(DeviceBase device) {
         return simpleDeviceDefinitionService.getChangeableDevices(getYukonDeviceForDevice(device));
     }
+    
+    public Set<DeviceDefinition> getChangeableDevices(YukonDevice device) {
+        return simpleDeviceDefinitionService.getChangeableDevices(device);
+    }
 
     public Map<String, List<DeviceDefinition>> getDeviceDisplayGroupMap() {
         return simpleDeviceDefinitionService.getDeviceDisplayGroupMap();
@@ -150,6 +154,7 @@ public class DeviceDefinitionServiceImpl implements DeviceDefinitionService {
     }
 
     @SuppressWarnings("unchecked")
+    @Transactional
     public DeviceBase changeDeviceType(DeviceBase currentDevice, DeviceDefinition newDefinition) {
 
         DeviceBase oldDevice = null;

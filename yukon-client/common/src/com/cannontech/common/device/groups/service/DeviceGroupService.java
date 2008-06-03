@@ -6,8 +6,8 @@ import java.util.Set;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
-import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.common.util.predicate.Predicate;
+import com.cannontech.core.dao.NotFoundException;
 
 /**
  * This is the primary interface that should be used for determining what devices
@@ -47,7 +47,7 @@ public interface DeviceGroupService {
      * @param group
      * @return an unmodifiable List
      */
-    public Set<Integer> getDeviceIds(Collection<? extends DeviceGroup> group);
+    public Set<Integer> getDeviceIds(Collection<? extends DeviceGroup> groups);
     
     /**
      * Returns a YukonDevice for every device contained in the DeviceGroup.
@@ -55,7 +55,15 @@ public interface DeviceGroupService {
      * @param group
      * @return an unmodifiable List
      */
-    public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> group);
+    public Set<YukonDevice> getDevices(Collection<? extends DeviceGroup> groups);
+    
+    /**
+     * Returns a count of every device contained in the DeviceGroup.
+     * This method works recursively on each child group of the requested group.
+     * @param group
+     * @return an unmodifiable List
+     */
+    public int getDeviceCount(Collection<? extends DeviceGroup> groups);
     
     /**
      * Returns a String that can be placed in an SQL WHERE clause

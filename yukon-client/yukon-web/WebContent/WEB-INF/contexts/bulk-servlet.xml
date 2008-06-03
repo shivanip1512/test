@@ -9,16 +9,30 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
-       
 
+    <context:annotation-config />
+
+
+    <bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="1"/>
+    </bean>
 
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <prop key="/action">BulkActionController</prop>
+                <prop key="/mass/*">MassChangeController</prop>
+                <prop key="/massChangeOptions">MassChangeOptionsController</prop>
+                <prop key="/update/*">UpdateController</prop>
+                <prop key="/group/*">AddRemoveCollectionToGroupController</prop>
+                <prop key="/import/*">ImportController</prop>
                 <prop key="/*">BulkController</prop>
             </props>
         </property>
+        <property name="order" value="2"></property>
+    </bean>
+    
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
+        <property name="suffix" value=".jsp"/>
     </bean>
     
     <bean id="viewResolver"
@@ -27,6 +41,10 @@
         <property name="prefix" value="/WEB-INF/pages/bulk/"/>
     </bean>
     
+    <bean class="com.cannontech.web.bulk.DeviceSelectionController" />
+    <bean class="com.cannontech.web.bulk.AddRemoveCollectionToGroupController" />
+
+    <!-- BASIC BULK CONTROLLER -->
 	<bean id="BulkController" class="com.cannontech.web.bulk.BulkController" >
         <property name="cacheSeconds">
             <value type="int">0</value>
@@ -44,13 +62,17 @@
             <value type="boolean">true</value>
         </property>
         
-        <property name="deviceGroupDao" ref="deviceGroupDao" />
         <property name="paoDao" ref="paoDao" />
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-
+        <property name="deviceGroupService" ref="deviceGroupService" />
+        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        
     </bean>
     
-	<bean id="BulkActionController" class="com.cannontech.web.bulk.BulkActionController" >
+    
+    <!-- MASS CHANGE CONTROLLER -->
+    <bean id="MassChangeController" class="com.cannontech.web.bulk.MassChangeController" >
+        
         <property name="cacheSeconds">
             <value type="int">0</value>
         </property>
@@ -58,7 +80,7 @@
             <null />
         </property>
         <property name="methodNameResolver" >
-            <bean class="org.springframework.web.servlet.mvc.multiaction.ParameterMethodNameResolver" />
+            <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
         </property>
         <property name="requireSession">
             <value type="boolean">true</value>
@@ -68,13 +90,117 @@
         </property>
         
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
-        <property name="processorFactory" ref="processorFactory" />
-        <property name="objectMapperFactory" ref="objectMapperFactory" />
-        
-        <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
-        <property name="paoDao" ref="paoDao" />
+        <property name="bulkFieldService" ref="bulkFieldService" />
+        <property name="deviceDao" ref="deviceDao" />
         
     </bean>
-           
+    
+    <!-- MASS CHANGE OPTIONS CONTROLLER -->
+    <bean id="MassChangeOptionsController" class="com.cannontech.web.bulk.MassChangeOptionsController" >
+        
+        <property name="commandName" value="massChangeOptions" />
+        <property name="formView" value="mass/massChangeOptions.jsp" />
+        
+        <property name="bulkFieldService" ref="bulkFieldService" />
+        
+        <property name="bulkYukonDeviceFieldFactory" ref="bulkYukonDeviceFieldFactory" />
+        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
+        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+        
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+        <property name="temporaryDeviceGroupService" ref="temporaryDeviceGroupService" />
+        <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
+        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        
+    </bean>
+    
+    
+    <!-- UPDATE CONTROLLER (UPDATE BY FILE) -->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+    
+    <bean id="UpdateController" class="com.cannontech.web.bulk.UpdateController" >
+        
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="validators">
+            <null />
+        </property>
+        <property name="methodNameResolver" >
+            <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        
+        <property name="bulkFieldService" ref="bulkFieldService" />
+        <property name="bulkUpdateService" ref="bulkUpdateService" />
+        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        
+    </bean>
+    
+    
+    <!-- ADD/REMOVE FROM GROUP CONTROLLER -->
+    <bean id="AddRemoveCollectionToGroupController" class="com.cannontech.web.bulk.AddRemoveCollectionToGroupController" >
+        
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="validators">
+            <null />
+        </property>
+        <property name="methodNameResolver" >
+            <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        
+        <property name="deviceGroupService" ref="deviceGroupService" />
+        <property name="deviceCollectionDeviceGroupHelper" ref="deviceCollectionDeviceGroupHelper" />
+        <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
+        
+    </bean>
+    
+    
+    <!-- IMPORT CONTROLLER (IMPORT BY FILE) -->
+    <bean id="ImportController" class="com.cannontech.web.bulk.ImportController" >
+        
+        <property name="cacheSeconds">
+            <value type="int">0</value>
+        </property>
+        <property name="validators">
+            <null />
+        </property>
+        <property name="methodNameResolver" >
+            <bean class="org.springframework.web.servlet.mvc.multiaction.InternalPathMethodNameResolver" />
+        </property>
+        <property name="requireSession">
+            <value type="boolean">true</value>
+        </property>
+        <property name="synchronizeOnSession">
+            <value type="boolean">true</value>
+        </property>
+        
+        <property name="bulkFieldService" ref="bulkFieldService" />
+        <property name="bulkImportService" ref="bulkImportService" />
+        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        <property name="importMethods">
+            <list>
+                <ref bean="templateBulkImportMethod" />
+                <ref bean="deviceTypeBulkImportMethod" />
+            </list>
+        </property>
+        
+    </bean>
+    
+    <!--  BULK UPDATE SERVICE -->
+
+    
 </beans>
