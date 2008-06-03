@@ -543,7 +543,7 @@ public void runImport(List<ImportData> imps) {
                 dmg.setDeviceID(updateDeviceID);
                 t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
                 dmg = (DeviceMeterGroup)t.execute();
-                if( !dmg.getMeterNumber().equals(meterNumber)) {
+                if( !dmg.getMeterNumber().equals(meterNumber) && StringUtils.isNotBlank(meterNumber)) {
                     dmg.setMeterNumber(meterNumber);
                     t = Transaction.createTransaction( Transaction.UPDATE, dmg);
                     dmg = (DeviceMeterGroup)t.execute();
