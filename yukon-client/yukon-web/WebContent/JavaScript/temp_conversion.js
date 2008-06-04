@@ -17,3 +17,22 @@ function getFahrenheitTemp(degreesEither, unit) {
   }
 }
 
+function getRawConvertedTemp(degreesFahrenheit, unit) {
+  if (unit == 'F') {
+    return degreesFahrenheit;
+  } else {
+    // convert to celsius
+    return (degreesFahrenheit - 32) / 9 * 5;
+  }
+}
+
+function getRawFahrenheitTemp(degreesEither, unit) {
+  if (unit == 'F') {
+    return degreesEither;
+  } else {
+    // convert to fahrenheit
+    var degreesCelsius = degreesEither;
+    return (degreesCelsius / 5 * 9) + 32;
+  }
+}
+

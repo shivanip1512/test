@@ -7,15 +7,7 @@
     var tempLowerLimit = 45;
     var tempUpperLimit = 88;
     
-    function convertTemp(temp, currentUnit) {
-        if (currentUnit == 'F') {
-            // convert to celsius
-            return Math.round((temp - 32) / 1.8);
-        } else {
-            // convert to fahrenheit
-            return Math.round((temp * 1.8) + 32);
-        }
-    }
+    var actualCurrentTemp = 72;
     
     function changeTemp(amount) {
     
@@ -63,7 +55,7 @@
         }
         
         // Convert current temp to fahrenheit if needed for validation
-        var fTemp = getFahrenheitTemp(currentTemp, currentTempUnit);
+        var fTemp = getRawFahrenheitTemp(currentTemp, currentTempUnit);
         
         if(fTemp < tempLowerLimit) {
             fTemp = tempLowerLimit; 
@@ -72,31 +64,27 @@
         }
         
         // Convert current temp to celsius if needed
-        fTemp = getConvertedTemp(fTemp, currentTempUnit);
+        fTemp = getRawConvertedTemp(fTemp, currentTempUnit);
         
-        tempField.value = fTemp;
+        actualCurrentTemp = fTemp;
+        tempField.value = Math.round(fTemp);
     }
     
-    function setTempUnits(units){
+    function setTempUnits(newUnit){
     
         var tempUnitField = $('temperatureUnit');
         var currentTempUnit = $F(tempUnitField);
 
-        var tempField = $('temperature');
-        var currentTemp = $F(tempField);
-        
-        if(units == currentTempUnit){
+        if(newUnit == currentTempUnit){
             return;
         }
     
-        if(!isNaN(currentTemp) && currentTemp != '') {
-            var temp = convertTemp(currentTemp, currentTempUnit);
-            tempField.value = temp;
-        }
-
-        tempUnitField.value = units;
+        tempUnitField.value = newUnit;
+        tempUnit = newUnit;
+    
+        convertFieldTemp('temperature', currentTempUnit, newUnit);
         
-        if('C' == units) {
+        if('C' == newUnit) {
             $('celsiusLink').hide();
             $('celsiusSpan').show();
             $('fahrenheitSpan').hide();
@@ -108,6 +96,21 @@
             $('fahrenheitSpan').show();
             $('fahrenheitLink').hide();
         }
+    }
+    
+    function convertFieldTemp(fieldId, currentUnit, newUnit){
+        
+        var field = $(fieldId);
+        var currentTemp = actualCurrentTemp;
+        
+        if(!isNaN(currentTemp) && currentTemp != '') {
+            currentTemp = getRawFahrenheitTemp(currentTemp, currentUnit);
+            currentTemp = getRawConvertedTemp(currentTemp, newUnit);
+            
+            actualCurrentTemp = currentTemp;
+            field.value = Math.round(currentTemp);
+        }
+        
     }
     
     function setMode(mode){
