@@ -105,7 +105,7 @@ public class DisabledGroupProvider extends DeviceGroupProviderBase {
             if (devicePao.getDisableFlag().equals(DisabledDeviceGroup.disableFlag)) {
                 return true;
             }
-        } else if (deviceGroup.getType().equals(DeviceGroupType.DISABLED)) {
+        } else if (deviceGroup.getType().equals(DeviceGroupType.METERS_DISABLED)) {
 
             if(devicePao.getDisableFlag().equals(DisabledDeviceGroup.disableFlag)){
                 return true;
