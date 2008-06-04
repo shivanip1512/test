@@ -14,5 +14,6 @@
 <!-- Alert Types -->
 <entry key="yukon.web.alerts.types.ALARM">Alarm</entry>
 <entry key="yukon.web.alerts.types.CAPCONTROL_SERVER_RESPONSE">Server Response</entry>
+<entry key="yukon.web.alerts.types.COMMAND_COMPLETION">Commander</entry>
 
 </properties>

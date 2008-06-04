@@ -1,8 +1,8 @@
 package com.cannontech.common.alert.model;
 
+import com.cannontech.common.util.Identifiable;
 
-public interface IdentifiableAlert extends Alert {
-    
-    public int getId();
+
+public interface IdentifiableAlert extends Alert, Identifiable {
     
 }

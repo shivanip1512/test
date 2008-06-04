@@ -4,23 +4,16 @@ import java.util.Date;
 
 import org.springframework.core.style.ToStringCreator;
 
-import com.cannontech.common.alert.model.Alert;
 import com.cannontech.common.alert.model.AlertType;
+import com.cannontech.common.alert.model.BaseAlert;
 import com.cannontech.common.util.ResolvableTemplate;
-import com.cannontech.user.checker.UserChecker;
 
-public class AlarmAlert implements Alert {
-    private Date date;
-    private ResolvableTemplate message;
+public class AlarmAlert extends BaseAlert {
     private boolean unacknowledgedAlarm;
     private int pointId;
     private int condition;
-    private UserChecker userChecker;
-
     public AlarmAlert(Date date, ResolvableTemplate message) {
-        super();
-        this.date = date;
-        this.message = message;
+        super(date, message);
     }
 
     @Override
@@ -28,25 +21,6 @@ public class AlarmAlert implements Alert {
         return AlertType.ALARM;
     }
 
-    @Override
-    public Date getDate() {
-        return date;
-    }
-
-    @Override
-    public ResolvableTemplate getMessage() {
-        return message;
-    }
-
-    @Override
-    public UserChecker getUserCheck() {
-        return userChecker;
-    }
-    
-    public void setUserChecker(UserChecker userChecker) {
-        this.userChecker = userChecker;
-    }
-    
     public void setUnacknowledgedAlarm(final boolean isUnacknowledgedAlarm) {
         this.unacknowledgedAlarm = isUnacknowledgedAlarm;
     }
