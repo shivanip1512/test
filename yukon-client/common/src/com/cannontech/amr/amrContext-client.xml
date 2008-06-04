@@ -63,7 +63,7 @@
     <bean id="meterReadService"
         class="com.cannontech.amr.deviceread.dao.impl.MeterReadServiceImpl">
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
-        <property name="commandExecutor" ref="deviceCommandRequestExecutor" />
+        <property name="commandExecutor" ref="commandRequestDeviceExecutor" />
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
         <property name="paoDao" ref="paoDao"/>
     </bean>
@@ -73,7 +73,7 @@
         <property name="dateFormattingService" ref="dateFormattingService" />
         <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="paoDao" ref="paoDao" />
-        <property name="commandRequestExecutor" ref="deviceCommandRequestExecutor" />
+        <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor" />
         <property name="meterDao" ref="meterDao" />
         <property name="peakReportDao" ref="peakReportDao" />
     </bean>
