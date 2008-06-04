@@ -25,22 +25,18 @@ public class DisabledGroupProvider extends DeviceGroupProviderBase {
     @Override
     public List<YukonDevice> getChildDevices(DeviceGroup group) {
         
-//        if (group instanceof DisabledDeviceGroup) {
-//            
             // return devices that belong to this route
             SqlStatementBuilder sql = new SqlStatementBuilder();
             sql.append("SELECT ypo.paobjectid, ypo.type");
             sql.append("FROM YukonPAObject ypo");
+            sql.append("JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DEVICEID");
+            sql.append("LEFT OUTER JOIN DeviceCarrierSettings dcs ON ypo.PAObjectID = dcs.DEVICEID");
+            sql.append("LEFT OUTER JOIN DeviceRoutes dr ON ypo.PAObjectID = dr.DEVICEID");
             sql.append("WHERE ypo.DisableFlag = ?");
             
             YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
             List<YukonDevice> devices = jdbcTemplate.query(sql.toString(), mapper, DisabledDeviceGroup.disableFlag);
             return devices;
-//            return Collections.unmodifiableList(devices);
-//        }
-//        
-//        // this must be our parent group
-//        return Collections.emptyList();
     }
 
     @Override
@@ -61,7 +57,6 @@ public class DisabledGroupProvider extends DeviceGroupProviderBase {
         disabledDeviceGroup.setName(base.getName());
         disabledDeviceGroup.setParent(base);
         disabledDeviceGroup.setType(base.getType());
-        
         
         // helps the singleton method be happy
         DeviceGroup result = disabledDeviceGroup;
@@ -106,28 +101,29 @@ public class DisabledGroupProvider extends DeviceGroupProviderBase {
         LiteYukonPAObject devicePao = paoDao.getLiteYukonPAO(device.getDeviceId());
         
         if (deviceGroup instanceof DisabledDeviceGroup) {
+            
             if (devicePao.getDisableFlag().equals(DisabledDeviceGroup.disableFlag)) {
                 return true;
             }
-            return false;
-            
         } else if (deviceGroup.getType().equals(DeviceGroupType.DISABLED)) {
 
             if(devicePao.getDisableFlag().equals(DisabledDeviceGroup.disableFlag)){
                 return true;
             }
-            return false;
-        } else {
-            return false;
-        }
+        } 
+        
+        return false;
     }
 
-	@Override
+    @Override
 	public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
 	    
         String whereString = identifier + " IN ( " +
                             " SELECT ypo.PAObjectID " +
                             " FROM YukonPAObject ypo " + 
+                            " JOIN DeviceMeterGroup dmg ON ypo.PAObjectID = dmg.DEVICEID " +
+                            " LEFT OUTER JOIN DeviceCarrierSettings dcs ON ypo.PAObjectID = dcs.DEVICEID " +
+                            " LEFT OUTER JOIN DeviceRoutes dr ON ypo.PAObjectID = dr.DEVICEID " +
                             " WHERE ypo.DisableFlag = '" + DisabledDeviceGroup.disableFlag + "') "; 
         return whereString;
 	    
