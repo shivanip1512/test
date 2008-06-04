@@ -18,7 +18,6 @@
 			<value>com/cannontech/core/service/applicationContext.xml</value>
 			<value>com/cannontech/loadcontrol/applicationContext.xml</value>
 			<value>com/cannontech/multispeak/client/applicationContext.xml</value>
-			<value>com/cannontech/common/device/deviceContext-server.xml</value>
 			<value>com/cannontech/billing/billingContext.xml</value>
 			<value>com/cannontech/stars/starsContext.xml</value>
 			<value>com/cannontech/cbc/cbcContext.xml</value>

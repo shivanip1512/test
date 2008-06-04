@@ -76,7 +76,7 @@
             <%-- GROUP COMMANDER --%>
             <tr>
                 <td>
-                    <form id="groupCommanderForm" method="get" action="/spring/group/commander2/groupProcessing">
+                    <form id="groupCommanderForm" method="get" action="/spring/group/commander/collectionProcessing">
                         <cti:deviceCollection deviceCollection="${deviceCollection}" />
                         <input type="submit" id="groupCommanderButton" value="${sendCommandLabel}" style="width:140px;"/>
                     </form>

@@ -37,6 +37,8 @@ import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.predicate.NullPredicate;
+import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
 import com.cannontech.web.util.ExtTreeNode;
@@ -171,7 +173,15 @@ public class GroupEditorController extends MultiActionController {
         }
         
         // ALL GROUPS TREE JSON
-        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
+        Predicate<DeviceGroup> deviceGroupPredicate;
+        boolean showAll = ServletRequestUtils.getBooleanParameter(request, "showAll", false);
+        if (showAll) {
+            deviceGroupPredicate = new NullPredicate<DeviceGroup>();
+        } else {
+            deviceGroupPredicate = new NonHiddenDeviceGroupPredicate();
+            
+        }
+        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, deviceGroupPredicate);
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         final DeviceGroup selectedDeviceGroup = group;

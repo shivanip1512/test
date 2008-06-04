@@ -98,7 +98,7 @@
 		</td>
         
         <td>
-            <form method="post" action="/spring/bulk/collectionActions">
+            <form method="get" action="/spring/bulk/collectionActions">
             <input type="submit" name="submit" value="Perform Collection Action">
     
             <cti:deviceCollection deviceCollection="${deviceCollection}" />

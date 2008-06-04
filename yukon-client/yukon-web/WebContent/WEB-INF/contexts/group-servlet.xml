@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+       http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+       http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
+       http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+       http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 
-<beans>
+    <context:annotation-config />
+
+    <bean id="annotationMapping" class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping">
+        <property name="order" value="1"/>
+    </bean>
+    
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <value>
             	/addDevicesResultUpdate=addDevicesResultUpdate
             	/editor/*=groupEditorController
-            	/commander/*=groupCommanderController
             </value>
         </property>
     </bean>    
@@ -42,23 +55,7 @@
         
     </bean>
     
-    <bean id="groupCommanderController" class="com.cannontech.web.group.GroupCommanderController" >
-        <property name="cacheSeconds">
-            <value type="int">0</value>
-        </property>
-        <property name="requireSession">
-            <value type="boolean">true</value>
-        </property>
-        <property name="synchronizeOnSession">
-            <value type="boolean">true</value>
-        </property>
-        
-        <property name="deviceGroupService" ref="deviceGroupService"/>
-        <property name="deviceGroupDao" ref="deviceGroupDao" />
-        <property name="commandDao" ref="commandDao" />
-        <property name="groupCommandExecutor" ref="groupCommandExecutor" />
-        <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
-    </bean>
+    <bean class="com.cannontech.web.group.GroupCommanderController" />
     
 	<bean id="bulkDeviceAdd" class="org.springframework.web.servlet.mvc.ParameterizableViewController">
     	<property name="viewName" value="bulkDeviceAdd.jsp"/>

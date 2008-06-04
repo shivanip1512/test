@@ -1120,6 +1120,31 @@
         </attribute>
     </tag>
     
+    <tag>
+        <name>dataUpdaterValue</name>
+        <tag-class>com.cannontech.web.taglib.DataUpdaterValueTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            A more generic version of the PointValueTag, outputs a formatted
+            span for any valid data updater tag.
+        </description>
+        <attribute>
+            <name>type</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>identifier</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>styleClass</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
   
   <function>
     <name>equalsIgnoreCase</name>

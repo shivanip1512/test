@@ -10,5 +10,6 @@ public enum DataType {
     FEEDER,
     CAPBANK,
     BULKRESULT,
+    COMMANDER,
     ;
 }
