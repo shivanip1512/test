@@ -13,6 +13,9 @@ public enum SystemGroupEnum {
     DEVICETYPES("/System/Device Types/"),
     ROUTES("/System/Routes/"),
     SCANNINGMETERS("/System/Scanning Meters/"),
+    TEMPORARYGROUPS("/System/Temporary/"),
+    SYSTEMMETERS("/System/Meters/"),
+    SYSTEMMETERSDISABLED("/System/Meters/Disabled/"),
     ;
 
     private String fullPath;

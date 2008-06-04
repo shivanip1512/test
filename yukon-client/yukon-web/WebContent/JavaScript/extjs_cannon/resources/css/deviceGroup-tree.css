@@ -172,3 +172,24 @@
 .x-tree-node-collapsed .x-tree-node-icon.SCANNINGMETERS{
 	background-image:url(../images/default/tree/folder_deviceGroupScanningMeters.gif);
 }
+
+/* System Meters */
+.x-tree-node-expanded .x-tree-node-icon.SYSTEMMETERS{
+    background-image:url(../images/default/tree/folder-open_deviceGroupMeters.gif);
+}
+.x-tree-node-leaf .x-tree-node-icon.SYSTEMMETERS{
+	background-image:url(../images/default/tree/folder_deviceGroupMeters.gif);
+}
+.x-tree-node-collapsed .x-tree-node-icon.SYSTEMMETERS{
+	background-image:url(../images/default/tree/folder_deviceGroupMeters.gif);
+}
+	
+/* System Disabled Meters */
+.x-tree-node-expanded .x-tree-node-icon.SYSTEMMETERSDISABLED{
+    background-image:url(../images/default/tree/folder-open_deviceGroupDisabled.gif);
+}
+.x-tree-node-leaf .x-tree-node-icon.SYSTEMMETERSDISABLED{
+	background-image:url(../images/default/tree/folder_deviceGroupDisabled.gif);
+}
+.x-tree-node-collapsed .x-tree-node-icon.SYSTEMMETERSDISABLED{
+	background-image:url(../images/default/tree/folder_deviceGroupDisabled.gif);
