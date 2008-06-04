@@ -72,7 +72,7 @@
                     
                     <c:choose>
                         <c:when test="${highBillSupported}">
-                            <c:url var="highBillUrl" value="/spring/csr/highBill">
+                            <c:url var="highBillUrl" value="/spring/csr/highBill/view">
                                 <c:param name="deviceId" value="${deviceId}" />
                             </c:url>
                             <a href="${highBillUrl}">High Bill Complaint</a>

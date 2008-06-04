@@ -205,28 +205,4 @@ public class CsrController extends MultiActionController {
         return mav;
     }
 
-    public ModelAndView highBill(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException {
-
-        ModelAndView mav = new ModelAndView("highBill.jsp");
-
-        int deviceId = ServletRequestUtils.getRequiredIntParameter(request, "deviceId");
-        mav.addObject("deviceId", String.valueOf(deviceId));
-
-        YukonDevice device = deviceDao.getYukonDevice(deviceId);
-
-        boolean createLPPoint = ServletRequestUtils.getBooleanParameter(request,
-                                                                        "createLPPoint",
-                                                                        false);
-        if (createLPPoint) {
-            attributeService.createPointForAttribute(device, BuiltInAttribute.LOAD_PROFILE);
-        }
-
-        boolean lmPointExists = attributeService.pointExistsForAttribute(device,
-                                                                         BuiltInAttribute.LOAD_PROFILE);
-        mav.addObject("lmPointExists", lmPointExists);
-
-        return mav;
-    }
-
 }
