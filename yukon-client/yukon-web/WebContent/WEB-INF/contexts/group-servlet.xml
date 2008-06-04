@@ -19,7 +19,6 @@
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <value>
-            	/addDevicesResultUpdate=addDevicesResultUpdate
             	/editor/*=groupEditorController
             </value>
         </property>
