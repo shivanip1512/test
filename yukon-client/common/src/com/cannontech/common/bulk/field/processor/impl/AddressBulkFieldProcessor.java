@@ -25,10 +25,6 @@ public class AddressBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
         catch (IllegalArgumentException e) {
             throw new ProcessingException(e.getMessage());
         }
-        catch (NullPointerException e) {
-            
-            System.out.print("asdsdfsdfsdfsdfsdfsd");
-        }
     }
     
     @Required

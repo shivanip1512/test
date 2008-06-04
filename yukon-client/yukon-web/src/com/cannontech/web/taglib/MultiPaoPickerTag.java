@@ -14,7 +14,8 @@ public class MultiPaoPickerTag extends ItemPickerTag {
 
     private String selectionLinkName = "Done";
     private String excludeIds = "";
-
+    private Boolean asButton = false;
+    
     public MultiPaoPickerTag() {
         super();
     }
@@ -38,10 +39,24 @@ public class MultiPaoPickerTag extends ItemPickerTag {
         getJspContext().getOut()
                        .println("<script type=\"text/javascript\"> " + pickerId + " = new MultiPaoPicker(" + initString + ");");
         getJspContext().getOut().println("</script> ");
-        String outputTagString = "<a href=\"javascript:" + pickerId + ".showPicker()\">";
-        getJspContext().getOut().println(outputTagString);
-        getJspBody().invoke(null);
-        getJspContext().getOut().println("</a>");
+        
+        String outputTagString = "";
+        if (asButton) {
+            outputTagString = "<input type=\"button\" value=\"";
+            getJspContext().getOut().print(outputTagString);
+            
+            getJspBody().invoke(null);
+            
+            outputTagString = "\" onclick=\"javascript:" + pickerId + ".showPicker()\" style=\"width:140px;\">";
+            getJspContext().getOut().println(outputTagString);
+        }
+        else {
+            outputTagString = "<a href=\"javascript:" + pickerId + ".showPicker()\">";
+            getJspContext().getOut().println(outputTagString);
+            getJspBody().invoke(null);
+            getJspContext().getOut().println("</a>");
+        }
+        
     }
 
     public String getPaoIdField() {
@@ -74,6 +89,14 @@ public class MultiPaoPickerTag extends ItemPickerTag {
 
     public void setExcludeIds(String excludeIds) {
         this.excludeIds = excludeIds;
+    }
+
+    public Boolean getAsButton() {
+        return asButton;
+    }
+
+    public void setAsButton(Boolean asButton) {
+        this.asButton = asButton;
     }
 
 }
