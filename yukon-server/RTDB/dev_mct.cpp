@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.127 $
-* DATE         :  $Date: 2008/04/09 19:49:53 $
+* REVISION     :  $Revision: 1.128 $
+* DATE         :  $Date: 2008/06/04 22:37:55 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4241,8 +4241,8 @@ CtiTime CtiDeviceMCT::getLastScheduledFreezeTimestamp( void )
 
         //  if it hasn't happened this month AND we're not at the end of the
         //    month, move us to the end of the previous month
-        if( scheduled_freeze.dayOfMonth() < day &&
-            scheduled_freeze.dayOfMonth() < scheduled_freeze.daysInMonthYear(scheduled_freeze.dayOfMonth(), scheduled_freeze.year()) )
+        if( scheduled_freeze.dayOfMonth() <= day &&
+            scheduled_freeze.dayOfMonth() <  scheduled_freeze.daysInMonthYear(scheduled_freeze.dayOfMonth(), scheduled_freeze.year()) )
         {
             scheduled_freeze -= scheduled_freeze.dayOfMonth();
         }
@@ -4254,7 +4254,7 @@ CtiTime CtiDeviceMCT::getLastScheduledFreezeTimestamp( void )
         }
 
         //  freeze happens at midnight at the end of the day, or the beginning of the next
-        scheduled_freeze++;
+        ++scheduled_freeze;
 
         if( CtiTime(scheduled_freeze) > getDynamicInfo(Keys::Key_MCT_ScheduledFreezeConfigTimestamp) )
         {
