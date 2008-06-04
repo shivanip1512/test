@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
@@ -1179,17 +1180,21 @@ public static Date roundToMinute(Date toRound) {
      * @return
      * @throws UnsupportedEncodingException
      */
-    public static String buildSafeQueryStringFromMap(Map<String,String> propertiesMap, Boolean htmlOutput) throws UnsupportedEncodingException {
-        final String urlEncoding = "UTF-8"; 
-        List<String> parameterPairs = new ArrayList<String>(propertiesMap.size()); 
-        for (String parameter : propertiesMap.keySet()) {
-            String thisPair = URLEncoder.encode(parameter, urlEncoding) + "=" + URLEncoder.encode(propertiesMap.get(parameter), urlEncoding);
-            parameterPairs.add(thisPair);
+    public static String buildSafeQueryStringFromMap(Map<String,String> propertiesMap, Boolean htmlOutput) {
+        try {
+            final String urlEncoding = "UTF-8"; 
+            List<String> parameterPairs = new ArrayList<String>(propertiesMap.size()); 
+            for (String parameter : propertiesMap.keySet()) {
+                String thisPair = URLEncoder.encode(parameter, urlEncoding) + "=" + URLEncoder.encode(propertiesMap.get(parameter), urlEncoding);
+                parameterPairs.add(thisPair);
+            }
+
+            String queryString = StringUtils.join(parameterPairs, htmlOutput ? "&" : "&amp;");
+
+            return queryString;
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Unable to build query string", e);
         }
-
-        String queryString = StringUtils.join(parameterPairs, htmlOutput ? "&" : "&amp;");
-
-        return queryString;
     }
     
     
@@ -1388,5 +1393,39 @@ public static Date roundToMinute(Date toRound) {
             }
         }
     }
-
+    
+    /**
+     * Helper method to convert the parameter map return by request.getParameterMap()
+     * which is a Map<String, String[]> into a Map<string, String>. 
+     * Note: Multiple values for a parameter are reduced the value of the last of them.
+     * @param request
+     * @return
+     */
+    @SuppressWarnings("unchecked")
+    public static Map<String, String> getParameterMap(HttpServletRequest request) {
+        
+        Map<String, String[]> parameterMapWithArrays = request.getParameterMap();
+        
+        Map<String, String> parameterMap = new HashMap<String, String>();
+        
+        for(String pKey : parameterMapWithArrays.keySet()) {
+            String[] vals = parameterMapWithArrays.get(pKey);
+            for(int i = 0; i < vals.length; i++) {
+                parameterMap.put(pKey, vals[i]);
+            }
+        }
+        
+        return parameterMap;
+    }
+    
+    public static <T> Map<T, Boolean> convertSetToMap(Set<T> allExistingAttributes) {
+        Map<T, Boolean> existingMap = new HashMap<T, Boolean>();
+        
+        // convert to a map of true's because JSP EL can use this to check "contains"
+        for (T attribute : allExistingAttributes) {
+            existingMap.put(attribute, Boolean.TRUE);
+        }
+        
+        return existingMap;
+    }
 }
