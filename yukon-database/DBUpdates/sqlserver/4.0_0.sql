@@ -2444,6 +2444,23 @@ ALTER TABLE DynamicCCCapBank ALTER COLUMN twoWayCBCLastControl NUMERIC NOT NULL;
 go
 /* End YUK-6004 */
 
+/* Start YUK-6006 */
+/* @start-block */
+IF NOT EXISTS(SELECT * 
+              FROM INFORMATION_SCHEMA.COLUMNS
+              WHERE TABLE_NAME = 'dynamicCCFeeder' AND COLUMN_NAME = 'retryIndex')
+ALTER TABLE DynamicCCFeeder ADD retryIndex NUMERIC;
+go
+/* @end-block */
+
+UPDATE DynamicCCFeeder 
+SET retryIndex = 0
+WHERE retryIndex IS NULL;
+
+ALTER TABLE DynamicCCFeeder ALTER COLUMN retryIndex NUMERIC NOT NULL;
+go
+/* End YUK-6006 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */

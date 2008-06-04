@@ -645,6 +645,31 @@ END;
 /* @end-block */
 /* End YUK-6004 */
 
+/* Start YUK-6006 */
+/* @start-block */
+DECLARE
+    tbl_exist int;
+BEGIN
+    SELECT COUNT(*) INTO tbl_exist 
+    FROM DBA_TAB_COLUMNS
+    WHERE table_name = 'DYNAMICCCFEEDER'
+    AND column_name = 'RETRYINDEX';
+    
+    IF tbl_exist = 0 THEN
+        execute immediate 'ALTER TABLE DynamicCCFeeder 
+                           ADD retryIndex NUMBER';
+        execute immediate 'UPDATE DynamicCCFeeder 
+                           SET retryIndex = 0 
+                           WHERE retryIndex IS NULL';
+        execute immediate 'ALTER TABLE DynamicCCFeeder 
+                           MODIFY retryIndex NUMBER NOT NULL';
+    END IF;
+END;
+/
+/* @end-block */
+/* End YUK-6006 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

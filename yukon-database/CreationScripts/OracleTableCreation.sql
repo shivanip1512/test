@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/4/2008 4:17:25 PM                          */
+/* Created on:     6/4/2008 5:25:18 PM                          */
 /*==============================================================*/
 
 
@@ -4369,6 +4369,7 @@ create table DynamicCCFeeder  (
    phasecvalue          FLOAT                           not null,
    LastWattPointTime    DATE                            not null,
    LastVoltPointTime    DATE                            not null,
+   retryIndex           NUMBER                          not null,
    constraint PK_DYNAMICCCFEEDER primary key (FeederID)
 );
 

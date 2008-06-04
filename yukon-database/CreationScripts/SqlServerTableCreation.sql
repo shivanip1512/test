@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/4/2008 4:32:00 PM                          */
+/* Created on:     6/4/2008 5:24:03 PM                          */
 /*==============================================================*/
 
 
@@ -6811,6 +6811,7 @@ create table DynamicCCFeeder (
    phasecvalue          float                not null,
    LastWattPointTime    datetime             not null,
    LastVoltPointTime    datetime             not null,
+   retryIndex           numeric              not null,
    constraint PK_DYNAMICCCFEEDER primary key (FeederID)
 )
 go
