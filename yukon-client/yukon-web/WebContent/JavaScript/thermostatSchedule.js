@@ -225,6 +225,11 @@ function timeChange(t, idx) {
 
   var val = timeStrToVal(timeStr);
   
+  if(val == -1) {
+    showTime($(thermostats[idx]), $(timeFields[idx]), idx);
+    return;
+  }
+  
   for (i = idx - 1; i >= 1; i--) {
     var layer = $(thermostats[i]);
     if (layer != null && layer.style.display == '') {

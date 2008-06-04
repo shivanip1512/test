@@ -51,7 +51,7 @@ TimeFormatter.prototype = {
         var exp = /^([0][0-9]|[1][0-2])[:][0-5][0-9]\s[AaPp][Mm]$/;
         
         if(!exp.test(time)) {
-            return 0;
+            return -1;
         }
         
         // Get the hours, minutes and determine if the time is pm
@@ -125,7 +125,7 @@ FrenchTimeFormatter.prototype = {
         var exp = /^([0-1][0-9]|[2][0-3])[h][0-5][0-9]$/;
         
         if(!exp.test(time)) {
-            return 0;
+            return -1;
         }
         
         // Get the hours and minutes
