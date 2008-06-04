@@ -525,6 +525,9 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 	<br/>
 	
 	<div class="TableCell">
+        <% if (!(ILCCmds.PROG_STOP.equals(cmd)) && 
+               !(ILCCmds.AREA_STOP_PROGS.equals(cmd)) && 
+               !(ILCCmds.SC_STOP.equals(cmd))) { %>
 		Constraint Handling:
        <select name="constraint">
         <%
@@ -546,6 +549,9 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 			}
 		%>
         </select>
+        <% 
+        }
+        %>
 	</div>
 	<br/>
 	
