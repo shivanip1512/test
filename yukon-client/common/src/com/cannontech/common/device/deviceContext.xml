@@ -157,7 +157,7 @@
                 <entry key="METERS_SCANNING_VOLTAGE_PROFILE" value-ref="voltageProfileScanningMetersGroupProvider"/>
                 <entry key="METERS_SCANNING_INTEGRITY" value-ref="integrityScanningMetersGroupProvider"/>
                 <entry key="METERS_SCANNING_ACCUMULATOR" value-ref="accumulatorScanningMetersGroupProvider"/>
-                <entry key="DISABLED" value-ref="disabledGroupProvider"/>
+                <entry key="METERS_DISABLED" value-ref="disabledGroupProvider"/>
             </map>
         </property>
         <property name="staticProvider" ref="staticDeviceGroupProvider"/>
