@@ -11,6 +11,13 @@ public class SimpleYukonUserContext implements YukonUserContext {
     private Locale locale;
     private LiteYukonUser yukonUser;
     private TimeZone timeZone;
+    private String themeName;
+    public String getThemeName() {
+        return themeName;
+    }
+    public void setThemeName(String themeName) {
+        this.themeName = themeName;
+    }
     public Locale getLocale() {
         return locale;
     }
@@ -29,10 +36,11 @@ public class SimpleYukonUserContext implements YukonUserContext {
     public void setTimeZone(TimeZone timeZone) {
         this.timeZone = timeZone;
     }
-    public SimpleYukonUserContext(LiteYukonUser yukonUser, Locale locale, TimeZone timeZone) {
+    public SimpleYukonUserContext(LiteYukonUser yukonUser, Locale locale, TimeZone timeZone, String themeName) {
         this.yukonUser = yukonUser;
         this.locale = locale;
         this.timeZone = timeZone;
+        this.themeName = themeName;
     }
     public SimpleYukonUserContext() {
     }
@@ -43,6 +51,7 @@ public class SimpleYukonUserContext implements YukonUserContext {
         to.append("yukonUser", yukonUser);
         to.append("timeZone", timeZone);
         to.append("locale", locale);
+        to.append("themeName", themeName);
         return to.toString();
     }
 }

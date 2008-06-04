@@ -5,6 +5,7 @@ import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.support.RequestContextUtils;
 
@@ -16,6 +17,11 @@ import com.cannontech.util.ServletUtil;
 
 public class YukonUserContextConstructor implements YukonUserContextResolver {
     private AuthDao authDao;
+    private ThemeResolver defaultThemeResolver;
+
+    public void setDefaultThemeResolver(ThemeResolver defaultThemeResolver) {
+        this.defaultThemeResolver = defaultThemeResolver;
+    }
 
     @Override
     public YukonUserContext resolveContext(HttpServletRequest request) {
@@ -26,7 +32,12 @@ public class YukonUserContextConstructor implements YukonUserContextResolver {
         context.setYukonUser(yukonUser);
         TimeZone timeZone = authDao.getUserTimeZone(yukonUser);
         context.setTimeZone(timeZone);
-        
+        ThemeResolver themeResolver = RequestContextUtils.getThemeResolver(request);
+        if (themeResolver == null) {
+            themeResolver = defaultThemeResolver;
+        }
+        String themeName = themeResolver.resolveThemeName(request);
+        context.setThemeName(themeName);
         return context;
     }
     

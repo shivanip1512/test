@@ -15,6 +15,7 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.jobs.model.YukonJob;
 import com.cannontech.jobs.support.YukonJobDefinition;
 import com.cannontech.jobs.support.YukonJobDefinitionFactory;
@@ -47,6 +48,7 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
         String localeStr = rs.getString("locale");
         Locale locale = LocaleUtils.toLocale(localeStr);
         String timezoneStr = rs.getString("timezone");
+        String themeName = rs.getString("themeName");
         // Because this table was expanded to include a timezone column (YUK-5204),
         // we must handle the default case where timezone is blank.
         
@@ -62,7 +64,13 @@ final class YukonJobBaseRowMapper extends SeparableRowMapper<YukonJob> {
         } else {
             timezone = TimeZone.getTimeZone(timezoneStr);
         }
-        SimpleYukonUserContext userContext = new SimpleYukonUserContext(liteYukonUser, locale, timezone);
+        
+        // handle blank themeName
+        if (StringUtils.isBlank(themeName)) {
+            themeName = ThemeUtils.getDefaultThemeName();
+        }
+        
+        SimpleYukonUserContext userContext = new SimpleYukonUserContext(liteYukonUser, locale, timezone, themeName);
         job.setUserContext(userContext);
         String sql =
             "select * from JobProperty " +

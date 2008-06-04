@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.ThemeUtils;
 
 public class SystemUserContext implements YukonUserContext {
 
@@ -20,6 +21,10 @@ public class SystemUserContext implements YukonUserContext {
     @Override
     public LiteYukonUser getYukonUser() {
         return UserUtils.getYukonUser();
+    }
+    
+    public String getThemeName() {
+        return ThemeUtils.getDefaultThemeName();
     }
 
 }

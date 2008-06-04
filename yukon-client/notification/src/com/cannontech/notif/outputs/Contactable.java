@@ -6,6 +6,7 @@ import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.*;
 import com.cannontech.database.data.notification.NotifType;
+import com.cannontech.i18n.ThemeUtils;
 import com.cannontech.user.SimpleYukonUserContext;
 import com.cannontech.user.YukonUserContext;
 
@@ -69,7 +70,7 @@ public class Contactable {
         }
         
         TimeZone timeZone = getTimeZone();
-        SimpleYukonUserContext userContext = new SimpleYukonUserContext(yukonUser, Locale.getDefault(), timeZone);
+        SimpleYukonUserContext userContext = new SimpleYukonUserContext(yukonUser, Locale.getDefault(), timeZone, ThemeUtils.getDefaultThemeName());
 
         return userContext;
     }

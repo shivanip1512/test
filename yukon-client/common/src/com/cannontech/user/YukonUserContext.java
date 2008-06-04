@@ -19,5 +19,7 @@ public interface YukonUserContext {
     public LiteYukonUser getYukonUser();
 
     public TimeZone getTimeZone();
+    
+    public String getThemeName();
 
 }
