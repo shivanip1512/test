@@ -6,17 +6,17 @@ import org.springframework.dao.DataAccessException;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.definition.service.SimpleDeviceDefinitionService;
+import com.cannontech.common.device.service.DeviceUpdateService;
 
 public class RouteBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     
-    private SimpleDeviceDefinitionService simpleDeviceService;
+    private DeviceUpdateService deviceUpdateService;
     
     @Override
     public void updateField(YukonDevice device, YukonDeviceDto value) {
         
         try {
-            this.simpleDeviceService.changeRoute(device.getDeviceId(), value.getRoute());
+            this.deviceUpdateService.changeRoute(device.getDeviceId(), value.getRoute());
         }
         catch (IllegalArgumentException e) {
             throw new ProcessingException(e.getMessage(), e);
@@ -27,7 +27,7 @@ public class RouteBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     }
     
     @Required
-    public void setSimpleDeviceService(SimpleDeviceDefinitionService simpleDeviceService) {
-        this.simpleDeviceService = simpleDeviceService;
+    public void setDeviceUpdateService(DeviceUpdateService deviceUpdateService) {
+        this.deviceUpdateService = deviceUpdateService;
     }
 }

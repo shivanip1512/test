@@ -77,7 +77,7 @@
 
     <bean id="addressBulkFieldProcessor" parent="bulkFieldProcessorBase"
         class="com.cannontech.common.bulk.field.processor.impl.AddressBulkFieldProcessor">
-        <property name="simpleDeviceService" ref="simpleDeviceService" />
+        <property name="deviceUpdateService" ref="deviceUpdateService" />
         <property name="updateableFields">
             <set>
                 <ref bean="addressBulkField" />
@@ -221,7 +221,7 @@
 
     <bean id="routeBulkFieldProcessor" parent="bulkFieldProcessorBase"
         class="com.cannontech.common.bulk.field.processor.impl.RouteBulkFieldProcessor">
-        <property name="simpleDeviceService" ref="simpleDeviceService" />
+        <property name="deviceUpdateService" ref="deviceUpdateService" />
         <property name="updateableFields">
             <set>
                 <ref bean="routeBulkField" />

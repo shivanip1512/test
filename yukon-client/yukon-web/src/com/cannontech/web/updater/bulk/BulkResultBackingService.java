@@ -30,6 +30,10 @@ public class BulkResultBackingService implements UpdateBackingService {
         // get result
         BulkOperationCallbackResults bulkOperationCallbackResults = recentResultsCache.getResult(requestId);
         
+        if (bulkOperationCallbackResults == null) {
+            return "";
+        }
+        
         BulkResultTypeEnum bulkResultTypeEnum = BulkResultTypeEnum.valueOf(resultTypeStr);
         Object value = bulkResultTypeEnum.getValue(bulkOperationCallbackResults);
         

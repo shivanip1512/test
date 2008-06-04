@@ -28,12 +28,15 @@
         <property name="nextValueHelper" ref="nextValueHelper" />
     </bean>
     
+    <bean id="deviceUpdateService" class="com.cannontech.common.device.service.DeviceUpdateServiceImpl" scope="singleton">
+        <property name="deviceDao" ref="deviceDao" />
+        <property name="paoDao" ref="paoDao" />
+    </bean>
+    
     <bean id="simpleDeviceService" class="com.cannontech.common.device.definition.service.SimpleDeviceDefinitionServiceImpl" scope="singleton">
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="pointService" ref="devicePointService" />
         <property name="pointDao" ref="pointDao" />
-        <property name="deviceDao" ref="deviceDao" />
-        <property name="paoDao" ref="paoDao" />
     </bean>
     
     <bean id="deviceService" class="com.cannontech.common.device.definition.service.DeviceDefinitionServiceImpl" scope="singleton">

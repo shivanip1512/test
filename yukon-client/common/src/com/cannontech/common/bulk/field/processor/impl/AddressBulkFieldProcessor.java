@@ -6,18 +6,18 @@ import org.springframework.dao.DataAccessException;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.definition.service.SimpleDeviceDefinitionService;
+import com.cannontech.common.device.service.DeviceUpdateService;
 
 
 public class AddressBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
 
-    private SimpleDeviceDefinitionService simpleDeviceService;
+    private DeviceUpdateService deviceUpdateService;
     
     @Override
     public void updateField(YukonDevice device, YukonDeviceDto value) throws ProcessingException  {
 
         try {
-            simpleDeviceService.changeAddress(device, value.getAddress());
+            deviceUpdateService.changeAddress(device, value.getAddress());
         }
         catch (DataAccessException e) {
             throw new ProcessingException("Unable to update address.");
@@ -32,7 +32,7 @@ public class AddressBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     }
     
     @Required
-    public void setSimpleDeviceService(SimpleDeviceDefinitionService simpleDeviceService) {
-        this.simpleDeviceService = simpleDeviceService;
+    public void setDeviceUpdateService(DeviceUpdateService deviceUpdateService) {
+        this.deviceUpdateService = deviceUpdateService;
     }
 }
