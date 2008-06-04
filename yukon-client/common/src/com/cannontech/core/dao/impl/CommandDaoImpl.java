@@ -11,9 +11,7 @@ import com.cannontech.core.dao.CommandDao;
 import com.cannontech.database.data.lite.LiteCommand;
 import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteDeviceTypeCommand;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
-import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.yukon.IDatabaseCache;
 
 /**
@@ -38,13 +36,13 @@ public final class CommandDaoImpl implements CommandDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.CommandDao#getAllDevTypeCommands(java.lang.String)
      */
-	public Vector getAllDevTypeCommands(String deviceType)
+	public Vector<LiteDeviceTypeCommand> getAllDevTypeCommands(String deviceType)
 	{
 		//Contains LiteDeviceTypeCommand values
-		Vector commands = new Vector();
+		Vector<LiteDeviceTypeCommand> commands = new Vector<LiteDeviceTypeCommand>();
 		synchronized (databaseCache)
 		{
-			java.util.List devTypeCmds = databaseCache.getAllDeviceTypeCommands();
+			List<LiteDeviceTypeCommand> devTypeCmds = databaseCache.getAllDeviceTypeCommands();
 			LiteDeviceTypeCommand liteDevTypeCmd = null;
 	
 			for (int i = 0; i < devTypeCmds.size(); i++)
@@ -61,13 +59,13 @@ public final class CommandDaoImpl implements CommandDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.CommandDao#getAllDevTypeCommands(int)
      */
-	public Vector getAllDevTypeCommands(int commandID)
+	public Vector<LiteDeviceTypeCommand> getAllDevTypeCommands(int commandID)
 	{
 		//Contains LiteDeviceTypeCommand values
-		Vector commands = new Vector();
+		Vector<LiteDeviceTypeCommand> commands = new Vector<LiteDeviceTypeCommand>();
 		synchronized (databaseCache)
 		{
-			java.util.List devTypeCmds = databaseCache.getAllDeviceTypeCommands();
+			List<LiteDeviceTypeCommand> devTypeCmds = databaseCache.getAllDeviceTypeCommands();
 			LiteDeviceTypeCommand liteDevTypeCmd = null;
 	
 			for (int i = 0; i < devTypeCmds.size(); i++)
@@ -83,14 +81,14 @@ public final class CommandDaoImpl implements CommandDao {
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.CommandDao#getAllCommandsByCategory(java.lang.String)
      */
-	public Vector getAllCommandsByCategory(String category)
+	public Vector<LiteCommand> getAllCommandsByCategory(String category)
 	{
 		//Contains LiteCommands
-		Vector commands = new Vector();
+		Vector<LiteCommand> commands = new Vector<LiteCommand>();
 
 		synchronized (databaseCache)
 		{
-			java.util.List cmds = databaseCache.getAllCommands();
+			List<LiteCommand> cmds = databaseCache.getAllCommands();
 			LiteCommand liteCmd = null;
 
 			for (int i = 0; i < cmds.size(); i++)
@@ -124,10 +122,9 @@ public final class CommandDaoImpl implements CommandDao {
      */
 	public LiteDeviceTypeCommand getDeviceTypeCommand(int devTypeCmdID)
 	{
-		LiteCommand liteCommand = null;
 		synchronized (databaseCache)
 		{
-			java.util.List devTypeCmds = databaseCache.getAllDeviceTypeCommands();
+			List<LiteDeviceTypeCommand> devTypeCmds = databaseCache.getAllDeviceTypeCommands();
 			LiteDeviceTypeCommand ldtc = null;
 
 			for (int i = 0; i < devTypeCmds.size(); i++)
@@ -190,7 +187,7 @@ public final class CommandDaoImpl implements CommandDao {
 		return valueString;
 	}
 	
-	public List<LiteCommand> getAuthorizedCommands(Vector<LiteCommand> possibleCommands, LiteYukonUser user) {
+	public List<LiteCommand> getAuthorizedCommands(List<LiteCommand> possibleCommands, LiteYukonUser user) {
 		
         List<LiteCommand> authorizedCommands = new ArrayList<LiteCommand>();
         for (LiteCommand command : possibleCommands) {

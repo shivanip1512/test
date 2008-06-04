@@ -48,16 +48,15 @@
 
     <bean id="jobScheduledExecutor"
         class="com.cannontech.common.util.ScheduledExecutorDelegate">
+        <qualifier value="job"/>
         <property name="service">
             <bean class="java.util.concurrent.Executors"
-                factory-method="newScheduledThreadPool"
-                destroy-method="shutdownNow">
+                factory-method="newScheduledThreadPool">
                 <constructor-arg value="2" />
             </bean>
         </property>
     </bean>
 
-    <!--  temp: remove initialize method -->
     <bean id="jobManager" class="com.cannontech.jobs.service.impl.JobManagerImpl" init-method="initialize">
         <property name="timeSource" ref="timeSource"/>
         <property name="scheduledOneTimeJobDao" ref="scheduledOneTimeJobDao"/>

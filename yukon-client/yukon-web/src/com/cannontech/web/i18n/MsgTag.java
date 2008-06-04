@@ -18,6 +18,8 @@ public class MsgTag extends ThemeTag {
         } else if (key instanceof String) {
             setCode((String) key);
             setMessage(null);
+        } else if (key == null) {
+            throw new IllegalArgumentException("Expected a String MessageSourceResolvable, got a null");
         } else {
             throw new IllegalArgumentException("Expected a String or MessageSourceResolvable, got a " + key.getClass().getName());
         }

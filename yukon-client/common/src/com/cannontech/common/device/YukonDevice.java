@@ -1,10 +1,12 @@
 package com.cannontech.common.device;
 
+import java.io.Serializable;
+
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.springframework.core.style.ToStringCreator;
 
-public class YukonDevice implements Cloneable {
+public class YukonDevice implements Cloneable, Serializable {
     private int deviceId;
     private int type;
 

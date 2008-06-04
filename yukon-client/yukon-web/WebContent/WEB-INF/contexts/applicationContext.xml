@@ -10,10 +10,6 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
 	
-	<tx:annotation-driven transaction-manager="transactionManager"/>
-    <context:annotation-config/>
-    <aop:aspectj-autoproxy/>
-    
     <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter">
         <property name="customArgumentResolvers">
             <list>
@@ -25,7 +21,6 @@
     
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
 
-    
     <bean id="webSecurityAdvice" class="com.cannontech.web.security.WebSecurityAdvice"/>
     
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
@@ -33,7 +28,12 @@
     </bean>
     
     <bean id="userContextArgumentResolver" class="com.cannontech.web.login.UserContextArgumentResolver"/>
-
+    
+    <!-- If we want the view resolver to continue to not jave the suffix, we'll need this. -->
+    <bean id="viewNameTranslator" class="org.springframework.web.servlet.view.DefaultRequestToViewNameTranslator">
+        <property name="suffix" value=".jsp"/>
+    </bean>
+    
     <bean id="themeResolver" class="com.cannontech.web.i18n.YukonGroupThemeResolver">
         <property name="defaultThemeName" value="default"/>
     </bean>
@@ -47,6 +47,7 @@
     
     <bean id="userContextResolver" class="com.cannontech.web.util.YukonUserContextConstructor">
         <property name="authDao" ref="authDao"/>
+        <property name="defaultThemeResolver" ref="themeResolver"/>
     </bean>
 
     <bean id="localMasterConfig" class="com.cannontech.common.config.MasterConfigHelper"
@@ -185,7 +186,7 @@
         <property name="meterDao" ref="meterDao"/>
         <property name="stateDao" ref="stateDao"/>
         <property name="dynamicDataSource" ref="dynamicDataSource"/>
-        <property name="commandRequestExecutor" ref="deviceCommandRequestExecutor"/>
+        <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
     
@@ -215,7 +216,7 @@
         </property>
         <property name="meterDao" ref="meterDao"/>
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
-        <property name="commandRequestExecutor" ref="deviceCommandRequestExecutor"/>
+        <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
     </bean>
     
     <bean id="meterReadingsWidget"
@@ -392,6 +393,9 @@
                 <entry key="BULKRESULT">
                     <ref local="bulkResultBackingService"/>
                 </entry>
+                <entry key="COMMANDER">
+                    <ref local="commanderUpdateBackingService"/>
+                </entry>
             </map>
         </property>
     </bean>
@@ -466,6 +470,8 @@
         <property name="templateProcessorFactory" ref="templateProcessorFactory" />
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
     </bean>
+    
+    <bean id="commanderUpdateBackingService" class="com.cannontech.web.updater.commander.GroupCommandResultBackingService"/>
     
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
           abstract="true">

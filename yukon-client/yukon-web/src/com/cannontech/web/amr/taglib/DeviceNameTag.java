@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
+import com.cannontech.common.device.YukonDevice;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
@@ -20,7 +21,7 @@ public class DeviceNameTag extends YukonTagSupport {
     private PaoDao paoDao = null;
     private int deviceId = 0;
     private boolean deviceIdSet = false;
-    private Meter device = null;
+    private YukonDevice device = null;
     
     @Override
     public void doTag() throws JspException, IOException {
@@ -36,8 +37,9 @@ public class DeviceNameTag extends YukonTagSupport {
         if (deviceIdSet) {
             
             try {
-                device = meterDao.getForId(deviceId);
-                formattedName = meterDao.getFormattedDeviceName(device);
+                Meter meter = meterDao.getForId(deviceId);
+                device = meter;
+                formattedName = meterDao.getFormattedDeviceName(meter);
             } catch (NotFoundException e) {
                 // device is not a meter
                 try {
@@ -50,7 +52,8 @@ public class DeviceNameTag extends YukonTagSupport {
             
         } else {
             deviceId = device.getDeviceId();
-            formattedName = meterDao.getFormattedDeviceName(device);
+            Meter meter = meterDao.getForYukonDevice(device);
+            formattedName = meterDao.getFormattedDeviceName(meter);
         }
 
         JspWriter out = getJspContext().getOut();
@@ -66,10 +69,10 @@ public class DeviceNameTag extends YukonTagSupport {
         deviceIdSet = true;
         this.deviceId = deviceId;
     }
-    public Meter getDevice() {
+    public YukonDevice getDevice() {
         return device;
     }
-    public void setDevice(Meter device) {
+    public void setDevice(YukonDevice device) {
         this.device = device;
     }
     

@@ -9,16 +9,16 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 
 public interface CommandDao {
 
-    public Vector getAllDevTypeCommands(String deviceType);
+    public Vector<LiteDeviceTypeCommand> getAllDevTypeCommands(String deviceType);
 
-    public Vector getAllDevTypeCommands(int commandID);
+    public Vector<LiteDeviceTypeCommand> getAllDevTypeCommands(int commandID);
 
     /**
      * Returns Vector of LiteCommands for Category = category
      * @param category
      * @return
      */
-    public Vector getAllCommandsByCategory(String category);
+    public Vector<LiteCommand> getAllCommandsByCategory(String category);
 
     public LiteCommand getCommand(int cmdID);
 
@@ -37,5 +37,5 @@ public interface CommandDao {
      * @param user
      * @return
      */
-    public List<LiteCommand> getAuthorizedCommands(Vector<LiteCommand> possibleCommands, LiteYukonUser user);
+    public List<LiteCommand> getAuthorizedCommands(List<LiteCommand> possibleCommands, LiteYukonUser user);
 }

@@ -13,6 +13,6 @@
 </label>
 
 <script type="text/javascript">
-stickyCheckboxes_setup("${id}", ${defaultValue});
+stickyCheckboxes_setup('${id}', ${defaultValue});
 </script>
 	
