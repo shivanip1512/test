@@ -621,6 +621,30 @@ ALTER TABLE State
 go
 /* End YUK-5960 */ 
 
+/* Start YUK-6004 */
+/* @start-block */
+DECLARE
+    tbl_exist int;
+BEGIN
+    SELECT COUNT(*) INTO tbl_exist 
+    FROM DBA_TAB_COLUMNS
+    WHERE table_name = 'DYNAMICCCCAPBANK'
+    AND column_name = 'TWOWAYCBCLASTCONTROL';
+    
+    IF tbl_exist = 0 THEN
+        execute immediate 'ALTER TABLE DynamicCCCapBank 
+                           ADD twoWayCBCLastControl NUMBER';
+        execute immediate 'UPDATE DynamicCCCapBank 
+                           SET twoWayCBCLastControl = 0 
+                           WHERE twoWayCBCLastControl IS NULL';
+        execute immediate 'ALTER TABLE DynamicCCCapBank 
+                           MODIFY twoWayCBCLastControl NUMBER NOT NULL';
+    END IF;
+END;
+/
+/* @end-block */
+/* End YUK-6004 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

@@ -2427,6 +2427,23 @@ ALTER TABLE CCurtProgram ALTER COLUMN identifierPrefix VARCHAR(32) NOT NULL;
 go
 /* End YUK-5963 */
 
+/* Start YUK-6004 */
+/* @start-block */
+IF NOT EXISTS(SELECT * 
+              FROM INFORMATION_SCHEMA.COLUMNS
+              WHERE TABLE_NAME = 'dynamicCCCapBank' AND COLUMN_NAME = 'twoWayCBCLastControl')
+ALTER TABLE DynamicCCCapBank ADD twoWayCBCLastControl NUMERIC;
+go
+/* @end-block */
+
+UPDATE DynamicCCCapBank 
+SET twoWayCBCLastControl = 0
+WHERE twoWayCBCLastControl IS NULL;
+
+ALTER TABLE DynamicCCCapBank ALTER COLUMN twoWayCBCLastControl NUMERIC NOT NULL;
+go
+/* End YUK-6004 */
+
 /******************************************************************************/
 /* Run the Stars Update if needed here */
 /* Note: DBUpdate application will ignore this if STARS is not present */
