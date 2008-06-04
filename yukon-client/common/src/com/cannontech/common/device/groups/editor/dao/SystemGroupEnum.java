@@ -12,7 +12,7 @@ public enum SystemGroupEnum {
     SYSTEM("/System/"),
     DEVICETYPES("/System/Device Types/"),
     ROUTES("/System/Routes/"),
-    SCANNINGMETERS("/System/Scanning Meters/"),
+    SCANNINGMETERS("/System/Meters/Scanning/"),
     TEMPORARYGROUPS("/System/Temporary/"),
     SYSTEMMETERS("/System/Meters/"),
     SYSTEMMETERSDISABLED("/System/Meters/Disabled/"),

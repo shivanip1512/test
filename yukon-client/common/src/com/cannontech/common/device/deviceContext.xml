@@ -153,10 +153,10 @@
                 <entry key="ROLODEX" value-ref="rolodexDeviceGroupProvider"/>
                 <entry key="ROUTE" value-ref="routeGroupProvider"/>
                 <entry key="DEVICETYPE" value-ref="deviceTypeGroupProvider"/>
-                <entry key="SCANNING_LOAD_PROFILE" value-ref="loadProfileScanningMetersGroupProvider"/>
-                <entry key="SCANNING_VOLTAGE_PROFILE" value-ref="voltageProfileScanningMetersGroupProvider"/>
-                <entry key="SCANNING_INTEGRITY" value-ref="integrityScanningMetersGroupProvider"/>
-                <entry key="SCANNING_ACCUMULATOR" value-ref="accumulatorScanningMetersGroupProvider"/>
+                <entry key="METERS_SCANNING_LOAD_PROFILE" value-ref="loadProfileScanningMetersGroupProvider"/>
+                <entry key="METERS_SCANNING_VOLTAGE_PROFILE" value-ref="voltageProfileScanningMetersGroupProvider"/>
+                <entry key="METERS_SCANNING_INTEGRITY" value-ref="integrityScanningMetersGroupProvider"/>
+                <entry key="METERS_SCANNING_ACCUMULATOR" value-ref="accumulatorScanningMetersGroupProvider"/>
                 <entry key="DISABLED" value-ref="disabledGroupProvider"/>
             </map>
         </property>
