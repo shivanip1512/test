@@ -29,13 +29,13 @@ public abstract class InputFormController extends SimpleFormController {
      * controls.
      * @return The input root for the form
      */
-    public abstract InputRoot getInputRoot();
+    public abstract InputRoot getInputRoot(HttpServletRequest request) throws Exception;
 
     @Override
     protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder)
             throws Exception {
 
-        Map<String, ? extends InputSource<?>> inputMap = getInputRoot().getInputMap();
+        Map<String, ? extends InputSource<?>> inputMap = getInputRoot(request).getInputMap();
 
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         List<String> notEditableFields = new ArrayList<String>();
@@ -73,8 +73,8 @@ public abstract class InputFormController extends SimpleFormController {
     protected void onBindAndValidate(HttpServletRequest request, Object command,
             BindException errors) throws Exception {
 
-        Map<String, InputSource<?>> inputMap = getInputRoot().getInputMap();
-        List<Input<?>> inputList = getInputRoot().getInputList();
+        Map<String, InputSource<?>> inputMap = getInputRoot(request).getInputMap();
+        List<Input<?>> inputList = getInputRoot(request).getInputList();
 
         BeanWrapper beanWrapper = new BeanWrapperImpl(command);
         Object value = null;
