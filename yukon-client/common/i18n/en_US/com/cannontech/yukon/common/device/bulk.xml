@@ -24,6 +24,8 @@
     <entry key="yukon.common.device.bulk.bulkAction.collection.addressRange">All devices in address range: {0} - {1}</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.group">All devices in device group: {0}</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.idList">Devices selected from picker</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter">Devices matching: {0}</entry>
+    <entry key="yukon.common.device.bulk.bulkAction.collection.deviceFilter.all">All Devices</entry>
 
     <!-- deviceSelection.jsp -->
     <entry key="yukon.common.device.bulk.deviceSelection.pageTitle">Device Selection</entry>

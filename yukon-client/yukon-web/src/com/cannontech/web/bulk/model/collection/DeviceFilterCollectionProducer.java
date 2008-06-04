@@ -88,13 +88,19 @@ public class DeviceFilterCollectionProducer extends DeviceCollectionProducerBase
 
             @Override
             public MessageSourceResolvable getDescription() {
-                List<String> filterByString = new ArrayList<String>(filterBys.size());
-                for (FilterBy filterBy : filterBys) {
-                    filterByString .add(filterBy.toCsrString());
-                }
-                String searchDescription = StringUtils.join(filterByString, " and ");
 
-                return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.deviceFilter", searchDescription);
+                int filterSize = filterBys.size();
+                if (filterSize > 0) {
+                    List<String> filterByString = new ArrayList<String>(filterSize);
+                    for (FilterBy filterBy : filterBys) {
+                        filterByString .add(filterBy.toCsrString());
+                    }
+                    String searchDescription = StringUtils.join(filterByString, " and ");
+                    return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.deviceFilter", searchDescription);
+                } else {
+                    return new YukonMessageSourceResolvable("yukon.common.device.bulk.bulkAction.collection.deviceFilter.all");
+                }
+
             }
 
             @Override
