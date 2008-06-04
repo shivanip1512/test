@@ -46,6 +46,6 @@ public interface CommandRequestExecutor<T> {
      * @throws PaoAuthorizationException - When user doesn't have permissing to
      *             execute the commands
      */
-    public void execute(List<T> commands, CommandCompletionCallback callback,
+    public void execute(List<T> commands, CommandCompletionCallback<? super T> callback,
             LiteYukonUser user) throws PaoAuthorizationException;
 }

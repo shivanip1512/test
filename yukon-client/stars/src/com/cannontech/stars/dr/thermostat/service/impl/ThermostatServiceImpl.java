@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandRequestRoute;
-import com.cannontech.common.device.commands.RouteCommandRequestExecutor;
+import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -51,7 +51,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     private InventoryDao inventoryDao;
     private ECMappingDao ecMappingDao;
     private ThermostatScheduleDao thermostatScheduleDao;
-    private RouteCommandRequestExecutor commandRequestExecutor;
+    private CommandRequestRouteExecutor commandRequestExecutor;
 
     private SimpleDateFormat SCHEDULE_START_TIME_FORMAT = new SimpleDateFormat("HH:mm");
 
@@ -78,7 +78,7 @@ public class ThermostatServiceImpl implements ThermostatService {
 
     @Autowired
     public void setCommandRequestExecutor(
-            RouteCommandRequestExecutor commandRequestExecutor) {
+            CommandRequestRouteExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
     }
 

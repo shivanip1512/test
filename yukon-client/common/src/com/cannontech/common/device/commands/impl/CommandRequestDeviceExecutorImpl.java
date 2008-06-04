@@ -8,7 +8,7 @@ import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.commands.DeviceCommandRequestExecutor;
+import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.PaoDao;
@@ -17,16 +17,16 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
 /**
- * Implementation class for DeviceCommandRequestExecutor
+ * Implementation class for CommandRequestDeviceExecutor
  */
-public class CommandRequestExecutorDevice extends
+public class CommandRequestDeviceExecutorImpl extends
         CommandRequestExecutorBase<CommandRequestDevice> implements
-        DeviceCommandRequestExecutor {
+        CommandRequestDeviceExecutor {
 
     private PaoDao paoDao;
     private PaoCommandAuthorizationService commandAuthorizationService;
     
-    private Logger log = YukonLogManager.getLogger(CommandRequestExecutorDevice.class);
+    private Logger log = YukonLogManager.getLogger(CommandRequestDeviceExecutorImpl.class);
 
     @Required
     public void setPaoDao(PaoDao paoDao) {
@@ -43,7 +43,7 @@ public class CommandRequestExecutorDevice extends
             LiteYukonUser user) throws PaoAuthorizationException {
 
         String command = commandRequest.getCommand();
-        int deviceId = commandRequest.getDeviceId();
+        int deviceId = commandRequest.getDevice().getDeviceId();
         LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(deviceId);
         commandAuthorizationService.verifyAuthorized(user,
                                                      command,
@@ -53,13 +53,13 @@ public class CommandRequestExecutorDevice extends
     protected Request buildRequest(CommandRequestDevice commandRequest) {
         Request request = new Request();
         request.setCommandString(commandRequest.getCommand());
-        request.setDeviceID(commandRequest.getDeviceId());
+        request.setDeviceID(commandRequest.getDevice().getDeviceId());
         long requestId = RandomUtils.nextInt();
         request.setUserMessageID(requestId);
         int priority = commandRequest.isBackgroundPriority() ? getDefaultBackgroundPriority()
                 : getDefaultForegroundPriority();
         request.setPriority(priority);
-        log.debug("Built request '" + commandRequest.getCommand() + "' for device " + commandRequest.getDeviceId() + " with user id " + requestId);
+        log.debug("Built request '" + commandRequest.getCommand() + "' for device " + commandRequest.getDevice() + " with user id " + requestId);
         return request;
     }
 
@@ -67,7 +67,7 @@ public class CommandRequestExecutorDevice extends
             LiteYukonUser user) throws Exception {
 
         CommandRequestDevice cmdRequest = new CommandRequestDevice();
-        cmdRequest.setDeviceId(device.getDeviceId());
+        cmdRequest.setDevice(device);
 
         String commandStr = command;
         commandStr += " update";

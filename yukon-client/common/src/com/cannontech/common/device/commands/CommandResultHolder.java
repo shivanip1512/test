@@ -3,13 +3,14 @@ package com.cannontech.common.device.commands;
 import java.util.List;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.common.util.Completable;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public interface CommandResultHolder {
+public interface CommandResultHolder extends Completable {
 
     /**
      * Returns a list of friendly error messages for errors
-     * that were received while executing the request.
+     * that were received as the last response to each request.
      */
     public List<DeviceErrorDescription> getErrors();
 
@@ -21,10 +22,10 @@ public interface CommandResultHolder {
     
     /**
      * When multiple commands are submitted, this holds the last
-     * result string that came back for each command.
+     * result string that came back for each request that completed successfully.
      * @return a porter result string, straight out of the Return message.
      */
-    public List<String> getLastResultStrings();
+    public List<String> getResultStrings();
     
     public boolean isErrorsExist();
     

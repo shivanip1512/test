@@ -6,7 +6,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 /**
  * Interface used to execute command requests for devices
  */
-public interface DeviceCommandRequestExecutor extends
+public interface CommandRequestDeviceExecutor extends
         CommandRequestExecutor<CommandRequestDevice> {
 
     /**

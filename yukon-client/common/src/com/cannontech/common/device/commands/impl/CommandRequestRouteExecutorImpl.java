@@ -5,19 +5,19 @@ import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.commands.CommandRequestRoute;
-import com.cannontech.common.device.commands.RouteCommandRequestExecutor;
+import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
 /**
- * Implementation class for RouteCommandRequestExecutor
+ * Implementation class for CommandRequestRouteExecutor
  */
-public class CommandRequestExecutorRoute extends
+public class CommandRequestRouteExecutorImpl extends
         CommandRequestExecutorBase<CommandRequestRoute> implements
-        RouteCommandRequestExecutor {
+        CommandRequestRouteExecutor {
 
-    private Logger log = YukonLogManager.getLogger(CommandRequestExecutorRoute.class);
+    private Logger log = YukonLogManager.getLogger(CommandRequestRouteExecutorImpl.class);
 
     protected void verifyRequest(CommandRequestRoute commandRequest,
             LiteYukonUser user) throws PaoAuthorizationException {

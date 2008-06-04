@@ -4,31 +4,42 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
+import com.cannontech.common.util.Completable;
 import com.cannontech.core.dynamic.PointValueHolder;
 
-public abstract class CollectingCommandCompletionCallback implements
-        CommandCompletionCallback, CommandResultHolder {
+public class CollectingCommandCompletionCallback implements
+        CommandCompletionCallback<Object>, CommandResultHolder, Completable {
+    
     private List<DeviceErrorDescription> errors = new ArrayList<DeviceErrorDescription>();
     private List<PointValueHolder> values = new ArrayList<PointValueHolder>();
-    private List<String> lastResultStrings = new ArrayList<String>();
     private List<String> resultStrings = new ArrayList<String>();
+    private boolean complete = false;
 
-    public void receivedError(DeviceErrorDescription error) {
+    @Override
+    public void receivedIntermediateError(Object command, DeviceErrorDescription error) {
+        // ignore
+    }
+
+    @Override
+    public void receivedIntermediateResultString(Object command, String value) {
+        // ignore
+    }
+
+    @Override
+    public void receivedLastError(Object command, DeviceErrorDescription error) {
         errors.add(error);
     }
 
-    public void receivedValue(PointValueHolder value) {
-        values.add(value);
-    }
-    
-    public void receivedResultString(String value) {
+    @Override
+    public void receivedLastResultString(Object command, String value) {
         resultStrings.add(value);
     }
-    
-    public void receivedLastResultString(String resultString) {
-        lastResultStrings.add(resultString);
+
+    @Override
+    public void receivedValue(Object command, PointValueHolder value) {
+        values.add(value);
     }
-    
+
     public boolean isErrorsExist() {
         return !errors.isEmpty();
     }
@@ -45,17 +56,28 @@ public abstract class CollectingCommandCompletionCallback implements
         return resultStrings;
     }
     
-    public List<String> getLastResultStrings() {
-        return lastResultStrings;
-    }
-    
     public String getLastResultString() {
         
-        if(lastResultStrings.size() > 0){
-            return lastResultStrings.get(lastResultStrings.size() - 1);
+        if(resultStrings.size() > 0){
+            return resultStrings.get(resultStrings.size() - 1);
         }
         
         return "";
+    }
+    
+    @Override
+    final public void complete() {
+        complete = true;
+        doComplete();
+    }
+    
+    @Override
+    public boolean isComplete() {
+        return complete;
+    }
+
+    protected void doComplete() {
+        // noop
     }
 
 }

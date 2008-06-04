@@ -13,8 +13,8 @@ import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutor;
 import com.cannontech.common.device.commands.CommandResultHolder;
+import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.CommandDefinition;
 import com.cannontech.common.device.definition.model.DevicePointIdentifier;
@@ -28,7 +28,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class MeterReadServiceImpl implements MeterReadService {
     private Logger log = YukonLogManager.getLogger(MeterReadServiceImpl.class);
     private DeviceDefinitionDao deviceDefinitionDao;
-    private CommandRequestExecutor<CommandRequestDevice> commandExecutor;
+    private CommandRequestDeviceExecutor commandExecutor;
     private PaoCommandAuthorizationService commandAuthorizationService;
     private PaoDao paoDao;
     
@@ -102,7 +102,7 @@ public class MeterReadServiceImpl implements MeterReadService {
             List<String> commandStringList = wrapper.commandDefinition.getCommandStringList();
             for (String commandStr : commandStringList) {
                 CommandRequestDevice request = new CommandRequestDevice();
-                request.setDeviceId(device.getDeviceId());
+                request.setDevice(device);
                 commandStr += (isUpdate ? " update " : "");
                 commandStr += (isNoqueue ? " noqueue " : "");
 
@@ -160,7 +160,7 @@ public class MeterReadServiceImpl implements MeterReadService {
     }
     
     @Required
-    public void setCommandExecutor(CommandRequestExecutor<CommandRequestDevice> commandExecutor) {
+    public void setCommandExecutor(CommandRequestDeviceExecutor commandExecutor) {
         this.commandExecutor = commandExecutor;
     }
     

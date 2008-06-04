@@ -1,7 +1,9 @@
 package com.cannontech.common.device.commands;
 
-import java.util.Set;
+import java.util.List;
 
+import com.cannontech.common.bulk.collection.DeviceCollection;
+import com.cannontech.common.util.SimpleCallback;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.lite.LiteYukonUser;
 
@@ -10,18 +12,13 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public interface GroupCommandExecutor {
 
-    /**
-     * Method to execute a command for each device in a set
-     * @param deviceIds - Ids of devices to execute command for
-     * @param command - Command to execute
-     * @param emailAddresses - Addresses to send results to
-     * @param emailSubject - Subject of result email
-     * @param user - User executing commands
-     * @throws PaoAuthorizationException - When user doesn't have permissing to
-     *             execute the command
-     */
-    public void execute(Set<Integer> deviceIds, String command,
-            String emailAddresses, String emailSubject, LiteYukonUser user)
-            throws PaoAuthorizationException;
+    public String execute(DeviceCollection deviceCollection, String command, SimpleCallback<GroupCommandResult> callback, LiteYukonUser user)
+        throws PaoAuthorizationException;
+    
+    public List<GroupCommandResult> getCompleted();
+
+    public List<GroupCommandResult> getPending();
+
+    public GroupCommandResult getResult(String id);
 
 }
