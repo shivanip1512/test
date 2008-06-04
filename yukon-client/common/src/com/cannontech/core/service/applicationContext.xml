@@ -21,18 +21,10 @@
     <property name="dbPersistentDao" ref="dbPersistentDao"/>
     <property name="dateFormattingService" ref="dateFormattingService"/>
     <property name="activityLoggerService" ref="activityLoggerService"/>
-    <!-- <property name="porterConnection">
-      <bean class="com.cannontech.core.service.MockPorterConnection"/>
-    </property>
-     -->
   </bean>
 
   <bean id="porterQueueDataService" class="com.cannontech.core.service.impl.PorterQueueDataServiceImpl">
     <property name="porterConnection" ref="porterConnection"/>
-    <!-- <property name="porterConnection">
-      <bean class="com.cannontech.core.service.MockPorterConnection"/>
-    </property>
-     -->
   </bean>
   
   <bean id="templateProcessorFactory" class="com.cannontech.common.util.TemplateProcessorFactory"/>
