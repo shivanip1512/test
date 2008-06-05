@@ -9,7 +9,7 @@ TimeFormatter.prototype = {
 	formatTime: function(minutes) {
 
         if(isNaN(minutes) || minutes == null){
-            return '00:00 AM';
+            return '12:00 AM';
         }
         
         // Make sure time is not negative and less than the number of minutes in a day
@@ -32,6 +32,8 @@ TimeFormatter.prototype = {
             if (hour > 12) {
                 hour = hour - 12;
             }
+        } else if (hour == 0) {
+            hour = 12;
         }
         
         // Add a leading zero to hours and minutes if needed
@@ -48,7 +50,7 @@ TimeFormatter.prototype = {
     parseTime: function(time) {
 
         // Make sure the time string is a valid time (ex: 12:30 PM)     
-        var exp = /^([0][0-9]|[1][0-2])[:][0-5][0-9]\s[AaPp][Mm]$/;
+        var exp = /^([0][1-9]|[1][0-2])[:][0-5][0-9]\s[AaPp][Mm]$/;
         
         if(!exp.test(time)) {
             return -1;
