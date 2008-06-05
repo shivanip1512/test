@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2008/06/03 15:41:18 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2008/06/05 17:53:04 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -154,6 +154,7 @@ void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void
             if(findNonUpdatedDynamicData(0,pTempPoint,NULL))
             {
                 RefreshDynamicData(pntID);
+                ApplyInsertNonUpdatedDynamicData(0, pTempPoint, NULL);
             }
         }
     }
