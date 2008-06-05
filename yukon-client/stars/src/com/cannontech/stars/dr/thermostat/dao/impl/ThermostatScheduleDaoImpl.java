@@ -124,8 +124,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
                                                                         new ThermostatScheduleMapper(energyCompany),
                                                                         scheduleId);
 
-        List<ThermostatSeason> seasons = this.getSeasons(schedule.getId(),
-                                                         scheduleId);
+        List<ThermostatSeason> seasons = this.getSeasons(schedule.getId(), energyCompany);
 
         for (ThermostatSeason season : seasons) {
             schedule.addSeason(season);
@@ -154,8 +153,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
         }
 
         if (schedule != null) {
-            List<ThermostatSeason> seasons = this.getSeasons(schedule.getId(),
-                                                             inventoryId);
+            List<ThermostatSeason> seasons = this.getSeasons(schedule.getId(), energyCompany);
 
             for (ThermostatSeason season : seasons) {
                 schedule.addSeason(season);
@@ -256,7 +254,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
      * @param scheduleId - Id of schedule in question
      * @return List of seasons
      */
-    private List<ThermostatSeason> getSeasons(int scheduleId, int inventoryId) {
+    private List<ThermostatSeason> getSeasons(int scheduleId, LiteStarsEnergyCompany energyCompany) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * from LMThermostatSeason");
@@ -268,8 +266,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
                                                                   scheduleId);
 
         for (ThermostatSeason season : seasons) {
-            List<ThermostatSeasonEntry> seasonEntries = this.getSeasonEntries(season.getId(),
-                                                                              inventoryId);
+            List<ThermostatSeasonEntry> seasonEntries = this.getSeasonEntries(season.getId(), energyCompany);
             for (ThermostatSeasonEntry entry : seasonEntries) {
                 season.addSeasonEntry(entry);
             }
@@ -285,9 +282,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
      * @return List of season entries
      */
     private List<ThermostatSeasonEntry> getSeasonEntries(int seasonId,
-            int inventoryId) {
-
-        LiteStarsEnergyCompany energyCompany = ecMappingDao.getInventoryEC(inventoryId);
+    		LiteStarsEnergyCompany energyCompany) {
 
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * from LMThermostatSeasonEntry");
