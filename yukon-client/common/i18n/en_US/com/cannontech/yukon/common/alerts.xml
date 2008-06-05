@@ -4,6 +4,11 @@
 
 <entry key="yukon.common.alerts.alarm">{paoName} / {pointName}: {alarmText}</entry>
 <entry key="yukon.common.alerts.serverResponse">{responseText}</entry>
-<entry key="yukon.common.alerts.commandCompletion">Command "{command}" completed with {percentSuccess|#0.0#}% success</entry>
+<entry key="yukon.common.alerts.commandCompletion"><![CDATA[
 
+Command "{command}" completed with {percentSuccess|#0.0#}% success 
+  <a href="/spring/group/commander/resultDetail?resultKey={resultKey}" title="Click to see complete details">
+    <img src="/WebConfig/yukon/Icons/magnifier_zoom_in.gif" alt="detail" style="border-style: none; vertical-align:middle">
+  </a>
+]]></entry>
 </properties>

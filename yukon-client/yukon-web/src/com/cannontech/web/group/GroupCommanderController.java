@@ -153,6 +153,7 @@ public class GroupCommanderController implements InitializingBean {
                 int total = failureCount + successCount;
                 resolvableTemplate.addData("percentSuccess", (float)successCount *100 / total);
                 resolvableTemplate.addData("command", result.getCommand());
+                resolvableTemplate.addData("resultKey", result.getKey());
                 
                 CommandCompletionAlert commandCompletionAlert = new CommandCompletionAlert(new Date(), resolvableTemplate);
                 
