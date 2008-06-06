@@ -6,6 +6,7 @@
 <%@ page import="com.cannontech.database.data.lite.LiteAddress" %>
 <%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation" %>
 <%@ page import="com.cannontech.database.data.lite.stars.StarsLiteFactory" %>
+<%@ page import="com.cannontech.database.data.customer.CustomerTypes" %>
 <%
     String pageName = request.getContextPath() + "/operator/Consumer/SearchResults.jsp";
 
