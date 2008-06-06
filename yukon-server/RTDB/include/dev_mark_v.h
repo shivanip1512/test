@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2007/11/12 17:03:46 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/06/06 20:28:44 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -120,7 +120,8 @@ public:
                            CtiTime                     &TimeNow,
                            list< CtiMessage* >  &vgList,
                            list< CtiMessage* >  &retList,
-                           list< OUTMESS* >     &outList);
+                           list< OUTMESS* >     &outList,
+                           bool                 &overrideExpectMore);
 
    int decodeResultScan( INMESS                    *InMessage,
                           CtiTime                    &TimeNow,

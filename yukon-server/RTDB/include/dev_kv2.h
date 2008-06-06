@@ -9,11 +9,16 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_kv2.h-arc  $
-* REVISION     :  $Revision: 1.15 $
-* DATE         :  $Date: 2007/11/12 17:04:11 $
+* REVISION     :  $Revision: 1.16 $
+* DATE         :  $Date: 2008/06/06 20:28:44 $
 *
 *    History:
       $Log: dev_kv2.h,v $
+      Revision 1.16  2008/06/06 20:28:44  jotteson
+      YUK-6005 Porter LLP expect more set incorrectly
+      Added an option to override expect more in the error decode call.
+      Made LLP retry 3 times before failing.
+
       Revision 1.15  2007/11/12 17:04:11  mfisher
       YUK-4464 Large meter reads can cause major database delays
       Removed references to "mgr_point.h"
@@ -102,7 +107,8 @@ public:
                            CtiTime                     &TimeNow,
                            list< CtiMessage* >  &vgList,
                            list< CtiMessage* >  &retList,
-                           list< OUTMESS* >     &outList);
+                           list< OUTMESS* >     &outList,
+                           bool                 &overrideExpectMore);
    virtual INT ExecuteRequest( CtiRequestMsg         *pReq,
                        CtiCommandParser           &parse,
                        OUTMESS                   *&OutMessage,

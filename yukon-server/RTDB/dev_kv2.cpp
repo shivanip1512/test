@@ -549,7 +549,8 @@ INT CtiDeviceKV2::sendCommResult( INMESS *InMessage)
 //=========================================================================================================================================
 
 INT CtiDeviceKV2::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list < CtiMessage* >&vgList, list< CtiMessage* > &retList,
-                               list< OUTMESS* > &outList)
+                               list< OUTMESS* > &outList,
+                               bool &overrideExpectMore)
 {
 
    return( 1 ); //just a val

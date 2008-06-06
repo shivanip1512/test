@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_mct4xx.h-arc  $
-* REVISION     :  $Revision: 1.37 $
-* DATE         :  $Date: 2008/04/21 21:57:08 $
+* REVISION     :  $Revision: 1.38 $
+* DATE         :  $Date: 2008/06/06 20:28:44 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -176,6 +176,7 @@ protected:
     enum
     {
         LPChannels       =    4,
+        LPRetries        =    3,
         LPRecentBlocks   =   16,
 
         DawnOfTime       = 0x386d4380,  //  jan 1, 2000, in UTC seconds
@@ -204,7 +205,7 @@ protected:
 
         long in_progress;
 
-        bool retry;
+        unsigned retry;
         bool failed;
     } _llpInterest;
 
@@ -330,7 +331,7 @@ public:
     static unsigned loadTimeSync(unsigned char *buf);
 
     INT ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
-    INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList);
+    INT ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore);
 
 };
 

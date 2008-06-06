@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/11/12 17:03:26 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/06/06 20:28:44 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -158,7 +158,8 @@ public:
                            CtiTime&,
                            list< CtiMessage* >   &vgList,
                            list< CtiMessage* > &retList,
-                           list< OUTMESS* > &outList);
+                           list< OUTMESS* > &outList,
+                           bool &overrideExpectMore);
 
    virtual BOOL verifyAndAddPointToReturnMsg (LONG          aPointId,
                                               DOUBLE        aValue,

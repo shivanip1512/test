@@ -8,10 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/06/06 20:28:44 $
 * HISTORY      :
 * $Log: dev_rtc.h,v $
+* Revision 1.15  2008/06/06 20:28:44  jotteson
+* YUK-6005 Porter LLP expect more set incorrectly
+* Added an option to override expect more in the error decode call.
+* Made LLP retry 3 times before failing.
+*
 * Revision 1.14  2007/12/10 23:02:57  jotteson
 * YUK-4788 Point data ordering issue
 * Fix to queues that were not ordering incoming data the way we wanted.
@@ -128,7 +133,7 @@ public:
     INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
     INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    INT ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    INT ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore);
 
     INT prepareOutMessageForComms(CtiOutMessage *&OutMessage);
     void getVerificationObjects(queue< CtiVerificationBase * > &work_queue);

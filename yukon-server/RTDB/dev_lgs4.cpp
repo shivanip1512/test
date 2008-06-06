@@ -1893,7 +1893,8 @@ INT CtiDeviceLandisGyrS4::ErrorDecode (INMESS *InMessage,
                                        CtiTime &TimeNow,
                                        list< CtiMessage* >   &vgList,
                                        list< CtiMessage* > &retList,
-                                       list< OUTMESS* > &outList)
+                                       list< OUTMESS* > &outList,
+                                       bool &overrideExpectMore)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_schlum.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/05/31 21:38:44 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -534,7 +534,8 @@ INT CtiDeviceSchlumberger::ErrorDecode (INMESS *InMessage,
                                         CtiTime &TimeNow,
                                         list< CtiMessage* >   &vgList,
                                         list< CtiMessage* > &retList,
-                                        list< OUTMESS* > &outList)
+                                        list< OUTMESS* > &outList,
+                                        bool &overrideExpectMore)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

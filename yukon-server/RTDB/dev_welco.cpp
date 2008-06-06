@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_welco.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2007/11/02 20:53:21 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1607,7 +1607,8 @@ INT CtiDeviceWelco::ErrorDecode(INMESS *InMessage,
                                 CtiTime &TimeNow,
                                 list< CtiMessage* >   &vgList,
                                 list< CtiMessage* > &retList,
-                                list< OUTMESS* > &outList)
+                                list< OUTMESS* > &outList,
+                                bool &overrideExpectMore)
 {
     INT nRet = NoError;
 

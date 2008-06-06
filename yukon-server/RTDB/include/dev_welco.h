@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_welco.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/11/12 17:03:26 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/06/06 20:28:45 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -89,7 +89,8 @@ public:
                            CtiTime&,
                            list< CtiMessage* >   &vgList,
                            list< CtiMessage* > &retList,
-                           list< OUTMESS* > &outList);
+                           list< OUTMESS* > &outList,
+                           bool &overrideExpectMore);
 
    virtual INT ResultDecode(INMESS*,
                             CtiTime&,

@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2007/11/12 17:04:59 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -836,7 +836,20 @@ INT CtiDeviceSingle::ProcessResult(INMESS *InMessage,
 
             retList.push_back( Ret );
 
-            ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
+            bool overrideExpectMore = false;
+            ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
+
+            list< CtiMessage* >::iterator iter;
+            if( overrideExpectMore )
+            {
+                for( iter = retList.begin(); iter != retList.end(); iter++ )
+                {
+                    if( (*iter)->isA() == MSG_PCRETURN )
+                    {
+                        ((CtiReturnMsg *)(*iter))->setExpectMore(true);
+                    }
+                }
+            }
         }
     }
 

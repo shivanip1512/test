@@ -7,11 +7,16 @@
 * Author: Julie Richter
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/09/24 19:48:36 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * HISTORY      :
 * $Log: dev_fmu.cpp,v $
+* Revision 1.7  2008/06/06 20:28:01  jotteson
+* YUK-6005 Porter LLP expect more set incorrectly
+* Added an option to override expect more in the error decode call.
+* Made LLP retry 3 times before failing.
+*
 * Revision 1.6  2007/09/24 19:48:36  mfisher
 * changed DawnOfTime to an enum to prevent tagging difficulties
 *
@@ -363,7 +368,7 @@ INT CtiDeviceFMU::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
     return ErrReturn;
 }
 
-INT CtiDeviceFMU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceFMU::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
     INT retCode = NORMAL;
 

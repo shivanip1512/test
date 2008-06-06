@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_base.cpp-arc  $
-* REVISION     :  $Revision: 1.71 $
-* DATE         :  $Date: 2008/04/09 19:49:53 $
+* REVISION     :  $Revision: 1.72 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -486,7 +486,7 @@ INT CtiDeviceBase::ProcessResult(INMESS*, CtiTime&, list< CtiMessage* > &vgList,
 }
 
 
-INT CtiDeviceBase::ErrorDecode(INMESS*, CtiTime&,  list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceBase::ErrorDecode(INMESS*, CtiTime&,  list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
     return NoErrorDecodeMethod;
 }

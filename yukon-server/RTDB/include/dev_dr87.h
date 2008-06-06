@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_dr87.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/11/12 17:04:31 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -207,7 +207,8 @@ public:
                             CtiTime&,
                             list< CtiMessage* >   &vgList,
                             list< CtiMessage* > &retList,
-                            list< OUTMESS* > &outList);
+                            list< OUTMESS* > &outList,
+                            bool             &overrideExpectMore);
 
     // interrogation routines
     virtual INT decodeResponseHandshake   (CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList);

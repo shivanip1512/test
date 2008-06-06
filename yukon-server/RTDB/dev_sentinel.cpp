@@ -512,7 +512,7 @@ INT CtiDeviceSentinel::sendCommResult( INMESS *InMessage)
 //=========================================================================================================================================
 
 INT CtiDeviceSentinel::ErrorDecode( INMESS *InMessage, CtiTime &TimeNow, list < CtiMessage* >&vgList, list< CtiMessage* > &retList,
-                               list< OUTMESS* > &outList)
+                               list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
 
    return( 1 ); //just a val

@@ -7,11 +7,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2008/01/25 22:29:23 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * HISTORY      :
 * $Log: dev_rtm.cpp,v $
+* Revision 1.23  2008/06/06 20:28:01  jotteson
+* YUK-6005 Porter LLP expect more set incorrectly
+* Added an option to override expect more in the error decode call.
+* Made LLP retry 3 times before failing.
+*
 * Revision 1.22  2008/01/25 22:29:23  jotteson
 * YUK-5184 Verification Reports not working for sa 205
 * Changed CtiString to allow padding up to a given size.
@@ -413,7 +418,7 @@ INT CtiDeviceRTM::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 }
 
 
-INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTM::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
     INT retCode = NORMAL;
 

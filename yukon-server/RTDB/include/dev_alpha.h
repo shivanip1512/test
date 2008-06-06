@@ -244,7 +244,8 @@ public:
                             CtiTime                    &TimeNow,
                             list< CtiMessage* > &vgList,
                             list< CtiMessage* > &retList,
-                            list< OUTMESS* >    &outList);
+                            list< OUTMESS* >    &outList,
+                            bool                &overrideExpectMore);
 
     // all defined in dev_alpha.cpp
     virtual INT generateCommand          (CtiXfer &Transfer, list< CtiMessage* > &traceList);

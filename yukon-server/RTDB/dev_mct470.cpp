@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.117 $
-* DATE         :  $Date: 2008/04/22 15:59:40 $
+* REVISION     :  $Revision: 1.118 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1388,7 +1388,7 @@ INT CtiDeviceMCT470::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
     return status;
 }
 
-INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
     int retVal = NoError;
     CtiCommandParser  parse(InMessage->Return.CommandStr);
@@ -1463,7 +1463,7 @@ INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
                 default:
                 {
-                    retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
+                    retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
 
                     break;
                 }
@@ -1487,7 +1487,7 @@ INT CtiDeviceMCT470::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
         }
         else
         {
-            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
+            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
         }
 
         // send the whole mess to dispatch

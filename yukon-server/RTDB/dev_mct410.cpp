@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.158 $
-* DATE         :  $Date: 2008/04/22 15:59:40 $
+* REVISION     :  $Revision: 1.159 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1026,7 +1026,7 @@ INT CtiDeviceMCT410::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore)
 {
     int retVal = NoError;
 
@@ -1078,7 +1078,7 @@ INT CtiDeviceMCT410::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         default:
         {
-            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
+            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
 
             break;
         }
@@ -3368,7 +3368,7 @@ INT CtiDeviceMCT410::decodeGetValueDailyRead(INMESS *InMessage, CtiTime &TimeNow
     }
     else
     {
-        //  this code is replicated in ErrorDecode()
+        //  this code is replicated in ErrorDecode
         if( !_daily_read_info.retry && _daily_read_info.current_request == daily_read_info_t::Request_MultiDay )
         {
             _daily_read_info.retry = true;

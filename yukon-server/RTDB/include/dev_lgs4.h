@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/11/12 17:03:46 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/06/06 20:28:44 $
 *
 * Copyright (c) 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -502,7 +502,8 @@ public:
                               CtiTime                    &TimeNow,
                               list< CtiMessage* > &vgList,
                               list< CtiMessage* > &retList,
-                              list< OUTMESS* >      &outList );
+                              list< OUTMESS* >    &outList,
+                              bool                &overrideExpectMore );
 
     // interrogation routines
     virtual INT decodeResponseHandshake  ( CtiXfer &Transfer, INT commReturnValue, list< CtiMessage* > &traceList );

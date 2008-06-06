@@ -7,11 +7,16 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2007/03/26 21:41:12 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * HISTORY      :
 * $Log: dev_rtc.cpp,v $
+* Revision 1.48  2008/06/06 20:28:01  jotteson
+* YUK-6005 Porter LLP expect more set incorrectly
+* Added an option to override expect more in the error decode call.
+* Made LLP retry 3 times before failing.
+*
 * Revision 1.47  2007/03/26 21:41:12  jotteson
 * Bug Id: 892
 * Fixed problem with uninitialized pointer being used and throwing exceptions
@@ -417,7 +422,7 @@ INT CtiDeviceRTC::ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMes
 }
 
 
-INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceRTC::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
     INT retCode = NORMAL;
 

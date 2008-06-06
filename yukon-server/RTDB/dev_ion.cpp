@@ -805,7 +805,7 @@ void CtiDeviceION::processInboundData( INMESS *InMessage, CtiTime &TimeNow, list
 }
 
 
-INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList)
+INT CtiDeviceION::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore)
 {
     INT retCode = NORMAL, ErrReturn = InMessage->EventCode & 0x3fff;
 

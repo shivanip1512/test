@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.77 $
-* DATE         :  $Date: 2008/04/21 21:57:08 $
+* REVISION     :  $Revision: 1.78 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -66,8 +66,8 @@ CtiDeviceMCT4xx::CtiDeviceMCT4xx()
     _llpInterest.channel     = 0;
     _llpInterest.offset      = 0;
     _llpInterest.in_progress = false;
-    _llpInterest.retry    = false;
-    _llpInterest.failed   = false;
+    _llpInterest.retry       = 0;
+    _llpInterest.failed      = false;
 
     _llpPeakInterest.channel = 0;
     _llpPeakInterest.command = 0;
@@ -2991,7 +2991,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
         if( crc8(interest, 5) == DSt->Message[0] )
         {
             //  if we succeeded, we should be okay for successive reads...
-            _llpInterest.retry = false;
+            _llpInterest.retry = 0;
 
             channel      = _llpInterest.channel;
             decode_time  = _llpInterest.time + _llpInterest.offset;
@@ -3065,10 +3065,10 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
         {
             resultString = "Load Profile Interest check does not match";
 
-            if( !_llpInterest.retry )
+            if( !(_llpInterest.retry >= LPRetries) )
             {
                 _llpInterest.time  = 0;
-                _llpInterest.retry = true;
+                _llpInterest.retry++;
 
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time, _llpInterest.time);
 
@@ -3094,7 +3094,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
                 resultString += " - try message again";
 
                 _llpInterest.time    = 0;
-                _llpInterest.retry = false;
+                _llpInterest.retry = 0;
 
                 setDynamicInfo(CtiTableDynamicPaoInfo::Key_MCT_LLPInterest_Time, _llpInterest.time);
 
@@ -3116,13 +3116,13 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
     else
     {
         //  this code is replicated in ErrorDecode()
-        if( !_llpInterest.retry )
+        if( !(_llpInterest.retry >= LPRetries) )
         {
             interval_len = getLoadProfileInterval(_llpInterest.channel);
 
             block_len    = interval_len * 6;
 
-            _llpInterest.retry = true;
+            _llpInterest.retry++;
 
             //  we're asking for the same block, not the next block, so don't move ahead a block
             CtiTime time_begin(_llpInterest.time + _llpInterest.offset + /* block_len + */ interval_len),
@@ -3168,7 +3168,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
         else
         {
             _llpInterest.failed = true;
-            _llpInterest.retry  = false;
+            _llpInterest.retry  = 0;
 
             //  reset the "in progress" flag
             InterlockedExchange(&_llpInterest.in_progress, false);
@@ -3776,7 +3776,7 @@ INT CtiDeviceMCT4xx::ModelDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 }
 
 
-INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList)
+INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage * > &vgList, list< CtiMessage * > &retList, list< OUTMESS * > &outList, bool &overrideExpectMore)
 {
     int retVal = NoError;
 
@@ -3787,13 +3787,14 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             int interval_len, block_len;
 
             //  this code is replicated in decodeGetValueLoadProfile(), but likely is never used, if we're properly handling it there
-            if( !_llpInterest.retry )
+            if( !(_llpInterest.retry >= LPRetries) )
             {
                 interval_len = getLoadProfileInterval(_llpInterest.channel);
 
                 block_len    = interval_len * 6;
 
-                _llpInterest.retry = true;
+                _llpInterest.retry++;
+                overrideExpectMore = true;
 
                 //  we're asking for the same block, not the next block, so don't move ahead a block
                 CtiTime time_begin(_llpInterest.time + _llpInterest.offset + /* block_len + */ interval_len),
@@ -3837,7 +3838,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             else
             {
                 _llpInterest.failed = true;
-                _llpInterest.retry  = false;
+                _llpInterest.retry  = 0;
 
                 //  reset the "in progress" flag
                 InterlockedExchange(&_llpInterest.in_progress, false);
@@ -3848,7 +3849,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
 
         default:
         {
-            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList);
+            retVal = Inherited::ErrorDecode(InMessage, TimeNow, vgList, retList, outList, overrideExpectMore);
 
             break;
         }

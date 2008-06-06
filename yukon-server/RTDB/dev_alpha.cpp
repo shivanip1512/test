@@ -6,12 +6,17 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_alpha.cpp-arc  $
-* REVISION     :  $Revision: 1.16 $
-* DATE         :  $Date: 2007/05/31 21:38:44 $
+* REVISION     :  $Revision: 1.17 $
+* DATE         :  $Date: 2008/06/06 20:28:01 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *    History:
       $Log: dev_alpha.cpp,v $
+      Revision 1.17  2008/06/06 20:28:01  jotteson
+      YUK-6005 Porter LLP expect more set incorrectly
+      Added an option to override expect more in the error decode call.
+      Made LLP retry 3 times before failing.
+
       Revision 1.16  2007/05/31 21:38:44  mfisher
       Reverted text in comments from "CTIDBG_new" back to "new"
 
@@ -588,7 +593,8 @@ INT CtiDeviceAlpha::ErrorDecode (INMESS *InMessage,
                                  CtiTime &TimeNow,
                                  list< CtiMessage* >   &vgList,
                                  list< CtiMessage* > &retList,
-                                 list< OUTMESS* > &outList)
+                                 list< OUTMESS* > &outList,
+                                 bool &overrideExpectMore)
 {
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);

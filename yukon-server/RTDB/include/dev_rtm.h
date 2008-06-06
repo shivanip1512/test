@@ -8,10 +8,15 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/06/06 20:28:44 $
 * HISTORY      :
 * $Log: dev_rtm.h,v $
+* Revision 1.9  2008/06/06 20:28:44  jotteson
+* YUK-6005 Porter LLP expect more set incorrectly
+* Added an option to override expect more in the error decode call.
+* Made LLP retry 3 times before failing.
+*
 * Revision 1.8  2006/09/21 21:31:39  mfisher
 * privatized Inherited typedef
 *
@@ -93,7 +98,7 @@ public:
     INT GeneralScan(CtiRequestMsg *pReq, CtiCommandParser &parse, OUTMESS *&OutMessage, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, INT ScanPriority = MAXPRIORITY - 4);
 
     INT ResultDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
-    INT ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList);
+    INT ErrorDecode (INMESS *InMessage, CtiTime &TimeNow, list< CtiMessage* > &vgList, list< CtiMessage* > &retList, list< OUTMESS* > &outList, bool &overrideExpectMore);
 
     int recvCommRequest(OUTMESS *OutMessage);
     int sendCommResult(INMESS *InMessage);
