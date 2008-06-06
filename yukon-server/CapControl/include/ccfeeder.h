@@ -203,6 +203,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     const CtiTime& getLastVarPointTime() const;
     const CtiTime& getLastWattPointTime() const;
     const CtiTime& getLastVoltPointTime() const;
+    LONG getRetryIndex() const;
     const CtiRegression& getRegression();
     const CtiRegression& getRegressionA();
     const CtiRegression& getRegressionB();
@@ -321,6 +322,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setPhaseCValueBeforeControl(DOUBLE value);
     CtiCCFeeder& setLastWattPointTime(const CtiTime& lastpointupdate);
     CtiCCFeeder& setLastVoltPointTime(const CtiTime& lastpointupdate);
+    CtiCCFeeder& setRetryIndex(LONG value);
 
     CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
     bool checkForMaxKvar( long, long );
@@ -571,6 +573,7 @@ private:
 
     CtiTime _lastWattPointTime;
     CtiTime _lastVoltPointTime;
+    LONG _retryIndex;
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;

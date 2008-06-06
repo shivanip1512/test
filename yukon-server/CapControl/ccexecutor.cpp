@@ -3079,18 +3079,11 @@ void CtiCCCommandExecutor::EnableArea()
         CtiCCSpecial* currentSpArea = store->findSpecialAreaByPAObjectID(areaId);
         if (currentSpArea != NULL)
         {
-            string text1 = string("Manual Enable Special Area");
-            string additional1 = string("Special Area: ");
-            additional1 += currentSpArea->getPAOName();
-
-            pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
-            ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPAOId(), 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
-
-            currentSpArea->setDisableFlag(FALSE);
-            store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
-
+            //CHECK ALL SUBSTATIONS ASSIGNED TO SPECIAL AREA FIRST, 
+            //To make sure they are not already on a conflicting different enabled Special Area
+            BOOL refusalFlag = FALSE;
+            string refusalText = "Special Area is not enabled!";
             std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
-            
             while (subIter != currentSpArea->getSubstationIds()->end())
             {
                 CtiCCSubstationPtr currentSubstation = NULL;
@@ -3098,28 +3091,75 @@ void CtiCCCommandExecutor::EnableArea()
                 subIter++;            
                 if (currentSubstation != NULL)
                 {
-                    if (!currentSubstation->getSaEnabledFlag()) 
-                    {
-                        currentSubstation->setSaEnabledFlag(TRUE);
-                        currentSubstation->setSaEnabledId(areaId);
+                    if (currentSubstation->getSaEnabledFlag()) 
+                    {      
+                        refusalFlag = TRUE;
+                        CtiCCSpecial* enabledSpArea = store->findSpecialAreaByPAObjectID(currentSubstation->getSaEnabledId());
+                        if (enabledSpArea != NULL)
+                        {
+                            refusalText +=  "  Special Area: " + enabledSpArea->getPAOName() + " with Sub: " + currentSubstation->getPAOName() + " is already ENABLED";
+                        }
+                        
+                        
+
                     }
                 }
             }
-            //store->setValid(false);  //This is to do a full DATABASE RELOAD.
 
-            if (eventMulti->getCount() > 0)
-                CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+            if (refusalFlag)
+            {
+                CtiCCExecutorFactory f;
+                CtiCCServerResponse* msg = new CtiCCServerResponse(CtiCCServerResponse::COMMAND_REFUSED, refusalText);
+                msg->setUser(_command->getUser());
+                CtiCCExecutor* executor = f.createExecutor(msg);
+                executor->Execute();
+                delete executor;
+            }
             else
-                delete eventMulti;
-            if (multi->getCount() > 0)
-                CtiCapController::getInstance()->sendMessageToDispatch(multi);
-            else
-                delete multi;
+            {
 
-            CtiCCExecutorFactory f;
-            CtiCCExecutor *executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
-            executor->Execute();
-            delete executor;
+                string text1 = string("Manual Enable Special Area");
+                string additional1 = string("Special Area: ");
+                additional1 += currentSpArea->getPAOName();
+                
+                pointChanges.push_back(new CtiSignalMsg(SYS_PID_CAPCONTROL,1,text1,additional1,CapControlLogType,SignalEvent,_command->getUser()));
+                ccEvents.push_back(new CtiCCEventLogMsg(0, SYS_PID_CAPCONTROL, currentSpArea->getPAOId(), 0, 0, 0, 0, capControlManualCommand, 0, 0, text1, _command->getUser()));
+                
+                currentSpArea->setDisableFlag(FALSE);
+                store->UpdateSpecialAreaDisableFlagInDB(currentSpArea);
+                
+                std::list <long>::iterator subIter = currentSpArea->getSubstationIds()->begin();
+                
+                while (subIter != currentSpArea->getSubstationIds()->end())
+                {
+                    CtiCCSubstationPtr currentSubstation = NULL;
+                    currentSubstation = store->findSubstationByPAObjectID(*subIter);
+                    subIter++;            
+                    if (currentSubstation != NULL)
+                    {
+                        if (!currentSubstation->getSaEnabledFlag()) 
+                        {
+                            currentSubstation->setSaEnabledFlag(TRUE);
+                            currentSubstation->setSaEnabledId(areaId);
+                        }
+                    }
+                }
+                //store->setValid(false);  //This is to do a full DATABASE RELOAD.
+                
+                if (eventMulti->getCount() > 0)
+                    CtiCapController::getInstance()->getCCEventMsgQueueHandle().write(eventMulti);
+                else
+                    delete eventMulti;
+                if (multi->getCount() > 0)
+                    CtiCapController::getInstance()->sendMessageToDispatch(multi);
+                else
+                    delete multi;
+                
+                CtiCCExecutorFactory f;
+                CtiCCExecutor *executor = f.createExecutor(new CtiCCSpecialAreasMsg(*store->getCCSpecialAreas(CtiTime().seconds())));
+                executor->Execute();
+                delete executor;
+            }
         }
         else
         {
@@ -5574,6 +5614,7 @@ void CtiCCCommandExecutor::doConfirmImmediately(CtiCCSubstationBus* currentSubst
             if (bankId == currentCapBank->getControlDeviceId())
             {       
                 currentFeeder->setRecentlyControlledFlag(FALSE);
+                currentFeeder->setRetryIndex(0);
                 if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
                 {
                     currentCapBank->setControlStatus(CtiCCCapBank::Close);
@@ -6704,6 +6745,7 @@ void CtiCCPointDataMsgExecutor::Execute()
                             currentSubstationBus->setBusUpdatedFlag(TRUE);
                             currentCapBank->setControlStatus((LONG)value);
                             currentCapBank->setControlRecentlySentFlag(FALSE);
+                            currentFeeder->setRetryIndex(0);
                             currentCapBank->setControlStatusQuality(CC_Normal);
                             currentCapBank->setTagsControlStatus((LONG)tags);
                             currentCapBank->setLastStatusChangeTime(timestamp);

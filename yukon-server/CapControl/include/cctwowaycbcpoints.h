@@ -132,7 +132,8 @@ public:
     const CtiTime& getOvUvCountResetDate() const;
     const CtiTime& getLastOvUvDateTime() const;
     string getLastControlText() const;
-
+    LONG getLastControl() const;
+    INT getLastControlReason() const;
     
     
     CtiCCTwoWayPoints& setPAOId(LONG paoId);
@@ -221,11 +222,16 @@ public:
     CtiCCTwoWayPoints& setOvUvCountResetDate(const CtiTime eventTime);
     CtiCCTwoWayPoints& setLastOvUvDateTime(const CtiTime eventTime);
 
+    CtiCCTwoWayPoints& setLastControlReason(); 
+
    
     BOOL setTwoWayPointId(int pointtype, int offset, LONG pointId);
     BOOL setTwoWayStatusPointValue(LONG pointID, LONG value);
     BOOL setTwoWayAnalogPointValue(LONG pointID, LONG value);
     BOOL setTwoWayPulseAccumulatorPointValue(LONG pointID, LONG value);
+
+    BOOL isLastControlReasonUpdated(LONG pointID, LONG reason );
+
 
 
     CtiCCTwoWayPoints& addAllCBCPointsToMsg(CtiCommandMsg *pointAddMsg);
@@ -320,6 +326,7 @@ private:
     LONG _ignoredReasonId;
     LONG _ignoredReason;
 
+   
     //analog outputs
     LONG _ovSetPointId;
     LONG _ovSetPoint;
@@ -346,7 +353,7 @@ private:
 
     CtiTime _ovuvCountResetDate;
     CtiTime _lastOvUvDateTime;
-
+    INT _lastControlReason;
 
     //don't stream
     BOOL _insertDynamicDataFlag;

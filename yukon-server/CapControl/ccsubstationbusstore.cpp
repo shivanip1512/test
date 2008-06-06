@@ -2598,6 +2598,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                                currentFeeder->setRetryIndex(0);
                                 currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                                 currentCapBank->setAfterVarsString("abnormal data");
@@ -2618,6 +2619,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                     dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                                 }
                                 currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                                currentFeeder->setRetryIndex(0);
                                 currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                                 currentCapBank->setAfterVarsString("abnormal data");
@@ -2659,6 +2661,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            currentFeeder->setRetryIndex(0);
                             currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                             currentCapBank->setAfterVarsString("abnormal data");
@@ -2678,6 +2681,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Cap Bank: " << currentCapBank->getPAOName() << " questionable because feeder is not recently controlled in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            currentFeeder->setRetryIndex(0);
                             currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                             currentCapBank->setAfterVarsString("abnormal data");
@@ -2744,6 +2748,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to close questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::CloseQuestionable);
+                            currentFeeder->setRetryIndex(0);
                             currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                             currentCapBank->setAfterVarsString("abnormal data");
@@ -2765,6 +2770,7 @@ void CtiCCSubstationBusStore::verifySubBusAndFeedersStates()
                                 dout << CtiTime() << " - Setting status to open questionable, Cap Bank: " << currentCapBank->getPAOName() << " in: " << __FILE__ << " at: " << __LINE__ << endl;
                             }
                             currentCapBank->setControlStatus(CtiCCCapBank::OpenQuestionable);
+                            currentFeeder->setRetryIndex(0);
                             currentCapBank->setControlStatusQuality(CC_AbnormalQuality);
 
                             currentCapBank->setAfterVarsString("abnormal data");
@@ -4204,10 +4210,10 @@ void CtiCCSubstationBusStore::reloadTimeOfDayStrategyFromDatabase(long strategyI
                 if (strategyId >= 0)
                     selector.where(capControlStrategy["strategyid"]==strategyId &&
                                    capControlStrategy["strategyid"]==capControlTimeOfDayStrategy["strategyid"] &&
-                                   capControlStrategy["controlmethod"]=="timeofday" );
+                                   capControlStrategy["controlmethod"]=="TimeOfDay" );
                 else
                     selector.where(capControlStrategy["strategyid"]==capControlTimeOfDayStrategy["strategyid"] &&
-                                   capControlStrategy["controlmethod"]=="timeofday" );
+                                   capControlStrategy["controlmethod"]=="TimeOfDay" );
 
 
 
@@ -7064,7 +7070,8 @@ void CtiCCSubstationBusStore::reloadFeederFromDatabase(long feederId, map< long,
                     << dynamicCCFeederTable["phasebvalue"]
                     << dynamicCCFeederTable["phasecvalue"]
                     << dynamicCCFeederTable["lastwattpointtime"]
-                    << dynamicCCFeederTable["lastvoltpointtime"];
+                    << dynamicCCFeederTable["lastvoltpointtime"]
+                    << dynamicCCFeederTable["retryindex"];
 
 
                     selector.from(dynamicCCFeederTable);
@@ -7491,7 +7498,8 @@ void CtiCCSubstationBusStore::reloadCapBankFromDatabase(long capBankId, map< lon
                     << dynamicCCCapBankTable["twowaycbcstatetime"]
                     << dynamicCCCapBankTable["beforevar"]
                     << dynamicCCCapBankTable["aftervar"] 
-                    << dynamicCCCapBankTable["changevar"];
+                    << dynamicCCCapBankTable["changevar"]
+                    << dynamicCCCapBankTable["twowaycbclastcontrol"];
 
                     selector.from(dynamicCCCapBankTable);
                     selector.from(capBankTable);
@@ -11333,9 +11341,13 @@ void CtiCCSubstationBusStore::reCalculateConfirmationStatsFromDatabase( )
                             }
                             if (start > userDefWindow)
                             {
-                            
                                 if (cap != NULL)
                                 {
+                                    if ( _CC_DEBUG & CC_DEBUG_OPSTATS )
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " ##### Incrementing User Def Comm Counts for Cap: "<< cap->getPAOName() << endl;
+                                    }
                                     /*cap->getConfirmationStats().setUserDefCommCount(attempts);
                                     cap->getConfirmationStats().setUserDefCommFail(errorTotal);
                                     successPercent = cap->getConfirmationStats().calculateSuccessPercent(attempts, errorTotal);

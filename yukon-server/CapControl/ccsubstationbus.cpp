@@ -46,6 +46,7 @@ extern bool _RATE_OF_CHANGE;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
 extern BOOL _TIME_OF_DAY_VAR_CONF;
 extern LONG _MAXOPS_ALARM_CATID;
+extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 
 
 RWDEFINE_COLLECTABLE( CtiCCSubstationBus, CTICCSUBSTATIONBUS_ID )
@@ -2445,6 +2446,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkAndUpdateRecentlyControlledFlag()
         if (!pendingBanks)
         {
             currentFeeder->setRecentlyControlledFlag(FALSE);
+            currentFeeder->setRetryIndex(0);
             pendingBanks = FALSE;
         }
     }
@@ -4147,7 +4149,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         {    
                             lastFeederControlled = (CtiCCFeeder*)varSortedFeeders[j];
                             positionLastFeederControlled = j;
-                            DOUBLE adjustedBankKVARIncrease = (leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
+                            DOUBLE adjustedBankKVARIncrease = -(leadLevel/100.0)*((DOUBLE)capBank->getBankSize());
                             if( adjustedBankKVARIncrease <= getKVARSolution() )
                             {
                                 string text =  ((CtiCCFeeder*)varSortedFeeders[j])->createTextString(getControlMethod(), CtiCCCapBank::Open,  getIVControl(), ((CtiCCFeeder*)varSortedFeeders[j])->getCurrentVarLoadPointValue()); 
@@ -5119,6 +5121,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                     }
                 }
                 foundFeeder = TRUE;
+
+                currentFeeder->setRetryIndex(0);
                 break;
             }
         
@@ -5673,6 +5677,7 @@ BOOL CtiCCSubstationBus::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec
                    }
                 }
                 foundFeeder = TRUE;
+                currentFeeder->setRetryIndex(0);
                 break;
             }
         }
@@ -7154,11 +7159,16 @@ BOOL CtiCCSubstationBus::isPastMaxConfirmTime(const CtiTime& currentDateTime)
         
             if (getLastFeederControlledSendRetries() > 0)
                 sendRetries = getLastFeederControlledSendRetries();
-        
-            if( ((getLastOperationTime().seconds() + (getMaxConfirmTime()/_SEND_TRIES)) <= currentDateTime.seconds()) ||
-                ((getLastOperationTime().seconds() + (getMaxConfirmTime()/(sendRetries+1))) <= currentDateTime.seconds()) )
+
+            for(LONG i=0;i<_ccfeeders.size();i++)
             {
-                returnBoolean = TRUE;
+                CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
+                if( currentCCFeeder->getRecentlyControlledFlag() &&
+                    currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),sendRetries) )
+                {
+                    returnBoolean = TRUE;
+                    break;
+                }
             }
         }
     }
@@ -7193,7 +7203,9 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
                     currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()) &&
                     currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime()) )
                 {
-                    setLastOperationTime(currentDateTime);
+                    if (_RETRY_ADJUST_LAST_OP_TIME)
+                        setLastOperationTime(currentDateTime);
+                    currentCCFeeder->setRetryIndex(currentCCFeeder->getRetryIndex() + 1);
                     returnBoolean = TRUE;
                     break;
                 }
@@ -7202,7 +7214,9 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
                          currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()) &&
                          currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime()) )
                 {
-                    setLastOperationTime(currentDateTime);
+                    if (_RETRY_ADJUST_LAST_OP_TIME)
+                        setLastOperationTime(currentDateTime);
+                    currentCCFeeder->setRetryIndex(currentCCFeeder->getRetryIndex() + 1);
                     returnBoolean = TRUE;
                     break;
                 }
@@ -7220,7 +7234,9 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
                     currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()) &&
                     currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime()) )
                 {
-                    setLastOperationTime(currentDateTime);
+                    if (_RETRY_ADJUST_LAST_OP_TIME)
+                        setLastOperationTime(currentDateTime);
+                    currentCCFeeder->setRetryIndex(currentCCFeeder->getRetryIndex() + 1);
                     returnBoolean = TRUE;
                     break;
                 }
@@ -7230,7 +7246,9 @@ BOOL CtiCCSubstationBus::checkForAndPerformSendRetry(const CtiTime& currentDateT
                          currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime()) )
                          
                 {
-                    setLastOperationTime(currentDateTime);
+                    if (_RETRY_ADJUST_LAST_OP_TIME)
+                        setLastOperationTime(currentDateTime);
+                    currentCCFeeder->setRetryIndex(currentCCFeeder->getRetryIndex() + 1);
                     returnBoolean = TRUE;
                     break;
                 }
@@ -7259,8 +7277,12 @@ BOOL CtiCCSubstationBus::checkForAndPerformVerificationSendRetry(const CtiTime& 
            currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()) &&
            currentCCFeeder->attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime()) )
        {
-           currentCCFeeder->setLastOperationTime(currentDateTime);
-           setLastOperationTime(currentDateTime);
+           if (_RETRY_ADJUST_LAST_OP_TIME)
+           {    
+               currentCCFeeder->setLastOperationTime(currentDateTime);
+               setLastOperationTime(currentDateTime);
+           }
+           currentCCFeeder->setRetryIndex(currentCCFeeder->getRetryIndex() + 1);
            returnBoolean = TRUE;
            break;
        }
@@ -8539,7 +8561,9 @@ void CtiCCSubstationBus::analyzeMultiVoltBus1(const CtiTime& currentDateTime, Ct
                     {
                         if (currentFeeder->attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, getMaxConfirmTime()))
                         {
-                            setLastOperationTime(currentDateTime);
+                            if (_RETRY_ADJUST_LAST_OP_TIME)
+                                setLastOperationTime(currentDateTime);
+                            currentFeeder->setRetryIndex(currentFeeder->getRetryIndex() + 1);
                         }
                         else if( currentFeeder->capBankControlStatusUpdate(pointChanges, ccEvents, getMinConfirmPercent(), getFailurePercent(), 
                                                               currentFeeder->getVarValueBeforeControl(), currentFeeder->getCurrentVarLoadPointValue(),
@@ -9721,6 +9745,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                                     request = currentFeeder->createDecreaseVarRequest(capBank, pointChanges, ccEvents, text,  getCurrentVarLoadPointValue(),
                                                                                       getPhaseAValue(), getPhaseBValue(), getPhaseCValue());
                                 }
+                               
                             }
                         }
                         catch(...)
@@ -10696,6 +10721,10 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setDecimalPlaces(0);
 
     setSendMoreTimeControlledCommandsFlag(FALSE);
+    setLikeDayControlFlag(FALSE);
+    _todControls.clear();
+    _percentToClose = 0;
+
     figureNextCheckTime();
     setNewPointDataReceivedFlag(FALSE);
     setBusUpdatedFlag(FALSE);
@@ -10730,7 +10759,6 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setMaxDailyOpsHitFlag(FALSE);
     setOvUvDisabledFlag(FALSE);
     setCorrectionNeededNoBankAvailFlag(FALSE);
-    setLikeDayControlFlag(FALSE);
     setCurrentVerificationCapBankId(-1);
     setCurrentVerificationFeederId(-1);
     setCurrentVerificationCapBankState(0);
@@ -10795,8 +10823,6 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setLastWattPointTime(gInvalidCtiTime);
     setLastVoltPointTime(gInvalidCtiTime); 
 
-    _todControls.clear();
-    _percentToClose = 0;
 }
 
 void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)

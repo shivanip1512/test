@@ -36,7 +36,6 @@ CtiCCCapBank::CtiCCCapBank()
 {
     _twoWayPoints = NULL;
     _ovuvSituationFlag = false;
-    
 }
 
 CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr) 
@@ -85,9 +84,7 @@ CtiCCCapBank::~CtiCCCapBank()
     {
         delete _twoWayPoints;
         _twoWayPoints = NULL;
-    }  
-    
-
+    } 
 }
 CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
 {
@@ -96,8 +93,7 @@ CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
     
     return _twoWayPoints;
 
-}
-
+} 
 
 CtiCCOperationStats& CtiCCCapBank::getOperationStats()
 {
@@ -188,6 +184,12 @@ LONG CtiCCCapBank::getReportedCBCState() const
 {
     return _reportedCBCState;
 }
+
+LONG CtiCCCapBank::getReportedCBCLastControlReason() const
+{
+    return _reportedCBCLastControlReason;
+}
+
 
 const CtiTime& CtiCCCapBank::getReportedCBCStateTime() const
 {
@@ -448,6 +450,11 @@ BOOL CtiCCCapBank::getVerificationDoneFlag() const
 BOOL CtiCCCapBank::getPorterRetFailFlag() const
 {
     return _porterRetFailFlag;
+}
+
+BOOL CtiCCCapBank::getUnsolicitedPendingFlag() const
+{
+    return _unsolicitedPendingFlag;
 }
 
 BOOL CtiCCCapBank::getRetryOpenFailedFlag() const
@@ -1057,6 +1064,15 @@ CtiCCCapBank& CtiCCCapBank::setPorterRetFailFlag(BOOL flag)
     _porterRetFailFlag = flag;
     return *this;
 }
+CtiCCCapBank& CtiCCCapBank::setUnsolicitedPendingFlag(BOOL flag)
+{
+    if (_unsolicitedPendingFlag != flag)
+    {
+        _dirty = TRUE;
+    }
+    _unsolicitedPendingFlag = flag;
+    return *this;
+}
 
 /*---------------------------------------------------------------------------
     setRetryOpenFailedFlag
@@ -1516,6 +1532,20 @@ CtiCCCapBank& CtiCCCapBank::setUDPPort(LONG value)
     return *this;
 
 }
+
+CtiCCCapBank& CtiCCCapBank::setReportedCBCLastControlReason(LONG value)
+{
+    if (_reportedCBCLastControlReason != value)
+    {
+        _dirty = TRUE;
+    }
+    _reportedCBCLastControlReason = value;
+
+    return *this;
+
+}
+
+
 CtiCCCapBank& CtiCCCapBank::setReportedCBCState(LONG value)
 {
     if (_reportedCBCState != value)
@@ -2219,11 +2249,13 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _localControlFlag = right._localControlFlag;
         _controlRecentlySentFlag = right._controlRecentlySentFlag;
         _porterRetFailFlag = right._porterRetFailFlag;
+        _unsolicitedPendingFlag = right._unsolicitedPendingFlag;
 
         _sendAllCommandFlag = right._sendAllCommandFlag;
         
         _ipAddress = right._ipAddress;
         _udpPortNumber = right._udpPortNumber;
+        _reportedCBCLastControlReason = right._reportedCBCLastControlReason;
         _reportedCBCState = right._reportedCBCState;
         _reportedCBCStateTime = right._reportedCBCStateTime;
 
@@ -2325,6 +2357,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setLocalControlFlag(FALSE);
     setControlRecentlySentFlag(FALSE);
     setPorterRetFailFlag(FALSE);
+    setUnsolicitedPendingFlag(FALSE);
 
     setOvUvSituationFlag(FALSE);
     _additionalFlags = string("NNNNNNNNNNNNNNNNNNNN");
@@ -2332,6 +2365,7 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
 
     setIpAddress(0);
     setUDPPort(0);
+    setReportedCBCLastControlReason(0);
     setReportedCBCState(-1);
     setReportedCBCStateTime(gInvalidCtiTime);
 
@@ -2383,6 +2417,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     _localControlFlag = (_additionalFlags[16]=='y'?TRUE:FALSE);
     _controlRecentlySentFlag = (_additionalFlags[17]=='y'?TRUE:FALSE);
     _porterRetFailFlag = (_additionalFlags[18]=='y'?TRUE:FALSE);
+    _unsolicitedPendingFlag = (_additionalFlags[19]=='y'?TRUE:FALSE);
 
     if (_controlStatusPartialFlag)
         _controlStatusQuality = CC_Partial;
@@ -2407,6 +2442,7 @@ void CtiCCCapBank::setDynamicData(RWDBReader& rdr)
     rdr["beforevar"] >> _sBeforeVars;  
     rdr["aftervar"] >> _sAfterVars;   
     rdr["changevar"] >> _sPercentChange;
+    rdr["twowaycbclastcontrol"] >> _reportedCBCLastControlReason;
 
     _insertDynamicDataFlag = FALSE;
     _dirty = FALSE;
@@ -2490,6 +2526,7 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             addFlags[16] = (_localControlFlag?'Y':'N');
             addFlags[17] = (_controlRecentlySentFlag?'Y':'N');
             addFlags[18] = (_porterRetFailFlag?'Y':'N');
+            addFlags[19] = (_unsolicitedPendingFlag?'Y':'N');
             _additionalFlags = char2string(*addFlags);
             _additionalFlags.append(char2string(*(addFlags+1)));
             _additionalFlags.append(char2string(*(addFlags+2))); 
@@ -2509,8 +2546,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             _additionalFlags.append(char2string(*(addFlags+16))); 
             _additionalFlags.append(char2string(*(addFlags+17))); 
             _additionalFlags.append(char2string(*(addFlags+18))); 
-            _additionalFlags.append("N");
-
+            _additionalFlags.append(char2string(*(addFlags+19))); 
+            
             RWDBUpdater updater = dynamicCCCapBankTable.updater();
 
             updater.where(dynamicCCCapBankTable["capbankid"]==_paoid);
@@ -2531,7 +2568,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << dynamicCCCapBankTable["twowaycbcstatetime"].assign( toRWDBDT((CtiTime)_reportedCBCStateTime) )
             << dynamicCCCapBankTable["beforevar"].assign( string2RWCString(_sBeforeVars) )
             << dynamicCCCapBankTable["aftervar"].assign( string2RWCString(_sAfterVars) )
-            << dynamicCCCapBankTable["changevar"].assign( string2RWCString(_sPercentChange) );
+            << dynamicCCCapBankTable["changevar"].assign( string2RWCString(_sPercentChange) )
+            << dynamicCCCapBankTable["twowaycbclastcontrol"].assign( _reportedCBCLastControlReason);
 
             updater.execute( conn );
 
@@ -2577,7 +2615,8 @@ void CtiCCCapBank::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTim
             << _reportedCBCStateTime
             << _sBeforeVars
             << _sAfterVars
-            << _sPercentChange;
+            << _sPercentChange
+            << _reportedCBCLastControlReason;
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
             {

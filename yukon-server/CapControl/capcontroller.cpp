@@ -78,6 +78,7 @@ extern ULONG _VOLT_REDUCTION_COMMAND_DELAY;
 extern BOOL _TIME_OF_DAY_VAR_CONF;
 extern ULONG _OP_STATS_USER_DEF_PERIOD;
 extern ULONG _OP_STATS_REFRESH_RATE;
+extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 
 
 //DLLEXPORT BOOL  bGCtrlC = FALSE;
@@ -3102,64 +3103,26 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                         {
                             if (twoWayPts->getIgnoredIndicator() != value) 
                             { 
-                                CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
-                                CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
-
-                                currentCapBank->setIgnoreFlag(TRUE);
-                                currentSubstationBus->setBusUpdatedFlag(TRUE);
-                               
-                                string text = string("CBC rejected command!");
-                                string text1 = string("Var:");
-                                string afterVarsString = string(" CBC rejected ");
-                                afterVarsString += currentCapBank->getControlStatusText();                                   
-                                text1 += afterVarsString;
-                                currentCapBank->setAfterVarsString(afterVarsString);
-                                currentCapBank->setPercentChangeString(" --- ");
-                                text1 += " command";
-                                text1 += currentCapBank->getIgnoreReasonText();
-                                text1 += "! Adjusting state, ";
-                                currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
-                                text1 += currentCapBank->getControlStatusText();
-                                currentCapBank->setControlStatusQuality(CC_NoControl);
-                               
-                                currentSubstationBus->checkAndUpdateRecentlyControlledFlag();
-                                string userName = "cap control";
-                                if (currentCapBank->getVerificationFlag())
-                                {
-                                    currentCapBank->setPorterRetFailFlag(TRUE);
-                                    userName += " verification";
-                                    currentCapBank->setPercentChangeString(" verify set to CBC state ");
-                                }
+                                handleRejectionMessaging(currentCapBank, currentFeeder, currentSubstationBus, twoWayPts);
                                 
-                                sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                LONG stationId, areaId, spAreaId;
-                                int actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
-                                store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
-                                
-                                ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
-                                
-                                
-                                if( currentCapBank->getOperationAnalogPointId() > 0 )
-                                {
-                                    if (currentCapBank->getTotalOperations() > 0)
-                                        currentCapBank->setTotalOperations( currentCapBank->getTotalOperations() - 1);
-                                    if (currentCapBank->getCurrentDailyOperations() > 0)
-                                        currentCapBank->setCurrentDailyOperations( currentCapBank->getCurrentDailyOperations() - 1);
-                                    getDispatchConnection()->WriteConnQue(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Command Refused, Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
-                                }
-                                getCCEventMsgQueueHandle().write(multiCCEventMsg);
-
-                                currentCapBank->setLastStatusChangeTime(CtiTime());
-                                currentCapBank->setControlRecentlySentFlag(FALSE);
-                                
-                                //SYNC with what CBC is reporting.
-                                currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
                             }
                         }
                         if (twoWayPts->setTwoWayStatusPointValue(pointID, value))
                         {   
-                            if (twoWayPts->getCapacitorBankStateId() == pointID) 
+                            if ( (twoWayPts->getLastControlLocalId() == pointID && twoWayPts->getLastControlLocal() > 0) ||  
+                                 (twoWayPts->getLastControlOvUvId() == pointID && twoWayPts->getLastControlOvUv() > 0) || 
+                                 (twoWayPts->getLastControlNeutralFaultId() == pointID && twoWayPts->getLastControlNeutralFault() > 0) || 
+                                 (twoWayPts->getLastControlScheduledId() == pointID && twoWayPts->getLastControlScheduled() > 0) || 
+                                 (twoWayPts->getLastControlDigitalId()== pointID && twoWayPts->getLastControlDigital() > 0) ||  
+                                 (twoWayPts->getLastControlAnalogId() == pointID && twoWayPts->getLastControlAnalog() > 0) || 
+                                 (twoWayPts->getLastControlTemperatureId() == pointID && twoWayPts->getLastControlTemperature() > 0) ) 
+                            {
+                                if ( currentCapBank->getUnsolicitedPendingFlag() )
+                                    handleUnsolicitedMessaging(currentCapBank, currentFeeder, currentSubstationBus, twoWayPts);
+
+                                currentCapBank->setReportedCBCLastControlReason(twoWayPts->getLastControl());
+                            }
+                            else if (twoWayPts->getCapacitorBankStateId() == pointID) 
                             {
                                 if (currentCapBank->getReportedCBCState() != value &&
                                     currentCapBank->getReportedCBCState() >= 0) 
@@ -3175,41 +3138,27 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                           currentCapBank->getControlStatus() != CtiCCCapBank::CloseQuestionable &&
                                           currentCapBank->getControlStatus() != CtiCCCapBank::CloseFail) )
                                     {
-                                        CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
-                                        CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
 
-                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                        string text = string("CBC Unsolicited Event!");
-                                        string text1 = string("Var:");
-                                        string beforeVarsString = string(" CBC Unsolicited ");
-                                        currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
-                                        beforeVarsString += currentCapBank->getControlStatusText();                                   text += 
-                                        text1 += beforeVarsString;
-                                        text1 += twoWayPts->getLastControlText();
-
-                                        currentCapBank->setBeforeVarsString(beforeVarsString);
-                                        currentCapBank->setAfterVarsString(" --- ");
-                                        currentCapBank->setPercentChangeString(" --- ");
-                                        currentCapBank->setControlStatusQuality(CC_UnSolicited);
-                                
-                                        text1 += "! Adjusting CapBank state,  ";
-                                        text1 += currentCapBank->getControlStatusText();
-
-                                        string opText = currentCapBank->getControlStatusText();
-                                        opText += " sent, CBC Local Change";
-
-
-                                        sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
-                                        LONG stationId, areaId, spAreaId;
-                                        store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
-                                        int actionId = CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1;
-                                        ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), opText, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
-                                        ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
-                                        getCCEventMsgQueueHandle().write(multiCCEventMsg);
-
+                                        currentCapBank->setUnsolicitedPendingFlag(TRUE);
+                                        currentCapBank->setControlStatus(value);
                                         currentCapBank->setLastStatusChangeTime(CtiTime());
                                     }
                                     
+                                }
+                                else if (stringContainsIgnoreCase(currentCapBank->getAfterVarsString(), "Manual") && 
+                                    ( (currentCapBank->getControlStatus() == CtiCCCapBank::Open ||
+                                        currentCapBank->getControlStatus() == CtiCCCapBank::Close ) &&
+                                       value !=  currentCapBank->getControlStatus()) )
+                                {
+                                    currentCapBank->setControlStatus(value);
+                                    currentCapBank->setAfterVarsString("Adjusted to CBC Reported State");
+                                    currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    {
+                                        CtiLockGuard<CtiLogger> logger_guard(dout);
+                                        dout << CtiTime() << " - Adjusting CapBank status to match CBC..."<< endl;
+                                    }
+                                    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+
                                 }
                                 
                                 if ( !currentFeeder->getRecentlyControlledFlag() && 
@@ -3221,7 +3170,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 {
                                     currentCapBank->setControlRecentlySentFlag(FALSE);
                                 }
-                                 
+                                
                                 currentCapBank->setReportedCBCState(twoWayPts->getCapacitorBankState());
                                 store->set2wayFlagUpdate(TRUE);
 
@@ -3245,16 +3194,15 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                     currentCapBank->setOvUvDisabledFlag(TRUE);
                                 }
                             }
-                            if //(twoWayPts->getOvCondition() || twoWayPts->getUvCondition() ) 
-                            (twoWayPts->getOvCondition() || twoWayPts->getUvCondition() ) 
+                            if (twoWayPts->getLastControlOvUv() > 0)
                             {
                                 if (!currentCapBank->getOvUvSituationFlag())
                                 {
-                                    currentCapBank->setOvUvSituationFlag(TRUE);
                                     currentSubstationBus->setBusUpdatedFlag(TRUE);
+                                    currentCapBank->setOvUvSituationFlag(TRUE);
                                 }
                             }
-                            else  //!(twoWayPts->getOvCondition() || twoWayPts->getUvCondition()
+                            else  
                             { 
                                 if (currentCapBank->getOvUvSituationFlag())
                                 {
@@ -3298,29 +3246,7 @@ void CtiCapController::pointDataMsgByCapBank( long pointID, double value, unsign
                                 currentCapBank->setIgnoredReason(value);
                                 currentSubstationBus->setBusUpdatedFlag(TRUE);
                             }
-                            else if (twoWayPts->getVoltageId() == pointID)
-                            {
-                                if( ( twoWayPts->getVoltage() > twoWayPts->getOvSetPoint() &&
-                                      twoWayPts->getCapacitorBankState() == CtiCCCapBank::Open ) ||  
-                                    ( twoWayPts->getVoltage() < twoWayPts->getUvSetPoint() &&
-                                      twoWayPts->getCapacitorBankState() == CtiCCCapBank::Close ))
-                                {
-                                    if (!currentCapBank->getOvUvSituationFlag())
-                                    {
-                                        currentCapBank->setOvUvSituationFlag(TRUE);
-                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                    }
-                                }
-                                else
-                                {   
-                                    if (currentCapBank->getOvUvSituationFlag())
-                                    {
-                                        currentSubstationBus->setBusUpdatedFlag(TRUE);
-                                        currentCapBank->setOvUvSituationFlag(FALSE);
-                                    }
-                                }
-                            }
-                                
+                            
                             if( _CC_DEBUG & CC_DEBUG_OPTIONALPOINT )
                             {
                                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -3524,7 +3450,8 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
                         eventMsg->setStateInfo(currentCapBank->getControlStatusQualityString());
                         getCCEventMsgQueueHandle().write(eventMsg);
                         currentCapBank->setLastStatusChangeTime(CtiTime());
-
+                        currentFeeder->setRetryIndex(0);
+                
                     }
                     sendMessageToDispatch(new CtiSignalMsg(currentCapBank->getStatusPointId(),1,text,additional,CapControlLogType,SignalEvent,userName));
                 }
@@ -3546,6 +3473,139 @@ void CtiCapController::porterReturnMsg( long deviceId, const string& _commandStr
         }
     }
    
+}
+
+
+void CtiCapController::handleRejectionMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
+                                                CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
+    CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
+
+    currentCapBank->setIgnoreFlag(TRUE);
+    currentSubstationBus->setBusUpdatedFlag(TRUE);
+    
+    string text = string("CBC rejected command!");
+    string text1 = string("Var:");
+    string afterVarsString = string(" CBC rejected ");
+    afterVarsString += currentCapBank->getControlStatusText();                                   
+    text1 += afterVarsString;
+    currentCapBank->setAfterVarsString(afterVarsString);
+    currentCapBank->setPercentChangeString(" --- ");
+    
+    text1 += " command";
+    text1 += currentCapBank->getIgnoreReasonText();
+    if (twoWayPts->getIgnoredReason() == 4) //voltage
+    {
+        if ( (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending &&
+             (twoWayPts->getVoltage() + twoWayPts->getDeltaVoltage()) > twoWayPts->getOvSetPoint()) ||
+             (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending &&
+             (twoWayPts->getVoltage() - twoWayPts->getDeltaVoltage()) < twoWayPts->getUvSetPoint()) )
+        {
+            currentCapBank->setPercentChangeString(" Rejection by Delta Voltage ");
+            text1 += " delta";
+        }
+
+        if ( (currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending &&
+              twoWayPts->getVoltage() >= twoWayPts->getOvSetPoint())  ||
+             (currentCapBank->getControlStatus() == CtiCCCapBank::OpenPending &&
+              twoWayPts->getVoltage() <= twoWayPts->getUvSetPoint()) ||
+             twoWayPts->getOvCondition() || twoWayPts->getUvCondition() )
+        {
+            currentCapBank->setPercentChangeString(" Rejection by OVUV ");
+            text1 += " ovuv";
+        }
+    }
+
+    text1 += "! Adjusting state, ";
+    currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
+    text1 += currentCapBank->getControlStatusText();
+    currentCapBank->setControlStatusQuality(CC_NoControl);
+    
+    currentSubstationBus->checkAndUpdateRecentlyControlledFlag();
+    string userName = "cap control";
+    if (currentCapBank->getVerificationFlag())
+    {
+        currentCapBank->setPorterRetFailFlag(TRUE);
+        userName += " verification";
+        currentCapBank->setPercentChangeString(" verify set to CBC state ");
+    }
+    
+    sendMessageToDispatch(new CtiPointDataMsg(currentCapBank->getStatusPointId(),currentCapBank->getControlStatus(),NormalQuality,StatusPointType, "Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+    LONG stationId, areaId, spAreaId;
+    int actionId = CCEventActionIdGen(currentCapBank->getStatusPointId());
+    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+    
+    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, userName, 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
+    
+    
+    if( currentCapBank->getOperationAnalogPointId() > 0 )
+    {
+        if (currentCapBank->getTotalOperations() > 0)
+            currentCapBank->setTotalOperations( currentCapBank->getTotalOperations() - 1);
+        if (currentCapBank->getCurrentDailyOperations() > 0)
+            currentCapBank->setCurrentDailyOperations( currentCapBank->getCurrentDailyOperations() - 1);
+        getDispatchConnection()->WriteConnQue(new CtiPointDataMsg(currentCapBank->getOperationAnalogPointId(),currentCapBank->getTotalOperations(),NormalQuality,AnalogPointType,"Command Refused, Forced ccServer Update", TAG_POINT_FORCE_UPDATE));
+        ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getOperationAnalogPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlSetOperationCount, currentSubstationBus->getEventSequence(), currentCapBank->getTotalOperations(), "Command Refused, opCount adjustment", userName, 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
+    }
+    getCCEventMsgQueueHandle().write(multiCCEventMsg);
+
+    currentCapBank->setLastStatusChangeTime(CtiTime());
+    currentCapBank->setControlRecentlySentFlag(FALSE);
+    
+    //SYNC with what CBC is reporting.
+    currentCapBank->setControlStatus(twoWayPts->getCapacitorBankState());
+
+}
+void CtiCapController::handleUnsolicitedMessaging(CtiCCCapBank* currentCapBank, CtiCCFeeder* currentFeeder, 
+                                                  CtiCCSubstationBus* currentSubstationBus, CtiCCTwoWayPoints* twoWayPts)
+{
+    CtiCCSubstationBusStore* store = CtiCCSubstationBusStore::getInstance();
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(store->getMux());
+
+    CtiMultiMsg* multiCCEventMsg = new CtiMultiMsg();
+    CtiMultiMsg_vec& ccEvents = multiCCEventMsg->getData();
+    
+    currentSubstationBus->setBusUpdatedFlag(TRUE);
+    string text = string("CBC Unsolicited Event!");
+    string text1 = string("Var:");
+    string beforeVarsString = string(" CBC Unsolicited ");
+    beforeVarsString += currentCapBank->getControlStatusText();                                  
+    
+    text1 += beforeVarsString;
+    text1 += "-"+twoWayPts->getLastControlText();
+    
+    currentCapBank->setBeforeVarsString(beforeVarsString);
+    currentCapBank->setAfterVarsString(twoWayPts->getLastControlText());
+    currentCapBank->setPercentChangeString(" --- ");
+    
+    text1 += "! Adjusting CapBank state,  ";
+    text1 += currentCapBank->getControlStatusText();
+    
+    string opText = currentCapBank->getControlStatusText();
+    opText += " sent, CBC Local Change";
+    currentCapBank->setControlStatusQuality(CC_UnSolicited);
+    
+    
+    //send the cceventmsg.
+    LONG stationId, areaId, spAreaId;
+    store->getSubBusParentInfo(currentSubstationBus, spAreaId, areaId, stationId); 
+    int actionId = CCEventActionIdGen(currentCapBank->getStatusPointId()) + 1;
+    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capControlCommandSent, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), opText, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
+    
+    
+    ccEvents.push_back( new CtiCCEventLogMsg(0, currentCapBank->getStatusPointId(), spAreaId, areaId, stationId, currentSubstationBus->getPAOId(), currentFeeder->getPAOId(), capBankStateUpdate, currentSubstationBus->getEventSequence(), currentCapBank->getControlStatus(), text1, "cap control", 0, 0, 0, currentCapBank->getIpAddress(), actionId, currentCapBank->getControlStatusQualityString()));
+    if (ccEvents.size() > 0)
+        getCCEventMsgQueueHandle().write(multiCCEventMsg);
+    else
+        multiCCEventMsg = NULL;
+    
+    currentCapBank->setUnsolicitedPendingFlag(FALSE);
+    
+
 }
 
 /*---------------------------------------------------------------------------
@@ -4008,6 +4068,24 @@ void CtiCapController::refreshCParmGlobals(bool force)
             dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
         }
 
+        _RETRY_ADJUST_LAST_OP_TIME = TRUE;
+        strcpy(var, "CAP_CONTROL_RETRY_ADJUST_LAST_OP_TIME");
+        if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+        {
+            std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+            _RETRY_ADJUST_LAST_OP_TIME = (str=="true"?TRUE:FALSE);
+            if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+            {
+                CtiLockGuard<CtiLogger> logger_guard(dout);
+                dout << CtiTime() << " - " << var << ":  " << str << endl;
+            }
+        }
+        else
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+        }
+
 
     }
     catch(RWxmsg& msg )
@@ -4023,6 +4101,7 @@ void CtiCapController::refreshCParmGlobals(bool force)
 
     return;
 }
+
 
 
 

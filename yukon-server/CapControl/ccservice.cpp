@@ -50,6 +50,7 @@ LONG _MAXOPS_ALARM_CATID;
 
 ULONG _OP_STATS_USER_DEF_PERIOD;
 ULONG _OP_STATS_REFRESH_RATE;
+BOOL _RETRY_ADJUST_LAST_OP_TIME;
 
 
 CtiDate gInvalidCtiDate = CtiDate(1,1, 1990);
@@ -559,7 +560,6 @@ void CtiCCService::Init()
         dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
     }
 
-
     _MAXOPS_ALARM_CAT = "(NONE)";
     _MAXOPS_ALARM_CATID = 1;
 
@@ -569,6 +569,24 @@ void CtiCCService::Init()
         std::transform(str.begin(), str.end(), str.begin(), ::tolower);
         _MAXOPS_ALARM_CAT = "%"+str+"%";
         
+        if ( _CC_DEBUG & CC_DEBUG_STANDARD)
+        {
+            CtiLockGuard<CtiLogger> logger_guard(dout);
+            dout << CtiTime() << " - " << var << ":  " << str << endl;
+        }
+    }
+    else
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Unable to obtain '" << var << "' value from cparms." << endl;
+    }
+
+    _RETRY_ADJUST_LAST_OP_TIME = TRUE;
+    strcpy(var, "CAP_CONTROL_RETRY_ADJUST_LAST_OP_TIME");
+    if ( !(str = gConfigParms.getValueAsString(var)).empty() )
+    {
+        std::transform(str.begin(), str.end(), str.begin(), ::tolower);
+        _RETRY_ADJUST_LAST_OP_TIME = (str=="true"?TRUE:FALSE);
         if ( _CC_DEBUG & CC_DEBUG_STANDARD)
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);

@@ -15,6 +15,7 @@
 
 #include "dbaccess.h"
 #include "cctwowaycbcpoints.h"
+#include "cccapbank.h"
 #include "ccid.h"
 #include "pointdefs.h"
 #include "logger.h"
@@ -1341,14 +1342,14 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
         RWDBTable dynamicCCTwoWayTable = getDatabase().table( "dynamiccctwowaycbc" );
         if( !_insertDynamicDataFlag )
         {
-            INT lastControl = ( ( _lastControlLocal & 0x01)||
-                                (_lastControlRemote & 0x02 ) ||
-                                (_lastControlOvUv & 0x04 ) ||
-                                (_lastControlNeutralFault & 0x08 ) ||
-                                (_lastControlScheduled & 0x10 ) ||
-                                (_lastControlDigital & 0x20 ) ||
-                                (_lastControlAnalog & 0x40 ) ||
-                                (_lastControlTemperature & 0x80 ) );
+            _lastControlReason = ( ( _lastControlRemote & 0x01)            ||
+                                ((_lastControlLocal & 0x01 )        << 1 ) ||
+                                ((_lastControlOvUv & 0x01 )         << 2 ) ||
+                                ((_lastControlNeutralFault & 0x01)  << 3 ) ||
+                                ((_lastControlScheduled & 0x01)     << 4 ) ||
+                                ((_lastControlDigital & 0x01)       << 5 ) ||
+                                ((_lastControlAnalog & 0x01 )       << 6 ) ||
+                                ((_lastControlTemperature & 0x01 )  << 7 ) );
             INT condition = 0;
             if (_uvCondition)
                 condition = 1;
@@ -1364,7 +1365,7 @@ void CtiCCTwoWayPoints::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDa
             updater << dynamicCCTwoWayTable["recloseblocked"].assign( _reCloseBlocked?"Y":"N")
             << dynamicCCTwoWayTable["controlmode"].assign( _controlMode?"Y":"N")
             << dynamicCCTwoWayTable["autovoltcontrol"].assign( _autoVoltControl?"Y":"N" )
-            << dynamicCCTwoWayTable["lastcontrol"].assign( lastControl )
+            << dynamicCCTwoWayTable["lastcontrol"].assign( _lastControlReason )
             << dynamicCCTwoWayTable["condition"].assign( condition )
             << dynamicCCTwoWayTable["opfailedneutralcurrent"].assign( _opFailedNeutralCurrent?"Y":"N" )
             << dynamicCCTwoWayTable["neutralcurrentfault"].assign(_neutralCurrentFault?"Y":"N")
@@ -2387,6 +2388,8 @@ CtiCCTwoWayPoints& CtiCCTwoWayPoints::operator=(const CtiCCTwoWayPoints& right)
         _uvCountId = right._uvCountId;
         _uvCount = right._uvCount;
 
+        _lastControlReason = right._lastControlReason;
+
 
         _insertDynamicDataFlag = right._insertDynamicDataFlag;
         _dirty = right._dirty;
@@ -2409,21 +2412,151 @@ string CtiCCTwoWayPoints::getLastControlText() const
     string retVal = "";
 
     if (_lastControlLocal > 0 )
-        retVal = "-Local";
+        retVal = "Local";
     else if (_lastControlRemote > 0 )
-        retVal = "-Remote";
+        retVal = "Remote";
     else if (_lastControlOvUv > 0 )
-        retVal = "-OvUv";
+        retVal = "OvUv";
     else if (_lastControlNeutralFault > 0 )
-        retVal = "-NeutralFault";
+        retVal = "NeutralFault";
     else if (_lastControlScheduled > 0 )
-        retVal = "-Schedule";
+        retVal = "Schedule";
     else if (_lastControlDigital > 0 )
-        retVal = "-Digital";
+        retVal = "Digital";
     else if (_lastControlAnalog > 0 )
-        retVal = "-Analog";
+        retVal = "Analog";
     else if (_lastControlTemperature > 0 )
-        retVal = "-Temp";
+        retVal = "Temp";
+
+    return retVal;
+}
+
+
+LONG CtiCCTwoWayPoints::getLastControl() const
+{
+    LONG retVal = 0;
+
+    if (_lastControlRemote > 0 )
+        retVal = CC_Remote;
+    else if (_lastControlLocal > 0 )
+        retVal = CC_Local;
+    else if (_lastControlOvUv > 0 )
+        retVal = CC_OvUv;
+    else if (_lastControlNeutralFault > 0 )
+        retVal = CC_NeutralFault;
+    else if (_lastControlScheduled > 0 )
+        retVal = CC_Scheduled;
+    else if (_lastControlDigital > 0 )
+        retVal = CC_Digital;
+    else if (_lastControlAnalog > 0 )
+        retVal = CC_Analog;
+    else if (_lastControlTemperature > 0 )
+        retVal = CC_Temperature;
+
+    return retVal;
+}
+
+INT CtiCCTwoWayPoints::getLastControlReason() const
+{
+    return _lastControlReason;
+}
+
+CtiCCTwoWayPoints& CtiCCTwoWayPoints::setLastControlReason() 
+{
+
+    if (_lastControlRemote > 0 )
+        _lastControlReason = CC_Remote;
+    else if (_lastControlLocal > 0 )
+        _lastControlReason = CC_Local;
+    else if (_lastControlOvUv > 0 )
+        _lastControlReason = CC_OvUv;
+    else if (_lastControlNeutralFault > 0 )
+        _lastControlReason = CC_NeutralFault;
+    else if (_lastControlScheduled > 0 )
+        _lastControlReason = CC_Scheduled;
+    else if (_lastControlDigital > 0 )
+        _lastControlReason = CC_Digital;
+    else if (_lastControlAnalog > 0 )
+        _lastControlReason = CC_Analog;
+    else if (_lastControlTemperature > 0 )
+        _lastControlReason = CC_Temperature;
+
+    return *this;
+}
+
+
+BOOL CtiCCTwoWayPoints::isLastControlReasonUpdated(LONG pointID,LONG reason )
+{
+    BOOL retVal = FALSE;
+    switch (reason)
+    {
+        case CC_Remote:
+        {
+            if (pointID == getLastControlRemoteId() && getLastControlRemote() == 0)
+            {
+                retVal = TRUE;
+            }
+            break;
+        }
+        case CC_Local:
+        {
+            if (pointID == getLastControlLocalId() && getLastControlLocal() == 0)
+            {
+                retVal = TRUE;
+            }
+            break;
+        }
+        case CC_OvUv:
+        {
+            if (pointID == getLastControlOvUvId() && getLastControlOvUv() == 0)
+            {
+                retVal = TRUE;
+            }
+            break;
+        }
+        case CC_NeutralFault:
+        {
+            if (pointID == getLastControlNeutralFaultId() && getLastControlNeutralFault() == 0)
+            {
+                retVal = TRUE;
+            }
+            break;
+        }
+        case CC_Scheduled:
+        {
+            if (pointID == getLastControlScheduledId() && getLastControlScheduled() == 0)
+            {
+                retVal = TRUE;
+            }
+            break;
+        }
+        case CC_Digital:
+        {
+            if (pointID == getLastControlDigitalId() && getLastControlDigital() == 0)
+            {
+                retVal = TRUE;
+            }
+            break;
+        }
+        case CC_Analog:
+        {
+            if (pointID == getLastControlAnalogId() && getLastControlAnalog() == 0)
+            {
+                retVal = TRUE;
+            }
+            break;
+        }
+        case CC_Temperature:
+        {
+            if (pointID == getLastControlTemperatureId() && getLastControlTemperature() == 0)
+            {
+                retVal = TRUE;
+            }
+            break;
+        }
+        default:
+            break;
+    }
 
     return retVal;
 }

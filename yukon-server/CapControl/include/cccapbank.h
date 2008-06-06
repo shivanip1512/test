@@ -45,7 +45,22 @@ typedef enum
     CC_CommFail = 5,
     CC_NoControl = 6,
     CC_UnSolicited = 7
-} CtiCCControlStatusQaulity;
+
+}CtiCCControlStatusQaulity;
+
+
+typedef enum
+{
+    CC_Remote = 0,
+    CC_Local = 1,
+    CC_OvUv = 2,
+    CC_NeutralFault = 3,
+    CC_Scheduled = 4,
+    CC_Digital = 5,
+    CC_Analog = 6,
+    CC_Temperature = 7
+} CtiCCLastControlReason;
+
 
 namespace capcontrol
 {
@@ -130,6 +145,7 @@ public:
     BOOL getOvUvSituationFlag() const;
     LONG getUDPPort() const;
     const string& getIpAddress() const;
+    LONG getReportedCBCLastControlReason() const;
     LONG getReportedCBCState() const;
     const CtiTime& getReportedCBCStateTime() const;
     BOOL getIgnoreFlag() const;
@@ -138,6 +154,7 @@ public:
     const string& getAfterVarsString() const;
     const string& getPercentChangeString() const;
     BOOL getSendAllCommandFlag() const;
+    BOOL getUnsolicitedPendingFlag() const;
 
 
     int  getVCtrlIndex() const;
@@ -209,6 +226,7 @@ public:
     CtiCCCapBank& setOvUvSituationFlag(BOOL ovUvSituationFlag);
     CtiCCCapBank& setUDPPort(LONG value);
     CtiCCCapBank& setIpAddress(ULONG value);
+    CtiCCCapBank& setReportedCBCLastControlReason(LONG value);
     CtiCCCapBank& setReportedCBCState(LONG value);
     CtiCCCapBank& setReportedCBCStateTime(const CtiTime& timestamp);
     CtiCCCapBank& setIgnoreFlag(BOOL flag);
@@ -217,6 +235,7 @@ public:
     CtiCCCapBank& setAfterVarsString(const string& after);
     CtiCCCapBank& setPercentChangeString(const string& percent);
     CtiCCCapBank& setSendAllCommandFlag(BOOL flag);
+    CtiCCCapBank& setUnsolicitedPendingFlag(BOOL flag);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
     CtiCCCapBank& setAssumedOrigVerificationState(int assumedOrigCapBankPos);
@@ -349,10 +368,12 @@ private:
     BOOL _localControlFlag;
     BOOL _controlRecentlySentFlag;
     BOOL _porterRetFailFlag;
+    BOOL _unsolicitedPendingFlag;
     
     CtiCCTwoWayPoints *_twoWayPoints;
     string _ipAddress;
     LONG _udpPortNumber;
+    LONG _reportedCBCLastControlReason;
     LONG _reportedCBCState;
     CtiTime _reportedCBCStateTime;
 
@@ -365,7 +386,6 @@ private:
 
     BOOL _sendAllCommandFlag;
 
-    
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;
     

@@ -48,6 +48,7 @@ extern ULONG _LIKEDAY_OVERRIDE_TIMEOUT;
 extern bool _RATE_OF_CHANGE;
 extern unsigned long _RATE_OF_CHANGE_DEPTH;
 extern LONG _MAXOPS_ALARM_CATID;
+extern BOOL _RETRY_ADJUST_LAST_OP_TIME;
 
 RWDEFINE_COLLECTABLE( CtiCCFeeder, CTICCFEEDER_ID )
 
@@ -734,6 +735,10 @@ const CtiTime& CtiCCFeeder::getLastVoltPointTime() const
     return _lastVoltPointTime;
 }
 
+LONG CtiCCFeeder::getRetryIndex() const
+{
+    return _retryIndex;
+}
 
 
 /*---------------------------------------------------------------------------
@@ -2707,7 +2712,8 @@ void CtiCCFeeder::createForcedVarConfirmation(CtiCCCapBank* capBank, CtiMultiMsg
     textInfo += typeOfControl;
     textInfo += ", ";
     textInfo += capBank->getControlStatusText();
-    
+
+    capBank->setControlRecentlySentFlag(TRUE);
     LONG stationId, areaId, spAreaId;
     store->getFeederParentInfo(this, spAreaId, areaId, stationId);  
     INT actionId = CCEventActionIdGen(capBank->getStatusPointId());
@@ -3687,6 +3693,7 @@ BOOL CtiCCFeeder::capBankControlStatusUpdate(CtiMultiMsg_vec& pointChanges, CtiM
         returnBoolean = TRUE;
     }
 
+    setRetryIndex(0);
     setRecentlyControlledFlag(FALSE);
 
     return returnBoolean;
@@ -3925,7 +3932,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
                     text = createPhaseControlStatusUpdateText(currentCapBank->getControlStatus(), varAValue, 
                                                           varBValue, varCValue, ratioA, ratioB, ratioC);
 
-                    currentCapBank->setBeforeVarsString(createPhaseVarText(varValueAbc, varValueBbc, varValueCbc,1.0));
+                    currentCapBank->setBeforeVarsString(createPhaseVarText(varValueAbc, varValueBbc, varValueCbc,1.0) );
                     currentCapBank->setAfterVarsString(createPhaseVarText(varAValue, varBValue, varCValue,1.0));
                     currentCapBank->setPercentChangeString(createPhaseRatioText(ratioA, ratioB, ratioC,100.0));
                 }
@@ -4000,6 +4007,7 @@ BOOL CtiCCFeeder::capBankControlPerPhaseStatusUpdate(CtiMultiMsg_vec& pointChang
     }
 
     setRecentlyControlledFlag(FALSE);
+    setRetryIndex(0);
 
     return returnBoolean;
 }
@@ -4368,6 +4376,8 @@ BOOL CtiCCFeeder::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointChanges,
             returnBoolean = TRUE;
         }
     }
+    
+    setRetryIndex(0);
     return returnBoolean;
 }
 
@@ -4780,6 +4790,8 @@ BOOL CtiCCFeeder::capBankVerificationPerPhaseStatusUpdate(CtiMultiMsg_vec& point
         dout << CtiTime() << " - Last Verification Cap Bank controlled NOT FOUND: " << __FILE__ << " at: " << __LINE__ << endl;
         returnBoolean = TRUE;
     }
+
+    setRetryIndex(0);
     return returnBoolean;
 }
 
@@ -5339,8 +5351,8 @@ BOOL CtiCCFeeder::isPastMaxConfirmTime(const CtiTime& currentDateTime, LONG maxC
         feederRetries = getControlSendRetries();
     }
 
-    if( ((getLastOperationTime().seconds() + (maxConfirmTime/_SEND_TRIES)) <= currentDateTime.seconds()) ||
-        ((getLastOperationTime().seconds() + (maxConfirmTime/(feederRetries+1))) <= currentDateTime.seconds()) )
+    if( ((getLastOperationTime().seconds() + ((maxConfirmTime/_SEND_TRIES) * (_retryIndex + 1))) <= currentDateTime.seconds()) ||
+        ((getLastOperationTime().seconds() + ((maxConfirmTime/(feederRetries+1)) * (_retryIndex + 1))) <= currentDateTime.seconds()) )
     {
         returnBoolean = TRUE;
     }
@@ -5572,7 +5584,8 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
 
                         CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control open");
                         pilMessages.push_back(reqMsg);
-                        setLastOperationTime(currentDateTime);
+                        if (_RETRY_ADJUST_LAST_OP_TIME)
+                            setLastOperationTime(currentDateTime);
                         returnBoolean = TRUE;
                     }
                     else if( currentCapBank->getControlStatus() == CtiCCCapBank::ClosePending )
@@ -5610,7 +5623,8 @@ BOOL CtiCCFeeder::attemptToResendControl(const CtiTime& currentDateTime, CtiMult
 
                         CtiRequestMsg* reqMsg = new CtiRequestMsg(currentCapBank->getControlDeviceId(),"control close");
                         pilMessages.push_back(reqMsg);
-                        setLastOperationTime(currentDateTime);
+                        if (_RETRY_ADJUST_LAST_OP_TIME)
+                            setLastOperationTime(currentDateTime);
                         returnBoolean = TRUE;
                     }
                     else if( _CC_DEBUG && CC_DEBUG_EXTENDED )
@@ -5640,7 +5654,9 @@ BOOL CtiCCFeeder::checkForAndPerformVerificationSendRetry(const CtiTime& current
        isPastMaxConfirmTime(currentDateTime,maxConfirmTime,sendRetries) &&
        attemptToResendControl(currentDateTime, pointChanges, ccEvents, pilMessages, maxConfirmTime) )
    {
-       setLastOperationTime(currentDateTime);
+       if (_RETRY_ADJUST_LAST_OP_TIME)
+           setLastOperationTime(currentDateTime);
+       setRetryIndex(getRetryIndex() + 1);
        returnBoolean = TRUE;
    }
    return returnBoolean;
@@ -6095,6 +6111,17 @@ CtiCCFeeder& CtiCCFeeder::setPhaseCValueBeforeControl(DOUBLE value)
     _phaseCvalueBeforeControl = value;
     return *this;
 }
+
+CtiCCFeeder& CtiCCFeeder::setRetryIndex(LONG value)
+{
+    if (_retryIndex != value)
+    {
+        _dirty = TRUE;
+    }
+    _retryIndex = value;
+    return *this;
+}
+
 
 BOOL CtiCCFeeder::getVerificationFlag() const
 {
@@ -7005,7 +7032,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << dynamicCCFeederTable["phasebvalue"].assign(_phaseBvalue)
             << dynamicCCFeederTable["phasecvalue"].assign(_phaseCvalue)
             << dynamicCCFeederTable["lastwattpointtime"].assign( toRWDBDT((CtiTime)_lastWattPointTime) )
-            << dynamicCCFeederTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) );
+            << dynamicCCFeederTable["lastvoltpointtime"].assign( toRWDBDT((CtiTime)_lastVoltPointTime) )
+            << dynamicCCFeederTable["retryindex"].assign(_retryIndex);
 
             /*{
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -7077,7 +7105,8 @@ void CtiCCFeeder::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime
             << _phaseBvalue
             << _phaseCvalue
             << _lastWattPointTime
-            << _lastVoltPointTime;
+            << _lastVoltPointTime
+            << _retryIndex;
 
 
             if( _CC_DEBUG & CC_DEBUG_DATABASE )
@@ -7382,6 +7411,7 @@ CtiCCFeeder& CtiCCFeeder::operator=(const CtiCCFeeder& right)
 
          _lastWattPointTime = right._lastWattPointTime;
          _lastVoltPointTime = right._lastVoltPointTime;
+         _retryIndex = right._retryIndex;
         regression = right.regression;
         regressionA = right.regressionA;
         regressionB = right.regressionB;
@@ -7572,6 +7602,7 @@ void CtiCCFeeder::restore(RWDBReader& rdr)
 
     setLastWattPointTime(gInvalidCtiTime);
     setLastVoltPointTime(gInvalidCtiTime);
+    setRetryIndex(0);
 
 }
 
@@ -7668,6 +7699,7 @@ void CtiCCFeeder::setDynamicData(RWDBReader& rdr)
 
     rdr["lastwattpointtime"] >> _lastWattPointTime;
     rdr["lastvoltpointtime"] >> _lastVoltPointTime;
+    rdr["retryindex"] >> _retryIndex;
 
     _insertDynamicDataFlag = FALSE;
     _dirty = false;
