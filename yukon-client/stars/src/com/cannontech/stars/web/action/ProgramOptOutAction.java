@@ -231,7 +231,7 @@ public class ProgramOptOutAction implements ActionBase {
 					
 					LiteStarsLMHardware[] hw = null;
 					if (reenableEvents[i].getInventoryID() > 0) {
-						hw = new LiteStarsLMHardware[0];
+						hw = new LiteStarsLMHardware[1];
 						hw[0] = (LiteStarsLMHardware) energyCompany.getInventory(reenableEvents[i].getInventoryID(), true);
 					}
 					else {
