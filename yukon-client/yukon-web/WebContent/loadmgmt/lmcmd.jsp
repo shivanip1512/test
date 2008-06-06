@@ -333,7 +333,7 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 	%>	  
 	            <tr valign="top"> 
 	              <td width="85" class="TableCell"> 
-	                <div align="right"><b>Start gear: </b></div>
+	                <div align="right"><b>Gear: </b></div>
 	              </td>
 	              <td width="25">&nbsp;</td>
 	              <td width="36">&nbsp;</td>
@@ -363,31 +363,6 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
 	        </td>
 	      </tr>
 	    </table>
-		<br/>
-		
-		<div class="TableCell">
-			Constraint Handling:
-	       <select name="constraint">
-	        <%
-	        	java.util.List constraints = lmSession.getConstraintOptions(
-	        		(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
-	
-	        	String defConstraint = lmSession.getConstraintDefault(
-	        		(LiteYukonUser)session.getAttribute(ServletUtil.ATT_YUKON_USER) );
-	
-				for( int j = 0; j < constraints.size(); j++ )
-				{
-					String curr = (String)constraints.get(j);
-			%>
-	          <option value="<%= curr %>"
-	          		<%= (curr.equals(defConstraint) ? "selected" : "") %> >
-	              <%= curr %>
-			  </option>
-	        <%
-				}
-			%>
-	        </select>
-		</div>
 		<br/>
 <%	
 			}
