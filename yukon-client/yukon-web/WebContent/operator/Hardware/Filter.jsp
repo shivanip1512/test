@@ -354,7 +354,8 @@
 		{
 			if(filterTexts.length < 1)
 			{
-				if(!confirm("You have not defined any filters!")) return;
+                alert("You have not defined any filters!");
+                return;
 			}
 			else
 			{

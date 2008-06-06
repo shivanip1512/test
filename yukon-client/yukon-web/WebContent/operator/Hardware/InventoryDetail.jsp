@@ -89,8 +89,12 @@ function deleteHardware(form) {
 <%  } %>
 	form.action.value = "DeleteInventory";
 <% } %>
-	form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Hardware/Inventory.jsp";
-	form.submit();
+        form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Hardware/Inventory.jsp"; 
+<%    if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
+        ((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { %>
+        form.REDIRECT.value = "<%= request.getContextPath() %>/operator/Hardware/Filter.jsp";
+<%    } %>
+    form.submit();
 }
 
 function copyHardware(form) {
