@@ -120,20 +120,22 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                                                                                     type);
         }
 
-        // Get json string for schedule and add schedule and string to model
-        JSONObject scheduleJSON = this.getJSONForSchedule(schedule);
-        map.addAttribute("scheduleJSONString", scheduleJSON.toString());
-        map.addAttribute("schedule", schedule);
-
-        // Get json string for the default schedule and add to model
-        JSONObject defaultScheduleJSON = this.getJSONForSchedule(defaultSchedule);
-        map.addAttribute("defaultScheduleJSONString",
-                         defaultScheduleJSON.toString());
-
         // Add the mode and temperature unit to model
         LiteCustomer customer = customerDao.getCustomerForUser(user.getUserID());
         String temperatureUnit = customer.getTemperatureUnit();
         map.addAttribute("temperatureUnit", temperatureUnit);
+
+        // Get json string for schedule and add schedule and string to model
+        boolean isFahrenheit = CtiUtilities.FAHRENHEIT_CHARACTER.equals(temperatureUnit);
+        JSONObject scheduleJSON = this.getJSONForSchedule(schedule, isFahrenheit);
+        map.addAttribute("scheduleJSONString", scheduleJSON.toString());
+        map.addAttribute("schedule", schedule);
+
+        // Get json string for the default schedule and add to model
+        JSONObject defaultScheduleJSON = this.getJSONForSchedule(defaultSchedule, isFahrenheit);
+        map.addAttribute("defaultScheduleJSONString",
+                         defaultScheduleJSON.toString());
+
 
         map.addAttribute("mode", ThermostatMode.COOL);
         
@@ -318,6 +320,32 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         return "consumer/savedSchedules.jsp";
     }
+    
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
+    @RequestMapping(value = "/consumer/thermostat/schedule/saved", method = RequestMethod.POST, params = "delete")
+    public String delete(HttpServletRequest request, @ModelAttribute("customerAccount") CustomerAccount account,
+    		String thermostatIds, Integer scheduleId, LiteYukonUser user, ModelMap map) throws Exception {
+    	
+    	List<Integer> thermostatIdsList = getThermostatIds(request);
+    	
+    	accountCheckerService.checkInventory(user, thermostatIdsList.toArray(new Integer[thermostatIdsList.size()]));
+    	
+    	thermostatScheduleDao.delete(scheduleId);
+
+    	map.addAttribute("thermostatIds", thermostatIds);
+    	
+    	return "redirect:/spring/stars/consumer/thermostat/schedule/view/saved";
+    }
+    
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
+    @RequestMapping(value = "/consumer/thermostat/schedule/saved", method = RequestMethod.POST, params = "view")
+    public String viewSchedule(String thermostatIds, Integer scheduleId, ModelMap map) throws Exception {
+    	map.addAttribute("scheduleId", scheduleId);
+    	map.addAttribute("thermostatIds", thermostatIds);
+    	return "redirect:/spring/stars/consumer/thermostat/schedule/view";
+    }
 
     /**
      * Helper method to default the 2nd and 3rd time/temp values for a two
@@ -356,9 +384,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
      * Helper method to get a JSON object representation of a thermostat
      * schedule
      * @param schedule - Schedule to get object for
+     * @param isFahrenheit - True if temp should be fahrenheit
      * @return JSON object
      */
-    private JSONObject getJSONForSchedule(ThermostatSchedule schedule) {
+    private JSONObject getJSONForSchedule(ThermostatSchedule schedule, boolean isFahrenheit) {
 
         Map<ThermostatMode, ThermostatSeason> seasonMap = schedule.getSeasonMap();
         if (seasonMap.size() != 2) {
@@ -370,7 +399,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
             ThermostatSeason season = seasonMap.get(mode);
 
-            JSONObject seasonObject = this.getJSONForSeason(season);
+            JSONObject seasonObject = this.getJSONForSeason(season, isFahrenheit);
 
             scheduleObject.put(mode.toString(), seasonObject);
 
@@ -380,11 +409,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     }
 
     /**
-     * Helper method to get a JSON object representation of a thermstat season
+     * Helper method to get a JSON object representation of a thermostat season
      * @param season - Season to get object for
+     * @param isFahrenheit - True if temp should be fahrenheit
      * @return JSON object
      */
-    private JSONObject getJSONForSeason(ThermostatSeason season) {
+    private JSONObject getJSONForSeason(ThermostatSeason season, boolean isFahrenheit) {
 
         JSONObject object = new JSONObject();
         Map<TimeOfWeek, List<ThermostatSeasonEntry>> seasonEntryMap = season.getSeasonEntryMap();
@@ -398,7 +428,15 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
                 JSONObject timeTemp = new JSONObject();
                 timeTemp.put("time", time);
-                timeTemp.put("temp", temperature);
+                if(isFahrenheit) {
+                	timeTemp.put("temp", temperature);
+                } else {
+                	int celsiusTemperature = (int) CtiUtilities.convertTemperature(
+                			temperature,
+							CtiUtilities.FAHRENHEIT_CHARACTER,
+							CtiUtilities.CELSIUS_CHARACTER);
+					timeTemp.put("temp", celsiusTemperature);
+                }
 
                 object.accumulate(timeOfWeek.toString(), timeTemp);
             }

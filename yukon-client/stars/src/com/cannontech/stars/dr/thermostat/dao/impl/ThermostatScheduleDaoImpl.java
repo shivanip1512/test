@@ -249,6 +249,37 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
 
     }
 
+	@Override
+	@Transactional
+	public void delete(int scheduleId) {
+
+		// Delete SeasonEntrys
+		SqlStatementBuilder deleteSeasonEntrySql = new SqlStatementBuilder();
+		deleteSeasonEntrySql.append("DELETE FROM ");
+		deleteSeasonEntrySql.append("	LMThermostatSeasonEntry");
+		deleteSeasonEntrySql.append("WHERE SeasonId IN");
+		deleteSeasonEntrySql.append("	(SELECT SeasonId from LMThermostatSeason WHERE ScheduleId = ?)");
+		
+		simpleJdbcTemplate.update(deleteSeasonEntrySql.toString(), scheduleId);
+
+		// Delete Seasons
+		SqlStatementBuilder deleteSeasonSql = new SqlStatementBuilder();
+		deleteSeasonSql.append("DELETE FROM ");
+		deleteSeasonSql.append("	LMThermostatSeason");
+		deleteSeasonSql.append("WHERE ScheduleId = ?");
+		
+		simpleJdbcTemplate.update(deleteSeasonSql.toString(), scheduleId);
+
+		// Delete Schedule
+		SqlStatementBuilder deleteScheduleSql = new SqlStatementBuilder();
+		deleteScheduleSql.append("DELETE FROM ");
+		deleteScheduleSql.append("	LMThermostatSchedule");
+		deleteScheduleSql.append("WHERE ScheduleId = ?");
+		
+		simpleJdbcTemplate.update(deleteScheduleSql.toString(), scheduleId);
+		
+	}
+
     /**
      * Helper method to get a list of thermostat seasons for a given schedule
      * @param scheduleId - Id of schedule in question
@@ -287,6 +318,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT * from LMThermostatSeasonEntry");
         sql.append("WHERE SeasonId = ?");
+        sql.append("ORDER BY Starttime");
 
         List<ThermostatSeasonEntry> seasonEntries = simpleJdbcTemplate.query(sql.toString(),
                                                                              new ThermostatSeasonEntryMapper(energyCompany),

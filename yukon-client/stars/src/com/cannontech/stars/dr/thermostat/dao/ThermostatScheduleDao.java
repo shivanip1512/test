@@ -49,5 +49,11 @@ public interface ThermostatScheduleDao {
      * @param schedule - Schedule to save
      */
     public void save(ThermostatSchedule schedule);
+    
+    /**
+     * Method to delete a thermostat schedule
+     * @param scheduleId - Id of schedule to delete
+     */
+    public void delete(int scheduleId);
 
 }
