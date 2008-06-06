@@ -113,7 +113,7 @@ public class WorkOrderFilter extends AbstractFilter<LiteWorkOrderBase> {
             }
             case YukonListEntryTypes.CUSTOMER_TYPE_COMMERCIAL :
             {
-                if (customer instanceof LiteCICustomer) {
+                if (customer instanceof LiteCICustomer && customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
                     int customerTypeId = ((LiteCICustomer) customer).getCICustType();
                     if (customerTypeId == filterId) {
                         match = true;
@@ -129,7 +129,7 @@ public class WorkOrderFilter extends AbstractFilter<LiteWorkOrderBase> {
             case YukonListEntryTypes.CUSTOMER_TYPE_INDUSTRIAL:
             case YukonListEntryTypes.CUSTOMER_TYPE_MANUFACTURING:
             case YukonListEntryTypes.CUSTOMER_TYPE_MUNICIPAL: {
-                if (customer instanceof LiteCICustomer) {
+                if (customer instanceof LiteCICustomer && customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
                     int customerTypeId = ((LiteCICustomer) customer).getCICustType();
                     if (customerTypeId == filterId) {
                         match = true;

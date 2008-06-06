@@ -2615,7 +2615,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             List<LiteStarsCustAccountInformation> custAcctInfoList = getAllCustAccountInformation();
             for (final LiteStarsCustAccountInformation liteAcctInfo : custAcctInfoList) {
                 LiteCustomer liteDude = liteAcctInfo.getCustomer();
-                if (liteDude instanceof LiteCICustomer) 
+                if (liteDude instanceof LiteCICustomer && liteDude.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) 
                 {
                     LiteCICustomer liteCICust = (LiteCICustomer) liteDude;
                     if (liteCICust.getCompanyName().toUpperCase().startsWith( searchName.toUpperCase() ))

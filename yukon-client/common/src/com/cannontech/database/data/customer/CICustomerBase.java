@@ -169,11 +169,11 @@ public class CICustomerBase extends Customer implements com.cannontech.common.ed
 		
 		//delete("CustomerAddress", "AddressID", getCiCustomerBase().getAddressID() );
 		getAddress().setAddressID( getCiCustomerBase().getMainAddressID() );
-//		com.cannontech.database.db.customer.CICustomerBase.getCICustomerAddressID( getCustomerID(), getDbConnection()) );
+		//com.cannontech.database.db.customer.CICustomerBase.getCICustomerAddressID( getCustomerID(), getDbConnection()) );
 	
 		getCiCustomerBase().delete();
 	
-		getAddress().delete();
+		if(getAddress().getAddressID() != 0) getAddress().delete();
 		
 		super.delete();
 	

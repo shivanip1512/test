@@ -671,6 +671,13 @@ public class ImportManagerUtil {
 		}
 		
 		// Delete the stars object from cache, so the user will see a fresh new copy
+        /* TODO: do I want this line, or is it better to do similar to in the UpdateCustAccountAction.process
+         * where I do this to make sure the currently viewed account gets updated:
+         *  StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(updateAccount.getAccountID(), true);
+         *  session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsCust);
+         *  I think this would adjust only the active account, which could be a problem since the importer either doesn't have
+         *  an active account (auto) or just viewed a different account (manual).  Leave this be for now, I think it is better this way.
+         */
 		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	

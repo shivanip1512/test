@@ -247,6 +247,11 @@ public class UpdateCustAccountAction implements ActionBase {
 			StarsSuccess success = new StarsSuccess();
 			success.setDescription( "Customer account updated successfully" );
             session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Customer account updated successfully" );
+            
+            // Make sure wretched STARS cache and session objects show the latest changes
+            StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(updateAccount.getAccountID(), true);
+            session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsCust);
+            session.setAttribute( ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, liteAcctInfo );
                         
             EventUtils.logSTARSEvent(user.getUserID(), EventUtils.EVENT_CATEGORY_ACCOUNT, YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED, updateAccount.getAccountID(), session);
             
@@ -375,12 +380,14 @@ public class UpdateCustAccountAction implements ActionBase {
 			boolean primContChanged = false;
 			boolean ciCustChanged = false;
 			boolean altCustFieldChanged = false;
+            boolean custAcctChanged = false;
         	
 			//For new RateScheduleID and CustomerNumber fields
 			if (liteCustomer.getCustomerNumber().compareTo( updateAccount.getCustomerNumber() ) != 0) 
 			{
 				// Customer number has changed
 				customerDB.setCustomerNumber(updateAccount.getCustomerNumber());
+                liteCustomer.setCustomerNumber(updateAccount.getCustomerNumber());
 				altCustFieldChanged = true;
 			}
 			if (liteCustomer.getRateScheduleID() != updateAccount.getRateScheduleID()) 
@@ -409,7 +416,7 @@ public class UpdateCustAccountAction implements ActionBase {
 				primContChanged = true;
 			}
         	
-			if (liteCustomer instanceof LiteCICustomer) {
+			if (liteCustomer instanceof LiteCICustomer && liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
 				LiteCICustomer liteCICust = (LiteCICustomer) liteCustomer;
 				
                 /*
@@ -422,10 +429,24 @@ public class UpdateCustAccountAction implements ActionBase {
                     ciDB.setCustomerID( customerDB.getCustomerID() );
                     ciDB.setDbConnection( conn );
                     ciDB.delete();
-                    Address companyAddress = new Address();
-                    companyAddress.setAddressID(liteCICust.getMainAddressID());
-                    companyAddress.setDbConnection(conn);
-                    companyAddress.delete();                    
+                    
+                    customerDB.setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL));
+                    liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_RESIDENTIAL);
+                    altCustFieldChanged = true;
+                    /*AddressID may be 0 if it wasn't filled in, so don't try to delete it!*/
+                    if(liteCICust.getMainAddressID() != 0) {
+                        Address companyAddress = new Address();
+                        companyAddress.setAddressID(liteCICust.getMainAddressID());
+                        companyAddress.setDbConnection(conn);
+                        companyAddress.delete();
+                    }
+                    
+                    /*Have I mentioned how much I hate cache and random STARS session variables?*/
+                    liteAcctInfo.setCustomer(liteCustomer);
+                    StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(updateAccount.getAccountID(), true);
+                    starsCust.getStarsCustomerAccount().setCICustomerType(0);
+                    starsCust.getStarsCustomerAccount().setCompany("");
+                    starsCust.getStarsCustomerAccount().setIsCommercial(false);
                 }
                 else 
                 {
@@ -440,7 +461,15 @@ public class UpdateCustAccountAction implements ActionBase {
 					ciDB.update();
 					        			
 					liteCICust.setCompanyName( ciDB.getCompanyName() );
+                    liteCICust.setCICustType(ciDB.getCICustType());
+                    liteAcctInfo.setCustomer(liteCICust);
 					ciCustChanged = true;
+                    
+                    /*Have I mentioned how much I hate cache and random STARS session variables?*/
+                    StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(updateAccount.getAccountID(), true);
+                    starsCust.getStarsCustomerAccount().setCICustomerType(ciDB.getCICustType());
+                    starsCust.getStarsCustomerAccount().setCompany(ciDB.getCompanyName());
+                    starsCust.getStarsCustomerAccount().setIsCommercial(true);
 				}
 			}
 			//wasn't commercial before, so I guess we better add it now that it is
@@ -452,18 +481,41 @@ public class UpdateCustAccountAction implements ActionBase {
                 ciDB.setCICustType(new Integer(updateAccount.getCICustomerType()));
                 ciDB.setDbConnection( conn );
                 ciDB.add();
+                customerDB.setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_CI));
+                liteCustomer.setCustomerTypeID(CustomerTypes.CUSTOMER_CI);
                                     
                 ciCustChanged = true;
-                liteCustomer.setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_CI));
-                customerDB.setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_CI));
+                
+                /*This is chunky but it seems to cause cache problems without it*/
+                LiteCICustomer liteCICustomer = new LiteCICustomer();
+                liteCICustomer.setCustomerID(liteCustomer.getCustomerID());
+                liteCICustomer.setCustomerTypeID(new Integer(CustomerTypes.CUSTOMER_CI));
+                liteCICustomer.setAccountIDs(liteCustomer.getAccountIDs());
+                liteCICustomer.setAdditionalContacts(liteCustomer.getAdditionalContacts());
+                liteCICustomer.setAltTrackingNumber(liteCustomer.getAltTrackingNumber());
+                liteCICustomer.setCustomerNumber(liteCustomer.getCustomerNumber());
+                liteCICustomer.setEnergyCompanyID(liteCustomer.getEnergyCompanyID());
+                liteCICustomer.setPrimaryContactID(liteCustomer.getPrimaryContactID());
+                liteCICustomer.setRateScheduleID(liteCustomer.getRateScheduleID());
+                liteCICustomer.setTemperatureUnit(liteCustomer.getTemperatureUnit());
+                liteCICustomer.setTimeZone(liteCustomer.getTimeZone());
+                liteCICustomer.setCICustType(ciDB.getCICustType());
+                liteCICustomer.setCompanyName(ciDB.getCompanyName());
+                liteAcctInfo.setCustomer(liteCICustomer);
+                /*Have I mentioned how much I hate cache and random STARS session variables?*/
+                StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(updateAccount.getAccountID(), true);
+                starsCust.getStarsCustomerAccount().setCICustomerType(ciDB.getCICustType());
+                starsCust.getStarsCustomerAccount().setCompany(ciDB.getCompanyName());
+                starsCust.getStarsCustomerAccount().setIsCommercial(true);
             }
 			
 			if(altCustFieldChanged || ciCustChanged)
 			{
 				customerDB.setDbConnection(conn);
 				customerDB.update();
+                custAcctChanged = true;
 			}
-			
+            
 			/* Update account site */
 			LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();
         	
@@ -478,6 +530,7 @@ public class UpdateCustAccountAction implements ActionBase {
 				stAddr.setDbConnection( conn );
 				stAddr.update();
 				StarsLiteFactory.setLiteAddress( liteStAddr, stAddr );
+                custAcctChanged = true;
 			}
         	
 			if (!StarsLiteFactory.isIdenticalAccountSite( liteAcctSite, updateAccount )) {
@@ -488,6 +541,7 @@ public class UpdateCustAccountAction implements ActionBase {
 				acctSite.setDbConnection( conn );
 				acctSite.update();
 				StarsLiteFactory.setLiteAccountSite( liteAcctSite, acctSite );
+                custAcctChanged = true;
 			}
         	
 			/* Update site information */
@@ -502,13 +556,16 @@ public class UpdateCustAccountAction implements ActionBase {
 				siteInfo.setDbConnection( conn );
 				siteInfo.update();
 				StarsLiteFactory.setLiteSiteInformation( liteSiteInfo, siteInfo );
+                custAcctChanged = true;
 			}
 			
 			conn.commit();
 			
 			if (primContChanged) ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
-			if (ciCustChanged || altCustFieldChanged) ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
-			//ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			//if (ciCustChanged || altCustFieldChanged) ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
+			/*this had been commented out.  Looks like Yao took this out in '03.  Why?  I think this might account for 
+            the problem with multiple webservers not staying synced up on account information during imports and other changes!*/
+            if (ciCustChanged || altCustFieldChanged || custAcctChanged) ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		}
 		catch (java.sql.SQLException e) {
 			System.out.println(e.getMessage());

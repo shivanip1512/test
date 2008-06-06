@@ -192,7 +192,7 @@ public class CustomerLoader implements Runnable
                 int customerTypeId = rset.getInt("CICustType");
                 
                 LiteCustomer liteCustomer = allCustsMap.get(customerId);
-                if (liteCustomer instanceof LiteCICustomer) {
+                if (liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
                     LiteCICustomer liteCiCustomer = (LiteCICustomer) liteCustomer;
                     
                     liteCiCustomer.setMainAddressID(addressID);

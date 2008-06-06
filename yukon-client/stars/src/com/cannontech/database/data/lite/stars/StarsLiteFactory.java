@@ -1207,7 +1207,7 @@ public class StarsLiteFactory {
 		acctSite.setStreetAddress( (com.cannontech.database.db.customer.Address) createDBPersistent(liteAddr) );
 		account.setAccountSite( acctSite );
 		
-		if (liteAccount.getCustomer() instanceof LiteCICustomer) {
+		if (liteAccount.getCustomer() instanceof LiteCICustomer && liteAccount.getCustomer().getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
 			com.cannontech.database.data.customer.CICustomerBase ciCust =
 					new com.cannontech.database.data.customer.CICustomerBase();
 			StarsLiteFactory.setCICustomerBase( ciCust, (LiteCICustomer)liteAccount.getCustomer() );
@@ -1528,7 +1528,7 @@ public class StarsLiteFactory {
 		starsAccount.setCustomerID( liteAccount.getCustomerID() );
 		starsAccount.setAccountNumber( StarsUtils.forceNotNull(liteAccount.getAccountNumber()) );
 		starsAccount.setIsCommercial( liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI );
-		if (liteCustomer instanceof LiteCICustomer) {
+		if (liteCustomer instanceof LiteCICustomer && liteCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
 			starsAccount.setCompany( ((LiteCICustomer)liteCustomer).getCompanyName() );
             starsAccount.setCICustomerType( ((LiteCICustomer)liteCustomer).getCICustType() );
         }

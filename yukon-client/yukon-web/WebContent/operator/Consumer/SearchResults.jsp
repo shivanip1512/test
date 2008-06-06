@@ -192,7 +192,7 @@ function navPage()
 %>
                   <td width="18%" class="TableCell"><%= StringEscapeUtils.escapeHtml(LiteStarsCustAccountInformation.getCompanyName(customer.getLiteID())) %>  
                   </td>
-<% } else if (customer instanceof LiteCICustomer) { %>                 
+<% } else if (customer instanceof LiteCICustomer && customer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) { %>                 
                   <td width="30%" class="TableCell"><%= StringEscapeUtils.escapeHtml(contact.getContLastName()) + ", " + StringEscapeUtils.escapeHtml(contact.getContFirstName()) + " (" + StringEscapeUtils.escapeHtml(((LiteCICustomer)customer).getCompanyName()) + ")"%>    
                   </td>
 <% } else { %>                 

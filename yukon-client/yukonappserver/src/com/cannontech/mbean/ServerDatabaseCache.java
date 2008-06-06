@@ -19,6 +19,7 @@ import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.CacheDBChangeListener;
 import com.cannontech.database.cache.DBChangeListener;
 import com.cannontech.database.cache.DBChangeLiteListener;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.lite.LiteAlarmCategory;
 import com.cannontech.database.data.lite.LiteBase;
@@ -373,7 +374,7 @@ public synchronized List<LiteCICustomer> getAllCICustomers() {
         
         for( int i = 0; i < customerList.size(); i++ ) {
             LiteCustomer aCustomer = customerList.get(i);
-            if( aCustomer instanceof LiteCICustomer ) {
+            if( aCustomer instanceof LiteCICustomer && aCustomer.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI) {
                 tempAllCICustomers.add((LiteCICustomer)aCustomer);
             }
         }

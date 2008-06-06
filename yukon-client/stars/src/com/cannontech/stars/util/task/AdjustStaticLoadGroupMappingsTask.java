@@ -20,6 +20,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.activity.ActivityLogActions;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -234,7 +235,7 @@ public class AdjustStaticLoadGroupMappingsTask extends TimeConsumingTask {
             //get ConsumptionType
             LiteCustomer cust = liteAcctInfo.getCustomer();
             Integer consumptionType = -1;
-            if(cust instanceof LiteCICustomer)
+            if(cust instanceof LiteCICustomer && cust.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
                 consumptionType = ((LiteCICustomer)cust).getCICustType();
             //get ApplianceCategoryID
             Integer applianceCatID = -1;

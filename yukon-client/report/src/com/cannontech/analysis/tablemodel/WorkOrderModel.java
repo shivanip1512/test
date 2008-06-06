@@ -44,6 +44,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
@@ -921,7 +922,7 @@ public class WorkOrderModel extends ReportModelBase {
 						return "";
 				case CONSUMPTION_TYPE_COLUMN:
                     if (lAcctInfo != null){
-                        if( lAcctInfo.getCustomer() instanceof LiteCICustomer)
+                        if( lAcctInfo.getCustomer() instanceof LiteCICustomer && lAcctInfo.getCustomer().getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
     					{
     						YukonListEntry coTypeEntry = DaoFactory.getYukonListDao().getYukonListEntry(((LiteCICustomer)lAcctInfo.getCustomer()).getCICustType());
     						return (coTypeEntry != null ? coTypeEntry.getEntryText() : "");
@@ -977,7 +978,7 @@ public class WorkOrderModel extends ReportModelBase {
                     else
                         return "";                    
 				case COMPANY_NAME_COLUMN:
-					if (lAcctInfo != null && lAcctInfo.getCustomer() instanceof LiteCICustomer 
+					if (lAcctInfo != null && lAcctInfo.getCustomer() instanceof LiteCICustomer && lAcctInfo.getCustomer().getCustomerTypeID() == CustomerTypes.CUSTOMER_CI
                             && ((LiteCICustomer)lAcctInfo.getCustomer()).getCompanyName() == null)
 						return ((LiteCICustomer)lAcctInfo.getCustomer()).getCompanyName();
 					else

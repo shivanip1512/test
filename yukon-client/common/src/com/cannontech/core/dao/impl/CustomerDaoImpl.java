@@ -11,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonUserDao;
+import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
@@ -141,7 +142,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         // Get the customer from AllCustomersMap (make use of the map), retun
         // null if NOT instance LiteCICustomer
         LiteCustomer lc = getLiteCustomer(customerID);
-        if (lc instanceof LiteCICustomer)
+        if (lc instanceof LiteCICustomer && lc.getCustomerTypeID() == CustomerTypes.CUSTOMER_CI)
             return (LiteCICustomer) lc;
 
         return null;
