@@ -2092,6 +2092,9 @@ END;
 /* @end-block */
 /* End YUK-6006 */
 
+/* Start YUK-5999*/
+INSERT INTO YukonRoleProperty VALUES(-100013, -1000, 'Three Phase', 'false', 'display 3-phase data for sub bus');
+/* End YUK-5999 */
 
 /******************************************************************************/
 /* Run the Stars Update if needed here */

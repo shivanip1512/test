@@ -806,6 +806,11 @@ ALTER TABLE DynamicCCFeeder ALTER COLUMN retryIndex NUMERIC NOT NULL;
 go
 /* End YUK-6006 */
 
+/* Start YUK-5999*/
+/* @error ignore-begin */
+INSERT INTO YukonRoleProperty VALUES(-100013, -1000, 'Three Phase', 'false', 'display 3-phase data for sub bus');
+/* @error ignore-end */
+/* End YUK-5999 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
