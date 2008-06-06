@@ -19,7 +19,8 @@ public class RecentResultsCache<T extends Completable> {
     private Map<String, Wrapper<T>> completedMap = new LinkedHashMap<String, Wrapper<T>>();
     private Map<String, Wrapper<T>> pendingMap = new LinkedHashMap<String, Wrapper<T>>();
     
-    private int minimumHoldMinutes = 60;
+    // 10080 = 7 days
+    private int minimumHoldMinutes = 10080;
     
     
     private ObjectMapper<Wrapper<T>, T> mapper = new ObjectMapper<Wrapper<T>, T>() {
@@ -133,6 +134,7 @@ public class RecentResultsCache<T extends Completable> {
         List<Wrapper<T>> list = new ArrayList<Wrapper<T>>(map.values());
         
         MappingList<Wrapper<T>, T> result = new MappingList<Wrapper<T>, T>(list, mapper);
+        result.reverse();
         return Collections.unmodifiableList(result);
     }
 

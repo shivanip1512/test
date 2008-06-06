@@ -13,7 +13,7 @@
 
     <div class="titleBar boxContainer_titleBar">
               <div class="controls" onclick="${onClose}">
-                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/collapse.gif">
+                <img class="minMax" alt="close" src="/WebConfig/yukon/Icons/close_x.gif">
               </div>
         <div class="title boxContainer_title">
             ${title}

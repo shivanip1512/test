@@ -85,11 +85,12 @@
                 <tr>
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.operationType"/></th>
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.updateTime"/></th>
-                    <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.success"/></th>
-                    <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException"/></th>
-                    <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.mappingException"/></th>
+                    <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.success"/></th>
+                    <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException"/></th>
+                    <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.mappingException"/></th>
+                    <th></th>
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.fields"/></th>
-                    <th>Complete</th>
+                    <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status"/></th>
                 </tr>
             
                 <c:forEach var="b" items="${bulkUpdateOperationResultsList}" varStatus="resultStatus">
@@ -113,7 +114,7 @@
                         
                         
                         <%-- SUCCESS --%>
-                        <td>
+                        <td align="right">
                             <c:set var="successFormName" value="processingExceptionForm${b.resultsId}"/>
                             
                             <a href="javascript:submitForm('${successFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/SUCCESS_COUNT"/></a> 
@@ -127,7 +128,7 @@
                         
                         
                         <%-- PROCESSING EXCEPTION --%>
-                        <td>
+                        <td align="right">
                             <c:set var="processingExceptionFormName" value="processingExceptionForm${b.resultsId}"/>
                             
                             <a href="javascript:submitForm('${processingExceptionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/PROCESSING_EXCEPTION_COUNT"/></a> 
@@ -139,13 +140,16 @@
                         </td>
                         
                         <%-- MAPPING EXCEPTION --%>
-                        <td>
+                        <td align="right">
                             <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/MAPPING_EXCEPTION_COUNT"/>
                         </td>
                         
                         
                         
                         <%-- FIELDS --%>
+                        <td>
+                            <div style="width:20px;"></div>
+                        </td>
                         <td>
                             <c:forEach var="field" items="${b.bulkFieldColumnHeaders}" varStatus="fieldStatus">
                                 ${field}<c:if test="${fieldStatus.count < fn:length(b.bulkFieldColumnHeaders)}">,</c:if>
@@ -155,7 +159,7 @@
                         
                         
                         <%-- COMPLETE? --%>
-                        <td>
+                        <td align="right">
                             <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/IS_COMPLETE"/>
                         </td>
                     </tr>

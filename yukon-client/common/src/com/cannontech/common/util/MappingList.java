@@ -1,6 +1,7 @@
 package com.cannontech.common.util;
 
 import java.util.AbstractList;
+import java.util.Collections;
 import java.util.List;
 
 public class MappingList<J, K> extends AbstractList<K> {
@@ -13,6 +14,10 @@ public class MappingList<J, K> extends AbstractList<K> {
         this.objectMapper = mapper;
     }
 
+    public void reverse() {
+        Collections.reverse(this.base);
+    }
+    
     @Override
     public K get(int index) {
         J j = base.get(index);

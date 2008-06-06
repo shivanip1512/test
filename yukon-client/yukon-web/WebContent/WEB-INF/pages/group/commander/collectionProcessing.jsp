@@ -35,6 +35,7 @@
 	<br>
 	<div style="width: 700px;">
 		<form action="<c:url value="/spring/group/commander/executeCollectionCommand" />">
+        
 			<cti:deviceCollection deviceCollection="${deviceCollection}" />
       
 			<tags:nameValueContainer altRowOn="true">

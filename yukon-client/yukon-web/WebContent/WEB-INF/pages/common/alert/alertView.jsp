@@ -20,7 +20,7 @@
                 <td>
                     <input type="hidden" name="alertId" value="${alert.id}">
                     <img style="cursor: pointer;" title="<cti:msg key="yukon.web.alerts.table.clear.tooltip"/>"
-                         src="<c:url value="/WebConfig/yukon/Icons/accept.png"/>"
+                         src="<c:url value="/WebConfig/yukon/Icons/accept.gif"/>"
                          onclick="javascript:alert_clearAlert(${alert.id});">
                 </td>
             </tr>

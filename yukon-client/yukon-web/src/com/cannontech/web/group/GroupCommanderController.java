@@ -128,7 +128,6 @@ public class GroupCommanderController implements InitializingBean {
     public String executeCollectionCommand(DeviceCollection deviceCollection, String commandString, LiteYukonUser user, ModelMap map)
             throws ServletException {
 
-
         boolean error = false;
         if (StringUtils.isBlank(commandString)) {
             error = true;
@@ -179,6 +178,7 @@ public class GroupCommanderController implements InitializingBean {
 
     @RequestMapping
     public void resultList(ModelMap map) {
+        
         List<GroupCommandResult> completed = groupCommandExecutor.getCompleted();
         List<GroupCommandResult> pending = groupCommandExecutor.getPending();
         
@@ -191,8 +191,16 @@ public class GroupCommanderController implements InitializingBean {
     
     @RequestMapping
     public void resultDetail(String resultKey, ModelMap map) {
+        
         GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
+        
         map.addAttribute("result", result);
     }
-
+    
+    @RequestMapping({"errorsList", "successList"})
+    public void results(String resultKey, ModelMap map) {
+        GroupCommandResult result = groupCommandExecutor.getResult(resultKey);
+        
+        map.addAttribute("result", result);
+    }
 }

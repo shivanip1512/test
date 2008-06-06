@@ -114,7 +114,11 @@ public YukonDevice getYukonDeviceObjectById(int deviceId) {
 
 public YukonDevice getYukonDeviceObjectByName(String name) {
     
-    String sql = "SELECT ypo.PAObjectID, ypo.Type FROM YukonPaObject ypo WHERE ypo.Category = 'DEVICE' AND ypo.PAOName = ?";
+    String sql = "SELECT ypo.PAObjectID, ypo.Type " +
+                 "FROM YukonPaObject ypo " +
+                 "WHERE ypo.Category = 'DEVICE' " +
+                 "AND ypo.PAOClass IN ('CARRIER','METER','IED') " +
+                 "AND ypo.PAOName = ?";
     YukonDevice device = (YukonDevice)jdbcOps.queryForObject(sql, new Object[] {name}, this.yukonDeviceRowMapper);
     return device;
 }

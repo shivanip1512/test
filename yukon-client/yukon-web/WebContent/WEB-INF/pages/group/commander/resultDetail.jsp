@@ -2,101 +2,173 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
-<%@ taglib prefix="ct" tagdir="/WEB-INF/tags" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
+<%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <cti:standardPage title="Commander Results" module="amr">
-<cti:standardMenu menuSelection="devicegroups|commander"/>
-   	<cti:breadCrumbs>
+
+    <cti:standardMenu menuSelection="devicegroups|commander"/>
+
+	<%-- BREAD CRUMBS --%>
+	<cti:breadCrumbs>
+    
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-   	    <cti:crumbLink url="/spring/group/commander/groupProcessing" title="Group Processing" />
+        
+        <%-- commander from location --%>
+        <cti:crumbLink url="/spring/group/commander/resultList" title="All Results" />
+        
+        <%-- this result --%>
 	    &gt; Command Executing
-	</cti:breadCrumbs>
-  
-  <a href="resultList">View All Results</a>
-  <br>
-  
-	Your group request has been started:<br><br>
-	Executing <b>${result.command}</b> on <b><cti:msg key="${result.deviceCollection.description}"/></b>.
-
-
-<hr>         
-
-<script type="text/javascript">
-    function submitForm(id) {
-        $(id).submit();
-    }
-    
-    function hideShowErrorList(id) {
-        $(id).toggle();
-    }
-</script>
-
-<%-- SUCCESS --%>
-<br>
-<div class="largeBoldLabel">Succeeded: <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/> </div>
-
-<div style="padding:10px;">
-
-    <c:choose>
-    <c:when test="${result.successCollection.deviceCount > 0}">
-    
-        <form id="successForm" method="get" action="/spring/bulk/collectionActions">
-            <cti:deviceCollection deviceCollection="${result.successCollection}" />
-        </form>
-             
-        <a href="javascript:submitForm('successForm');" class="small">Do stuff</a> <ct:selectedDevicesPopup deviceCollection="${result.successCollection}" />
-        
-   <ct:hideReveal title="Show Results">     
-<table class="compactResultsTable">
-<tr><th>Device</th><th>Result</th><th>First Point Value</th></tr>
-<c:forEach items="${result.resultHolder.successfulDevices}" var="device">
-<tr>
-<td><cti:deviceName device="${device}"/></td>
-<td>${result.resultHolder.resultStrings[device]}</td>
-<td>${result.resultHolder.values[device][0]}</td>
-</tr>
-</c:forEach>
-</table>
-      </ct:hideReveal>  
-        
-    </c:when>
-    <c:otherwise>
-        <div class="smallBoldLabel">No devices successfully processed.</div>
-    </c:otherwise>
-    </c:choose>
-    
-</div> 
-
-
-<%-- PROCESSING EXCEPTION --%>
-<br>
-<div class="largeBoldLabel">Failed: <cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></div>
-
-<div style="padding:10px;">
-    
-    <form id="processingExceptionForm" method="get" action="/spring/bulk/collectionActions">
-        <cti:deviceCollection deviceCollection="${result.failureCollection}" />
-    </form>
-         
-    <a href="javascript:submitForm('processingExceptionForm');" class="small">Do stuff</a> <ct:selectedDevicesPopup deviceCollection="${result.failureCollection}" />
-    
-    <ct:hideReveal title="Show Errors">
-<table class="compactResultsTable">
-<tr><th>Device</th><th>Result</th></tr>
-<c:forEach items="${result.resultHolder.failedDevices}" var="device">
-<tr>
-<td><cti:deviceName device="${device}"/></td>
-<c:set value="${result.resultHolder.errors[device]}" var="error"/>
-  <td>${error.description} (${error.errorCode})</td>
-</tr>
-</c:forEach>
-</table>
-</ct:hideReveal>
-    
-</div>  
-    
-
-
 	
+    </cti:breadCrumbs>
+    
+    <script type="text/javascript">
+        
+        function updateProgress(totalItems) {
+    
+            return function(data) {
+            
+                var completedItems = data['completedItems'];
+                
+                var percentDone = Math.round((completedItems / totalItems) * 100);
+                
+                $('completedItems${result.key}').innerHTML = data['completedItems']; 
+                
+                $('progressInner${result.key}').style.width = percentDone + 'px';
+                $('percentComplete${result.key}').innerHTML = percentDone + '%';  
+                
+                if (completedItems < totalItems) {
+                    $('progressDescription${result.key}').innerHTML = 'In Progress...   ';
+                }
+                else {
+                    $('progressDescription${result.key}').innerHTML = 'Complete.   ';
+                }
+    
+            };
+        }
+    
+        function refreshResults(kind, theDiv) {
+
+            if (theDiv.visible()) {
+            
+                var url = '/spring/group/commander/' + kind;
+                
+                var params = $H();
+                params['resultKey'] = '${result.key}';
+            
+                var updater = new Ajax.Updater (theDiv, url, {
+              
+                  'parameters': params,
+                  
+                  'onSuccess': function(response) {
+                               },
+                  
+                  'onException': function(response) {
+                               }
+                });
+            }
+        }
+    
+    </script>
+    
+    <h2>Results</h2>
+    <br>
+  
+    <tags:boxContainer id="commanderResultsContainer" hideEnabled="false">
+    
+        <jsp:attribute name="title">
+            Executing '${result.command}' on <cti:msg key="${result.deviceCollection.description}"/>
+        </jsp:attribute>
+        
+        <jsp:body>
+    
+        <%-- NOTE --%>
+        <table>
+            <tr>
+                <td valign="top" class="smallBoldLabel">Note:</td>
+                <td style="font-size:11px;">
+                    Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>
+                    You may view the progress of all recent and ongoing processes from the main Commander page.<br><br>
+                </td>
+            </tr>
+        </table>
+
+        <%-- PROGRESS --%>
+        <span class="normalBoldLabel">Progress: </span><span id="progressDescription${result.key}">In Progress...</span>
+        
+        <div style="padding:10px;">
+            <table cellpadding="0px" border="0px">
+                <tr>
+                    <td>
+                        <div id="progressBorder${result.key}" style="height:12px; width:100px; border:1px solid black; padding:0px; background-color:#CCCCCC;" align="left">
+                            <div id="progressInner${result.key}" style="height: 10px; width: 0px; padding:1px; overflow:hidden; background-color:#006633; ">
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span id="percentComplete${result.key}" style="padding-left:6px;padding-right:10px;display:inline;font-size:11px;">0%</span>
+                    </td>
+                    <td>
+                        <span style="font-size:11px;display:inline;"><span id="completedItems${result.key}"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/COMPLETED_ITEMS"/></span>/${result.deviceCollection.deviceCount}</span>
+                    </td>
+                </tr>
+            </table>
+            
+            <%-- device collection action --%>
+           <form id="allForm" method="get" action="/spring/bulk/collectionActions">
+               <cti:deviceCollection deviceCollection="${result.deviceCollection}" />
+           </form>
+                 
+           <a href="javascript:void(0);" onclick="$('allForm').submit();" class="small">Choose New Operation For All Devices</a> <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
+           
+        </div>
+    
+    
+        <%-- SUCCESS --%>
+        <br>
+        <div class="normalBoldLabel">Successfully Executed: <span style="color:#006633;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span></div>
+        
+    	<div style="padding:10px;">
+        
+    	   <%-- device collection action --%>
+    	   <form id="successForm" method="get" action="/spring/bulk/collectionActions">
+    	       <cti:deviceCollection deviceCollection="${result.successCollection}" />
+    	   </form>
+                 
+    	   <a href="javascript:void(0);" onclick="$('successForm').submit();" class="small">Choose New Operation For These Devices</a> <tags:selectedDevicesPopup deviceCollection="${result.successCollection}" />
+        
+            <%-- success list --%>
+            <div style="height:8px;"></div>
+            <a href="javascript:void(0);" onclick="$('successResultsDiv${result.key}').toggle();refreshResults('successList', $('successResultsDiv${result.key}'));" class="small">View Results</a>
+            <div id="successResultsDiv${result.key}" style="display:none;"></div>
+            
+        </div>
+    
+    
+    
+        <%-- PROCESSING EXCEPTION --%>
+        <br>
+        <div class="normalBoldLabel">Failed: <span style="color:#CC0000;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span></div>
+        
+        <div style="padding:10px;">
+            
+            <%-- device collection action --%>
+            <form id="processingExceptionForm" method="get" action="/spring/bulk/collectionActions">
+                <cti:deviceCollection deviceCollection="${result.failureCollection}" />
+            </form>
+                 
+            <a href="javascript:void(0);" onclick="$('processingExceptionForm').submit();" class="small">Choose New Operation For These Devices</a> <tags:selectedDevicesPopup deviceCollection="${result.failureCollection}" />
+            
+            <%-- errors list --%>
+            <div style="height:8px;"></div>
+            <a href="javascript:void(0);" onclick="$('errorsResultsDiv${result.key}').toggle();refreshResults('errorsList', $('errorsResultsDiv${result.key}'));" class="small">View Failure Reasons</a>
+            <div id="errorsResultsDiv${result.key}" style="display:none;"></div>
+        
+        </div> 
+
+        </jsp:body>
+        
+    </tags:boxContainer>
+	
+    <cti:dataUpdaterCallback function="updateProgress(${result.deviceCollection.deviceCount})" initialize="true" completedItems="COMMANDER/${result.key}/COMPLETED_ITEMS" />
+    
 </cti:standardPage>

@@ -21,11 +21,13 @@ public class PointValueFormatterTag extends YukonTagSupport {
     
     @Override
     public void doTag() throws JspException, IOException {
-        YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(getJspContext());
-        String valueString = pointFormattingService.getValueString(value, format, userContext);
-        
-        JspWriter out = getJspContext().getOut();
-        out.print(valueString);
+        if (value != null) {
+            YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(getJspContext());
+            String valueString = pointFormattingService.getValueString(value, format, userContext);
+
+            JspWriter out = getJspContext().getOut();
+            out.print(valueString);
+        }
     }
 
     /**

@@ -14,9 +14,10 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.success">Success</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException"><![CDATA[Processing<br>Failures]]></entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.mappingException"><![CDATA[Invalid<br>Data]]></entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status">Status</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
-    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE">{isComplete|Yes|No}</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE">{isComplete|Complete|In Progress}</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.performNewActionLinkTitle">Perform another action on these devices</entry>
 
