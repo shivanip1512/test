@@ -10,7 +10,7 @@
             <c:forEach var="group" items="${currentGroups}">
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td style="border: none">
-                       <c:url value="/spring/group/home" var="groupEditorUrl">
+                       <c:url value="/spring/group/editor/home" var="groupEditorUrl">
                          <c:param name="groupName" value="${group.fullName}"/>
                        </c:url>
         
