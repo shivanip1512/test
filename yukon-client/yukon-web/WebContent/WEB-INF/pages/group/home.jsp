@@ -10,7 +10,7 @@
 
    	<cti:breadCrumbs>
 	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
-	    &gt; Groups Home
+	    <cti:crumbLink title="Groups Home" />
 	</cti:breadCrumbs>
 	
 	
@@ -200,13 +200,12 @@
                             <%-- REMOVE --%>
                             <form id="removeGroupForm" action="/spring/group/editor/removeGroup" method="post">
                                 <input type="hidden" name="removeGroupName" value="${fn:escapeXml(group.fullName)}">
-                                <a title="<cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.removeGroupLinkTitle"/>" href="javascript:removeGroup('removeGroupForm')"><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.removeGroupText"/></a>
+                                <cti:link key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup" href="javascript:removeGroup('removeGroupForm')"/>
                             </form>
                             
                             <%-- MOVE --%>
                             <div>
-                            <cti:msg var="moveGroupLinkTitle" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupLinkTitle"/>
-                            <a title="${moveGroupLinkTitle}" href="javascript:void(0);" id="moveGroupLink">${moveGroupLinkTitle}</a>
+                            <cti:link id="moveGroupLink" class="lame" href="javascript:void(0);" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup"/>
                             
                             <form id="moveGroupForm" action="/spring/group/editor/moveGroup">
                                 
@@ -231,6 +230,7 @@
                                                                     width="432"
                                                                     height="600" />
                             </form>
+                            </div>
                             
 						</c:when>
 						<c:otherwise>
@@ -268,6 +268,7 @@
                                                             width="432"
                                                             height="600" />
                     </form>
+                    </div>
 					
                     <%-- ADD GROUPS --%>
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.addGroupsLabel"/></h4>
@@ -326,39 +327,25 @@
                     </c:choose>
                     
                     <%-- COLLECTION ACTION --%>
-                    <cti:msg var="removeFromGroupLabel" key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupLabel"/>
-                    <cti:msg var="removeFromGroupDescription" key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupDescription"/>
-                    <cti:msg var="sendCommandLabel" key="yukon.common.device.bulk.collectionActions.sendCommandLabel"/>
-                    <cti:msg var="sendCommandDescription" key="yukon.common.device.bulk.collectionActions.sendCommandDescription"/>
-                    <cti:msg var="massChangeLabel" key="yukon.common.device.bulk.collectionActions.massChangeLabel"/>
-                    <cti:msg var="massChangeDescription" key="yukon.common.device.bulk.collectionActions.massChangeDescription"/>
-                    <cti:msg var="massDeleteLabel" key="yukon.common.device.bulk.collectionActions.massDeleteLabel"/>
-                    <cti:msg var="massDeleteDescription" key="yukon.common.device.bulk.collectionActions.massDeleteDescription"/>
-        
                     <h4><cti:msg key="yukon.web.deviceGroups.editor.operationsContainer.collectionActionLabel"/></h4>
                     <c:choose>
                         <c:when test="${deviceCount > 0}">
                             
-                            <form id="removeFromGroupForm" method="get" action="/spring/bulk/group/selectGroup">
-                                <input type="hidden" name="addRemove" value="REMOVE" />
-                                <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                                <a href="javascript:void(0);" onclick="$('removeFromGroupForm').submit();" title="${removeFromGroupDescription}">${removeFromGroupLabel}</a>
-                            </form>
-                            
-                            <form id="groupCommanderForm" method="get" action="/spring/group/commander2/groupProcessing">
-                                <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                                <a href="javascript:void(0);" onclick="$('groupCommanderForm').submit();" title="${sendCommandDescription}">${sendCommandLabel}</a>
-                            </form>
-                            
-                            <form id="massChangeForm" method="post" action="/spring/bulk/mass/massChangeSelect">
-                                <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                                <a href="javascript:void(0);" onclick="$('massChangeForm').submit();" title="${massChangeDescription}">${massChangeLabel}</a>
-                            </form>
-                            
-                            <form id="massDeleteForm" method="post" action="/spring/bulk/mass/massDelete">
-                                <cti:deviceCollection deviceCollection="${deviceCollection}" />
-                                <a href="javascript:void(0);" onclick="$('massDeleteForm').submit();" title="${massDeleteDescription}">${massDeleteLabel}</a>
-                            </form>
+                            <cti:link href="/spring/group/commander/collectionProcessing" key="yukon.web.deviceGroups.editor.operationsContainer.sendCommand">
+                                <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                            </cti:link>
+                            <br>
+                            <cti:link href="/spring/bulk/mass/massChangeSelect" key="yukon.web.deviceGroups.editor.operationsContainer.massChange">
+                                <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                            </cti:link>
+                            <br>
+                            <cti:link href="/spring/bulk/mass/massDelete" key="yukon.web.deviceGroups.editor.operationsContainer.massDelete">
+                                <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                            </cti:link>
+                            <br>
+                            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.deviceGroups.editor.operationsContainer.otherActions">
+                                <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                            </cti:link>
                             
                         </c:when>
                         <c:otherwise>
@@ -473,6 +460,6 @@
 	
 	</div>
 	
-	<div style="clear: both" />
+	<div style="clear: both"></div>
 
 </cti:standardPage>
