@@ -9,6 +9,7 @@ import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.print.PageFormat;
@@ -944,10 +945,10 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
  */
 public void exit() {
     Preferences prefs = Preferences.userNodeForPackage(GraphClient.class);
-    prefs.put("Trending_LAST_X", new Integer(this.getGraphParentFrame().getX()).toString());
-    prefs.put("Trending_LAST_Y", new Integer(this.getGraphParentFrame().getY()).toString());
-    prefs.put("Trending_LAST_WIDTH", new Integer(this.getGraphParentFrame().getWidth()).toString());
-    prefs.put("Trending_LAST_HEIGHT", new Integer(this.getGraphParentFrame().getHeight()).toString());
+    prefs.put("LAST_X", new Integer(this.getGraphParentFrame().getX()).toString());
+    prefs.put("LAST_Y", new Integer(this.getGraphParentFrame().getY()).toString());
+    prefs.put("LAST_WIDTH", new Integer(this.getGraphParentFrame().getWidth()).toString());
+    prefs.put("LAST_HEIGHT", new Integer(this.getGraphParentFrame().getHeight()).toString());
 	getTrendProperties().writeDefaultsFile();
 	System.exit(0);
 }
@@ -2117,7 +2118,7 @@ public static void main(String[] args)
         javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
 
         javax.swing.JFrame mainFrame = new javax.swing.JFrame();
-		mainFrame.setIconImage( java.awt.Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
+		mainFrame.setIconImage( Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
 		mainFrame.setTitle("Yukon Trending");
         
         SplashWindow.createYukonSplash(mainFrame);
@@ -2144,10 +2145,11 @@ public static void main(String[] args)
 			
 		Preferences prefs;
         prefs = Preferences.userNodeForPackage(GraphClient.class);
-        String lastX = prefs.get("Trending_LAST_X", "0");
-        String lastY = prefs.get("Trending_LAST_Y", "0");
-        String lastWidth = prefs.get("Trending_LAST_WIDTH", "1024");
-        String lastHeight = prefs.get("Trending_LAST_HEIGHT", "768");
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); 
+        String lastX = prefs.get("LAST_X", "0");
+        String lastY = prefs.get("LAST_Y", "0");
+        String lastWidth = prefs.get("LAST_WIDTH", new Integer((int) (screenSize.width * .95)).toString());
+        String lastHeight = prefs.get("LAST_HEIGHT", new Integer((int)( screenSize.height * .95)).toString());
 
         mainFrame.setBounds(Integer.parseInt(lastX), Integer.parseInt(lastY), Integer.parseInt(lastWidth), Integer.parseInt(lastHeight));
 
@@ -2323,7 +2325,7 @@ public void setSliderSize(int min, int max, int numTicks)
 public void showPopupMessage(String message, int messageType )
 {
 	javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-	popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
+	popupFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
 	javax.swing.JOptionPane.showMessageDialog(popupFrame,
 	message, "Yukon Trending", messageType);
 	return;

@@ -2,6 +2,7 @@ package com.cannontech.dbeditor;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -590,7 +591,7 @@ private JTreeEditorFrame createInternalEditorFrame()
 		
 	});
 	
-	ImageIcon editorIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
+	ImageIcon editorIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
 	frame.setFrameIcon(editorIcon);
 
 	return frame;
@@ -2211,17 +2212,18 @@ public static void main(String[] args) {
 
             Preferences prefs;
             prefs = Preferences.userNodeForPackage(DatabaseEditor.class);
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();    
             String lastX = prefs.get("LAST_X", "0");
             String lastY = prefs.get("LAST_Y", "0");
-            String lastWidth = prefs.get("LAST_WIDTH", "1024");
-            String lastHeight = prefs.get("LAST_HEIGHT", "768");
+            String lastWidth = prefs.get("LAST_WIDTH", new Integer((int) (screenSize.width * .95)).toString());
+            String lastHeight = prefs.get("LAST_HEIGHT", new Integer((int)( screenSize.height * .95)).toString());
 
             f.setBounds(Integer.parseInt(lastX),
                         Integer.parseInt(lastY),
                         Integer.parseInt(lastWidth),
                         Integer.parseInt(lastHeight));
 
-            f.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
+            f.setIconImage(Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
 
             ClientSession session = ClientSession.getInstance();
             boolean loggingIn = true;
@@ -2939,7 +2941,7 @@ private void showChangeTypeWizardPanel(WizardPanel wizard) {
 	changingObjectType = true;
 	wizard.setValue(null);
 	f.setVisible(true);
-	ImageIcon wizardIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
+	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
 	f.setFrameIcon(wizardIcon);
 	
 	try
@@ -2992,7 +2994,7 @@ private void showCopyWizardPanel(WizardPanel wizard) {
 	
 	wizard.setValue(userObject);
 	copyingObject = true;
-	ImageIcon wizardIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage(CtiUtilities.CTISMALL_GIF));
+	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(CtiUtilities.CTISMALL_GIF));
 	f.setFrameIcon(wizardIcon);
 	f.show();
 	
@@ -3058,7 +3060,7 @@ private void showWizardPanel(WizardPanel wizard) {
 
 	wizard.setValue(null);
 	f.setVisible(true);
-	ImageIcon wizardIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit().getImage(CtiUtilities.CTISMALL_GIF));
+	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(CtiUtilities.CTISMALL_GIF));
 	f.setFrameIcon(wizardIcon);
 	
 	try
