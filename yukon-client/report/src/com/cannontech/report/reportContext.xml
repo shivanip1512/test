@@ -574,5 +574,69 @@
         </property>
     </bean>
     
+   <!-- Group Command Success Result Report -->
+   <bean id="groupCommanderSuccessResultModel" class="com.cannontech.analysis.tablemodel.GroupCommanderSuccessResultsModel" scope="prototype">
+   </bean>
+    
+    <bean id="groupCommanderSuccessResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+    
+        <property name="reportModelName"><idref local="groupCommanderSuccessResultModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="resultKey"/>
+                    <property name="displayName" value="Result Key"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                    <property name="validatorList">
+                        <list>
+                             <bean class="com.cannontech.web.input.validate.RequiredValidator"/>
+                        </list>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupCommanderSuccessResultsReportLayoutData"/>
+        </property>
+    </bean>
+    
+   <!-- Group Command Failure Result Report -->
+   <bean id="groupCommanderFailureResultModel" class="com.cannontech.analysis.tablemodel.GroupCommanderFailureResultsModel" scope="prototype">
+   </bean>
+    
+    <bean id="groupCommanderFailureResultDefinition" class="com.cannontech.simplereport.SimpleYukonReportDefinition">
+    
+        <property name="reportModelName"><idref local="groupCommanderFailureResultModel"/></property>
+        <property name="inputs">
+          <bean class="com.cannontech.web.input.InputRoot">
+            <property name="inputList">
+              <list>
+                <bean class="com.cannontech.web.input.InputBase">
+                    <property name="field" value="resultKey"/>
+                    <property name="displayName" value="Result Key"/>
+                    <property name="type">
+                      <bean class="com.cannontech.web.input.type.StringType"/>
+                    </property>
+                    <property name="validatorList">
+                        <list>
+                             <bean class="com.cannontech.web.input.validate.RequiredValidator"/>
+                        </list>
+                    </property>
+                </bean>
+              </list>
+            </property>
+          </bean>
+        </property>
+        <property name="reportLayoutData">
+            <bean class="com.cannontech.simplereport.reportlayoutdata.GroupCommanderFailureResultsReportLayoutData"/>
+        </property>
+    </bean>
+    
 </beans>
 
