@@ -123,10 +123,14 @@ div.message {
 
 div.movingBar {
     position: relative; 
-    width: 30px; 
+    width: 45px; 
     height: 162px; 
     left: 0px; 
     top: 5px; 
+}
+
+.movingTable {
+    width: 100%;	
 }
 
 .barTemperature {

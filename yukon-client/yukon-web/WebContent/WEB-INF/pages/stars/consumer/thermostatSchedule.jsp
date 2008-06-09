@@ -199,7 +199,7 @@
                             <tr>
                                 <td width="50">
                                     <div id="MovingLayer1" class="movingBar" style="z-index:1;" onMouseDown="beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');">
-                                        <table border="0">
+                                        <table class="movingTable">
                                             <tr>
                                                 <td class="barTemperature" colspan="2">
                                                     <span id="tempdisp1"></span>
@@ -237,7 +237,7 @@
                                 </td>
                                 <td width="50">
                                     <div id="MovingLayer2" class="movingBar" style="z-index:2; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(2),getLeftBound(2),'showTimeLeave()','horizontal','MovingLayer2');"> 
-                                        <table border="0">
+                                        <table class="movingTable">
                                             <tr>
                                                 <td class="barTemperature" colspan="2">
                                                     <span id="tempdisp2"></span>
@@ -275,7 +275,7 @@
                                 </td>
                                 <td width="50">
                                     <div id="MovingLayer3" class="movingBar" style="z-index:3; ${(twoBars)? 'display: none;': ''}" onMouseDown="beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');"> 
-                                        <table border="0">
+                                        <table class="movingTable">
                                             <tr> 
                                                 <td class="barTemperature" colspan="2"> 
                                                     <span id="tempdisp3"></span>
@@ -313,7 +313,7 @@
                                 </td>
                                 <td width="50">
                                     <div id="MovingLayer4" class="movingBar" style="z-index:4;" onMouseDown="beginDrag(event,0,0,getRightBound(4),getLeftBound(4),'showTimeSleep()','horizontal','MovingLayer4');"> 
-                                        <table border="0">
+                                        <table class="movingTable">
                                             <tr> 
                                                 <td class="barTemperature" colspan="2"> 
                                                     <span id="tempdisp4"></span>
