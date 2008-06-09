@@ -23,11 +23,11 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.editGroupNameCancelText">cancel</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.newGroupNameSaveText">Save</entry>
 
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroupText">Delete Group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroupLinkTitle">Click to delete this group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup">Delete Group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.removeGroup.title">Click to delete this group</entry>
 
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupText">Move Group</entry>
-<entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupLinkTitle">Click to move this group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup">Move Group</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup.title">Click to move this group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupCancelText">cancel</entry>
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.linkText">Copy contents to another group</entry>
@@ -58,6 +58,15 @@
 
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.collectionActionLabel">Collection Actions</entry>
 
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.otherActions">Other Actions...</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.otherActions.title">Click to go to a menu of all Collection Actions</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.sendCommand">Send Command</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.sendCommand.title">Issue a command to multiple devices</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.massChange">Mass Change</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.massChange.title">Change same value on multiple devices</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.massDelete">Mass Delete</entry>
+<entry key="yukon.web.deviceGroups.editor.operationsContainer.massDelete.title">Delete multiple devices</entry>
+    
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupLabel">Remove Devices From Another Group</entry>
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupDescription">Remove devices in this group from a another Device Group.</entry>
 
