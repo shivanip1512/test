@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrinet.cpp-arc  $
-*    REVISION     :  $Revision: 1.21 $
-*    DATE         :  $Date: 2008/03/27 21:04:17 $
+*    REVISION     :  $Revision: 1.22 $
+*    DATE         :  $Date: 2008/06/09 15:48:08 $
 *
 *
 *    AUTHOR: David Sutton
@@ -22,6 +22,11 @@
 *    ---------------------------------------------------
 *    History: 
       $Log: fdrinet.cpp,v $
+      Revision 1.22  2008/06/09 15:48:08  tspar
+      YUK-6032 FDR Inet Will not send data
+
+      std::transform() was used incorrectly, after attempting to convert to upper case letters it FDR Inet erased the destination name. When we send a point, we look it up by name. We could not find the connection since the name was erased.
+
       Revision 1.21  2008/03/27 21:04:17  tspar
       Minor bug fix for fdrinet
 
@@ -566,7 +571,8 @@ bool CtiFDR_Inet::loadList(string &aDirection,  CtiFDRPointList &aList)
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                     dout << " Destination: " << translationPoint->getDestinationList()[x].getDestination() << endl;
                                                 }
-                                                translationPoint->getDestinationList()[x].setDestination(std::transform(s.begin(), s.end(), s.begin(), ::toupper)); 
+                                                std::transform(s.begin(), s.end(), s.begin(), ::toupper);
+                                                translationPoint->getDestinationList()[x].setDestination(s); 
                                                 if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
                                                 {
                                                     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -889,7 +895,13 @@ bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
     CHAR *ptr=NULL;
     int  connectionIndex;;
     CHAR *foreignSys=NULL;
-                
+
+    if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " DEBUG: Building message to send to INET. " << endl;
+    }
+
     // now loop thru the many possible destinations for the point
     for (int x=0; x < aPoint.getDestinationList().size(); x++)
     {
@@ -976,6 +988,21 @@ bool CtiFDR_Inet::buildAndWriteToForeignSystem (CtiFDRPoint &aPoint )
                     // successfully sent message
                     retVal = true;
                 }
+                else
+                {
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " Error: " << string (trim(deviceName)) << " " << string(trim(pointName)) << " sending to " << iConnectionList[connectionIndex]->getName() << endl;
+                    }
+                }
+            }
+        }
+        else
+        {
+            if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " DEBUG: Could not find the destination connection. <"<< aPoint.getDestinationList()[x].getDestination() << ">\n";
             }
         }
     }

@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrsocketinterface.cpp-arc  $
-*    REVISION     :  $Revision: 1.13 $
-*    DATE         :  $Date: 2006/04/24 14:47:33 $
+*    REVISION     :  $Revision: 1.14 $
+*    DATE         :  $Date: 2008/06/09 15:48:08 $
 *
 *
 *    AUTHOR: David Sutton
@@ -19,6 +19,11 @@
 *    ---------------------------------------------------
 *    History: 
 *     $Log: fdrsocketinterface.cpp,v $
+*     Revision 1.14  2008/06/09 15:48:08  tspar
+*     YUK-6032 FDR Inet Will not send data
+*
+*     std::transform() was used incorrectly, after attempting to convert to upper case letters it FDR Inet erased the destination name. When we send a point, we look it up by name. We could not find the connection since the name was erased.
+*
 *     Revision 1.13  2006/04/24 14:47:33  tspar
 *     RWreplace: replacing a few missed or new Rogue Wave elements
 *
@@ -322,6 +327,12 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
     CtiPointDataMsg     *localMsg = (CtiPointDataMsg *)aMessage;
     CtiFDRPoint point;
 
+    if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " DEBUG: Message received from yukon for sending. " << endl;
+    }
+
     // if requested, check the timestamp and value to see if we should forward this message
     if (getPointTimeVariation() > 0)
     {
@@ -333,6 +344,11 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
             // check timestamp
             if (point.getLastTimeStamp() + getPointTimeVariation() >= localMsg->getTime())
             {
+                if (getDebugLevel () & MAJOR_DETAIL_FDR_DEBUGLEVEL)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " DEBUG: Point not being forwarded to connection. " << endl;
+                }
                 forwardPointData = false;
             }
         }
@@ -400,12 +416,17 @@ bool CtiFDRSocketInterface::sendMessageToForeignSys ( CtiMessage *aMessage )
                             CtiLockGuard<CtiLogger> doubt_guard(dout);
                             dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** building msg error" << endl;
                         }
+                    } 
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " " << __FILE__ << " (" << __LINE__ << " **** Checkpoint **** Not Registered" << endl;
                     }
                 }
             }
         }
     }
-   return retVal;
+    return retVal;
 }
 
 /** Network to Host IEEE Float
