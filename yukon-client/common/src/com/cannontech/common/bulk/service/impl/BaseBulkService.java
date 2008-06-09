@@ -268,6 +268,7 @@ public abstract class BaseBulkService {
         // save reference to callback in cache
         String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
         bulkOperationCallbackResults.setResultsId(id);
+        bulkOperationCallbackResults.setBulkFileInfo(bulkFileInfo);
         String resultsId = recentBulkOperationResultsCache.addResult(id, bulkOperationCallbackResults);
 
         // process

@@ -11,6 +11,7 @@ public class YukonDeviceDto {
     private String route; 
     private Integer substation;
     private Integer deviceType;
+    private Integer disconnectAddress;
     
     
     // SETTER GETTERS
@@ -55,5 +56,11 @@ public class YukonDeviceDto {
     }
     public void setRoute(String route) {
         this.route = route;
+    }
+    public Integer getDisconnectAddress() {
+        return disconnectAddress;
+    }
+    public void setDisconnectAddress(Integer disconnectAddress) {
+        this.disconnectAddress = disconnectAddress;
     }
 }

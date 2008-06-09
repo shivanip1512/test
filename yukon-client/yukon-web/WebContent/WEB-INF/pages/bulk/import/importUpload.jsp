@@ -92,6 +92,16 @@
                     <ul style="font-size:11px;">
                         <cti:msg key="yukon.common.device.bulk.importUpload.instructions"/>
                     </ul>
+                    
+                    <%-- sample files --%>
+                    <div class="small">
+                        <div class="normalBoldLabel" style="display:inline;"><cti:msg key="yukon.common.device.bulk.importUpload.sampleFilesLabel"/>:</div>
+                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File1.csv"/>" target="_blank">File 1</a>, 
+                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File2.csv"/>" target="_blank">File 2</a>, 
+                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File3.csv"/>" target="_blank">File 3</a>, 
+                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Import_File4.csv"/>" target="_blank">File 4</a>
+                    </div>
+                    
                 </td>
             
             </tr>

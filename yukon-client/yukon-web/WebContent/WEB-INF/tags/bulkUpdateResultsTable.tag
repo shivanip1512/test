@@ -3,10 +3,10 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="resultsTypeMsgKey" required="true" type="java.lang.String"%>
-<%@ attribute name="resultsId" required="true" type="java.lang.String"%>
 <%@ attribute name="lineCount" required="true" type="java.lang.Integer"%>
 <%@ attribute name="bulkUpdateOperationResults" required="true" type="com.cannontech.common.bulk.service.BulkOperationCallbackResults"%>
 
+<c:set var="resultsId" value="${bulkUpdateOperationResults.resultsId}" />
 
 <script type="text/javascript">
 
@@ -70,8 +70,6 @@
 </table>
 
 
-
-
 <%-- PROGRESS --%>
 <span class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.progressLabel" />:</span>
 
@@ -106,11 +104,9 @@
 <div style="padding:10px;">
 
     <%-- device collection action --%>
-    <form id="successForm" method="post" action="/spring/bulk/collectionActions">
-        <cti:deviceCollection deviceCollection="${bulkUpdateOperationResults.successDeviceCollection}" />
-    </form>
-         
-    <a href="javascript:void(0);" onclick="$('successForm').submit();" class="small"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" /></a> <tags:selectedDevicesPopup deviceCollection="${bulkUpdateOperationResults.successDeviceCollection}" />
+    <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
+        <cti:mapParam value="${bulkUpdateOperationResults.successDeviceCollection.collectionParameters}"/>
+    </cti:link>
 
 </div>
 
@@ -124,11 +120,9 @@
 <div style="padding:10px;">
     
     <%-- device collection action --%>
-    <form id="processingExceptionForm" method="post" action="/spring/bulk/collectionActions">
-        <cti:deviceCollection deviceCollection="${bulkUpdateOperationResults.processingExceptionDeviceCollection}" />
-    </form>
-         
-    <a href="javascript:void(0);" onclick="$('processingExceptionForm').submit();" class="small"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" /></a> <tags:selectedDevicesPopup deviceCollection="${bulkUpdateOperationResults.processingExceptionDeviceCollection}" />
+    <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
+        <cti:mapParam value="${bulkUpdateOperationResults.processingExceptionDeviceCollection.collectionParameters}"/>
+    </cti:link>
     
     <%-- errors list --%>
     <div style="height:8px;"></div>

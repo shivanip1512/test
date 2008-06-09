@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.common.device.bulk.massChangeResults.pageTitle"/>
+<cti:msg var="pageTitle" key="yukon.common.device.bulk.massDeleteResults.pageTitle"/>
 
 <cti:standardPage title="${pageTitle}" module="amr">
 
@@ -10,7 +10,7 @@
 
     <%-- BREAD CRUMBS --%>
     <cti:breadCrumbs>
-        
+    
         <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         
         <%-- bulk home --%>
@@ -30,37 +30,27 @@
         <cti:msg var="collectionActionsPageTitle" key="yukon.common.device.bulk.collectionActions.pageTitle"/>
         <cti:crumbLink url="${collectionActionsUrl}" title="${collectionActionsPageTitle}" />
         
-        <%-- mass change options --%>
-        <c:url var="massChangeOptionsUrl" value="/spring/bulk/massChangeOptions">
-            <c:param name="massChangeBulkFieldName" value="${massChangeBulkFieldName}"/>
-            <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
-                <c:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>
-            </c:forEach>
-        </c:url>
-        <cti:msg var="massChangeOptionsPageTitle" key="yukon.common.device.bulk.massChangeOptions.pageTitle"/>
-        <cti:crumbLink url="${massChangeOptionsUrl}" title="${massChangeOptionsPageTitle}" />
-        
-        <%-- mass change results --%>
+        <%-- mass delete --%>
         <cti:crumbLink>${pageTitle}</cti:crumbLink>
         
     </cti:breadCrumbs>
     
+    <%-- TITLE --%>
     <h2>${pageTitle}</h2>
     <br>
     
-    <cti:msg var="headerTitle" key="yukon.common.device.bulk.massChangeResults.header"/>
-    <tags:boxContainer title="${headerTitle}" id="massChangeResultsContainer" hideEnabled="false">
+    <%-- BOX --%>
+    <cti:msg var="headerTitle" key="yukon.common.device.bulk.massDeleteResults.header"/>
+    <tags:boxContainer title="${headerTitle}" id="massDeleteResultsContainer" hideEnabled="false">
     
-    
-        <%-- HIDDEN DEVICE COLLECTION --%>
-        <cti:deviceCollection deviceCollection="${deviceCollection}" />
-        
-        <%-- RESULTS --%>
-        <tags:bulkUpdateResultsTable    resultsTypeMsgKey="massChange"
-                                        resultsId="${resultsId}"
-                                        lineCount="${deviceCollection.deviceCount}"
-                                        bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
-        
+        <form id="massDeleteForm" method="post" action="/spring/bulk/massChange/doMassDelete">
+            
+            <cti:msg key="yukon.common.device.bulk.massDeleteResults.deleteComplete" arguments="${deletedItemsCount}" />
+            <br><br>
+            <cti:msg var="return" key="yukon.common.device.bulk.massDeleteResults.return" />
+            <input type="submit" name="returnButton" value="${return}">
+                
+        </form>
     
     </tags:boxContainer>
     

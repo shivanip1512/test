@@ -13,7 +13,10 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.field.BulkField;
 import com.cannontech.common.bulk.field.BulkFieldService;
+import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
+import com.cannontech.common.bulk.service.MassChangeFileInfo;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.core.dao.DeviceDao;
 
 
@@ -21,6 +24,7 @@ public class MassChangeController extends BulkControllerBase {
 
     private BulkFieldService bulkFieldService = null;
     private DeviceDao deviceDao = null;
+    private RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache = null;
     
     /**
      * SELECT MASS CHANGE TYPE
@@ -31,7 +35,7 @@ public class MassChangeController extends BulkControllerBase {
      */
     public ModelAndView massChangeSelect(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        ModelAndView mav = new ModelAndView("mass/massChangeSelect.jsp");
+        ModelAndView mav = new ModelAndView("massChange/massChangeSelect.jsp");
         
         // pass along deviceCollection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -47,6 +51,27 @@ public class MassChangeController extends BulkControllerBase {
         return mav;
     }
     
+    // VIEW RESULTS
+    public ModelAndView massChangeResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+
+        ModelAndView mav = new ModelAndView("massChange/massChangeResults.jsp");
+
+        // result info
+        String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
+        BulkOperationCallbackResults bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
+        
+        // file info
+        MassChangeFileInfo massChangeFileInfo = (MassChangeFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
+        
+        mav.addObject("deviceCollection", massChangeFileInfo.getDeviceCollection());
+        mav.addObject("massChangeBulkFieldName", massChangeFileInfo.getMassChangeBulkFieldName());
+        mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
+
+        return mav;
+    }
+    
+    
+    
     
     /**
      * MASS DELETE
@@ -57,7 +82,7 @@ public class MassChangeController extends BulkControllerBase {
      */
     public ModelAndView massDelete(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
-        ModelAndView mav = new ModelAndView("mass/massDeleteConfirm.jsp");
+        ModelAndView mav = new ModelAndView("massChange/massDeleteConfirm.jsp");
         
         // pass along deviceCollection
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
@@ -98,7 +123,7 @@ public class MassChangeController extends BulkControllerBase {
         // DO DELETE
         else if (deleteButton != null) {
             
-            mav = new ModelAndView("mass/massDeleteResults.jsp");
+            mav = new ModelAndView("massChange/massDeleteResults.jsp");
             
             DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
             long deletedItemsCount = 0;
@@ -132,6 +157,12 @@ public class MassChangeController extends BulkControllerBase {
     @Required
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
+    }
+    
+    @Required
+    public void setRecentBulkOperationResultsCache(
+            RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache) {
+        this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
     }
     
 }

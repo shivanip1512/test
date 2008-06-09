@@ -87,7 +87,7 @@
             <%-- MASS CHANGE --%>
             <tr>
                 <td>
-                    <form id="massChangeForm" method="post" action="/spring/bulk/mass/massChangeSelect">
+                    <form id="massChangeForm" method="post" action="/spring/bulk/massChange/massChangeSelect">
                         <cti:deviceCollection deviceCollection="${deviceCollection}" />
                         <input type="submit" id="massChangeButton" value="${massChangeLabel}" style="width:140px;"/>
                     </form>
@@ -98,7 +98,7 @@
             <%-- MASS DELETE --%>
             <tr>
                 <td>
-                    <form id="massDeleteForm" method="post" action="/spring/bulk/mass/massDelete">
+                    <form id="massDeleteForm" method="post" action="/spring/bulk/massChange/massDelete">
                         <cti:deviceCollection deviceCollection="${deviceCollection}" />
                         <input type="submit" id="massDeleteButton" value="${massDeleteLabel}" style="width:140px;"/>
                     </form>

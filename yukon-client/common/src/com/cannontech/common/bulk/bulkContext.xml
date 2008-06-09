@@ -84,6 +84,36 @@
             </set>
         </property>
     </bean>
+    
+    <!-- DISCONNECT ADDRESS BULK FIELD -->
+    <bean id="disconnectAddressBulkField" parent="bulkFieldBase"
+        class="com.cannontech.common.bulk.field.impl.DisconnectAddressBulkField">
+
+        <property name="massChangable" value="false" />
+
+        <property name="inputSource">
+            <bean class="com.cannontech.web.input.InputBase">
+                <property name="displayName" value="Disconnect Address" />
+                <property name="field" value="disconnectAddress" />
+                <property name="description">
+                    <value>The disconnect address of the meter</value>
+                </property>
+                <property name="type" ref="inputStringType" />
+            </bean>
+        </property>
+
+    </bean>
+
+    <bean id="disconnectAddressBulkFieldProcessor" parent="bulkFieldProcessorBase"
+        class="com.cannontech.common.bulk.field.processor.impl.DisconnectAddressBulkFieldProcessor">
+        <property name="dbPersistentDao" ref="dbPersistentDao" />
+        <property name="attributeService" ref="attributeService" />
+        <property name="updateableFields">
+            <set>
+                <ref bean="disconnectAddressBulkField" />
+            </set>
+        </property>
+    </bean>
 
     <!-- ENABLE/DISABLE BULK FIELD -->
     <bean id="enableBulkField" parent="bulkFieldBase"
@@ -335,6 +365,7 @@
         <property name="bulkFields">
             <list>
                 <ref bean="addressBulkField" />
+                <ref bean="disconnectAddressBulkField" />
                 <ref bean="enableBulkField" />
                 <ref bean="meterNumberBulkField" />
                 <ref bean="nameBulkField" />
@@ -364,7 +395,7 @@
     
     <bean id="baseBulkService" class="com.cannontech.common.bulk.service.impl.BaseBulkService" abstract="true">
     
-        <property name="bulkProcessor" ref="oneAtATimeProcessor" />
+        <property name="bulkProcessor" ref="transactionPerItemProcessor" />
         <property name="bulkYukonDeviceFieldFactory" ref="bulkYukonDeviceFieldFactory" />
         <property name="bulkFieldService" ref="bulkFieldService" />
         <property name="temporaryDeviceGroupService" ref="temporaryDeviceGroupService" />

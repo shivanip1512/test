@@ -114,11 +114,9 @@
             </table>
             
             <%-- device collection action --%>
-           <form id="allForm" method="get" action="/spring/bulk/collectionActions">
-               <cti:deviceCollection deviceCollection="${result.deviceCollection}" />
-           </form>
-                 
-           <a href="javascript:void(0);" onclick="$('allForm').submit();" class="small">Choose New Operation For All Devices</a> <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
+            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
+                <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
+            </cti:link>
            
         </div>
     
@@ -130,12 +128,10 @@
     	<div style="padding:10px;">
         
     	   <%-- device collection action --%>
-    	   <form id="successForm" method="get" action="/spring/bulk/collectionActions">
-    	       <cti:deviceCollection deviceCollection="${result.successCollection}" />
-    	   </form>
-                 
-    	   <a href="javascript:void(0);" onclick="$('successForm').submit();" class="small">Choose New Operation For These Devices</a> <tags:selectedDevicesPopup deviceCollection="${result.successCollection}" />
-        
+           <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
+                <cti:mapParam value="${result.successCollection.collectionParameters}"/>
+            </cti:link>
+            
             <%-- success list --%>
             <div style="height:8px;"></div>
             <a href="javascript:void(0);" onclick="$('successResultsDiv${result.key}').toggle();refreshResults('successList', $('successResultsDiv${result.key}'));" class="small">View Results</a>
@@ -152,11 +148,9 @@
         <div style="padding:10px;">
             
             <%-- device collection action --%>
-            <form id="processingExceptionForm" method="get" action="/spring/bulk/collectionActions">
-                <cti:deviceCollection deviceCollection="${result.failureCollection}" />
-            </form>
-                 
-            <a href="javascript:void(0);" onclick="$('processingExceptionForm').submit();" class="small">Choose New Operation For These Devices</a> <tags:selectedDevicesPopup deviceCollection="${result.failureCollection}" />
+            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
+                <cti:mapParam value="${result.failureCollection.collectionParameters}"/>
+            </cti:link>
             
             <%-- errors list --%>
             <div style="height:8px;"></div>

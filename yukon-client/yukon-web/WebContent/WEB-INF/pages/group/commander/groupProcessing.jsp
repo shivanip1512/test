@@ -23,12 +23,6 @@
         	
         </script>
 	
-        <%-- TITLE --%>
-	    <h2>Group Processing</h2>
-        <br>
-  
-        <tags:boxContainer title="Group Processing" id="groupProcessingContainer" hideEnabled="false">
-	
     	<c:if test="${errorMsg != null}">
     		<div style="color: red;margin: 10px 0px;">Error: ${errorMsg}</div>
     		<c:set var="errorMsg" value="" scope="request"/>
@@ -37,64 +31,55 @@
     	<br>
     	<div style="width: 700px;">
         
-    		<form action="<c:url value="/spring/group/commander/executeGroupCommand" />">
+            <form action="<c:url value="/spring/group/commander/executeGroupCommand" />">
+        
+            <%-- SELECT COMMAND --%>
+            <div class="largeBoldLabel">Select Command:</div>
             
-    			<tags:nameValueContainer altRowOn="false">
+            <c:choose>
+                <c:when test="${fn:length(commands) <= 0}">
+                    No pre-defined commands authorized for this user.
+                </c:when>
                 
-                    <%-- RESULTS PAGE LINK --%>
-                    <tags:nameValue name="Results">
-                        <c:url var="resultListUrl" value="/spring/group/commander/resultList" />
-                        <a href="${resultListUrl}">View recent/ongoing commands</a>
-                    </tags:nameValue>
-                    
-                    <%-- SELECT COMMAND --%>
-    				<tags:nameValue name="Select command">
-    					<c:choose>
-    						<c:when test="${fn:length(commands) <= 0}">
-    							No pre-defined commands authorized for this user.
-    						</c:when>
-    						
-    						<c:otherwise>
-    							<select id="commandSelect" name="commandSelect" onchange="selectCommand()">
-    								<c:forEach var="commandOption" items="${commands}">
-    								
-    									<c:if test="${commandOption.command == command}">
-    										<c:set var="selected" value="selected" scope="page"></c:set>
-    									</c:if>
-    									<c:if test="${commandOption.command != command}">
-    										<c:set var="selected" value="" scope="page"></c:set>
-    									</c:if>
-    								
-    									<option value="${commandOption.command}" ${selected}> ${commandOption.label}</option>
-    								</c:forEach>
-    							</select>
-    						</c:otherwise>
-    					</c:choose>
-    					
-    					<br>
-    					<input style="margin-top: .25em;" type="text" id="commandString" name="commandString" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" />
-    				</tags:nameValue>
-    
-    
-    
-                    <%-- SELECT DEVICE GROUP TREE INPUT --%>
-                    <tags:nameValue name="Group">
-                      <ext:nodeValueSelectingInlineTree fieldId="groupName" fieldName="groupName"
-                        nodeValueName="groupName" id="selectGroupTree" dataJson="${dataJson}" width="500"
-                        height="400" treeAttributes="{'border':true}" />
-                    </tags:nameValue>
-                    
-                  </tags:nameValueContainer>
+                <c:otherwise>
+                    <select id="commandSelect" name="commandSelect" onchange="selectCommand()">
+                        <c:forEach var="commandOption" items="${commands}">
+                        
+                            <c:if test="${commandOption.command == command}">
+                                <c:set var="selected" value="selected" scope="page"></c:set>
+                            </c:if>
+                            <c:if test="${commandOption.command != command}">
+                                <c:set var="selected" value="" scope="page"></c:set>
+                            </c:if>
+                        
+                            <option value="${commandOption.command}" ${selected}> ${commandOption.label}</option>
+                        </c:forEach>
+                    </select>
+                </c:otherwise>
+            </c:choose>
+            <br>
+            <input style="margin-top: .25em;" type="text" id="commandString" name="commandString" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" />
+            
+            <%-- SELECT DEVICE GROUP TREE INPUT --%>
+            <br><br>
+            <div class="largeBoldLabel">Group:</div>
+            
+            <ext:nodeValueSelectingInlineTree   fieldId="groupName" 
+                                                fieldName="groupName"
+                                                nodeValueName="groupName" 
+                                                id="selectGroupTree" 
+                                                dataJson="${dataJson}" 
+                                                width="500"
+                                                height="400" treeAttributes="{'border':true}" />
+            
                   
                   
-                <%-- EXECUTE BUTTON --%>
-    			<br>
-    			<input type="submit" name="execute" value="Execute" />
+            <%-- EXECUTE BUTTON --%>
+			<input type="submit" name="execute" value="Execute" />
     			 
     		</form>
     	</div>
   
-  </tags:boxContainer>
   
   
 	

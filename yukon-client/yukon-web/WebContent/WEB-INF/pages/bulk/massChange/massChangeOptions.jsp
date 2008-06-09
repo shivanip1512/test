@@ -32,7 +32,7 @@
         <cti:crumbLink url="${collectionActionsUrl}" title="${collectionActionsPageTitle}" />
         
         <%-- mass change options --%>
-        <c:url var="massChangeSelectUrl" value="/spring/bulk/mass/massChangeSelect">
+        <c:url var="massChangeSelectUrl" value="/spring/bulk/massChange/massChangeSelect">
             <c:param name="selectedBulkFieldName" value="${massChangeBulkFieldName}"/>
             <c:forEach var="deviceCollectionParam" items="${deviceCollection.collectionParameters}">
                 <c:param name="${deviceCollectionParam.key}" value="${deviceCollectionParam.value}"/>

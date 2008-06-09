@@ -460,6 +460,6 @@
 	
 	</div>
 	
-	<div style="clear: both"></div>
+	<div style="clear: both" />
 
 </cti:standardPage>

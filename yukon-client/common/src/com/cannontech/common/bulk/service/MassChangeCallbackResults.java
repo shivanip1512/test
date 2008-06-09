@@ -12,7 +12,7 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.TimedOperation;
 
-public class BulkOperationCallbackResults extends DeviceGroupAddingBulkProcessorCallback implements Completable, TimedOperation {
+public class MassChangeCallbackResults extends DeviceGroupAddingBulkProcessorCallback implements Completable, TimedOperation {
 
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
     private List<BulkFieldColumnHeader> bulkFieldColumnHeaders = null;
@@ -25,7 +25,7 @@ public class BulkOperationCallbackResults extends DeviceGroupAddingBulkProcessor
     
     BulkOperationTypeEnum bulkOperationType = null;
     
-    public BulkOperationCallbackResults(StoredDeviceGroup successGroup, StoredDeviceGroup processingExceptionGroup, DeviceGroupMemberEditorDao deviceGroupMemberEditorDao, DeviceGroupCollectionHelper deviceGroupCollectionHelper, List<BulkFieldColumnHeader> bulkFieldColumnHeaders, BulkOperationTypeEnum bulkOperationType) {
+    public MassChangeCallbackResults(StoredDeviceGroup successGroup, StoredDeviceGroup processingExceptionGroup, DeviceGroupMemberEditorDao deviceGroupMemberEditorDao, DeviceGroupCollectionHelper deviceGroupCollectionHelper, List<BulkFieldColumnHeader> bulkFieldColumnHeaders, BulkOperationTypeEnum bulkOperationType) {
         
         super(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao);
         this.deviceGroupCollectionHelper = deviceGroupCollectionHelper;

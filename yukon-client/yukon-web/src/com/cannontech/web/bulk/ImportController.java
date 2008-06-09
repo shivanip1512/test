@@ -149,25 +149,23 @@ public class ImportController extends MultiActionController {
         ParsedBulkImportFileInfo parsedResult = bulkImportService.createParsedBulkImportFileInfo(bulkImportFileInfo);
         String resultsId = bulkImportService.startBulkImport(parsedResult);
         
-        mav.addObject("fileInfoId", fileInfoId);
         mav.addObject("resultsId", resultsId);
         
         return mav;
     }
     
+    // VIEW RESULTS
     public ModelAndView importResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
         
         ModelAndView mav = new ModelAndView("import/importResults.jsp");
         
-        // GET RESULTS FROM CACHE
-        String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
-        BulkImportFileInfo bulkImportFileInfo = bulkImportFileInfoMap.get(fileInfoId);
-        
+        // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         BulkOperationCallbackResults bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
         
-        mav.addObject("resultsId", resultsId);
-        mav.addObject("bulkImportFileInfo", bulkImportFileInfo);
+        BulkImportFileInfo bulkImportFileInfo = (BulkImportFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
+        
+        mav.addObject("ignoreInvalidCols", bulkImportFileInfo.isIgnoreInvalidCols());
         mav.addObject("bulkImportOperationResults", bulkOperationCallbackResults);
         
         return mav;

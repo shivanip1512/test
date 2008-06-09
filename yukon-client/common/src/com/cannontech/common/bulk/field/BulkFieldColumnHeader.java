@@ -6,6 +6,7 @@ public enum BulkFieldColumnHeader {
     DEVICE_ID("deviceId"),
     NAME("name"),
     ADDRESS("address"),
+    DISCONNECT_ADDRESS("disconnectAddress"),
     METER_NUMBER("meterNumber"),
     ENABLE("enable"),
     ROUTE("route"),

@@ -33,6 +33,7 @@ import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
+import com.cannontech.common.bulk.service.MassChangeFileInfo;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
@@ -134,9 +135,9 @@ public class MassChangeOptionsController extends InputFormController {
         final StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
         
         // init callcback, use a TranslatingBulkProcessorCallback to get from UpdateableDevice to YukonDevice
-        BulkOperationCallbackResults bulkOperationCallbackResults = new BulkOperationCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, Collections.singletonList(bulkFieldColumnHeader), BulkOperationTypeEnum.UPDATE);
+        BulkOperationCallbackResults bulkOperationCallbackResults = new BulkOperationCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, Collections.singletonList(bulkFieldColumnHeader), BulkOperationTypeEnum.MASS_CHANGE);
         
-        ModelAndView mav = new ModelAndView("mass/massChangeResults.jsp");
+        ModelAndView mav = new ModelAndView("massChange/massChangeResults.jsp");
         mav.addObject("deviceCollection", deviceCollection);
         mav.addObject("massChangeBulkFieldName", massChangeBulkFieldName);
         
@@ -144,9 +145,10 @@ public class MassChangeOptionsController extends InputFormController {
         // STORE RESULTS INFO TO CACHE
         String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
         bulkOperationCallbackResults.setResultsId(id);
-        String resultsId = recentResultsCache.addResult(id, bulkOperationCallbackResults);
+        MassChangeFileInfo massChangeFileInfo = new MassChangeFileInfo(deviceCollection, massChangeBulkFieldName);
+        bulkOperationCallbackResults.setBulkFileInfo(massChangeFileInfo);
+        recentResultsCache.addResult(id, bulkOperationCallbackResults);
         
-        mav.addObject("resultsId", resultsId);
         mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
         
         // PROCESS
@@ -154,6 +156,8 @@ public class MassChangeOptionsController extends InputFormController {
         
         return mav;
     }
+    
+    
 
     private BulkYukonDeviceFieldProcessor findYukonDeviceFieldProcessor(BulkField<?, YukonDevice> bulkField) {
         

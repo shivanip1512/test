@@ -14,6 +14,9 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.success">Success</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException"><![CDATA[Processing<br>Failures]]></entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.mappingException"><![CDATA[Invalid<br>Data]]></entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailHeader">Detail</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailLink">View</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detail">Detail</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status">Status</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME">{finished|{stopTime|BOTH}|In Progress...}</entry>
@@ -204,6 +207,7 @@
         <li>One of the following column idenifiers must be used in the <i><b>Meter Idenification</b></i> column: <br><b>ADDRESS</b>, <b>METER_NUMBER</b>, <b>NAME</b>, or <b>DEVICE_ID</b>.</li><br>
         <li>Leaving a field blank indicates that the field should not be changed. <br>Choosen columns should be included for each row even if they contain no value.</li><br>
     ]]></entry>
+    <entry key="yukon.common.device.bulk.updateUpload.sampleFilesLabel">Sample Files</entry>
     
     <!-- updateUpload.jsp: option labels -->
     <entry key="yukon.common.device.bulk.options.update.ignoreInvalidHeaders">Ignore columns with invalid headers</entry>
@@ -217,6 +221,8 @@
     <!-- updateUpload.jsp: column header instruction text -->
     <entry key="yukon.common.device.bulk.columnHeader.update.description.ADDRESS">Address to change to.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.ADDRESS"></entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.description.DISCONNECT_ADDRESS">Address of disconnect collar for device.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.instruction.DISCONNECT_ADDRESS"></entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.description.ENABLE">Enable or Disable meter.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.ENABLE"><![CDATA[
         Use <i>"true"</i>, <i>"yes"</i>, or <i>"on"</i> to enable, <i>"false"</i>, <i>"no"</i>, or <i>"off"</i> to disable. Case-insensitive. Invalid values are ignored.
@@ -292,6 +298,7 @@
         <li>Devices may be imported using either by <i><b>Template</b></i> or by <i><b>Device Type</b></i>.<br>Each method requires that certain column values are included for each row.</li><br>
         <li>Additional columns may be included to further configure the device.</li><br>
     ]]></entry>
+    <entry key="yukon.common.device.bulk.importUpload.sampleFilesLabel">Sample Files</entry>
     
     <!-- importUpload.jsp: option labels -->
     <entry key="yukon.common.device.bulk.options.import.ignoreInvalidHeaders">Ignore columns with invalid headers</entry>
@@ -320,6 +327,8 @@
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.NAME"></entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.description.ADDRESS">Address to set.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.ADDRESS"></entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.description.DISCONNECT_ADDRESS">Address of disconnect collar to set.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.import.instruction.DISCONNECT_ADDRESS"></entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.description.ENABLE">Enable or Disable meter.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.import.instruction.ENABLE"><![CDATA[
         Use <i>"true"</i>, <i>"yes"</i>, or <i>"on"</i> to enable, <i>"false"</i>, <i>"no"</i>, or <i>"off"</i> to disable.<br>Case-insensitive. Invalid values are ignored.
@@ -393,36 +402,37 @@
     <!-- ******************************************************************************************************************** -->
     
     <!-- Bulk actions -->
-    <entry key="yukon.common.device.bulk.bulkAction.DELETE_DEVICES">Delete Devices</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.DELETE_DEVICES.description">Delete Devices</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.CHANGE_TYPE">Change Device type</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.CHANGE_TYPE.description">Change type to {0}</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.UPDATE_ROUTE">Update Route</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.UPDATE_ROUTE.description">Update Route to {0}</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.ENABLE_DISABLE_DEVICES">Enable/Disable Devices</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.ENABLE_DISABLE_DEVICES.description">{0} Devices</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.EDIT_DEVICES">Edit Devices</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.EDIT_DEVICES.description">Manual Device Edit</entry>
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.DELETE_DEVICES">Delete Devices</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.DELETE_DEVICES.description">Delete Devices</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.CHANGE_TYPE">Change Device type</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.CHANGE_TYPE.description">Change type to {0}</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.UPDATE_ROUTE">Update Route</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.UPDATE_ROUTE.description">Update Route to {0}</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.ENABLE_DISABLE_DEVICES">Enable/Disable Devices</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.ENABLE_DISABLE_DEVICES.description">{0} Devices</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.EDIT_DEVICES">Edit Devices</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.EDIT_DEVICES.description">Manual Device Edit</entry>-->
     
     <!--  bulkActions.jsp -->
-    <entry key="yukon.common.device.bulk.bulkAction.title">Bulk Actions</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.selectType">Select the new type for the devices:</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.selectRoute">Select the new route for the devices:</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.enableDisable">Choose whether to enable or disable the devices:</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.enable">Enable</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.disable">Disable</entry>
-    <entry key="yukon.common.device.bulk.bulkAction.doAction">Do Action</entry>
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.title">Bulk Actions</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.selectType">Select the new type for the devices:</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.selectRoute">Select the new route for the devices:</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.enableDisable">Choose whether to enable or disable the devices:</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.enable">Enable</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.disable">Disable</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.bulkAction.doAction">Do Action</entry>-->
     
     <!--  currentBulkProcesses.jsp -->
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.title">Current Bulk Processes</entry>
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.action">Process description</entry>
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.collection">Objects being processed</entry>
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.user">User</entry>
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.start">Started</entry>
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.total">Total</entry>
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.success">Successful</entry>
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.fail">Unsuccessful</entry>
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.complete">Complete</entry>
-    <entry key="yukon.common.device.bulk.currentBulkProcesses.remove">Remove Result</entry>
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.title">Current Bulk Processes</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.action">Process description</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.collection">Objects being processed</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.user">User</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.start">Started</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.total">Total</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.success">Successful</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.fail">Unsuccessful</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.complete">Complete</entry>-->
+    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.remove">Remove Result</entry>-->
+    
     
 </properties>

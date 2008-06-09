@@ -20,7 +20,7 @@
     <bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
         <property name="mappings">
             <props>
-                <prop key="/mass/*">MassChangeController</prop>
+                <prop key="/massChange/*">MassChangeController</prop>
                 <prop key="/massChangeOptions">MassChangeOptionsController</prop>
                 <prop key="/update/*">UpdateController</prop>
                 <prop key="/group/*">AddRemoveCollectionToGroupController</prop>
@@ -92,6 +92,7 @@
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
         <property name="bulkFieldService" ref="bulkFieldService" />
         <property name="deviceDao" ref="deviceDao" />
+        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
         
     </bean>
     
@@ -99,7 +100,7 @@
     <bean id="MassChangeOptionsController" class="com.cannontech.web.bulk.MassChangeOptionsController" >
         
         <property name="commandName" value="massChangeOptions" />
-        <property name="formView" value="mass/massChangeOptions.jsp" />
+        <property name="formView" value="massChange/massChangeOptions.jsp" />
         
         <property name="bulkFieldService" ref="bulkFieldService" />
         

@@ -36,8 +36,7 @@
         
            <%-- RESULTS --%>
            <tags:bulkUpdateResultsTable resultsTypeMsgKey="update"
-                                        resultsId="${resultsId}"
-                                        lineCount="${bulkUpdateFileInfo.lineCount}"
+                                        lineCount="${bulkUpdateOperationResults.bulkFileInfo.lineCount}"
                                         bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
             
             
@@ -51,8 +50,8 @@
                 <input type="submit" value="${backToUploadButton}">
             
                 <%-- PASS ALONGS --%>
-                <input type="hidden" name="ignoreInvalidCols" value="${bulkUpdateFileInfo.ignoreInvalidCols}">
-                <input type="hidden" name="ignoreInvalidIdentifiers" value="${bulkUpdateFileInfo.ignoreInvalidIdentifiers}">
+                <input type="hidden" name="ignoreInvalidCols" value="${ignoreInvalidCols}">
+                <input type="hidden" name="ignoreInvalidIdentifiers" value="${ignoreInvalidIdentifiers}">
             
             </form>
         

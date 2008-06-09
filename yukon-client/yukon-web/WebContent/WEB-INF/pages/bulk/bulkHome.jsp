@@ -90,6 +90,7 @@
                     <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.mappingException"/></th>
                     <th></th>
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.fields"/></th>
+                    <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailHeader"/></th>
                     <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.status"/></th>
                 </tr>
             
@@ -107,8 +108,6 @@
                         <td>
                             <cti:formatDate value="${b.startTime}" type="BOTH"/> - <br>
                             <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/STOP_TIME"/>
-                            
-                            
                         </td>
                         
                         
@@ -156,7 +155,14 @@
                             </c:forEach>
                         </td>
                         
-                        
+                        <%-- DEATIL LINK --%>
+                        <c:url var="resultDetailUrl" value="/spring/bulk/${b.bulkOperationType.name}/${b.bulkOperationType.name}Results">
+                            <c:param name="resultsId" value="${b.resultsId}" />
+                        </c:url>
+                
+                        <td>
+                            <a href="${resultDetailUrl}"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailLink"/></a>
+                        </td>
                         
                         <%-- COMPLETE? --%>
                         <td align="right">

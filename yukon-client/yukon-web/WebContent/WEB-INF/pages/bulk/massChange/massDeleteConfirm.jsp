@@ -2,7 +2,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.common.device.bulk.massDeleteResults.pageTitle"/>
+<cti:msg var="pageTitle" key="yukon.common.device.bulk.massDeleteConfirm.pageTitle"/>
 
 <cti:standardPage title="${pageTitle}" module="amr">
 
@@ -40,18 +40,27 @@
     <br>
     
     <%-- BOX --%>
-    <cti:msg var="headerTitle" key="yukon.common.device.bulk.massDeleteResults.header"/>
-    <tags:boxContainer title="${headerTitle}" id="massDeleteResultsContainer" hideEnabled="false">
+    <tags:bulkActionContainer   titleKey="yukon.common.device.bulk.massDeleteConfirm.header" 
+                            noteLabelKey="yukon.common.device.bulk.massDeleteConfirm.noteLabel"
+                            noteLabelStyle="color:#CC0000;"
+                            noteTextKey="yukon.common.device.bulk.massDeleteConfirm.noteText"
+                            noteTextArguments="${deviceCount}"
+                            deviceCollection="${deviceCollection}">
     
-        <form id="massDeleteForm" method="post" action="/spring/bulk/mass/doMassDelete">
+    
+        <form id="massDeleteForm" method="post" action="/spring/bulk/massChange/doMassDelete">
+        
+            <%-- DEVICE COLLECTION --%>
+            <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
-            <cti:msg key="yukon.common.device.bulk.massDeleteResults.deleteComplete" arguments="${deletedItemsCount}" />
-            <br><br>
-            <cti:msg var="return" key="yukon.common.device.bulk.massDeleteResults.return" />
-            <input type="submit" name="returnButton" value="${return}">
-                
+            <%-- DELETE OR CANCEL BUTTONS --%>
+            <cti:msg var="cancel" key="yukon.common.device.bulk.massDeleteConfirm.cancel" />
+            <cti:msg var="delete" key="yukon.common.device.bulk.massDeleteConfirm.delete" />
+            <input type="submit" name="cancelButton" value="${cancel}"> <input type="submit" name="deleteButton" value="${delete}">
+            <br>
+            
         </form>
-    
-    </tags:boxContainer>
+            
+    </tags:bulkActionContainer>
     
 </cti:standardPage>

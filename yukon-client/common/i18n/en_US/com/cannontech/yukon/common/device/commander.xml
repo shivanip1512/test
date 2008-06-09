@@ -4,4 +4,12 @@
     
     <entry key="yukon.common.device.commander.groupCommandExecutor.IS_COMPLETE">{isComplete|Complete|In Progress}</entry>
     
+    <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults">Choose New Operation For All Devices</entry>
+    
+    <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults">Choose New Operation For These Devices</entry>
+    
+    <entry key="yukon.common.device.commander.collectionActionOnDevicesLabel.failedResults">Choose New Operation For These Devices</entry>
+    
+    
+    
 </properties>

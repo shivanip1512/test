@@ -150,24 +150,24 @@ public class UpdateController extends MultiActionController {
        
         String resultsId = bulkUpdateService.startBulkUpdate(parsedResult);
         
-        mav.addObject("fileInfoId", fileInfoId);
         mav.addObject("resultsId", resultsId);
         
         return mav;
     }
     
+    // VIEW RESULTS
     public ModelAndView updateResults(HttpServletRequest request, HttpServletResponse response) throws ServletException {
 
         ModelAndView mav = new ModelAndView("update/updateResults.jsp");
 
-        String fileInfoId = ServletRequestUtils.getRequiredStringParameter(request, "fileInfoId");
-        BulkUpdateFileInfo bulkUpdateFileInfo = bulkUpdateFileInfoMap.get(fileInfoId);
-        
+        // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         BulkOperationCallbackResults bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
         
-        mav.addObject("resultsId", resultsId);
-        mav.addObject("bulkUpdateFileInfo", bulkUpdateFileInfo);
+        BulkUpdateFileInfo bulkUpdateFileInfo = (BulkUpdateFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
+        
+        mav.addObject("ignoreInvalidCols", bulkUpdateFileInfo.isIgnoreInvalidCols());
+        mav.addObject("ignoreInvalidIdentifiers", bulkUpdateFileInfo.isIgnoreInvalidIdentifiers());
         mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
 
         return mav;
