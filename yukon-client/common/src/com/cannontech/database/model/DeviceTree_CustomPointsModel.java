@@ -1,160 +1,44 @@
 package com.cannontech.database.model;
 
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.data.pao.DeviceClasses;
 import com.cannontech.database.data.pao.PAOGroups;
 
-/**
- * This type was created in VisualAge.
- * This Model is for custom point types.
- * Please note that Cap Control device class is also accepted as a valid device.
- */
-public class DeviceTree_CustomPointsModel extends DeviceTreeModel
-{
-	public static final String[] POINT_UNIT_ARRAY =
-	{
-		"kWh",
-		"kVAh",
-		"kVArh",
-		"MWh",
-		"MWVAh",
-		"MWVArh"
-	};
+public class DeviceTree_CustomPointsModel extends DeviceTreeModel {
 
-	private long includePoints = 0x00000000;
-/**
- * DeviceTreeModel constructor comment.
- * @param root javax.swing.tree.TreeNode
- */
-public DeviceTree_CustomPointsModel() {
-	super( new DBTreeNode("Devices") );
-}
-/**
- * DeviceTreeModel constructor comment.
- * @param root javax.swing.tree.TreeNode
- */
-public DeviceTree_CustomPointsModel( boolean showPointNodes )
-{
-	super( showPointNodes, new DBTreeNode("Devices") );
-}
+    private long includePoints = 0x00000000;
 
-public boolean isDeviceValid( int category_, int class_, int type_ )
-{
-   return( (com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass( class_ )
-           || class_ == PAOGroups.CAT_CAPCONTROL)   //Added for Trending
-            && category_ == PAOGroups.CAT_DEVICE );
-}
+    public DeviceTree_CustomPointsModel() {
+        super(new DBTreeNode("Devices"));
+    }
 
+    public DeviceTree_CustomPointsModel(boolean showPointNodes) {
+        super(showPointNodes, new DBTreeNode("Devices"));
+    }
 
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public static boolean isInPointUnitArray( String value )
-{
-	for( int i = 0; i < POINT_UNIT_ARRAY.length; i++ )
-	{
-		if( POINT_UNIT_ARRAY[i].equalsIgnoreCase( value ) )
-			return true;
-	}
-	
-	return false;
-}
+    public boolean isDeviceValid(int category_, int class_, int type_) {
+        return ((DeviceClasses.isCoreDeviceClass(class_) || class_ == PAOGroups.CAT_CAPCONTROL) && category_ == PAOGroups.CAT_DEVICE);
+    }
 
-public void setIncludeUOFMType(long pointUOFMMask)
-{
-	includePoints = pointUOFMMask;
-}
+    public void setIncludeUOFMType(long pointUOFMMask) {
+        includePoints = pointUOFMMask;
+    }
 
-/**
- * This method was created in VisualAge.
- * @return java.lang.String
- */
-public String toString() 
-{
-	if( (includePoints & com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH) == com.cannontech.database.data.lite.LitePoint.POINT_UOFM_GRAPH)
-	{
-		return "Graph Points";
-	}
-	else if( (includePoints & com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE) == com.cannontech.database.data.lite.LitePoint.POINT_UOFM_USAGE)
-	{
-		return "Usage Points";
-	}
+    public String toString() {
+        if ((includePoints & LitePoint.POINT_UOFM_GRAPH) == LitePoint.POINT_UOFM_GRAPH) {
+            return "Graph Points";
+        } else if ((includePoints & LitePoint.POINT_UOFM_USAGE) == LitePoint.POINT_UOFM_USAGE) {
+            return "Usage Points";
+        }
 
-	return "Device";
-}
+        return "Device";
+    }
 
-protected boolean isPointValid( com.cannontech.database.data.lite.LitePoint lp )
-{
-   if( lp == null )
-      return false;
-   else
-      return ( lp.getTags() == includePoints );
-}
-
-/**
- * This method was created in VisualAge.
- */
-/*public void update() {
-
-	com.cannontech.database.cache.DefaultDatabaseCache cache =
-					com.cannontech.database.cache.DefaultDatabaseCache.getInstance();
-
-	synchronized(cache)
-	{
-		java.util.List devices = cache.getAllDevices();
-		java.util.Collections.sort( devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator );
-		java.util.List points = null;
-		
-		if( showPoints )
-		{
-			points = cache.getAllGraphTaggedPoints();
-			java.util.Collections.sort( points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator );
-		}
-
-		DBTreeNode rootNode = (DBTreeNode) getRoot();
-		rootNode.removeAllChildren();
-		
-		int deviceDevID;
-		int deviceClass;
-		for( int i = 0; i < devices.size(); i++ )
-		{
-			deviceClass = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getPaoClass();
-			
-			if( com.cannontech.database.data.pao.DeviceClasses.isCoreDeviceClass(deviceClass) )
-			{
-				DBTreeNode deviceNode = new DBTreeNode( devices.get(i));	
-				rootNode.add( deviceNode );
-
-				if( showPoints )
-				{
-					deviceDevID = ((com.cannontech.database.data.lite.LiteYukonPAObject)devices.get(i)).getYukonID();
-					boolean pointsFound = false;
-					for( int j = 0; j < points.size(); j++ )
-					{
-						if( ((com.cannontech.database.data.lite.LitePoint)points.get(j)).getPaobjectID() == deviceDevID 
-							&& ( (com.cannontech.database.data.lite.LitePoint)points.get(j)).getTags() == includePoints)
-						{
-							pointsFound = true;
-							deviceNode.add( new DBTreeNode( points.get(j)) );
-						}
-						else if( pointsFound )  // used to optimize the iterations
-						{						
-							j = points.size();
-							break;
-						}					
-					}
-					if( !pointsFound)
-					{
-//						System.out.println( " REMOVE MY DEVICE");
-						rootNode.remove(deviceNode);
-					}
-				}
-				
-			}
-		}
-	}
-
-	reload();
-}
-*/
-
+    protected boolean isPointValid(LitePoint lp) {
+        if (lp == null) {
+            return false;
+        }else {
+                return (lp.getTags() == includePoints);
+        }
+    }
 }

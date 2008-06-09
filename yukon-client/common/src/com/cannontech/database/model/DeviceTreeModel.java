@@ -3,12 +3,15 @@ package com.cannontech.database.model;
 /**
  * This type was created in VisualAge.
  */
+import java.util.List;
+
 import javax.swing.tree.TreePath;
 
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -20,7 +23,7 @@ public class DeviceTreeModel extends DBTreeModel
 	private boolean showPoints = true;
 
 	//a Vector only needed to store temporary things
-	private java.util.List pointTempList = new java.util.Vector(20);
+	private List<LitePoint> pointTempList = new java.util.Vector<LitePoint>(20);
 
 
 	//a mutable lite point used for comparisons
@@ -243,19 +246,6 @@ public boolean insertTreeObject( LiteBase lb )
 			treePathWillExpand( rootPath );
 
 			updateTreeNodeStructure( rootNode );
-			
-/*       //lock our point list down
-         synchronized( pointTempList )
-         {
-            pointTempList.clear();
-            pointTempList.add( lb );
-
-            //add this point and maybe its point type to the deviceNode
-            addPoints( rootNode );
-         }
-
-         updateTreeNodeStructure( rootNode );
-*/
 			return true;
 		}
 
@@ -321,17 +311,11 @@ protected synchronized void runUpdate()
 	synchronized (cache)
 	{
 		java.util.List devices = getCacheList(cache);
-		java.util.Collections.sort(devices, com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-//		java.util.List points = null;
-
-//		if (showPoints)
-//			points = cache.getAllPoints();
+		java.util.Collections.sort(devices, LiteComparators.liteStringComparator);
 
 		DBTreeNode rootNode = (DBTreeNode) getRoot();
 		rootNode.removeAllChildren();
 
-//		int deviceDevID;
-//		int deviceClass;
 		for (int i = 0; i < devices.size(); i++)
 		{
 			if( isDeviceValid(
@@ -342,23 +326,8 @@ protected synchronized void runUpdate()
 				DBTreeNode deviceNode = getNewNode(devices.get(i));
 				rootNode.add(deviceNode);
 				
-				if (showPoints)
-				{
-/*					deviceDevID = ((com.cannontech.database.data.lite.LiteYukonPAObject) devices.get(i)).getYukonID();
-					
-					//change our dummy points device ID to the current DeviceID
-					DUMMY_LITE_POINT.setPaobjectID(deviceDevID);
-					
-					java.util.Collections.sort(points, com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator);
-
-					int res = java.util.Collections.binarySearch( points, 
-						DUMMY_LITE_POINT, 
-						com.cannontech.database.data.lite.LiteComparators.litePointDeviceIDComparator );
-
-					if( res >= 0 )
-*/
+				if (showPoints){
 					deviceNode.setWillHaveChildren(true);
-
 				}
 				
 			}

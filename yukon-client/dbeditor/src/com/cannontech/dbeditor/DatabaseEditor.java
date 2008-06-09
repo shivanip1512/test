@@ -14,7 +14,6 @@ import java.util.Vector;
 import java.util.prefs.*;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -34,7 +33,6 @@ import javax.swing.event.PopupMenuEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.common.device.configuration.model.Category;
 import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;

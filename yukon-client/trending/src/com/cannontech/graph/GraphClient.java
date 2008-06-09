@@ -1,11 +1,11 @@
 package com.cannontech.graph;
 
 /**
- * Insert the type's description here.
- * Creation date: (5/16/2001 5:21:13 PM)
- * @author: 
+ * Insert the type's description here. Creation date: (5/16/2001 5:21:13 PM)
+ * @author:
  */
 
+import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
@@ -18,7 +18,9 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Hashtable;
 import java.util.Vector;
+import java.util.prefs.*;
 
 import javax.swing.JLabel;
 import javax.swing.JMenu;
@@ -940,8 +942,12 @@ private String buildHTMLBuffer( HTMLBuffer htmlBuffer)
  * Writes the current application state to a file for convenient default startup display.
  * Creation date: (9/25/2001 11:12:24 AM)
  */
-public void exit()
-{
+public void exit() {
+    Preferences prefs = Preferences.userNodeForPackage(GraphClient.class);
+    prefs.put("Trending_LAST_X", new Integer(this.getGraphParentFrame().getX()).toString());
+    prefs.put("Trending_LAST_Y", new Integer(this.getGraphParentFrame().getY()).toString());
+    prefs.put("Trending_LAST_WIDTH", new Integer(this.getGraphParentFrame().getWidth()).toString());
+    prefs.put("Trending_LAST_HEIGHT", new Integer(this.getGraphParentFrame().getHeight()).toString());
 	getTrendProperties().writeDefaultsFile();
 	System.exit(0);
 }
@@ -2136,9 +2142,14 @@ public static void main(String[] args)
 			}
 		}
 			
-        java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        mainFrame.setSize((int) (d.width * .85), (int) (d.height * .85));
-        mainFrame.setLocation((int) (d.width * .05), (int) (d.height * .05));
+		Preferences prefs;
+        prefs = Preferences.userNodeForPackage(GraphClient.class);
+        String lastX = prefs.get("Trending_LAST_X", "0");
+        String lastY = prefs.get("Trending_LAST_Y", "0");
+        String lastWidth = prefs.get("Trending_LAST_WIDTH", "1024");
+        String lastHeight = prefs.get("Trending_LAST_HEIGHT", "768");
+
+        mainFrame.setBounds(Integer.parseInt(lastX), Integer.parseInt(lastY), Integer.parseInt(lastWidth), Integer.parseInt(lastHeight));
 
         GraphClient gc = new GraphClient(mainFrame);
         mainFrame.setContentPane(gc);

@@ -7,6 +7,7 @@ package com.cannontech.graph;
  * @author: 
  */
 import java.awt.Color;
+import java.awt.Dimension;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -1062,7 +1063,6 @@ private javax.swing.JPanel getTopPanel() {
  * Return the PointTreeViewModel property value.
  * @return com.cannontech.common.gui.util.TreeViewPanel
  */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
 public com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 	if (ivjTreeViewPanel == null) {
 		try {
@@ -1071,15 +1071,17 @@ public com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 			// user code begin {1}
 			ivjTreeViewPanel.setTreeModels( new LiteBaseTreeModel[] { getGraphPointsModel(), getUsagePointsModel()} );
 			ivjTreeViewPanel.getTree().setCellRenderer( new CtiTreeCellRenderer() );
-			// user code end
+			Dimension treeSize = new Dimension(30, 100);
+			ivjTreeViewPanel.getTree().setPreferredSize(treeSize);
+			ivjTreeViewPanel.getTree().setMinimumSize(treeSize);
+			ivjTreeViewPanel.getTree().setMaximumSize(treeSize);
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
 	return ivjTreeViewPanel;
 }
+
 private DeviceTree_CustomPointsModel getUsagePointsModel()
 {
 	if( usagePointsModel == null)
@@ -1462,8 +1464,9 @@ public GraphDefinition showCreateGraphPanelDialog(java.awt.Frame parent)
 		
 	dialog.setModal(true);	
 	dialog.getContentPane().add(this);
-	dialog.setSize(parent.getWidth(), 500);
-	dialog.show();
+	java.awt.Dimension size = new java.awt.Dimension(parent.getWidth() - 50, 500);
+	dialog.setSize(size);
+	dialog.setVisible(true);
 
 	getOkButton().removeActionListener(listener);
 	getCancelButton().removeActionListener(listener);
