@@ -1454,10 +1454,10 @@ public void executeSortByOffsetButton_ActionPerformed(ActionEvent event)
  */
 private void exit(){
     Preferences prefs = Preferences.userNodeForPackage(DatabaseEditor.class);
-    prefs.put("DBEditor_LAST_X", new Integer(getParentFrame().getX()).toString());
-    prefs.put("DBEditor_LAST_Y", new Integer(getParentFrame().getY()).toString());
-    prefs.put("DBEditor_LAST_WIDTH", new Integer(getParentFrame().getWidth()).toString());
-    prefs.put("DBEditor_LAST_HEIGHT", new Integer(getParentFrame().getHeight()).toString());
+    prefs.put("LAST_X", new Integer(getParentFrame().getX()).toString());
+    prefs.put("LAST_Y", new Integer(getParentFrame().getY()).toString());
+    prefs.put("LAST_WIDTH", new Integer(getParentFrame().getWidth()).toString());
+    prefs.put("LAST_HEIGHT", new Integer(getParentFrame().getHeight()).toString());
     
 	//There may be events in the EventQueue up to this point,
 	// let them go first then we can Exit the program.
@@ -2211,10 +2211,10 @@ public static void main(String[] args) {
 
             Preferences prefs;
             prefs = Preferences.userNodeForPackage(DatabaseEditor.class);
-            String lastX = prefs.get("DBEditor_LAST_X", "0");
-            String lastY = prefs.get("DBEditor_LAST_Y", "0");
-            String lastWidth = prefs.get("DBEditor_LAST_WIDTH", "1024");
-            String lastHeight = prefs.get("DBEditor_LAST_HEIGHT", "768");
+            String lastX = prefs.get("LAST_X", "0");
+            String lastY = prefs.get("LAST_Y", "0");
+            String lastWidth = prefs.get("LAST_WIDTH", "1024");
+            String lastHeight = prefs.get("LAST_HEIGHT", "768");
 
             f.setBounds(Integer.parseInt(lastX),
                         Integer.parseInt(lastY),
