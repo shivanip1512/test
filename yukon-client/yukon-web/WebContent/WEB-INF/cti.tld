@@ -1145,6 +1145,72 @@
         </attribute>
     </tag>
     
+    <tag>
+        <name>link</name>
+        <tag-class>com.cannontech.web.i18n.LinkTag</tag-class>
+        <body-content>scriptless</body-content>
+        <description>
+            Used to generate a anchor link using i18n values.
+        </description>
+        <attribute>
+            <name>key</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>href</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <attribute>
+            <name>escapeBody</name>
+            <required>false</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+        <dynamic-attributes>true</dynamic-attributes>
+    </tag>
+    
+    <tag>
+        <name>mapParam</name>
+        <tag-class>com.cannontech.web.i18n.MapParamTag</tag-class>
+        <body-content>empty</body-content>
+        <description>
+            Mimics the behavior of c:param, but uses a map
+        </description>
+        <attribute>
+            <name>value</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+    
+      <tag>
+    <description>
+        Adds a parameter to a containing 'import' tag's URL.
+        Copied from JSTL because the JstlCoreTLV checks don't allow param to be
+        used outside of the core JSTL tags.
+    </description>
+    <name>param</name>
+    <tag-class>com.cannontech.web.i18n.ParamTag</tag-class>
+    <body-content>scriptless</body-content>
+    <attribute>
+        <description>
+            Name of the query string parameter.
+        </description>
+        <name>name</name>
+        <required>true</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+    <attribute>
+        <description>
+            Value of the parameter.
+        </description>
+        <name>value</name>
+        <required>false</required>
+        <rtexprvalue>true</rtexprvalue>
+    </attribute>
+  </tag>
+    
   
   <function>
     <name>equalsIgnoreCase</name>
