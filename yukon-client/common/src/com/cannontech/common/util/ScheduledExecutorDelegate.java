@@ -29,6 +29,10 @@ public class ScheduledExecutorDelegate implements ScheduledExecutor {
     public void execute(Runnable command) {
         service.execute(command);
     }
+    
+    public void shutdown() {
+        service.shutdownNow();
+    }
 
     public void setService(ScheduledExecutorService service) {
         this.service = service;

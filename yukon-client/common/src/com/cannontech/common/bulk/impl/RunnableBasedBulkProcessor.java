@@ -1,21 +1,21 @@
 package com.cannontech.common.bulk.impl;
 
 import java.util.Iterator;
+import java.util.concurrent.Executor;
 
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.bulk.BulkProcessorCallback;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.ScheduledExecutor;
 
 public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
     
-    private ScheduledExecutor scheduledExecutor = null;
+    private Executor executor = null;
 
     @Required
-    public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
-        this.scheduledExecutor = scheduledExecutor;
+    public void setExecutor(Executor executor) {
+        this.executor = executor;
     }
 
     public <I, O> void bulkProcess(Iterator<I> iterator,
@@ -26,8 +26,8 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
         // Get the bulk processor runnable and run it in this thread (will
         // block)
         Runnable runnable = getBulkProcessorRunnable(iterator,
-                                               mapper, processor,
-                                               callback);
+                                                     mapper, processor,
+                                                     callback);
         runnable.run();
     }
 
@@ -40,8 +40,8 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
         // it in the background
         Runnable runnable = getBulkProcessorRunnable(iterator,
                                                      mapper, processor,
-                                               callback);
-        scheduledExecutor.execute(runnable);
+                                                     callback);
+        executor.execute(runnable);
 
     }
     

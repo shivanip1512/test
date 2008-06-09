@@ -91,15 +91,23 @@
        <constructor-arg value="true"/> <!--  create as daemon  -->
     </bean>
     
-    <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate">
+    <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate" destroy-method="shutdown">
        <qualifier value="main"/>
        <property name="service">
 		    <bean class="java.util.concurrent.Executors"
-		    	factory-method="newScheduledThreadPool"
-		    	destroy-method="shutdownNow"> <!-- It isn't in the interface, but this method will exist. -->
+		    	factory-method="newScheduledThreadPool">
 		    	<constructor-arg value="2" />
 		    </bean>
        </property>
+    </bean>
+
+    <bean id="longRunningExecutor" class="java.util.concurrent.ThreadPoolExecutor">
+       <qualifier value="longRunning"/>
+       <constructor-arg value="1"/>
+       <constructor-arg value="1"/>
+       <constructor-arg value="60"/>
+       <constructor-arg value="SECONDS"/>
+       <constructor-arg><bean class="java.util.concurrent.LinkedBlockingQueue"/></constructor-arg>
     </bean>
 
     <bean id="rolePropertyUserCheckerFactory" class="com.cannontech.user.checker.RolePropertyUserCheckerFactory">
