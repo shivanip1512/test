@@ -125,7 +125,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinnerMaxConnectTimeSecs() {
 			ivjJCSpinnerMaxConnectTimeSecs.setDataProperties(
 				new com.klg.jclass.field.DataProperties(
 					new com.klg.jclass.field.validate.JCIntegerValidator(null, 
-					new Integer(0)/*MIN*/, new Integer(59)/*MAX*/, null, true, null,
+					new Integer(0)/*MIN*/, new Integer(9999999)/*MAX*/, null, true, null,
 					new Integer(1)/*Increment*/, "#,##0.###;-#,##0.###", false, 
 					false, false, null, new Integer(0)/*Default*/), 
 					new com.klg.jclass.util.value.MutableValueModel(
@@ -205,7 +205,7 @@ private com.klg.jclass.field.JCSpinField getJCSpinnerMinConnectTimeSecs() {
 			ivjJCSpinnerMinConnectTimeSecs.setDataProperties(
 				new com.klg.jclass.field.DataProperties(
 					new com.klg.jclass.field.validate.JCIntegerValidator(null, 
-					new Integer(0)/*MIN*/, new Integer(59)/*MAX*/, null, true, null,
+					new Integer(0)/*MIN*/, new Integer(9999999)/*MAX*/, null, true, null,
 					new Integer(1)/*Increment*/, "#,##0.###;-#,##0.###", false, 
 					false, false, null, new Integer(0)/*Default*/), 
 					new com.klg.jclass.util.value.MutableValueModel(

@@ -319,6 +319,8 @@ public void jButtonOk_ActionPerformed(java.awt.event.ActionEvent actionEvent)
 			getPropertiesPanel().getValue( 
 					getPropertiesPanel().getOriginalObject() ) );
 	
+	getPropertiesPanel().setValue( getPropertiesPanel().getOriginalObject() );
+	
 	setResponse( RESPONSE_ACCEPT );
 
 	if( dialog != null )
