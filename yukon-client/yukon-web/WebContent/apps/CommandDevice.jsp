@@ -114,10 +114,19 @@
 	<c:set var="deviceId" scope="page" value="<%=deviceID%>"/>
 	<c:set var="isMCT4XX" scope="page" value="<%=isMCT4XX%>"/>
 	<c:set var="serialType" scope="page" value="<%=serialType%>"/>
+    
+    <table border="0">
+    
+        <tr>
+        
+        <%-- COMMANDER --%>
+        <td>
+            <%@ include file="Commander.jspf"%>
+        </td>
+    
+        <%-- SIDE MENU --%>
+        <td>
 	
-	<div id="main">
-	
-		<!-- Side menu -->
 		<div id="sideMenu">
 		
 			<div class="commanderHeader">&nbsp;</div>
@@ -375,14 +384,9 @@
 			</cti:titledContainer>
 			
 		</div>
-	
-		<div class="commandInclude">
-		
-		<%@ include file="Commander.jspf"%>
-		
-		</div>
-	</div>
-	
-	<div style="clear:both"></div>
+        
+        </td>
+        </tr>
+        </table>
 	
 </cti:standardPage>
