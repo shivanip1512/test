@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.78 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.79 $
+* DATE         :  $Date: 2008/06/09 14:57:51 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -3065,7 +3065,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
         {
             resultString = "Load Profile Interest check does not match";
 
-            if( !(_llpInterest.retry >= LPRetries) )
+            if( _llpInterest.retry < LPRetries )
             {
                 _llpInterest.time  = 0;
                 _llpInterest.retry++;
@@ -3116,7 +3116,7 @@ INT CtiDeviceMCT4xx::decodeGetValueLoadProfile(INMESS *InMessage, CtiTime &TimeN
     else
     {
         //  this code is replicated in ErrorDecode()
-        if( !(_llpInterest.retry >= LPRetries) )
+        if( _llpInterest.retry < LPRetries )
         {
             interval_len = getLoadProfileInterval(_llpInterest.channel);
 
@@ -3787,7 +3787,7 @@ INT CtiDeviceMCT4xx::ErrorDecode(INMESS *InMessage, CtiTime &TimeNow, list< CtiM
             int interval_len, block_len;
 
             //  this code is replicated in decodeGetValueLoadProfile(), but likely is never used, if we're properly handling it there
-            if( !(_llpInterest.retry >= LPRetries) )
+            if( _llpInterest.retry < LPRetries )
             {
                 interval_len = getLoadProfileInterval(_llpInterest.channel);
 
