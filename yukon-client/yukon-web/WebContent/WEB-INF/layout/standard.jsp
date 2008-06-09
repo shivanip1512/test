@@ -6,8 +6,8 @@
 <cti:outputDoctype levels="${info.htmlLevel}, strict"/>
 <html>
     <head>
-        <title><c:out value="${info.title}"/></title>           
-
+        <title><c:out value="${title}"/></title>           
+<!-- Page key: ${pageKey} -->
         <!-- Layout CSS files -->
         <link rel="stylesheet" type="text/css" href="<c:url value="/WebConfig/yukon/CannonStyle.css"/>" >
         <link rel="stylesheet" type="text/css" href="<c:url value="/WebConfig/yukon/styles/StandardStyles.css"/>" >
