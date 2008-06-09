@@ -230,8 +230,6 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
                     }
 
                     JPanel panel = getChangeValuePanelMap().get(item);
-                    
-
 
                     getChangePanel().add(panel, pConstraints);
                     getChangePanel().revalidate();
@@ -348,11 +346,11 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
         c.gridx = 2;
         c.gridy = 0;
-        statEditorPanel.add(new JLabel("(0:00 - 2:00)"), c);
+        statEditorPanel.add(new JLabel("(0:00 - 2:00, hh:mm)"), c);
 
         c.gridx = 0;
         c.gridy = 1;
-        statEditorPanel.add(new JLabel("PreCool"), c);
+        statEditorPanel.add(new JLabel("Pre-Op (Cool or Heat)"), c);
 
         c.gridx = 1;
         c.gridy = 1;
@@ -376,7 +374,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
         c.gridx = 3;
         c.gridy = 2;
-        statEditorPanel.add(new JLabel("(0:00 - 5:00)"), c);
+        statEditorPanel.add(new JLabel("(0:00 - 5:00, hh:mm)"), c);
 
         c.gridx = 1;
         c.gridy = 3;
@@ -388,7 +386,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
         c.gridx = 3;
         c.gridy = 3;
-        statEditorPanel.add(new JLabel("(0:00 - 5:00)"), c);
+        statEditorPanel.add(new JLabel("(0:00 - 5:00, hh:mm)"), c);
 
         c.gridx = 0;
         c.gridy = 4;
@@ -424,7 +422,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
         c.gridx = 2;
         c.gridy = 6;
-        statEditorPanel.add(new JLabel("(0:00 - 5:00)"), c);
+        statEditorPanel.add(new JLabel("(0:00 - 5:00, hh:mm)"), c);
 
         c.gridx = 0;
         c.gridy = 7;
@@ -436,7 +434,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
         c.gridx = 2;
         c.gridy = 7;
-        statEditorPanel.add(new JLabel("(4:00 - 24:00)"), c);
+        statEditorPanel.add(new JLabel("(4:00 - 24:00, hh:mm)"), c);
 
         c.gridx = 0;
         c.gridy = 8;
@@ -449,7 +447,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
 
         c.gridx = 2;
         c.gridy = 8;
-        statEditorPanel.add(new JLabel("(0:00 - 3:00)"), c);
+        statEditorPanel.add(new JLabel("(0:00 - 3:00, hh:mm)"), c);
         
         c.gridx = 0;
         c.gridy = 9;
@@ -552,7 +550,7 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         JLabel c0 = new JLabel("Rand");
         c0.setHorizontalAlignment(SwingConstants.CENTER);
 
-        JLabel c1 = new JLabel("PreCool");
+        JLabel c1 = new JLabel("Pre-Op");
         c1.setHorizontalAlignment(SwingConstants.CENTER);
 
         JLabel time = new JLabel("Time");
@@ -663,6 +661,19 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         return date;
     }
     
+    private Date toDateFromSeconds(final int seconds) {
+        int totalMin = seconds / 60;
+        int hour = totalMin / 60;
+        int min = totalMin % 60;
+        
+        Calendar tempCal = (Calendar) zeroCal.clone();
+        tempCal.set(Calendar.HOUR_OF_DAY, hour);
+        tempCal.set(Calendar.MINUTE, min);
+        
+        Date date = tempCal.getTime();
+        return date;
+    }
+    
     private boolean isNotEmpty(Number number) {
         boolean result = (number != null && number.intValue() != 0);
         return result;
@@ -679,6 +690,19 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         
         int totalMinutes = hour * 60 + minute;
         return Integer.valueOf(totalMinutes);
+    }
+    
+    private Integer toSecondsFromDate(final Object obj) {
+        if (obj == null || !(obj instanceof Date)) return Integer.valueOf(0);
+        
+        Calendar tempCal = (Calendar) zeroCal.clone();
+        tempCal.setTime((Date) obj);
+        
+        int hour = tempCal.get(Calendar.HOUR_OF_DAY);
+        int minute = tempCal.get(Calendar.MINUTE);
+        
+        int totalSeconds = (hour * 60 + minute) * 60;
+        return Integer.valueOf(totalSeconds);
     }
     
     @Override
@@ -719,8 +743,11 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         Integer maxRuntime = gear.getValueTa();
         if (isNotEmpty(maxRuntime)) getMaxRuntimeSpinner().setValue(toDateFromMinutes(maxRuntime));
         
+        /*Values going into the LMProgramDirectGear table should be stored in seconds, not minutes
+         * LMThermostatGear table stores as minutes so the other values are fine.
+         * */
         Integer resendRate = gear.getMethodRate();
-        if (isNotEmpty(resendRate)) getResendRateSpinner().setValue(toDateFromMinutes(resendRate));
+        if (isNotEmpty(resendRate)) getResendRateSpinner().setValue(toDateFromSeconds(resendRate));
         
         setChangeCondition(getChangeGearBox(), gear.getChangeCondition());
         
@@ -779,7 +806,10 @@ public class SimpleThermostatSetbackGearPanel extends GenericGearPanel implement
         Integer maxRuntime = toMinutesFromDate(getMaxRuntimeSpinner().getValue());
         gear.setValueTa(maxRuntime);
         
-        Integer resendRate = toMinutesFromDate(getResendRateSpinner().getValue());
+        /*Values going into the LMProgramDirectGear table should be stored in seconds, not minutes
+         * LMThermostatGear table stores as minutes so the other values are fine.
+         * */
+        Integer resendRate = toSecondsFromDate(getResendRateSpinner().getValue());
         gear.setMethodRate(resendRate);
         
         gear.setChangeCondition(getChangeCondition(getChangeGearBox().getSelectedItem().toString()));
