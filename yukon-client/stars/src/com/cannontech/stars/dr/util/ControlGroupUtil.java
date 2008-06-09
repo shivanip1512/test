@@ -34,7 +34,7 @@ public final class ControlGroupUtil {
             @Override
             public int compare(LMHardwareControlGroup o1, LMHardwareControlGroup o2) {
                 Date d1 = o1.getOptOutStart();
-                Date d2 = o2.getOptOutStop();
+                Date d2 = o2.getOptOutStart();
                 if (hasBothNullDates(d1, d2)) return 0;
                 return d1.compareTo(d2);
             }
