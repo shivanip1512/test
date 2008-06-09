@@ -19,10 +19,10 @@ form {
 
 div.simplePopup {
   position: absolute;
-  width: 700px;
+  width: 800px;
   border: 12px solid #666;
   background-color: white;
-  left: 20%;
+  left: 75px;
   top: 150px;
 }
 
@@ -35,14 +35,14 @@ div.simplePopup {
 }
 
 #alertBody {
-  width: 685px;
+  width: 785px;
   overflow: auto; 
   height: 230px
 }
 
 #alertView table {
   border-collapse: collapse;
-  width: 665px;
+  width: 765px;
 }
 
 #alertView table tbody tr td {
@@ -474,6 +474,22 @@ table.boxContainer td.boxContainer_content {
     padding: 10px 10px;
 }
 
+/* SECTION CONTAINER */
+div.sectionContainer .sectionContainer_titleBar {
+  padding-bottom:5px;
+}
+
+div.sectionContainer .sectionContainer_titleBar .sectionContainer_title {
+   color:#0066CC;
+   font-size:16px;
+   font-weight:bold;
+}
+
+div.sectionContainer .sectionContainer_content {
+   padding: .5em;
+   border-top:1px #CCCCCC solid;
+}
+
 .widgetColumns td.widgetColumnCell .titledContainerOverride {
   margin: 0px 0px;
 }
@@ -491,3 +507,5 @@ table.boxContainer td.boxContainer_content {
 	font-size:14px;
 	font-weight:bold;
 }
+ 
+
