@@ -5378,17 +5378,17 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
     string method = cur_gear->getControlMethod();
     long control_time = stop - start;
 
-    if( method == CtiLMProgramDirectGear::TimeRefreshMethod.c_str() )
+    if( method == CtiLMProgramDirectGear::TimeRefreshMethod.c_str() ||
+        method == CtiLMProgramDirectGear::LatchingMethod.c_str() ||
+        method == CtiLMProgramDirectGear::SimpleThermostatRampingMethod.c_str() )
     {
         return control_time;
     }
-    else if( method == CtiLMProgramDirectGear::MasterCycleMethod.c_str() )
-    {
-        return control_time * (double) cur_gear->getMethodRate()/100.0;
-    }
     else if( method == CtiLMProgramDirectGear::TrueCycleMethod.c_str() ||
              method == CtiLMProgramDirectGear::MagnitudeCycleMethod.c_str() ||
-             method == CtiLMProgramDirectGear::SmartCycleMethod.c_str() )
+             method == CtiLMProgramDirectGear::SmartCycleMethod.c_str() ||
+             method == CtiLMProgramDirectGear::MasterCycleMethod.c_str() ||
+             method == CtiLMProgramDirectGear::TargetCycleMethod.c_str() )
     {
         return control_time * (double) cur_gear->getMethodRate()/100.0;//       getMethodRateCount()
     }
@@ -5403,6 +5403,17 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
         double implied_percent = (double) shed_time / (double) implied_period;
 
         return control_time * implied_percent;
+    }
+    else if( method == CtiLMProgramDirectGear::ThermostatRampingMethod.c_str() )
+    {
+        CtiLMProgramThermoStatGear *thermoGear = (CtiLMProgramThermoStatGear *)cur_gear;
+        return ( thermoGear->getPrecoolTime() + thermoGear->getPrecoolHoldTime() + 
+                 thermoGear->getControlTime() + thermoGear->getControlHoldTime() + 
+                 thermoGear->getRestoreTime() ) * 60;
+    }
+    else if( method == CtiLMProgramDirectGear::NoControlMethod.c_str() )
+    {
+        return 0;
     }
     else
     {
