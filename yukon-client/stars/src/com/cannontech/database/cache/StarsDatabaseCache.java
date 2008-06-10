@@ -122,7 +122,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
                     }
                 }
             }
-        });
+        },"StarsDatabaseCacheFireLoadThread");
         initThrd.start();
     }
 	
@@ -212,7 +212,7 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
                     }
                 }
             }
-        });
+        }, "StarsDatabaseCacheRefreshInventory");
         initThrd.start();
     }
     

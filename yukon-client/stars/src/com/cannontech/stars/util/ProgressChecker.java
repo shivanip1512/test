@@ -32,7 +32,7 @@ public class ProgressChecker {
 	public static synchronized long addTask(TimeConsumingTask task) {
 		long id = generateTaskID();
 		tasks.put( new Long(id), task );
-		Thread t = new Thread( task );
+		Thread t = new Thread( task, task.getClass().getSimpleName() );
 		threads.put( new Long(id), t );
 		t.start();
 		

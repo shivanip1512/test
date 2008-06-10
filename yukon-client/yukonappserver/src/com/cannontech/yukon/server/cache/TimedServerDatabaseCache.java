@@ -37,6 +37,9 @@ protected TimedServerDatabaseCache(String databaseAlias) {
 
 private class TimedUpdater extends Thread
 {
+    public TimedUpdater() {
+        super("TimedServerDatabaseCacheUpdater");
+    }
 	public void run()
 	{
 		while (true)

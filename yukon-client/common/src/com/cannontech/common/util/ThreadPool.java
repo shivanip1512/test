@@ -13,6 +13,9 @@ public class ThreadPool implements Runnable {
 
 	class RunnerThread extends java.lang.Thread
 	{
+	    public RunnerThread() {
+	        super("ThreadPool--RunnerThread");
+        }
 		{
 			setDaemon(true);			
 		}

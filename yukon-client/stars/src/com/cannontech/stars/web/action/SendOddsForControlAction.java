@@ -1,6 +1,5 @@
 package com.cannontech.stars.web.action;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -145,7 +144,7 @@ public class SendOddsForControlAction implements ActionBase {
 				}
             	
 				// Create a new thread to get through all the accounts and send out emails
-				new Thread( new SendControlOddsTask(energyCompanyID) ).start();
+				new Thread( new SendControlOddsTask(energyCompanyID), "SendControlOddsTask--action" ).start();
 			}
             
 			StarsSuccess success = new StarsSuccess();
