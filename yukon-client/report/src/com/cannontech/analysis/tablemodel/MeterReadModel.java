@@ -471,11 +471,11 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         sb.append("        </tr>" + LINE_SEPARATOR);
 
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td><input type='radio' name='" + ATT_METER_READ_TYPE +"' value='" + MISSED_METER_READ_TYPE + "' checked>Missed Read" + LINE_SEPARATOR);
+        sb.append("          <td><input type='radio' onclick=\"$('GenerateMissedList').disabled=false;\" name='" + ATT_METER_READ_TYPE +"' value='" + MISSED_METER_READ_TYPE + "' checked>Missed Read" + LINE_SEPARATOR);
         sb.append("          </td>" + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td><input type='radio' name='" + ATT_METER_READ_TYPE +"' value='" + SUCCESS_METER_READ_TYPE + "' >Successful Read" + LINE_SEPARATOR);
+        sb.append("          <td><input type='radio' onclick=\"$('GenerateMissedList').disabled=true;\" name='" + ATT_METER_READ_TYPE +"' value='" + SUCCESS_METER_READ_TYPE + "' >Successful Read" + LINE_SEPARATOR);
         sb.append("          </td>" + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("      </table>" + LINE_SEPARATOR);
@@ -504,7 +504,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
         sb.append("          <td>* Click this button to generate a list of missed meters that MACS can process.</td>"+ LINE_SEPARATOR);		
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("        <tr>" + LINE_SEPARATOR);
-        sb.append("          <td><input type='button' name='GenerateMissedList' value='Generate Missed List' onclick='document.reportForm.ACTION.value=\"GenerateMissedMeterList\";reportForm.submit();'>"+ LINE_SEPARATOR);
+        sb.append("          <td><input type='button' id='GenerateMissedList' name='GenerateMissedList' value='Generate Missed List' onclick='document.reportForm.ACTION.value=\"GenerateMissedMeterList\";reportForm.submit();'>"+ LINE_SEPARATOR);
         sb.append("          </td>" + LINE_SEPARATOR);
         sb.append("        </tr>" + LINE_SEPARATOR);
         sb.append("      </table>" + LINE_SEPARATOR);
