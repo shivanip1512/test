@@ -176,8 +176,8 @@
 					<form name="SearchForm" method="POST" action="">
 						<select name="SearchBy">
 							<c:set var="count" scope="page" value="0" />
-							<c:forEach items="${commandDeviceBean.searchByStrings}" var="entry">
-								<option value="${count}" ${commandDeviceBean.orderBy == count ? 'selected' : ''}>${entry}</option>
+							<c:forEach items="${commandDeviceBean.searchByStrings}" var="entry" varStatus="status">
+								<option value="${count}" ${commandDeviceBean.searchBy == (status.count - 1) ? 'selected' : ''}>${entry}</option>
 								<c:set var="count" scope="page" value="${count + 1}" />
 							</c:forEach>
 						</select>
