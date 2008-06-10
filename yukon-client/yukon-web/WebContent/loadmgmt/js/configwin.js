@@ -24,20 +24,16 @@ function dateChanged (t)
 {
     var hidden = null;
     var d = new Date();
-        if (t == 'start') 
-        {
-            hidden = $('h_starttime');
-            s = document.cmdForm.startdate.value + ' ' + document.cmdForm.startTime1.value; 
-            d.setTime (Date.parse(s));
-
-        }
-        if (t == 'stop') 
-        {
-            hidden = $('h_stoptime');
-            s = document.cmdForm.stopdate.value + ' ' + document.cmdForm.stopTime1.value;
-            d.setTime (Date.parse(s));
-        }
-        hidden.value = d.toString();        
+    if (t == 'start') {
+        hidden = $('h_starttime');
+        s = document.cmdForm.startdate.value + ' ' + document.cmdForm.startTime1.value; 
+        d.setTime (Date.parse(s));
+    }
+    if (t == 'stop') {
+        hidden = $('h_stoptime');
+        s = document.cmdForm.stopdate.value + ' ' + document.cmdForm.stopTime1.value;
+        d.setTime (Date.parse(s));
+    }
 }
 
                

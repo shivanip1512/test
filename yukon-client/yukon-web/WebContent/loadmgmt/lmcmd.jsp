@@ -31,10 +31,12 @@ if( cmdMsg.getLMData() == null )
 }
 
 %>
+<%@page import="com.cannontech.core.service.DateFormattingService"%>
+<%@page import="com.cannontech.database.data.device.lm.LMScenario"%>
 <%@page import="com.cannontech.user.YukonUserContext"%>
-<%@page import="com.cannontech.servlet.YukonUserContextUtils"%><%
-YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext);
-%>
+<%@page import="com.cannontech.servlet.YukonUserContextUtils"%>
+<% YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageContext); %>
+
 <html>
 <head>
 <title>Energy Services Operations Center</title>
@@ -430,6 +432,29 @@ pageContext.setAttribute("nowDate", nowStartOrStop);%>
  //add 4 hours worth of millis = 14400000
  Date stpDate = new Date();
  stpDate.setTime( nowStartOrStop.getTime() + 14400000 );
+ if (ILCCmds.PROG_STOP.equals(cmd)) { 
+     Date stopDate = null;
+     LMProgramBase lmProg = lcCache.getProgram(Integer.parseInt(itemid));
+     String hourMinStr = (String) LCUtils.getProgramValueAt(lmProg, ProgramTableModel.STOP_TIME, userContext);
+     if((hourMinStr != null) && (!hourMinStr.contains("-"))) {
+         stopDate = new Date(hourMinStr);
+         stpDate.setTime( stopDate.getTime());
+     }
+ } else if(ILCCmds.AREA_STOP_PROGS.equals(cmd)) {
+     Date stopDate = new Date();
+     LMControlArea lmContArea = lcCache.getControlArea(Integer.parseInt(itemid));
+     String hourMinStr = (String) LCUtils.getControlAreaValueAt(lmContArea, ControlAreaTableModel.STOP_TIME, userContext);
+     if((hourMinStr != null) && (!hourMinStr.contains("-"))) {
+         String[] temp = hourMinStr.split(":");
+         int hours = Integer.parseInt(temp[0]);
+         int mins = Integer.parseInt(temp[1]);
+         stopDate.setHours(hours);
+         stopDate.setMinutes(mins);
+         stopDate.setSeconds(0);
+         stpDate.setTime( stopDate.getTime());
+     }
+ }
+ 
  pageContext.setAttribute("stopNowDate", stpDate);
 %>
 <cti:formatDate value="${stopNowDate}" type="DATE" var="stopAtThisMoment" />
