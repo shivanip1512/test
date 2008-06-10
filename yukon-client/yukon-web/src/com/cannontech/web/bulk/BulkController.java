@@ -3,6 +3,7 @@ package com.cannontech.web.bulk;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -83,9 +84,13 @@ public class BulkController extends BulkControllerBase {
         List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
         for (YukonDevice device : deviceCollection.getDeviceList()) {
             
-            Map<String, Object> deviceInfo = new HashMap<String, Object>();
+            Map<String, Object> deviceInfo = new LinkedHashMap<String, Object>();
+            
             LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(device.getDeviceId());
-            deviceInfo.put("name", devicePaoObj.getPaoName());
+            deviceInfo.put("Device Name", devicePaoObj.getPaoName());
+            deviceInfo.put("Address", devicePaoObj.getAddress());
+            deviceInfo.put("Route", paoDao.getRouteNameForRouteId(devicePaoObj.getRouteID()));
+            
             
             deviceInfoList.add(deviceInfo);
             
