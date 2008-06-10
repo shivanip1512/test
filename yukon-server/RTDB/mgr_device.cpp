@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.95 $
-* DATE         :  $Date: 2008/06/10 20:48:42 $
+* REVISION     :  $Revision: 1.96 $
+* DATE         :  $Date: 2008/06/10 21:47:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2493,7 +2493,8 @@ void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
 
 void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
 {
-    LONG  tmpmctid, tmpdisconnectaddress;
+    LONG tmpmctid, tmpdisconnectaddress;
+    bool row_found = false;
 
     {
         RWDBConnection conn   = getConnection();
@@ -2524,16 +2525,21 @@ void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
 
         if(rdr.status().errorCode() == RWDBStatus::ok)
         {
+            CtiDeviceSPtr       tmpDevice;
+            CtiDeviceMCT410SPtr tmpMCT410;
+
             while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
             {
+                row_found = true;
+
                 rdr["deviceid"]          >> tmpmctid;
                 rdr["disconnectaddress"] >> tmpdisconnectaddress;
 
-                CtiDeviceMCT410SPtr tmpMCT410 = boost::static_pointer_cast<CtiDeviceMCT410>(getEqual(tmpmctid));
+                tmpMCT410 = boost::static_pointer_cast<CtiDeviceMCT410>(getEqual(tmpmctid));
 
                 if( tmpMCT410 )
                 {
-                    if( tmpdisconnectaddress >= 0 && tmpdisconnectaddress < 0x400000 )
+                    if( tmpdisconnectaddress > 0 && tmpdisconnectaddress < 0x400000 )
                     {
                         tmpMCT410->setDisconnectAddress(tmpdisconnectaddress);
                     }
@@ -2547,6 +2553,17 @@ void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
                             dout << CtiTime() << " **** Checkpoint - invalid disconnect address " << tmpdisconnectaddress << " for device \"" << tmpMCT410->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                         }
                     }
+                }
+            }
+
+            //  if this was targeted at a certain MCT and we didn't find a row, clear out the MCT's address
+            if( paoID && !row_found )
+            {
+                tmpDevice = getEqual(paoID);
+
+                if( tmpDevice && tmpDevice->getType() == TYPEMCT410 )
+                {
+                    boost::static_pointer_cast<CtiDeviceMCT410>(tmpDevice)->setDisconnectAddress(0);
                 }
             }
         }
