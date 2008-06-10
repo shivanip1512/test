@@ -43,8 +43,6 @@
 <%@ taglib prefix="cti" uri="http://cannontech.com/tags/cti" %>
 
 <%-- CSS & JAVASCRIPT INCLUDES --%>
-<cti:includeCss link="/JavaScript/extjs/resources/css/ext-all.css"/>
-<cti:includeCss link="/JavaScript/extjs/resources/css/xtheme-gray.css"/>
 <c:choose>
     <c:when test="${not empty treeCss}">
         <cti:includeCss link="${treeCss}"/>

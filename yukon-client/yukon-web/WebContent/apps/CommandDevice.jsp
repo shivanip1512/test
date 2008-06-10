@@ -94,6 +94,9 @@
 		    document.mspCommandForm.submit();
 		}
 	</script>
+    
+    <cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
+    <cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
 	
 <% 
 	//"redirect" is required by Commander.jsp and for the sake of this wrapper being able to know the deviceID
@@ -126,11 +129,22 @@
     
         <%-- SIDE MENU --%>
         <td>
+            <div style="width:20px;"></div>
+        </td>
+        <td valign="top">
 	
 		<div id="sideMenu">
 		
 			<div class="commanderHeader">&nbsp;</div>
-			<cti:titledContainer title="Navigation">
+            
+            <div class="titledContainer boxContainer">
+            <div class="titleBar boxContainer_titleBar">
+                <div class="title boxContainer_title">
+                    Navigation
+                </div>
+            </div>
+            
+			<div id="commandDevice_content" class="content boxContainer_content">
 
 			<div class="header">Go To...</div>
 			
@@ -381,7 +395,8 @@
 				</c:if>
 			</c:forEach>
 			
-			</cti:titledContainer>
+			</div>    
+            </div>
 			
 		</div>
         

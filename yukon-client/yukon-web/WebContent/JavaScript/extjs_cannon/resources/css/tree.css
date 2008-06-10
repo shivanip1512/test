@@ -8,3 +8,5 @@
 	font-family: Verdana,Arial,Helvetica,sans-serif;
 	white-space: nowrap;
 }
+
+OL, UL { margin-left: 2px }

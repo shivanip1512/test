@@ -9,6 +9,9 @@
         <title><c:out value="${title}"/></title>           
 <!-- Page key: ${pageKey} -->
         <!-- Layout CSS files -->
+        <link rel="stylesheet" type="text/css" href="<c:url value="/JavaScript/extjs/resources/css/ext-all.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<c:url value="/JavaScript/extjs/resources/css/xtheme-gray.css"/>" >
+        <link rel="stylesheet" type="text/css" href="<c:url value="/WebConfig/yukon/styles/BaseStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<c:url value="/WebConfig/yukon/CannonStyle.css"/>" >
         <link rel="stylesheet" type="text/css" href="<c:url value="/WebConfig/yukon/styles/StandardStyles.css"/>" >
         <link rel="stylesheet" type="text/css" href="<c:url value="/WebConfig/yukon/styles/YukonGeneralStyles.css"/>" >

@@ -4,8 +4,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 
-<cti:includeCss link="/JavaScript/extjs/resources/css/ext-all.css"/>
-<cti:includeCss link="/JavaScript/extjs/resources/css/xtheme-gray.css"/>
 <cti:includeCss link="/JavaScript/extjs/resources/css/grid.css"/>
 
 <cti:includeScript link="/JavaScript/extjs/ext-base.js"/>

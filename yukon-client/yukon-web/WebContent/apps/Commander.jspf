@@ -42,33 +42,76 @@ div.scroll { font-size: 12px;
         x.disabled = true;
         document.commandForm.submit();
     }
+    
+    var params = new Array();
+    
     function loadCommand() {
-        
+    
+        // init params for this command
+        params = new Array();
+    
         var originalCmd = document.commandForm.commonCommand.value;
         
-        var replacementCmd = replaceCommandParams(originalCmd);
+        // parse for parameters
+        getParams(originalCmd);
         
-        replacementCmd != null ? document.commandForm.command.value = replacementCmd : document.commandForm.command.value = originalCmd;
+        // kick off replacements
+        processReplacement(0, originalCmd, originalCmd);
     }
     
-    function replaceCommandParams(cmd) {
+   
+    // prompt for a replacement for the parameter
+    // Ext.Msg.prompt is asynchronous... the callback will trigger the next replacement
+    // replacements will stop when no more parameters exist
+    function processReplacement(paramIdx, originalCmd, cmd) {
     
-        var params = new Array();
-        var replacements = new Array();
+        var param = params[paramIdx];
+        
+        if (param != undefined) {
+        
+            var displayParam = params[paramIdx].replace(/'/g, '').replace(/"/g, '').replace('?', '');
+            
+            Ext.Msg.prompt('Enter value for command parameter', displayParam, function(btn, text){
+                
+                if (btn == 'ok'){
+                    replacement = text;
+                    
+                    cmd = cmd.replace(params[paramIdx], replacement);
+                    document.commandForm.command.value = cmd;
+                    
+                    // try next replacements
+                    processReplacement(paramIdx + 1, originalCmd, cmd);
+                }
+                else {
+                    document.commandForm.command.value = originalCmd;
+                }
+                
+            });
+        }
+        else {
+            
+            // no parameter on first attempt, set command value as-is
+            if (paramIdx == 0) {
+                document.commandForm.command.value = originalCmd;
+            }
+        }
+    }
+    
+    function getParams(cmd) {
     
         var cmdIdx = 0;
         while(cmdIdx < cmd.length) {
         
             // search for ?' or ?" to that indicates the beginning of a prompt replacement
-            if (cmd[cmdIdx] == '?') {
-                
+            if (cmd.charAt(cmdIdx) == '?') {
+            
                 var startIdx = cmdIdx;
                 var endIdx = null;
                 
                 // quoted prompt string if quote immediately follows ?
-                if ((cmd[cmdIdx + 1] == "'" || cmd[cmdIdx + 1] == '"')) {
+                if (cmd.charAt(cmdIdx + 1) == "'" || cmd.charAt(cmdIdx + 1) == '"') {
                     for (j = cmdIdx + 2; j < cmd.length; j++) {
-                        if (cmd[j] == "'" || cmd[j] == '"') {
+                        if (cmd.charAt(j) == "'" || cmd.charAt(j) == '"') {
                             endIdx = j;
                             break;    
                         }
@@ -79,7 +122,7 @@ div.scroll { font-size: 12px;
                 // ends at space or quote that is to be preserved, or eol
                 else {
                     for (j = cmdIdx + 1; j < cmd.length; j++) {
-                        if (cmd[j] == ' ' || cmd[j] == "'" || cmd[j] == '"') {
+                        if (cmd.charAt(j) == ' ' || cmd.charAt(j) == "'" || cmd.charAt(j) == '"') {
                             endIdx = j - 1;
                             break;    
                         }
@@ -94,15 +137,9 @@ div.scroll { font-size: 12px;
                 
                 // clean it up for display and prompt user for replacement
                 var displayParam = param.replace(/'/g, '').replace(/"/g, '').replace('?', '');
-                var replacement = prompt("Enter value for command parameter:\n\n " + displayParam, "");
-                
-                if (replacement == null) {
-                    return null;
-                }
                 
                 // save original prompt string and replacement
                 params.push(param);
-                replacements.push(replacement);
             
                 // move index forward past this prompt to continue parsing command
                 cmdIdx = endIdx;
@@ -112,14 +149,8 @@ div.scroll { font-size: 12px;
             cmdIdx++;
         }
     
-        // do replacements
-        for(paramIdx = 0; paramIdx < params.length; paramIdx++) {
-            cmd = cmd.replace(params[paramIdx], replacements[paramIdx])
-        }
-    
         return cmd;
     }
-    
     
 </SCRIPT>
     
@@ -185,7 +216,7 @@ div.scroll { font-size: 12px;
 			<tr> 
 	        	<td class="name">Common Commands:</td>
 	            <td class="value">
-	            	<select name="commonCommand" onChange="loadCommand()" onInit="loadCommand()">
+	            	<select name="commonCommand" onChange="loadCommand()">
 	                	<option value="">Select a Command</option>                
 <%
 	Object commandObject = liteYukonPao;
@@ -213,19 +244,15 @@ div.scroll { font-size: 12px;
 	        	<td class="name">Execute Command:</td>
 	            <td class="value">
 	            	<input type="text" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="<%=YC_BEAN.getCommandString()%>">
-	            </td>
+	                <input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
+                </td>
 	        </tr>
-	        <tr>
-	            <td></td>
-	            <td>
-	            	<input type="submit" name="execute" value="Execute" onClick="disableButton(this)">
-	            </td>
-			</tr>
 			<tr>
-				<td colspan="3">
+				<td colspan="3" style="padding-top:20px;">
 	    		<div class="scroll">
     	    		<c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
 	        	</div>
+                <br>
 	    		<input type="submit" name="clearText" value="Clear Results">
         		<input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
 				</td>
