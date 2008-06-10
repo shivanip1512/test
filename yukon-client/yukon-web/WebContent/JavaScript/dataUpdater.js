@@ -5,11 +5,14 @@ var cannonDataUpdateRegistrations = $A();
 
 function initiateCannonDataUpdate(url, delayMs) {
     var lastUpdate = 0;
+    var failureCount = 0;
     var processResponseCallback = function(transport) {
         // looks like stuff is working, hide error div
         $('cannonUpdaterErrorDiv').hide();
+        failureCount = 0;
+        
         var content = transport.responseText;
-        var responseStruc = content.evalJSON();
+        var responseStruc = content.evalJSON(); // fails when server is shutdown if this is an onSuccess callback!
         // find all of the updatable elements
         var updatableElements = $$('span[cannonUpdater]');
         updatableElements.each(function(it) {
@@ -66,9 +69,13 @@ function initiateCannonDataUpdate(url, delayMs) {
         setTimeout(doUpdate, delayMs);
     };
     
-    var failureCallback = function(transport) {
+    var failureCallback = function() {
         // something bad happened, show user that updates are off
-        $('cannonUpdaterErrorDiv').show();
+        failureCount += 1;
+        $('cannonUpdaterErrorDivCount').innerHTML = failureCount;
+        if (failureCount > 1) {
+            $('cannonUpdaterErrorDiv').show();
+        }
         // schedule another update incase the server comes back, but slow it down a bit
         setTimeout(doUpdate, delayMs * 5);
     };
@@ -110,9 +117,10 @@ function initiateCannonDataUpdate(url, delayMs) {
             method: 'post',
             postBody: requestJson,
             contentType: 'application/json',
-            onSuccess: processResponseCallback,
-            onFailure: failureCallback,
-            onException: failureCallback
+            on200: processResponseCallback, // this odd combination seems to be the only
+            onSuccess: failureCallback,     // way to detect that the server is shutdown
+            onFailure: failureCallback,     // note: the onSuccess will not be called when 
+            onException: failureCallback    // the on200 is called
         });
         
         requestData = null;

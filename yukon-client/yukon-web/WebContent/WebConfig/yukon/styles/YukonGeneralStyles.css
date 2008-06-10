@@ -534,5 +534,16 @@ div.sectionContainer .sectionContainer_content {
 	font-size:14px;
 	font-weight:bold;
 }
- 
+
+#cannonUpdaterErrorDiv {
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    right: 0;
+    background: red; 
+    color: white; 
+    font-weight: bold;
+    text-align: center;
+    padding: 3px;
+}
 
