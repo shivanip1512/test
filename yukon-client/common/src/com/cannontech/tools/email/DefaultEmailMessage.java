@@ -2,7 +2,7 @@ package com.cannontech.tools.email;
 
 public class DefaultEmailMessage implements EmailMessageHolder {
     private String body = "";
-    private String htmlBody = "";
+    private String htmlBody = null;
     private String recipient = "";
     private String subject = "";
 

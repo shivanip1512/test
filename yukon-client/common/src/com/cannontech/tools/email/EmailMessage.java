@@ -456,8 +456,4 @@ public class EmailMessage
 		getDSAttachments().add( ds );
 	}
 	
-	public void addAttachment(byte[] fileData, String fileName, String contentType) {
-		ByteArrayDataSource ds = new ByteArrayDataSource(fileData, fileName, contentType);
-		getDSAttachments().add( ds );
-	}
 }

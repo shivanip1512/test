@@ -73,6 +73,9 @@
                                                 dataJson="${dataJson}" 
                                                 width="500"
                                                 height="400" treeAttributes="{'border':true}" />
+                                                
+            Email Address (optional): <input type="text" name="emailAddress" value="" size="40">
+                                                
             
                   
                   

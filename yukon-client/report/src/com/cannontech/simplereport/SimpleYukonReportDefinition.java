@@ -5,11 +5,11 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanNameAware;
 
+import com.cannontech.analysis.tablemodel.BareReportModel;
 import com.cannontech.simplereport.reportlayoutdata.ReportLayoutData;
 import com.cannontech.web.input.InputRoot;
 
-@SuppressWarnings("unchecked")
-public class SimpleYukonReportDefinition implements YukonReportDefinition, BeanFactoryAware, BeanNameAware {
+public class SimpleYukonReportDefinition<T extends BareReportModel> implements YukonReportDefinition<T>, BeanFactoryAware, BeanNameAware {
     private String reportModelName;
     private String name;
     private BeanFactory beanFactory;
@@ -22,8 +22,10 @@ public class SimpleYukonReportDefinition implements YukonReportDefinition, BeanF
     public void setReportModelName(String reportModelName) {
         this.reportModelName = reportModelName;
     }
-    public Object createBean() {
-        return beanFactory.getBean(getReportModelName());
+
+    @SuppressWarnings("unchecked")
+    public T createBean() {
+        return (T) beanFactory.getBean(getReportModelName());
     }
     public void setBeanFactory(BeanFactory beanFactory) throws BeansException {
         this.beanFactory = beanFactory;

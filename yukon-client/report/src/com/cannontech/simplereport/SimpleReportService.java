@@ -38,13 +38,12 @@ public interface SimpleReportService {
      */
     @SuppressWarnings("unchecked")
     public abstract BareReportModel getReportModel(
-            YukonReportDefinition<BareReportModel> reportDefinition,
+            YukonReportDefinition<? extends BareReportModel> reportDefinition,
             Map<String, String> parameterMap) throws Exception;
     
-    public BareReportModel getStringReportModel(final YukonReportDefinition<BareReportModel> reportDefinition,
+    public BareReportModel getStringReportModel(final YukonReportDefinition<? extends BareReportModel> reportDefinition,
             final BareReportModel reportModel,
-            Map<String, String> parameterMap,
-            final YukonUserContext userContext) throws Exception;
+            final YukonUserContext userContext);
 
     /**
      * Return a list of lists of the report data that has been formatted.

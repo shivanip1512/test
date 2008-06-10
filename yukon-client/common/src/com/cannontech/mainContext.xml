@@ -9,7 +9,7 @@
        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.5.xsd
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
-	
+    
     <context:annotation-config/>
     
     <!-- Enabling @AspectJ Support -->
@@ -76,7 +76,7 @@
     <bean id="dispatchConnection" factory-bean="connectionPool" factory-method="getDefDispatchConn" scope="prototype" />
     <bean id="porterConnection" factory-bean="connectionPool" factory-method="getDefPorterConn" scope="prototype" />
     <bean id="macsConnection" factory-bean="connectionPool" factory-method="getDefMacsConn" scope="prototype"/>
-	<bean id="cbcConnection" factory-bean="connectionPool" factory-method="getDefCapControlConn" scope="prototype"/>
+    <bean id="cbcConnection" factory-bean="connectionPool" factory-method="getDefCapControlConn" scope="prototype"/>
 
     <bean id="nextValueHelper" class="com.cannontech.database.incrementer.NextValueHelper">
         <property name="sequenceNameLookup" ref="sequenceNameLookup" />
@@ -94,10 +94,10 @@
     <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate" destroy-method="shutdown">
        <qualifier value="main"/>
        <property name="service">
-		    <bean class="java.util.concurrent.Executors"
-		    	factory-method="newScheduledThreadPool">
-		    	<constructor-arg value="2" />
-		    </bean>
+            <bean class="java.util.concurrent.Executors"
+                factory-method="newScheduledThreadPool">
+                <constructor-arg value="2" />
+            </bean>
        </property>
     </bean>
 
@@ -141,6 +141,7 @@
                <value>classpath:com/cannontech/yukon/dr/appliance</value>
                <value>classpath:com/cannontech/yukon/dr/consumer</value>
                <value>classpath:com/cannontech/yukon/dr/program</value>
+               <value>classpath:com/cannontech/yukon/web/modules/amr/groupCommander</value>
             </list>
         </property>
         <property name="defaultEncoding" value="UTF-8"/>

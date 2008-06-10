@@ -2,6 +2,8 @@ package com.cannontech.tools.email.impl;
 
 import java.util.Date;
 
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
@@ -16,6 +18,7 @@ import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.roles.yukon.SystemRole;
+import com.cannontech.tools.email.EmailAttachmentMessageHolder;
 import com.cannontech.tools.email.EmailMessageHolder;
 import com.cannontech.tools.email.EmailService;
 
@@ -48,6 +51,38 @@ public class EmailServiceImpl implements EmailService {
         _message.setContent(mp);
         
         send(_message);
+    }
+    
+    @Override
+    public void sendAttachmentMessage(EmailAttachmentMessageHolder holder)
+        throws MessagingException {
+        MimeMessage _message = prepareMessage(holder);
+        
+        Multipart mp = new MimeMultipart();
+        
+        MimeBodyPart plain_part = new MimeBodyPart();
+        plain_part.setContent(holder.getBody(), "text/plain");
+        
+        String htmlBody = holder.getHtmlBody();
+        if (htmlBody != null) {
+            MimeBodyPart html_part = new MimeBodyPart();
+            html_part.setContent(htmlBody, "text/html");
+            mp.addBodyPart(html_part);
+        }
+        
+        mp.addBodyPart(plain_part);
+        
+        for (DataSource dataSource : holder.getAttachments()) {
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setDataHandler(new DataHandler(dataSource));
+            messageBodyPart.setFileName(dataSource.getName());
+            mp.addBodyPart(messageBodyPart);
+        }
+        
+        _message.setContent(mp);
+        
+        send(_message);
+        
     }
     
     private void send(MimeMessage _message) throws MessagingException{

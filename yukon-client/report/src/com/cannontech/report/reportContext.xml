@@ -19,6 +19,10 @@
         <property name="pointFormattingService" ref="pointFormattingService"/>
     </bean>
     
+    <bean id="simpleReportOutputter" class="com.cannontech.simplereport.SimpleReportOutputterImpl">
+        <property name="simpleReportService" ref="simpleReportService"/>
+    </bean>
+    
    <!-- Cap Control Disabled Devices -->
    <bean id="capControlDisabledDevicesModel" class="com.cannontech.analysis.tablemodel.CapControlDisabledDevicesModel"
          scope="prototype">

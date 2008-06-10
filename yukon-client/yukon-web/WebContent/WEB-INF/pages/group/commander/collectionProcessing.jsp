@@ -38,7 +38,7 @@
         
 			<cti:deviceCollection deviceCollection="${deviceCollection}" />
       
-			<tags:nameValueContainer altRowOn="true">
+			<tags:nameValueContainer altRowOn="false">
 	
 				<tags:nameValue name="Select command">
 					
@@ -65,8 +65,12 @@
 					</c:choose>
 					
 					<br>
-					<input style="margin-top: .25em;" type="text" id="commandString" name="commandString" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" />
+					<input style="margin-top: .25em;" type="text" id="commandString" name="commandString" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="80" />
 				</tags:nameValue>
+        
+                <tags:nameValue name="Email Address (optional)">
+                    <input type="text" name="emailAddress" value="" size="40">
+                </tags:nameValue>
 	
 			</tags:nameValueContainer>
 			<br>

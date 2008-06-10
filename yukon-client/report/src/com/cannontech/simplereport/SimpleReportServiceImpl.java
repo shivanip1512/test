@@ -135,7 +135,7 @@ public class SimpleReportServiceImpl implements SimpleReportService {
      * @see com.cannontech.simplereport.SimpleReportService#getReportModel(com.cannontech.simplereport.YukonReportDefinition, javax.servlet.http.HttpServletRequest)
      */
     @SuppressWarnings("unchecked")
-    public BareReportModel getReportModel(YukonReportDefinition<BareReportModel> reportDefinition, Map<String, String> parameterMap) throws Exception {
+    public BareReportModel getReportModel(YukonReportDefinition<? extends BareReportModel> reportDefinition, Map<String, String> parameterMap) throws Exception {
         
         BareReportModel reportModel = reportDefinition.createBean();
         
@@ -156,10 +156,9 @@ public class SimpleReportServiceImpl implements SimpleReportService {
      * @see com.cannontech.simplereport.SimpleReportService#getReportModel(com.cannontech.simplereport.YukonReportDefinition, javax.servlet.http.HttpServletRequest)
      */
     @SuppressWarnings("unchecked")
-    public BareReportModel getStringReportModel(final YukonReportDefinition<BareReportModel> reportDefinition,
+    public BareReportModel getStringReportModel(final YukonReportDefinition<? extends BareReportModel> reportDefinition,
             final BareReportModel reportModel,
-            Map<String, String> parameterMap,
-            final YukonUserContext userContext) throws Exception {
+            final YukonUserContext userContext) {
         
         final PointFormattingService cachedInstance = pointFormattingService.getCachedInstance();
         
