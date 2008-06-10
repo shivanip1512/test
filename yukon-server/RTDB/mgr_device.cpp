@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.94 $
-* DATE         :  $Date: 2007/12/13 16:00:21 $
+* REVISION     :  $Revision: 1.95 $
+* DATE         :  $Date: 2008/06/10 20:48:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2493,22 +2493,13 @@ void CtiDeviceManager::refreshMCTConfigs(LONG paoID)
 
 void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
 {
-    CtiDeviceSPtr pTempCtiDevice;
-
-    LONG      tmpmctid, tmpdisconnectaddress;
+    LONG  tmpmctid, tmpdisconnectaddress;
 
     {
         RWDBConnection conn   = getConnection();
         RWDBDatabase db       = getDatabase();
         RWDBSelector selector = db.selector();
         RWDBTable configTbl   = db.table("devicemct400series");
-        /*
-        RWDBTable touDayMapping      = db.table("toudaymapping"),
-                  touDayRateSwitches = db.table("toudayrateswitches"),
-                  touSchedule        = db.table("touschedule");
-        */
-
-        //RWDBTable tblPAObject = db.table("yukonpaobject");
         RWDBReader rdr;
 
         if(DebugLevel & 0x00020000)
@@ -2538,20 +2529,23 @@ void CtiDeviceManager::refreshMCT400Configs(LONG paoID)
                 rdr["deviceid"]          >> tmpmctid;
                 rdr["disconnectaddress"] >> tmpdisconnectaddress;
 
-                pTempCtiDevice = getEqual(tmpmctid);
+                CtiDeviceMCT410SPtr tmpMCT410 = boost::static_pointer_cast<CtiDeviceMCT410>(getEqual(tmpmctid));
 
-                if( pTempCtiDevice )
+                if( tmpMCT410 )
                 {
-                    CtiDeviceMCT410 *tmpMCT410 = (CtiDeviceMCT410 *)pTempCtiDevice.get();
-
-                    if( tmpdisconnectaddress > 0 && tmpdisconnectaddress < 0x400000 )
+                    if( tmpdisconnectaddress >= 0 && tmpdisconnectaddress < 0x400000 )
                     {
                         tmpMCT410->setDisconnectAddress(tmpdisconnectaddress);
                     }
-                    else if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                    else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - invalid disconnect address " << tmpdisconnectaddress << " for device \"" << pTempCtiDevice->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        tmpMCT410->setDisconnectAddress(0);
+
+                        if( getDebugLevel() & DEBUGLEVEL_LUDICROUS )
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** Checkpoint - invalid disconnect address " << tmpdisconnectaddress << " for device \"" << tmpMCT410->getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
                 }
             }

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_MCT410.h-arc  $
-* REVISION     :  $Revision: 1.67 $
-* DATE         :  $Date: 2008/06/06 20:28:44 $
+* REVISION     :  $Revision: 1.68 $
+* DATE         :  $Date: 2008/06/10 20:49:47 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -398,5 +398,7 @@ public:
     virtual ULONG calcNextLPScanTime( void );
 
 };
+
+typedef boost::shared_ptr<CtiDeviceMCT410> CtiDeviceMCT410SPtr;
 
 #endif // #ifndef __DEV_MCT410_H__
