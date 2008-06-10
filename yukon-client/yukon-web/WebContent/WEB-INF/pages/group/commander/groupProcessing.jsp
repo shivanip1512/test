@@ -12,6 +12,8 @@
     	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
     	    &gt; Group Processing
     	</cti:breadCrumbs>
+        
+        <cti:includeScript link="/JavaScript/commanderPrompter.js"/>
 
         <script type="text/javascript">
         	
@@ -42,7 +44,7 @@
                 </c:when>
                 
                 <c:otherwise>
-                    <select id="commandSelect" name="commandSelect" onchange="selectCommand()">
+                    <select id="commandSelect" name="commandSelect" onChange="loadCommanderCommand(this, 'commandString');">
                         <c:forEach var="commandOption" items="${commands}">
                         
                             <c:if test="${commandOption.command == command}">
@@ -52,7 +54,7 @@
                                 <c:set var="selected" value="" scope="page"></c:set>
                             </c:if>
                         
-                            <option value="${commandOption.command}" ${selected}> ${commandOption.label}</option>
+                            <option value="${fn:escapeXml(commandOption.command)}" ${selected}> ${commandOption.label}</option>
                         </c:forEach>
                     </select>
                 </c:otherwise>
