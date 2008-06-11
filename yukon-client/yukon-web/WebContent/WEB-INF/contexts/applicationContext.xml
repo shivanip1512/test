@@ -20,6 +20,7 @@
     </bean>
     
     <bean class="org.springframework.web.servlet.mvc.SimpleControllerHandlerAdapter"/>
+    <bean class="org.springframework.web.servlet.mvc.HttpRequestHandlerAdapter"/>
 
     <bean id="webSecurityAdvice" class="com.cannontech.web.security.WebSecurityAdvice"/>
     
