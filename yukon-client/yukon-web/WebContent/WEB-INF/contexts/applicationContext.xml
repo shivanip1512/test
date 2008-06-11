@@ -638,7 +638,7 @@
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
 
-    <bean id="formatMillisDateTagPrototype" class="com.cannontech.web.taglib.FormatMillisTag">
+    <bean id="formatMillisTagPrototype" class="com.cannontech.web.taglib.FormatMillisTag">
         <property name="dateFormattingService" ref="dateFormattingService"/>
     </bean>
     
