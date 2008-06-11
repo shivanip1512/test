@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/5/2008 11:09:38 PM                         */
+/* Created on:     6/11/2008 5:39:01 PM                         */
 /*==============================================================*/
 
 
@@ -9435,6 +9435,10 @@ create table STATE (
 )
 go
 
+INSERT INTO State VALUES(-9,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES(-9, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES(-9, 1, 'Closed', 1, 6 , 0);
+INSERT INTO State VALUES(-9, 2, 'Unknown', 2, 6 , 0);
 insert into state values(-7, 0, 'Normal',0,6,0);
 insert into state values(-7, 1, 'NonCriticalFailure',1,6,0);
 insert into state values(-7, 2, 'CriticalFailure',2,6,0);
@@ -9471,10 +9475,6 @@ INSERT INTO State VALUES( 0, 0, 'SystemText', 0, 6 , 0);
 INSERT INTO State VALUES( 1,-1, 'Any', 2, 6 , 0);
 INSERT INTO State VALUES( 1, 0, 'Open', 0, 6 , 0);
 INSERT INTO State VALUES( 1, 1, 'Closed', 1, 6 , 0);
-INSERT INTO State VALUES( 2,-1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES( 2, 0, 'Open', 0, 6 , 0);
-INSERT INTO State VALUES( 2, 1, 'Closed', 1, 6 , 0);
-INSERT INTO State VALUES( 2, 2, 'Unknown', 2, 6 , 0);
 INSERT INTO State VALUES( 3,-1, 'Any', 2, 6 , 0);
 INSERT INTO State VALUES( 3, 0, 'Open', 0, 6 , 0);
 INSERT INTO State VALUES( 3, 1, 'Close', 1, 6 , 0);

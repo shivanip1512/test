@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/5/2008 10:56:24 PM                         */
+/* Created on:     6/11/2008 5:41:24 PM                         */
 /*==============================================================*/
 
 
@@ -6810,6 +6810,10 @@ create table STATE  (
    constraint PK_STATE primary key (STATEGROUPID, RAWSTATE)
 );
 
+INSERT INTO State VALUES(-9,-1, 'Any', 2, 6 , 0);
+INSERT INTO State VALUES(-9, 0, 'Open', 0, 6 , 0);
+INSERT INTO State VALUES(-9, 1, 'Closed', 1, 6 , 0);
+INSERT INTO State VALUES(-9, 2, 'Unknown', 2, 6 , 0);
 insert into state values(-7, 0, 'Normal',0,6,0);
 insert into state values(-7, 1, 'NonCriticalFailure',1,6,0);
 insert into state values(-7, 2, 'CriticalFailure',2,6,0);
@@ -6846,10 +6850,6 @@ INSERT INTO State VALUES( 0, 0, 'SystemText', 0, 6 , 0);
 INSERT INTO State VALUES( 1,-1, 'Any', 2, 6 , 0);
 INSERT INTO State VALUES( 1, 0, 'Open', 0, 6 , 0);
 INSERT INTO State VALUES( 1, 1, 'Closed', 1, 6 , 0);
-INSERT INTO State VALUES( 2,-1, 'Any', 2, 6 , 0);
-INSERT INTO State VALUES( 2, 0, 'Open', 0, 6 , 0);
-INSERT INTO State VALUES( 2, 1, 'Closed', 1, 6 , 0);
-INSERT INTO State VALUES( 2, 2, 'Unknown', 2, 6 , 0);
 INSERT INTO State VALUES( 3,-1, 'Any', 2, 6 , 0);
 INSERT INTO State VALUES( 3, 0, 'Open', 0, 6 , 0);
 INSERT INTO State VALUES( 3, 1, 'Close', 1, 6 , 0);
