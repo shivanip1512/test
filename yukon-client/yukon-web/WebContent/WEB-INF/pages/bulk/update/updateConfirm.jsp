@@ -64,8 +64,8 @@
             <c:url var="cancelUrl" value="/spring/bulk/update/upload"/>
             
             <br>
-            <input type="button" name="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'">
-            <input type="submit" name="updateButton" value="${updateButton}">
+            <input type="button" id="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'">
+            <input type="button" id="updateButton" value="${updateButton}" onclick="$('cancelButton').disabled=true;$('updateButton').disabled=true;$('updateConfirmForm').submit();">
             
             <%-- UPDATE INFO ID --%>
             <input type="hidden" name="fileInfoId" value="${parsedResult.bulkFileInfo.id}">

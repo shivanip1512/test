@@ -17,13 +17,13 @@ public class MassChangeCallbackResults extends DeviceGroupAddingBulkProcessorCal
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
     private List<BulkFieldColumnHeader> bulkFieldColumnHeaders = null;
 
-    BulkFileInfo bulkFileInfo = null;
-    String resultsId = "";
+    private BulkFileInfo bulkFileInfo = null;
+    private String resultsId = "";
     
-    Date startTime = null;
-    Date stopTime = null;
+    private Date startTime = null;
+    private Date stopTime = null;
     
-    BulkOperationTypeEnum bulkOperationType = null;
+    private BulkOperationTypeEnum bulkOperationType = null;
     
     public MassChangeCallbackResults(StoredDeviceGroup successGroup, StoredDeviceGroup processingExceptionGroup, DeviceGroupMemberEditorDao deviceGroupMemberEditorDao, DeviceGroupCollectionHelper deviceGroupCollectionHelper, List<BulkFieldColumnHeader> bulkFieldColumnHeaders, BulkOperationTypeEnum bulkOperationType) {
         

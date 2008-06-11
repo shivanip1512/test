@@ -33,7 +33,7 @@
     	<br>
     	<div style="width: 700px;">
         
-            <form action="<c:url value="/spring/group/commander/executeGroupCommand" />">
+            <form id="groupCommanderForm" action="<c:url value="/spring/group/commander/executeGroupCommand" />">
         
             <%-- SELECT COMMAND --%>
             <div class="largeBoldLabel">Select Command:</div>
@@ -80,7 +80,7 @@
                   
                   
             <%-- EXECUTE BUTTON --%>
-			<input type="submit" name="execute" value="Execute" />
+			<input type="button" id="executeButton" value="Execute" onclick="$('executeButton').disabled=true;$('groupCommanderForm').submit();" />
     			 
     		</form>
     	</div>

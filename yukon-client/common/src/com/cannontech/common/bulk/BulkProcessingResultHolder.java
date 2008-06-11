@@ -28,6 +28,7 @@ public interface BulkProcessingResultHolder<T> {
 
     // STATUS
     public boolean isComplete();
+    public boolean isSuccessfull();
 
     public boolean isProcessingFailed();
 
