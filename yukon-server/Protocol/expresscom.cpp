@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2008/05/09 22:00:32 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2008/06/11 14:59:18 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1511,6 +1511,10 @@ INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, string name, str
 
     _message.push_back( mtConfiguration );
     _message.push_back( cfgUtilityInformation );
+
+    size_t sizepos = _message.size();         // This is where the index is.
+    _message.push_back( 0x00 );                 // Hold a slot for the flags.
+
     _message.push_back( chan );
 
     size_t configpos = _message.size();
@@ -1594,6 +1598,7 @@ INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, string name, str
 
     _message[configpos] = config;
 
+    _message[sizepos] = _message.size() - sizepos - 1; //The size byte is not counted in the size
 
     incrementMessageCount();
 
