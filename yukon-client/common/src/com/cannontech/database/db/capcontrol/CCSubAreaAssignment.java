@@ -50,6 +50,7 @@ public class CCSubAreaAssignment extends DBPersistent{
     public void retrieve() throws SQLException {
     }
 
+    @SuppressWarnings("unchecked")
     public static List<CCSubAreaAssignment> getAllAreaSubStations(Integer areaID) {
         SqlStatementBuilder allSubs = new SqlStatementBuilder();
         allSubs.append("SELECT AreaID, SubstationBusID, DisplayOrder FROM ");
@@ -57,7 +58,7 @@ public class CCSubAreaAssignment extends DBPersistent{
         allSubs.append("WHERE AreaID = ? ORDER BY DisplayOrder");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
         List<CCSubAreaAssignment> subStationsForAreaList = new ArrayList<CCSubAreaAssignment>();
-        yukonTemplate.query(allSubs.toString(), new Integer[] { areaID },
+        subStationsForAreaList = yukonTemplate.query(allSubs.toString(), new Integer[] { areaID },
             new RowMapper() {
                 public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
                     CCSubAreaAssignment assign = new CCSubAreaAssignment();
