@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -1120,13 +1122,29 @@ public static Date roundToMinute(Date toRound) {
 	 */
 	public static String getFullURL( HttpServletRequest req )
 	{
-		if( req == null ) return "";
-
-		String q = "";
-		if( req.getQueryString() != null )
-			q = "?" + req.getQueryString();
-
-		return req.getRequestURI() + q;		
+	    if( req == null ) return "";
+	    
+	    String q = "";
+	    if( req.getQueryString() != null )
+	        q = "?" + req.getQueryString();
+	    
+	    return req.getRequestURI() + q;		
+	}
+	
+	/**
+	 * Returns the URL for the "host". Could be useful
+	 * for building links that go into emails.
+	 *
+	 */
+	public static URL getHostURL(HttpServletRequest req) {
+        try {
+            StringBuffer hostString = req.getRequestURL();
+            URL fullHostUrl = new URL(hostString.toString());
+            URL hostUrl = new URL(fullHostUrl.getProtocol(), fullHostUrl.getHost(), fullHostUrl.getPort(), "");	
+            return hostUrl;
+        } catch (MalformedURLException e) {
+            throw new RuntimeException("Unable to build host URL", e);
+        }
 	}
     
 	
