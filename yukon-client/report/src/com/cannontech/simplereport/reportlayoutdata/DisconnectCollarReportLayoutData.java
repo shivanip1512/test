@@ -10,8 +10,9 @@ public class DisconnectCollarReportLayoutData implements ReportLayoutData{
         
         this.bodyColumns = new ColumnLayoutData[] {
             new ColumnLayoutData("Device Name", "deviceName", 200),
-            new ColumnLayoutData("Device Type", "deviceType", 80),
-            new ColumnLayoutData("Meter Number", "meterNumber", 80),
+            new ColumnLayoutData("Enabled", "enabled", 80),
+            new ColumnLayoutData("Type", "deviceType", 80),
+            new ColumnLayoutData("Meter #", "meterNumber", 80),
             new ColumnLayoutData("Address", "physicalAddress", 80),
             new ColumnLayoutData("Disconnect Address", "disconnectAddress", 120),
         };

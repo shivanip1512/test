@@ -641,6 +641,9 @@
             <bean class="com.cannontech.simplereport.reportlayoutdata.GroupCommanderFailureResultsReportLayoutData"/>
         </property>
     </bean>
-    
+    <bean id="reportGroupService" class="com.cannontech.analysis.service.impl.ReportGroupServiceImpl">
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
+    </bean>
 </beans>
 

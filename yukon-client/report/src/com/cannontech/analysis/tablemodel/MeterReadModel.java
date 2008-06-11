@@ -16,12 +16,17 @@ import org.springframework.dao.DataRetrievalFailureException;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
+import com.cannontech.analysis.data.group.SimpleReportGroup;
+import com.cannontech.analysis.service.ReportGroupService;
+import com.cannontech.analysis.service.impl.ReportGroupServiceImpl;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.NaturalOrderComparator;
 
 /**
@@ -40,19 +45,25 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	
 	/** Enum values for column representation */
 	public final static int DEVICE_NAME_COLUMN = 0;
-	public final static int METER_NUMBER_COLUMN = 1;
-	public final static int PHYSICAL_ADDRESS_COLUMN = 2;
-	public final static int ROUTE_NAME_COLUMN = 3;
-	public final static int TIMESTAMP_COLUMN = 4;
-	//Alternate columns for a successful meter report
+    public final static int DISABLED_COLUMN = 1;
+    public final static int PAO_TYPE_COLUMN = 2;
+    public final static int METER_NUMBER_COLUMN = 3;
+	public final static int PHYSICAL_ADDRESS_COLUMN = 4;
+	public final static int ROUTE_NAME_COLUMN = 5;
+    public final static int COLL_GROUP_NAME_OR_TIMESTAMP_COLUMN = 6;    //CollGroup for Missed, Timestamp for Success
+    public final static int TEST_COLL_GROUP_NAME_COLUMN = 7;
 
 	/** String values for column representation */
 	public final static String DEVICE_NAME_STRING = "Device Name";
-	public final static String METER_NUMBER_STRING = "Meter Number";
+    public final static String DISABLED_STRING = "Disabled";
+    public final static String PAO_TYPE_STRING = "Type";
+	public final static String METER_NUMBER_STRING = "Meter #";
 	public final static String PHYSICAL_ADDRESS_STRING = "Address";
 	public final static String ROUTE_NAME_STRING = "Route Name";
 	public final static String TIMESTAMP_STRING= "Timestamp";
-	
+    public final static String COLL_GROUP_NAME_STRING = "Collection Group";
+    public final static String TEST_COLL_GROUP_NAME_STRING = "Alternate Group";
+    
 	/** Class fields */
 	public final static int MISSED_METER_READ_TYPE = 2;
 	public  final static int SUCCESS_METER_READ_TYPE = 1;
@@ -72,6 +83,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 	private static String ATT_POINT_TYPE = "pointType";
 	private static final String ATT_ORDER_BY = "orderBy";
 	
+    private ReportGroupService reportGroupService = YukonSpringHook.getBean("reportGroupService", ReportGroupServiceImpl.class);
+
 	/**
 	 * 
 	 */
@@ -126,7 +139,7 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
             meter.setType(deviceType);
             meter.setTypeStr(type);
             String disabledStr = rset.getString("disableFlag");
-            boolean disabled = CtiUtilities.isTrue(disabledStr);
+            boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
             meter.setDisabled(disabled);
             String meterNumber = rset.getString("meterNumber");
             meter.setMeterNumber(meterNumber);
@@ -276,23 +289,36 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 			{
 				case DEVICE_NAME_COLUMN:
 					return mpData.getMeter().getName();
-					
-				case METER_NUMBER_COLUMN:
-				    return mpData.getMeter().getMeterNumber();
-				    
-				case PHYSICAL_ADDRESS_COLUMN:
-				    return mpData.getMeter().getAddress();
-				    
-				case ROUTE_NAME_COLUMN:
-					return mpData.getMeter().getRoute();
-					
-				case TIMESTAMP_COLUMN:
-				{
-				    if( getMeterReadType() == SUCCESS_METER_READ_TYPE)
-				        return mpData.getTimeStamp();
-				        
-                    return null;
-				}				    
+
+                case DISABLED_COLUMN:
+                    return (mpData.getMeter().isDisabled() ? "Yes" : "No");
+        
+                case PAO_TYPE_COLUMN:
+                    return mpData.getMeter().getTypeStr();
+
+                case METER_NUMBER_COLUMN:
+                    return mpData.getMeter().getMeterNumber();
+                    
+                case PHYSICAL_ADDRESS_COLUMN:
+                    return mpData.getMeter().getAddress();
+    
+                case ROUTE_NAME_COLUMN:
+                    return mpData.getMeter().getRoute();
+                    
+                case COLL_GROUP_NAME_OR_TIMESTAMP_COLUMN: {
+                    if( getMeterReadType() == SUCCESS_METER_READ_TYPE) {
+                        return mpData.getTimeStamp();                        
+                    } else {
+                        SystemGroupEnum systemGroupEnum = SystemGroupEnum.COLLECTION;
+                        SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, mpData.getMeter());
+                        return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                    }
+                }
+                case TEST_COLL_GROUP_NAME_COLUMN: {
+                    SystemGroupEnum systemGroupEnum = SystemGroupEnum.ALTERNATE;
+                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, mpData.getMeter());
+                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                }
 			}
 		}
 		return null;
@@ -310,17 +336,23 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		    {
                 columnNames = new String[]{
                         DEVICE_NAME_STRING,
+                        DISABLED_STRING,
+                        PAO_TYPE_STRING,
                         METER_NUMBER_STRING,
                         PHYSICAL_ADDRESS_STRING,
-                        ROUTE_NAME_STRING, 
+                        ROUTE_NAME_STRING,
                         TIMESTAMP_STRING, 
                     };      
 		    } else {
                 columnNames = new String[]{
                         DEVICE_NAME_STRING,
+                        DISABLED_STRING,
+                        PAO_TYPE_STRING,
                         METER_NUMBER_STRING,
                         PHYSICAL_ADDRESS_STRING,
-                        ROUTE_NAME_STRING
+                        ROUTE_NAME_STRING,
+                        COLL_GROUP_NAME_STRING,
+                        TEST_COLL_GROUP_NAME_STRING
                     };      
             }
 
@@ -342,6 +374,8 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 					String.class,
 					String.class,
 					String.class,
+                    String.class,
+                    String.class,
 					Date.class,
 				};
 		    }
@@ -352,6 +386,10 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 						String.class,
 						String.class,
 						String.class,
+						String.class,
+                        String.class,
+                        String.class,
+                        String.class
 					};
 		    }
 		}
@@ -369,21 +407,27 @@ public class MeterReadModel extends ReportModelBase<MeterAndPointData> implement
 		    {
 				columnProperties = new ColumnProperties[]{
 					//posX, posY, width, height, numberFormatString
-					new ColumnProperties(0, 1, 150, null),
-					new ColumnProperties(150, 1, 75, null),
-					new ColumnProperties(225, 1, 75, null),
-					new ColumnProperties(300, 1, 200, null),
-					new ColumnProperties(500, 1, 92, "MM/dd/yyyy HH:mm:ss"),
+                    new ColumnProperties(0, 1, 200, null),
+                    new ColumnProperties(200, 1, 40, null),
+                    new ColumnProperties(240, 1, 60, null),
+                    new ColumnProperties(300, 1, 60, null),
+                    new ColumnProperties(360, 1, 60, null),
+                    new ColumnProperties(420, 1, 100, null),
+					new ColumnProperties(520, 1, 100, "MM/dd/yyyy HH:mm:ss"),
 				};
 		    }
 		    else
 		    {
 		    	columnProperties = new ColumnProperties[]{
 					//posX, posY, width, height, numberFormatString
-                    new ColumnProperties(0, 1, 250, null),
-                    new ColumnProperties(250, 1, 75, null),
-                    new ColumnProperties(325, 1, 75, null),
-                    new ColumnProperties(400, 1, 200, null),
+	                new ColumnProperties(0, 1, 200, null),
+	                new ColumnProperties(200, 1, 40, null),
+	                new ColumnProperties(240, 1, 60, null),
+	                new ColumnProperties(300, 1, 60, null),
+	                new ColumnProperties(360, 1, 60, null),
+	                new ColumnProperties(420, 1, 100, null),
+	                new ColumnProperties(520, 1, 100, null),
+	                new ColumnProperties(620, 1, 100, null)
 				};
 			}
 		}

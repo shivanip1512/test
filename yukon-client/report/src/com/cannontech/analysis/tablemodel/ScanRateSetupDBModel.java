@@ -26,16 +26,18 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 	
 	/** Enum values for column representation */
 	public final static int DEVICE_NAME_COLUMN = 0;
-	public final static int DEVICE_TYPE_COLUMN = 1;
-	public final static int METER_NUMBER_COLUMN = 2;
-	public final static int ADDRESS_COLUMN = 3;
-	public final static int ROUTE_NAME_COLUMN = 4;
-	public final static int SCAN_TYPE_COLUMN = 5;
-	public final static int INTERVAL_RATE_COLUMN = 6;
-	public final static int ALTERNATE_RAT_COLUMN = 7;
+	public final static int ENABLE_FLAG_COLUMN = 1;
+	public final static int DEVICE_TYPE_COLUMN = 2;
+	public final static int METER_NUMBER_COLUMN = 3;
+	public final static int ADDRESS_COLUMN = 4;
+	public final static int ROUTE_NAME_COLUMN = 5;
+	public final static int SCAN_TYPE_COLUMN = 6;
+	public final static int INTERVAL_RATE_COLUMN = 7;
+	public final static int ALTERNATE_RAT_COLUMN = 8;
 	
 	/** String values for column representation */
 	public final static String DEVICE_NAME_STRING = "Meter Name";
+    public final static String ENABLE_FLAG_STRING = "Enabled";
 	public final static String DEVICE_TYPE_STRING = "Type";
 	public final static String METER_NUMBER_STRING = "Meter #";
 	public final static String ADDRESS_STRING  = "Address";
@@ -77,7 +79,7 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
             meter.setName(rs.getString("PAONAME"));
             meter.setTypeStr(rs.getString("TYPE"));
             meter.setType(PAOGroups.getDeviceType(meter.getTypeStr()));
-            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG")));
+            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
             meter.setMeterNumber(rs.getString("METERNUMBER"));
             meter.setAddress(rs.getString("ADDRESS"));
             meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
@@ -202,6 +204,8 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 			switch( columnIndex) {
 				case DEVICE_NAME_COLUMN:
                     return mpData.getMeter().getName();
+                case ENABLE_FLAG_COLUMN:
+                    return (mpData.getMeter().isDisabled() ? "No" : "Yes");
 				case DEVICE_TYPE_COLUMN:
                     return mpData.getMeter().getTypeStr();
 				case METER_NUMBER_COLUMN:
@@ -230,6 +234,7 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 		{
 			columnNames = new String[]{
 				DEVICE_NAME_STRING,
+				ENABLE_FLAG_STRING,
 				DEVICE_TYPE_STRING,
 				METER_NUMBER_STRING,
 				ADDRESS_STRING,
@@ -256,6 +261,7 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 				String.class,
 				String.class,
 				String.class,
+				String.class,
 				Integer.class,
 				Integer.class
 			};
@@ -270,11 +276,12 @@ public class ScanRateSetupDBModel extends ReportModelBase<ScanRateMeterData> imp
 	{
 		if(columnProperties == null) {
 			columnProperties = new ColumnProperties[]{
-					new ColumnProperties(0, 1, 150, null),
-					new ColumnProperties(150, 1, 75, null),
-					new ColumnProperties(225, 1, 70, null),
-					new ColumnProperties(295, 1, 70, null),
-					new ColumnProperties(365, 1, 180, null),
+					new ColumnProperties(0, 1, 175, null),
+					new ColumnProperties(175, 1, 40, null),
+					new ColumnProperties(215, 1, 60, null),
+					new ColumnProperties(275, 1, 60, null),
+					new ColumnProperties(335, 1, 60, null),
+					new ColumnProperties(395, 1, 150, null),
 					new ColumnProperties(545, 1, 75, null),
 					new ColumnProperties(620, 1, 50, null),
 					new ColumnProperties(670, 1, 50, null)

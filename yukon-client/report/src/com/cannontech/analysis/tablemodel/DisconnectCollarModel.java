@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
 
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
 
@@ -28,6 +29,7 @@ public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarM
     
     static public class ModelRow {
         public String deviceName;
+        public String enabled;
         public String deviceType;
         public String meterNumber;
         public String physicalAddress;
@@ -46,6 +48,8 @@ public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarM
 
                 String deviceName = rs.getString("deviceName");
                 row.deviceName = deviceName;
+                String disableFlag = rs.getString("disableFlag");
+                row.enabled = (CtiUtilities.isTrue(disableFlag.charAt(0)) ? "No" : "Yes"); 
                 row.deviceType = rs.getString("deviceType");
                 row.meterNumber = rs.getString("meterNumber");
                 row.disconnectAddress = rs.getString("disconnectAddress");
@@ -60,7 +64,7 @@ public class DisconnectCollarModel extends BareReportModelBase<DisconnectCollarM
     public StringBuffer buildSQLStatement()
     {
         StringBuffer sql = new StringBuffer ("SELECT PAO.PAONAME as deviceName, PAO.TYPE as deviceType, DMG.METERNUMBER as meterNumber, "); 
-        sql.append("DMCT400.DISCONNECTADDRESS as disconnectAddress, DCS.ADDRESS as physicalAddress ");
+        sql.append("DMCT400.DISCONNECTADDRESS as disconnectAddress, DCS.ADDRESS as physicalAddress, DISABLEFLAG as disableFlag ");
         sql.append("FROM YUKONPAOBJECT PAO, DEVICEMCT400SERIES DMCT400, DEVICEMETERGROUP DMG, DEVICECARRIERSETTINGS DCS ");
         sql.append("WHERE PAO.PAOBJECTID = DMCT400.DEVICEID ");
         sql.append(" AND PAO.PAOBJECTID = DMG.DEVICEID ");

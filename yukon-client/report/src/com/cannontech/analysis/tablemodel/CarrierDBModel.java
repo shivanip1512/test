@@ -2,11 +2,16 @@ package com.cannontech.analysis.tablemodel;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.data.group.SimpleReportGroup;
+import com.cannontech.analysis.service.ReportGroupService;
+import com.cannontech.analysis.service.impl.ReportGroupServiceImpl;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.spring.YukonSpringHook;
 
 /**
  * Created on Dec 15, 2003
@@ -18,30 +23,36 @@ import com.cannontech.database.data.pao.PAOGroups;
  *  String address			- DeviceCarrierSettings.address
  *  String routeName		- YukonPaobject.paoName (route)
  */
-public class CarrierDBModel extends ReportModelBase
+public class CarrierDBModel extends ReportModelBase<Meter>
 {
 	/** Number of columns */
-	protected final int NUMBER_COLUMNS = 6;
+	protected final int NUMBER_COLUMNS = 8;
 	
 	/** Enum values for column representation */
 	public final static int PAO_NAME_COLUMN = 0;
-    public final static int PAO_DISABLE_FLAG_COLUMN = 1;
+    public final static int PAO_ENABLE_FLAG_COLUMN = 1;
 	public final static int PAO_TYPE_COLUMN = 2;
 	public final static int METER_NUMBER_COLUMN = 3;
 	public final static int ADDRESS_COLUMN = 4;
 	public final static int ROUTE_NAME_COLUMN = 5;
+	public final static int COLL_GROUP_NAME_COLUMN = 6;
+	public final static int TEST_COLL_GROUP_NAME_COLUMN = 7;
+	
 	
 	/** String values for column representation */
 	public final static String PAO_NAME_STRING = "MCT Name";
-    public final static String PAO_DISABLE_FLAG_STRING = "Disabled";
+    public final static String PAO_ENABLE_FLAG_STRING = "Enabled";
 	public final static String PAO_TYPE_STRING = "Type";
-	public final static String METER_NUMBER_STRING = "Meter Number";
+	public final static String METER_NUMBER_STRING = "Meter #";
 	public final static String ADDRESS_STRING  = "Address";
 	public final static String ROUTE_NAME_STRING = "Route Name";
+	public final static String COLL_GROUP_NAME_STRING = "Collection Group";
+	public final static String TEST_COLL_GROUP_NAME_STRING = "Alternate Group";
 	
 	/** A string for the title of the data */
-	private static String title = "Database Report";
+	protected static String title = "Database Report";
 		
+	protected ReportGroupService reportGroupService = YukonSpringHook.getBean("reportGroupService", ReportGroupServiceImpl.class);
 	/**
 	 * Default Constructor
 	 */
@@ -123,7 +134,7 @@ public class CarrierDBModel extends ReportModelBase
                     meter.setType(deviceType);
                     meter.setTypeStr(type);
                     String disabledStr = rset.getString(4);
-                    boolean disabled = CtiUtilities.isTrue(disabledStr);
+                    boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
                     meter.setDisabled(disabled);
                     String meterNumber = rset.getString(5);
                     meter.setMeterNumber(meterNumber);
@@ -170,8 +181,8 @@ public class CarrierDBModel extends ReportModelBase
 				case PAO_NAME_COLUMN:
 					return meter.getName();
                 
-                case PAO_DISABLE_FLAG_COLUMN:
-                    return (meter.isDisabled() ? "Disabled" : "");
+                case PAO_ENABLE_FLAG_COLUMN:
+                    return (meter.isDisabled() ? "No" : "Yes");
 		
 				case PAO_TYPE_COLUMN:
 					return meter.getTypeStr();
@@ -184,7 +195,17 @@ public class CarrierDBModel extends ReportModelBase
 	
 				case ROUTE_NAME_COLUMN:
 					return meter.getRoute();
-				
+					
+				case COLL_GROUP_NAME_COLUMN: {
+				    SystemGroupEnum systemGroupEnum = SystemGroupEnum.COLLECTION;
+				    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
+				    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+				}
+				case TEST_COLL_GROUP_NAME_COLUMN: {
+				    SystemGroupEnum systemGroupEnum = SystemGroupEnum.ALTERNATE;
+                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
+                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+				}
 			}
 		}
 		return null;
@@ -199,11 +220,13 @@ public class CarrierDBModel extends ReportModelBase
 		{
 			columnNames = new String[]{
 				PAO_NAME_STRING,
-                PAO_DISABLE_FLAG_STRING,
+                PAO_ENABLE_FLAG_STRING,
 				PAO_TYPE_STRING,
 				METER_NUMBER_STRING,
 				ADDRESS_STRING,
-				ROUTE_NAME_STRING
+				ROUTE_NAME_STRING,
+				COLL_GROUP_NAME_STRING,
+				TEST_COLL_GROUP_NAME_STRING
 			};
 		}
 		return columnNames;
@@ -217,6 +240,8 @@ public class CarrierDBModel extends ReportModelBase
 		if( columnTypes == null)
 		{
 			columnTypes = new Class[]{
+				String.class,
+				String.class,
 				String.class,
 				String.class,
 				String.class,
@@ -237,11 +262,13 @@ public class CarrierDBModel extends ReportModelBase
 		{
 			columnProperties = new ColumnProperties[]{
 				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(200, 1, 75, null),
-				new ColumnProperties(275, 1, 75, null),
-				new ColumnProperties(350, 1, 75, null),
-				new ColumnProperties(425, 1, 75, null),
-				new ColumnProperties(500, 1, 200, null)
+				new ColumnProperties(200, 1, 40, null),
+				new ColumnProperties(240, 1, 60, null),
+				new ColumnProperties(300, 1, 60, null),
+				new ColumnProperties(360, 1, 60, null),
+				new ColumnProperties(420, 1, 100, null),
+				new ColumnProperties(520, 1, 100, null),
+				new ColumnProperties(620, 1, 100, null)
 			};
 		}
 		return columnProperties;

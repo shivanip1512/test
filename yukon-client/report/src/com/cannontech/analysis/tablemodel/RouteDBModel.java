@@ -7,24 +7,34 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
+import com.cannontech.analysis.data.group.SimpleReportGroup;
+import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.util.NaturalOrderComparator;
 
 public class RouteDBModel extends CarrierDBModel 
 {
-	public final static int ROUTE_NAME_COLUMN = 0;
-	public final static int PAO_NAME_COLUMN = 1;
-	public final static int METER_NUMBER_COLUMN = 2;
-	public final static int ADDRESS_COLUMN = 3;
-	public final static int PAO_TYPE_COLUMN = 4;
-	public final static int PAO_DISABLE_FLAG_COLUMN = 5;
+    /** Enum values for column representation */
+    public final static int ROUTEDB_ROUTE_NAME_COLUMN = 0;
+	public final static int ROUTEDB_METER_NAME_COLUMN = 1;
+    public final static int ROUTEDB_ENABLED_COLUMN = 2;
+    public final static int ROUTEDB_METER_TYPE_COLUMN = 3;
+	public final static int ROUTEDB_METER_NUMBER_COLUMN = 4;
+	public final static int ROUTEDB_ADDRESS_COLUMN = 5;
+    public final static int ROUTEDB_COLL_GROUP_NAME_COLUMN = 6;
+    public final static int ROUTEDB_TEST_COLL_GROUP_NAME_COLUMN = 7;
+    public final static int ROUTEDB_BILL_GROUP_NAME_COLUMN = 8;
 	
 	/** String values for column representation */
-	public final static String ROUTE_NAME_STRING = "Route Name";
-	public final static String METER_NAME_STRING = "Meter Name";
-	public final static String METER_TYPE_STRING = "Type";
-	public final static String METER_NUMBER_STRING = "Meter #";
-	public final static String ADDRESS_STRING  = "Address";
-	public final static String DISABLED_STRING  = "Disabled";
+	public final static String ROUTEDB_ROUTE_NAME_STRING = "Route Name";
+	public final static String ROUTEDB_METER_NAME_STRING = "Meter Name";
+    public final static String ROUTEDB_ENABLED_STRING  = "Enabled";
+	public final static String ROUTEDB_METER_TYPE_STRING = "Type";
+	public final static String ROUTEDB_METER_NUMBER_STRING = "Meter #";
+	public final static String ROUTEDB_ADDRESS_STRING  = "Address";
+    public final static String ROUTEDB_COLL_GROUP_NAME_STRING = "Collection Group";
+    public final static String ROUTEDB_TEST_COLL_GROUP_NAME_STRING = "Alternate Group";
+    public final static String ROUTEDB_BILL_GROUP_NAME_STRING = "Billing Group";
+
 	
 	public static final int ORDER_BY_METER_NAME = 0;
 	public static final int ORDER_BY_METER_NUMBER = 1;
@@ -37,11 +47,7 @@ public class RouteDBModel extends CarrierDBModel
 
 	private static final String ATT_ORDER_BY = "orderBy";
 	
-	/** A string for the title of the data */
-	private static String title = "Database Report";
-		
-	public Comparator routeDBComparator = new java.util.Comparator<Meter>()
-	{
+	public Comparator<Meter> routeDBComparator = new java.util.Comparator<Meter>() {
 		public int compare(Meter o1, Meter o2){
 
 		    String thisVal = o1.getRoute();
@@ -64,31 +70,45 @@ public class RouteDBModel extends CarrierDBModel
 	};
 	
 	@Override
-    public Object getAttribute(int columnIndex, Object o)
-    {
+    public Object getAttribute(int columnIndex, Object o) {
         if ( o instanceof Meter)
         {
             Meter meter = (Meter)o;
             switch( columnIndex)
             {
-                case PAO_NAME_COLUMN:
+                case ROUTEDB_ROUTE_NAME_COLUMN:
+                    return meter.getRoute();
+
+                case ROUTEDB_METER_NAME_COLUMN:
                     return meter.getName();
                 
-                case PAO_DISABLE_FLAG_COLUMN:
-                    return (meter.isDisabled() ? "Disabled" : "");
+                case ROUTEDB_ENABLED_COLUMN:
+                    return (meter.isDisabled() ? "No" : "Yes");
         
-                case PAO_TYPE_COLUMN:
+                case ROUTEDB_METER_TYPE_COLUMN:
                     return meter.getTypeStr();
 
-                case METER_NUMBER_COLUMN:
+                case ROUTEDB_METER_NUMBER_COLUMN:
                     return meter.getMeterNumber();
                     
-                case ADDRESS_COLUMN:
+                case ROUTEDB_ADDRESS_COLUMN:
                     return meter.getAddress();
-    
-                case ROUTE_NAME_COLUMN:
-                    return meter.getRoute();
-                
+
+                case ROUTEDB_COLL_GROUP_NAME_COLUMN: {
+                    SystemGroupEnum systemGroupEnum = SystemGroupEnum.COLLECTION;
+                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
+                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                }
+                case ROUTEDB_TEST_COLL_GROUP_NAME_COLUMN: {
+                    SystemGroupEnum systemGroupEnum = SystemGroupEnum.ALTERNATE;
+                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
+                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                }
+                case ROUTEDB_BILL_GROUP_NAME_COLUMN: {
+                    SystemGroupEnum systemGroupEnum = SystemGroupEnum.BILLING;
+                    SimpleReportGroup group = reportGroupService.getSimpleGroupMembership(systemGroupEnum, meter);
+                    return reportGroupService.getPartialGroupName(systemGroupEnum, group);
+                }
             }
         }
         return null;
@@ -96,8 +116,7 @@ public class RouteDBModel extends CarrierDBModel
 
 
 	@Override
-	public void collectData()
-	{
+	public void collectData() {
 		super.collectData();
         
 		if(getData() != null) {
@@ -108,67 +127,77 @@ public class RouteDBModel extends CarrierDBModel
 		}
 	}
 
-	/* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getColumnNames()
-	 */
-	public String[] getColumnNames()
-	{
+    @Override
+	public String[] getColumnNames() {
 		if( columnNames == null)
 		{
 			columnNames = new String[]{
-			    ROUTE_NAME_STRING,
-				METER_NAME_STRING,
-				METER_NUMBER_STRING,
-				ADDRESS_STRING,
-				METER_TYPE_STRING,
-				DISABLED_STRING
+			    ROUTEDB_ROUTE_NAME_STRING,
+			    ROUTEDB_METER_NAME_STRING,
+			    ROUTEDB_ENABLED_STRING,
+			    ROUTEDB_METER_TYPE_STRING,
+			    ROUTEDB_METER_NUMBER_STRING,
+			    ROUTEDB_ADDRESS_STRING,
+			    ROUTEDB_COLL_GROUP_NAME_STRING,
+			    ROUTEDB_TEST_COLL_GROUP_NAME_STRING,
+			    ROUTEDB_BILL_GROUP_NAME_STRING
 			};
 		}
 		return columnNames;
 	}
 	
-    /* (non-Javadoc)
-	 * @see com.cannontech.analysis.Reportable#getColumnProperties()
-	 */
-	public ColumnProperties[] getColumnProperties()
-	{
+    @Override
+	public ColumnProperties[] getColumnProperties() {
 		if(columnProperties == null)
 		{
 			columnProperties = new ColumnProperties[]{
 				new ColumnProperties(0, 1, 200, null),
 				new ColumnProperties(0, 1, 200, null),
-				new ColumnProperties(200, 1, 100, null),
-				new ColumnProperties(300, 1, 100, null),
-				new ColumnProperties(400, 1, 100, null),
-				new ColumnProperties(500, 1, 100, null)
+                new ColumnProperties(200, 1, 40, null),
+                new ColumnProperties(240, 1, 60, null),
+                new ColumnProperties(300, 1, 60, null),
+                new ColumnProperties(360, 1, 60, null),
+                new ColumnProperties(420, 1, 100, null),
+                new ColumnProperties(520, 1, 100, null),
+                new ColumnProperties(620, 1, 100, null)
 			};
 		}
 		return columnProperties;
 	}
 
 	@Override
-	public String getTitleString()
-	{
+    public Class[] getColumnTypes() {
+        if( columnTypes == null)
+        {
+            columnTypes = new Class[]{
+                String.class,
+                String.class,
+                String.class,
+                String.class,
+                String.class,
+                String.class,
+                String.class,
+                String.class,
+                String.class
+            };
+        }
+        return columnTypes;
+    }
+    
+	@Override
+	public String getTitleString() {
 		return title + " - Routes";
 	}
-	
-	/**
-	 * @return
-	 */
-	public int getOrderBy()
-	{
+
+	public int getOrderBy() {
 		return orderBy;
 	}
 
-	/**
-	 * @param i
-	 */
-	public void setOrderBy(int i)
-	{
+	public void setOrderBy(int i) {
 		orderBy = i;
 	}
-	public String getOrderByString(int orderBy)
-	{
+	
+	public String getOrderByString(int orderBy) {
 		switch (orderBy)
 		{
 			case ORDER_BY_METER_NAME:
@@ -178,13 +207,13 @@ public class RouteDBModel extends CarrierDBModel
 		}
 		return "UNKNOWN";
 	}
-	public static int[] getAllOrderBys()
-	{
+	
+	public static int[] getAllOrderBys() {
 		return ALL_ORDER_BYS;
-	}	
+	}
+	
 	@Override
-	public String getHTMLOptionsTable()
-	{
+	public String getHTMLOptionsTable() {
 	    String html = "";
 		html += "<table align='center' width='90%' border='0' cellspacing='0' cellpadding='0' class='TableCell'>" + LINE_SEPARATOR;
 		html += "  <tr>" + LINE_SEPARATOR;
@@ -209,9 +238,9 @@ public class RouteDBModel extends CarrierDBModel
 		html += "</table>" + LINE_SEPARATOR;
 		return html;
 	}
+	
 	@Override
-	public void setParameters( HttpServletRequest req )
-	{
+	public void setParameters( HttpServletRequest req ) {
 	    super.setParameters(req);
 		if( req != null)
 		{
