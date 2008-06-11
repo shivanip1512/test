@@ -139,10 +139,13 @@ public class FilterCapControlCacheImpl implements CapControlCache {
 	public List<CCArea> getCbcAreas() {
 		List<CCArea> aList = cache.getCbcAreas();
 		List<CCArea> retList = new ArrayList<CCArea>(aList.size());
-		
-		for( CCArea a : aList ){
-			if ( filter.valid(a) )
-				retList.add(a);
+
+		synchronized (aList) {
+    		for( CCArea a : aList ){
+    			if ( filter.valid(a) ) {
+    				retList.add(a);
+    			}
+    		}
 		}
 		return retList;
 	}

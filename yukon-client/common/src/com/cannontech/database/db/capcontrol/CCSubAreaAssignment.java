@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.JdbcTemplateHelper;
@@ -18,7 +18,6 @@ public class CCSubAreaAssignment extends DBPersistent{
     private Integer areaID;
     private Integer substationBusID;
     private Integer displayOrder;
-    private static List<CCSubAreaAssignment> subStationsForAreaList = new ArrayList<CCSubAreaAssignment>();
     public static final String TABLE_NAME = "CCSubAreaAssignment";
     public static final String SETTER_COLUMNS[] = { "DisplayOrder" };
     public static final String CONSTRAINT_COLUMNS[] = { "AreaID", "SubstationBusID" };
@@ -57,16 +56,17 @@ public class CCSubAreaAssignment extends DBPersistent{
         allSubs.append("CCSubAreaAssignment");
         allSubs.append("WHERE AreaID = ? ORDER BY DisplayOrder");
         JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate();
-        subStationsForAreaList = new ArrayList<CCSubAreaAssignment>();
-        yukonTemplate.query(allSubs.toString(), new Integer[] { areaID }, new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                CCSubAreaAssignment assign = new CCSubAreaAssignment();
-                assign.setAreaID(rs.getInt(1));
-                assign.setSubstationBusID(rs.getInt(2));
-                assign.setDisplayOrder(rs.getInt(3));
-                subStationsForAreaList.add(assign);
-            }
-        });
+        List<CCSubAreaAssignment> subStationsForAreaList = new ArrayList<CCSubAreaAssignment>();
+        yukonTemplate.query(allSubs.toString(), new Integer[] { areaID },
+            new RowMapper() {
+                public Object mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    CCSubAreaAssignment assign = new CCSubAreaAssignment();
+                    assign.setAreaID(rs.getInt(1));
+                    assign.setSubstationBusID(rs.getInt(2));
+                    assign.setDisplayOrder(rs.getInt(3));
+                    return assign;
+                }
+            });
         return subStationsForAreaList;
     }
 
