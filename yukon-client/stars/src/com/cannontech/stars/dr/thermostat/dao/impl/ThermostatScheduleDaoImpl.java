@@ -2,14 +2,17 @@ package com.cannontech.stars.dr.thermostat.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.RowCallbackHandler;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
@@ -278,6 +281,27 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
 		
 		simpleJdbcTemplate.update(deleteScheduleSql.toString(), scheduleId);
 		
+	}
+	
+	@Override
+	public List<Integer> getInventoryIdsForSchedules(Integer... scheduleIds) {
+
+		String ids = StringUtils.join(scheduleIds, ",");
+
+		SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT InventoryId");
+        sql.append("FROM LMThermostatSchedule");
+        sql.append("WHERE ScheduleId IN (" + ids + ")");
+
+        final List<Integer> inventoryIds = new ArrayList<Integer>();
+        simpleJdbcTemplate.getJdbcOperations().query(sql.toString(), new RowCallbackHandler(){
+			@Override
+			public void processRow(ResultSet rs) throws SQLException {
+				int inventoryId = rs.getInt("InventoryId");
+				inventoryIds.add(inventoryId);
+			}});
+		
+		return inventoryIds;
 	}
 
     /**

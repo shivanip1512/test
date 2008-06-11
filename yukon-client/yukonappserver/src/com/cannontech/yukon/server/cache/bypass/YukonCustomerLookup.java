@@ -47,7 +47,7 @@ public class YukonCustomerLookup
 			if( stmt.getRowCount() > 0 )
 			{
 			    int customerID = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
-                int customerType = ((java.math.BigDecimal) stmt.getRow(0)[0]).intValue();
+                int customerType = ((java.math.BigDecimal) stmt.getRow(0)[1]).intValue();
                 theCustomer = LiteFactory.createCICustomerOrLiteCustomer(CtiUtilities.getDatabaseAlias(), customerID, customerType);
             }
 		}

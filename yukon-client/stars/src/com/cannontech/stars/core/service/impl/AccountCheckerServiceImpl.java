@@ -26,7 +26,6 @@ import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
-import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
 import com.cannontech.stars.util.StarsUtils;
 
 public class AccountCheckerServiceImpl implements AccountCheckerService {
@@ -51,9 +50,15 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     @Override
     public void checkThermostatSchedule(final LiteYukonUser user, final Integer... scheduleIds)
             throws NotAuthorizedException {
-        
-        final List<Integer> actualScheduleIds = getThermostatSchedulesIdsByUser(user);
-        doCheck(user, actualScheduleIds, scheduleIds, "ThermostatSchedule");
+    	
+    	if(!this.isEmptyIds(scheduleIds)) {
+    		
+	        // Check schedule authorization by looking at the inventory that each schedule is
+	    	// associated with.
+	    	List<Integer> inventoryIds = thermostatScheduleDao.getInventoryIdsForSchedules(scheduleIds);
+	    	
+	        this.checkInventory(user, inventoryIds.toArray(new Integer[]{}));
+    	}
     }
     
     @Override
@@ -198,21 +203,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
             }
         }
         return true;
-    }
-    
-    private List<Integer> getThermostatSchedulesIdsByUser(LiteYukonUser user) {
-        int customerAccountId = getCustomerAccountId(user);
-
-        final List<ScheduleDropDownItem> list = 
-            thermostatScheduleDao.getSavedThermostatSchedulesByAccountId(customerAccountId);
-        final List<Integer> scheduleIdList = new ArrayList<Integer>(list.size());
-
-        for (final ScheduleDropDownItem schedule : list) {
-            Integer scheduleId = schedule.getId();
-            scheduleIdList.add(scheduleId);
-        }
-        
-        return scheduleIdList;
     }
     
     private List<Integer> getInventoryIdsByUser(LiteYukonUser user) {

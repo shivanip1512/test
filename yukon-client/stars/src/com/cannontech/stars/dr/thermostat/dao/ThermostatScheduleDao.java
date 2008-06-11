@@ -55,5 +55,12 @@ public interface ThermostatScheduleDao {
      * @param scheduleId - Id of schedule to delete
      */
     public void delete(int scheduleId);
+    
+    /**
+     * Method to get the inventory ids that the given schedules are associated with
+     * @param scheduleId - Ids of schedules in question
+     * @return - list inventory ids for schedules
+     */
+    public List<Integer> getInventoryIdsForSchedules(Integer... scheduleId);
 
 }

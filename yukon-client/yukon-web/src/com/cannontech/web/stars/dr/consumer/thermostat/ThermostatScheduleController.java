@@ -229,9 +229,7 @@ public class ThermostatScheduleController extends AbstractThermostatController {
                 // schedule
 
                 schedule.setId(scheduleId);
-
-                // Default the inventory id
-                schedule.setInventoryId(0);
+                schedule.setInventoryId(thermostatId);
 
                 // Save changes to schedule
                 thermostatService.updateSchedule(account,
