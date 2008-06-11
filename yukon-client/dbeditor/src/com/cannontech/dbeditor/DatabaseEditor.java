@@ -2,6 +2,7 @@ package com.cannontech.dbeditor;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -11,8 +12,10 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Vector;
-import java.util.prefs.*;
+import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
@@ -113,7 +116,24 @@ public class DatabaseEditor
 {
    //all editor frame sizes
    public static final Dimension EDITOR_FRAME_SIZE = new Dimension(435, 600);
-   public static final URL DBEDITOR_GIF = DatabaseEditor.class.getResource("/dbEditorIcon.gif");
+   
+   public static final URL DBEDITOR_IMG_16 = DatabaseEditor.class.getResource("/DatabaseEditor16.gif");
+   public static final URL DBEDITOR_IMG_24 = DatabaseEditor.class.getResource("/DatabaseEditor24.gif");
+   public static final URL DBEDITOR_IMG_32 = DatabaseEditor.class.getResource("/DatabaseEditor32.gif");
+   public static final URL DBEDITOR_IMG_48 = DatabaseEditor.class.getResource("/DatabaseEditor48.gif");
+   public static final URL DBEDITOR_IMG_64 = DatabaseEditor.class.getResource("/DatabaseEditor64.gif");
+   
+   public static List<Image> getIconsImages() {
+       
+       List<Image> iconsImages = new ArrayList<Image>();
+       iconsImages.add(Toolkit.getDefaultToolkit().getImage(DBEDITOR_IMG_16));
+       iconsImages.add(Toolkit.getDefaultToolkit().getImage(DBEDITOR_IMG_24));
+       iconsImages.add(Toolkit.getDefaultToolkit().getImage(DBEDITOR_IMG_32));
+       iconsImages.add(Toolkit.getDefaultToolkit().getImage(DBEDITOR_IMG_48));
+       iconsImages.add(Toolkit.getDefaultToolkit().getImage(DBEDITOR_IMG_64));
+       
+       return iconsImages;
+   }
    
 	//gui elements of the app
 	private DBEditorTreePopUpMenu treeNodePopUpMenu = null;
@@ -591,7 +611,7 @@ private JTreeEditorFrame createInternalEditorFrame()
 		
 	});
 	
-	ImageIcon editorIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
+	ImageIcon editorIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(DBEDITOR_IMG_16));
 	frame.setFrameIcon(editorIcon);
 
 	return frame;
@@ -2223,7 +2243,7 @@ public static void main(String[] args) {
                         Integer.parseInt(lastWidth),
                         Integer.parseInt(lastHeight));
 
-            f.setIconImage(Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
+            f.setIconImages(getIconsImages());
 
             ClientSession session = ClientSession.getInstance();
             boolean loggingIn = true;
@@ -2941,7 +2961,7 @@ private void showChangeTypeWizardPanel(WizardPanel wizard) {
 	changingObjectType = true;
 	wizard.setValue(null);
 	f.setVisible(true);
-	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(DBEDITOR_GIF));
+	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(DBEDITOR_IMG_16));
 	f.setFrameIcon(wizardIcon);
 	
 	try
@@ -3060,7 +3080,7 @@ private void showWizardPanel(WizardPanel wizard) {
 
 	wizard.setValue(null);
 	f.setVisible(true);
-	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(CtiUtilities.CTISMALL_GIF));
+	ImageIcon wizardIcon = new ImageIcon(Toolkit.getDefaultToolkit().getImage(DatabaseEditor.DBEDITOR_IMG_16));
 	f.setFrameIcon(wizardIcon);
 	
 	try
