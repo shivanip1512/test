@@ -50,9 +50,7 @@ public class CollectingBulkProcessorCallback<T> implements BulkProcessorCallback
         this.complete = true;
     }
     
-    public boolean isSuccessfull() {
-        return this.complete && this.failedException == null;
-    }
+    
     
     // is processing completely blows up, this is the exception
     public void processingFailed(Exception e) {
@@ -104,6 +102,10 @@ public class CollectingBulkProcessorCallback<T> implements BulkProcessorCallback
         return this.complete;
     }
 
+    public boolean isSuccessfull() {
+        return isComplete() && !isProcessingFailed();
+    }
+    
     public boolean isProcessingFailed() {
         return failedException != null;
     }
