@@ -88,7 +88,7 @@ public class MeterOutageModel extends ReportModelBase
 	{
 		try
 		{
-Meter meter = new Meter();
+		    Meter meter = new Meter();
             
             int paobjectID = rset.getInt(1);
             meter.setDeviceId(paobjectID);
@@ -99,7 +99,7 @@ Meter meter = new Meter();
             meter.setType(deviceType);
             meter.setTypeStr(type);
             String disabledStr = rset.getString(4);
-            boolean disabled = CtiUtilities.isTrue(disabledStr);
+            boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
             meter.setDisabled(disabled);
             String meterNumber = rset.getString(5);
             meter.setMeterNumber(meterNumber);
