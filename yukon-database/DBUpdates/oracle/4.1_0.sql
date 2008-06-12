@@ -675,6 +675,13 @@ INSERT INTO YukonRoleProperty VALUES(-100013, -1000, 'Three Phase', 'false', 'di
 /* @error ignore-end */
 /* End YUK-5999 */
 
+/* Start YUK-5365 */
+/* @error ignore-begin */
+INSERT INTO YukonGroupRole VALUES (-779,-301,-900,-90004,'(none)'); 
+INSERT INTO YukonRoleProperty VALUES (-1112,-2,'applicable_point_type_key',' ','The name of the set of CICustomerPointData TYPES that should be set for customers.'); 
+/* @error ignore-end */
+/* End YUK-5365 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
