@@ -1,7 +1,6 @@
 package com.cannontech.analysis.controller;
 
 import java.util.HashSet;
-import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -50,8 +49,6 @@ public class LMControlSummaryController extends ReportControllerBase {
         super.setRequestParameters(request);
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
         if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
-            String filterValueList = request.getParameter(ReportModelBase.ATT_FILTER_MODEL_VALUES).trim();
-            StringTokenizer st = new StringTokenizer(filterValueList, ",\t\n\r\f");
             if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
                 int idsArray[] = ServletRequestUtils.getIntParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);
                 HashSet<Integer> programsSet = new HashSet<Integer>();
