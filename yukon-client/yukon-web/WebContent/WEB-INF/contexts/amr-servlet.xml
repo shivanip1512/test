@@ -82,7 +82,7 @@
         <property name="attributeService" ref="attributeService" />
 		<property name="meterDao" ref="meterDao" />
         <property name="meterReadService" ref="meterReadService" />
-        <property name="paoDao" ref="paoDao" />
+        <property name="deviceDao" ref="deviceDao" />
     </bean>
     
     <bean id="ManualCommandController" class="com.cannontech.web.amr.manual.ManualCommandController" >

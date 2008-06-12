@@ -1909,6 +1909,12 @@
         	<attribute name="TOU_RATE_D_PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate D kW)" />
         	</attribute>
+            <attribute name="MINIMUM_VOLTAGE">
+                <basicLookup point="Min Volts" />
+            </attribute>
+            <attribute name="MAXIMUM_VOLTAGE">
+                <basicLookup point="Max Volts" />
+            </attribute>
         </attributes>
     </device>
     <device>
@@ -2300,6 +2306,12 @@
         	<attribute name="TOU_RATE_D_PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate D kW)" />
         	</attribute>
+            <attribute name="MINIMUM_VOLTAGE">
+                <basicLookup point="Min Volts" />
+            </attribute>
+            <attribute name="MAXIMUM_VOLTAGE">
+                <basicLookup point="Max Volts" />
+            </attribute>
         </attributes>
     </device>
         <device>
@@ -2691,6 +2703,12 @@
         	<attribute name="TOU_RATE_D_PEAK_DEMAND">
         		<basicLookup point="Peak kW (Rate D kW)" />
         	</attribute>
+            <attribute name="MINIMUM_VOLTAGE">
+                <basicLookup point="Min Volts" />
+            </attribute>
+            <attribute name="MAXIMUM_VOLTAGE">
+                <basicLookup point="Max Volts" />
+            </attribute>
         </attributes>
      </device>
 <!--

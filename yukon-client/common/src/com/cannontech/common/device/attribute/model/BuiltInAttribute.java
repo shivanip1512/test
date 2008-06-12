@@ -19,7 +19,10 @@ public enum BuiltInAttribute implements Attribute {
     VOLTAGE("Voltage"), 
     VOLTAGE_PROFILE("Voltage Profile"),
     KVAR("kVAr"),
-    KVARH("kVArh");
+    KVARH("kVArh"),
+    MINIMUM_VOLTAGE("Minimum Voltage"),
+    MAXIMUM_VOLTAGE("Maximum Voltage"),
+    ;
     
     private BuiltInAttribute(String description) {
         this.description = description;
