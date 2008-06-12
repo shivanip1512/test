@@ -22,6 +22,10 @@
 				}
 </style>
 
+<cti:includeScript link="/JavaScript/extjs/ext-base.js"/>
+<cti:includeScript link="/JavaScript/extjs/ext-all.js"/>
+<cti:includeScript link="/JavaScript/commanderPrompter.js"/>
+
 <script language="JavaScript">
     function disableButton(x) {
         x.disabled = true;
@@ -35,55 +39,67 @@
 
 	<h2>Manual Commander</h2>
 	<br>
-	
-	<div style="width: 600px">
-	
-      <tags:widgetContainer deviceId="${deviceId}">
-		<tags:widget bean="meterInformationWidget" />
-      </tags:widgetContainer>
-	  <BR>
-		<tags:boxContainer title="Execute Command" hideEnabled="false">
-			<form name="commandForm" method="POST" action="/servlet/CommanderServlet">
-	
-				<input type="hidden" name="deviceID" value="${device.yukonID}">
-			    <input type="hidden" name="timeOut" value="8000">
-			    <input id="redirect" type="hidden" name="REDIRECT" value="/spring/amr/manualCommand/home?deviceId=${deviceId}">
-			    <input id="referrer" type="hidden" name="REFERRER" value="/spring/amr/manualCommand/home?deviceId=${deviceId}">
-	
-				<tags:nameValueContainer altRowOn="true">
-					<tags:nameValue name="Type">
-						${deviceType}
-					</tags:nameValue>
-					<tags:nameValue name="Common Commands">
-		            	<select name="commonCommand" onChange="loadCommand()" onInit="loadCommand()">
-		                	<option value="">Select a Command</option>                
-							
-							<c:forEach var="command" items="${commandList}">
-								<option value="${command.command}" >${command.label}</option>
-							</c:forEach>
-	
-						</select>
-					</tags:nameValue>
-					<tags:nameValue name="Execute Command">
-		            	<input type="text" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="${YC_BEAN.commandString}">
-					</tags:nameValue>
-				</tags:nameValueContainer>	
-				
-				<br>
-				<input type="submit" name="execute" value="Execute" onClick="disableButton(this)">					
-				<br><br>
-	    		
-	    		<div class="scroll">
-	   	    		<c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
-	        	</div>
-	        	<div>
-		    		<input type="submit" name="clearText" value="Clear Results">
-		       		<input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
-		       	</div>
-				
-			</form>
-		</tags:boxContainer>
-		
-	</div>
-		
+    
+    <tags:widgetContainer deviceId="${deviceId}" identify="false">
+    
+        <table class="widgetColumns">
+            <tr>
+                <td class="widgetColumnCell" valign="top">
+                
+                    <tags:boxContainer title="Execute Command" hideEnabled="false" styleClass="widgetContainer">
+                        <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
+                
+                            <input type="hidden" name="deviceID" value="${device.yukonID}">
+                            <input type="hidden" name="timeOut" value="8000">
+                            <input id="redirect" type="hidden" name="REDIRECT" value="/spring/amr/manualCommand/home?deviceId=${deviceId}">
+                            <input id="referrer" type="hidden" name="REFERRER" value="/spring/amr/manualCommand/home?deviceId=${deviceId}">
+                
+                            <tags:nameValueContainer altRowOn="true">
+                                <tags:nameValue name="Type">
+                                    ${deviceType}
+                                </tags:nameValue>
+                                <tags:nameValue name="Common Commands">
+                                    <select name="commonCommand" onchange="loadCommanderCommand(this, 'command');">
+                                        <option value="">Select a Command</option>                
+                                        
+                                        <c:forEach var="command" items="${commandList}">
+                                            <option value="${command.command}" >${command.label}</option>
+                                        </c:forEach>
+                                    </select>
+                                </tags:nameValue>
+                                <tags:nameValue name="Execute Command">
+                                    <input type="text" id="command" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="${YC_BEAN.commandString}">
+                                </tags:nameValue>
+                            </tags:nameValueContainer>  
+                            
+                            <br>
+                            <input type="submit" name="execute" value="Execute" onClick="disableButton(this)">                  
+                            <br><br>
+                            
+                            <div class="scroll">
+                                <c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
+                            </div>
+                            <div>
+                                <input type="submit" name="clearText" value="Clear Results">
+                                <input type="reset" name="refresh" value="Refresh" onClick="window.location.reload()">
+                            </div>
+                            
+                        </form>
+                    </tags:boxContainer>
+        
+                </td>
+                
+                <td class="widgetColumnCell" valign="top">
+                    <div style="width:600px;">
+                    <tags:widgetContainer deviceId="${deviceId}">
+                       <tags:widget bean="meterInformationWidget" />
+                    </tags:widgetContainer>
+                    </div>
+                </td>
+                
+            </tr>
+        </table>
+    
+    </tags:widgetContainer>
+    
 </cti:standardPage>		
