@@ -349,6 +349,42 @@ function checkDates(){
         if(filterObjectsMap.keySet().contains(ReportFilter.CAPBANK)){
             filters.add(ReportFilter.CAPBANK);
         }
+        if(filterObjectsMap.keySet().contains(ReportFilter.METER)){
+            filters.add(ReportFilter.METER);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.DEVICE)){
+            filters.add(ReportFilter.DEVICE);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.GROUPS)){
+            filters.add(ReportFilter.GROUPS);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.LMCONTROLAREA)){
+            filters.add(ReportFilter.LMCONTROLAREA);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.LMGROUP)){
+            filters.add(ReportFilter.LMGROUP);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.PORT)){
+            filters.add(ReportFilter.PORT);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.PROGRAM)){
+            filters.add(ReportFilter.PROGRAM);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.RECEIVER)){
+            filters.add(ReportFilter.RECEIVER);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.ROUTE)){
+            filters.add(ReportFilter.ROUTE);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.RTU)){
+            filters.add(ReportFilter.RTU);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.SCHEDULE)){
+            filters.add(ReportFilter.SCHEDULE);
+        }
+        if(filterObjectsMap.keySet().contains(ReportFilter.TRANSMITTER)){
+            filters.add(ReportFilter.TRANSMITTER);
+        }
         for (ReportFilter filter : filters) {%>
 				document.getElementById('Div<%=filter.getFilterTitle()%>').style.display = (filterBy == <%=filter.ordinal()%>)? "block" : "none";
         <% 
