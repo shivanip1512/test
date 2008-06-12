@@ -344,7 +344,7 @@ public abstract class CategoryEditorPanel extends DataInputPanel {
             // Create and initialize the internal frame
             JInternalFrame frame = new JInternalFrame("Category editor", true, true, true, true);
             ImageIcon editorIcon = new ImageIcon(java.awt.Toolkit.getDefaultToolkit()
-                                                                 .getImage(DatabaseEditor.DBEDITOR_GIF));
+                                                                 .getImage(DatabaseEditor.DBEDITOR_IMG_16));
             frame.setFrameIcon(editorIcon);
 
             // Add the new internal frame to the existing desktop pane
