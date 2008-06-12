@@ -25,7 +25,7 @@ import com.cannontech.database.data.pao.PAOGroups;
  *  String routeName  
  * @author snebben
  */
-public class MeterOutageModel extends ReportModelBase
+public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 {
 	/** Number of columns */
 	protected final int NUMBER_COLUMNS = 7;
@@ -98,8 +98,7 @@ public class MeterOutageModel extends ReportModelBase
             int deviceType = PAOGroups.getDeviceType(type);
             meter.setType(deviceType);
             meter.setTypeStr(type);
-            String disabledStr = rset.getString(4);
-            boolean disabled = CtiUtilities.isTrue(disabledStr.charAt(0));
+            boolean disabled = CtiUtilities.isTrue(rset.getString(4).charAt(0));
             meter.setDisabled(disabled);
             String meterNumber = rset.getString(5);
             meter.setMeterNumber(meterNumber);

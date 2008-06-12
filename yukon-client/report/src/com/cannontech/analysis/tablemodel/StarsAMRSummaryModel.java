@@ -109,7 +109,7 @@ public class StarsAMRSummaryModel extends ReportModelBase<StarsAMRDetail> implem
             meter.setName(rs.getString("PAONAME"));
             meter.setTypeStr(rs.getString("TYPE"));
             meter.setType(PAOGroups.getDeviceType(rs.getString("TYPE")));
-            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG")));
+            meter.setDisabled(CtiUtilities.isTrue(rs.getString("DISABLEFLAG").charAt(0)));
             meter.setMeterNumber(rs.getString("METERNUMBER"));
             meter.setAddress(rs.getString("ADDRESS"));
             meter.setRouteId(rs.getInt("ROUTEPAOBJECTID"));
