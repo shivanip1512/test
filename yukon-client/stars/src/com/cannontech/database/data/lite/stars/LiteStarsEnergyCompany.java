@@ -2570,36 +2570,49 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     /**
-     * Search customer accounts by hardware alternate tracking #.
+     * Search customer accounts by account alternate tracking # (customerNumber from Customer table).
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
     public List<Object> searchAccountByAltTrackNo(String altTrackNo, boolean searchMembers) {
-        List<Object> invList = searchInventoryByAltTrackNo( altTrackNo, false );
         List<Object> accountList = new ArrayList<Object>();
         
-        for (int i = 0; i < invList.size(); i++) {
-            LiteInventoryBase inv = (LiteInventoryBase) invList.get(i);
-            if (inv.getAccountID() > 0) {
-                LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( inv.getAccountID(), true );
-                if (searchMembers)
-                    accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, this) );
-                else
-                    accountList.add( liteAcctInfo );
-            }
-        }
-        
-        if (searchMembers) {
-            List<LiteStarsEnergyCompany> children = getChildren();
-            synchronized (children) {
-                for (final LiteStarsEnergyCompany company : children) {
-                    List<Object> memberList = company.searchAccountByAltTrackNo( altTrackNo, searchMembers );
-                    accountList.addAll( memberList );
+        if (isAccountsLoaded()) {
+            List<LiteStarsCustAccountInformation> custAcctInfoList = getAllCustAccountInformation();
+            for (final LiteStarsCustAccountInformation liteAcctInfo : custAcctInfoList) {
+                LiteCustomer liteDude = liteAcctInfo.getCustomer();
+                if (liteDude.getCustomerNumber().toUpperCase().startsWith( altTrackNo.toUpperCase() )) {
+                    if (searchMembers)
+                        accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, this) );
+                    else
+                        accountList.add( liteAcctInfo );
                 }
             }
         }
+        else {
+            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByCustomerNumber( altTrackNo + "%", getLiteID() );
+            if (accountIDs != null) {
+               for (int i = 0; i < accountIDs.length; i++) {
+                   LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );
+                   if (searchMembers)
+                       accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, this) );
+                   else
+                       accountList.add( liteAcctInfo );
+               }
+           }
+       }
         
-        return accountList;
+       if (searchMembers) {
+           List<LiteStarsEnergyCompany> children = getChildren();
+           synchronized (children) {
+               for (final LiteStarsEnergyCompany company : children) {
+                   List<Object> memberList = company.searchAccountByAltTrackNo( altTrackNo, searchMembers );
+                   accountList.addAll( memberList );
+               }
+           }
+       }
+        
+       return accountList;
     }
     
     /**

@@ -446,6 +446,45 @@ public class CustomerAccount extends DBPersistent {
         return returnAcctIDs;
     }
     
+    public static int[] searchByCustomerNumber(String searchNumber, int energyCompanyID) {
+        int[] returnAcctIDs = null;
+        String sql = "SELECT DISTINCT acct.AccountID " +
+                    " FROM ECToAccountMapping map, " + TABLE_NAME + " acct, " + Customer.TABLE_NAME + " cust " + 
+                    " WHERE map.EnergyCompanyID = ?" + 
+                    " AND map.AccountID = acct.AccountID " +
+                    " AND acct.CustomerID = cust.CustomerID " + 
+                    " AND UPPER(cust.CustomerNumber) LIKE UPPER(?)";
+
+        PreparedStatement pstmt = null;
+        Connection conn = null;
+        ResultSet rset = null;
+        
+        try {
+            conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
+            
+            pstmt = conn.prepareStatement(sql);
+            pstmt.setInt(1, energyCompanyID);
+            pstmt.setString(2, searchNumber);
+
+            rset = pstmt.executeQuery();
+            
+            ArrayList<Integer> accountIDs = new ArrayList<Integer>();
+            while(rset.next())
+                accountIDs.add(rset.getInt(1));
+            
+            returnAcctIDs = new int[accountIDs.size()];
+            for(int i = 0; i < accountIDs.size(); i++)
+                returnAcctIDs[i] = accountIDs.get(i).intValue();
+        }
+        catch (Exception e) {
+            CTILogger.error( e.getMessage(), e );
+        }
+        finally {
+            SqlUtils.close(rset, pstmt, conn );
+        }
+        return returnAcctIDs;
+    }
+    
     public static int[] searchByAddress(String address, int energyCompanyID) {
     	String sql = "SELECT DISTINCT acct.AccountID " +
     			"FROM CustomerAccount acct, ECToAccountMapping map, AccountSite site, Address addr " +

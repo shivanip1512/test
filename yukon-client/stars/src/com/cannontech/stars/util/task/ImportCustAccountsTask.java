@@ -1457,7 +1457,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 			int appID = -1;
 			for (int j = 0; j < liteAcctInfo.getAppliances().size(); j++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(j);
-				if (!forcedUnenroll && liteApp.getProgramID() == programs[0][0]) {
+				if (!forcedUnenroll && liteApp.getProgramID() == programs[0][0] && liteApp.getInventoryID() == liteInv.getInventoryID()) {
 					appID = liteApp.getApplianceID();
 					break;
 				}

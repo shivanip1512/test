@@ -247,6 +247,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 					hasAssignedProg = true;
 				}
 			}
+            text.append(LINE_SEPARATOR);
 			
 			if (!hasAssignedProg)
 				text.append("    (No Assigned Program)").append(LINE_SEPARATOR);
