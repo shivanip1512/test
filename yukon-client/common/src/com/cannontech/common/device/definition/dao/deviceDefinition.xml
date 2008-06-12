@@ -5019,7 +5019,7 @@
             <point init="true" type="Status">
                 <name>Disconnect Status</name>
                 <offset value="1"/>
-                <stategroup value="SystemState"/>
+                <stategroup value="ThreeStateStatus"/>
             </point>
             <point type="Status">
                 <name>Power Fail Flag</name>
