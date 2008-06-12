@@ -6,6 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.TransactionException;
@@ -20,6 +22,8 @@ import com.cannontech.web.stars.action.StarsInventoryActionController;
 
 public class PurchaseChangeController extends StarsInventoryActionController {
 
+    private SimpleJdbcOperations jdbcTemplate;
+    
     @Override
     public void doAction(final HttpServletRequest request, final HttpServletResponse response,
             final HttpSession session, final StarsYukonUser user, 
@@ -35,15 +39,12 @@ public class PurchaseChangeController extends StarsInventoryActionController {
         try
         {
             //new purchase plan
-            if(currentPlan.getPurchaseID() == null)
-            {
+            if(currentPlan.getPurchaseID() == null) {
                 currentPlan.setPurchaseID(PurchasePlan.getNextPurchaseID());
                 currentPlan.setEnergyCompanyID(pBean.getEnergyCompany().getEnergyCompanyID());
                 Transaction.createTransaction(Transaction.INSERT, currentPlan).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "New purchase plan added to database.");
-            }
-            else
-            {
+            } else {
                 Transaction.createTransaction(Transaction.UPDATE, currentPlan).execute();
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Purchase plan successfully updated in the database.");
             }
@@ -53,16 +54,16 @@ public class PurchaseChangeController extends StarsInventoryActionController {
              * Only really have to worry about deletes: updates and news have already been added
              **/
             String[] scheduleIDs = request.getParameterValues("schedules");
-            List<DeliverySchedule> oldList = DeliverySchedule.getAllDeliverySchedulesForAPlan(currentPlan.getPurchaseID());
+            List<DeliverySchedule> oldDeliveryScheduleList = DeliverySchedule.getAllDeliverySchedulesForAPlan(currentPlan.getPurchaseID());
             
-            for(int i = 0; i < oldList.size(); i++)
+            for(int i = 0; i < oldDeliveryScheduleList.size(); i++)
             {
                 boolean isFound = false;
                 if(scheduleIDs != null)
                 {
                     for(int j = 0; j < scheduleIDs.length; j++)
                     {
-                        if(scheduleIDs[j].compareTo(oldList.get(i).getScheduleID().toString()) == 0)
+                        if(scheduleIDs[j].compareTo(oldDeliveryScheduleList.get(i).getScheduleID().toString()) == 0)
                         {
                             isFound = true;
                             break;
@@ -74,7 +75,11 @@ public class PurchaseChangeController extends StarsInventoryActionController {
                  */
                 if(!isFound)
                 {
-                    Transaction.createTransaction(Transaction.DELETE, oldList.get(i)).execute();
+                    /* Delete the entry out of the schedule shipment mapping table and 
+                     * out of the schedule table */
+                    String sql = "DELETE FROM ScheduleShipmentMapping WHERE ScheduleID = ?";
+                    jdbcTemplate.update(sql, oldDeliveryScheduleList.get(i).getScheduleID());
+                    Transaction.createTransaction(Transaction.DELETE, oldDeliveryScheduleList.get(i)).execute();
                 }
             }
             
@@ -104,6 +109,10 @@ public class PurchaseChangeController extends StarsInventoryActionController {
                  */
                 if(!isFound)
                 {
+                    /* Delete the entry out of the invoice shipment mapping table and 
+                     * out of the invoice table */
+                    String sql = "DELETE FROM InvoiceShipmentMapping WHERE InvoiceID = ?";
+                    jdbcTemplate.update(sql, oldInvoiceList.get(i).getInvoiceID());
                     Transaction.createTransaction(Transaction.DELETE, oldInvoiceList.get(i)).execute();
                 }
             }
@@ -119,5 +128,10 @@ public class PurchaseChangeController extends StarsInventoryActionController {
         String redirect = request.getContextPath() + "/operator/Hardware/PurchaseTrack.jsp";
     	response.sendRedirect(redirect);
     }
+
+    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 	
+    
 }

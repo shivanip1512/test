@@ -136,7 +136,9 @@
           parent="starsInventoryActionController"/>
 	
 	<bean id="inventoryPurchaseChange" class="com.cannontech.web.stars.action.inventory.PurchaseChangeController"
-          parent="starsInventoryActionController"/>
+          parent="starsInventoryActionController">
+          <property name="jdbcTemplate" ref="simpleJdbcTemplate" />
+    </bean>
 	
 	<bean id="inventoryRequestNewPurchasePlan" class="com.cannontech.web.stars.action.inventory.RequestNewPurchasePlanController"
           parent="starsInventoryActionController"/>
