@@ -72,7 +72,7 @@
             
             <br>
             <input type="button" id="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'">
-            <input type="button" id="importButton" value="${importButton}" onclick="$('cancelButton').disabled=true;$('importButton').disabled=true;$('importConfirmForm').submit();">
+            <tags:slowInput myFormId="importConfirmForm" label="${importButton}" labelBusy="${importButton}" />
             
             <%-- UPDATE INFO ID --%>
             <input type="hidden" name="fileInfoId" value="${parsedResult.bulkFileInfo.id}">

@@ -65,7 +65,7 @@
             
             <br>
             <input type="button" id="cancelButton" value="${cancelButton}" onclick="window.location='${cancelUrl}'">
-            <input type="button" id="updateButton" value="${updateButton}" onclick="$('cancelButton').disabled=true;$('updateButton').disabled=true;$('updateConfirmForm').submit();">
+            <tags:slowInput myFormId="updateConfirmForm" label="${updateButton}" labelBusy="${updateButton}" />
             
             <%-- UPDATE INFO ID --%>
             <input type="hidden" name="fileInfoId" value="${parsedResult.bulkFileInfo.id}">

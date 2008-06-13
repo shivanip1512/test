@@ -81,7 +81,7 @@
                         <%-- file select --%>
                         <div class="normalBoldLabel" style="display:inline;">Import File:</div>
                         <input type="file" name="dataFile" size="30px">
-                        <input type="submit" name="importFile" value="Load">
+                        <tags:slowInput myFormId="uploadForm" label="Load" labelBusy="Load" />
                         
                     </form>
                 </td>

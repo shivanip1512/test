@@ -80,7 +80,7 @@
                   
                   
             <%-- EXECUTE BUTTON --%>
-			<input type="button" id="executeButton" value="Execute" onclick="$('executeButton').disabled=true;$('groupCommanderForm').submit();" />
+            <tags:slowInput myFormId="groupCommanderForm" label="Execute" labelBusy="Execute" />
     			 
     		</form>
     	</div>
