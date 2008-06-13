@@ -108,6 +108,8 @@
         class="com.cannontech.common.bulk.field.processor.impl.DisconnectAddressBulkFieldProcessor">
         <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="attributeService" ref="attributeService" />
+        <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
+        <property name="pointDao" ref="pointDao" />
         <property name="updateableFields">
             <set>
                 <ref bean="disconnectAddressBulkField" />
