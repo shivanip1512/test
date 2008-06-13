@@ -812,6 +812,12 @@ INSERT INTO YukonRoleProperty VALUES(-100013, -1000, 'Three Phase', 'false', 'di
 /* @error ignore-end */
 /* End YUK-5999 */
 
+/* Start YUK-6011 */
+UPDATE yukongrouprole 
+SET value = '/spring/stars/consumer/general' 
+WHERE value='/user/ConsumerStat/stat/General.jsp';
+/* End YUK-6011 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/

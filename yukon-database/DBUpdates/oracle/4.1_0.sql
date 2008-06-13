@@ -682,6 +682,12 @@ INSERT INTO YukonRoleProperty VALUES (-1112,-2,'applicable_point_type_key',' ','
 /* @error ignore-end */
 /* End YUK-5365 */
 
+/* Start YUK-6011 */
+UPDATE yukongrouprole 
+SET value = '/spring/stars/consumer/general' 
+WHERE value='/user/ConsumerStat/stat/General.jsp';
+/* End YUK-6011 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

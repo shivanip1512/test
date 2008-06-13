@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/11/2008 5:41:24 PM                         */
+/* Created on:     6/13/2008 4:37:46 PM                         */
 /*==============================================================*/
 
 
@@ -7576,7 +7576,7 @@ insert into yukongrouprole values (-415, -302, -305, -30500, 'true');
 insert into YukonGroupRole values (-416, -302, -102, -10205, '(none)');
 insert into YukonGroupRole values (-417, -302, -102, -10206, '(none)');
 
-insert into yukongrouprole values (-500,-300,-108,-10800,'/user/ConsumerStat/stat/General.jsp');
+insert into yukongrouprole values (-500,-300,-108,-10800,'/spring/stars/consumer/general');
 insert into yukongrouprole values (-502,-300,-108,-10802,'(none)');
 insert into yukongrouprole values (-503,-300,-108,-10803,'(none)');
 insert into yukongrouprole values (-504,-300,-108,-10804,'(none)');
@@ -7974,11 +7974,11 @@ insert into yukongrouprole values (-2191,-303,-201,-20891,'(none)');
 insert into yukongrouprole values (-2192,-303,-201,-20892,'(none)');
 insert into yukongrouprole values (-2193,-303,-201,-20893,'(none)');
 
-insert into yukongrouprole values (-2200,-304,-108,-10800,'/user/ConsumerStat/stat/General.jsp');
+insert into yukongrouprole values (-2200,-304,-108,-10800,'/spring/stars/consumer/general');
 insert into yukongrouprole values (-2202,-304,-108,-10802,'(none)');
 insert into yukongrouprole values (-2203,-304,-108,-10803,'(none)');
 insert into yukongrouprole values (-2204,-304,-108,-10804,'(none)');
-insert into yukongrouprole values (-2205,-304,-108, -10805,'yukon/DemoHeaderCES.gif');
+insert into yukongrouprole values (-2205,-304,-108,-10805,'yukon/DemoHeaderCES.gif');
 insert into yukongrouprole values (-2206,-304,-108,-10806,'(none)');
 insert into yukongrouprole values (-2207,-304,-108,-10807,'(none)');
 insert into yukongrouprole values (-2208,-304,-108,-10808,'(none)');
