@@ -221,7 +221,7 @@
     <!-- updateUpload.jsp: column header instruction text -->
     <entry key="yukon.common.device.bulk.columnHeader.update.description.ADDRESS">Address to change to.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.ADDRESS"></entry>
-    <entry key="yukon.common.device.bulk.columnHeader.update.description.DISCONNECT_ADDRESS">Address of disconnect collar for device.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.description.DISCONNECT_ADDRESS"><![CDATA[Address of disconnect collar for device.<br>Supported by MCT-410 type devices only.]]></entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.DISCONNECT_ADDRESS">Leave blank to remove existing disconnect address.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.description.ENABLE">Enable or Disable meter.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.ENABLE"><![CDATA[
