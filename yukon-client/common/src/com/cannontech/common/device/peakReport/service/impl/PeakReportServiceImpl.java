@@ -1,5 +1,6 @@
 package com.cannontech.common.device.peakReport.service.impl;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -12,9 +13,8 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
-import com.cannontech.common.device.commands.CommandDateFormatFactory;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.peakReport.dao.PeakReportDao;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
@@ -25,6 +25,8 @@ import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.SystemDateFormattingService;
+import com.cannontech.core.service.SystemDateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -35,6 +37,7 @@ import com.cannontech.user.YukonUserContext;
 public class PeakReportServiceImpl implements PeakReportService {
 
     private DateFormattingService dateFormattingService = null;
+    private SystemDateFormattingService systemDateFormattingService = null;
     private DBPersistentDao dbPersistentDao = null;
     private PaoDao paoDao = null;
     private CommandRequestDeviceExecutor commandRequestExecutor = null;
@@ -52,7 +55,7 @@ public class PeakReportServiceImpl implements PeakReportService {
         commandBuffer.append("getvalue lp peak");
         commandBuffer.append(" " + peakType.toString().toLowerCase());
         commandBuffer.append(" channel " + channel);
-        SimpleDateFormat cmdFormatter = CommandDateFormatFactory.createPeakReportCommandDateFormatter();
+        DateFormat cmdFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.PeakReport);
         commandBuffer.append(" " + cmdFormatter.format(stopDate));
         
         Calendar startDateCal = dateFormattingService.getCalendar(userContext);
@@ -289,6 +292,11 @@ public class PeakReportServiceImpl implements PeakReportService {
     @Required
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
+    }
+    
+    @Required
+    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
+        this.systemDateFormattingService = systemDateFormattingService;
     }
     
     @Required

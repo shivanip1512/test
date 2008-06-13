@@ -5,10 +5,10 @@ import static org.junit.Assert.*;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -17,6 +17,7 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.ScheduledExecutorMock;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.service.LoadProfileService;
@@ -96,7 +97,7 @@ public class LongLoadProfileServiceImplTest {
     private int cancelRan = 0;
     private YukonUserContext userContext = new SystemUserContext();
     
-    private LoadProfileService.CompletionCallback incrementingRunner = new LoadProfileServiceEmailCompletionCallbackImpl(null, null, null) {
+    private LoadProfileService.CompletionCallback incrementingRunner = new LoadProfileService.CompletionCallback() {
         public void onFailure(int returnStatus, String resultString) {
             failureRan++;
         }
@@ -158,10 +159,14 @@ public class LongLoadProfileServiceImplTest {
         
         serviceDebug.setDateFormattingService(new DateFormattingServiceImpl(){
             
-            public GregorianCalendar getCalendar(LiteYukonUser user){
-                return new GregorianCalendar();
-            }
             
+        });
+        
+        serviceDebug.setSystemDateFormattingService(new SystemDateFormattingServiceImpl() {
+            @Override
+            public TimeZone getSystemTimeZone() throws BadConfigurationException {
+                return TimeZone.getDefault();
+            }
         });
         
         serviceDebug.setActivityLoggerService(new ActivityLoggerServiceImpl(){

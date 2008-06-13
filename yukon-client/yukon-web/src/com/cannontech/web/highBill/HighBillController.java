@@ -1,5 +1,6 @@
 package com.cannontech.web.highBill;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -29,7 +30,6 @@ import com.cannontech.common.chart.model.GraphType;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
-import com.cannontech.common.device.commands.CommandDateFormatFactory;
 import com.cannontech.common.device.peakReport.model.PeakReportPeakType;
 import com.cannontech.common.device.peakReport.model.PeakReportResult;
 import com.cannontech.common.device.peakReport.model.PeakReportRunType;
@@ -124,7 +124,7 @@ public class HighBillController extends MultiActionController {
         
         // DATE RANGE
         //-------------------------------------------
-        SimpleDateFormat dateFormatter = CommandDateFormatFactory.createPeakReportCommandDateFormatter();
+        SimpleDateFormat dateFormatter = null; //TODO fix
         
         Date defaultStopDate = new Date();
         Date defaultStartDate = TimeUtil.addDays(defaultStopDate, -5);
@@ -499,7 +499,7 @@ public class HighBillController extends MultiActionController {
          
             // map of email elements
             Map<String, Object> msgData = new HashMap<String, Object>();
-            SimpleDateFormat dateFormat = CommandDateFormatFactory.createLoadProfileCommandDateFormatter();
+            DateFormat dateFormat = null; //TODO fix
             
             msgData.put("email", email);
             msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));

@@ -3,18 +3,16 @@ package com.cannontech.common.bulk.impl;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.Executor;
 
 import junit.framework.TestCase;
 
+import com.cannontech.common.bulk.BulkProcessingResultHolder;
 import com.cannontech.common.bulk.CollectingBulkProcessorCallback;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.util.ObjectMapper;
-import com.cannontech.common.util.ScheduledExecutor;
 
 /**
  * Test class for OneAtATimeProcessor
@@ -29,25 +27,7 @@ public class OneAtATimeProcessorTest extends TestCase {
     protected void setUp() throws Exception {
 
         oneAtATimeProcessor = new OneAtATimeProcessor();
-        oneAtATimeProcessor.setScheduledExecutor(new ScheduledExecutor() {
-
-            public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
-                return null;
-            }
-
-            public <V> ScheduledFuture<V> schedule(Callable<V> callable, long delay, TimeUnit unit) {
-                return null;
-            }
-
-            public ScheduledFuture<?> scheduleAtFixedRate(Runnable command, long initialDelay,
-                    long period, TimeUnit unit) {
-                return null;
-            }
-
-            public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay,
-                    long delay, TimeUnit unit) {
-                return null;
-            }
+        oneAtATimeProcessor.setExecutor(new Executor() {
 
             public void execute(Runnable command) {
                 command.run();
@@ -92,36 +72,45 @@ public class OneAtATimeProcessorTest extends TestCase {
         testList.add("two");
         testList.add("three");
 
-        CollectingBulkProcessorCallback callback = new CollectingBulkProcessorCallback();
+        BulkProcessingResultHolder<String> holder;
+        {
+            CollectingBulkProcessorCallback<String> callback = new CollectingBulkProcessorCallback<String>();
 
-        oneAtATimeProcessor.backgroundBulkProcess(testList.iterator(), mapper, processor, callback);
+            oneAtATimeProcessor.backgroundBulkProcess(testList.iterator(), mapper, processor, callback);
+            holder = callback;
+        }
 
         assertEquals("Didn't process correct number of items",
                      3,
-                     callback.getTotalObjectsProcessedCount());
+                     holder.getMappingExceptionCount() + holder.getMappingExceptionCount() + holder.getProcessingExceptionCount());
 
         assertEquals("Didn't process the correct number items successfully",
                      1,
-                     callback.getSuccessfulObjectsProcessedCount());
+                     holder.getSuccessCount());
 
+        assertEquals("Didn't map the correct number items unsuccessfully ",
+                     1,
+                     holder.getMappingExceptionCount());
+        
         assertEquals("Didn't process the correct number items unsuccessfully ",
-                     2,
-                     callback.getUnsuccessfulObjectsProcessedCount());
+                     1,
+                     holder.getProcessingExceptionCount());
 
-        assertEquals("Mapping exception list not populated", 1, callback.getMappingExceptionList()
+        assertEquals("Mapping exception list not populated", 1, holder.getMappingExceptionList()
                                                                         .size());
 
         assertEquals("Processing exception list not populated",
                      1,
-                     callback.getProcessingExceptionList().size());
+                     holder.getProcessingExceptionList().size());
 
         assertEquals("Processing exception list not populated",
                      1,
-                     callback.getProcessingExceptionList().size());
+                     holder.getProcessingExceptionList().size());
 
-        assertTrue("Should be complete", callback.isComplete());
+        assertTrue("Should be complete", holder.isComplete());
 
-        assertFalse("Should not have failed", callback.isProcessingFailed());
+        assertTrue("Should have succeeded", holder.isSuccessfull());
+        assertFalse("Should not have failed", holder.isProcessingFailed());
 
         // Test one at a time processor with functioning processor and failing
         // mapper
@@ -131,18 +120,22 @@ public class OneAtATimeProcessorTest extends TestCase {
             }
         };
 
-        callback = new CollectingBulkProcessorCallback();
+        {
+            CollectingBulkProcessorCallback<String> callback = new CollectingBulkProcessorCallback<String>();
 
-        oneAtATimeProcessor.backgroundBulkProcess(testList.iterator(),
-                                                  failingMapper,
-                                                  processor,
-                                                  callback);
+            oneAtATimeProcessor.backgroundBulkProcess(testList.iterator(),
+                                                      failingMapper,
+                                                      processor,
+                                                      callback);
+            holder = callback;
+        }
 
-        assertNotNull("There should be a fail exception", callback.getFailedException());
+        assertNotNull("There should be a fail exception", holder.getFailedException());
 
-        assertTrue("Should be complete", callback.isComplete());
+        assertTrue("Should be complete", holder.isComplete());
 
-        assertTrue("Should have failed", callback.isProcessingFailed());
+        assertTrue("Should have failed", holder.isProcessingFailed());
+        assertFalse("Should have not succeeded", holder.isSuccessfull());
 
         // Test one at a time processor with functioning mapper and failing
         // processor
@@ -156,18 +149,22 @@ public class OneAtATimeProcessorTest extends TestCase {
             }
         };
 
-        callback = new CollectingBulkProcessorCallback();
+        {
+            CollectingBulkProcessorCallback<String> callback = new CollectingBulkProcessorCallback<String>();
 
-        oneAtATimeProcessor.backgroundBulkProcess(testList.iterator(),
-                                                  mapper,
-                                                  failingProcessor,
-                                                  callback);
+            oneAtATimeProcessor.backgroundBulkProcess(testList.iterator(),
+                                                      mapper,
+                                                      failingProcessor,
+                                                      callback);
+            holder = callback;
+        }
 
-        assertNotNull("There should be a fail exception", callback.getFailedException());
+        assertNotNull("There should be a fail exception", holder.getFailedException());
 
-        assertTrue("Should be complete", callback.isComplete());
+        assertTrue("Should be complete", holder.isComplete());
 
-        assertTrue("Should have failed", callback.isProcessingFailed());
+        assertTrue("Should have failed", holder.isProcessingFailed());
+        assertFalse("Should not have succeeded", holder.isSuccessfull());
 
     }
 

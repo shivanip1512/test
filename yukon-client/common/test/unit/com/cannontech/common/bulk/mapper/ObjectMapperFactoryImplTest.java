@@ -21,13 +21,15 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
     private ObjectMapperFactoryImpl mapper = null;
     private YukonDevice testDevice = new YukonDevice(1, 1);
+    private PaoDaoAdapter paoDaoAdapter;
+    private DeviceDaoAdapter deviceDaoAdapter;
 
     @Override
     protected void setUp() throws Exception {
 
         mapper = new ObjectMapperFactoryImpl();
 
-        mapper.setPaoDao(new PaoDaoAdapter() {
+        paoDaoAdapter = new PaoDaoAdapter() {
 
             private LiteYukonPAObject lite1 = new LiteYukonPAObject(1,
                                                                     null,
@@ -111,9 +113,9 @@ public class ObjectMapperFactoryImplTest extends TestCase {
                 throw new IllegalArgumentException(address + " is not supported");
             }
 
-        });
+        };
 
-        mapper.setDeviceDao(new DeviceDaoAdapter() {
+        deviceDaoAdapter = new DeviceDaoAdapter() {
             @Override
             public YukonDevice getYukonDevice(LiteYukonPAObject yukonPAObject) {
                 return new YukonDevice(yukonPAObject.getLiteID(),
@@ -131,87 +133,19 @@ public class ObjectMapperFactoryImplTest extends TestCase {
                 }
             }
 
-        });
+        };
 
-    }
-
-    public void testCreatePaoNameToYukonDeviceMapper() throws Exception {
-
-        ObjectMapper<String, YukonDevice> testMapper = mapper.createPaoNameToYukonDeviceMapper();
-
-        try {
-            testMapper.map("none");
-            fail("Should throw exception when there are no results");
-        } catch (ObjectMappingException e) {
-            // expected exception
-        }
-
-        YukonDevice device = testMapper.map("one");
-        assertEquals("Mapped device is not as expected", testDevice, device);
-
-        try {
-            testMapper.map("two");
-            fail("Should throw exception when there are multiple results");
-        } catch (ObjectMappingException e) {
-            // expected exception
-        }
-
-    }
-
-    public void testCreateMeterNumberToYukonDeviceMapper() throws Exception {
-
-        ObjectMapper<String, YukonDevice> testMapper = mapper.createMeterNumberToYukonDeviceMapper();
-
-        try {
-            testMapper.map("none");
-            fail("Should throw exception when there are no results");
-        } catch (ObjectMappingException e) {
-            // expected exception
-        }
-
-        YukonDevice device = testMapper.map("one");
-        assertEquals("Mapped device is not as expected", testDevice, device);
-
-        try {
-            testMapper.map("two");
-            fail("Should throw exception when there are multiple results");
-        } catch (ObjectMappingException e) {
-            // expected exception
-        }
-    }
-
-    public void testCreateAddressToYukonDeviceMapper() throws Exception {
-
-        ObjectMapper<String, YukonDevice> testMapper = mapper.createAddressToYukonDeviceMapper();
-
-        try {
-            testMapper.map("0");
-            fail("Should throw exception when there are no results");
-        } catch (ObjectMappingException e) {
-            // expected exception
-        }
-
-        YukonDevice device = testMapper.map("1");
-        assertEquals("Mapped device is not as expected", testDevice, device);
-
-        try {
-            testMapper.map("2");
-            fail("Should throw exception when there are multiple results");
-        } catch (ObjectMappingException e) {
-            // expected exception
-        }
-
-        try {
-            testMapper.map("not an address");
-            fail("Should throw exception when a non-integer value is mapped");
-        } catch (ObjectMappingException e) {
-            // expected exception
-        }
     }
 
     public void testCreateBulkImporterToYukonDeviceMapper() throws Exception {
 
-        ObjectMapper<String, YukonDevice> testMapper = mapper.createBulkImporterToYukonDeviceMapper();
+        ObjectMapper<String, YukonDevice> testMapper;
+        {
+            BulkImporterToYukonDeviceMapper origMapper = new BulkImporterToYukonDeviceMapper();
+            origMapper.setDeviceDao(deviceDaoAdapter);
+            origMapper.setPaoDao(paoDaoAdapter);
+            testMapper = origMapper;
+        }
 
         try {
             testMapper.map("0");
@@ -274,52 +208,6 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         } catch (ObjectMappingException e) {
             // expected exception
         }
-    }
-
-    public void testCreateLiteYukonPaoToYukonDeviceMapper() throws Exception {
-
-        ObjectMapper<LiteYukonPAObject, YukonDevice> testMapper = mapper.createLiteYukonPAObjectToYukonDeviceMapper();
-
-        LiteYukonPAObject litePao = new LiteYukonPAObject(1);
-        litePao.setType(1);
-
-        YukonDevice device = testMapper.map(litePao);
-        assertEquals("Mapped device is not as expected", testDevice, device);
-
-    }
-
-    public void testCreatePaoIdToYukonDeviceMapper() throws Exception {
-
-        ObjectMapper<Integer, YukonDevice> testMapper = mapper.createPaoIdToYukonDeviceMapper();
-
-        try {
-            testMapper.map(0);
-            fail("Should throw exception when there are no results");
-        } catch (ObjectMappingException e) {
-            // expected exception
-        }
-
-        YukonDevice device = testMapper.map(1);
-        assertEquals("Mapped device is not as expected", testDevice, device);
-
-    }
-    
-    public void testCreatePassThroughMapper() throws Exception {
-        
-        // Test integer pass through
-        ObjectMapper<Integer, Integer> testIntMapper = mapper.createPassThroughMapper();
-        
-        Integer testInt = 1;
-        
-        Integer resultInt = testIntMapper.map(testInt);
-        assertEquals("Mapped integer is not as expected", testInt, resultInt);
-
-        // Test yukon device pass through
-        ObjectMapper<YukonDevice, YukonDevice> testDeviceMapper = mapper.createPassThroughMapper();
-        
-        YukonDevice device = testDeviceMapper.map(testDevice);
-        assertEquals("Mapped yukon device is not as expected", testDevice, device);
-        
     }
 
     /**
@@ -407,6 +295,21 @@ public class ObjectMapperFactoryImplTest extends TestCase {
                 int startAddress, int endAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+
+        @Override
+        public long getObjectCountByAddressRange(int startAddress, int endAddress) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public Integer getRouteIdForRouteName(String routeName) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public String getRouteNameForRouteId(int routeId) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
     }
 
     /**
@@ -477,6 +380,46 @@ public class ObjectMapperFactoryImplTest extends TestCase {
 
         @Override
         public void removeDevice(YukonDevice device) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void changeAddress(int deviceId, int newAddress) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void changeMeterNumber(int deviceId, String newMeterNumber) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void changeName(int deviceId, String newName) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public void changeRoute(int deviceId, int newRouteId) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public YukonDevice getYukonDeviceObjectByAddress(String address) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public YukonDevice getYukonDeviceObjectById(int deviceId) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public YukonDevice getYukonDeviceObjectByMeterNumber(String meterNumber) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+
+        @Override
+        public YukonDevice getYukonDeviceObjectByName(String name) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 

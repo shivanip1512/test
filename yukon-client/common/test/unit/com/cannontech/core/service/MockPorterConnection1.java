@@ -13,7 +13,7 @@ import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
 import com.cannontech.yukon.BasicServerConnection;
 
-public class MockPorterConnection implements BasicServerConnection {
+public class MockPorterConnection1 implements BasicServerConnection {
     List<MessageListener> listeners = new ArrayList<MessageListener>();
     Timer timer = new Timer();
 
@@ -32,6 +32,7 @@ public class MockPorterConnection implements BasicServerConnection {
     public void write(Object o) {
         if (!(o instanceof Request)) return;
         final Request req = (Request) o;
+        CTILogger.info("Received message: " + req);
         // send first response in 15 seconds
         timer.schedule(new TimerTask() {
             @Override
@@ -51,6 +52,7 @@ public class MockPorterConnection implements BasicServerConnection {
                 retMsg.setExpectMore(0);
                 retMsg.setUserMessageID(req.getUserMessageID());
                 retMsg.setDeviceID(req.getDeviceID());
+                retMsg.setResultString("Mock porter result");
                 returnMessage(retMsg);
             }
         }, 50000);
@@ -59,7 +61,11 @@ public class MockPorterConnection implements BasicServerConnection {
     private void returnMessage(Message m) {
         CTILogger.info("Sending mock return message: " + m);
         MessageEvent e = new MessageEvent(this, m);
-        for (MessageListener listener : listeners) {
+        
+        // go backwards to allow listeners to remove 
+        // themselves concurrently within the handler
+        for(int i = listeners.size()-1; i >= 0; i--) {
+            MessageListener listener = listeners.get(i);
             listener.messageReceived(e);
         }
     }

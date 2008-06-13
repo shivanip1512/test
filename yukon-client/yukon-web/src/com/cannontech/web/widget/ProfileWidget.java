@@ -1,8 +1,6 @@
 package com.cannontech.web.widget;
 
-import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -16,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -27,6 +26,7 @@ import com.cannontech.amr.toggleProfiling.service.ToggleProfilingService;
 import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
+import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -65,8 +65,8 @@ public class ProfileWidget extends WidgetControllerBase {
     private SimpleReportService simpleReportService = null;
     private ToggleProfilingService toggleProfilingService = null;
     private MeterReadService meterReadService = null;
+    private TemplateProcessorFactory templateProcessorFactory = null;
     
-    private static DateFormat dateFormat = new SimpleDateFormat("MM/dd/yy hh:mma");
     /*
      * Long load profile email message format NOTE: Outlook will sometimes strip
      * extra line breaks of its own accord. For some reason putting extra spaces
@@ -309,8 +309,8 @@ public class ProfileWidget extends WidgetControllerBase {
                 msgData.put("deviceName", device.getPaoName());
                 msgData.put("meterNumber", meterNum.getMeterNumber());
                 msgData.put("physAddress", device.getAddress());
-                msgData.put("startDate", dateFormat.format(startDate));
-                msgData.put("stopDate", dateFormat.format(stopDate));
+                msgData.put("startDate", startDate);
+                msgData.put("stopDate", stopDate);
                 long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
                 msgData.put("totalDays", Long.toString(numDays));
                 
@@ -344,7 +344,7 @@ public class ProfileWidget extends WidgetControllerBase {
 
                 // completion callbacks
                 LoadProfileServiceEmailCompletionCallbackImpl callback = 
-                    new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, deviceErrorTranslatorDao);
+                    new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, templateProcessorFactory, deviceErrorTranslatorDao);
                 
                 callback.setUserContext(userContext);
                 callback.setEmail(email);
@@ -650,6 +650,11 @@ public class ProfileWidget extends WidgetControllerBase {
     @Required
     public void setMeterReadService(MeterReadService meterReadService) {
         this.meterReadService = meterReadService;
+    }
+    
+    @Autowired
+    public void setTemplateProcessorFactory(TemplateProcessorFactory templateProcessorFactory) {
+        this.templateProcessorFactory = templateProcessorFactory;
     }
 
 }

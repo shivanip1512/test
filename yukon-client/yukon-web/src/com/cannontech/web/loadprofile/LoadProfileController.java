@@ -1,7 +1,6 @@
 package com.cannontech.web.loadprofile;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.apache.commons.lang.time.DateUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -22,13 +22,14 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.common.device.commands.CommandDateFormatFactory;
+import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LoadProfileService;
+import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.core.service.impl.LoadProfileServiceEmailCompletionCallbackImpl;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -50,8 +51,7 @@ public class LoadProfileController extends MultiActionController {
     private DateFormattingService dateFormattingService;
     private MeterDao meterDao;
     private DeviceErrorTranslatorDao deviceErrorTranslatorDao;
-    private static SimpleDateFormat inputDateFormat = new SimpleDateFormat("MM/dd/yyyy");
-    private static SimpleDateFormat cmdDateFormat = CommandDateFormatFactory.createLoadProfileCommandDateFormatter();
+    private TemplateProcessorFactory templateProcessorFactory;
     /*
      * Long load profile email message format
      * NOTE: Outlook will sometimes strip extra line breaks of its own accord.  For some
@@ -91,23 +91,23 @@ public class LoadProfileController extends MultiActionController {
                 
                 // before peak
                 if (beforeDaysStr.equalsIgnoreCase("ALL")) {
-                    startDate = inputDateFormat.parse(startDateStr);
+                    startDate = dateFormattingService.flexibleDateParser(startDateStr, userContext);
                     startDate = DateUtils.truncate(startDate, Calendar.DATE);
                 }
                 else {
-                    startDate = inputDateFormat.parse(peakDateStr);
+                    startDate = dateFormattingService.flexibleDateParser(peakDateStr, userContext);
                     startDate = DateUtils.truncate(startDate, Calendar.DATE);
                     startDate = DateUtils.addDays(startDate, -Integer.parseInt(beforeDaysStr));
                 }
                 
                 // after peak
                 if (afterDaysStr.equalsIgnoreCase("ALL")) {
-                    stopDate = inputDateFormat.parse(stopDateStr);
+                    stopDate = dateFormattingService.flexibleDateParser(stopDateStr, userContext);
                     stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
                     stopDate = DateUtils.addDays(stopDate, 1);
                 }
                 else {
-                    stopDate = inputDateFormat.parse(peakDateStr);
+                    stopDate = dateFormattingService.flexibleDateParser(peakDateStr, userContext);
                     stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
                     stopDate = DateUtils.addDays(stopDate, Integer.parseInt(afterDaysStr));
                     stopDate = DateUtils.addDays(stopDate, 1);
@@ -116,10 +116,10 @@ public class LoadProfileController extends MultiActionController {
             }
             else {
                 
-                startDate = inputDateFormat.parse(startDateStr);
+                startDate = dateFormattingService.flexibleDateParser(startDateStr, userContext);
                 startDate = DateUtils.truncate(startDate, Calendar.DATE);
                 
-                stopDate = inputDateFormat.parse(stopDateStr);
+                stopDate = dateFormattingService.flexibleDateParser(stopDateStr, userContext);
                 stopDate = DateUtils.truncate(stopDate, Calendar.DATE);
                 stopDate = DateUtils.addDays(stopDate, 1);
             }
@@ -150,13 +150,13 @@ public class LoadProfileController extends MultiActionController {
             msgData.put("deviceName", device.getPaoName());
             msgData.put("meterNumber", meterNum.getMeterNumber());
             msgData.put("physAddress", device.getAddress());
-            msgData.put("startDate", cmdDateFormat.format(startDate));
-            msgData.put("stopDate", cmdDateFormat.format(stopDate));
+            msgData.put("startDate", startDate);
+            msgData.put("stopDate", stopDate);
             long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
             msgData.put("totalDays", Long.toString(numDays));
             
             LoadProfileServiceEmailCompletionCallbackImpl callback = 
-                new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, deviceErrorTranslatorDao);
+                new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, templateProcessorFactory, deviceErrorTranslatorDao);
             
             callback.setUserContext(userContext);
             callback.setEmail(email);
@@ -204,8 +204,8 @@ public class LoadProfileController extends MultiActionController {
                 Date startDate = dateFormattingService.flexibleDateParser(startDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
                 Date stopDate = dateFormattingService.flexibleDateParser(stopDateStr, DateFormattingService.DateOnlyMode.START_OF_DAY, userContext);
             
-                mav.addObject("startDate", cmdDateFormat.format(startDate));
-                mav.addObject("stopDate", cmdDateFormat.format(stopDate));
+                mav.addObject("startDate", dateFormattingService.formatDate(startDate, DateFormatEnum.DATE, userContext));
+                mav.addObject("stopDate", dateFormattingService.formatDate(stopDate, DateFormatEnum.DATE, userContext));
             
             } catch (ParseException e) {
                 mav.addObject("success", false);
@@ -214,12 +214,12 @@ public class LoadProfileController extends MultiActionController {
             
         } else {
             Date now = new Date();
-            String stopDate = cmdDateFormat.format(now);
+            String stopDate = dateFormattingService.formatDate(now, DateFormatEnum.DATE, userContext);
             mav.addObject("stopDate", stopDate);
             
             int startOffset = ServletRequestUtils.getIntParameter(request, "startOffset", 7);
             Date weekAgo = DateUtils.addDays(now, -startOffset);
-            String startDate = cmdDateFormat.format(weekAgo);
+            String startDate = dateFormattingService.formatDate(weekAgo, DateFormatEnum.DATE, userContext);
             mav.addObject("startDate", startDate);
         }
         
@@ -309,6 +309,11 @@ public class LoadProfileController extends MultiActionController {
     public void setDeviceErrorTranslatorDao(
             DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
         this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
+    }
+    
+    @Autowired
+    public void setTemplateProcessorFactory(TemplateProcessorFactory templateProcessorFactory) {
+        this.templateProcessorFactory = templateProcessorFactory;
     }
 
 }

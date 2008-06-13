@@ -9,7 +9,6 @@ import javax.mail.MessagingException;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.amr.errors.dao.DeviceErrorTranslatorDao;
 import com.cannontech.amr.errors.model.DeviceErrorDescription;
@@ -35,10 +34,10 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
     private String email;
     private YukonUserContext userContext;
     
-    private final String baseSubjectFormat = "Profile data collection for {formattedDeviceName} from {startDate} - {stopDate} {status}";
+    private final String baseSubjectFormat = "Profile data collection for {formattedDeviceName} from {startDate|DATE} - {stopDate|DATE} {status}";
 
-    private String base_template_plain = "{statusMsg}\n\n" + "Device Summary\n" + "Device Name: {deviceName}\n" + "Meter Number: {meterNumber}\n" + "Physical Address: {physAddress}\n\n" + "Request Range: {startDate} to {stopDate}\n" + "Total Requested Days: {totalDays} \n\n";
-    private String base_template_html  = "{statusMsg}<br/><br/>" + "Device Summary<br/>" + "Device Name: {deviceName}<br/>" + "Meter Number: {meterNumber}<br/>" + "Physical Address: {physAddress}<br/><br/>" + "Request Range: {startDate} to {stopDate}<br/>" + "Total Requested Days: {totalDays}<br/><br/>";
+    private String base_template_plain = "{statusMsg}\n\n" + "Device Summary\n" + "Device Name: {deviceName}\n" + "Meter Number: {meterNumber}\n" + "Physical Address: {physAddress}\n\n" + "Request Range: {startDate|DATE} to {stopDate|DATE}\n" + "Total Requested Days: {totalDays} \n\n";
+    private String base_template_html  = "{statusMsg}<br/><br/>" + "Device Summary<br/>" + "Device Name: {deviceName}<br/>" + "Meter Number: {meterNumber}<br/>" + "Physical Address: {physAddress}<br/><br/>" + "Request Range: {startDate|DATE} to {stopDate|DATE}<br/>" + "Total Requested Days: {totalDays}<br/><br/>";
     
     private final String success_template_plain = base_template_plain + "Data is now available online.\n\nHTML\n{reportHtmlUrl}\n\nCSV\n{reportCsvUrl}\n\nPDF\n{reportPdfUrl}\n\n";
     private final String failure_template_plain = base_template_plain + "Partial data may be available online.\n\nHTML\n{reportHtmlUrl}\n\nCSV\n{reportCsvUrl}\n\nPDF\n{reportPdfUrl}\n\n";
@@ -67,9 +66,10 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
     }
     
     public LoadProfileServiceEmailCompletionCallbackImpl(
-            EmailService emailService, DateFormattingService dateFormattingeService, DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
+            EmailService emailService, DateFormattingService dateFormattingeService, TemplateProcessorFactory templateProcessorFactory,DeviceErrorTranslatorDao deviceErrorTranslatorDao) {
         this.emailService = emailService;
         this.dateFormattingService = dateFormattingeService;
+        this.templateProcessorFactory = templateProcessorFactory;
         this.deviceErrorTranslatorDao = deviceErrorTranslatorDao;
     }
     
@@ -198,12 +198,6 @@ public class LoadProfileServiceEmailCompletionCallbackImpl implements LoadProfil
 
     public void setUserContext(YukonUserContext userContext) {
         this.userContext = userContext;
-    }
-
-    @Autowired
-    public void setTemplateProcessorFactory(
-            TemplateProcessorFactory templateProcessorFactory) {
-        this.templateProcessorFactory = templateProcessorFactory;
     }
 
 }

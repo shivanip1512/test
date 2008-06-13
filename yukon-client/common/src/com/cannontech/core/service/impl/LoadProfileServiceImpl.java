@@ -1,6 +1,6 @@
 package com.cannontech.core.service.impl;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -19,7 +19,6 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandDateFormatFactory;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.ScheduledExecutor;
@@ -28,6 +27,8 @@ import com.cannontech.core.service.ActivityLoggerService;
 import com.cannontech.core.service.DateFormattingService;
 import com.cannontech.core.service.LoadProfileService;
 import com.cannontech.core.service.PorterQueueDataService;
+import com.cannontech.core.service.SystemDateFormattingService;
+import com.cannontech.core.service.SystemDateFormattingService.DateFormatEnum;
 import com.cannontech.database.data.activity.ActivityLogActions;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.MCTBase;
@@ -47,9 +48,10 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     private BasicServerConnection porterConnection;
     private PorterQueueDataService queueDataService;
     private DBPersistentDao dbPersistentDao;
-    private DateFormattingService dateFormattingService = null;
+    private DateFormattingService dateFormattingService;
+    private SystemDateFormattingService systemDateFormattingService;
     private ActivityLoggerService activityLoggerService = null;
-    Logger log = YukonLogManager.getLogger(LoadProfileServiceImpl.class);
+    private Logger log = YukonLogManager.getLogger(LoadProfileServiceImpl.class);
     private ScheduledExecutor executor;
     
     private Map<Long, Integer> outstandingCancelRequestIds = new HashMap<Long, Integer>();
@@ -89,14 +91,14 @@ public class LoadProfileServiceImpl implements LoadProfileService {
         formatString.append(channel);
         formatString.append(" ");
         if (start != null) {
-            SimpleDateFormat cmdFormatter = CommandDateFormatFactory.createLoadProfileCommandDateFormatter();
+            DateFormat cmdFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.LoadProfile);
             formatString.append(cmdFormatter.format(start));
             formatString.append(" ");
         }
         if (stop == null) {
             stop = new Date();
         }
-        SimpleDateFormat cmdFormatter = CommandDateFormatFactory.createLoadProfileCommandDateFormatter();
+        DateFormat cmdFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.LoadProfile);
         formatString.append(cmdFormatter.format(stop));
         if (runner == null) {
             formatString.append(" background");
@@ -565,6 +567,11 @@ public class LoadProfileServiceImpl implements LoadProfileService {
     @Required
     public void setDateFormattingService(DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
+    }
+    
+    @Required
+    public void setSystemDateFormattingService(SystemDateFormattingService systemDateFormattingService) {
+        this.systemDateFormattingService = systemDateFormattingService;
     }
     
     @Required

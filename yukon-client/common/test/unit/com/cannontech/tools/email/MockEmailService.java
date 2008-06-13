@@ -22,8 +22,13 @@ public class MockEmailService implements EmailService {
     }
 
     public DefaultEmailMessage getEmailer(String email, String subject, String body) {
-        // TODO Auto-generated method stub
         return null;
+    }
+
+    @Override
+    public void sendAttachmentMessage(EmailAttachmentMessageHolder message)
+        throws MessagingException {
+        sentMessages.add(message);
     }
 
 }

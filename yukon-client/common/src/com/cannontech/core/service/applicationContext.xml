@@ -20,6 +20,7 @@
     <property name="porterConnection" ref="porterConnection"/>
     <property name="dbPersistentDao" ref="dbPersistentDao"/>
     <property name="dateFormattingService" ref="dateFormattingService"/>
+    <property name="systemDateFormattingService" ref="systemDateFormattingService"/>
     <property name="activityLoggerService" ref="activityLoggerService"/>
   </bean>
 

@@ -1,8 +1,6 @@
 package com.cannontech.common.device.definition.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -139,15 +137,9 @@ public class DeviceDefinitionServiceImplTest {
         assertEquals("Changeable devices were not as expected", expectedDevices, actualDevices);
 
         // Test with device that is not changeable
-        try {
-            device.setType(DeviceTypes.MCT318L);
-            service.getChangeableDevices(device);
-            fail("getChangeableDevices should've thrown an exception");
-        } catch (IllegalArgumentException e) {
-            // expected exception
-        } catch (Exception e) {
-            fail("Threw wrong type of exception: " + e.getClass());
-        }
+        device.setType(DeviceTypes.MCT318L);
+        Set<DeviceDefinition> actualDevices2 = service.getChangeableDevices(device);
+        assertTrue("Should be empty set", actualDevices2.isEmpty());
 
         // Test with unsupported device
         try {

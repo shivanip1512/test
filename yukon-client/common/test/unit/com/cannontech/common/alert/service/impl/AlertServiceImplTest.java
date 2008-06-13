@@ -10,18 +10,26 @@ import org.junit.Test;
 
 import com.cannontech.common.alert.alarms.AlarmAlert;
 import com.cannontech.common.alert.model.IdentifiableAlert;
+import com.cannontech.common.mock.RoleDaoAdapter;
 import com.cannontech.common.util.ResolvableTemplate;
 import com.cannontech.common.util.TimeSourceImpl;
 import com.cannontech.common.util.TimeSourceMock;
-import com.cannontech.core.dao.RoleDao;
-import com.cannontech.database.data.lite.LiteYukonGroup;
-import com.cannontech.database.data.lite.LiteYukonRole;
-import com.cannontech.database.data.lite.LiteYukonRoleProperty;
 import com.cannontech.user.checker.NullUserChecker;
 
 public class AlertServiceImplTest {
     
     private AlertServiceImpl alertService = null;
+    
+    private static class MockRoleDao extends RoleDaoAdapter {
+        private final String returnValue;
+        public MockRoleDao(String returnValue) {
+            this.returnValue = returnValue;
+        }
+        public String getGlobalPropertyValue(int rolePropertyID_) {
+            return returnValue;
+        }
+
+    }
     
     @Before
     public void setup() {
@@ -82,55 +90,5 @@ public class AlertServiceImplTest {
         IdentifiableAlert returnedAlert = all.iterator().next();
         assertEquals("b", returnedAlert.getMessage().getCode());
         
-    }
-
-    
-    
-    private class MockRoleDao implements RoleDao {
-        private String returnValue;
-        
-        public MockRoleDao(String returnValue) {
-            this.returnValue = returnValue;
-        }
-
-        @Override
-        public String getGlobalPropertyValue(int rolePropertyID_) {
-            return returnValue;
-        }
-
-        @Override
-        public LiteYukonRole getLiteRole(Integer rolePropID) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public LiteYukonRoleProperty[] getRoleProperties(int roleID_) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public LiteYukonGroup getGroup(String groupName) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public LiteYukonGroup getGroup(int grpID_) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getRolePropValueGroup(LiteYukonGroup group_, int rolePropertyID, String defaultValue) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public String getRolePropValueGroup(int groupId, int rolePropertyId, String defaultValue) {
-            throw new UnsupportedOperationException();
-        }
-
-        @Override
-        public LiteYukonRoleProperty getRoleProperty(int propid) {
-            throw new UnsupportedOperationException();
-        }
     }
 }

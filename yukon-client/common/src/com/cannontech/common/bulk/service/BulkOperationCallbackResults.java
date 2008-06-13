@@ -56,12 +56,6 @@ public class BulkOperationCallbackResults extends DeviceGroupAddingBulkProcessor
         return bulkOperationType;
     }
     
-    // IS COMPLETE
-    public boolean isComplete() {
-        return super.isComplete();
-    }
-
-
     // TIME
     public Date getStartTime() {
         return startTime;

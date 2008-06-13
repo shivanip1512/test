@@ -1,12 +1,27 @@
 package com.cannontech.core.service;
 
-import java.text.SimpleDateFormat;
+import java.text.DateFormat;
 import java.util.TimeZone;
 
 import com.cannontech.common.exception.BadConfigurationException;
 
 
-public interface SystemDateFormattingService{
+public interface SystemDateFormattingService {
+    
+    public static enum DateFormatEnum {
+        PeakReport("MM/dd/yyyy"),
+        LoadProfile("MM/dd/yyyy HH:mm");
+        
+        private final String formatString;
+
+        private DateFormatEnum(String formatString) {
+            this.formatString = formatString;
+        }
+        
+        public String getFormatString() {
+            return formatString;
+        }
+    }
 
     /**
      * This method returns the TimeZone for the System.  
@@ -24,5 +39,5 @@ public interface SystemDateFormattingService{
      * @param dateFormat
      * @return SimpleDateFormat
      */
-    public SimpleDateFormat getSystemDateFormat(String dateFormatStr);
+    public DateFormat getSystemDateFormat(DateFormatEnum dateFormat);
 }

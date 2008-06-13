@@ -71,6 +71,7 @@
     <bean id="peakReportService"
         class="com.cannontech.common.device.peakReport.service.impl.PeakReportServiceImpl">
         <property name="dateFormattingService" ref="dateFormattingService" />
+        <property name="systemDateFormattingService" ref="systemDateFormattingService" />
         <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="paoDao" ref="paoDao" />
         <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor" />

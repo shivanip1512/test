@@ -36,8 +36,8 @@ public class SystemDateFormattingServiceImpl implements SystemDateFormattingServ
         return timeZone;
     }
     
-    public SimpleDateFormat getSystemDateFormat(String dateFormatStr) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatStr);
+    public SimpleDateFormat getSystemDateFormat(DateFormatEnum dateFormatEnum) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatEnum.getFormatString());
         dateFormat.setTimeZone(getSystemTimeZone());
         return dateFormat;
     }
