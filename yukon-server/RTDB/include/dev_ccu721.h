@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/06/13 13:39:49 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ private:
 
     CtiTableDeviceAddress _address;
 
-    OUTMESS _current_outmessage;
+    OUTMESS *om;
 
 protected:
 
@@ -49,8 +49,9 @@ public:
     enum Commands
     {
         Command_Loopback,
-        Command_WriteQueue,
+        Command_LoadQueue,
         Command_ReadQueue,
+        Command_LoadRoutes,
     };
 
     virtual void getSQL(RWDBDatabase &db, RWDBTable &keyTable, RWDBSelector &selector);
@@ -64,10 +65,12 @@ public:
     INT ErrorDecode (INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList, bool &overrideExpectMore);
     INT ResultDecode(INMESS *InMessage, CtiTime &Now, list<CtiMessage *> &vgList, list<CtiMessage *> &retList, list<OUTMESS *> &outList);
 
-    //  these commands just indicate that the device hasn't sent back an INMESS yet;
-    //    it says nothing about whether the messages are currently loaded into the CCU-721
+    //  these commands just indicate that messages are queued into the Yukon-side CCU device;
+    //    it does not indicate whether the messages are currently loaded into the field device
     INT  queuedWorkCount() const;
     bool hasQueuedWork()   const;
+    bool hasWaitingWork()  const;
+    bool hasRemoteWork()   const;
     INT  queueOutMessageToDevice(OUTMESS *&OutMessage, UINT *dqcnt);
 
     virtual LONG getAddress() const;
@@ -77,9 +80,10 @@ public:
     virtual int recvCommRequest(OUTMESS *OutMessage);
     virtual int sendCommResult (INMESS  *InMessage);
 
-    virtual int sendCommRequest(OUTMESS *&OutMessage, list<OUTMESS *> &outList);
-    virtual int recvCommResult (INMESS   *InMessage,  list<OUTMESS *> &outList);
+    void processInbound(const OUTMESS *om, INMESS *im);
 };
+
+typedef boost::shared_ptr<CCU721> CCU721SPtr;
 
 }
 }

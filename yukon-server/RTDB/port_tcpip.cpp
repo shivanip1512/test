@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/port_tcpip.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2007/04/27 16:50:28 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2008/06/13 13:39:49 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -281,7 +281,7 @@ INT CtiPortTCPIPDirect::inClear() const
                 return(MEMORY);
             }
 
-            if(recv (_socket, (PCHAR)Buffer, (int)ulTemp, 0) == SOCKET_ERROR )
+            if(recv (_socket, (PCHAR)Buffer, (int)ulTemp, 0) <= 0 )
             {
                 status = TCPREADERROR;
             }
@@ -382,10 +382,15 @@ INT CtiPortTCPIPDirect::inMess(CtiXfer& Xfer, CtiDeviceSPtr  Dev, list< CtiMessa
             if(getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY))
             {
                 CTISleep ((ULONG) getDelay(DATA_OUT_TO_INBUFFER_FLUSH_DELAY));
-                inClear();
+                status = inClear();
+
+                if( status == TCPREADERROR )
+                {
+                    shutdownClose(__FILE__, __LINE__);
+                }
             }
 
-            if(getTablePortSettings().getCDWait() != 0)
+            if(status == NORMAL && getTablePortSettings().getCDWait() != 0)
             {
                 status = NODCD;
                 /* Check if we have DCD */
@@ -800,6 +805,12 @@ INT CtiPortTCPIPDirect::sendData(PBYTE Message, ULONG Length, PULONG Written)
     USHORT CharsToSend;
     ULONG TimeToSend;
     INT retval;
+    ULONG ulTemp;
+
+    if( ioctlsocket(_socket, FIONREAD, &ulTemp) == SOCKET_ERROR )
+    {
+        close(FALSE);  //  will set _socket to INVALID_SOCKET
+    }
 
     if(_socket == INVALID_SOCKET)
     {

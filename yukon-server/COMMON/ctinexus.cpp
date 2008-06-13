@@ -431,6 +431,12 @@ INT CTINEXUS::CTINexusWrite(VOID *buf, ULONG len, PULONG BytesWritten, LONG Time
 
     CtiTime  now, then(CtiTime::now() + TimeOut);
     int      wbLoops = 0;        //  number of "would block" loops
+    unsigned long ulTemp;
+
+    if( ioctlsocket(sockt, FIONREAD, &ulTemp) == SOCKET_ERROR )
+    {
+        CTINexusClose();  //  will set sockt to INVALID_SOCKET
+    }
 
     try
     {
@@ -592,16 +598,18 @@ INT CTINEXUS::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
 
                     bytes_read = recv(sockt, read_buffer.begin() + insert_position, bytes_available, 0);
 
-                    if( bytes_read == SOCKET_ERROR)
+                    if( bytes_read <= 0 )
                     {
-                        bytes_read = 0;
+                        if( bytes_read == SOCKET_ERROR)
+                        {
+                            bytes_read = 0;
 
-                        CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
+                            CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
+                        }
 
                         retval = ErrorNexusRead;
                     }
-
-                    if( bytes_read < bytes_available )
+                    else if( bytes_read < bytes_available )
                     {
                         read_buffer.erase(read_buffer.begin() + insert_position + bytes_read, read_buffer.end());
                     }
@@ -685,9 +693,13 @@ INT CTINEXUS::CTINexusPeek(VOID *buf, ULONG len, PULONG BRead)
         {
             BytesRead = recv(sockt, bptr, len, MSG_PEEK);
 
-            if(BytesRead == SOCKET_ERROR)
+            if(BytesRead <= 0)
             {
-                CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
+                if(BytesRead == SOCKET_ERROR)
+                {
+                    CTINexusReportError(__FILE__, __LINE__, CTIGetLastError());
+                }
+
                 return(ErrorNexusRead);
             }
 

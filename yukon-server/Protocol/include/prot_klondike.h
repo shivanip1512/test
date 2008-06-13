@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/03/31 21:17:35 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/06/13 13:39:49 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,15 +20,15 @@
 #pragma warning( disable : 4786)
 
 
-#include <list>
+#include <queue>
 #include <set>
 #include <functional>
 
 #include "dlldefs.h"
 #include "pointtypes.h"
+#include "rte_ccu.h"  //  so we can add knowledge of CCU routes
 
 #include "prot_wrap.h"
-
 #include "prot_idlc.h"
 //#include "dnp_datalink.h"  //  DNP should be reimplemented as a wrapper protocol
 
@@ -76,8 +76,8 @@ public:
         iterator(set_itr itr) : set_itr(itr) { }
         iterator() : set_itr() { }
 
-        operator bool()      const  {  return *this;  }
-        Element operator->() const  {  return *this;  }
+        operator bool()      const  {  return (*(static_cast<const set_itr *>(this)))->first;  /*return *this;*/  }
+        Element operator->() const  {  return (*(static_cast<const set_itr *>(this)))->first;  /*return *this;*/  }
         Element operator*()  const  {  return (*(static_cast<const set_itr *>(this)))->first;  }
     };
 
@@ -86,7 +86,7 @@ public:
 
     Inherited::_Pairib insert(Element element)
     {
-        if( empty() )  count = 0;
+        if( empty() )  count = 0;  //  if we ever get a breather, reset the FIFO count
 
         return Inherited::insert(std::make_pair(element, ++count));
     }
@@ -104,42 +104,58 @@ struct outmessage_ptr_less : public std::binary_function<OUTMESS *, OUTMESS *, b
 
 class IM_EX_PROT Klondike : public Interface
 {
+public:
+
+    typedef std::pair<const OUTMESS *, INMESS *> result_pair_t;
+    typedef std::queue<result_pair_t>            result_queue_t;
+
+    enum Errors;
     enum Command;
     //enum ProtocolWrap;
-    enum Errors;
 
 private:
 
-    struct command_mapping_t : public map<int, Command>
+    enum CommandCode;
+
+    struct command_state_map_t : public map<Command, vector<CommandCode> >
     {
-        command_mapping_t();
+        command_state_map_t();
     };
-    /*
-    struct error_mapping_t : public map<Errors, int>
+
+    static const command_state_map_t _command_states;
+    friend class command_state_map_t;  //  so it can see our private enum
+
+    struct command_state_t
     {
-        error_mapping_t();
-    };
-    */
+        Command     command;
+        CommandCode command_code;
+        unsigned    state;
+
+    } _current_command;
+
+    bool nextCommandState();
+
     unsigned short _masterAddress,
                    _slaveAddress;
 
-    Command _command;
-    static const command_mapping_t _command_mapping;
+    void refreshMCTTimeSync(BSTRUCT &bst);
 
-    BSTRUCT _dtran_bstruct;  //  the outbound information for a direct transmission
+    OUTMESS *_dtran_outmess;  //  the outbound information for a direct transmission
     unsigned char _d_words[DWORDLEN * 3];  //  the response (if any) from a direct transmission
     unsigned char _response_length;
 
     int _protocol_errors;
-    int _sequence;
+    int _read_toggle;
 
-    typedef fifo_multiset<const OUTMESS *, outmessage_ptr_less> local_work;
-    typedef std::map<unsigned, local_work::iterator>            pending_work;
-    typedef std::map<unsigned, const OUTMESS *>                 remote_work;
+    typedef fifo_multiset<const OUTMESS *, outmessage_ptr_less> local_work_t;
+    typedef std::map<unsigned, local_work_t::iterator>          pending_work_t;
+    typedef std::map<unsigned, const OUTMESS *>                 remote_work_t;
 
-    local_work   _waiting_requests;
-    pending_work _pending_requests;
-    remote_work  _remote_requests;
+    local_work_t   _waiting_requests;
+    pending_work_t _pending_requests;
+    remote_work_t  _remote_requests;
+
+    result_queue_t _dlc_results;
 
     bool _loading_device_queue,
          _reading_device_queue;
@@ -147,9 +163,61 @@ private:
     unsigned _device_queue_sequence,
              _device_queue_entries_available;
 
+#pragma pack( push, 1 )
+    union device_status
+    {
+        struct
+        {
+            unsigned short response_buffer_has_data         : 1;
+            unsigned short response_buffer_has_marked_data  : 1;
+            unsigned short response_buffer_full             : 1;
+            unsigned short transmit_buffer_has_data         : 1;
+            unsigned short transmit_buffer_full             : 1;
+            unsigned short transmit_buffer_frozen           : 1;
+            unsigned short plc_transmitting_dtran_message   : 1;
+            unsigned short plc_transmitting_buffer_message  : 1;
+            unsigned short time_sync_required               : 1;
+            unsigned short reserved                         : 7;
+        };
+        unsigned char  as_bytes[2];
+        unsigned short as_ushort;
+    } _device_status;
+#pragma pack( pop )
+
     unsigned writeDLCMessage(unsigned char *buf, const BSTRUCT &bst);
     unsigned calcDLCMessageLength(const BSTRUCT &bst);
     void processResponse(unsigned char *inbound, unsigned char inbound_length);
+
+    enum CommandCode
+    {
+        CommandCode_Null = 0,
+
+        CommandCode_DirectMessageRequest = 0x01,
+
+        CommandCode_CheckStatus          = 0x11,
+
+        CommandCode_WaitingQueueClear    = 0x12,
+        CommandCode_WaitingQueueWrite    = 0x13,
+        CommandCode_WaitingQueueFreeze   = 0x14,
+        CommandCode_WaitingQueueThaw     = 0x15,
+        CommandCode_WaitingQueueSpy      = 0x16,
+        CommandCode_ReplyQueueRead       = 0x17,
+
+        CommandCode_TimeSyncCCU          = 0x21,
+        CommandCode_TimeSyncTransmit     = 0x22,
+
+        CommandCode_RoutingTableWrite                 = 0x31,
+        CommandCode_RoutingTableRead                  = 0x32,
+        CommandCode_RoutingTableRequestAvailableSlots = 0x33,
+        CommandCode_RoutingTableClear                 = 0x34,
+
+        CommandCode_ConfigurationMemoryRead  = 0x41,
+        CommandCode_ConfigurationMemoryWrite = 0x42,
+
+        CommandCode_ACK_NoData           = 0x80,
+        CommandCode_ACK_Data             = 0x81,
+        CommandCode_NAK                  = 0xc1,
+    };
 
     enum NAK_Errors
     {
@@ -167,9 +235,10 @@ private:
 
     enum MiscNumeric
     {
-        ProtocolErrorsMaximum  =   3,
+        ProtocolErrorsMaximum  =   1,
         WrapLengthMaximum      = 255,
         QueueWriteBasePriority =  11,
+        QueueReadBasePriority  =  11,
         QueueEntryHeaderLength =   4,
     };
 
@@ -185,9 +254,9 @@ private:
 
     } _io_state;
 
-    void doOutput(void);
-    void doInput (CtiXfer &xfer);
-    static bool response_expected(Command command);
+    void doOutput(CommandCode command_code);
+    void doInput (CommandCode command_code, CtiXfer &xfer);
+    static bool responseExpected(CommandCode command);
 
     Klondike(const Klondike &aRef);
     Klondike &operator=(const Klondike &aRef);
@@ -196,6 +265,19 @@ private:
 
     IDLC _idlc_wrap;
     //DNP::Datalink _dnp_wrap;
+
+    struct route_entry_t
+    {
+        unsigned char fixed;
+        unsigned char variable;
+        unsigned char stages;
+        unsigned char bus;
+        unsigned char spid;
+    };
+
+    typedef list<route_entry_t> route_list_t;
+
+    route_list_t _routes;
 
 protected:
 
@@ -207,12 +289,11 @@ public:
     void setAddresses(unsigned short slaveAddress, unsigned short masterAddress);
     //void setWrap(ProtocolWrap w);
 
-    bool setCommand(int command);
-    bool setCommandDirectTransmission(const BSTRUCT &BSt);
+    int setCommand(const OUTMESS *const outmessage);
 
     Command getCommand() const;
 
-    void getResultDirectTransmission(unsigned char *buf, int buf_length, unsigned char &input_length);
+    void getResults(result_queue_t &results);
 
     int generate(CtiXfer &xfer);
     int decode  (CtiXfer &xfer, int status);
@@ -222,21 +303,24 @@ public:
     bool errorCondition() const;
     int  errorCode();
 
-    bool hasQueuedWork() const;
+    bool hasQueuedWork()  const;
     unsigned queuedWorkCount() const;
     bool addQueuedWork(OUTMESS *&OutMessage);
 
-    bool     hasRemoteWork() const;
+    bool hasRemoteWork()  const;
     unsigned getRemoteWorkPriority() const;
     bool isLoadingDeviceQueue() const;
     bool setLoadingDeviceQueue(bool loading);
 
-    bool     hasWaitingWork() const;
+    bool hasWaitingWork() const;
     unsigned getWaitingWorkPriority() const;
     bool isReadingDeviceQueue() const;
     bool setReadingDeviceQueue(bool loading);
 
     static int decodeDWords(unsigned char *input, unsigned input_length, unsigned Remote, DSTRUCT *DSt);
+
+    void clearRoutes();
+    void addRoute(const CtiRouteCCUSPtr &route);
 
     /*enum ProtocolWrap
     {
@@ -246,33 +330,13 @@ public:
 
     enum Command
     {
-        Command_Invalid = 0,
-
-        Command_DirectMessageRequest = 0x01,
-
-        Command_CheckStatus          = 0x11,
-
-        Command_WaitingQueueClear    = 0x12,
-        Command_WaitingQueueWrite    = 0x13,
-        Command_WaitingQueueFreeze   = 0x14,
-        Command_WaitingQueueThaw     = 0x15,
-        Command_WaitingQueueRead     = 0x16,
-        Command_ReplyQueueRead       = 0x17,
-
-        Command_TimeSyncCCU          = 0x21,
-        Command_TimeSyncTransmit     = 0x22,
-
-        Command_RoutingTableWrite    = 0x31,
-        Command_RoutingTableRead     = 0x32,
-        Command_RoutingTableRequestAvailableSlots = 0x33,
-        Command_RoutingTableClear    = 0x34,
-
-        Command_ConfigurationMemoryRead  = 0x41,
-        Command_ConfigurationMemoryWrite = 0x42,
-
-        Command_ACK_NoData           = 0x80,
-        Command_ACK_Data             = 0x81,
-        Command_NAK                  = 0xc1,
+        Command_Null,
+        Command_Loopback,
+        Command_LoadQueue,
+        Command_ReadQueue,
+        Command_DirectTransmission,
+        Command_TimeSync,
+        Command_LoadRoutes,
     };
 
     enum
@@ -287,4 +351,4 @@ public:
 }
 
 
-#endif // #ifndef __PROT_DNP_H__
+#endif // #ifndef __PROT_KLONDIKE_H__

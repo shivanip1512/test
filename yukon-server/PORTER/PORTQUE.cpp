@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.62 $
-* DATE         :  $Date: 2008/03/31 21:17:35 $
+* REVISION     :  $Revision: 1.63 $
+* DATE         :  $Date: 2008/06/13 13:39:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -163,8 +163,8 @@ static void applyBuildLGrpQ(const long unusedid, CtiDeviceSPtr Dev, void *usprti
 
                 OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
-                if( ccu->hasQueuedWork()
-                    && ccu->buildCommand(OutMessage, CCU721::Command_WriteQueue) )
+                if( ccu->hasWaitingWork()
+                    && ccu->buildCommand(OutMessage, CCU721::Command_LoadQueue) )
                 {
                     PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);
                 }
@@ -1202,11 +1202,11 @@ static void applyKick(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
         case TYPE_CCU721:
         {
             using Cti::Device::CCU721;
-            boost::shared_ptr<CCU721> ccu = boost::static_pointer_cast<CCU721>(Dev);
+            Cti::Device::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(Dev);
 
             OUTMESS *OutMessage = CTIDBG_new OUTMESS;
 
-            if( ccu->hasQueuedWork()
+            if( ccu->hasRemoteWork()
                 && ccu->buildCommand(OutMessage, CCU721::Command_ReadQueue) )
             {
                 PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof(*OutMessage), reinterpret_cast<char *>(OutMessage), OutMessage->Priority);

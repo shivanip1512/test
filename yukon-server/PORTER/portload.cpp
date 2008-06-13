@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portload.cpp-arc  $
-* REVISION     :  $Revision: 1.17 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.18 $
+* DATE         :  $Date: 2008/06/13 13:39:49 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -67,6 +67,8 @@
 #include "rte_ccu.h"
 #include "trx_711.h"
 #include "dev_ccu.h"
+#include "dev_ccu721.h"
+
 
 using namespace std;
 
@@ -105,8 +107,40 @@ LoadRemoteRoutes(CtiDeviceSPtr Dev)
     /* get this remote from database */
     if( Dev )
     {
+        /* CCU-721 is handled seperately from the 711 */
+        if( Dev->getType() == TYPE_CCU721 )
+        {
+            using Cti::Device::CCU721;
+            Cti::Device::CCU721SPtr ccu = boost::static_pointer_cast<CCU721>(Dev);
+
+            if( (OutMessage = CTIDBG_new OUTMESS) == NULL )
+            {
+                return(MEMORY);
+            }
+
+            ccu->buildCommand(OutMessage, CCU721::Command_LoadRoutes);
+
+            OutMessage->DeviceID = Dev->getID();
+            OutMessage->TargetID = Dev->getID();
+            OutMessage->Port     = Dev->getPortID();
+            OutMessage->Remote   = Dev->getAddress();
+            OutMessage->TimeOut  = TIMEOUT;
+            OutMessage->Retry    = 1;
+            OutMessage->InLength = 0;
+            OutMessage->Priority = MAXPRIORITY - 1;
+            OutMessage->EventCode    = NORESULT | ENCODED;  //  used?
+            OutMessage->ReturnNexus  = NULL;
+            OutMessage->SaveNexus    = NULL;
+
+            if( PortManager.writeQueue(OutMessage->Port, OutMessage->Request.UserID, sizeof (*OutMessage), (char *) OutMessage, OutMessage->Priority) )
+            {
+                printf ("Error Writing to Queue for Port %2ld\n", Dev->getPortID());
+                delete (OutMessage);
+                return(QUEUE_WRITE);
+            }
+        }
         /* Find all non-broadcast 711 transmitters. */
-        if((Dev->getType() == TYPE_CCU711) && (Dev->getAddress() != CCUGLOBAL && Dev->getAddress() != RTUGLOBAL) )
+        else if((Dev->getType() == TYPE_CCU711) && (Dev->getAddress() != CCUGLOBAL && Dev->getAddress() != RTUGLOBAL) )
         {
             CtiTransmitter711Info *pInfo = (CtiTransmitter711Info*)Dev->getTrxInfo();
 

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/03/31 21:17:35 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/06/13 13:39:49 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -21,20 +21,25 @@
 #include "numstr.h"
 #include "prot_klondike.h"
 #include "prot_emetcon.h"
+#include "porter.h"
 #include "dev_mct4xx.h"  //  for MCT-4xx timesyncs
 
 namespace Cti       {
 namespace Protocol  {
 
-const Klondike::command_mapping_t Klondike::_command_mapping;
-//const Klondike::error_mapping_t   Klondike::_error_mapping;
+const Klondike::command_state_map_t Klondike::_command_states;
+
 
 Klondike::Klondike() :
-    _command(Command_Invalid),
-    _sequence(0),
     _wrap(&_idlc_wrap),
-    _io_state(IO_Invalid)
+    _io_state(IO_Invalid),
+    _loading_device_queue(false),
+    _reading_device_queue(false),
+    _device_queue_sequence(0),
+    _read_toggle(0x00)
 {
+    _device_status.as_ushort = 0;
+    _current_command.command = Command_Null;
     setAddresses(DefaultSlaveAddress, DefaultMasterAddress);
 }
 
@@ -59,60 +64,84 @@ Klondike &Klondike::operator=(const Klondike &aRef)
 }
 
 
-Klondike::command_mapping_t::command_mapping_t()
+Klondike::command_state_map_t::command_state_map_t()
 {
-    using std::make_pair;
+    (*this)[Command_Null];  //  initialize to an empty set
 
-#define __insert_make_pair(X) insert(make_pair(X, X))
+    (*this)[Command_Loopback ].push_back(CommandCode_CheckStatus);
 
-    __insert_make_pair(Command_CheckStatus);
+    (*this)[Command_LoadQueue].push_back(CommandCode_CheckStatus);
+    (*this)[Command_LoadQueue].push_back(CommandCode_WaitingQueueWrite);
 
-    __insert_make_pair(Command_DirectMessageRequest);
+    (*this)[Command_ReadQueue].push_back(CommandCode_CheckStatus);
+    (*this)[Command_ReadQueue].push_back(CommandCode_ReplyQueueRead);
 
-    __insert_make_pair(Command_WaitingQueueWrite);
-    __insert_make_pair(Command_WaitingQueueFreeze);
-    __insert_make_pair(Command_WaitingQueueRead);
-    __insert_make_pair(Command_WaitingQueueClear);
-    __insert_make_pair(Command_ReplyQueueRead);
+    (*this)[Command_TimeSync ].push_back(CommandCode_TimeSyncCCU);
+    (*this)[Command_TimeSync ].push_back(CommandCode_TimeSyncTransmit);
 
-    __insert_make_pair(Command_TimeSyncCCU);
-    __insert_make_pair(Command_TimeSyncTransmit);
+    (*this)[Command_DirectTransmission].push_back(CommandCode_DirectMessageRequest);
 
-    __insert_make_pair(Command_ConfigurationMemoryRead);
-    __insert_make_pair(Command_ConfigurationMemoryWrite);
-
-    __insert_make_pair(Command_RoutingTableWrite);
-    __insert_make_pair(Command_RoutingTableRead);
-    __insert_make_pair(Command_RoutingTableRequestAvailableSlots);
-    __insert_make_pair(Command_RoutingTableClear);
+    (*this)[Command_LoadRoutes].push_back(CommandCode_RoutingTableClear);
+    (*this)[Command_LoadRoutes].push_back(CommandCode_RoutingTableWrite);
 }
-
 
 /*
-Klondike::error_mapping_t::error_mapping_t()
+bool Klondike::checkCommandOverride()
 {
-    using std::make_pair;
-
-    insert(make_pair(Command_DirectMessageRequest,              Command_DirectMessageRequest));
-
-    insert(make_pair(Command_WaitingQueueWrite,                 Command_WaitingQueueWrite));
-    insert(make_pair(Command_WaitingQueueFreeze,                Command_WaitingQueueFreeze));
-    insert(make_pair(Command_WaitingQueueRead,                  Command_WaitingQueueRead));
-    insert(make_pair(Command_WaitingQueueClear,                 Command_WaitingQueueClear));
-    insert(make_pair(Command_ReplyQueueRead,                    Command_ReplyQueueRead));
-
-    insert(make_pair(Command_TimeSyncCCU,                       Command_TimeSyncCCU));
-    insert(make_pair(Command_TimeSyncTransmit,                  Command_TimeSyncTransmit));
-
-    insert(make_pair(Command_ConfigurationMemoryRead,           Command_ConfigurationMemoryRead));
-    insert(make_pair(Command_ConfigurationMemoryWrite,          Command_ConfigurationMemoryWrite));
-
-    insert(make_pair(Command_RoutingTableWrite,                 Command_RoutingTableWrite));
-    insert(make_pair(Command_RoutingTableRead,                  Command_RoutingTableRead));
-    insert(make_pair(Command_RoutingTableRequestAvailableSlots, Command_RoutingTableRequestAvailableSlots));
-    insert(make_pair(Command_RoutingTableClear,                 Command_RoutingTableClear));
+    if( _remote_requests.empty() && _device_status.response_buffer_has_data )
+    {
+        _current_command.command = Command_ClearQueue;
+    }
 }
 */
+
+bool Klondike::nextCommandState()
+{
+    bool complete = true;
+
+    //checkCommandOverride();
+
+    command_state_map_t::iterator itr = _command_states.find(_current_command.command);
+
+    /*if( _current_command.command == Command_LoadQueue &&
+        (_device_status.bits.transmit_buffer_full ||
+         _device_status.bits.response_buffer_full) )
+    {
+
+    }
+    else*/ if( itr != _command_states.end() && _current_command.state < itr->second.size() )
+    {
+        _current_command.command_code = itr->second[_current_command.state];
+        _current_command.state++;
+
+        complete = false;
+    }
+    else
+    {
+        _current_command.command_code = CommandCode_Null;
+    }
+
+    return !complete;
+}
+
+
+void Klondike::refreshMCTTimeSync(BSTRUCT &bst)
+{
+    if( bst.Function == CtiDeviceMCT4xx::FuncWrite_TSyncPos &&
+        bst.Length   == CtiDeviceMCT4xx::FuncWrite_TSyncLen )
+    {
+        //  replicated from CtiDeviceMCT4xx::loadTimeSync()
+        CtiTime now;
+        unsigned long time = now.seconds();
+
+        bst.Message[0] = gMCT400SeriesSPID;  //  global SPID
+        bst.Message[1] = (time >> 24) & 0x000000ff;
+        bst.Message[2] = (time >> 16) & 0x000000ff;
+        bst.Message[3] = (time >>  8) & 0x000000ff;
+        bst.Message[4] =  time        & 0x000000ff;
+        bst.Message[5] = now.isDST();
+    }
+}
 
 
 void Klondike::setAddresses( unsigned short slaveAddress, unsigned short masterAddress )
@@ -139,59 +168,65 @@ void Klondike::setWrap( ProtocolWrap w )
 }
 */
 
-bool Klondike::setCommand( int command )
+int Klondike::setCommand( const OUTMESS *const outmessage )
 {
-    command_mapping_t::const_iterator found_command = _command_mapping.find(command);
+    int command;
 
-    if( found_command != _command_mapping.end() )
+    if( outmessage->EventCode & DTRAN &&
+        outmessage->EventCode & BWORD )
     {
-        _command = found_command->second;
-
-        _wrap->init();
+        command = Klondike::Command_DirectTransmission;
+        _dtran_outmess = CTIDBG_new OUTMESS(*outmessage);
     }
     else
+    {
+        command = outmessage->Sequence;
+    }
+
+    command_state_map_t::const_iterator itr = _command_states.find(static_cast<Command>(command));
+
+    if( itr == _command_states.end() )
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint - invalid command (" << command << ") in Klondike::setCommand() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
 
-        _command = Command_Invalid;
+        _current_command.command      = Command_Null;
+        _current_command.command_code = CommandCode_Null;
+    }
+    else
+    {
+        _current_command.command = itr->first;
+        _current_command.state   = 0;
+
+        if( nextCommandState() )
+        {
+            _wrap->init();
+        }
     }
 
+    _io_state   = IO_Output;
+    _error_code = NoError;
     _protocol_errors = 0;
-    _io_state        = IO_Output;
-    _error_code      = NoError;
 
-    return _command != Command_Invalid;
-}
-
-
-bool Klondike::setCommandDirectTransmission( const BSTRUCT &BSt )
-{
-    _dtran_bstruct = BSt;
-
-    return setCommand(Command_DirectMessageRequest);
+    return (_current_command.command == Command_Null)?(NoMethod):(NoError);
 }
 
 
 Klondike::Command Klondike::getCommand( void ) const
 {
-    return _command;
+    return _current_command.command;
 }
 
 
-void Klondike::getResultDirectTransmission(unsigned char *buf, int buf_length, unsigned char &input_length)
+void Klondike::getResults( Klondike::result_queue_t &results )
 {
-    if( buf && (buf_length > _response_length) )
+    while( !_dlc_results.empty() )
     {
-        memcpy(buf, _d_words, _response_length);
-        input_length = _response_length;
-    }
-    else
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " **** Checkpoint - !buf || buf_length <= response_length **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+        results.push(_dlc_results.front());
+
+        _dlc_results.pop();
     }
 }
 
@@ -200,28 +235,10 @@ int Klondike::generate( CtiXfer &xfer )
 {
     if( _wrap->isTransactionComplete() )
     {
-        if( _wrap->errorCondition() )
+        switch( _io_state )
         {
-            _io_state = IO_Failed;
-        }
-        else
-        {
-            switch( _io_state )
-            {
-                case IO_Output:
-                {
-                    doOutput();
-
-                    break;
-                }
-
-                case IO_Input:
-                {
-                    doInput(xfer);
-
-                    break;
-                }
-            }
+            case IO_Output:     doOutput(_current_command.command_code);        break;
+            case IO_Input:      doInput (_current_command.command_code, xfer);  break;
         }
     }
 
@@ -229,89 +246,74 @@ int Klondike::generate( CtiXfer &xfer )
 }
 
 
-void Klondike::doOutput()
+void Klondike::doOutput(CommandCode command_code)
 {
     int pos = 0, length_pos, dlc_length = 0;
 
     unsigned char outbound[255];
 
-    //  first byte is always the command
-    outbound[pos++] = _command;
+    //  first byte is always the command code
+    outbound[pos++] = command_code;
 
-    switch( _command )
+    switch( command_code )
     {
-        case Command_CheckStatus:
+        //  no additional data
+        case CommandCode_CheckStatus:
+        case CommandCode_TimeSyncTransmit:
         {
             break;
         }
 
-        case Command_DirectMessageRequest:
+        case CommandCode_DirectMessageRequest:
         {
-            outbound[pos++] = (_sequence >> 8) & 0x00ff;
-            outbound[pos++] =  _sequence       & 0x00ff;
+            outbound[pos++] =  _device_queue_sequence       & 0x00ff;
+            outbound[pos++] = (_device_queue_sequence >> 8) & 0x00ff;
 
-            outbound[pos++] = _dtran_bstruct.DlcRoute.Bus + 1;
-            outbound[pos++] = _dtran_bstruct.DlcRoute.Stages;
+            outbound[pos++] = _dtran_outmess->Buffer.BSt.DlcRoute.Bus + 1;
+            outbound[pos++] = _dtran_outmess->Buffer.BSt.DlcRoute.Stages;
 
             //  save the length position - it gets filled in after we write the Emetcon words
             length_pos = pos++;
 
-            if( _dtran_bstruct.Function == CtiDeviceMCT4xx::FuncWrite_TSyncPos &&
-                _dtran_bstruct.Length   == CtiDeviceMCT4xx::FuncWrite_TSyncLen )
-            {
-                //  replicated from CtiDeviceMCT4xx::loadTimeSync()
-                CtiTime now;
-                unsigned long time = now.seconds();
+            refreshMCTTimeSync(_dtran_outmess->Buffer.BSt);
 
-                _dtran_bstruct.Message[0] = gMCT400SeriesSPID;  //  global SPID
-                _dtran_bstruct.Message[1] = (time >> 24) & 0x000000ff;
-                _dtran_bstruct.Message[2] = (time >> 16) & 0x000000ff;
-                _dtran_bstruct.Message[3] = (time >>  8) & 0x000000ff;
-                _dtran_bstruct.Message[4] =  time        & 0x000000ff;
-                _dtran_bstruct.Message[5] = now.isDST();
-            }
-
-            dlc_length = writeDLCMessage(outbound + pos, _dtran_bstruct);
+            dlc_length = writeDLCMessage(outbound + pos, _dtran_outmess->Buffer.BSt);
 
             outbound[length_pos] = dlc_length;
 
             pos += dlc_length;
 
-            _wrap->send(outbound, pos);
-
             break;
         }
 
-        case Command_WaitingQueueWrite:
+        case CommandCode_WaitingQueueWrite:
         {
             if( _waiting_requests.empty() )
             {
                 {
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - _waiting_requests.empty() with _command = Command_WaitingQueueWrite in Cti::Protocol::Klondike::doOutput() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    dout << CtiTime() << " **** Checkpoint - _waiting_requests.empty() with command_code = CommandCode_WaitingQueueWrite in Cti::Protocol::Klondike::doOutput() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _io_state = IO_Complete;
             }
             else
             {
-                outbound[pos++] = _command;
-
-                outbound[pos++] = (_device_queue_sequence >> 8) & 0x00ff;
                 outbound[pos++] =  _device_queue_sequence       & 0x00ff;
+                outbound[pos++] = (_device_queue_sequence >> 8) & 0x00ff;
 
-                outbound[pos++] = _device_queue_entries_available;
+                int queue_count_pos = pos++;
 
-                local_work::iterator itr,
-                                     itr_begin = _waiting_requests.begin(),
-                                     itr_end   = _waiting_requests.end();
+                local_work_t::iterator itr,
+                                       itr_begin = _waiting_requests.begin(),
+                                       itr_end   = _waiting_requests.end();
 
                 int processed = 0,
                     limit     = _wrap->getMaximumPayload();
 
-                bool complete = false;
+                bool full = false;
 
-                for( itr = itr_begin; itr != itr_end && !complete; itr++ )
+                for( itr = itr_begin; itr != itr_end && !full && processed < _device_queue_entries_available; itr++ )
                 {
                     if( itr )
                     {
@@ -319,7 +321,11 @@ void Klondike::doOutput()
 
                         unsigned entry_len = QueueEntryHeaderLength + calcDLCMessageLength(om->Buffer.BSt);
 
-                        if( pos + entry_len < limit )
+                        if( pos + entry_len > limit )
+                        {
+                            full = true;
+                        }
+                        else
                         {
                             unsigned char dlc_parms;
 
@@ -342,65 +348,131 @@ void Klondike::doOutput()
 
                             processed++;
                         }
-                        else
-                        {
-                            complete = true;
-                        }
                     }
                     else
                     {
                         //  null OM, just delete it
                         _waiting_requests.erase(itr);
                     }
-
-                    if( processed >= _device_queue_entries_available )
-                    {
-                        complete = true;
-                    }
                 }
 
-                _wrap->send(outbound, pos);
+                outbound[queue_count_pos] = processed;
+            }
+
+            break;
+        }
+
+        case CommandCode_ReplyQueueRead:
+        {
+            if( _remote_requests.empty() && !_device_status.response_buffer_has_data )
+            {
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - _remote_requests.empty() && !_device_status.response_buffer_has_data with command_code = CommandCode_ReplyQueueRead in Cti::Protocol::Klondike::doOutput() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+
+                _io_state = IO_Complete;
+            }
+            else
+            {
+                outbound[pos++] = _read_toggle;
+
+            }
+
+            break;
+        }
+
+        case CommandCode_RoutingTableClear:
+        {
+            outbound[pos++] = 0x00;  //  clear all slots
+
+            break;
+        }
+
+        case CommandCode_RoutingTableWrite:
+        {
+            if( _routes.empty() )
+            {
+                _io_state = IO_Complete;  //  abort!
+            }
+            else
+            {
+                if( _routes.size() <= 32 )
+                {
+                    outbound[pos++] = _routes.size();
+                }
+                else
+                {
+                    outbound[pos++] = 32;
+                }
+
+                route_list_t::iterator itr = _routes.begin();
+                int route = 1;
+
+                while( itr != _routes.end() && route <= 32 )
+                {
+                    outbound[pos++] = route;
+                    outbound[pos++] = (itr->variable) << 5 | itr->fixed;
+                    outbound[pos++] = itr->stages;
+                    outbound[pos++] = itr->bus;
+                    outbound[pos++] = itr->spid;
+
+                    route++;
+                    itr++;
+                }
             }
 
             break;
         }
 
         /*
-        case Command_WaitingQueueFreeze:
-        case Command_WaitingQueueRead:
-        case Command_WaitingQueueClear:
-        case Command_ReplyQueueRead:
-
-        case Command_TimeSyncCCU:
-        case Command_TimeSyncTransmit:
-
-        case Command_RoutingTableWrite:
-        case Command_RoutingTableRead:
-        case Command_RoutingTableRequestAvailableSlots:
-        case Command_RoutingTableClear:
-
-        case Command_ConfigurationMemoryRead:
-        case Command_ConfigurationMemoryWrite:
+        case CommandCode_WaitingQueueFreeze:
+        case CommandCode_WaitingQueueClear:
         */
 
-        case Command_Invalid:
+        case CommandCode_TimeSyncCCU:
+        {
+            unsigned long now = CtiTime::now().seconds();
+
+            outbound[pos++] = now & 0xff;   now >>= 8;
+            outbound[pos++] = now & 0xff;   now >>= 8;
+            outbound[pos++] = now & 0xff;   now >>= 8;
+            outbound[pos++] = now & 0xff;
+
+            break;
+        }
+
+        /*
+        case CommandCode_RoutingTableRead:
+        case CommandCode_RoutingTableRequestAvailableSlots:
+
+        case CommandCode_ConfigurationMemoryRead:
+        case CommandCode_ConfigurationMemoryWrite:
+        */
+
         default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled command (" << _command << ") in Cti::Protocol::Klondike::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unhandled command (" << _current_command.command << ") in Cti::Protocol::Klondike::generate() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
             break;
         }
     }
+
+    //  IO_Complete is the "abort" setting
+    if( _io_state != IO_Complete )
+    {
+        _wrap->send(outbound, pos);
+    }
 }
 
 
-void Klondike::doInput(CtiXfer &xfer)
+void Klondike::doInput(CommandCode command_code, CtiXfer &xfer)
 {
     _wrap->recv();
 
-    switch( _command )
+    switch( command_code )
     {
         //  normal case is to leave the xfer untouched...
         default:
@@ -410,18 +482,18 @@ void Klondike::doInput(CtiXfer &xfer)
 
         //  ...  but in the case of DTRAN, we need to add on
         //    some additional timeout time for the PLC comms
-        case Command_DirectMessageRequest:
+        case CommandCode_DirectMessageRequest:
         {
             //  hack the timeout into the xfer before we pass it to _wrap->generate()
             int timeout = TIMEOUT;
 
-            if( _dtran_bstruct.IO & Emetcon::IO_Read )
+            if( _dtran_outmess->Buffer.BSt.IO & Emetcon::IO_Read )
             {
-                timeout += _dtran_bstruct.DlcRoute.Stages * ((_dtran_bstruct.Length + 6 / 5) + 1);
+                timeout += _dtran_outmess->Buffer.BSt.DlcRoute.Stages * ((_dtran_outmess->Buffer.BSt.Length + 6 / 5) + 1);
             }
             else
             {
-                timeout += _dtran_bstruct.DlcRoute.Stages * ((_dtran_bstruct.Length + 4 / 5) + 1);
+                timeout += _dtran_outmess->Buffer.BSt.DlcRoute.Stages * ((_dtran_outmess->Buffer.BSt.Length + 4 / 5) + 1);
             }
 
             xfer.setInTimeout(timeout);
@@ -472,7 +544,7 @@ unsigned Klondike::calcDLCMessageLength( const BSTRUCT &bst )
 }
 
 
-bool Klondike::response_expected( Command command )
+bool Klondike::responseExpected( CommandCode command_code )
 {
     bool response = true;
 /*
@@ -484,7 +556,7 @@ bool Klondike::response_expected( Command command )
             break;
     }
 */
-    return true;
+    return response;
 }
 
 
@@ -494,56 +566,75 @@ int Klondike::decode( CtiXfer &xfer, int status )
 
     retVal = _wrap->decode(xfer, status);
 
-    if( !_wrap->isTransactionComplete() )
+    if( _wrap->isTransactionComplete() )
     {
-        //  not ready for anything yet - maybe increment a sanity check?
-    }
-    else if( _wrap->errorCondition() && ++_protocol_errors > ProtocolErrorsMaximum )
-    {
-        _io_state = IO_Failed;
-    }
-    else
-    {
-        switch( _io_state )
+        if( _wrap->errorCondition() )
         {
-            case IO_Output:
+            if( ++_protocol_errors > ProtocolErrorsMaximum )
             {
-                if( response_expected(_command) )
-                {
-                    //  next time through generate(), set xfer to read the input
-                    _io_state = IO_Input;
-                }
-                else
-                {
-                    _io_state = IO_Complete;
-                }
-
-                break;
+                _io_state = IO_Failed;
             }
-
-            case IO_Input:
+        }
+        else
+        {
+            switch( _io_state )
             {
-                unsigned char inbound[WrapLengthMaximum];
-                unsigned length;
-
-                //  process DTRAN response ACK/NACK
-                if( (length = _wrap->getInboundDataLength()) > WrapLengthMaximum )
+                case IO_Output:
                 {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " **** Checkpoint - _wrap->getInboundDataLength() > WrapLengthMaximum ("
-                                      << _wrap->getInboundDataLength() << " > " << WrapLengthMaximum
-                                      << ") in Cti::Protocol::Klondike::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    if( responseExpected(_current_command.command_code) )
+                    {
+                        //  next time through generate(), set xfer to read the input
+                        _io_state = IO_Input;
+                    }
+                    else if( nextCommandState() )
+                    {
+                        _io_state = IO_Output;
+                    }
+                    else
+                    {
+                        _io_state = IO_Complete;
+                    }
+
+                    break;
                 }
-                else
+
+                case IO_Input:
                 {
-                    _wrap->getInboundData(inbound);
+                    unsigned char inbound[WrapLengthMaximum];
+                    unsigned length;
 
-                    processResponse(inbound, length);
+                    //  process DTRAN response ACK/NACK
+                    if( (length = _wrap->getInboundDataLength()) > WrapLengthMaximum )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - _wrap->getInboundDataLength() > WrapLengthMaximum ("
+                                          << _wrap->getInboundDataLength() << " > " << WrapLengthMaximum
+                                          << ") in Cti::Protocol::Klondike::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    else
+                    {
+                        _wrap->getInboundData(inbound);
 
-                    _io_state = IO_Complete;
+                        processResponse(inbound, length);
+                    }
+
+                    if( nextCommandState() )
+                    {
+                        _io_state = IO_Output;
+                    }
+                    else
+                    {
+                        _io_state = IO_Complete;
+                    }
                 }
             }
         }
+    }
+
+    if( _io_state == IO_Complete || _io_state == IO_Failed )
+    {
+        if( _current_command.command == Command_LoadQueue )  setLoadingDeviceQueue(false);
+        if( _current_command.command == Command_ReadQueue )  setReadingDeviceQueue(false);
     }
 
     return retVal;
@@ -553,44 +644,80 @@ int Klondike::decode( CtiXfer &xfer, int status )
 void Klondike::processResponse(unsigned char *inbound, unsigned char inbound_length)
 {
     unsigned char pos = 0;
-    unsigned char response_command  =  inbound[pos++];
+    unsigned char response_command  = inbound[pos++];
+    unsigned char requested_command = inbound[pos++];
 
-    switch( _command )
+    _device_status.as_bytes[0] = inbound[pos++];
+    _device_status.as_bytes[1] = inbound[pos++];
+
+    switch( _current_command.command_code )
     {
-        case Command_CheckStatus:
+        case CommandCode_CheckStatus:
         {
-            inbound[0];
+            if( response_command == CommandCode_NAK )
+            {
+                unsigned char nak_code = inbound[pos++];
+
+                _error_code = NOTNORMAL;
+            }
+            else if( response_command == CommandCode_ACK_NoData )
+            {
+                _error_code = NOTNORMAL;
+            }
+            else if( response_command == CommandCode_ACK_Data )
+            {
+                _device_queue_entries_available = inbound[pos++];
+                _device_queue_sequence  = inbound[pos++];
+                _device_queue_sequence |= (inbound[pos++] << 8);
+            }
+            else
+            {
+                _error_code = NOTNORMAL;
+            }
 
             break;
         }
 
-        case Command_DirectMessageRequest:
+        case CommandCode_DirectMessageRequest:
         {
-            if( response_command == Command_NAK )
+            if( response_command == CommandCode_NAK )
             {
-                unsigned char status1  = inbound[pos++],
-                              status2  = inbound[pos++],
-                              nak_code = inbound[pos++];
+                unsigned char nak_code = inbound[pos++];
+
+                switch( nak_code )
+                {
+                    case 0x00:
+                    case 0x01:
+                    {
+                        break;
+                    }
+                    case 0x02:
+                    {
+                        _device_queue_sequence  =  inbound[pos++];
+                        _device_queue_sequence |= (inbound[pos++] << 8);
+
+                        //  could do some trickery here and reset the command so it goes out again...
+
+                        break;
+                    }
+                }
 
                 _error_code = NOTNORMAL;
             }
-            else if( response_command == Command_ACK_NoData )
+            else if( response_command == CommandCode_ACK_NoData )
             {
                 _error_code = NOTNORMAL;
             }
             else
             {
-                unsigned char requested_command =  inbound[pos++];
-                unsigned char status_bytes[2]   = {inbound[pos++],
-                                                   inbound[pos++]};
                 unsigned short sequence, snr;
                 unsigned char  message_length;
 
-                sequence  = inbound[pos++] << 8;
-                sequence |= inbound[pos++];
+                sequence  = inbound[pos++];
+                sequence |= inbound[pos++] << 8;
 
-                snr       = inbound[pos++] << 8;
-                snr      |= inbound[pos++];
+                snr       = inbound[pos++];
+                snr      |= inbound[pos++] << 8;
 
                 message_length = inbound[pos++];
 
@@ -606,8 +733,24 @@ void Klondike::processResponse(unsigned char *inbound, unsigned char inbound_len
                 }
                 else
                 {
-                    memcpy(_d_words, inbound + pos, message_length);
-                    _response_length = message_length;
+                    INMESS *im = CTIDBG_new INMESS;
+
+                    OutEchoToIN(_dtran_outmess, im);
+
+                    im->Port   = _dtran_outmess->Port;
+                    im->Remote = _dtran_outmess->Remote;
+
+                    im->Buffer.DSt.Address = _dtran_outmess->Buffer.BSt.Address;
+
+                    memcpy(im->Buffer.InMessage, inbound + pos, message_length);
+
+                    im->Time      = CtiTime::now().seconds();
+                    im->InLength  = message_length;
+
+                    _dlc_results.push(std::make_pair(_dtran_outmess, im));
+
+                    _dtran_outmess = 0;
+
                     pos += message_length;
                 }
 
@@ -617,13 +760,49 @@ void Klondike::processResponse(unsigned char *inbound, unsigned char inbound_len
             break;
         }
 
-        case Command_WaitingQueueWrite:
+        case CommandCode_WaitingQueueWrite:
         {
-            if( inbound[0] == Command_NAK )
+            if( response_command == CommandCode_NAK )
             {
-                //  error handling - we got nacked
+                unsigned char nak_code = inbound[pos++];
+
+                switch( nak_code )
+                {
+                    case 0x00:
+                    {
+                        //  capture the expected sequence
+                        _device_queue_sequence  =  inbound[pos++];
+                        _device_queue_sequence |= (inbound[pos++] << 8);
+
+                        unsigned char  rejected = inbound[pos++],
+                                       rejected_nak_code;
+                        unsigned short rejected_sequence;
+
+                        while( rejected > 0 )
+                        {
+                            rejected--;
+
+                            rejected_sequence  =  inbound[pos++];
+                            rejected_sequence |= (inbound[pos++] << 8);
+
+                            pending_work_t::iterator itr = _pending_requests.find(rejected_sequence);
+
+                            if( itr != _pending_requests.end() )
+                            {
+                                _pending_requests.erase(itr);
+                            }
+
+                            rejected_nak_code  = inbound[pos++];
+                        }
+                    }
+                    case 0x01:
+                    case 0x02:
+                    {
+                        break;
+                    }
+                }
             }
-            else if( inbound[0] == Command_ACK_NoData )
+            else if( response_command == CommandCode_ACK_NoData )
             {
                 _loading_device_queue = false;
 
@@ -632,26 +811,27 @@ void Klondike::processResponse(unsigned char *inbound, unsigned char inbound_len
                     dout << CtiTime() << " **** Checkpoint - ACK/No data in Cti::Protocol::Klondike::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
             }
-            else if( inbound[0] == Command_ACK_Data )
+            else if( response_command == CommandCode_ACK_Data )
             {
-                pending_work::iterator itr     = _pending_requests.begin(),
-                                       itr_end = _pending_requests.end();
+                pending_work_t::iterator itr     = _pending_requests.begin(),
+                                         itr_end = _pending_requests.end();
 
-                unsigned accepted = inbound[1];
-                _device_queue_entries_available = inbound[2];
+                unsigned accepted               = inbound[pos++];
+                _device_queue_entries_available = inbound[pos++];
 
-                if( accepted != _pending_requests.size() )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** Checkpoint - accepted != _pending_requests.size() in Cti::Protocol::Klondike::decode() (" << accepted << " != " << _pending_requests.size() <<") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                    }
-                }
-
-                while( itr != itr_end )
+                while( itr != itr_end && accepted )
                 {
                     _remote_requests.insert(std::make_pair(itr->first, *(itr->second)));
                     _waiting_requests.erase(itr->second);
+                    _device_queue_sequence++;
+                    accepted--;
+                    itr++;
+                }
+
+                if( accepted )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - accept > _pending_requests.size() in Cti::Protocol::Klondike::decode() (" << accepted << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
                 _pending_requests.clear();
@@ -664,11 +844,103 @@ void Klondike::processResponse(unsigned char *inbound, unsigned char inbound_len
             break;
         }
 
+        case CommandCode_ReplyQueueRead:
+        {
+            if( response_command == CommandCode_NAK )
+            {
+                //  error handling - we got nacked
+            }
+            else if( response_command == CommandCode_ACK_NoData )
+            {
+                _reading_device_queue = false;
+
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " **** Checkpoint - ACK/No data in Cti::Protocol::Klondike::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                }
+            }
+            else if( response_command == CommandCode_ACK_Data )
+            {
+                _read_toggle = inbound[pos++] ^ 0x01;  //  we'll echo this bit back to the CCU when we read or ack next
+
+                unsigned queue_entries_read = inbound[pos++];
+
+#pragma pack( push, 1 )
+                struct queue_response
+                {
+                    unsigned short sequence;
+                    unsigned long  timestamp;
+                    unsigned short signal_strength;
+                    unsigned char  result;
+                    unsigned char  message_length;
+                    unsigned char  message[DWORDLEN * 3];  //  3 D words is the maximum that we can bring back
+                } *q;
+#pragma pack( pop )
+
+                for( int entry = 0; entry < queue_entries_read; entry++ )
+                {
+                    q = reinterpret_cast<queue_response *>(inbound + pos);
+
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - read queue response (seq, timestamp, signal strength, result, message) "
+                             << "(" << CtiNumStr(q->sequence).xhex(4)        << ", "
+                                    << CtiTime(q->timestamp)                 << ", "
+                                    << CtiNumStr(q->signal_strength).xhex(2) << ", "
+                                    << CtiNumStr(q->result).xhex(2)          << ", ";
+
+                        for( int i = 0; i < q->message_length; i++ )
+                        {
+                            dout << CtiNumStr(q->message[i]).hex(2);
+                        }
+
+                        dout <<  ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+
+                    remote_work_t::iterator itr = _remote_requests.find(q->sequence);
+
+                    if( itr == _remote_requests.end() )
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** Checkpoint - unknown sequence (" << CtiNumStr(q->sequence).xhex(4) << ") received **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                    else
+                    {
+                        const OUTMESS *om = itr->second;
+                        INMESS *im = CTIDBG_new INMESS;
+
+                        OutEchoToIN(om, im);
+
+                        im->Port      = om->Port;
+                        im->Remote    = om->Remote;
+
+                        memcpy(im->Buffer.InMessage,  q->message, q->message_length);
+
+                        im->Buffer.DSt.Address = om->Buffer.BSt.Address;
+
+                        im->EventCode = q->result;
+                        im->Time      = q->timestamp;
+                        im->InLength  = q->message_length;
+
+                        _dlc_results.push(std::make_pair(om, im));
+
+                        _remote_requests.erase(itr);
+                    }
+
+                    //  increment past this queue entry
+                    pos += sizeof(queue_response) - (DWORDLEN * 3) + q->message_length;
+                }
+
+                _reading_device_queue = false;
+            }
+
+            break;
+        }
+
         /*
         case Command_WaitingQueueFreeze:
         case Command_WaitingQueueRead:
         case Command_WaitingQueueClear:
-        case Command_ReplyQueueRead:
 
         case Command_TimeSyncCCU:
         case Command_TimeSyncTransmit:
@@ -682,12 +954,11 @@ void Klondike::processResponse(unsigned char *inbound, unsigned char inbound_len
         case Command_ConfigurationMemoryWrite:
         */
 
-        case Command_Invalid:
         default:
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint - unhandled command (" << _command << ") in Cti::Protocol::Klondike::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                dout << CtiTime() << " **** Checkpoint - unhandled command code (" << _current_command.command_code << ") in Cti::Protocol::Klondike::decode() **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
 
             break;
@@ -699,9 +970,10 @@ void Klondike::processResponse(unsigned char *inbound, unsigned char inbound_len
 
 bool Klondike::isTransactionComplete( void ) const
 {
-    return _command == Command_Invalid
-             || _io_state == IO_Complete
-             || _io_state == IO_Failed;
+    return _current_command.command      == Command_Null     ||
+           _current_command.command_code == CommandCode_Null ||
+           _io_state == IO_Complete ||
+           errorCondition();
 }
 
 
@@ -711,20 +983,9 @@ bool Klondike::errorCondition( void ) const
 }
 
 
+
 int Klondike::errorCode()
 {
-/*
-    int error = NOTNORMAL;
-
-    error_mapping_t::const_iterator found_error;// = _error_mapping.find(_error_code);
-
-    if( found_error != _error_mapping.end() )
-    {
-        error = found_error->second;
-    }
-
-    return error;
-*/
     return _error_code;
 }
 
@@ -741,7 +1002,7 @@ bool Klondike::addQueuedWork(OUTMESS *&OutMessage)
 
 bool Klondike::hasQueuedWork() const
 {
-    return !_waiting_requests.empty() || !_remote_requests.empty();
+    return hasWaitingWork() || hasRemoteWork();
 }
 
 
@@ -781,17 +1042,17 @@ bool Klondike::setReadingDeviceQueue(bool reading)
 
 bool Klondike::hasRemoteWork() const
 {
-    return !_remote_requests.empty();
+    return !_remote_requests.empty() || _device_status.response_buffer_has_data;
 }
 
 
 unsigned Klondike::getRemoteWorkPriority() const
 {
-    unsigned priority = QueueWriteBasePriority;
+    unsigned priority = QueueReadBasePriority;
 
-    remote_work::iterator itr,
-                          itr_begin = _remote_requests.begin(),
-                          itr_end = _remote_requests.end();
+    remote_work_t::iterator itr,
+                            itr_begin = _remote_requests.begin(),
+                            itr_end = _remote_requests.end();
 
     //  iterate over all work in the CCU that needs to be retrieved
     for( itr = itr_begin; itr != itr_end; itr++ )
@@ -845,6 +1106,26 @@ int Klondike::decodeDWords(unsigned char *input, unsigned input_length, unsigned
     }
 
     return status;
+}
+
+
+void Klondike::addRoute(const CtiRouteCCUSPtr &new_route)
+{
+    route_entry_t route;
+
+    route.bus      = new_route->getBus();
+    route.fixed    = new_route->getCCUFixBits();
+    route.variable = new_route->getCCUVarBits();
+    route.stages   = new_route->getStages();
+    route.spid     = 0xff;  //  to be changed to system SPID
+
+    _routes.push_back(route);
+}
+
+
+void Klondike::clearRoutes()
+{
+    _routes.clear();
 }
 
 

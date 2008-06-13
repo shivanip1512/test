@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/03/31 21:17:35 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/06/13 13:39:49 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -338,6 +338,10 @@ int IDLC::decode( CtiXfer &xfer, int status )
                         {
                             _protocol_errors++;
                         }
+                        else
+                        {
+                            recv();  //  reset us for the next inbound
+                        }
                     }
                     else if( _in_frame.header.control.request_sequence != _slave_sequence )
                     {
@@ -357,7 +361,6 @@ int IDLC::decode( CtiXfer &xfer, int status )
 
                         //  we're done
                         _io_operation  = IO_Operation_Complete;
-                        _control_state = Control_State_OK;
                     }
 
                 }
@@ -368,7 +371,6 @@ int IDLC::decode( CtiXfer &xfer, int status )
             case IO_Operation_Output:
             {
                 _io_operation  = IO_Operation_Complete;
-                _control_state = Control_State_OK;
 
                 break;
             }
@@ -382,7 +384,6 @@ int IDLC::decode( CtiXfer &xfer, int status )
 
                 _protocol_errors++;
                 _io_operation  = IO_Operation_Failed;
-                _control_state = Control_State_OK;
 
                 break;
             }
@@ -397,7 +398,6 @@ int IDLC::decode( CtiXfer &xfer, int status )
         //  this should be a nicer error - this is very generic
         retval = !NORMAL;
         _io_operation  = IO_Operation_Failed;
-        _control_state = Control_State_OK;
     }
 
     return retval;
@@ -544,7 +544,7 @@ bool IDLC::control_pending( void )
     if( _control_state == Control_State_OK )
     {
         //  uninitialized
-        if( _slave_sequence  > 7 || _master_sequence > 7 )
+        if( _slave_sequence > 7 || _master_sequence > 7 )
         {
             _control_state = Control_State_ResetSend;
         }
@@ -556,9 +556,9 @@ bool IDLC::control_pending( void )
 
 bool IDLC::isTransactionComplete( void ) const
 {
-    //  if we're not inputting or outputting, we're done
-    return !(_io_operation == IO_Operation_Input ||
-             _io_operation == IO_Operation_Output);
+    //  if there's an error OR we're not inputting or outputting
+    return errorCondition() || !(_io_operation == IO_Operation_Input ||
+                                 _io_operation == IO_Operation_Output);
 }
 
 

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/rte_ccu.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2007/11/12 16:49:47 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/06/13 13:39:49 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,4 +86,7 @@ public:
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
    virtual void DecodeRepeaterDatabaseReader(RWDBReader &rdr);
 };
+
+typedef boost::shared_ptr<CtiRouteCCU> CtiRouteCCUSPtr;
+
 #endif // #ifndef __RTE_CCU_H__
