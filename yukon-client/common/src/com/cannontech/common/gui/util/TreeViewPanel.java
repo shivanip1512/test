@@ -28,7 +28,14 @@ import javax.swing.tree.TreePath;
 import com.cannontech.common.device.groups.service.DeviceGroupRenderer;
 import com.cannontech.common.gui.tree.CustomRenderJTree;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.lite.LiteBase;
+import com.cannontech.database.data.lite.LiteConfig;
+import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LitePoint;
+import com.cannontech.database.db.DBPersistent;
+import com.cannontech.database.db.device.Device;
+import com.cannontech.database.model.DBTreeModel;
 import com.cannontech.database.model.LiteBaseTreeModel;
 import com.cannontech.database.model.NullDBTreeModel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -547,25 +554,21 @@ public void selectLiteObject(com.cannontech.database.data.lite.LiteBase liteObj)
 /**
  * This method will select objects looking in current tree model first
  */
-public void selectObject(com.cannontech.database.db.DBPersistent obj) {
-
-	if( obj == null )
+public boolean selectObject(DBPersistent obj) {
+    LiteBase liteBase = LiteFactory.createLite(obj);
+	if( obj == null ) {
 		getTree().getSelectionModel().setSelectionPath( null );
-	else
-	{
-		com.cannontech.database.data.lite.LiteBase liteBase = com.cannontech.database.data.lite.LiteFactory.createLite(obj);
+		return false;
+	} else {
 		TreePath rootPath = new TreePath( getCurrentTreeModel().getRoot() );
 		
-		if( selectLiteBase(rootPath, liteBase) )
-		{
+		if( selectLiteBase(rootPath, liteBase) ) {
 			invalidate();
 			repaint();
-		}
-		else
-		{
-			for( int i = 0; i < getSortByComboBox().getModel().getSize(); i++ )
-			{
-				com.cannontech.database.model.DBTreeModel model = (com.cannontech.database.model.DBTreeModel) getSortByComboBox().getItemAt(i);
+			return true;
+		} else {
+			for( int i = 0; i < getSortByComboBox().getModel().getSize(); i++ ) {
+				DBTreeModel model = (DBTreeModel) getSortByComboBox().getItemAt(i);
 
 				model.update();
 				
@@ -573,15 +576,25 @@ public void selectObject(com.cannontech.database.db.DBPersistent obj) {
 				
 				rootPath = new TreePath( getCurrentTreeModel().getRoot() );
 				
-				if( selectLiteBase(rootPath, liteBase) )
-				{
+				if( selectLiteBase(rootPath, liteBase) ) {
 					getSortByComboBox().setSelectedIndex( i );
 					invalidate();
 					repaint();
-					break;
+					return true;
 				}
 			} 
 		}
+		if(liteBase instanceof LitePoint) {  // Change to device tree for points.
+		    getSortByComboBox().setSelectedIndex(1);
+		    DBTreeModel model = (DBTreeModel) getSortByComboBox().getSelectedItem();
+		    getTree().setModel(model);
+		    rootPath = new TreePath( getCurrentTreeModel().getRoot() );
+		    getTree().setSelectionPath( rootPath );
+	        getTree().scrollPathToVisible( rootPath );
+	        invalidate();
+            repaint();
+		}
+		return false;
 	}
 }
 

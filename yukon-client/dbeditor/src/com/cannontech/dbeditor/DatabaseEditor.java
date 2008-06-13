@@ -1,7 +1,9 @@
 package com.cannontech.dbeditor;
 
 import java.awt.Container;
+import java.awt.Cursor;
 import java.awt.Dimension;
+import java.awt.Frame;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -1348,6 +1350,44 @@ private void executeEditButton_ActionPerformed(ActionEvent event)
    }
    
 }
+
+private void showEditor(DBPersistent userObject) {
+    Frame owner = CtiUtilities.getParentFrame(getTree());
+    Cursor savedCursor = owner.getCursor();
+    LiteBase liteBase = LiteFactory.createLite(userObject);
+    DefaultMutableTreeNode node = new DefaultMutableTreeNode();
+    node.setUserObject(liteBase);
+    owner.setCursor(new Cursor(Cursor.WAIT_CURSOR));
+    try {
+        Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, userObject);
+        userObject = t.execute();   
+    } catch (Exception e) {
+        CTILogger.error( e.getMessage(), e );
+        fireMessage( new MessageEvent(this, "Error retrieving " + liteBase + " from the database.  Error received:  " + e.getMessage(), MessageEvent.ERROR_MESSAGE));
+    }
+    PropertyPanel panel = EditorPanelFactory.createEditorPanel( userObject );
+    panel.addPropertyPanelListener(this);
+    panel.setValue(userObject);
+    JTreeEditorFrame frame = getAvailableEditorFrame();
+    frame.setOwnerNode( node ); //set the editors ownerNode
+    frame.setTitle( userObject.toString() + " : " + panel.toString());
+    frame.setContentPane(panel);
+    
+    frame.setSize( EDITOR_FRAME_SIZE );
+    frame.setLocation( getVisibleEditorFrames() * 10, getVisibleEditorFrames() * 20 );
+    frame.setVisible(true);
+    try {
+       frame.setSelected(true);
+    }
+    catch (java.beans.PropertyVetoException e) {
+       CTILogger.error( e.getMessage(), e ); //when does this happen??
+    }
+    finally{
+        owner.setCursor(savedCursor);
+    }
+   
+}
+
 /**
  * Insert the method's description here.
  * Creation date: (6/11/2001 9:23:31 AM)
@@ -2720,6 +2760,8 @@ public void selectionPerformed(WizardPanelEvent event)
 	boolean objTypeChange = false;
 	boolean successfullInsertion = false;
     boolean selectInTree = true;
+    boolean selectWorked = false;
+    DBPersistent newItem = null;
 
 	if (event.getID() == WizardPanelEvent.FINISH_SELECTION)
 	{
@@ -2731,13 +2773,10 @@ public void selectionPerformed(WizardPanelEvent event)
 		{		
 			WizardPanel p = (WizardPanel) event.getSource();
 
-			//get the newly created item from the wizard panel
-			com.cannontech.database.db.DBPersistent newItem = null;
-
 			copyingObject = false;
 
 			//p.getValue(null) may throw a CancelInsertException
-			newItem = (com.cannontech.database.db.DBPersistent) p.getValue(null);
+			newItem = (DBPersistent) p.getValue(null);
 
             // Hack - Don't try to select new Categories or TOUSchedules 
             // created in the device config UI
@@ -2757,7 +2796,7 @@ public void selectionPerformed(WizardPanelEvent event)
 			//Bring the editor up for the newly created Object
 			if (successfullInsertion && selectInTree)
 			{
-				getTreeViewPanel().selectObject(newItem);
+			    selectWorked = getTreeViewPanel().selectObject(newItem);
 			}
 
 		}
@@ -2794,7 +2833,11 @@ public void selectionPerformed(WizardPanelEvent event)
 	
 
 	if((successfullInsertion || objTypeChange) && selectInTree) {
-		 showEditorSelectedObject();
+	    if(selectWorked) {
+	        showEditorSelectedObject();
+	    }else {
+	        showEditor(newItem);
+	    }
 	}
 
 }
@@ -3004,7 +3047,7 @@ public void showEditorSelectedObject()
 
 	try
 	{
-		 
+		
 		executeEditButton_ActionPerformed(new ActionEvent(this, DBEditorTreePopUpMenu.EDIT_TREENODE, "edit"));
 	}
 	catch (Exception e)
