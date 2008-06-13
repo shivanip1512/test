@@ -50,7 +50,7 @@ public class DeviceConfigurationFormController extends InputFormController {
     }
 
     @Override
-    public InputRoot getInputRoot() {
+    public InputRoot getInputRoot(HttpServletRequest request) {
         return inputRoot;
     }
 
