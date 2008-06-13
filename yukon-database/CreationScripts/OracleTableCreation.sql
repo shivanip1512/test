@@ -3158,7 +3158,7 @@ create table DYNAMICBILLINGFIELD  (
 
 /* STANDARD */
 insert into DynamicBillingField values(1, 31,'Plain Text', 0, 'M', 0, ' ','none','ELECTRIC');
-insert into DynamicBillingField values(2, 31, 'meterNumber', 1, '', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(2, 31, 'meterNumber', 1, ' ', 0, ' ','none','ELECTRIC');
 insert into DynamicBillingField values(3, 31, 'totalConsumption - reading',2,'#####', 0, ' ','none','ELECTRIC');
 insert into DynamicBillingField values(4, 31, 'totalConsumption - timestamp', 3, 'HH:mm', 0, ' ','none','ELECTRIC');
 insert into DynamicBillingField values(5, 31, 'totalConsumption - timestamp', 4, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
@@ -3167,7 +3167,7 @@ insert into DynamicBillingField values(7, 31, 'totalPeakDemand - timestamp', 6, 
 insert into DynamicBillingField values(8, 31, 'totalPeakDemand - timestamp', 7, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
 
 /* SimpleTOU */
-insert into DynamicBillingField values(10, 21, 'meterNumber', 0, '', 0, ' ','none','ELECTRIC');
+insert into DynamicBillingField values(10, 21, 'meterNumber', 0, ' ', 0, ' ','none','ELECTRIC');
 insert into DynamicBillingField values(11, 21, 'totalConsumption - reading' ,1, '#####', 0, ' ','none','ELECTRIC');
 insert into DynamicBillingField values(12, 21, 'totalConsumption - timestamp', 2, 'HH:mm', 0, ' ','none','ELECTRIC');
 insert into DynamicBillingField values(13, 21, 'totalConsumption - timestamp', 3, 'MM/dd/yyyy', 0, ' ','none','ELECTRIC');
@@ -3194,8 +3194,8 @@ create table DYNAMICBILLINGFORMAT  (
    constraint PK_DYNAMICBILLINGFORMAT primary key (FormatID)
 );
 
-insert into DynamicBillingFormat values( 31, ',' ,'H Meter kWh Time Date Peak PeakT PeakD', '');
-insert into DynamicBillingFormat values( 21, ',' ,'' ,''); 
+insert into DynamicBillingFormat values( 31, ',' ,'H Meter kWh Time Date Peak PeakT PeakD', ' ');
+insert into DynamicBillingFormat values( 21, ',' ,' ' ,' '); 
 
 /*==============================================================*/
 /* Table: DYNAMICCCAREA                                         */
