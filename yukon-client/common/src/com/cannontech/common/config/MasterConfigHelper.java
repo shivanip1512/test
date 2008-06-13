@@ -3,22 +3,20 @@ package com.cannontech.common.config;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLEncoder;
 
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.remoting.httpinvoker.HttpInvokerClientInterceptor;
-import org.springframework.remoting.httpinvoker.SimpleHttpInvokerRequestExecutor;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.spring.SimpleSessionHttpInvokerRequestExecutor;
 
 public class MasterConfigHelper {
     static private File masterCfgLocation;
-    private static String urlBase = null;
-    //private static String sessionId;
-    private static SimpleHttpInvokerRequestExecutor requestExecutor = new SimpleHttpInvokerRequestExecutor();
+    private static String url = null;
     
     static {
         masterCfgLocation = new File(CtiUtilities.getYukonBase(), "Server/Config/master.cfg");
@@ -31,7 +29,7 @@ public class MasterConfigHelper {
     
     static public InputStream getMasterConfig() {
         try {
-            return masterCfgLocation.toURL().openStream();
+            return masterCfgLocation.toURI().toURL().openStream();
         } catch (Exception e) {
             throw new BadConfigurationException("Unable to open master.cfg from " + masterCfgLocation, e);
         }
@@ -60,23 +58,19 @@ public class MasterConfigHelper {
     }
     
     static public ConfigurationSource getRemoteConfiguration() {
-        if (urlBase == null) {
-            CTILogger.warn("urlBase=" + urlBase);
-            
-            throw new BadConfigurationException("remoteBaseUrl or sessionId not set");
+        if (url == null) {
+            throw new BadConfigurationException("can't get remote configuration when url isn't set");
         }
         HttpInvokerClientInterceptor interceptor = new HttpInvokerClientInterceptor();
-        interceptor.setHttpInvokerRequestExecutor(requestExecutor);
-        String url = urlBase + "/remote/MasterConfig";
         interceptor.setServiceUrl(url);
+        interceptor.afterPropertiesSet();
         CTILogger.debug("remote configuration interceptor=" + interceptor);
         ConfigurationSource config = (ConfigurationSource) ProxyFactory.getProxy(ConfigurationSource.class, interceptor);
-        CTILogger.info("Remote config setup: " + url);
         return config;
     }
     
     static public ConfigurationSource getConfiguration() {
-        if (urlBase != null) {
+        if (url != null) {
             CTILogger.debug("Returning remote config");
             return getRemoteConfiguration();
         } else {
@@ -85,22 +79,12 @@ public class MasterConfigHelper {
         }
     }
     
-    static public void setRemoteBaseUrl(String urlBase) {
-        MasterConfigHelper.urlBase = urlBase;
-    }
-    
-    static public void setRemoteHostAndPort(String host, int port) {
-        setRemoteBaseUrl("http://" + host + ":" + port);
-    }
-    
-    static public void setSessionId(String sessionId) {
-        //MasterConfigHelper.sessionId = sessionId;
-        if (sessionId == null) {
-            requestExecutor = new SimpleHttpInvokerRequestExecutor();
-        } else {
-            SimpleSessionHttpInvokerRequestExecutor executor = new SimpleSessionHttpInvokerRequestExecutor();
-            executor.setSessionId(sessionId);
-            requestExecutor = executor;
+    static public void setRemoteHostAndPort(String host, String userName, String password) {
+        try {
+            url = host + "/remote/MasterConfig?" + "USERNAME=" + URLEncoder.encode(userName, "UTF-8") + "&PASSWORD=" + URLEncoder.encode(password, "UTF-8") + "&noLoginRedirect=true";
+            CTILogger.debug("setting url to: " + url);
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("Unable to set host and port", e);
         }
     }
     

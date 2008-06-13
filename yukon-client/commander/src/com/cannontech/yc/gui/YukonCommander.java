@@ -25,7 +25,6 @@ import java.util.Vector;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JTextPane;
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;
@@ -39,9 +38,9 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupTreeFactory;
 import com.cannontech.common.gui.util.JTextPanePrintable;
-import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.gui.util.TreeViewPanel;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NativeIntVector;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
@@ -1346,7 +1345,6 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			// user code begin {1}
 			// user code end
 			setName("YukonCommander");
-			setSize(841, 647);
 			setJMenuBar(getYukonCommanderJMenuBar());
 			setContentPane(getJFrameContentPane());
 		} catch (java.lang.Throwable ivjExc) {
@@ -1505,73 +1503,25 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	{
 		try
 		{
-			System.setProperty("cti.app.name", "Commander");
-            CTILogger.info("Commander starting...");
-			javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
-			final SplashWindow splash = SplashWindow.createYukonSplash(null);
-	
-			final ClientSession session = ClientSession.getInstance(); 
-			boolean loggingIn = true;
-			while(loggingIn){
-				if(!session.establishSession(null)){
-					System.exit(-1);			
-				}
-				  
-				if(session == null) 
-				{
-				    System.exit(-1);
-				}
-				  
-				if(!session.checkRole(CommanderRole.ROLEID)) {
-					JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", "Access Denied", JOptionPane.WARNING_MESSAGE);				
-					session.closeSession();
-				} else {
-					loggingIn = false;
-				}
-			}
+	        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
+	        clientStartupHelper.setAppName("Commander");
+	        clientStartupHelper.setRequiredRole(CommanderRole.ROLEID);
+
+	        clientStartupHelper.doStartup();
 	
 			final YukonCommander ycClient = new YukonCommander();
+			
+			clientStartupHelper.setParentFrame(ycClient);
 			
 			ycClient.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_GIF));
 						
 			ycClient.setTitle(YC_TITLE);
-			splash.setDisplayText("Opening connection to database...");
-	
-			//Test that a connection can actually be made.
-			java.sql.Connection c = null;
-			try
-			{
-				c = com.cannontech.database.PoolManager.getInstance().getConnection(com.cannontech.common.util.CtiUtilities.getDatabaseAlias());
-	
-				if (c == null)
-				{
-					splash.setDisplayText("Error connecting to database, closing");
-					Thread.sleep(2000);		//let them see
-					System.exit(0);
-				}
-			}
-			catch (Throwable t)
-			{
-				t.printStackTrace();
-				splash.setDisplayText("Error connecting to database, closing");
-				Thread.sleep(2000);		//let them see
-				System.exit(0);
-			}
-			finally
-			{
-				if (c != null)
-					c.close();
-			}
 	
 			//set the app to start as close to the center as you can....
 			//  only works with small gui interfaces.
-			java.awt.Dimension d = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-			ycClient.setLocation((int)(d.width * .07),(int)(d.height * .07));
 
 			javax.swing.SwingUtilities.invokeLater(new Runnable() {
 			    public void run() {
-                    splash.setVisible( false );
-                    splash.dispose();           
                     ycClient.setVisible(true);
 //                  ycClient.getTreeViewPanel().getTree().setSelectionInterval(1,1);
                     ycClient.getTreeViewPanel().getTree().requestFocusInWindow();
@@ -1579,10 +1529,9 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
             });
 
 		}
-		catch (Throwable exception)
+		catch (Throwable e)
 		{
-			System.err.println("Exception occurred in main() of javax.swing.JFrame");
-			exception.printStackTrace(System.err);
+			CTILogger.error("Exception occurred in main() of javax.swing.JFrame",e);
 			System.exit(-1);
 		}
 	}

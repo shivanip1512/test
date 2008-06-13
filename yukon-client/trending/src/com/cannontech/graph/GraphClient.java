@@ -5,7 +5,6 @@ package com.cannontech.graph;
  * @author:
  */
 
-import java.awt.Dimension;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
@@ -19,15 +18,13 @@ import java.net.URL;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.Vector;
-import java.util.prefs.*;
+import java.util.prefs.Preferences;
 
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
@@ -40,8 +37,8 @@ import org.jfree.chart.JFreeChart;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
-import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
@@ -71,7 +68,6 @@ import com.cannontech.graph.model.TrendModel;
 import com.cannontech.graph.model.TrendProperties;
 import com.cannontech.jfreechart.chart.YukonChartPanel;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TrendingRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
@@ -2113,45 +2109,18 @@ public static void main(String[] args)
 {
     try
         {
-		System.setProperty("cti.app.name", "Trending");
-        CTILogger.info("Trending starting...");
-        javax.swing.UIManager.setLookAndFeel( javax.swing.UIManager.getSystemLookAndFeelClassName());
-
-        javax.swing.JFrame mainFrame = new javax.swing.JFrame();
+        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
+        clientStartupHelper.setAppName("Trending");
+        clientStartupHelper.setRequiredRole(TrendingRole.ROLEID);
+        
+        // creates a stupid anonymous class to create a unique class name for the main frame
+        // the ClientStartupHelper will use this for picking a Preference node
+        javax.swing.JFrame mainFrame = new javax.swing.JFrame() {};
+        clientStartupHelper.setParentFrame(mainFrame);
 		mainFrame.setIconImage( Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
 		mainFrame.setTitle("Yukon Trending");
         
-        SplashWindow.createYukonSplash(mainFrame);
-        
-		ClientSession session = ClientSession.getInstance(); 
-		boolean loggingIn = true;
-		while(loggingIn){
-			if(!session.establishSession(mainFrame)){
-				System.exit(-1);			
-			}
-			  
-			if(session == null) 
-			{
-				System.exit(-1);
-			}
-			  
-			if(!session.checkRole(TrendingRole.ROLEID)) {
-				JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", "Access Denied", JOptionPane.WARNING_MESSAGE);				
-				session.closeSession();
-			} else {
-				loggingIn = false;
-			}
-		}
-			
-		Preferences prefs;
-        prefs = Preferences.userNodeForPackage(GraphClient.class);
-        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize(); 
-        String lastX = prefs.get("LAST_X", "0");
-        String lastY = prefs.get("LAST_Y", "0");
-        String lastWidth = prefs.get("LAST_WIDTH", new Integer((int) (screenSize.width * .95)).toString());
-        String lastHeight = prefs.get("LAST_HEIGHT", new Integer((int)( screenSize.height * .95)).toString());
-
-        mainFrame.setBounds(Integer.parseInt(lastX), Integer.parseInt(lastY), Integer.parseInt(lastWidth), Integer.parseInt(lastHeight));
+		clientStartupHelper.doStartup();
 
         GraphClient gc = new GraphClient(mainFrame);
         mainFrame.setContentPane(gc);

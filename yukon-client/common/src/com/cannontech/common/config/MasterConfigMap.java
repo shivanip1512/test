@@ -56,7 +56,7 @@ public class MasterConfigMap implements ConfigurationSource {
         }
     }
     
-    public String getRequiredString(String key) {
+    public String getRequiredString(String key) throws UnknownKeyException {
         if (!configMap.containsKey(key)) {
             throw new UnknownKeyException(key);
         }

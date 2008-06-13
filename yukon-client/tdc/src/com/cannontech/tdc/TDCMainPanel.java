@@ -2129,11 +2129,6 @@ private void initializeParameters()
 
 	try
 	{
-		parentFrame.setBounds( 
-							Integer.parseInt(pf.getParameterValue("FrameX", "150")),
-							Integer.parseInt(pf.getParameterValue("FrameY", "200")),
-							Integer.parseInt(pf.getParameterValue("FrameWidth", "650")),
-							Integer.parseInt(pf.getParameterValue("FrameHeight", "400")) );
 		
 		newFont = new java.awt.Font( pf.getParameterValue("FontName", "Arial"),
 									 java.awt.Font.PLAIN,

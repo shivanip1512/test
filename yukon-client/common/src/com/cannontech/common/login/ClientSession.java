@@ -5,18 +5,22 @@ package com.cannontech.common.login;
 
 import java.awt.Frame;
 import java.net.CookieHandler;
-import java.util.Properties;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.swing.JOptionPane;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.exception.ExceptionUtils;
+import org.springframework.jdbc.CannotGetJdbcConnectionException;
+import org.springframework.remoting.RemoteAccessException;
+import org.springframework.remoting.RemoteConnectFailureException;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.config.ConfigurationSource;
 import com.cannontech.common.config.MasterConfigHelper;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -37,36 +41,10 @@ import com.cannontech.user.UserUtils;
 public class ClientSession {
 		
 	private LiteYukonUser user;
-	private String sessionID;
-	private String host;
-	private int port;
-	
-	private boolean localLogin = true;
-	
-	private Timer refreshTimer; 
-	
-	private static int SESSION_REFRESH_FREQUENCY = 1000*60*15; //15 minutes
 	
 	private static int INVALID_CURRENT_USERID = Integer.MIN_VALUE;
 	private static int DEF_PORT = 8080;
 
-	/*
-	 * SessionRefreshTimerTask refreshes a client session on a periodic basis 
-	 * to avoid session timeouts while the client is still running.  
-	 */
-	class SessionRefreshTimerTask extends TimerTask {
-		public void run() {
-			Properties p = null;
-			try {			
-				CTILogger.debug("Refreshing client session: " + sessionID + " with host: " + host + " port: " + port);
-                ConfigurationSource config = MasterConfigHelper.getRemoteConfiguration();
-                config.getRequiredString("DB_USERNAME");
-			}
-			catch(Exception e) {
-				CTILogger.warn("Unable to refresh client  session: " + sessionID + " with host: " + host + " port: " + port, e);							
-			}
-		}
-	}
 	/**
 	 * Return the user associated with this session.
 	 * @return
@@ -120,22 +98,6 @@ public class ClientSession {
 		return instance;
 	}
 	
-	public synchronized void closeSession() {
-		if(LoginPrefs.getInstance().getCurrentSessionID().length() > 0 &&
-			LoginPrefs.getInstance().getCurrentUserID() != INVALID_CURRENT_USERID) {
-		
-			LoginPrefs.getInstance().setCurrentSessionID("");
-			LoginPrefs.getInstance().setCurrentUserID(INVALID_CURRENT_USERID);		
-
-			if(!localLogin) {
-				//Stop session refreshes and close the session
-				refreshTimer.cancel();
-				LoginSupport.closeSession(sessionID, host, port);
-			}
-		}
-	}
-
-
 	/**
 		 * Attempt to establish a session
 		 * @return
@@ -152,37 +114,25 @@ public class ClientSession {
         
         boolean isJws = StringUtils.isNotBlank(System.getProperty("yukon.jws.host"));
         CTILogger.info("Java Web Start property found: " + isJws);
-		if(!isJws && MasterConfigHelper.isLocalConfigAvailable()) {
-			CTILogger.info("Attempting local load of database properties...");
+		if (!isJws && MasterConfigHelper.isLocalConfigAvailable()) {
+		    CTILogger.info("Attempting local load of database properties...");
 			success = doLocalLogin(parent, MasterConfigHelper.getLocalConfiguration());
-            localLogin = success;
 		}
 		else {
-			CTILogger.info("Attempting remote load of database properties...");
-            success = doRemoteLogin(parent);
-			localLogin = !success;
-            if (success) {
-                YukonLogManager.initialize(host, port, sessionID);
-            }
-                
-		}			
-		
-		if(success) {
-			LoginPrefs prefs = LoginPrefs.getInstance();
-			prefs.setCurrentSessionID(sessionID);
-			prefs.setCurrentUserID(user.getUserID());
-			prefs.setCurrentYukonHost(host);
-			prefs.setCurrentYukonPort(port);
-			
-			if(!localLogin) {
-				//fire up a timer to refresh the session 
-				refreshTimer = new Timer(true);
-				refreshTimer.schedule(new SessionRefreshTimerTask(), SESSION_REFRESH_FREQUENCY, SESSION_REFRESH_FREQUENCY);
-			}
-			return true;
+		    if (isJws) {
+		        CTILogger.info("Attempting JWS load of database properties...");
+		        success = doJwsLogin(parent);
+		    } else {
+		        CTILogger.info("Attempting remote load of database properties...");
+		        success = doRemoteLogin(parent);
+		    }
+		}		
+		if (success) {
+		    CTILogger.debug("Login was successful for " + getUser());
+		} else {
+		    CTILogger.debug("Login was not successful");
 		}
-		
-		return false;
+		return success;
 	}
 
     /**
@@ -203,7 +153,7 @@ public class ClientSession {
         if(u != null)
         {
             CTILogger.debug("  Assuming SERVER loginID to be " + userID );
-            setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);      
+            setSessionInfo(u);      
             success = true;
         }
         else
@@ -220,107 +170,66 @@ public class ClientSession {
         PoolManager.setConfigurationSource(configSource);
 		
 		LoginPrefs prefs = LoginPrefs.getInstance();
-		int userID = prefs.getCurrentUserID();
-		if(userID != INVALID_CURRENT_USERID) {
-			//already 'logged in' so we try to re-establish the login
-			// with the existing credentials
-			String oldUserName = prefs.getDefaultUsername();
-			String oldPassword = prefs.getDefaultPassword();
-			LiteYukonUser u = DaoFactory.getAuthDao().login(oldUserName, oldPassword);			
-			if(u != null) {
-				setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);		
-				return true;
-			}
-			//Couldn't find the supposedly logged in user, disregard current login
-		}
 
-		LoginPanel lp = makeLocalLoginPanel();
-		while(collectInfo(p, lp)) {
-			LiteYukonUser u = DaoFactory.getAuthDao().login(lp.getUsername(), lp.getPassword());
-			if(u != null) {
-				//score! we found them
-				setSessionInfo(u, Integer.toString(u.getUserID()), "", DEF_PORT);
-				boolean saveInfo = lp.isRememberPassword();
-				prefs.setDefaultRememberPassword(saveInfo);
-				if(saveInfo) {
-					prefs.setDefaultUsername(lp.getUsername());
-					prefs.setDefaultPassword(lp.getPassword());
-				}
-				else {
-					prefs.setDefaultUsername("");
-					prefs.setDefaultPassword("");
-				}
-				
-				return true;
-			}
-			else {
-				// bad username or password
-				displayMessage(p, "Invalid Username or Password.  Usernames and Passwords are case sensitive, be sure to use correct upper and lower case.", "Yukon Login");
-			}
-		}
+        try {
+            // force load of the application context
+            YukonSpringHook.getContext();
+
+            LoginPanel lp = makeLocalLoginPanel();
+            while(collectInfo(p, lp)) {
+            	LiteYukonUser u = DaoFactory.getAuthDao().login(lp.getUsername(), lp.getPassword());
+            	if(u != null) {
+            		//score! we found them
+            		setSessionInfo(u);
+            		boolean saveInfo = lp.isRememberPassword();
+            		prefs.setDefaultRememberPassword(saveInfo);
+            		if(saveInfo) {
+            			prefs.setDefaultUsername(lp.getUsername());
+            			prefs.setDefaultPassword(lp.getPassword());
+            		}
+            		else {
+            			prefs.setDefaultUsername("");
+            			prefs.setDefaultPassword("");
+            		}
+            		
+            		return true;
+            	}
+            	else {
+            		// bad username or password
+            		displayMessage(p, "Invalid Username or Password.  Usernames and Passwords are case sensitive, be sure to use correct upper and lower case.", "Error");
+            	}
+            }
+        } catch (RuntimeException e) {
+            handleOtherExceptions(p, e);
+        }
 		
 		// They gave up trying to login
 		return false;
 	}
-    
-	private boolean doRemoteLogin(Frame p) {
-		LoginPrefs prefs = LoginPrefs.getInstance();
-		
-		String sessionID = prefs.getCurrentSessionID();
-		String host = prefs.getCurrentYukonHost();
-		int port = prefs.getCurrentYukonPort();
-		
-		try
-		{
-			if(sessionID.length() > 0 && host.length() > 0 && port > 0) {
-                CTILogger.debug("Found session, host, and port. Attempting local login.");
-				// have a session info already lets try it
-                MasterConfigHelper.setRemoteHostAndPort(host, port);
-                MasterConfigHelper.setSessionId(sessionID);
-                
-                ConfigurationSource config = MasterConfigHelper.getConfiguration();
-                PoolManager.setConfigurationSource(config);
-                // force load of the application context
-                YukonSpringHook.getContext();
-                
-				//already 'logged in' so we try to re-establish the login
-				// with the existing credentials
-				String oldUserName = prefs.getDefaultUsername();
-				String oldPassword = prefs.getDefaultPassword();
-				LiteYukonUser u = DaoFactory.getAuthDao().login(oldUserName, oldPassword);					
-				if(u != null) {
-					//score! we found them
-                    CTILogger.debug("Got not null user: " + u);
-					setSessionInfo(u, sessionID, host, port);
-					return true;
-				}
-			}  // current session didn't work out, lets try to establish a new one
-		}
-		catch( Exception ex ) //did not work for whatever reason, force them to login again
-		{
-			CTILogger.error("Unable to use old credentials, forcing login process");
-		}
+	
+	private boolean doJwsLogin(Frame p) {
+	    String jwsHost = System.getProperty("yukon.jws.host");
+	    String jwsUser = System.getProperty("yukon.jws.user");
+	    LoginPanel lp = makeJwsLoginPanel(jwsHost, jwsUser);
+	    
+        return doLoginLoop(p, lp);
+	}
 
-        // if we get here, we need to release the application context
-        YukonSpringHook.shutdownContext();
-        		
+    private boolean doLoginLoop(Frame p, LoginPanel lp) {
         CTILogger.debug("Starting login dialog loop");
-		LoginPanel lp = makeRemoteLoginPanel();
-		while(collectInfo(p, lp)) {
-			try {
-				sessionID = LoginSupport.getSessionID(lp.getYukonHost(), lp.getYukonPort(), lp.getUsername(), lp.getPassword());
-			}
-			catch(RuntimeException re) {
-				displayMessage(p, re.getMessage(), "Yukon Login"); //blew up, try again?
-				continue;
-			}
-			
-            CTILogger.debug("Got a session: " + sessionID);
+        LoginPrefs prefs = LoginPrefs.getInstance();
+        while(collectInfo(p, lp)) {
             try {
-                MasterConfigHelper.setRemoteHostAndPort(lp.getYukonHost(), lp.getYukonPort());
-                MasterConfigHelper.setSessionId(sessionID);
+                // test host
+                URL url = new URL(lp.getYukonHost());
+                
+                MasterConfigHelper.setRemoteHostAndPort(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
                 
                 ConfigurationSource configuration = MasterConfigHelper.getConfiguration();
+                // test the config by getting something that should always exist
+                // (if we don't do this here, it will fail deep inside the context startup)
+                configuration.getRequiredString("DB_USERNAME");
+                
                 PoolManager.setConfigurationSource(configuration);
                 // force load of the application context
                 YukonSpringHook.getContext();
@@ -329,47 +238,90 @@ public class ClientSession {
                 LiteYukonUser u = DaoFactory.getYukonUserDao().getLiteYukonUser(lp.getUsername());
                 if(u != null) {
                     CTILogger.debug("Got not null user: " + u);
-                	//score! we found them
-                  	setSessionInfo(u, sessionID, lp.getYukonHost(), lp.getYukonPort());
-                  	
-                	boolean saveInfo = lp.isRememberPassword();
-                	prefs.setDefaultRememberPassword(saveInfo);
-                	if(saveInfo) {
-                		prefs.setDefaultUsername(lp.getUsername());
-                		prefs.setDefaultPassword(lp.getPassword());
-                	} else {
-                		prefs.setDefaultUsername("");
-                		prefs.setDefaultPassword("");
-                	}
-                  	return true;
+                    //score! we found them
+                    setSessionInfo(u);
+                    
+                    boolean saveInfo = lp.isRememberPassword();
+                    prefs.setDefaultRememberPassword(saveInfo);
+                    if(saveInfo) {
+                        prefs.setDefaultUsername(lp.getUsername());
+                        prefs.setDefaultPassword(lp.getPassword());
+                    } else {
+                        prefs.setDefaultUsername("");
+                        prefs.setDefaultPassword("");
+                    }
+                    
+                    // setup remote logging
+                    YukonLogManager.initialize(lp.getYukonHost(), lp.getUsername(), lp.getPassword());
+                    return true;
                 } else {
-                	//ooh, thats bad.
-                	String msg = "Server returned valid session ID but user id: " + lp.getUsername() + " couldn't be found in the local cache.  This is either a bug or a configuration problem.";
-                    displayMessage(p, msg, "Error");					
+                    // ooh, thats bad.
+                    String msg =
+                        "Unable to find user '" + lp.getUsername() + "' in database.  This probably a configuration problem.";
+                    displayMessage(p, msg, "Error");
+                    YukonSpringHook.shutdownContext();
                 }
-            } catch (RuntimeException e) {
-                CTILogger.warn("Got an exception during login", e);
-                String msg = "Successful login returned ZERO database properties.  This is either a bug or DBProps servlet is not responding.";
+            } catch (MalformedURLException e) {
+                CTILogger.warn("Invalid host: " + e.getMessage());
+                Throwable cause = CtiUtilities.getRootCause(e);
+                String msg = "Invalid host. (Example entry: http://yukon-app:8080) \n" + cause.getMessage();
                 displayMessage(p, msg, "Error");
+            } catch (RemoteConnectFailureException e) {
+                CTILogger.warn("Got an exception during login", e);
+                Throwable cause = CtiUtilities.getRootCause(e);
+                String msg = "Unable to access the Yukon Web Application Service \n" + cause.getMessage();
+                displayMessage(p, msg, "Error");
+            } catch (RemoteAccessException e) {
+                CTILogger.warn("Got an exception during login", e);
+                Throwable cause = CtiUtilities.getRootCause(e);
+                String msg = "Unable to login to the Yukon Web Application Service \n" + cause.getMessage();
+                displayMessage(p, msg, "Error");
+            } catch (RuntimeException e) {
+                handleOtherExceptions(p, e);
             }
-				
-		}
-		return false;		 
-	}
+        }
+        return false;
+    }
+
+    private void handleOtherExceptions(Frame p, RuntimeException e) {
+        String msg;
+        int indexOfJdbcException = ExceptionUtils.indexOfType(e, CannotGetJdbcConnectionException.class);
+        if (indexOfJdbcException != -1) {
+            msg = "Unable to connect to database\n";
+            Throwable jdbcException = ExceptionUtils.getThrowables(e)[indexOfJdbcException];
+            msg += jdbcException.getMessage();
+        } else {
+            CTILogger.warn("Got an exception during login", e);
+            msg = "Unable to login: \n" + e.getMessage();
+            Throwable cause = CtiUtilities.getRootCause(e);
+            if (!e.equals(cause)) {
+                msg += "\n" + cause.getMessage();
+            }
+        }
+        displayMessage(p, msg, "Error");
+    }
+    
+    private boolean doRemoteLogin(Frame p) {
+        LoginPanel lp = makeRemoteLoginPanel();
+
+        boolean success = doLoginLoop(p, lp);
+
+        if(success) {
+            LoginPrefs prefs = LoginPrefs.getInstance();
+            prefs.setCurrentYukonHost(lp.getYukonHost());
+        }
+        return success;
+
+    }
 	
-	private void setSessionInfo(LiteYukonUser u, String sessionID, String host, int port) {
-        CTILogger.debug("Setting session: user=" + u + ", sessionID=" + sessionID + ", host=" + host + ", port=" + port);
+	private void setSessionInfo(LiteYukonUser u) {
+        CTILogger.debug("Setting session: user=" + u);
 		this.user = u;
-		this.sessionID = sessionID;
-		this.host = host;
-		this.port = port;			
 	}
 	
 	private LoginPanel makeLocalLoginPanel() {
 		LoginPrefs prefs = LoginPrefs.getInstance();
 		return  new LoginPanel(prefs.getCurrentYukonHost(),
-								prefs.getAvailableYukonHosts(),
-								prefs.getCurrentYukonPort(),
 								prefs.getDefaultUsername(),
 								prefs.getDefaultPassword(),
 								prefs.getDefaultRememberPassword(), true);
@@ -377,23 +329,43 @@ public class ClientSession {
 		
 	private LoginPanel makeRemoteLoginPanel() {
 	    LoginPrefs prefs = LoginPrefs.getInstance();
-	    String hostToUse = prefs.getCurrentYukonHost();
-	    int portToUse = prefs.getCurrentYukonPort();
-	    String jwsHost = System.getProperty("yukon.jws.host");
-	    String jwsPort = System.getProperty("yukon.jws.port");
-	    if (StringUtils.isNotBlank(jwsHost) && StringUtils.isNotBlank(jwsPort)) {
-	        portToUse = Integer.parseInt(jwsPort);
-	        hostToUse = jwsHost;
+	    
+	    // check stored host
+	    String currentYukonHost = prefs.getCurrentYukonHost();
+	    String host = "http://localhost:8080";
+	    if (StringUtils.isNotBlank(currentYukonHost)) {
+	        URL testUrl = null;
+	        try {
+                testUrl = new URL(currentYukonHost);
+	        } catch (MalformedURLException e) {
+	            try {
+                    testUrl = new URL("http", currentYukonHost, prefs.getCurrentYukonPort(), "");
+                } catch (MalformedURLException e1) {
+                }
+	        }
+	        if (testUrl != null) {
+	            host = testUrl.toExternalForm();
+	        }
 	    }
 
-	    return  new LoginPanel(hostToUse,
-	                           prefs.getAvailableYukonHosts(),
-	                           portToUse,
+	    return  new LoginPanel(host,
 	                           prefs.getDefaultUsername(),
 	                           prefs.getDefaultPassword(),
 	                           prefs.getDefaultRememberPassword(), false);
 	}
 		
+	private LoginPanel makeJwsLoginPanel(String host, String userName) {
+        LoginPrefs prefs = LoginPrefs.getInstance();
+	    
+	    LoginPanel loginPanel = new LoginPanel(host,
+	                           userName,
+	                           prefs.getDefaultPassword(),
+                               prefs.getDefaultRememberPassword(), false);
+	    loginPanel.setHostEditable(false);
+	    loginPanel.setUserEditable(false);
+        return loginPanel;
+	}
+	
 	private boolean collectInfo(Frame parent, LoginPanel lp) {
 	    return LoginFrame.showLogin(parent, lp);
 	}

@@ -17,7 +17,6 @@ import java.util.List;
 import java.util.Vector;
 
 import javax.swing.JOptionPane;
-import javax.swing.UIManager;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableModel;
 
@@ -28,8 +27,8 @@ import com.cannontech.clientutils.commonutils.ModifiedDate;
 import com.cannontech.clientutils.parametersfile.ParameterNotFoundException;
 import com.cannontech.clientutils.parametersfile.ParametersFile;
 import com.cannontech.common.gui.util.CTIKeyEventDispatcher;
-import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.debug.gui.AboutDialog;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -37,7 +36,6 @@ import com.cannontech.message.util.Command;
 import com.cannontech.message.util.Message;
 import com.cannontech.message.util.MessageEvent;
 import com.cannontech.message.util.MessageListener;
-import com.cannontech.roles.application.DBEditorRole;
 import com.cannontech.roles.application.TDCRole;
 import com.cannontech.tdc.bookmark.BookMarkBase;
 import com.cannontech.tdc.commandevents.AckAlarm;
@@ -135,7 +133,6 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 
 	private SignalAlarmHandler alarmHandler = null;   
 	private javax.swing.JMenuItem jMenuItemResetCntrlHrs = null;
-	private javax.swing.JMenuItem jMenuItemEndSession = null;
 
     public static final URL TDC_GIF = TDCMainFrame.class.getResource("/tdcIcon.gif");
 
@@ -250,14 +247,6 @@ public void actionPerformed(java.awt.event.ActionEvent e) {
 	
 	if( e.getSource() == getJMenuItemResetCntrlHrs() )
 		jMenuItemResetCntrlHrs_ActionPerformed( e );
-
-	if( e.getSource() == getJMenuItemEndSession() )
-	{
-		ClientSession.getInstance().closeSession();
-
-		jMenuItemExit_ActionPerformed(e);
-	}		
-
 
 	// user code end
 }
@@ -1755,7 +1744,6 @@ private javax.swing.JMenu getJMenuFile() {
 			ivjJMenuFile.add(getJMenuItemPrint());
 			ivjJMenuFile.add(getJSeparator5());
 			ivjJMenuFile.add(getJMenuItemSpawnTDC());
-			ivjJMenuFile.add(getJMenuItemEndSession());
 			ivjJMenuFile.add(getJSeparator1());
 			ivjJMenuFile.add(getJMenuItemExit());
 			// user code begin {1}
@@ -2587,37 +2575,6 @@ private javax.swing.JSeparator getJSeparator2() {
 	return ivjJSeparator2;
 }
 
-
-/**
- * Return the EndSession property value.
- * 
- * @return javax.swing.JMenuItem
- */
-private javax.swing.JMenuItem getJMenuItemEndSession()
-{
-	if( jMenuItemEndSession == null )
-	{
-		try
-		{
-			jMenuItemEndSession = new javax.swing.JMenuItem();
-			jMenuItemEndSession.setName("JMenuItemEndSession");
-			jMenuItemEndSession.setMnemonic('o');
-			jMenuItemEndSession.setText("End Session");
-			jMenuItemEndSession.setBackground(java.awt.SystemColor.control);
-			jMenuItemEndSession.setForeground(java.awt.SystemColor.controlText);
-			jMenuItemEndSession.setFont(new java.awt.Font("dialog", 0, 12));
-			//jMenuItemEndSession.setAccelerator(javax.swing.KeyStroke.getKeyStroke( java.awt.event.KeyEvent.VK_Z, java.awt.Event.CTRL_MASK));
-		}
-		catch (java.lang.Throwable ivjExc)
-		{
-			handleException(ivjExc);
-		}
-	}
-
-	return jMenuItemEndSession;
-}
-
-
 /**
  * Return the JSeparator5 property value.
  * @return javax.swing.JSeparator
@@ -2929,7 +2886,6 @@ private void initConnections() throws java.lang.Exception {
 	getJMenuItemSearch().addActionListener(this);
 	getJMenuItemFindNext().addActionListener(this);
 	getJMenuItemHelpTopics().addActionListener(this);
-	getJMenuItemEndSession().addActionListener(this);
 }
 
 /**
@@ -4157,70 +4113,46 @@ public void JToolBarJCDateChange_actionPerformed(java.beans.PropertyChangeEvent 
  */
 public static void main(final java.lang.String[] args)
 {
-	try
-	{
-		System.setProperty("cti.app.name", "TDC");
-        CTILogger.info("TDC starting...");
-		UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		
-		SplashWindow splash = SplashWindow.createYukonSplash(null);
-		
-		CTILogger.info("Syntax for optional parameters is as follows:");
-		CTILogger.info("   TDCMainFrame view=<value> display=<value>");
+    try
+    {
+        CTILogger.info("Syntax for optional parameters is as follows:");
+        CTILogger.info("   TDCMainFrame view=<value> display=<value>");
+        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
+        clientStartupHelper.setAppName("TDC");
+        clientStartupHelper.setRequiredRole(TDCRole.ROLEID);
 
-      
-		ClientSession session = ClientSession.getInstance(); 
-		boolean loggingIn = true;
-		while(loggingIn){
-			  if(!session.establishSession(null)){
-				  System.exit(-1);			
-			  }
-			  
-			  if(session == null) 
-			  {
-				  System.exit(-1);
-			  }
-			  
-			  if(!session.checkRole(TDCRole.ROLEID)) {
-				  JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", "Access Denied", JOptionPane.WARNING_MESSAGE);				
-				  session.closeSession();
-			  } else {
-				  loggingIn = false;
-			  }
-		  }
-		
-		javax.swing.ToolTipManager.sharedInstance().setDismissDelay(2000);
+        clientStartupHelper.doStartup();
 
-		final CommandLineParser parser;
-		final TDCMainFrame aTDCFrame;
-		final com.cannontech.tdc.spawn.TDCOverSeeer overSeer = new com.cannontech.tdc.spawn.TDCOverSeeer();
+        javax.swing.ToolTipManager.sharedInstance().setDismissDelay(2000);
 
-		if( args.length > 1 )  // the user tried to enter some params
-		{
-			com.cannontech.clientutils.CTILogger.info("Remember when entering parameters be sure to surrond parameters with spaces with double quotes.");
-			com.cannontech.clientutils.CTILogger.info("Example:  TDCMainFrame view=Core \"display=Event Viewer\" ");
-			
-			parser = new CommandLineParser( TDCMainFrame.COMMAND_LINE_PARAM_NAMES );
-						
-			aTDCFrame = overSeer.createTDCMainFrame( parser.parseArgs( args ) );
+        final CommandLineParser parser;
+        final TDCMainFrame aTDCFrame;
+        final com.cannontech.tdc.spawn.TDCOverSeeer overSeer = new com.cannontech.tdc.spawn.TDCOverSeeer();
 
-		}
-		else
-		{
-			aTDCFrame = overSeer.createTDCMainFrame();
-		}		
-		
-		splash.setVisible( false );
-		splash.dispose();
+        if( args.length > 1 )  // the user tried to enter some params
+        {
+            com.cannontech.clientutils.CTILogger.info("Remember when entering parameters be sure to surrond parameters with spaces with double quotes.");
+            com.cannontech.clientutils.CTILogger.info("Example:  TDCMainFrame view=Core \"display=Event Viewer\" ");
 
-		aTDCFrame.visibilityInitialization();
-	}
-	catch (Throwable exception)
-	{
-		System.err.println("Exception occurred in main() of javax.swing.JFrame");
-		exception.printStackTrace( System.err );
-		System.exit(-1);
-	}
+            parser = new CommandLineParser( TDCMainFrame.COMMAND_LINE_PARAM_NAMES );
+
+            aTDCFrame = overSeer.createTDCMainFrame( parser.parseArgs( args ) );
+
+        }
+        else
+        {
+            aTDCFrame = overSeer.createTDCMainFrame();
+        }       
+
+        clientStartupHelper.setParentFrame(aTDCFrame);
+
+        aTDCFrame.visibilityInitialization();
+    }
+    catch (Throwable exception)
+    {
+        CTILogger.warn("Exception occurred in main() of javax.swing.JFrame", exception);
+        System.exit(-1);
+    }
 }
 
 
@@ -4696,10 +4628,10 @@ private void writeParameters()
 		{
 			"DisplayName",
 			"ViewType",
-			"FrameX",
-			"FrameY",
-			"FrameWidth",
-			"FrameHeight",
+			"FrameX", // not used, but kept for compatibility
+			"FrameY", // not used, but kept for compatibility
+			"FrameWidth", // not used, but kept for compatibility
+			"FrameHeight", // not used, but kept for compatibility
 			"FontName",
 			"FontSize",
 			"HGridLine",

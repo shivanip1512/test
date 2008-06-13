@@ -114,7 +114,7 @@ public class LoginFrame extends JFrame {
      * @return True if the user attempts to login
      */
     public static boolean showLogin(Frame parent, LoginPanel loginPanel) {
-
+        TextSelector.install();
         LoginFrame frame = null;
         CountDownLatch latch = new CountDownLatch(1);
         frame = new LoginFrame(parent, latch, loginPanel);
@@ -125,7 +125,9 @@ public class LoginFrame extends JFrame {
         } catch (InterruptedException e) {
             return false;
         }
-        return frame.getLogin();
+        boolean result = frame.getLogin();
+        TextSelector.uninstall();
+        return result;
     }
 
 }

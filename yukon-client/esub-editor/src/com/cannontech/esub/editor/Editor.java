@@ -37,8 +37,7 @@ import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.editor.PropertyPanelListener;
 import com.cannontech.common.gui.image.ImageChooser;
-import com.cannontech.common.gui.util.SplashWindow;
-import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.debug.gui.AboutDialog;
@@ -521,10 +520,11 @@ public class Editor extends JPanel {
 	 * @param args java.lang.String[]
 	 */
 	public static void main(String[] args) {
-		System.setProperty("cti.app.name", APPLICATION_NAME);
-        CTILogger.info(APPLICATION_NAME + " starting...");
-		CtiUtilities.setLaF();
-		frame = new JFrame();
+	    ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
+		clientStartupHelper.setAppName(APPLICATION_NAME);
+		clientStartupHelper.setRequiredRole(EsubEditorRole.ROLEID);
+		frame = new JFrame() {};
+		clientStartupHelper.setParentFrame(frame);
 
 		frame.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
@@ -545,30 +545,8 @@ public class Editor extends JPanel {
             }
 		});
 		
-		SplashWindow.createYukonSplash(frame);
-	
-		frame.setSize(defaultSize);
 		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_GIF));
 
-		final ClientSession session = ClientSession.getInstance(); 
-		boolean loggingIn = true;
-		while(loggingIn){
-			if(!session.establishSession(frame)){
-				System.exit(-1);			
-			}
-			  
-			if(session == null) 
-			{
-				System.exit(-1);
-			}
-			  
-			if(!session.checkRole(EsubEditorRole.ROLEID)) {
-				JOptionPane.showMessageDialog(null, "User: '" + session.getUser().getUsername() + "' is not authorized to use this application. Please log in as a different user.", "Access Denied", JOptionPane.WARNING_MESSAGE);				
-				session.closeSession();
-			} else {
-				loggingIn = false;
-			}
-		}
 				
 		Editor editor = new Editor();
 

@@ -2,6 +2,7 @@ package com.cannontech.web.jws;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Set;
@@ -10,7 +11,6 @@ import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.lang.StringUtils;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.Format;
@@ -113,27 +113,12 @@ public class JnlpController extends AbstractController {
             resourcesElem.addContent(userPropElem);
         }
         
-        String cookies = request.getHeader("Cookie");
-        if (StringUtils.isNotBlank(cookies)) {
-            Element hostPropElem = new Element("property");
-            hostPropElem.setAttribute("name", "yukon.jws.cookies");
-            hostPropElem.setAttribute("value", cookies);
-            resourcesElem.addContent(hostPropElem);
-        }
-        
         // add server info
-        String host = request.getServerName();
+        URL hostUrl = ServletUtil.getHostURL(request);
         Element hostPropElem = new Element("property");
         hostPropElem.setAttribute("name", "yukon.jws.host");
-        hostPropElem.setAttribute("value", host);
+        hostPropElem.setAttribute("value", hostUrl.toString());
         resourcesElem.addContent(hostPropElem);
-        
-        String port = Integer.toString(request.getServerPort());
-        Element portPropElem = new Element("property");
-        portPropElem.setAttribute("name", "yukon.jws.port");
-        portPropElem.setAttribute("value", port);
-        resourcesElem.addContent(portPropElem);
-
         
         Element appElem = new Element("application-desc");
         jnlpElem.addContent(appElem);

@@ -15,7 +15,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
-import java.util.prefs.Preferences;
 
 import javax.swing.ImageIcon;
 import javax.swing.JDesktopPane;
@@ -44,8 +43,8 @@ import com.cannontech.common.editor.PropertyPanel;
 import com.cannontech.common.editor.PropertyPanelEvent;
 import com.cannontech.common.gui.util.MessagePanel;
 import com.cannontech.common.gui.util.OkCancelDialog;
-import com.cannontech.common.gui.util.SplashWindow;
 import com.cannontech.common.login.ClientSession;
+import com.cannontech.common.login.ClientStartupHelper;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.LoggerEventListener;
@@ -387,13 +386,6 @@ public void actionPerformed(ActionEvent event)
 	{
 		if( exitConfirm() )		
 			exit();
-	}
-	else
-	if( item == fileMenu.endSessionMenuItem )
-	{
-		ClientSession.getInstance().closeSession();
-                        
-		exit();
 	}
 	else
 	if( item == editMenu.editMenuItem )
@@ -1474,19 +1466,13 @@ public void executeSortByOffsetButton_ActionPerformed(ActionEvent event)
  * Creation date: (1/10/2001 8:22:00 AM)
  */
 private void exit(){
-    Preferences prefs = Preferences.userNodeForPackage(DatabaseEditor.class);
-    prefs.put("LAST_X", new Integer(getParentFrame().getX()).toString());
-    prefs.put("LAST_Y", new Integer(getParentFrame().getY()).toString());
-    prefs.put("LAST_WIDTH", new Integer(getParentFrame().getWidth()).toString());
-    prefs.put("LAST_HEIGHT", new Integer(getParentFrame().getHeight()).toString());
-    
 	//There may be events in the EventQueue up to this point,
 	// let them go first then we can Exit the program.
+    System.exit(0);
 	SwingUtilities.invokeLater( new Runnable()
 	{
 		public void run()
 		{
-			System.exit(0);
 		}
 	});
 }
@@ -2076,8 +2062,13 @@ public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeM
 private void handleException(Throwable exception) 
 {
 	/* Uncomment the following lines to print uncaught exceptions to stdout */
-	com.cannontech.clientutils.CTILogger.info("--------- UNCAUGHT EXCEPTION ---------");
-	com.cannontech.clientutils.CTILogger.error( exception.getMessage(), exception );;
+	Throwable rootCause = CtiUtilities.getRootCause(exception);
+    fireMessage( new MessageEvent( DatabaseEditor.this, 
+                                   rootCause.getMessage(), MessageEvent.ERROR_MESSAGE) );
+    JOptionPane.showMessageDialog(getParentFrame(), "An unexpected error has occurred: \n"
+                                  + rootCause,
+                                  "Uncaught Exception", JOptionPane.ERROR_MESSAGE);               
+
 }
 /**
  * Insert the method's description here.
@@ -2220,73 +2211,44 @@ private boolean isEditorAlreadyShowing(DefaultMutableTreeNode node)
  */
 public static void main(String[] args) {
 
-	try {
-            javax.swing.UIManager.setLookAndFeel(javax.swing.UIManager.getSystemLookAndFeelClassName());
-            System.setProperty("cti.app.name", "DBEditor");
-            CTILogger.info("DBEditor starting...");
-            YukonSpringHook.setDefaultContext("com.cannontech.context.dbeditor");
+    try
+    {
+        ClientStartupHelper clientStartupHelper = new ClientStartupHelper();
+        clientStartupHelper.setAppName("DBEditor");
+        clientStartupHelper.setRequiredRole(DBEditorRole.ROLEID);
+        clientStartupHelper.setContext("com.cannontech.context.dbeditor");
 
-            final javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]");
-            f.setDefaultCloseOperation(WindowConstants.DO_NOTHING_ON_CLOSE);
-            SplashWindow.createYukonSplash(f);
+        // creates a stupid anonymous class to create a unique class name for the main frame
+        // the ClientStartupHelper will use this for picking a Preference node
+        final javax.swing.JFrame f = new javax.swing.JFrame("Yukon Database Editor [Not Connected to Dispatch]") {};
+        clientStartupHelper.setParentFrame(f);
+        f.setDefaultCloseOperation( WindowConstants.DO_NOTHING_ON_CLOSE );
 
-            Preferences prefs;
-            prefs = Preferences.userNodeForPackage(DatabaseEditor.class);
-            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();    
-            String lastX = prefs.get("LAST_X", "0");
-            String lastY = prefs.get("LAST_Y", "0");
-            String lastWidth = prefs.get("LAST_WIDTH", new Integer((int) (screenSize.width * .95)).toString());
-            String lastHeight = prefs.get("LAST_HEIGHT", new Integer((int)( screenSize.height * .95)).toString());
+        f.setIconImages(getIconsImages());
 
-            f.setBounds(Integer.parseInt(lastX),
-                        Integer.parseInt(lastY),
-                        Integer.parseInt(lastWidth),
-                        Integer.parseInt(lastHeight));
+        clientStartupHelper.doStartup();
 
-            f.setIconImages(getIconsImages());
+        if (ClientSession.getInstance().getUser().getUserID() == com.cannontech.user.UserUtils.USER_ADMIN_ID) {
+            isSuperuser = true;
+        }	
 
-            ClientSession session = ClientSession.getInstance();
-            boolean loggingIn = true;
-            while (loggingIn) {
-                if (!session.establishSession(f)) {
-                    System.exit(-1);
-                }
+        DatabaseEditor editor = new DatabaseEditor();
+        f.addWindowListener(editor);
 
-                if (session == null) {
-                    System.exit(-1);
-                }
+        editor.displayDatabaseEditor( f.getRootPane() );
 
-                if (!session.checkRole(DBEditorRole.ROLEID)) {
-                    JOptionPane.showMessageDialog(null, "User: '" 
-                                                  + session.getUser().getUsername() 
-                                                  + "' is not authorized to use this application. Please log in as a different user.",
-                                                  "Access Denied",
-                                                  JOptionPane.WARNING_MESSAGE);
-                    session.closeSession();
-                } else {
-                    loggingIn = false;
-                }
+        javax.swing.SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                f.setVisible(true);
             }
+        });
 
-            if (session.getUser().getUserID() == com.cannontech.user.UserUtils.USER_ADMIN_ID)
-                isSuperuser = true;
-            /* Cache loads as needed, do not load it all here!! --RWN */
-            //com.cannontech.database.cache.DefaultDatabaseCache.getInstance().loadAllCache();
-            DatabaseEditor editor = new DatabaseEditor();
-            f.addWindowListener(editor);
-
-            editor.displayDatabaseEditor(f.getRootPane());
-
-            javax.swing.SwingUtilities.invokeLater(new Runnable() {
-                public void run() {
-                    f.setVisible(true);
-                }
-            });
-
-        } catch (Throwable t) {
-            t.printStackTrace(System.err);
-            System.exit(-1);
-        }
+    }
+    catch( Throwable t )
+    {
+        CTILogger.error("Unable to startup", t);
+        System.exit(-1);		
+    }
 
 }
 

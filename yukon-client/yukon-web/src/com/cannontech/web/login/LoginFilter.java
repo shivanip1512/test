@@ -17,6 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.log4j.Logger;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
+import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 import org.springframework.web.util.UrlPathHelper;
@@ -108,7 +109,8 @@ public class LoginFilter implements Filter {
 
         // okay, if we got here, they weren't authenticated
         boolean ajaxRequest = ServletUtil.isAjaxRequest(req);
-        if (ajaxRequest) {
+        boolean noRedirect = ServletRequestUtils.getBooleanParameter(request, "noLoginRedirect", false);
+        if (ajaxRequest || noRedirect) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not Authenticated!");
         } else {
             sendLoginRedirect(request, response);
