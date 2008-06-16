@@ -134,7 +134,6 @@ public class RecentResultsCache<T extends Completable> {
         List<Wrapper<T>> list = new ArrayList<Wrapper<T>>(map.values());
         
         MappingList<Wrapper<T>, T> result = new MappingList<Wrapper<T>, T>(list, mapper);
-        result.reverse();
         return Collections.unmodifiableList(result);
     }
 

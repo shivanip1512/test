@@ -25,6 +25,7 @@ import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.util.RecentResultsCache;
+import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
@@ -54,8 +55,8 @@ public class BulkController extends BulkControllerBase {
         // -----------------------------------------------------------------------------------------
         
         // results
-        bulkUpdateOperationResultsList.addAll(recentResultsCache.getCompleted());
-        bulkUpdateOperationResultsList.addAll(recentResultsCache.getPending());
+        bulkUpdateOperationResultsList.addAll(new ReverseList<BulkOperationCallbackResults>(recentResultsCache.getPending()));
+        bulkUpdateOperationResultsList.addAll(new ReverseList<BulkOperationCallbackResults>(recentResultsCache.getCompleted()));
         
         // add lists to mav
         mav.addObject("bulkUpdateOperationResultsList", bulkUpdateOperationResultsList);
