@@ -3,6 +3,8 @@ package com.cannontech.web.taglib;
 
 import javax.servlet.jsp.JspException;
 
+import org.springframework.web.util.ExpressionEvaluationUtils;
+
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ReflectivePropertySearcher;
@@ -19,6 +21,7 @@ public class RoleProperty extends javax.servlet.jsp.tagext.BodyTagSupport {
     private String property;
     private String defaultvalue = "";
 	public String format = null;
+	public String var = null;
 	
 /**
  * TextTag constructor comment.
@@ -45,7 +48,6 @@ public int doEndTag() throws javax.servlet.jsp.JspException {
  */
 public int doStartTag() throws JspException {
 	try {
-		String uri = null;
 		LiteYukonUser user = (LiteYukonUser) pageContext.getSession().getAttribute("YUKON_USER");
 		if(user != null) {
             int propId;
@@ -68,7 +70,14 @@ public int doStartTag() throws JspException {
 				else if (fmat.equalsIgnoreCase( ServletUtil.FORMAT_ADD_ARTICLE ))
 					text = ServletUtil.addArticle( text );
 			}
-			pageContext.getOut().write(text);
+			
+			// Expose as variable, if demanded, else write to the page.
+			String resolvedVar = ExpressionEvaluationUtils.evaluateString("var", this.var, pageContext);
+			if (resolvedVar != null) {
+				pageContext.setAttribute(resolvedVar, text);
+			} else {
+				pageContext.getOut().write(text);
+			}
 		}
 	}
 	catch(java.io.IOException e )
@@ -133,5 +142,13 @@ public int doStartTag() throws JspException {
         this.property = property;
         useId = false;
     }
+    
+    public void setVar(String var) {
+		this.var = var;
+	}
+    
+    public String getVar() {
+		return var;
+	}
 
 }
