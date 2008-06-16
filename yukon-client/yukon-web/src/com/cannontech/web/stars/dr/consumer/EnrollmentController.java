@@ -30,7 +30,6 @@ import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableEnrollmen
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollment;
 
 @Controller
-@RequestMapping("/consumer/enrollment")
 public class EnrollmentController extends AbstractConsumerController {
     private static final String KEY_PROGRAMID = "programId";
     private static final String KEY_INVENTORYID = "inventoryId";
@@ -41,7 +40,7 @@ public class EnrollmentController extends AbstractConsumerController {
     
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)
-    @RequestMapping(method = RequestMethod.GET)
+    @RequestMapping(value = "/consumer/enrollment", method = RequestMethod.GET)
     public String view(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             YukonUserContext yukonUserContext, ModelMap map) {
         
@@ -56,9 +55,25 @@ public class EnrollmentController extends AbstractConsumerController {
     }
     
     @CheckRole(ResidentialCustomerRole.ROLEID)
-    @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT)
+    @CheckRoleProperty(ResidentialCustomerRole.ENROLLMENT_PER_DEVICE)
+    @RequestMapping(value = "/consumer/enrollmentDetail", method = RequestMethod.GET)
+    public String viewDetail(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
+    		YukonUserContext yukonUserContext, ModelMap map) {
+    	
+    	List<DisplayableEnrollment> enrollments = 
+    		displayableEnrollmentDao.getDisplayableEnrollments(customerAccount, yukonUserContext);
+    	map.addAttribute("enrollments", enrollments);
+    	
+    	boolean disableCheckBox = authDao.checkRoleProperty(yukonUserContext.getYukonUser(), ResidentialCustomerRole.DISABLE_PROGRAM_SIGNUP);
+    	map.addAttribute("disableCheckBox", disableCheckBox);
+    	
+    	return "consumer/enrollment/enrollmentDetail.jsp";
+    }
+    
+    @CheckRole(ResidentialCustomerRole.ROLEID)
+    @CheckRoleProperty({ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT, ResidentialCustomerRole.ENROLLMENT_PER_DEVICE})
     @SuppressWarnings("unchecked")
-    @RequestMapping(method = RequestMethod.POST)
+    @RequestMapping(value = "/consumer/enrollmentUpdate", method = RequestMethod.POST)
     public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
             String json, YukonUserContext yukonUserContext, HttpSession session, ModelMap map) {
         

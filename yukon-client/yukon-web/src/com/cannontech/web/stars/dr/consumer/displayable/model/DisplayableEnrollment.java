@@ -1,5 +1,6 @@
 package com.cannontech.web.stars.dr.consumer.displayable.model;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
@@ -81,6 +82,57 @@ public final class DisplayableEnrollment {
         return count;
     }
     
+    /**
+     * Method to get all program ids associated with this category
+     * @return Array of program ids
+     */
+    public String[] getProgramIds(){
+    	Set<DisplayableEnrollmentProgram> programSet = getEnrollmentPrograms();
+    	String[] idArray = new String[programSet.size()];
+    	
+    	int count = 0;
+    	for(DisplayableEnrollmentProgram program : programSet) {
+    		idArray[count++] = String.valueOf(program.getProgram().getProgramId());
+    	}
+    	
+    	return idArray;
+    }
+    
+    /**
+     * Method to determine if at least one program in this category has at least one 
+     * inventory enrolled
+     * @return True if one or more inventory enrolled
+     */
+    public boolean isEnrolled() {
+    	
+    	for(DisplayableEnrollmentProgram program : enrollmentPrograms) {
+    		if(program.isEnrolled()) {
+    			return true;
+    		}
+    	}
+    	return false;
+    }
+    
+    /**
+     * Method to get inventory ids that are enrolled in a program in this category
+     * @return Array of inventory ids
+     */
+    public String[] getEnrolledInventoryIds(){
+    	
+    	String[] idArray = null;
+    	
+    	for(DisplayableEnrollmentProgram program : enrollmentPrograms) {
+    		String[] ids = program.getEnrolledInventoryIds();
+    		if(ids.length > 0) {
+    			return ids;
+    		} else {
+    			idArray = program.getAllInventoryIds();
+    		}
+    	}
+    	
+		return idArray;
+    }
+    
     public static final class DisplayableEnrollmentProgram {
         private final Program program;
         private final List<DisplayableEnrollmentInventory> inventory;
@@ -96,6 +148,65 @@ public final class DisplayableEnrollment {
         
         public List<DisplayableEnrollmentInventory> getInventory() {
             return inventory;
+        }
+        
+        /**
+         * Method to get all inventory ids associated with this program
+         * @return Array of inventory ids
+         */
+        public String[] getAllInventoryIds(){
+        	
+        	List<DisplayableEnrollmentInventory> inventoryList = getInventory();
+        	String[] idArray = new String[inventoryList.size()];
+        	
+        	for(int i=0; i< inventoryList.size(); i++) {
+        		DisplayableEnrollmentInventory inventory = inventoryList.get(i);
+        		idArray[i] = String.valueOf(inventory.getInventoryId());
+        	}
+        	
+        	return idArray;
+        }
+
+        /**
+         * Method to get all of the inventory ids that are enrolled in this program
+         * @return Array of inventory ids
+         */
+        public String[] getEnrolledInventoryIds(){
+        	
+        	List<DisplayableEnrollmentInventory> inventoryList = getInventory();
+        	List<String> idList = new ArrayList<String>();
+        	
+        	for(int i=0; i< inventoryList.size(); i++) {
+        		DisplayableEnrollmentInventory inventory = inventoryList.get(i);
+        		if(inventory.isEnrolled) {
+        			idList.add(String.valueOf(inventory.getInventoryId()));
+        		}
+        	}
+        	
+    		return idList.toArray(new String[]{});
+        }
+
+        public String[] getProgramInventoryIds(){
+        	String[] enrolledInventoryIds = getEnrolledInventoryIds();
+        	if(enrolledInventoryIds.length > 0) {
+        		return enrolledInventoryIds;
+        	} else {
+        		return getAllInventoryIds();
+        	}
+        }
+        
+        /**
+         * Method to determine if at least one inventory is enrolled in this program 
+         * @return True if one or more inventory enrolled
+         */
+        public boolean isEnrolled() {
+        	
+        	for(DisplayableEnrollmentInventory inv : inventory) {
+        		if(inv.isEnrolled()) {
+        			return true;
+        		}
+        	}
+        	return false;
         }
     }
     

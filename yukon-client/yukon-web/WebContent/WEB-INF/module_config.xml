@@ -319,7 +319,7 @@
             </option>
 		    <option id="enrollment">
 			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_ENROLLMENT" />
-              <link>/user/ConsumerStat/stat/Enrollment.jsp</link>
+              <link>/spring/stars/consumer/enrollment</link>
             </option>
 		    <option id="optOut">
 			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT" />
