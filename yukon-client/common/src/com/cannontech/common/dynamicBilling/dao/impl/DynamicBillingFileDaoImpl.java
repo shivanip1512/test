@@ -13,6 +13,7 @@ import com.cannontech.common.dynamicBilling.ReadingType;
 import com.cannontech.common.dynamicBilling.dao.DynamicBillingFileDao;
 import com.cannontech.common.dynamicBilling.model.DynamicBillingField;
 import com.cannontech.common.dynamicBilling.model.DynamicFormat;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.incrementer.NextValueHelper;
 
 /**
@@ -114,8 +115,11 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 
 		// Execute the format update or insert
 		simpleJdbcTemplate.update(bffSql, format.getName(), format.getFormatId());
-		simpleJdbcTemplate.update(dbfSql, format.getDelim(),
-				format.getHeader(), format.getFooter(), format.getFormatId());
+		simpleJdbcTemplate.update(dbfSql, 
+		                          SqlUtils.convertStringToDbValue(format.getDelim()),
+		                          SqlUtils.convertStringToDbValue(format.getHeader()),
+		                          SqlUtils.convertStringToDbValue(format.getFooter()),
+		                                                          format.getFormatId());
 
 		// Insert the format field data
 		for (DynamicBillingField field : format.getFieldList()) {
@@ -127,7 +131,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 					format.getFormatId(),
 					field.getName(), 
 					field.getOrder(), 
-					field.getFormat(),
+					SqlUtils.convertStringToDbValue(field.getFormat()),
                     field.getMaxLength(),
                     field.getPadChar(),
                     field.getPadSide(),
@@ -166,9 +170,9 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 		public DynamicFormat mapRow(ResultSet rs, int row) throws SQLException {
 			DynamicFormat format = new DynamicFormat();
 			format.setFormatId(rs.getInt("FormatID"));
-			format.setDelim(rs.getString("Delimiter"));
-			format.setHeader(rs.getString("Header"));
-			format.setFooter(rs.getString("Footer"));
+			format.setDelim(SqlUtils.convertDbValueToString(rs.getString("Delimiter")));
+			format.setHeader(SqlUtils.convertDbValueToString(rs.getString("Header")));
+			format.setFooter(SqlUtils.convertDbValueToString(rs.getString("Footer")));
 			format.setName(rs.getString("FormatType"));
 			format.setIsSystem(rs.getBoolean("SystemFormat"));
 			return format;
@@ -189,7 +193,7 @@ public final class DynamicBillingFileDaoImpl implements DynamicBillingFileDao {
 			field.setFormatId(rs.getInt("FormatID"));
 			field.setName(rs.getString("FieldName"));
 			field.setOrder(rs.getInt("FieldOrder"));
-			field.setFormat(rs.getString("FieldFormat"));
+			field.setFormat(SqlUtils.convertDbValueToString(rs.getString("FieldFormat")));
 			field.setMaxLength(rs.getInt("MaxLength"));
 			field.setPadChar(rs.getString("PadChar"));
 			field.setPadSide(rs.getString("PadSide"));
