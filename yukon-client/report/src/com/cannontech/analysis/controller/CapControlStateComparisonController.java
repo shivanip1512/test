@@ -16,11 +16,12 @@ import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 public class CapControlStateComparisonController extends CapControlReportControllerBase {
 
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
-            ReportFilter.CAPBANK,
+            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            ReportFilter.CAPBANK
+            };
     
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     protected static final String ATT_SHOW_MISMATCH = "showMisMatch";

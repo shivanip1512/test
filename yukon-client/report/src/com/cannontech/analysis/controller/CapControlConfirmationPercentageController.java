@@ -18,11 +18,12 @@ import com.cannontech.util.ServletUtil;
 public class CapControlConfirmationPercentageController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
-            ReportFilter.CAPBANK,
+            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            ReportFilter.CAPBANK
+            };
     private TimeZone timeZone = TimeZone.getDefault();
     
     public CapControlConfirmationPercentageController() {

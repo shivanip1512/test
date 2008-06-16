@@ -9,11 +9,12 @@ import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 public class CapControlMaintenancePendingController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
-            ReportFilter.CAPBANK,
+            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            ReportFilter.CAPBANK
+            };
     
     public CapControlMaintenancePendingController() {
         super();

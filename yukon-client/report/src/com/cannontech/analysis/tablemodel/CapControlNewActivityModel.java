@@ -70,11 +70,12 @@ public class CapControlNewActivityModel extends ReportModelBase {
 	{
 		super(start_, stop_);
         setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.AREA,
                 ReportFilter.CAPCONTROLSUBSTATION,
                 ReportFilter.CAPCONTROLSUBBUS,
                 ReportFilter.CAPCONTROLFEEDER,
-                ReportFilter.CAPBANK,
-                ReportFilter.AREA}
+                ReportFilter.CAPBANK
+                }
             );
 	}	
 	/**

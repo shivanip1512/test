@@ -10,9 +10,10 @@ import com.cannontech.spring.YukonSpringHook;
 public class TimeControlledCapBanksController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
-            ReportFilter.CAPCONTROLSUBBUS,
-            ReportFilter.AREA};
+            ReportFilter.CAPCONTROLSUBBUS
+            };
     
     public TimeControlledCapBanksController() {
         super();

@@ -16,11 +16,12 @@ import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 public class CapControlUnsolicitedMessagesController extends CapControlReportControllerBase {
 
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
-            ReportFilter.CAPBANK,
+            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            ReportFilter.CAPBANK
+            };
     
     protected static final String ATT_ORDERBY = "orderBy";
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");

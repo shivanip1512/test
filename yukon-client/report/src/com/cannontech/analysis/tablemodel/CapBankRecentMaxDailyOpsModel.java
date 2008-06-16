@@ -56,11 +56,11 @@ public class CapBankRecentMaxDailyOpsModel extends ReportModelBase {
     {
         super();
         setFilterModelTypes(new ReportFilter[]{
-        		ReportFilter.CAPCONTROLSUBBUS,
-        		ReportFilter.CAPCONTROLSUBSTATION,
-        		ReportFilter.CAPBANK,
-        		ReportFilter.CAPCONTROLFEEDER,
-        		ReportFilter.AREA}
+                ReportFilter.AREA,
+                ReportFilter.CAPCONTROLSUBSTATION,
+                ReportFilter.CAPCONTROLSUBBUS,
+                ReportFilter.CAPCONTROLFEEDER,
+         	 	ReportFilter.CAPBANK}
             );
     }
     

@@ -1,7 +1,7 @@
 package com.cannontech.analysis.controller;
 
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -14,7 +14,7 @@ public interface ReportController {
     public String getHTMLOptionsTable();
     public YukonReportBase getReport();
     
-    public Map<ReportFilter, List<? extends Object>> getFilterObjectsMap();
+    public LinkedHashMap<ReportFilter, List<? extends Object>> getFilterObjectsMap();
     public void setRequestParameters(HttpServletRequest request);
     
 }

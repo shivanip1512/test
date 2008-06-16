@@ -1,9 +1,8 @@
 package com.cannontech.analysis.controller;
 
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -20,11 +19,12 @@ import com.cannontech.spring.YukonSpringHook;
 public class CapControlDisabledDevicesController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
-            ReportFilter.CAPBANK,
+            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            ReportFilter.CAPBANK
+            };
     
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     protected static final String ATT_DEVICE_TYPES = "deviceTypes";
@@ -130,8 +130,8 @@ public class CapControlDisabledDevicesController extends CapControlReportControl
         return html;
     }
     
-    public Map<ReportFilter,List<? extends Object>> getFilterObjectsMap() {
-        HashMap<ReportFilter, List<? extends Object>> result = new HashMap<ReportFilter, List<? extends Object>>();
+    public LinkedHashMap<ReportFilter,List<? extends Object>> getFilterObjectsMap() {
+        LinkedHashMap<ReportFilter, List<? extends Object>> result = new LinkedHashMap<ReportFilter, List<? extends Object>>();
         return result;
     }
 }

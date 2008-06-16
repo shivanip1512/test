@@ -16,11 +16,12 @@ import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 public class CapControlVarChangeController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
             ReportFilter.CAPCONTROLSUBBUS,
-            ReportFilter.CAPBANK,
             ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            ReportFilter.CAPBANK
+            };
     
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
     protected static final String ATT_QUERY_PERCENT = "queryPercent";

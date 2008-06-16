@@ -19,10 +19,11 @@ import com.cannontech.util.ServletUtil;
 public class CapControlAssetUnavailabilityController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
+            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            };
     
     private TimeZone timeZone = TimeZone.getDefault();
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");

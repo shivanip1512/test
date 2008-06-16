@@ -17,11 +17,12 @@ import com.cannontech.spring.YukonSpringHook;
 public class VarImbalanceOnExecutionController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
             ReportFilter.CAPCONTROLSUBBUS,
-            ReportFilter.CAPBANK,
             ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            ReportFilter.CAPBANK
+            };
     
     public VarImbalanceOnExecutionController() {
         super();

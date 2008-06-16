@@ -1,8 +1,7 @@
 package com.cannontech.analysis.controller;
 
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.TimeZone;
 
 import javax.servlet.http.HttpServletRequest;
@@ -21,8 +20,8 @@ public abstract class ReportControllerBase implements ReportController {
     protected BareReportModel model = null;
     protected YukonReportBase report = null;;
     
-    public Map<ReportFilter,List<? extends Object>> getFilterObjectsMap() {
-        HashMap<ReportFilter, List<? extends Object>> result = new HashMap<ReportFilter, List<? extends Object>>();
+    public LinkedHashMap<ReportFilter,List<? extends Object>> getFilterObjectsMap() {
+        LinkedHashMap<ReportFilter, List<? extends Object>> result = new LinkedHashMap<ReportFilter, List<? extends Object>>();
         if (getFilterModelTypes() == null) {
             return result;
         } else {

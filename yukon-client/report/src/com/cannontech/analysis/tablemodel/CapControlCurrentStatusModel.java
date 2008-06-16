@@ -132,10 +132,11 @@ public class CapControlCurrentStatusModel extends ReportModelBase
 	{
 		super();
 		setFilterModelTypes(new ReportFilter[]{
-		        ReportFilter.CAPCONTROLSUBBUS,
+                ReportFilter.AREA,
 		        ReportFilter.CAPCONTROLSUBSTATION,
-                ReportFilter.CAPCONTROLFEEDER,
-                ReportFilter.AREA}
+                ReportFilter.CAPCONTROLSUBBUS,
+                ReportFilter.CAPCONTROLFEEDER
+                }
 			);
 	}
 

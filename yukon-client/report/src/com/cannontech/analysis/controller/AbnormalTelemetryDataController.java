@@ -9,10 +9,11 @@ import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 public class AbnormalTelemetryDataController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
-            ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.CAPCONTROLFEEDER
+            };
     
     public AbnormalTelemetryDataController() {
         super();

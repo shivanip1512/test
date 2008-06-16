@@ -333,62 +333,9 @@ function checkDates(){
         <%
         //Create a local instance of the map.
         Map<ReportFilter,List<? extends Object>> filterObjectsMap = REPORT_BEAN.getFilterObjectsMap();
-        List<ReportFilter> filters = new ArrayList<ReportFilter>();
-        if(filterObjectsMap.keySet().contains(ReportFilter.AREA)){
-            filters.add(ReportFilter.AREA);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.CAPCONTROLSUBSTATION)){
-            filters.add(ReportFilter.CAPCONTROLSUBSTATION);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.CAPCONTROLSUBBUS)){
-            filters.add(ReportFilter.CAPCONTROLSUBBUS);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.CAPCONTROLFEEDER)){
-            filters.add(ReportFilter.CAPCONTROLFEEDER);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.CAPBANK)){
-            filters.add(ReportFilter.CAPBANK);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.METER)){
-            filters.add(ReportFilter.METER);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.DEVICE)){
-            filters.add(ReportFilter.DEVICE);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.GROUPS)){
-            filters.add(ReportFilter.GROUPS);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.LMCONTROLAREA)){
-            filters.add(ReportFilter.LMCONTROLAREA);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.LMGROUP)){
-            filters.add(ReportFilter.LMGROUP);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.PORT)){
-            filters.add(ReportFilter.PORT);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.PROGRAM)){
-            filters.add(ReportFilter.PROGRAM);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.RECEIVER)){
-            filters.add(ReportFilter.RECEIVER);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.ROUTE)){
-            filters.add(ReportFilter.ROUTE);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.RTU)){
-            filters.add(ReportFilter.RTU);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.SCHEDULE)){
-            filters.add(ReportFilter.SCHEDULE);
-        }
-        if(filterObjectsMap.keySet().contains(ReportFilter.TRANSMITTER)){
-            filters.add(ReportFilter.TRANSMITTER);
-        }
-        for (ReportFilter filter : filters) {%>
-				document.getElementById('Div<%=filter.getFilterTitle()%>').style.display = (filterBy == <%=filter.ordinal()%>)? "block" : "none";
-        <% 
-        }%>
+        for (ReportFilter filter : filterObjectsMap.keySet()) {%>
+                document.getElementById('Div<%=filter.getFilterTitle()%>').style.display = (filterBy == <%=filter.ordinal()%>)? "block" : "none";
+        <% }  %>
         }
     
         </SCRIPT>
@@ -398,7 +345,7 @@ function checkDates(){
             	<td class='main' style='padding-left:5; padding-top:5'>
 					<div id='DivFilterModelType' style='display:true'>
 						<select id='filterModelType' name='filterModelType' onChange='changeFilter(this.value)'>
-							<%for (ReportFilter filter : filters) {%>
+							<%for (ReportFilter filter : filterObjectsMap.keySet()) {%>
                     			<option value='<%=filter.ordinal()%>'>  <%=filter.getFilterTitle() %></option>
         					<% } %>
                 		</select>
@@ -409,7 +356,7 @@ function checkDates(){
           	<tr>
             	<td class='main' valign='top' height='19' style='padding-left:5; padding-top:5'>
         			<% int isFirst = 0; %>
-        			<%for(ReportFilter filter: filters) {%>
+        			<%for(ReportFilter filter: filterObjectsMap.keySet()) {%>
             			<%if( filter.equals(ReportFilter.METER ) ){%>
                     		<div id="Div<%=filter.getFilterTitle()%>" style="display:<%=isFirst==0?"true":"none"%>">
                     		<input type='text' name="filterMeterValues" style='width:650px;'/>

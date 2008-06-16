@@ -9,10 +9,11 @@ import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
 public class CBCInventoryController extends CapControlReportControllerBase {
 
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-    		ReportFilter.CAPCONTROLSUBBUS,
-    		ReportFilter.CAPBANK,
+            ReportFilter.AREA,
+            ReportFilter.CAPCONTROLSUBBUS,
     		ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+    		ReportFilter.CAPBANK
+            };
 
     public CBCInventoryController() {
         super();

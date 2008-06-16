@@ -18,11 +18,12 @@ import com.cannontech.util.ServletUtil;
 public class CapControlScheduleDetailController extends CapControlReportControllerBase {
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
-            ReportFilter.CAPCONTROLSUBBUS,
+            ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
-            ReportFilter.CAPBANK,
+            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.AREA};
+            ReportFilter.CAPBANK
+            };
     private TimeZone timeZone = TimeZone.getDefault();
     protected static final String ATT_ORDERBY = "orderBy";
     public static final String LINE_SEPARATOR = System.getProperty("line.separator");
