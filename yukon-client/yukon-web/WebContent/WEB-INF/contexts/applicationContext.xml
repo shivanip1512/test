@@ -220,6 +220,35 @@
         <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
     </bean>
     
+    <bean id="voltageWidget"
+        class="com.cannontech.web.widget.VoltageWidget">
+        <property name="title" value="Voltage"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="attributeService" ref="attributeService" />
+        <property name="meterReadService" ref="meterReadService" />
+        <property name="meterDao" ref="meterDao"/>
+        <property name="deviceDao" ref="deviceDao"/>
+        <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
+    </bean>
+    
+    <bean id="touScheduleWidget"
+        class="com.cannontech.web.widget.TouScheduleWidget">
+        <property name="title" value="TOU Schedule"/>
+        <property name="identityPath" value="common/deviceIdentity.jsp" />
+        <property name="inputs">
+           <set>
+              <ref local="widgetInput.deviceId"/>
+           </set>
+        </property>
+        <property name="meterDao" ref="meterDao"/>
+        <property name="commandRequestExecutor" ref="commandRequestDeviceExecutor"/>
+    </bean>
+    
     <bean id="meterReadingsWidget"
     	class="com.cannontech.web.widget.MeterReadingsWidget">
     	<property name="title" value="Meter Readings"/>

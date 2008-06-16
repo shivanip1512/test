@@ -15,5 +15,14 @@ There was an error reading the meter<br>
 </c:if>
 
 <c:if test="${!result.errorsExist}">
-  <span title="${result.lastResultString}">Successful Read</span>
+  <span title="${result.lastResultString}">
+    <c:choose>
+        <c:when test="${not empty successMsg}">
+            ${successMsg}
+        </c:when>
+        <c:otherwise>
+            Successful Read
+        </c:otherwise>
+    </c:choose>
+  </span>
 </c:if>
