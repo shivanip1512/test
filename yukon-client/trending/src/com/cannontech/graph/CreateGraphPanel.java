@@ -1071,10 +1071,7 @@ public com.cannontech.common.gui.util.TreeViewPanel getTreeViewPanel() {
 			// user code begin {1}
 			ivjTreeViewPanel.setTreeModels( new LiteBaseTreeModel[] { getGraphPointsModel(), getUsagePointsModel()} );
 			ivjTreeViewPanel.getTree().setCellRenderer( new CtiTreeCellRenderer() );
-			Dimension treeSize = new Dimension(30, 100);
-			ivjTreeViewPanel.getTree().setPreferredSize(treeSize);
-			ivjTreeViewPanel.getTree().setMinimumSize(treeSize);
-			ivjTreeViewPanel.getTree().setMaximumSize(treeSize);
+			ivjTreeViewPanel.getTree().setLargeModel(true);
 		} catch (java.lang.Throwable ivjExc) {
 			handleException(ivjExc);
 		}
