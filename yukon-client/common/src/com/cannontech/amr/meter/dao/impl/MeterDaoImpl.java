@@ -181,8 +181,6 @@ public class MeterDaoImpl implements MeterDao {
         if (meterNumber == null) {
             meterNumber = "n/a";
         }
-        
-        values.put("description", device.getName());
         values.put("meterNumber", meterNumber);
         values.put("name", device.getName());
         values.put("id", Integer.toString(device.getDeviceId()));
