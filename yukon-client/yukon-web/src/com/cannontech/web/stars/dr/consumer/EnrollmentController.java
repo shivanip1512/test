@@ -75,7 +75,8 @@ public class EnrollmentController extends AbstractConsumerController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/consumer/enrollmentUpdate", method = RequestMethod.POST)
     public String update(@ModelAttribute("customerAccount") CustomerAccount customerAccount,
-            String json, YukonUserContext yukonUserContext, HttpSession session, ModelMap map) {
+            String json, String enrollPage, YukonUserContext yukonUserContext, HttpSession session, 
+            ModelMap map) {
         
         final LiteYukonUser user = yukonUserContext.getYukonUser();
         
@@ -124,6 +125,8 @@ public class EnrollmentController extends AbstractConsumerController {
                                  YukonListEntryTypes.EVENT_ACTION_CUST_ACCT_UPDATED,
                                  customerAccount.getAccountId(),
                                  session);
+        
+        map.addAttribute("backUrl", "/spring/stars/consumer/" + enrollPage);
         
         return "consumer/enrollment/enrollmentResult.jsp";
     }

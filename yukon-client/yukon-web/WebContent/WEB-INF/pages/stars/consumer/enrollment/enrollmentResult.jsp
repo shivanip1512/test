@@ -3,8 +3,6 @@
 <%@ taglib tagdir="/WEB-INF/tags/dr" prefix="dr"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
-<c:url var="backUrl" value="/spring/stars/consumer/enrollment"/>
-
 <cti:standardPage module="consumer" page="enrollmentComplete">
     <cti:standardMenu/>
 

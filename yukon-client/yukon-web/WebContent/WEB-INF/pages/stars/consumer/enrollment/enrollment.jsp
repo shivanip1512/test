@@ -85,6 +85,8 @@ function submitEnrollment() {
     <br>
     <cti:msg key="yukon.dr.consumer.enrollment.enrollmentTitle" var="enrollmentTitle"/>
     <form id="mainForm" action="/spring/stars/consumer/enrollmentUpdate" method="POST">
+        
+        <input type="hidden" name="enrollPage" value="enrollment" />
         <ct:boxContainer title="${enrollmentTitle}" hideEnabled="false">
             <div id="programEnrollmentDiv">
             
