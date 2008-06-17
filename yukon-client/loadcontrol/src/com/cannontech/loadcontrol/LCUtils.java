@@ -13,6 +13,7 @@ import java.util.List;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.service.DateFormattingService;
+import com.cannontech.core.service.SystemDateFormattingService;
 import com.cannontech.core.service.DateFormattingService.DateFormatEnum;
 import com.cannontech.loadcontrol.data.IGearProgram;
 import com.cannontech.loadcontrol.data.ILMGroup;
@@ -36,7 +37,6 @@ import com.cannontech.message.util.ServerRequestImpl;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.common.device.commands.CommandDateFormatFactory;
 
 
 /**
@@ -434,9 +434,9 @@ public class LCUtils
             {
                 String timeString = null;
 			    DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
-			    CommandDateFormatFactory.createServerCalendar();
-                Calendar startDate = CommandDateFormatFactory.createServerCalendar();
-                Calendar stopDate = CommandDateFormatFactory.createServerCalendar();
+			    SystemDateFormattingService systemDateFormattingService = (SystemDateFormattingService) YukonSpringHook.getBean("systemDateFormattingService");
+                Calendar startDate = systemDateFormattingService.getSystemCalendar();
+                Calendar stopDate = systemDateFormattingService.getSystemCalendar();
                 String winStart = CtiUtilities.STRING_DASH_LINE;
                 String winStop = CtiUtilities.STRING_DASH_LINE;
                 
@@ -480,9 +480,8 @@ public class LCUtils
             
 			case ControlAreaTableModel.START_TIME:
             {
-                DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
-                CommandDateFormatFactory.createServerCalendar();
-                Calendar startDate = CommandDateFormatFactory.createServerCalendar();
+                SystemDateFormattingService systemDateFormattingService = (SystemDateFormattingService) YukonSpringHook.getBean("systemDateFormattingService");
+                Calendar startDate = systemDateFormattingService.getSystemCalendar();
                 String winStart = CtiUtilities.STRING_DASH_LINE;
                 
                 int winStartInt = lmCntrArea.getCurrentDailyStartTime();
@@ -497,7 +496,8 @@ public class LCUtils
                     startDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
                     startDate.set(GregorianCalendar.MINUTE, 0);
                     startDate.set(GregorianCalendar.SECOND, winStartInt);
-                    
+
+                    DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
                     winStart = dateFormattingService.formatDate(startDate.getTime(), DateFormatEnum.TIME, userContext);
                 }
                 return winStart;
@@ -505,9 +505,8 @@ public class LCUtils
             
 			case ControlAreaTableModel.STOP_TIME:
             {
-                DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
-                CommandDateFormatFactory.createServerCalendar();
-                Calendar stopDate = CommandDateFormatFactory.createServerCalendar();
+                SystemDateFormattingService systemDateFormattingService = (SystemDateFormattingService) YukonSpringHook.getBean("systemDateFormattingService");
+                Calendar stopDate = systemDateFormattingService.getSystemCalendar();
                 String winStop = CtiUtilities.STRING_DASH_LINE;
                 
                 int winStopInt = lmCntrArea.getCurrentDailyStopTime();
@@ -522,7 +521,8 @@ public class LCUtils
                     stopDate.set(GregorianCalendar.HOUR_OF_DAY, 0);
                     stopDate.set(GregorianCalendar.MINUTE, 0);
                     stopDate.set(GregorianCalendar.SECOND, winStopInt);
-                    
+
+                    DateFormattingService dateFormattingService = (DateFormattingService) YukonSpringHook.getBean("dateFormattingService");
                     winStop = dateFormattingService.formatDate(stopDate.getTime(), DateFormatEnum.TIME, userContext);
                 }
                 return winStop;

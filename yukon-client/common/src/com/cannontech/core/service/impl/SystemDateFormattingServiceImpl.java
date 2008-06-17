@@ -1,6 +1,7 @@
 package com.cannontech.core.service.impl;
 
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.TimeZone;
 
 import org.apache.commons.lang.StringUtils;
@@ -36,12 +37,18 @@ public class SystemDateFormattingServiceImpl implements SystemDateFormattingServ
         return timeZone;
     }
     
+    @Override
     public SimpleDateFormat getSystemDateFormat(DateFormatEnum dateFormatEnum) {
         SimpleDateFormat dateFormat = new SimpleDateFormat(dateFormatEnum.getFormatString());
         dateFormat.setTimeZone(getSystemTimeZone());
         return dateFormat;
     }
 
+    @Override
+    public Calendar getSystemCalendar() {
+        return Calendar.getInstance(getSystemTimeZone());
+    }
+    
     @Required
     public void setRoleDao(RoleDao roleDao) {
         this.roleDao = roleDao;
