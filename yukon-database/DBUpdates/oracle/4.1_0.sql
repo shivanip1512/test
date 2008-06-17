@@ -702,6 +702,12 @@ WHERE themeName IS NULL;
 ALTER TABLE Job MODIFY themeName VARCHAR2(60) NOT NULL;
 /* End YUK-6017 */
 
+/* Start YUK-5932 */
+UPDATE UnitMeasure 
+SET uomName = 'Ops' 
+WHERE uomId = 26;
+/* End YUK-5932 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

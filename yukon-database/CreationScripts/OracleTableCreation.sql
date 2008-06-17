@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/17/2008 4:59:50 PM                         */
+/* Created on:     6/17/2008 5:33:45 PM                         */
 /*==============================================================*/
 
 
@@ -7300,7 +7300,7 @@ INSERT INTO UnitMeasure VALUES ( 22,'MVA', 0,'MVA','(none)' );
 INSERT INTO UnitMeasure VALUES ( 23,'MVAr', 0,'MVAr','(none)' );
 INSERT INTO UnitMeasure VALUES ( 24,'MVAh', 0,'MVAh','usage' );
 INSERT INTO UnitMeasure VALUES ( 25,'MVArh', 0,'MVArh','usage' );
-INSERT INTO UnitMeasure VALUES ( 26,'Ops.', 0,'Ops','(none)' );
+INSERT INTO UnitMeasure VALUES ( 26,'Ops', 0,'Ops','(none)' );
 INSERT INTO UnitMeasure VALUES ( 27,'PF', 0,'PF','(none)' );
 INSERT INTO UnitMeasure VALUES ( 28,'Percent', 0,'Percent','(none)' );
 INSERT INTO UnitMeasure VALUES ( 29,'%', 0,'Percent Char','(none)' );

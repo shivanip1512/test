@@ -835,6 +835,11 @@ ALTER TABLE Job ALTER COLUMN themeName VARCHAR(60) NOT NULL;
 go
 /* End YUK-6017 */
 
+/* Start YUK-5932 */
+UPDATE UnitMeasure 
+SET uomName = 'Ops' 
+WHERE uomId = 26;
+/* End YUK-5932 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
