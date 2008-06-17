@@ -1,5 +1,6 @@
 package com.cannontech.common.gui.panel;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -541,19 +542,11 @@ private com.cannontech.common.gui.util.JTextFieldTimeEntry getJTextFieldStopTime
 			{
 				java.util.GregorianCalendar cal = new java.util.GregorianCalendar();
 				cal.setTime( new Date() );
-
-				StringBuffer hour = new StringBuffer( String.valueOf(cal.get( java.util.GregorianCalendar.HOUR_OF_DAY)+4) );
-				if( hour.length() < 2 )
-					hour.insert(0, "0" );
-					
-				StringBuffer minute = new StringBuffer( String.valueOf(cal.get(java.util.GregorianCalendar.MINUTE)) );
-				if( minute.length() < 2 )
-					minute.insert(0, "0" );
-					
-				if( cal.get( java.util.GregorianCalendar.HOUR_OF_DAY) > 20 )
-					hour = new StringBuffer("23");
-					
-				ivjJTextFieldStopTime.setText( hour + ":" + minute );
+				
+				cal.add(Calendar.HOUR_OF_DAY, 4);
+				
+				ivjJTextFieldStopTime.setTimeText(cal.getTime());
+				getDateComboStop().setSelectedDate(cal.getTime());
 			}
 		
 			// user code end
