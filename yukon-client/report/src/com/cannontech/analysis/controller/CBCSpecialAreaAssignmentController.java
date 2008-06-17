@@ -15,8 +15,8 @@ public class CBCSpecialAreaAssignmentController extends CapControlReportControll
     
     private ReportFilter[] filterModelTypes = new ReportFilter[]{
             ReportFilter.AREA,
-            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLSUBSTATION,
+            ReportFilter.CAPCONTROLSUBBUS,
             ReportFilter.CAPCONTROLFEEDER,
             ReportFilter.CAPBANK
             };
