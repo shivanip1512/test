@@ -147,7 +147,7 @@ public class MeterUsageModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DGM.DEVICEGROUPID, PAO.PAONAME,  DMG.METERNUMBER, RPH.TIMESTAMP, RPH.VALUE" + 
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DGM.DEVICEGROUPID, PAO.PAONAME,  DMG.METERNUMBER, RPH.TIMESTAMP, RPH.VALUE" + 
 			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICEGROUPMEMBER DGM, " +
 			" POINT P join RAWPOINTHISTORY RPH "+
 			" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? " + //this is the join clause
@@ -173,7 +173,7 @@ public class MeterUsageModel extends ReportModelBase
             sql.append(" AND " + deviceGroupSqlWhereClause);
 		}
 
-		sql.append("ORDER BY DGM.DEVICEGROUPID, PAO.PAONAME, P.POINTNAME, TIMESTAMP");
+		sql.append("ORDER BY DGM.DEVICEGROUPID, PAO.PAONAME, TIMESTAMP");
 		return sql;
 	
 	}

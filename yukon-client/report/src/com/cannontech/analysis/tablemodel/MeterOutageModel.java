@@ -158,11 +158,13 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 		else if (getOrderBy() == ORDER_BY_DURATION)
 		    sql.append(" VALUE ");
 		else //if (getOrderBy() == ORDER_BY_DEVICE_NAME) //default
-			sql.append(" PAO.PAONAME " );
+			sql.append(" PAO.PAONAME ");
 
 		if( getOrderBy() == DESCENDING)
-		    sql.append(" DESC ");		    
+		    sql.append(" DESC ");
 		
+		if (getOrderBy() == ORDER_BY_DEVICE_NAME) //add more ordering columns when device name selected
+		    sql.append(", POINTNAME, TIMESTAMP"); 
 		return sql;
 	}
 	
