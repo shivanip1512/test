@@ -1060,7 +1060,7 @@ public void showEditorPanel( final Schedule selectedSchedule )
 		frame.setContentPane( panel );
 		
 		// sets the size of EVERY editor frame!!!!!!!
-		frame.setSize(450,570);
+		frame.setSize(450,700);
 		panel.addPropertyPanelListener(this);
 	
 		frame.setTitle( panel.toString() );
