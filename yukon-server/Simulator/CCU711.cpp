@@ -9,7 +9,7 @@
 *    PURPOSE: CCU Simulator
 *
 *    DESCRIPTION: Simulate the behavior of CCU 711s
-*
+*    
 *    Copyright (C) 2007 Cannon Technologies, Inc.  All rights reserved.
 *****************************************************************************/
 #include "yukon.h"
@@ -26,7 +26,7 @@ using namespace std;
 
 
 /**************************************************
-/*  CCU711 functions
+/*  CCU711 functions   
 ***************************************************/
 
 CCU711::CCU711(unsigned char addressFound) :
@@ -34,13 +34,13 @@ CCU711::CCU711(unsigned char addressFound) :
       _indexOfWords(0),
       _outindexOfEnd(0),
       _outindexOfWords(0),
-      _messageType(0),
-      _commandType(0),
-      _preamble(0),
-      _bytesToFollow(0),
-      _outmessageType(0),
-      _outcommandType(0),
-      _outpreamble(0),
+      _messageType(0),     
+      _commandType(0),     
+      _preamble(0),        
+      _bytesToFollow(0),   
+      _outmessageType(0),  
+      _outcommandType(0),  
+      _outpreamble(0),     
       _mctNumber(0),
       _qmessagesReady(0),
       _strategy(0)
@@ -69,7 +69,7 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter, mctStruct stru
 
     for(int i=10; i<300; i++)
     {
-        _messageData[i]=ReadBuffer[i];
+        _messageData[i]=ReadBuffer[i];   
     }
 
     int Ctr = 3;
@@ -86,7 +86,7 @@ void CCU711::ReceiveMore(unsigned char ReadBuffer[], int counter, mctStruct stru
     }
     else if(_commandType==LGRPQ)
     {
-        CreateQueuedMsg(structArray);  ////////////////////////   <--- Use struct kwhvalue HERE !!!!!!!!!!!!!!!!!!!!!
+        CreateQueuedMsg(0);////   <--- Use struct kwhvalue HERE !!!!!!
     }
 }
 
@@ -116,14 +116,14 @@ void CCU711::CreateMsg(int ccuNumber)
 {
     unsigned char someData[10];
     int setccuNumber = 0;
-    if(_messageType== RESETREQ)
-    {
+	if(_messageType== RESETREQ)
+	{
         //  Reset request
         unsigned char Address = _messageData[1];
         CreateMessage(RESETACK, DEFAULT, someData, ccuNumber, setccuNumber, Address);
     }
-    else if(_messageType==GENREQ)
-    {
+	else if(_messageType==GENREQ)
+	{
         //  General Request
         unsigned char Frame = getFrame();
         unsigned char Address = _messageData[1];
@@ -149,9 +149,9 @@ void CCU711::CreateMsg(int ccuNumber)
             CreateResponse(WSETS);
         }
         else if(_commandType==RCOLQ) {
-            LoadQueuedMsg();
+            LoadQueuedMsg(); 
         }
-        else{
+		else{ 
             CreateMessage(GENREP, DEFAULT, someData, ccuNumber, setccuNumber, Address, Frame);
         }
     }
@@ -221,15 +221,15 @@ void CCU711::PrintMessage(){
 
 void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd, string & printPre, string & printWrd, string & printFnc)
 {
-    if(direction == INCOMING){
-        switch(_messageType){
+	if(direction == INCOMING){
+		switch(_messageType){
             case INPUT:     printMsg.append("INPUT");       break;
             case RESETREQ:  printMsg.append("RESETREQ");    break;
             case RESETACK:  printMsg.append("RESETACK");    break;
             case GENREQ:    printMsg.append("GENREQ");      break;
             case GENREP:    printMsg.append("GENREP");      break;
         }
-        switch(_commandType){
+		switch(_commandType){
             case DTRAN:        printCmd.append("DTRAN");       break;
             case LGRPQ:        printCmd.append("LGRPQ");       break;
             case RCOLQ:        printCmd.append("RCOLQ");       break;
@@ -238,10 +238,10 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case XTIME:        printCmd.append("XTIME");       break;
 
         }
-        switch(_preamble){
+		switch(_preamble){
             case FEEDEROP:  printPre.append("FEEDEROP");    break;
         }
-        switch(_words[0].getWordType())
+		switch(_words[0].getWordType())
         {
             case A_WORD:    printWrd.append("A_WORD");      break;
             case B_WORD:    printWrd.append("B_WORD");      break;
@@ -249,7 +249,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case D_WORD:    printWrd.append("D_WORD");      break;
             case E_WORD:    printWrd.append("E_WORD");      break;
         }
-        switch(_words[0].getWordFunction()){
+		switch(_words[0].getWordFunction()){
             case FUNCREAD:   printFnc.append("FUNCREAD");     break;
             case FUNC_READ:   printFnc.append("FUNC_READ");     break;
             case FUNC_WRITE:   printFnc.append("FUNC_WRITE");     break;
@@ -257,7 +257,7 @@ void CCU711::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case WRITE:     printFnc.append("WRITE");       break;
         }
     }
-    else if(direction == OUTGOING){
+	else if(direction == OUTGOING){
         switch(_outmessageType){
             case INPUT:     printMsg.append("INPUT");       break;
             case RESETREQ:  printMsg.append("RESETREQ");    break;
@@ -303,7 +303,7 @@ CTINEXUS * CCU711::getNewSocket(){
 void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int ccuNumber, int &setccuNumber, unsigned char Address, unsigned char Frame)
 {
     _messageType = MsgType;
-    if(_messageType == INPUT)
+	if(_messageType == INPUT) 
     {
         _messageData[0] = Data[0];
         _messageData[1] = Data[1];
@@ -312,7 +312,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
         _indexOfEnd = 4;           //   this may cause a PROBLEM  SINCE 710 should be 3 bytes !!!
         _bytesToFollow = DecodeIDLC(setccuNumber);
     }
-    else if(_messageType == RESETACK)
+	else if(_messageType == RESETACK) 
     {
         _outmessageData[0] = 0x7e;
         _outmessageData[1] = _address;   //  slave address
@@ -322,11 +322,11 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
         _outmessageData[4] = LOBYTE(CRC);   //  insert CRC code
         _outindexOfEnd = 5;
     }
-    else if(_messageType == GENREP)
+	else if(_messageType == GENREP) 
     {
         _outmessageType = GENREP;
         int Ctr = 0;
-        if(WrdFnc==ACKACK) {
+		if(WrdFnc==ACKACK) {
             _outmessageData[Ctr++] = 0x7e;
             _outmessageData[Ctr++] = _address;   //  slave address
             _outmessageData[Ctr++] = Frame;     //  control
@@ -336,43 +336,43 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
             _outmessageData[Ctr++] = 0x00;      // system status items
             _outmessageData[Ctr++] = 0x00;      //    "   "
             _outmessageData[Ctr++] = 0x00;      //    "   "
-            _outmessageData[Ctr++] = 0x00;      //    "   "
+            _outmessageData[Ctr++] = 0x00;      //    "   "  
             _outmessageData[Ctr++] = 0x00;     // device status items
             _outmessageData[Ctr++] = 0x00;     //    "   "
-            _outmessageData[Ctr++] = 0x00;     //    "   "
+            _outmessageData[Ctr++] = 0x00;     //    "   "   
             _outmessageData[Ctr++] = 0x00;     //    "   "
             _outmessageData[Ctr++] = 0x00;     //    "   "
             _outmessageData[Ctr++] = 0x00;     //    "   "
             _outmessageData[Ctr++] = 0x00;     // process status items
-            _outmessageData[Ctr++] = 0x00;     //    "   "
+            _outmessageData[Ctr++] = 0x00;     //    "   "		
             _outmessageData[Ctr++] = 0x42;
             _outmessageData[Ctr++] = 0x42;
             _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
-
+										
             unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
             _outmessageData[Ctr++] = HIBYTE (CRC);
             _outmessageData[Ctr++] = LOBYTE (CRC);
         }
-        else if(_commandType==DTRAN)
+		else if(_commandType==DTRAN)
         {
                 _outmessageData[Ctr++] = 0x7e;
                 _outmessageData[Ctr++] = _address;   //  slave address
                 _outmessageData[Ctr++] = Frame;     //  control
-                Ctr++;          // # of bytes to follow minus two filled in at bottom of section
+                Ctr++;  		// # of bytes to follow minus two filled in at bottom of section
                 _outmessageData[Ctr++] = 0x02;      // SRC/DES
                 _outmessageData[Ctr++] = 0xa6;      // Echo of command received
                 _outmessageData[Ctr++] = 0x00;      // system status items
                 _outmessageData[Ctr++] = 0x00;      //    "   "
                 _outmessageData[Ctr++] = 0x00;      //    "   "
-                _outmessageData[Ctr++] = 0x00;      //    "   "
+                _outmessageData[Ctr++] = 0x00;      //    "   "  
                 _outmessageData[Ctr++] = 0x00;     // device status items
                 _outmessageData[Ctr++] = 0x00;     //    "   "
-                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     //    "   "   
                 _outmessageData[Ctr++] = 0x00;     //    "   "
                 _outmessageData[Ctr++] = 0x00;     //    "   "
                 _outmessageData[Ctr++] = 0x00;     //    "   "
                 _outmessageData[Ctr++] = 0x00;     // process status items
-                _outmessageData[Ctr++] = 0x00;     //    "   "
+                _outmessageData[Ctr++] = 0x00;     //    "   "									
 
                 if(subCCU710.getWordFunction(0) == FUNCREAD)
                 {
@@ -477,10 +477,10 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
     }
     else if(_messageType == PING) {
         int Ctr = 0;
+        _outmessageData[Ctr++] = 0xc3;                          
         _outmessageData[Ctr++] = 0xc3;
-        _outmessageData[Ctr++] = 0xc3;
-        _outmessageData[Ctr++] = 0xf5;
-        _outmessageData[Ctr++] = 0x55;
+        _outmessageData[Ctr++] = 0xf5;                          
+        _outmessageData[Ctr++] = 0x55;  
         _outindexOfEnd = Ctr;
     }
     else
@@ -495,13 +495,13 @@ void CCU711::DecodeCommand(unsigned char Data[]){
     _messageData[7]=Data[7];
     _messageData[8]=Data[8];
     _messageData[9]=Data[9];
-    if(Data[5] == 0x26) {
+	if(Data[5] == 0x26) {
         _commandType = DTRAN;
     }
     else if(Data[5] == 0x2b) {
         _commandType = LGRPQ;    //  Load request group into queue  CMND=43 in book
     }
-    else if(Data[5] == 0x2a) {
+    else if(Data[5] == 0x2a) {      
         _commandType = XTIME;    //  Transmit time sync  CMND=42 in book
     }
     else if(Data[5] == 0x27) {
@@ -510,7 +510,7 @@ void CCU711::DecodeCommand(unsigned char Data[]){
     else if(Data[5] == 0x00) {
         _commandType = ACTIN;    //  Action/Action sequence  CMND=00 in book
     }
-    else if(Data[5] == 0x09) {
+    else if(Data[5] == 0x09) {      
         _commandType = WSETS;    //  Write Parameter sets by ID  CMND=9 in book
     }
 }
@@ -542,34 +542,34 @@ int CCU711::DecodePreamble(int &setccuNumber)
             _bytesToFollow = 14;
         }
     }
-    else if((_messageData[3]==0x53) &&
-            (_messageData[4]==0xf5) &&
+	else if((_messageData[3]==0x53) && 
+            (_messageData[4]==0xf5) && 
             (_messageData[5]==0x55)) {
         // CCU710 ping in IDLC wrap
         _messageType = PING;
         _bytesToFollow = 0;
     }
-    else if((_messageData[0]==0x53) &&
-            (_messageData[1]==0xf5) &&
+    else if((_messageData[0]==0x53) && 
+            (_messageData[1]==0xf5) && 
             (_messageData[2]==0x55)) {
         // CCU710 ping
         _messageType = PING;
         _bytesToFollow = 0;
     }
 
-    else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x8e)) {
+	else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x8e)) {
         // CCU710 ping
         _messageType = '1';
         _bytesToFollow = 14;
     }
-    else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x95)) {
+	else if((_messageData[3]==0x47) && (_messageData[4]==0x30) && (_messageData[5]==0x95)) {
         // CCU710 ping
         _messageType = '2';
         _bytesToFollow = 21;
     }
-    if(_messageData[4]== 0x0){
-    }
-    if(_messageData[5]== 0x0){
+	if(_messageData[4]== 0x0){
+	}
+	if(_messageData[5]== 0x0){
     }
     return _bytesToFollow;
 }
@@ -578,9 +578,9 @@ int CCU711::DecodePreamble(int &setccuNumber)
 //  This is used to insert _words into incoming messages
 void CCU711::InsertWord(int WordType, unsigned char Data[], int counter)
 {
-    _messageData[10]=Data[10];
-    _messageData[11]=Data[11];
-    _messageData[12]=Data[12];
+    _messageData[10]=Data[10];   
+    _messageData[11]=Data[11];    
+    _messageData[12]=Data[12];   
     _messageData[13]=Data[13];
     _messageData[14]=Data[14];
     _messageData[15]=Data[15];
@@ -609,8 +609,8 @@ void CCU711::InsertWord(int WordType, unsigned char Data[], int counter)
 
     //  If the first word is a b word, see how many c _words follow it
     //  and insert them into the incoming message
-    if(_words[0].getWordType() == 2) {
-        for(int i=0; i<InsertMore; i++) {
+	if(_words[0].getWordType() == 2) {
+		for(int i=0; i<InsertMore; i++) {
             EmetconWord anotherWord;
             anotherWord.InsertWord(3, Data, WordFunction, 0, 0, (subCCU710.getRepeaters()));
             _indexOfEnd += anotherWord.getWordSize();
@@ -632,18 +632,18 @@ unsigned char CCU711::getFrame(){
 
 int CCU711::DecodeIDLC(int & setccuNumber){
     int _bytesToFollow = 0;
-    if((_messageData[0] & 0x7e) == 0x7e){
+	if((_messageData[0] & 0x7e) == 0x7e){
         //  IDLC LAYER 2 Asynchronous Link Control
-            if((_messageData[2] & 0x1f)== 0x1f){
+			if((_messageData[2] & 0x1f)== 0x1f){
             //  Reset Request
-                _messageType = RESETREQ;
-                _bytesToFollow = 1;
-            }
-            else if((_messageData[2] & 0x01) == 0x00){
+				_messageType = RESETREQ;
+				_bytesToFollow = 1;
+			}
+			else if((_messageData[2] & 0x01) == 0x00){
             //  General Request
-                _messageType = GENREQ;
-                _bytesToFollow = (_messageData[3] + 0x02);
-            }
+				_messageType = GENREQ;
+				_bytesToFollow = (_messageData[3] + 0x02);  
+			}
             //if(!(_messageData[1] & 0x06))
             //{
             //    setccuNumber = 0;
@@ -653,7 +653,7 @@ int CCU711::DecodeIDLC(int & setccuNumber){
                 setccuNumber = 1;
             }
             else if((_messageData[1] & 0x04) == 0x04)
-            {
+            { 
                 setccuNumber = 2;
             }
             else if((_messageData[1] & 0x06) == 0x06)
@@ -662,7 +662,7 @@ int CCU711::DecodeIDLC(int & setccuNumber){
             }
             else
                 setccuNumber = 0;
-    }
+	}
     else{  //  The message is not an IDLC message.  Probably 710 protocol instead
         return -1;
     }
@@ -672,8 +672,8 @@ int CCU711::DecodeIDLC(int & setccuNumber){
 
 int CCU711::DecodeDefinition(){
     int WordType = 0;
-    if(_messageData[11] == 0xaf)    {   WordType = B_WORD;   }    //  IDLC CCU711
-    else if(_messageData[3] == 0xaf){   WordType = B_WORD;   }    //CCU710
+   	if(_messageData[11] == 0xaf)    {   WordType = B_WORD;   }    //  IDLC CCU711 
+	else if(_messageData[3] == 0xaf){   WordType = B_WORD;   }    //CCU710
     else
     {
             WordType = 999;
@@ -683,27 +683,27 @@ int CCU711::DecodeDefinition(){
 
 
 int CCU711::DecodeWTF(int WordType, unsigned char Data[]){
-    if((Data[4] & 0x10) == 0x10) {  return 1;   }
-    else if((Data[4] & 0x20) == 0x20) {  return 2;   }
-    else if((Data[4] & 0x30) == 0x30) {  return 3;   }
+	if((Data[4] & 0x10) == 0x10) {  return 1;   }
+	else if((Data[4] & 0x20) == 0x20) {  return 2;   }
+	else if((Data[4] & 0x30) == 0x30) {  return 3;   }
     else return 0;
 }
 
 
 int CCU711::DecodeFunction(int WordType, unsigned char Data[]){
     char FunctionType = 0;
-    if(WordType== B_WORD)
+	if(WordType== B_WORD) 
     {
         //   check to see what function is specified
-        if((_messageData[15] & 0xc) == 0x0c)       {  FunctionType = FUNCREAD;     }     //  Function with acknowledge
-        else if((_messageData[15] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
-        else if((_messageData[15] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
-    }
+		if((_messageData[15] & 0xc) == 0x0c)       {  FunctionType = FUNCREAD;     }     //  Function with acknowledge
+		else if((_messageData[15] & 0x04) == 0x04) {  FunctionType = READ;        }     //  Read
+		else if((_messageData[15] & 0x00) == 0x00) {  FunctionType = WRITE;       }     //  Write
+	}
     return FunctionType;
 }
 
 
-void CCU711::CreateQueuedMsg(mctStruct structArray[])
+void CCU711::CreateQueuedMsg(int DBValue)
 {
     int Offset = _messageData[6];
     int Length = _messageData[3];
@@ -714,7 +714,7 @@ void CCU711::CreateQueuedMsg(mctStruct structArray[])
         //cout<<"Offset : "<<Offset<<" !"<<endl;
         _queueMessage newMessage;
         newMessage.initializeMessage();
-
+    
         unsigned char one, two, three, four;
         one   = _messageData[7+(i*Offset)];
         two   = _messageData[8+(i*Offset)];
@@ -726,14 +726,14 @@ void CCU711::CreateQueuedMsg(mctStruct structArray[])
         //cout <<string(CtiNumStr(_messageData[9+(i*Offset)]).hex().zpad(2))<<"   ";
         //cout <<string(CtiNumStr(_messageData[10+(i*Offset)]).hex().zpad(2))<<"!"<<endl;
         newMessage.setQENID(one, two, three, four);
-
+    
         int type = 0;
         int iotype = 0;
         int function = 0;
         unsigned char address;
         long int mctaddress;
         int bytesToReturn = 0;
-        decodeForQueueMessage(type, iotype, function, address, mctaddress, bytesToReturn, Offset, i);
+        decodeForQueueMessage(type, iotype, function, address, mctaddress, bytesToReturn, Offset);
         newMessage.setWord(type);
         newMessage.setiotype(iotype);
         newMessage.setFunction(function);
@@ -744,11 +744,11 @@ void CCU711::CreateQueuedMsg(mctStruct structArray[])
         {
             CtiTime currentTime;
             int delay = 0;
-            if(bytesToReturn<4)
+            if(bytesToReturn<4) 
             {
                 delay = 3;
             }
-            else if(bytesToReturn<9)
+            else if(bytesToReturn<9) 
             {
                 delay=4;
             }
@@ -761,11 +761,11 @@ void CCU711::CreateQueuedMsg(mctStruct structArray[])
         else
         {
             int delay = 0;
-            if(bytesToReturn<4)
+            if(bytesToReturn<4) 
             {
                 delay = 3;
             }
-            else if(bytesToReturn<9)
+            else if(bytesToReturn<9) 
             {
                 delay=4;
             }
@@ -775,28 +775,13 @@ void CCU711::CreateQueuedMsg(mctStruct structArray[])
             }
             newMessage.setTime(_messageQueue.back().getTime(), delay);   //Should be words !!!!!
         }
-
+            
         //RTE_CIRCUIT;
         //RTE_RPTCON;
         //RTE_TYPCON;
-
-        // Store the decoded incoming message
+    
         _messageQueue.push_back(newMessage);
-
-        //  Iterate through the array of mct data tuples to find the kwhvalue that matches the mct address we're working with
-        int DBValue = 0;
-        int structCounter = 0;
-        while((structArray[structCounter].getmctAddress()!=mctaddress)&&(structCounter<1000))
-        {
-            structCounter++;
-        }
-        //  If there's no matching mct address, just reset the counter
-        if(structCounter>999)
-        {
-            structCounter=0;
-        }
-        DBValue = structArray[structCounter].getKwhValue();
-        CreateQueuedResponse(DBValue);//  <-----  USE THE RIGHT DB VALUE FOR THIS ADDRESS
+        CreateQueuedResponse(DBValue);
         Offset = _messageData[6 + Offset];
     }
 }
@@ -831,7 +816,6 @@ void CCU711::CreateQueuedResponse(int DBValue)
                 Data[ctr++] = 0x00; // "  "
                 long int mctAddress = _messageQueue.back().getmctAddress();
 
-                //This is used for the getkwh call
                 getData(DBValue, _messageQueue.back().getFunction(), _messageQueue.back().getioType(), _messageQueue.back().getbytesToReturn());
                 for(int i = 0; i<_messageQueue.back().getbytesToReturn(); i++)
                 {
@@ -918,7 +902,7 @@ void CCU711::CreateResponse(int command)
     _outmessageData[Ctr++] = 0x00;      // system status items
     _outmessageData[Ctr++] = 0x00;      //    "   "
     _outmessageData[Ctr++] = 0x00;      //    "   "
-    _outmessageData[Ctr++] = 0x00;      //    "   "
+    _outmessageData[Ctr++] = 0x00;      //    "   "  
     _outmessageData[Ctr++] = 0x00;     // device status items
     _outmessageData[Ctr++] = 0x00;     //    "   "
     _outmessageData[Ctr++] = 0x20-_messageQueue.size();  // "  "
@@ -926,7 +910,7 @@ void CCU711::CreateResponse(int command)
     _outmessageData[Ctr++] = 0x00;                       // NCOCTS
     _outmessageData[Ctr++] = ncocts;                     // "    "
     _outmessageData[Ctr++] = 0x00;     // process status items
-    _outmessageData[Ctr++] = 0x00;     //    "   "
+    _outmessageData[Ctr++] = 0x00;     //    "   "	
 
     if((command!=WSETS) && (command!=XTIME))
     {
@@ -962,7 +946,7 @@ void CCU711::LoadQueuedMsg()
         if(_qmessagesReady==0)
         {
             _outmessageData[ctr++] = 0x7e;
-            _outmessageData[ctr++] = _address; //  Stored in 711 on startup
+            _outmessageData[ctr++] = _address; //  Stored in 711 on startup  
             _outmessageData[ctr++] = getFrame(1);
             ctr++;                 //length set below
             _outmessageData[ctr++] = 0x00;
@@ -983,7 +967,7 @@ void CCU711::LoadQueuedMsg()
         else
         {
             _outmessageData[ctr++] = 0x7e;
-            _outmessageData[ctr++] = _address; //  Stored in 711 on startup
+            _outmessageData[ctr++] = _address; //  Stored in 711 on startup  
             _outmessageData[ctr++] = getFrame(1);
             ctr++;                 //length set below
             _outmessageData[ctr++] = 0x00;
@@ -1000,13 +984,13 @@ void CCU711::LoadQueuedMsg()
             _outmessageData[ctr++] = ncocts;  // "    "
             _outmessageData[ctr++] = 0x00;    //StatP
             _outmessageData[ctr++] = 0x00;    // "  "
-            while(!_messageQueue.empty() && _messageQueue.front().isReady())
+            while(!_messageQueue.empty() && _messageQueue.front().isReady() && ctr < 250)
             {
                 unsigned char Data[300];
                 _messageQueue.front().copyOut(Data);
                 for(int i=0; i<_messageQueue.front().getmessageLength(); i++)
                 {
-                    _outmessageData[ctr++]=Data[i];
+                    _outmessageData[ctr++]=Data[i]; 
                 }
                 _qmessagesReady--;
                 _messageQueue.pop_front();
@@ -1017,7 +1001,7 @@ void CCU711::LoadQueuedMsg()
         unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), ctr-1);
         _outmessageData[ctr++] = HIBYTE (CRC);
         _outmessageData[ctr++] = LOBYTE (CRC);
-
+    
         _outindexOfEnd = ctr;
     }
     else
@@ -1036,9 +1020,9 @@ void CCU711::LoadQueuedMsg()
         }
         int ctr = 0;
         unsigned char preData[300];
-
+ 
         _outmessageData[ctr++] = 0x7e;
-        _outmessageData[ctr++] = _address; //  Stored in 711 on startup
+        _outmessageData[ctr++] = _address; //  Stored in 711 on startup  
         _outmessageData[ctr++] = getFrame(1);
         ctr++;                 //length set below
         _outmessageData[ctr++] = 0x00;
@@ -1055,7 +1039,7 @@ void CCU711::LoadQueuedMsg()
         _outmessageData[ctr++] = 0x00;  // "    "
         _outmessageData[ctr++] = 0x00;    //StatP
         _outmessageData[ctr++] = 0x00;    // "  "
-
+        
         _outmessageData[ctr++] = 0x00;  //  SETL = 0
         _outmessageData[3] = ctr-4;
         unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), ctr-1);
@@ -1076,7 +1060,7 @@ unsigned char CCU711::getRLEN()
      return RLEN14;
 }
 
-void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress, int  & bytesToReturn, int offset, int counter)
+void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress, int  & bytesToReturn, int offset)
 {
     switch(_messageData[19] & 0xc0)
     {
@@ -1114,10 +1098,9 @@ void CCU711::decodeForQueueMessage(int & type, int & iotype, int & function, uns
     bytesToReturn = _messageData[offset+5];
 
     address = _messageData[1];
-    mctaddress = _messageData[12+(counter*offset)] << 16 |
-                 _messageData[13+(counter*offset)] <<  8 |
-                 _messageData[14+(counter*offset)];
-
+    mctaddress = _messageData[12] << 16 |
+                 _messageData[13] <<  8 |
+                 _messageData[14];
 }
 
 
@@ -1137,30 +1120,28 @@ unsigned char CCU711::getFrame(int frameCount)
 }
 
 
-void CCU711::getNeededAddresses(const std::map <int, mctStruct> & addressMap, std::list<int> & neededAddresses)
+void CCU711::getNeededAddresses(int addressArray[])
 {
     //Insert the needed addresses
     deque <_queueMessage> ::iterator itr;
-    for (itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++)
-    {
+    int i = 0;
+    for (itr=_messageQueue.begin(); itr!=_messageQueue.end(); itr++) {
         _queueMessage temp = *itr;
         _qmessagesReady += temp.isReady();
-        //if (temp.isReady()) {
-            mctStruct tempStruct;
-            //Check if the mct is already in the map, if not, push on to list
-            if(addressMap.find(temp.getmctAddress())==addressMap.end())
-            {
-                neededAddresses.push_back(temp.getmctAddress());
-            }
-       // }
+        if (temp.isReady()) {
+            addressArray[i] = temp.getmctAddress();
+        }
     }
+
 }
 
 void CCU711::getData(long int DBValue, int function, int ioType, int bytesToReturn)
 {
-    _data[0] = (DBValue >> 16) & 0xff;
-    _data[1] = (DBValue >>  8) & 0xff;
-    _data[2]=   DBValue & 0xff;
+    DBValue = rand();
+    for(int i = 0; i< bytesToReturn; i++)
+    {
+        _data[i] = (DBValue+i) * i;
+    }
 }
 
 void CCU711::setStrategy(int strategy)

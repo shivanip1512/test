@@ -9,21 +9,17 @@
 *    PURPOSE: CCU Simulator
 *
 *    DESCRIPTION: Simulate the behavior of CCU 711s
-*
+*    
 *    Copyright (C) 2007 Cannon Technologies, Inc.  All rights reserved.
 *****************************************************************************/
 #ifndef  __CCU711_H__
 #define  __CCU711_H__
-
-#include <queue>
-#include <list>
-#include <iostream>
 #include "Winsock2.h"
-
+#include <iostream>
 #include "CCU710.h"
 #include "ctiTime.h"
 #include "mctStruct.h"
-
+#include <queue>
 
 
 class CCU711
@@ -34,7 +30,7 @@ public:
     //Destructor
 
     enum WordTypes
-    {
+    {   
         DEFAULT    = 0,
         INPUT      = 0,
         RESETREQ   = 1,
@@ -135,7 +131,7 @@ public:
     void DecodeCommand(unsigned char Data[]);
     //  Figure out what the preamble says
     int DecodePreamble(int &setccuNumber);
-    // This is used to insert words into incoming messages
+    // This is used to insert words into incoming messages 
     void InsertWord(int WordType, unsigned char Data[], int counter);
     //  Returns the frame of message
     unsigned char getFrame();
@@ -150,7 +146,7 @@ public:
     //  Determine what function the word specifies
     int DecodeFunction(int WordType, unsigned char Data[]);
     //  Build a message to store in the queue
-    void CreateQueuedMsg(mctStruct structArray[]);
+    void CreateQueuedMsg(int DBValue);
     //  Create a response for immediate use (not to put into the queue)
     void CreateResponse(int command);
     //  Copy the message from the queue into the 711 outgoing message storage
@@ -159,14 +155,15 @@ public:
     unsigned char getRLEN();
     //  Create a response to a message that has been received and store it in the array of a queue message struct
     void CreateQueuedResponse(int DBValue);
-    //  Decode the information contained in an incoming message
-    void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress,int & bytesToReturn, int offset, int counter);
+    //  Decode the information contained in an incoming message 
+    void decodeForQueueMessage(int & type, int & iotype, int & function, unsigned char & address, long int & mctaddress,int & bytesToReturn, int offset);
     //  Returns number of data bytes to be sent to poerter at an index and fills the data array
     void getData(long int mctAddress, int function, int ioType, int bytesToReturn);
     //  Allows serverNexus to set the current strategy
     void setStrategy(int strategy);
     //  Return the mct addresses from the current message group
-    void getNeededAddresses(const std::map <int, mctStruct> & addressMap, std::list<int> & neededAddresses);
+    void getNeededAddresses(int addressArray[]);
+
 
 
 private:

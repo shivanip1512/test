@@ -63,8 +63,8 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
         pMessageData[Ctr++] = (mctNumber >> 4) & 0xff;
         pMessageData[Ctr++] = (mctNumber << 4) & 0xf0;   //data begins in second half of this byte
         pMessageData[Ctr++] = 0x0f;   // data
-        pMessageData[Ctr++] = 0x00;   // data
-        pMessageData[Ctr++] = 0x00;   // data ends first half of this byte
+        pMessageData[Ctr++] = rand();   // data
+        pMessageData[Ctr++] = rand() & 0xf0;   // data ends first half of this byte
         pMessageData[Ctr++] = 0x00;
 
         unsigned char BCH = BCHCalc_C (pMessageData+Ctr-7, 46);
@@ -85,8 +85,8 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
         pMessageData[Ctr++] = (mctNumber >> 4) & 0xff;
         pMessageData[Ctr++] = (mctNumber << 4) & 0xf0;   //data begins in second half of this byte
         pMessageData[Ctr++] = 0x0f;   // data
-        pMessageData[Ctr++] = 0x00;   // data
-        pMessageData[Ctr++] = 0x00;   // data ends first half of this byte
+        pMessageData[Ctr++] = rand();   // data
+        pMessageData[Ctr++] = rand() & 0xf0;   // data ends first half of this byte
         pMessageData[Ctr++] = 0x00;
 
         unsigned char BCH = BCHCalc_C (pMessageData+Ctr-7, 46);
@@ -105,7 +105,7 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
         cWord[1] = 0x00;
         cWord[2] = 0x00;
         cWord[3] = 0x00;
-        cWord[4] = 0x00;
+        cWord[4] = rand();
         if(pMessageData[4]==0x0) {
             cWord[5] = 0x08;
         }
@@ -128,7 +128,7 @@ int EmetconWord::InsertWord(int Type, unsigned char * pMessageData, int WordFunc
         cWord[2] = 0x00;
         cWord[3] = 0x00;
         cWord[4] = 0x00;
-        cWord[5] = 0x00;
+        cWord[5] = rand();
         cWord[6] = 0x00;
 
         BCH = BCHCalc (cWord, 46);
