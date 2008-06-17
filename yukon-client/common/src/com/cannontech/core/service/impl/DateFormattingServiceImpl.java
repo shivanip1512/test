@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.core.service.DateFormattingService;
@@ -28,6 +29,14 @@ public class DateFormattingServiceImpl implements DateFormattingService {
             throws IllegalArgumentException {
         DateFormat df = getDateFormatter(type, userContext);
         if (date != null) {
+            
+            // will result in dates that would normally format to midnight of a date, to format instead
+            // to the previous date.
+            // MidnightMode.PREV_DAY is only set on date-only type DateFormatEnum values
+            if (type.getMidnightMode() == MidnightMode.PREV_DAY) {
+                date = DateUtils.addSeconds(date, -1);
+            }
+            
             return df.format(date);
         } else {
             throw new IllegalArgumentException("Date object is null in DateFormattingServiceImpl.formatDate()");

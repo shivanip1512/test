@@ -20,23 +20,39 @@ import com.cannontech.user.YukonUserContext;
 public interface DateFormattingService {
 
     static public enum DateFormatEnum {
-        TIME, 
-        TIME_TZ,
-        TIMEZONE,
-        DATE, 
-        BOTH, 
-        DATEHM, 
-        DATEH_AP,
+        TIME(null), 
+        TIME_TZ(null),
+        TIMEZONE(null),
+        DATE(MidnightMode.PREV_DAY), 
+        DATE_SHORTYEAR(MidnightMode.PREV_DAY),
+        BOTH(null), 
+        DATEHM(null), 
+        DATEH_AP(MidnightMode.PREV_DAY),
+        HOUR_AP(null),
+        HM_AP(null),
         ;
+        
+        private MidnightMode midnightMode = null;
 
         private final static String keyPrefix = "yukon.common.dateFormatting.";
 
         public String getFormatKey() {
             return keyPrefix + name();
         }
+        
+        public MidnightMode getMidnightMode() {
+            return midnightMode;
+        }
 
+        DateFormatEnum(MidnightMode midnightMode) {
+            this.midnightMode = midnightMode;
+        }
     }
 
+    public static enum MidnightMode {
+        PREV_DAY
+    };
+    
     public static enum DateOnlyMode {
         START_OF_DAY, END_OF_DAY
     };

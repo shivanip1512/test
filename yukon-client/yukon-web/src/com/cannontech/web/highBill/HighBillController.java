@@ -2,7 +2,6 @@ package com.cannontech.web.highBill;
 
 import java.text.DateFormat;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -37,6 +36,7 @@ import com.cannontech.common.device.peakReport.service.PeakReportService;
 import com.cannontech.common.exception.InitiateLoadProfileRequestException;
 import com.cannontech.common.exception.PeakSummaryReportRequestException;
 import com.cannontech.common.util.FriendlyExceptionResolver;
+import com.cannontech.common.util.TemplateProcessorFactory;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
 import com.cannontech.core.dao.ContactDao;
@@ -75,6 +75,7 @@ public class HighBillController extends MultiActionController {
     private YukonUserDao yukonUserDao = null;
     private ContactDao contactDao = null;
     private RawPointHistoryDao rphDao = null;
+    private TemplateProcessorFactory templateProcessorFactory = null;
     
     final long MS_IN_A_DAY = 1000 * 60 * 60 * 24;
     
@@ -124,7 +125,7 @@ public class HighBillController extends MultiActionController {
         
         // DATE RANGE
         //-------------------------------------------
-        SimpleDateFormat dateFormatter = null; //TODO fix
+        DateFormat dateFormatter = dateFormattingService.getDateFormatter(DateFormattingService.DateFormatEnum.DATE, userContext);
         
         Date defaultStopDate = new Date();
         Date defaultStartDate = TimeUtil.addDays(defaultStopDate, -5);
@@ -155,8 +156,6 @@ public class HighBillController extends MultiActionController {
         
         mav.addObject("startDateDate", startDate);
         mav.addObject("stopDateDate", stopDate);
-        mav.addObject("startDate", startDateStr);
-        mav.addObject("stopDate", stopDateStr);
         
         
         
@@ -167,20 +166,13 @@ public class HighBillController extends MultiActionController {
         
         // PARSE RESULTS AND ADD TO MAV
         //-------------------------------------------
-        Map<String, Object> preMap = getParsedPeakResultValuesMap(preResult, userContext, deviceId, 1);
-        Map<String, Object> postMap = getParsedPeakResultValuesMap(postResult, userContext, deviceId, 1);
+        Map<String, Object> preMap = peakReportService.formatPeakReportResult(preResult, userContext, deviceId, 1);
+        Map<String, Object> postMap = peakReportService.formatPeakReportResult(postResult, userContext, deviceId, 1);
         addProfileResultsToMav(mav, deviceId, userContext, preResult, postResult, preMap, postMap);
         
         
         // remaining items are only required during "step 2" (analyze=true)
         if (analyze) {
-            
-            // PENDING LP REQUESTS
-            //-------------------------------------------
-            LiteYukonPAObject devicePaoObj = paoDao.getLiteYukonPAO(deviceId);
-            List<Map<String, String>> pendingRequests = loadProfileService.getPendingRequests(devicePaoObj, userContext);
-            mav.addObject("pendingRequests", pendingRequests);
-            
             
             // FOR LOAD_PROFILE CHART
             //-------------------------------------------
@@ -198,50 +190,13 @@ public class HighBillController extends MultiActionController {
             // PRE CHART
             if (preResult != null && !preResult.isNoData()) {
                 
-                Date preRangeStartDate = null;
-                Date preRangeStopDate = null;
+                RangeStartStopDateHolder preRangeStartStopDateHolder = getRangeStartStopDate(preResult, chartRange, userContext);
                 
-                if (chartRange.equals("PEAK")) {
-                    
-                    preRangeStartDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
-
-                    preRangeStopDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
-                    preRangeStopDate = DateUtils.addDays(preRangeStopDate, 1);
-                    preRangeStopDate = DateUtils.addSeconds(preRangeStopDate, -1);
-                }
-                else if (chartRange.equals("PEAKPLUSMINUS3")) {
-                    
-                    preRangeStartDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
-                    preRangeStartDate = DateUtils.addDays(preRangeStartDate, -3);
-
-                    preRangeStopDate = DateUtils.truncate(preResult.getPeakStopDate(), Calendar.DATE);
-                    preRangeStopDate = DateUtils.addDays(preRangeStopDate, 4);
-                    preRangeStopDate = DateUtils.addSeconds(preRangeStopDate, -1);
-                }
-                else if (chartRange.equals("ENTIRE")) {
-                    
-                    preRangeStartDate = DateUtils.truncate(preResult.getRangeStartDate(), Calendar.DATE);
-
-                    preRangeStopDate = DateUtils.truncate(preResult.getRangeStopDate(), Calendar.DATE);
-                    preRangeStopDate = DateUtils.addDays(preRangeStopDate, 1);
-                    preRangeStopDate = DateUtils.addSeconds(preRangeStopDate, -1);
-                }
+                Date preRangeStartDate = preRangeStartStopDateHolder.getRangeStartDate();
+                Date preRangeStopDate = preRangeStartStopDateHolder.getRangeStopDate();
                 
-                String preRangeStartDateStr = dateFormattingService.formatDate(preRangeStartDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-                String preRangeStopDateStr = dateFormattingService.formatDate(preRangeStopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-                String preChartTitle = "";
-                if (chartRange.equals("PEAK")) {
-                    preChartTitle = preRangeStartDateStr;
-                }
-                else if (chartRange.equals("PEAKPLUSMINUS3")) {
-                    preChartTitle = preRangeStartDateStr + " - " + preRangeStopDateStr;
-                    preChartTitle += " (" + preMap.get("peakValueStr") + " +/- 3 Days)";
-                }
-                else if (chartRange.equals("ENTIRE")) {
-                    preChartTitle = preRangeStartDateStr + " - " + preRangeStopDateStr;
-                }
-                
-                mav.addObject("preChartTitle", preChartTitle);
+                mav.addObject("preRangeStartDate", preRangeStartDate);
+                mav.addObject("preRangeStopDate", preRangeStopDate);
                 mav.addObject("preStartDateMillis", preRangeStartDate.getTime());
                 mav.addObject("preStopDateMillis", preRangeStopDate.getTime());
                 mav.addObject("preChartInterval", calcIntervalForPeriod(preRangeStartDate, preRangeStopDate));
@@ -249,50 +204,13 @@ public class HighBillController extends MultiActionController {
                 // POST CHART
                 if (postResult != null && !postResult.isNoData()) {
                     
-                    Date postRangeStartDate = null;
-                    Date postRangeStopDate = null;
+                    RangeStartStopDateHolder postRangeStartStopDateHolder = getRangeStartStopDate(postResult, chartRange, userContext);
                     
-                    if (chartRange.equals("PEAK")) {
-                        
-                        postRangeStartDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
-                        postRangeStartDate = DateUtils.addDays(postRangeStartDate, -3);
-
-                        postRangeStopDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
-                        postRangeStopDate = DateUtils.addDays(postRangeStopDate, 4);
-                        postRangeStopDate = DateUtils.addSeconds(postRangeStopDate, -1);
-                    }
-                    else if (chartRange.equals("PEAKPLUSMINUS3")) {
-                        
-                        postRangeStartDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
-
-                        postRangeStopDate = DateUtils.truncate(postResult.getPeakStopDate(), Calendar.DATE);
-                        postRangeStopDate = DateUtils.addDays(postRangeStopDate, 1);
-                        postRangeStopDate = DateUtils.addSeconds(postRangeStopDate, -1);
-                    }
-                    else if (chartRange.equals("ENTIRE")) {
-                        
-                        postRangeStartDate = DateUtils.truncate(postResult.getRangeStartDate(), Calendar.DATE);
-
-                        postRangeStopDate = DateUtils.truncate(postResult.getRangeStopDate(), Calendar.DATE);
-                        postRangeStopDate = DateUtils.addDays(postRangeStopDate, 1);
-                        postRangeStopDate = DateUtils.addSeconds(postRangeStopDate, -1);
-                    }
+                    Date postRangeStartDate = postRangeStartStopDateHolder.getRangeStartDate();
+                    Date postRangeStopDate = postRangeStartStopDateHolder.getRangeStopDate();
                     
-                    String postRangeStartDateStr = dateFormattingService.formatDate(postRangeStartDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-                    String postRangeStopDateStr = dateFormattingService.formatDate(postRangeStopDate, DateFormattingService.DateFormatEnum.DATE, userContext);
-                    String postChartTitle = "";
-                    if (chartRange.equals("PEAK")) {
-                        postChartTitle = postRangeStartDateStr;
-                    }
-                    else if (chartRange.equals("PEAKPLUSMINUS3")) {
-                        postChartTitle = postRangeStartDateStr + " - " + postRangeStopDateStr;
-                        postChartTitle += " (" + postMap.get("peakValueStr") + " +/- 3 Days)";
-                    }
-                    else if (chartRange.equals("ENTIRE")) {
-                        postChartTitle = postRangeStartDateStr + " - " + postRangeStopDateStr;
-                    }
-                    
-                    mav.addObject("postChartTitle", postChartTitle);
+                    mav.addObject("postRangeStartDate", postRangeStartDate);
+                    mav.addObject("postRangeStopDate", postRangeStopDate);
                     mav.addObject("postStartDateMillis", postRangeStartDate.getTime());
                     mav.addObject("postStopDateMillis", postRangeStopDate.getTime());
                     mav.addObject("postChartInterval", calcIntervalForPeriod(postRangeStartDate, postRangeStopDate));
@@ -336,6 +254,63 @@ public class HighBillController extends MultiActionController {
         }
         
         return mav;
+    }
+    
+    private RangeStartStopDateHolder getRangeStartStopDate(PeakReportResult result, String chartRange, YukonUserContext userContext) {
+        
+        Calendar dateCal = dateFormattingService.getCalendar(userContext);
+        
+        Date rangeStartDate = null;
+        Date rangeStopDate = null;
+        
+        if (chartRange.equals("PEAK")) {
+            
+            dateCal.setTime(result.getPeakStopDate()); 
+            rangeStartDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
+            
+            rangeStopDate = DateUtils.addDays(rangeStartDate, 1);
+        }
+        else if (chartRange.equals("PEAKPLUSMINUS3")) {
+            
+            dateCal.setTime(result.getPeakStopDate()); 
+            rangeStartDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
+            rangeStartDate = DateUtils.addDays(rangeStartDate, -3);
+            
+            dateCal.setTime(result.getPeakStopDate()); 
+            rangeStopDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
+            rangeStopDate = DateUtils.addDays(rangeStopDate, 4);
+        }
+        else if (chartRange.equals("ENTIRE")) {
+            
+            dateCal.setTime(result.getRangeStartDate()); 
+            rangeStartDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
+            
+            dateCal.setTime(result.getRangeStopDate()); 
+            rangeStopDate = DateUtils.truncate(dateCal, Calendar.DATE).getTime();
+            rangeStopDate = DateUtils.addDays(rangeStopDate, 1);
+        }
+        
+        return new RangeStartStopDateHolder(rangeStartDate, rangeStopDate);
+    }
+    
+    private class RangeStartStopDateHolder {
+        
+        public Date rangeStartDate = null;
+        public Date rangeStopDate = null;
+        
+        public RangeStartStopDateHolder(Date rangeStartDate, Date rangeStopDate) {
+            
+            this.rangeStartDate = rangeStartDate;
+            this.rangeStopDate = rangeStopDate;
+        }
+        
+        public Date getRangeStartDate() {
+            return rangeStartDate;
+        }
+        
+        public Date getRangeStopDate() {
+            return rangeStopDate;
+        }
     }
     
     private ChartInterval calcIntervalForPeriod(Date startDate, Date stopDate) {
@@ -499,15 +474,14 @@ public class HighBillController extends MultiActionController {
          
             // map of email elements
             Map<String, Object> msgData = new HashMap<String, Object>();
-            DateFormat dateFormat = null; //TODO fix
             
             msgData.put("email", email);
             msgData.put("formattedDeviceName", meterDao.getFormattedDeviceName(meterDao.getForId(device.getLiteID())));
             msgData.put("deviceName", device.getPaoName());
             msgData.put("meterNumber", meterNum.getMeterNumber());
             msgData.put("physAddress", device.getAddress());
-            msgData.put("startDate", dateFormat.format(startDate));
-            msgData.put("stopDate", dateFormat.format(stopDate));
+            msgData.put("startDate", dateFormattingService.formatDate(startDate, DateFormattingService.DateFormatEnum.DATE, userContext));
+            msgData.put("stopDate", dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.DATE, userContext));
             long numDays = (stopDate.getTime() - startDate.getTime()) / MS_IN_A_DAY;
             msgData.put("totalDays", Long.toString(numDays));
             
@@ -533,7 +507,7 @@ public class HighBillController extends MultiActionController {
             msgData.put("reportPdfUrl", reportPdfUrl);
 
             // completion callbacks
-            LoadProfileServiceEmailCompletionCallbackImpl callback = new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, deviceErrorTranslatorDao);
+            LoadProfileServiceEmailCompletionCallbackImpl callback = new LoadProfileServiceEmailCompletionCallbackImpl(emailService, dateFormattingService, templateProcessorFactory, deviceErrorTranslatorDao);
             
             callback.setUserContext(userContext);
             callback.setEmail(email);
@@ -591,7 +565,6 @@ public class HighBillController extends MultiActionController {
         
         List<String> preAvailableDaysAfterPeak = new ArrayList<String>();
         if(preResult != null && !preResult.isNoData()) {
-            mav.addObject("displayName", preMap.get("displayName"));
             mav.addObject("prePeriodStartDate",preMap.get("periodStartDate"));
             mav.addObject("prePeriodStopDate",preMap.get("periodStopDate"));
             mav.addObject("prePeriodStartDateDisplay",preMap.get("periodStartDateDisplay"));
@@ -633,70 +606,6 @@ public class HighBillController extends MultiActionController {
             }
         }
         mav.addObject("postAvailableDaysAfterPeak", postAvailableDaysAfterPeak);
-    }
-    
-    
-    /**
-     * HELPER to parse PeakReportResult objects.
-     * @param peakResult
-     * @param userContext
-     * @param deviceId
-     * @param channel
-     * @return
-     */
-    private Map<String, Object> getParsedPeakResultValuesMap(PeakReportResult peakResult, YukonUserContext userContext, int deviceId, int channel) {
-        
-        if (peakResult == null || peakResult.isNoData()) {
-            return null;
-        }
-        
-        // init hash
-        Map<String, Object> parsedVals = new HashMap<String, Object>();
-        
-        // special formatting of peakResult dates for display purposes
-        String runDateDisplay = dateFormattingService.formatDate(peakResult.getRunDate(), DateFormattingService.DateFormatEnum.DATEHM, userContext);
-        parsedVals.put("runDateDisplay", runDateDisplay);
-        
-        String periodStartDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
-        parsedVals.put("periodStartDate", peakResult.getRangeStartDate());
-        parsedVals.put("periodStartDateDisplay", periodStartDateDisplay);
-        
-        String periodStopDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
-        parsedVals.put("periodStopDate", peakResult.getRangeStopDate());
-        parsedVals.put("periodStopDateDisplay", periodStopDateDisplay);
-        
-        parsedVals.put("displayName", peakResult.getPeakType().getDisplayName());
-        parsedVals.put("reportTypeDisplayName",peakResult.getPeakType().getReportTypeDisplayName());
-        
-        String peakValueStr = "";
-        if(peakResult.getPeakType() == PeakReportPeakType.DAY) {
-            peakValueStr = dateFormattingService.formatDate(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
-        }
-        else if(peakResult.getPeakType() == PeakReportPeakType.HOUR) {
-            peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());
-            peakValueStr += " ";
-            peakValueStr += new SimpleDateFormat("Ka").format(peakResult.getPeakStartDate());
-            peakValueStr += " - ";
-            peakValueStr += new SimpleDateFormat("Ka").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
-        }
-        else if(peakResult.getPeakType() == PeakReportPeakType.INTERVAL) {
-            int interval = peakReportService.getChannelIntervalForDevice(deviceId,channel);
-            peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());
-            peakValueStr += " ";
-            if(interval == 60){
-                peakValueStr += new SimpleDateFormat("Ha").format(peakResult.getPeakStartDate());
-                peakValueStr += " - ";
-                peakValueStr += new SimpleDateFormat("Ha").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
-            }
-            else{
-                peakValueStr += new SimpleDateFormat("K:mma").format(peakResult.getPeakStartDate());
-                peakValueStr += " - ";
-                peakValueStr += new SimpleDateFormat("K:mma").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
-            }
-        }
-        parsedVals.put("peakValueStr", peakValueStr);
-        
-        return parsedVals;
     }
     
     /**
@@ -789,5 +698,11 @@ public class HighBillController extends MultiActionController {
     @Required
     public void setRphDao(RawPointHistoryDao rphDao) {
         this.rphDao = rphDao;
+    }
+    
+    @Required
+    public void setTemplateProcessorFactory(
+            TemplateProcessorFactory templateProcessorFactory) {
+        this.templateProcessorFactory = templateProcessorFactory;
     }
 }

@@ -1,7 +1,6 @@
 package com.cannontech.web.widget;
 
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -127,7 +126,8 @@ public class PeakReportWidget extends WidgetControllerBase {
         
         if(peakResult != null){
             mav.addObject("peakResult", peakResult);
-            addParsedPeakResultValuesToMav(peakResult, mav, userContext, deviceId, prevChannel);
+            Map<String, Object> formattedPeakMap = peakReportService.formatPeakReportResult(peakResult, userContext, deviceId, prevChannel);
+            mav.addAllObjects(formattedPeakMap);
         }
         
         boolean readable = commandAuthorizationService.isAuthorized(userContext.getYukonUser(), "getvalue lp peak", meter);
@@ -222,57 +222,13 @@ public class PeakReportWidget extends WidgetControllerBase {
         
         // special formatting of peakResult dates for display purposes
         if(!peakResult.isNoData()) {
-            addParsedPeakResultValuesToMav(peakResult, mav, userContext, deviceId, channel);
+            Map<String, Object> formattedPeakMap = peakReportService.formatPeakReportResult(peakResult, userContext, deviceId, channel);
+            mav.addAllObjects(formattedPeakMap);
         }
         
         return mav;
     }
 
-    
-   private void addParsedPeakResultValuesToMav(PeakReportResult peakResult, ModelAndView mav, YukonUserContext userContext, int deviceId, int channel) {
-       
-       // special formatting of peakResult dates for display purposes
-       String runDateDisplay = dateFormattingService.formatDate(peakResult.getRunDate(), DateFormattingService.DateFormatEnum.DATEHM, userContext);
-       mav.addObject("runDateDisplay", runDateDisplay);
-       
-       String periodStartDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStartDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
-       mav.addObject("periodStartDateDisplay", periodStartDateDisplay);
-       
-       String periodStopDateDisplay = dateFormattingService.formatDate(peakResult.getRangeStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
-       mav.addObject("periodStopDateDisplay", periodStopDateDisplay);
-       
-       mav.addObject("displayName", peakResult.getPeakType().getDisplayName());
-       mav.addObject("reportTypeDisplayName",peakResult.getPeakType().getReportTypeDisplayName());
-       
-       String peakValueStr = "";
-       if(peakResult.getPeakType() == PeakReportPeakType.DAY) {
-           peakValueStr = dateFormattingService.formatDate(peakResult.getPeakStopDate(), DateFormattingService.DateFormatEnum.DATE, userContext);
-       }
-       else if(peakResult.getPeakType() == PeakReportPeakType.HOUR) {
-           peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());
-           peakValueStr += " ";
-           peakValueStr += new SimpleDateFormat("Ka").format(peakResult.getPeakStartDate());
-           peakValueStr += " - ";
-           peakValueStr += new SimpleDateFormat("Ka").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
-       }
-       else if(peakResult.getPeakType() == PeakReportPeakType.INTERVAL) {
-           int interval = peakReportService.getChannelIntervalForDevice(deviceId,channel);
-           peakValueStr = new SimpleDateFormat("MM/dd/yy").format(peakResult.getPeakStopDate());
-           peakValueStr += " ";
-           if(interval == 60){
-               peakValueStr += new SimpleDateFormat("Ha").format(peakResult.getPeakStartDate());
-               peakValueStr += " - ";
-               peakValueStr += new SimpleDateFormat("Ha").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
-           }
-           else{
-               peakValueStr += new SimpleDateFormat("K:mma").format(peakResult.getPeakStartDate());
-               peakValueStr += " - ";
-               peakValueStr += new SimpleDateFormat("K:mma").format(DateUtils.addMinutes(peakResult.getPeakStopDate(), 1));
-           }
-       }
-       mav.addObject("peakValueStr", peakValueStr);
-   }
- 
     private ModelAndView setDefaultMavDateTime(HttpServletRequest request, ModelAndView mav, YukonUserContext userContext){
         
         String startDateStr = WidgetParameterHelper.getStringParameter(request, "startDateStr", "");
