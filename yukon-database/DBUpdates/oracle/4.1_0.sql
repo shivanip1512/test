@@ -694,6 +694,14 @@ SET Description = 'Defines the format for displaying devices. Available placehol
 WHERE yukonrolepropertyid = -1700;
 /* End YUK-6023 */
 
+/* Start YUK-6017 */
+ALTER TABLE Job ADD themeName VARCHAR2(60);
+UPDATE Job 
+SET themeName = ' ' 
+WHERE themeName IS NULL;
+ALTER TABLE Job MODIFY themeName VARCHAR2(60) NOT NULL;
+/* End YUK-6017 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

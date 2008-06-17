@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/17/2008 4:32:25 PM                         */
+/* Created on:     6/17/2008 4:59:50 PM                         */
 /*==============================================================*/
 
 
@@ -5272,6 +5272,7 @@ create table JOB  (
    UserID               NUMBER                          not null,
    Locale               VARCHAR2(10)                    not null,
    TimeZone             VARCHAR2(40)                    not null,
+   themeName            VARCHAR2(60)                    not null,
    constraint PK_JOB primary key (JobID)
 );
 

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/17/2008 4:31:03 PM                         */
+/* Created on:     6/17/2008 5:01:36 PM                         */
 /*==============================================================*/
 
 
@@ -7775,6 +7775,7 @@ create table JOB (
    UserID               numeric              not null,
    Locale               varchar(10)          not null,
    TimeZone             varchar(40)          not null,
+   themeName            varchar(60)          not null,
    constraint PK_JOB primary key (JobID)
 )
 go
