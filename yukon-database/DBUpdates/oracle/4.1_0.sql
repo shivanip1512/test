@@ -688,6 +688,12 @@ SET value = '/spring/stars/consumer/general'
 WHERE value='/user/ConsumerStat/stat/General.jsp';
 /* End YUK-6011 */
 
+/* Start YUK-6023 */
+UPDATE YukonRoleProperty 
+SET Description = 'Defines the format for displaying devices. Available placeholders: {name},{meterNumber},{id},{address}' 
+WHERE yukonrolepropertyid = -1700;
+/* End YUK-6023 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

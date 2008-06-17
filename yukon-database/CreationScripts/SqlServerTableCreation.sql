@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/13/2008 4:39:09 PM                         */
+/* Created on:     6/17/2008 4:31:03 PM                         */
 /*==============================================================*/
 
 
@@ -11442,10 +11442,10 @@ insert into YukonRoleProperty values(-1601,-7,'Primary CIS Vendor','0','Defines 
 insert into YukonRoleProperty values(-1602,-7,'Msp BillingCyle DeviceGroup','/Meters/Billing/','Defines the Device Group parent group name for the MultiSpeak billingCycle element. Valid values are ''/Meters/Billing/'', ''/Meters/Collection'', ''/Meters/Alternate''');
 
 /* Configuration */
-insert into YukonRoleProperty values(-1700,-8,'Device Display Template','{name}','Defines the format for displaying devices. Available placeholders: {name},{description},{meterNumber},{id},{address}');
-insert into YukonRoleProperty values(-1701,-8, 'Alert Timeout Hours', '168', 'The number of hours that an alert should be held (zero = forever, decimal numbers are okay)'); 
-insert into YukonRoleProperty values(-1702,-8, 'Customer Info Importer File Location', ' ', 'File location of the automated consumer information import process.');
-INSERT INTO YukonRoleProperty VALUES(-1703,-8, 'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
+insert into YukonRoleProperty values(-1700,-8,'Device Display Template','{name}','Defines the format for displaying devices. Available placeholders: {name},{meterNumber},{id},{address}');
+insert into YukonRoleProperty values(-1701,-8,'Alert Timeout Hours', '168', 'The number of hours that an alert should be held (zero = forever, decimal numbers are okay)'); 
+insert into YukonRoleProperty values(-1702,-8,'Customer Info Importer File Location', ' ', 'File location of the automated consumer information import process.');
+INSERT INTO YukonRoleProperty VALUES(-1703,-8,'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 
 /* TDC Role */
 insert into YukonRoleProperty values(-10100,-101,'loadcontrol_edit','00000000','(No settings yet)');
