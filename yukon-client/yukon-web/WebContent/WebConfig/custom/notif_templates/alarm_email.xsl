@@ -35,7 +35,7 @@
 
   <xsl:template match="alarm">
       <subject>Yukon Alarm <xsl:value-of select="paoname"/> / <xsl:value-of select="pointname"/></subject>
-      <body>The value of <xsl:value-of select="paoname"/> / <xsl:value-of select="pointname"/> is now <xsl:value-of select="value"/> <xsl:value-of select="unitofmeasure"/>.
+      <body>The value of <xsl:value-of select="paoname"/> / <xsl:value-of select="pointname"/> is now <xsl:value-of select="value"/><xsl:text> </xsl:text><xsl:value-of select="unitofmeasure"/>.
 
 Alarm Time: <xsl:value-of select="alarmdate"/><xsl:text> </xsl:text><xsl:value-of select="alarmtime"/>
 Condition: <xsl:value-of select="condition"/>
