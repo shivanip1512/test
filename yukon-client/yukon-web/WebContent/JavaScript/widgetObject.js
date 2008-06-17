@@ -39,7 +39,7 @@ JsWidgetObject.prototype = {
   },
   
   doActionRefresh: function(cmd, actionButton, waitingLabel, key) {
-    $(actionButton).getElementsByClassName('widgetAction_waiting').invoke('show');
+    $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('show');
     $(actionButton).getElementsBySelector('input').each(function(it) {it.value = waitingLabel});
     $(this.container).getElementsBySelector('input').invoke('disable');
     
@@ -52,7 +52,7 @@ JsWidgetObject.prototype = {
   },
   
   doActionUpdate: function(cmd, theContainer, actionButton, waitingLabel, key) {
-    $(actionButton).getElementsByClassName('widgetAction_waiting').invoke('show');
+    $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('show');
     var input = $(actionButton).getElementsBySelector('input').first();
     var initialLabel = input.value;
     input.value = waitingLabel;
@@ -60,7 +60,7 @@ JsWidgetObject.prototype = {
     
     var localSuccess = function() {
       // the following is only useful for the actionUpdate case
-      $(actionButton).getElementsByClassName('widgetAction_waiting').invoke('hide'); 
+      $(actionButton).getElementsBySelector('.widgetAction_waiting').invoke('hide'); 
       input.value = initialLabel;
       input.enable();
     
@@ -84,7 +84,7 @@ JsWidgetObject.prototype = {
   },
 
   doActionLinkRefresh: function(cmd, actionSpan, waitingLabel, key, container) {
-    $(actionSpan).getElementsByClassName('widgetAction_waiting').invoke('show');
+    $(actionSpan).getElementsBySelector('.widgetAction_waiting').invoke('show');
     $(actionSpan).getElementsBySelector('span').innerHTML = waitingLabel;
     $(this.container).getElementsBySelector('input').invoke('disable');
     

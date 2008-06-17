@@ -10,7 +10,7 @@ function formSubmit(myForm, imgId, imgPath){
 submitted in cases were a form takes a bit of time to process.
 */
 function updateButton(actionButton, waitingLabel, myForm, imgId){
-    $(actionButton).getElementsByClassName('slowInput_waiting').invoke('show');
+    $(actionButton).getElementsBySelector('.slowInput_waiting').invoke('show');
     var input = $(actionButton).getElementsBySelector('input').first();
     var initialLabel = input.value;
     input.value = waitingLabel;

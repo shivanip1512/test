@@ -9,7 +9,7 @@ CtiMenu.prototype = {
   show: function(link, subId) {
   
     // Unselect all of the menu links
-  	menuItems = document.getElementsByClassName('stdhdr_menuLink');
+  	menuItems = $$('.stdhdr_menuLink');
 	menuItems.each(function(item) {
 	  item.removeClassName('selected');
 	});
