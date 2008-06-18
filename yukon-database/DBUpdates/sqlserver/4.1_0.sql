@@ -820,8 +820,8 @@ WHERE value='/user/ConsumerStat/stat/General.jsp';
 
 /* Start YUK-6023 */
 UPDATE YukonRoleProperty 
-SET Description = 'Defines the format for displaying devices. Available placeholders: {name},{meterNumber},{id},{address}' 
-WHERE yukonrolepropertyid = -1700;
+SET description = 'Defines the format for displaying devices. Available placeholders: {name},{meterNumber},{id},{address}' 
+WHERE rolePropertyId = -1700;
 /* End YUK-6023 */
 
 /* Start YUK-6017 */
