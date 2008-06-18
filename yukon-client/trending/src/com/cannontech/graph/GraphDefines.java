@@ -63,7 +63,7 @@ public interface GraphDefines
 
 	public static SimpleDateFormat dwellValuesDateTimeformat = new SimpleDateFormat("MMM d HH:mm:ss");
 
-	public static DecimalFormat valueFormat = new DecimalFormat();
+	public static DecimalFormat valueFormat = new DecimalFormat("0.000");
 	public static DecimalFormat percentFormat = new DecimalFormat(" ##0.0% ");
 	
 	public final Character [] axisChars = new Character[]{new Character('L'), new Character('R')};
@@ -75,8 +75,4 @@ public interface GraphDefines
 	public static java.text.SimpleDateFormat CATEGORY_FORMAT_MMM_dd_HH_mm = new java.text.SimpleDateFormat(" MMM dd HH:mm ");
 	public static java.text.SimpleDateFormat CATEGORY_FORMAT_MMM_dd_HH_mm_ss = new java.text.SimpleDateFormat(" MMM dd HH:mm:ss ");
 	public static java.text.SimpleDateFormat CATEGORY_FORMAT_MMM_dd_HH_mm_ss_SSS = new java.text.SimpleDateFormat(" MMM dd HH:mm:ss.SSS ");
-	
-	public static java.text.DecimalFormat MIN_MAX_FORMAT = new java.text.DecimalFormat("0.000");
-	public static java.text.DecimalFormat LF_FORMAT = new java.text.DecimalFormat("###.000%");
-	
 }

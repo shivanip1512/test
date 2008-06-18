@@ -63,34 +63,46 @@ public class YukonDataSetFactory implements com.cannontech.graph.GraphDefines
 				double lf = serie.getLoadFactor();
 				if( lf < 0)
 					stat += "     LF: n/a";
-				else
-					stat += "     LF: " + LF_FORMAT.format(lf);
+				else {
+				    final int decimals = serie.getDecimalPlaces();
+				    percentFormat.setMaximumFractionDigits(decimals);
+				    percentFormat.setMinimumFractionDigits(decimals);
+					stat += "     LF: " + percentFormat.format(lf);
+				}
 			}
 
 			if( (options & GraphRenderers.LEGEND_MIN_MAX_MASK) == GraphRenderers.LEGEND_MIN_MAX_MASK)
 			{
 				if( serie.getAxis().equals(new Character('L')))
-				{					
+				{
+                    final int decimals = serie.getDecimalPlaces();
+                    valueFormat.setMaximumFractionDigits(decimals);
+                    valueFormat.setMinimumFractionDigits(decimals);
+                    
 					if( serie.getMinimumValue() == null ||	serie.getMinimumValue().doubleValue() == Double.MAX_VALUE)
 						stat += "   Min:  n/a";
 					else
-						stat += "   Min: " + MIN_MAX_FORMAT.format(serie.getMinimumValue());
+						stat += "   Min: " + valueFormat.format(serie.getMinimumValue());
 
 					if( serie.getMaximumValue() == null ||	serie.getMaximumValue().doubleValue() == Double.MIN_VALUE)
 						stat += "   Max:  n/a";
 					else
-						stat += "   Max: " + MIN_MAX_FORMAT.format(serie.getMaximumValue());
+						stat += "   Max: " + valueFormat.format(serie.getMaximumValue());
 				}
 				else if( serie.getAxis().equals(new Character('R')))
 				{					
+                    final int decimals = serie.getDecimalPlaces();
+                    valueFormat.setMaximumFractionDigits(decimals);
+                    valueFormat.setMinimumFractionDigits(decimals);
+                    
 					if( serie.getMinimumValue() == null || serie.getMinimumValue().doubleValue() == Double.MAX_VALUE)
 						stat += "   Min:  n/a";
 					else
-						stat += "   Min: " + MIN_MAX_FORMAT.format(serie.getMinimumValue());
+						stat += "   Min: " + valueFormat.format(serie.getMinimumValue());
 					if( serie.getMaximumValue() == null || serie.getMaximumValue().doubleValue() == Double.MIN_VALUE)
 						stat += "   Max:  n/a";
 					else
-						stat += "   Max: " + MIN_MAX_FORMAT.format(serie.getMaximumValue());
+						stat += "   Max: " + valueFormat.format(serie.getMaximumValue());
 				}
 			}
 			stat += "     " + serie.getAxis();

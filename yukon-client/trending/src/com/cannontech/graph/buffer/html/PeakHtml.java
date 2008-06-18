@@ -98,10 +98,6 @@ public class PeakHtml extends HTMLBuffer
 	
 			buf.append("</tr>\r\n");
 		
-			// Set the number of decimal places that will display for each point.
-			int decimals = model.getTrendSeries()[primaryPointIndex].getDecimalPlaces();
-			setFractionDigits( decimals );
-			
 			// Find the 6 peak values for the primary point
 			double[] peakData = model.getTrendSeries()[primaryPointIndex].getValuesArray();
 			long[] peakTimeStamps = model.getTrendSeries()[primaryPointIndex].getPeriodsArray();
@@ -126,7 +122,11 @@ public class PeakHtml extends HTMLBuffer
 		
 			for( int i = keyArray.length-1; i >= 0; i-- )
 			{
-				buf.append("<tr valign=\"middle\">\r\n");
+	            // Set the number of decimal places that will display for each point.
+	            int decimals = model.getTrendSeries()[primaryPointIndex].getDecimalPlaces();
+	            setFractionDigits( decimals );
+	            
+			    buf.append("<tr valign=\"middle\">\r\n");
 				buf.append("<td valign=\"middle\" align=\"center\" width=\"130\" bgcolor=\""+TABLE_CELL_BGCOLOR+"\" class=\"tablecell\">&nbsp;<font size=\"-1\" face=\"arial\"><span class=\"tablecell\">");
 				buf.append( dateTimeformat.format(new java.util.Date(((Long)peakMap.get(keyArray[i])).longValue())));
 				buf.append("</span></font></td>\r\n");

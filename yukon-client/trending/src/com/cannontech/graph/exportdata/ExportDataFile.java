@@ -357,8 +357,8 @@ public class ExportDataFile implements com.cannontech.graph.GraphDefines
 				Double prevValue = null;
 				if( GDSTypesFuncs.isGraphType(serie.getTypeMask()))
 				{
-					valueFormat.setMaximumFractionDigits(3);//serie.getDecimalPlaces());
-					valueFormat.setMinimumFractionDigits(3);//serie.getDecimalPlaces());
+					valueFormat.setMaximumFractionDigits(serie.getDecimalPlaces());
+					valueFormat.setMinimumFractionDigits(serie.getDecimalPlaces());
 
 					// label the export file columns with their device + model name
 					exportArray[csvRowLength * (validIndex+2)]  = (serie.getLabel());

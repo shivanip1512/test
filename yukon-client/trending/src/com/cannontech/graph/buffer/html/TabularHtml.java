@@ -216,14 +216,16 @@ public class TabularHtml extends HTMLBuffer
 			TimePeriod prevTimePeriod = null;
 			if(GDSTypesFuncs.isGraphType(model.getTrendSeries()[i].getTypeMask()))
 			{
-				setFractionDigits(3);
+				setFractionDigits(model.getTrendSeries()[i].getDecimalPlaces());
 				buf.append("<td width=\"130\"><font size=\"-1\" face=\"arial\"><span class=\"tablecell\">\n");
 				for (int j = 0; j < keyArray.length; j++)
 				{
 					Double[] values = valuesArray[j];												
 					Double val = values[validIndex];
-					if( val != null )
+					if( val != null ) {
 						buf.append(valueFormat.format(val));
+						valueFormat.getMaximumFractionDigits();
+					}
 					buf.append("<br>");
 				}
 				buf.append("</span></font></td>\n");
