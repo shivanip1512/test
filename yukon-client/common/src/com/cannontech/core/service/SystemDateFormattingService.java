@@ -43,6 +43,9 @@ public interface SystemDateFormattingService {
      */
     public DateFormat getSystemDateFormat(DateFormatEnum dateFormat);
     
+    /**
+     * This method returns a new Calendar object for the system TimeZone.
+     * @return
+     */
     public Calendar getSystemCalendar();
-    
 }
