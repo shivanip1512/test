@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      ORACLE Version 9i                            */
-/* Created on:     6/17/2008 5:33:45 PM                         */
+/* Created on:     6/18/2008 10:56:34 AM                        */
 /*==============================================================*/
 
 
@@ -2684,7 +2684,7 @@ INSERT INTO DeviceGroup values (18,'Integrity',15,'NOEDIT_NOMOD','SCANNING_INTEG
 INSERT INTO DeviceGroup values (19,'Accumulator',15,'NOEDIT_NOMOD','SCANNING_ACCUMULATOR');
 INSERT INTO DeviceGroup VALUES (20,'Temporary',12,'HIDDEN','STATIC'); 
 INSERT INTO DeviceGroup VALUES (21,'Meters',12,'NOEDIT_NOMOD','STATIC'); 
-INSERT INTO DeviceGroup VALUES (22,'Disabled',21,'NOEDIT_NOMOD','DISABLED');
+INSERT INTO DeviceGroup VALUES (22,'Disabled',21,'NOEDIT_NOMOD','METERS_DISABLED');
 
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId);
