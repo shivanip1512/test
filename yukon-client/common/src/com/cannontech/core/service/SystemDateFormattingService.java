@@ -1,6 +1,7 @@
 package com.cannontech.core.service;
 
 import java.text.DateFormat;
+import java.util.Calendar;
 import java.util.TimeZone;
 
 import com.cannontech.common.exception.BadConfigurationException;
@@ -41,4 +42,7 @@ public interface SystemDateFormattingService {
      * @return SimpleDateFormat
      */
     public DateFormat getSystemDateFormat(DateFormatEnum dateFormat);
+    
+    public Calendar getSystemCalendar();
+    
 }
