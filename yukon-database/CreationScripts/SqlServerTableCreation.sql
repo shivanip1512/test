@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/18/2008 12:45:55 PM                        */
+/* Created on:     6/18/2008 4:15:30 PM                         */
 /*==============================================================*/
 
 
@@ -5074,14 +5074,14 @@ insert into DeviceGroup values (11,'UsageMonitoring',8,'NOEDIT_MOD','STATIC');
 INSERT INTO DeviceGroup values (12,'System',0,'NOEDIT_NOMOD','STATIC');
 INSERT INTO DeviceGroup values (13,'Routes',12,'NOEDIT_NOMOD','ROUTE');
 INSERT INTO DeviceGroup values (14,'Device Types',12,'NOEDIT_NOMOD','DEVICETYPE'); 
-INSERT INTO DeviceGroup values (15,'Scanning Meters',12,'NOEDIT_NOMOD','STATIC'); 
-INSERT INTO DeviceGroup values (16,'Load Profile',15,'NOEDIT_NOMOD','SCANNING_LOAD_PROFILE');
-INSERT INTO DeviceGroup values (17,'Voltage Profile',15,'NOEDIT_NOMOD','SCANNING_VOLTAGE_PROFILE');
-INSERT INTO DeviceGroup values (18,'Integrity',15,'NOEDIT_NOMOD','SCANNING_INTEGRITY');
-INSERT INTO DeviceGroup values (19,'Accumulator',15,'NOEDIT_NOMOD','SCANNING_ACCUMULATOR');
-INSERT INTO DeviceGroup VALUES (20,'Temporary',12,'HIDDEN','STATIC'); 
-INSERT INTO DeviceGroup VALUES (21,'Meters',12,'NOEDIT_NOMOD','STATIC'); 
-INSERT INTO DeviceGroup VALUES (22,'Disabled',21,'NOEDIT_NOMOD','METERS_DISABLED');
+INSERT INTO DeviceGroup VALUES (15,'Meters',12,'NOEDIT_NOMOD','STATIC'); 
+INSERT INTO DeviceGroup VALUES (16,'Scanning',15,'NOEDIT_NOMOD','STATIC'); 
+INSERT INTO DeviceGroup VALUES (17,'Load Profile',16,'NOEDIT_NOMOD','METERS_SCANNING_LOAD_PROFILE'); 
+INSERT INTO DeviceGroup VALUES (18,'Voltage Profile',16,'NOEDIT_NOMOD','METERS_SCANNING_VOLTAGE_PROFILE'); 
+INSERT INTO DeviceGroup VALUES (19,'Integrity',16,'NOEDIT_NOMOD','METERS_SCANNING_INTEGRITY'); 
+INSERT INTO DeviceGroup VALUES (20,'Accumulator',16,'NOEDIT_NOMOD','METERS_SCANNING_ACCUMULATOR'); 
+INSERT INTO DeviceGroup VALUES (21,'Temporary',12,'HIDDEN','STATIC'); 
+INSERT INTO DeviceGroup VALUES (22,'Disabled',15,'NOEDIT_NOMOD','METERS_DISABLED'
 
 alter table DEVICEGROUP
    add constraint AK_DEVICEGR_PDG_GN unique (GroupName, ParentDeviceGroupId)

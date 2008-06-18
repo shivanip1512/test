@@ -51,63 +51,80 @@ insert into YukonRoleProperty values(-1021,-1,'importer_communications_enabled',
 /* @error ignore-end */
 /* End YUK-5350 */
 
-/* Start YUK-5337 */
-INSERT INTO DeviceGroup
-(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Scanning Meters',12,'Y','STATIC' FROM DeviceGroup WHERE DeviceGroupId<100; 
+/* Start YUK-5337 */ 
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type) 
+SELECT MAX(DeviceGroupID)+1,'Meters',12,'Y','STATIC' 
+FROM DeviceGroup 
+WHERE DeviceGroupId < 100; 
 
-INSERT INTO DeviceGroup
-(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Load Profile',0,'Y','SCANNING_LOAD_PROFILE' FROM DeviceGroup WHERE DeviceGroupId<100;
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type) 
+SELECT MAX(DeviceGroupID)+1,'Scanning',MAX(DeviceGroupID),'Y','STATIC' 
+FROM DeviceGroup 
+WHERE DeviceGroupId < 100; 
 
-INSERT INTO DeviceGroup
-(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Voltage Profile',0,'Y','SCANNING_VOLTAGE_PROFILE' FROM DeviceGroup WHERE DeviceGroupId<100;
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type) 
+SELECT MAX(DeviceGroupID)+1,'Load Profile',0,'Y','METERS_SCANNING_LOAD_PROFILE' 
+FROM DeviceGroup 
+WHERE DeviceGroupId < 100; 
 
-INSERT INTO DeviceGroup
-(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Integrity',0,'Y','SCANNING_INTEGRITY' FROM DeviceGroup WHERE DeviceGroupId<100;
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type) 
+SELECT MAX(DeviceGroupID)+1,'Voltage Profile',0,'Y','METERS_SCANNING_VOLTAGE_PROFILE' 
+FROM DeviceGroup 
+WHERE DeviceGroupId < 100; 
 
-INSERT INTO DeviceGroup
-(DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type)
-SELECT MAX(DeviceGroupID)+1,'Accumulator',0,'Y','SCANNING_ACCUMULATOR' FROM DeviceGroup WHERE DeviceGroupId<100;
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type) 
+SELECT MAX(DeviceGroupID)+1,'Integrity',0,'Y','METERS_SCANNING_INTEGRITY' 
+FROM DeviceGroup 
+WHERE DeviceGroupId < 100; 
 
-UPDATE DeviceGroup
-SET ParentDeviceGroupId = (SELECT DeviceGroupId FROM DeviceGroup WHERE GroupName='Scanning Meters')
-WHERE Type IN ('SCANNING_LOAD_PROFILE','SCANNING_VOLTAGE_PROFILE','SCANNING_INTEGRITY','SCANNING_ACCUMULATOR');
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,SystemGroup,Type) 
+SELECT MAX(DeviceGroupID)+1,'Accumulator',0,'Y','METERS_SCANNING_ACCUMULATOR' 
+FROM DeviceGroup 
+WHERE DeviceGroupId < 100; 
+
+UPDATE DeviceGroup 
+SET ParentDeviceGroupId = (SELECT DeviceGroupId 
+                           FROM DeviceGroup 
+                           WHERE GroupName='Scanning') 
+WHERE Type IN ('METERS_SCANNING_LOAD_PROFILE','METERS_SCANNING_VOLTAGE_PROFILE','METERS_SCANNING_INTEGRITY','METERS_SCANNING_ACCUMULATOR'); 
+
+ALTER TABLE DeviceGroup MODIFY SystemGroup NVARCHAR2(50); 
 
 ALTER TABLE DEVICEGROUP
 RENAME COLUMN SYSTEMGROUP TO Permission;
 
-ALTER TABLE DEVICEGROUP
-MODIFY(Permission NVARCHAR2(50));
+UPDATE DeviceGroup 
+SET Permission = 'NOEDIT_NOMOD' 
+WHERE Permission = 'Y' 
+AND Type = 'STATIC' 
+AND GroupName IN ('Meters') 
+AND ParentDeviceGroupId = 12; 
 
-UPDATE DeviceGroup
-SET Permission = 'NOEDIT_NOMOD'
-WHERE Permission = 'Y'
-AND Type = 'STATIC'
-AND GroupName IN ('Scanning Meters');
+UPDATE DeviceGroup 
+SET Permission = 'NOEDIT_NOMOD' 
+WHERE Permission = 'Y' 
+AND Type = 'STATIC' 
+AND GroupName IN ('Scanning'); 
 
-UPDATE DeviceGroup
-SET Permission = 'NOEDIT_MOD'
-WHERE Permission = 'Y'
-AND Type = 'STATIC';
+UPDATE DeviceGroup 
+SET Permission = 'NOEDIT_MOD' 
+WHERE Permission = 'Y' 
+AND Type = 'STATIC'; 
 
-UPDATE DeviceGroup
-SET Permission = 'NOEDIT_NOMOD'
-WHERE Permission = 'Y'
-AND Type != 'STATIC';
+UPDATE DeviceGroup 
+SET Permission = 'NOEDIT_NOMOD' 
+WHERE Permission = 'Y' 
+AND Type != 'STATIC'; 
 
-UPDATE DeviceGroup
-SET Permission = 'EDIT_MOD'
-WHERE Permission = 'N';
+UPDATE DeviceGroup 
+SET Permission = 'EDIT_MOD' 
+WHERE Permission = 'N'; 
 
-update devicegroup
-set Permission = 'NOEDIT_NOMOD'
-where
-    GroupName = 'System'
-    and ParentDeviceGroupID = 0
-    and Type = 'STATIC';
+UPDATE DeviceGroup 
+SET Permission = 'NOEDIT_NOMOD' 
+WHERE GroupName = 'System' 
+AND ParentDeviceGroupID = 0 
+AND Type = 'STATIC'; 
 /* End YUK-5337 */
 
 /* Start YUK-5454 */
@@ -554,13 +571,12 @@ INSERT INTO YukonRoleProperty VALUES(-40200,-400,'Create Login For Account','fal
 /* @error ignore-end */
 /* End Yuk-5900 */
 
-/* Start Yuk-5872 */
-INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type)
+/* Start Yuk-5872 */ 
+INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type) 
 SELECT MAX(DeviceGroupID)+1,'Temporary',12,'HIDDEN','STATIC' 
 FROM DeviceGroup 
 WHERE DeviceGroupId < 100; 
-go
-/* End Yuk-5872 */
+/* End Yuk-5872 */ 
 
 /* Start YUK-5923 */
 DELETE FROM YukonGroupRole WHERE rolePropertyId = -1102;
@@ -573,17 +589,17 @@ INSERT INTO YukonRoleProperty VALUES(-10819, -108, 'Default TimeZone',' ','Defau
 INSERT INTO YukonRoleProperty VALUES(-1703, -8, 'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 /* End YUK-5923 */
 
-/* Start YUK-5904, YUK-6013 */
+/* Start YUK-5904 */ 
 INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type) 
-SELECT MAX(DeviceGroupID)+1,'Meters',12,'NOEDIT_NOMOD','STATIC' 
+SELECT MAX(DeviceGroupID)+1,'Disabled', 
+(SELECT DeviceGroupId 
+ FROM DeviceGroup 
+ WHERE GroupName = 'Meters' 
+ AND ParentDeviceGroupId = 12), 
+'NOEDIT_NOMOD','METERS_DISABLED' 
 FROM DeviceGroup 
-WHERE DeviceGroupId<100; 
-
-INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type) 
-SELECT MAX(DeviceGroupID)+1,'Disabled',MAX(DeviceGroupID),'NOEDIT_NOMOD','METERS_DISABLED' 
-FROM DeviceGroup 
-WHERE DeviceGroupId<100; 
-/* End YUK-5904, YUK-6013 */
+WHERE DeviceGroupId < 100; 
+/* End YUK-5904 */
 
 /* Start YUK-5269 */
 UPDATE YukonRoleProperty 
