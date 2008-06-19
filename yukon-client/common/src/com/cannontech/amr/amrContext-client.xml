@@ -49,6 +49,11 @@
         <property name="jdbcOps" ref="jdbcTemplate" />
         <property name="deviceGroupProviderDao" ref="deviceGroupDao" />
     </bean>
+    
+    <bean id="meterService" class="com.cannontech.amr.meter.service.impl.MeterServiceImpl">
+        <property name="dbPersistentDao" ref="dbPersistentDao" />
+        <property name="attributeService" ref="attributeService" />
+    </bean>
 
     <bean id="meterRowMapper"
         class="com.cannontech.amr.meter.dao.impl.MeterRowMapper">
