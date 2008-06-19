@@ -186,7 +186,7 @@ go
 INSERT INTO BillingFileFormats VALUES(-32, 'NISC TOU (kVarH) Rates Only', 1);
 /* End YUK-5579 */
 
-/* Start YUK-5663 */ 
+/* Start YUK-5663 */
 ALTER TABLE JOBSCHEDULEDREPEATING ALTER COLUMN CronString VARCHAR(100) not null; 
 
 ALTER TABLE JOBPROPERTY ALTER COLUMN name VARCHAR(100) not null; 
@@ -745,15 +745,6 @@ go
 INSERT INTO YukonRoleProperty VALUES(-10819, -108, 'Default TimeZone',' ','Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 INSERT INTO YukonRoleProperty VALUES(-1703, -8, 'System Default TimeZone', ' ', 'System Default TimeZone (e.g. America/Denver, America/Chicago, America/Los_Angeles, or America/New_York)'); 
 /* End YUK-5923 */
-
-/* Start YUK-5904 */ 
-INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type) 
-SELECT MAX(DeviceGroupID)+1,'Disabled', 
-(SELECT DeviceGroupId from DeviceGroup where GroupName = 'Meters' and ParentDeviceGroupId = 12), 
-'NOEDIT_NOMOD','METERS_DISABLED' 
-FROM DeviceGroup 
-WHERE DeviceGroupId<100; 
-/* End YUK-5904 */ 
 
 /* Start YUK-5904 */ 
 INSERT INTO DeviceGroup (DeviceGroupId,GroupName,ParentDeviceGroupId,Permission,Type) 
