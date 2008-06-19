@@ -387,7 +387,7 @@
     
     <entry key="yukon.common.device.bulk.fileUpload.error.noFile">No file provided.</entry>
     <entry key="yukon.common.device.bulk.fileUpload.error.emptyFile">Empty file.</entry>
-    <entry key="yukon.common.device.bulk.fileUpload.error.duplicateColumn">File contains mupltiple {0} columns.</entry>
+    <entry key="yukon.common.device.bulk.fileUpload.error.duplicateColumn">File contains multiple {0} columns.</entry>
     
     
     
