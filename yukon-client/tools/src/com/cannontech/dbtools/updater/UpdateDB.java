@@ -29,11 +29,9 @@ import com.cannontech.tools.gui.IMessageFrame;
  */
 public class UpdateDB
 {
-	//private static double dbVersion = 0.0;
+
 	private IMessageFrame output = null;
-    
     private Double version = null;
-    private int build = 0;
 
 	/**
 	 * 
@@ -380,15 +378,15 @@ public class UpdateDB
 
 				while( fileReader.getFilePointer() < fileReader.length() )
 				{
-					token = fileReader.readLine();
+					token = fileReader.readLine().trim();
 
 					if( isValidString(token) )
 					{
+
 					    // Checks to see if its an end block
 						if ( blockState ) {
 						    // Checks to see if the file is using a slash and skips to the next line
-	                        String trimmedToken = token.trim();
-						    if (trimmedToken.equals(DBMSDefines.PROCESS_COMMAND_CHARACTER)) {
+	                        if (token.equals(DBMSDefines.PROCESS_COMMAND_CHARACTER)) {
 	                            continue;
 	                        }
 	                        
