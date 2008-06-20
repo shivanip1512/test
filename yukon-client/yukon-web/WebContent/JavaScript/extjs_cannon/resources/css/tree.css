@@ -9,4 +9,6 @@
 	white-space: nowrap;
 }
 
-OL, UL { margin-left: 2px }
+.x-tree .x-panel-body ul{margin:0;padding:0;list-style:none;}
+.x-tree .x-panel-body ol{margin:0;padding:0;list-style:none;}
+.x-tree .x-panel-body li{margin:0;padding:0;} 
