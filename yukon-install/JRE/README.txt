@@ -254,6 +254,7 @@ for the Solaris(TM) Operating System and Linux).
         lib/tools.jar       [All platforms]
 
     The Annotation Processing Tool, consisting of the following files:
+        lib/tools.jar       [All platforms]  
         bin/apt             [Solaris(TM) Operating System
                              and Linux]
         bin/sparcv9/apt     [Solaris Operating System
@@ -262,7 +263,33 @@ for the Solaris(TM) Operating System and Linux).
         bin/apt.exe         [Microsoft Windows]
 
     lib/jconsole.jar
-        The Jconsole application.
+        The Jconsole application.  NOTE: The Jconsole application requires
+        the dynamic attach mechanism.
+
+    The dynamic attach mechanism consisting of the following files:
+        lib/tools.jar       [All platforms]
+        jre/lib/sparc/libattach.so 
+          [Solaris(TM) Operating System (SPARC(R) Platform Edition) and Linux]
+        jre/lib/sparcv9/libattach.so 
+          [Solaris(TM) Operating System (SPARC(R) Platform Edition) and Linux]
+        jre/lib/i386/libattach.so 
+          [Solaris(TM) Operating System (x86) and Linux]
+        jre/lib/amd64/libattach.so 
+          [Solaris(TM) Operating System (AMD) and Linux]
+        jre\bin\attach.dll  [Microsoft Windows]
+
+    The Java Platform Debugger Architecture implementation consisting of the
+    files shown in the dynamic attach section above, and the following files:
+        lib/tools.jar       [All platforms]
+        lib/sa-jdi.jar      [All platforms]
+        jre/lib/sparc/libsaproc.so 
+          [Solaris(TM) Operating System (SPARC(R) Platform Edition) and Linux]
+        jre/lib/sparcv9/libsaproc.so 
+          [Solaris(TM) Operating System (SPARC(R) Platform Edition) and Linux]
+        jre/lib/i386/libsaproc.so 
+          [Solaris(TM) Operating System (x86) and Linux]
+        jre/lib/amd64/libsaproc.so 
+          [Solaris(TM) Operating System (AMD) and Linux]
 
     jre\bin\server\
         On Microsoft Windows platforms, the JDK includes both
@@ -337,6 +364,7 @@ override, see
 The Java(TM) Runtime Environment (JRE) is a product of 
 Sun Microsystems(TM), Inc.
 
-Copyright © 2007 Sun Microsystems, Inc.
+Copyright © 2008 Sun Microsystems, Inc.
 4150 Network Circle, Santa Clara, California 95054, U.S.A.
 All rights reserved.
+
