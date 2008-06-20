@@ -471,15 +471,15 @@ public class DailyPeaksModel extends ReportModelBase
 				new ColumnProperties(0, 1, 375, null),
 				new ColumnProperties(375, 1, 375, null),
 				new ColumnProperties(0, 1, 50, "#."),
-				new ColumnProperties(50, 1, 60, "0.00"),
+				new ColumnProperties(50, 1, 60, "0.00####"),
 				new ColumnProperties(150, 1, 100, null),
 				new ColumnProperties(250, 1, 100, "MM/dd/yyyy HH:mm:ss"),
-				new ColumnProperties(400, 1, 100, "0.00"),
+				new ColumnProperties(400, 1, 100, "0.00####"),
 				new ColumnProperties(500, 1, 100, null),
 				new ColumnProperties(600, 1, 100, "MM/dd/yyyy HH:mm:ss"),
 				new ColumnProperties(0, 1, 250, "Target Threshold Value is:  0.00" ),
-				new ColumnProperties(0, 1, 150, "Current Peak of  #0.00" ),
-				new ColumnProperties(250, 1, 150, "  'occurred at'  MM/dd/yyyy HH:mm:ss")
+				new ColumnProperties(0, 1, 200, "Current Peak of  #0.00####" ),
+				new ColumnProperties(300, 1, 200, "  '  occurred at'  MM/dd/yyyy HH:mm:ss")
 			};
 		}
 		return columnProperties;

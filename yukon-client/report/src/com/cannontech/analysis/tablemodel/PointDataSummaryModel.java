@@ -926,46 +926,46 @@ public class PointDataSummaryModel extends ReportModelBase
 				new ColumnProperties(275, 1, 100, null),
 				new ColumnProperties(375, 1, 100, null),
 				new ColumnProperties(0, 1, 75, "HH:mm:ss"),	//NA?
-				new ColumnProperties(75, 1, 75, "#,###,##0.00#"),	//NA?
+				new ColumnProperties(75, 1, 75, "#,###,##0.00####"),	//NA?
 
 				new ColumnProperties(0, 1, 50, "MM-dd-yyyy"),
 				new ColumnProperties(75, 1, 75, "HH:mm:ss"),
-				new ColumnProperties(150, 1, 75, "#,###,##0.00#"),
-				new ColumnProperties(225, 1, 75, "#,###,##0.00#"),
+				new ColumnProperties(150, 1, 75, "#,###,##0.00####"),
+				new ColumnProperties(225, 1, 75, "#,###,##0.00####"),
 				new ColumnProperties(300, 1, 75, "HH:mm:ss"),
-				new ColumnProperties(375, 1, 75, "#,###,##0.00#"),
-				new ColumnProperties(450, 1, 75, "#,###,###,##0.00#"),
+				new ColumnProperties(375, 1, 75, "#,###,##0.00####"),
+				new ColumnProperties(450, 1, 75, "#,###,###,##0.00####"),
 				new ColumnProperties(50, 1, 25, null),
 				
 				new ColumnProperties(50, 1, 225, null),
 				new ColumnProperties(325, 1, 225, null),
 				
 				new ColumnProperties(50, 30, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(150, 30, 100, "#,###,##0.00#"),
+				new ColumnProperties(150, 30, 100, "#,###,##0.00####"),
 				new ColumnProperties(325, 30, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(425, 30, 100, "#,###,##0.00#"),
+				new ColumnProperties(425, 30, 100, "#,###,##0.00####"),
 
 				new ColumnProperties(50, 42, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(150, 42, 100, "#,###,##0.00#"),
+				new ColumnProperties(150, 42, 100, "#,###,##0.00####"),
 				new ColumnProperties(325, 42, 100, "MM-dd-yyyy HH:mm:ss"),
 				new ColumnProperties(425, 42, 100, "#,###,##0.00#"),
 				
 				new ColumnProperties(50, 54, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(150, 54, 100, "#,###,##0.00#"),
+				new ColumnProperties(150, 54, 100, "#,###,##0.00####"),
 				new ColumnProperties(325, 54, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(425, 54, 100, "#,###,##0.00#"),
+				new ColumnProperties(425, 54, 100, "#,###,##0.00####"),
 
 				new ColumnProperties(50, 66, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(150, 66, 100, "#,###,##0.00#"),
+				new ColumnProperties(150, 66, 100, "#,###,##0.00####"),
 				new ColumnProperties(325, 66, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(425, 66, 100, "#,###,##0.00#"),
+				new ColumnProperties(425, 66, 100, "#,###,##0.00####"),
 
 				new ColumnProperties(50, 78, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(150, 78, 100, "0.00#"),
+				new ColumnProperties(150, 78, 100, "0.00####"),
 				new ColumnProperties(325, 78, 100, "MM-dd-yyyy HH:mm:ss"),
-				new ColumnProperties(425, 78, 100, "#,###,##0.00#"),
+				new ColumnProperties(425, 78, 100, "#,###,##0.00####"),
 				
-				new ColumnProperties(450, 1, 100, "#,###,###,##0.0000")
+				new ColumnProperties(450, 1, 100, "#,###,###,##0.0000####")
 			};
 		}
 		return columnProperties;

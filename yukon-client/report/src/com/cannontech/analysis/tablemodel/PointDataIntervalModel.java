@@ -383,7 +383,7 @@ public class PointDataIntervalModel extends ReportModelBase
 				new ColumnProperties(300, 1, 200, null),
 				new ColumnProperties(100, 1, 100, "MM-dd-yyyy"),
 				new ColumnProperties(200, 1, 100, "HH:mm:ss"),
-				new ColumnProperties(300, 1, 100, "0.00#"),
+				new ColumnProperties(300, 1, 100, "0.00####"),
 				new ColumnProperties(400, 1, 100, null)
 			};
 		}
