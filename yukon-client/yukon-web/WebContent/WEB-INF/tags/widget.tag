@@ -2,6 +2,7 @@
 <%@ attribute name="bean" required="true" type="java.lang.String"%>
 <%@ attribute name="paramMap" required="false" type="java.util.Map"%>
 <%@ attribute name="hideEnabled" required="false" type="java.lang.Boolean"%>
+<%@ attribute name="title" required="false" type="java.lang.String"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
@@ -39,6 +40,9 @@ Event.observe(window,'load', function() {${widgetParameters.jsWidget}.render()})
 </c:if>
 <c:if test="${not showIdentity}">
 <c:set var="containerTitle" value="${beanInst.title}"/>
+</c:if>
+<c:if test="${not empty title}">
+    <c:set var="containerTitle" value="${title}"/>
 </c:if>
 
 <ct:abstractContainer type="box" title="${containerTitle}" id="widgetTitledContainer_${widgetParameters.widgetId}" styleClass="widgetContainer" showInitially="true" hideEnabled="${empty hideEnabled ? true : hideEnabled}">
