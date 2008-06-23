@@ -1,28 +1,4 @@
-<%@ taglib tagdir="/WEB-INF/tags" prefix="ct" %>
-<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
-<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib tagdir="/WEB-INF/tags/amr" prefix="amr"%>
 
-<c:if test="${result.errorsExist}">
-<div style="max-height: 240px; overflow: auto">
-There was an error reading the meter<br>
-  <c:forEach items="${result.errors}" var="error">
-    <ct:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
-    ${error.porter}<br>
-    ${error.troubleshooting}<br>
-    </ct:hideReveal><br>
-  </c:forEach>
-</div>
-</c:if>
-
-<c:if test="${!result.errorsExist}">
-  <span title="${result.lastResultString}">
-    <c:choose>
-        <c:when test="${not empty successMsg}">
-            ${successMsg}
-        </c:when>
-        <c:otherwise>
-            Successful Read
-        </c:otherwise>
-    </c:choose>
-  </span>
-</c:if>
+<amr:meterReadingsResult result="${result}" errorMsg="${errorMsg}" successMsg="${successMsg}"/>

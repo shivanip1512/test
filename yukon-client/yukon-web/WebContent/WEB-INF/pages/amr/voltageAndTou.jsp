@@ -29,7 +29,7 @@
         <%-- VOLTAGE --%>
         <br>
         <tags:widgetContainer deviceId="${deviceId}">
-            <tags:widget bean="voltageWidget" />
+            <tags:widget bean="simpleAttributesWidget" attributes="VOLTAGE,MINIMUM_VOLTAGE,MAXIMUM_VOLTAGE" labels="Last Interval,Minimum Voltage,Maximum Voltage" />
         </tags:widgetContainer>
             
         <%-- TOU SCHEDULE --%>

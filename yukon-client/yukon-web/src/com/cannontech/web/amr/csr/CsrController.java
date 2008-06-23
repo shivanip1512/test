@@ -201,6 +201,8 @@ public class CsrController extends MultiActionController {
 
         boolean isMCT4XX = DeviceTypesFuncs.isMCT4XX(device.getType());
         mav.addObject("isMCT4XX", isMCT4XX);
+        
+        mav.addObject("voltageSupported", availableAttributes.contains(BuiltInAttribute.VOLTAGE));
 
         return mav;
     }

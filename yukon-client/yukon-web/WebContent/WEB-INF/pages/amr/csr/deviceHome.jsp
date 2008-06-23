@@ -101,7 +101,7 @@
                         
 						<!-- Actions: Voltage & TOU -->
                         <c:choose>
-                            <c:when test="${isMCT4XX}">
+                            <c:when test="${isMCT4XX && voltageSupported}">
         						<c:url var="voltageTouUrl" value="/spring/amr/voltageAndTou/home">
         							<c:param name="deviceId" value="${deviceId}" />
         						</c:url>
