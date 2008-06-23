@@ -75,6 +75,12 @@
     <bean id="thermostatService" class="com.cannontech.stars.dr.thermostat.service.impl.ThermostatServiceImpl" />
 
     <bean id="scheduledOptOutDao" class="com.cannontech.stars.dr.optout.dao.impl.ScheduledOptOutDaoImpl"/>
+    
+    <bean id="optOutService" class="com.cannontech.stars.dr.optout.service.impl.OptOutServiceImpl"/>
+
+    <bean id="optOutDao" class="com.cannontech.stars.dr.optout.dao.impl.OptOutDaoImpl"/>
+
+    <bean id="optOutNotificationService" class="com.cannontech.stars.dr.optout.service.impl.OptOutNotificationServiceImpl"/>
 
     <bean id="applianceAndProgramDao"
         class="com.cannontech.stars.dr.account.dao.impl.ApplianceAndProgramDaoImpl">

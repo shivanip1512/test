@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
 import com.cannontech.stars.util.OptOutEventQueue;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -278,7 +279,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		StringBuffer text = new StringBuffer();
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
-		text.append( getAccountInformation(energyCompany, liteAcctInfo) );
+		text.append(OptOutNotificationUtil.getAccountInformation(energyCompany, liteAcctInfo) );
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
@@ -299,7 +300,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		text.append(ServletUtil.capitalize( reenableTxt )).append(" Time: ")
 			.append(StarsUtils.formatDate( reenableDate, energyCompany.getDefaultTimeZone() )).append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
-		text.append( getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
+		text.append(OptOutNotificationUtil.getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
@@ -339,7 +340,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 		StringBuffer text = new StringBuffer();
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
-		text.append( getAccountInformation(energyCompany, liteAcctInfo) );
+		text.append(OptOutNotificationUtil.getAccountInformation(energyCompany, liteAcctInfo) );
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
 		text.append(LINE_SEPARATOR);
@@ -402,7 +403,7 @@ public class SendOptOutNotificationAction implements ActionBase {
 			hardwares = ProgramOptOutAction.getAffectedHardwares( liteAcctInfo, energyCompany );
 		
 		text.append(LINE_SEPARATOR);
-		text.append( getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
+		text.append(OptOutNotificationUtil.getProgramInformation(energyCompany, liteAcctInfo, hardwares) );
 		text.append(LINE_SEPARATOR);
 		text.append("======================================================").append(LINE_SEPARATOR);
 		

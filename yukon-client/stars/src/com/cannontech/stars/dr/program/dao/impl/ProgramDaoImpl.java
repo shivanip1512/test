@@ -31,7 +31,7 @@ public class ProgramDaoImpl implements ProgramDao {
     private SimpleJdbcTemplate simpleJdbcTemplate;
     
     static {
-        selectSql = "SELECT ProgramID,ProgramOrder,ywc.Description,AlternateDisplayName,PAOName,yle.EntryText as ChanceOfControl,ApplianceCategoryID,LogoLocation " +
+        selectSql = "SELECT ProgramID,ProgramOrder,ywc.Description,ywc.url,AlternateDisplayName,PAOName,yle.EntryText as ChanceOfControl,ApplianceCategoryID,LogoLocation " +
                     "FROM LMProgramWebPublishing pwp, YukonWebConfiguration ywc, YukonPAObject ypo, YukonListEntry yle " +
                     "WHERE pwp.WebsettingsID = ywc.ConfigurationID " +
                     "AND ypo.PAObjectID = pwp.DeviceID " +
@@ -163,6 +163,9 @@ public class ProgramDaoImpl implements ProgramDao {
                 
                 int applianceCategoryId = rs.getInt("ApplianceCategoryID");
                 program.setApplianceCategoryId(applianceCategoryId);
+                
+                String url = rs.getString("url");
+                program.setDescriptionUrl(url);
                 
                 return program;
             }

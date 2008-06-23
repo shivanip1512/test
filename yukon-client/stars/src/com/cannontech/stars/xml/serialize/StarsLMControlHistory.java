@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsLMControlHistory.java,v 1.95 2006/06/21 17:12:12 alauinger Exp $
+ * $Id: StarsLMControlHistory.java,v 1.96 2008/06/23 20:01:29 nmeverden Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -13,15 +13,12 @@ package com.cannontech.stars.xml.serialize;
 
 import java.util.Vector;
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-
 /**
  * 
  * 
- * @version $Revision: 1.95 $ $Date: 2006/06/21 17:12:12 $
+ * @version $Revision: 1.96 $ $Date: 2008/06/23 20:01:29 $
 **/
-public class StarsLMControlHistory implements java.io.Serializable {
+public class StarsLMControlHistory {
 
 
       //--------------------------/
@@ -155,43 +152,6 @@ public class StarsLMControlHistory implements java.io.Serializable {
 
     /**
     **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
-
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
-
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-    **/
     public void removeAllControlHistory()
     {
         _controlHistoryList.removeAllElements();
@@ -259,25 +219,5 @@ public class StarsLMControlHistory implements java.io.Serializable {
     {
         this._controlSummary = controlSummary;
     } //-- void setControlSummary(ControlSummary) 
-
-    /**
-     * 
-     * 
-     * @param reader
-    **/
-    public static com.cannontech.stars.xml.serialize.StarsLMControlHistory unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        return (com.cannontech.stars.xml.serialize.StarsLMControlHistory) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLMControlHistory.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsLMControlHistory unmarshal(java.io.Reader) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
 
 }

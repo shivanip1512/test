@@ -208,6 +208,10 @@ public final class DisplayableEnrollment {
         	}
         	return false;
         }
+        
+        public String getDescriptionUrl() {
+        	return program.getDescriptionUrl();
+        }
     }
     
     public static final class DisplayableEnrollmentInventory {

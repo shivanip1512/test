@@ -6,6 +6,7 @@ import com.cannontech.stars.dr.appliance.dao.ApplianceCategoryDao;
 import com.cannontech.stars.dr.appliance.dao.ApplianceDao;
 import com.cannontech.stars.dr.controlhistory.dao.ControlHistoryDao;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
+import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.optout.dao.ScheduledOptOutDao;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
@@ -20,6 +21,7 @@ public class AbstractDisplayableDao {
     protected ScheduledOptOutDao scheduledOptOutDao;
     protected ControlHistoryDao controlHistoryDao;
     protected ControlHistoryService controlHistoryService;
+    protected InventoryBaseDao inventoryBaseDao;
     
     @Autowired
     public void setApplianceDao(ApplianceDao applianceDao) {
@@ -62,6 +64,11 @@ public class AbstractDisplayableDao {
     public void setControlHistoryService(
             ControlHistoryService controlHistoryService) {
         this.controlHistoryService = controlHistoryService;
+    }
+    
+    @Autowired
+    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
+        this.inventoryBaseDao = inventoryBaseDao;
     }
     
 }

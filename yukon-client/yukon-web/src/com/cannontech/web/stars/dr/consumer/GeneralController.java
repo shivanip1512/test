@@ -13,7 +13,7 @@ import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableOptOut;
+import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableScheduledOptOut;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram;
 
 @Controller
@@ -35,7 +35,9 @@ public class GeneralController extends AbstractConsumerController {
 
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
         
-        DisplayableOptOut displayableOptOut = displayableOptOutDao.getDisplayableOptOut(customerAccount, yukonUserContext);
+        DisplayableScheduledOptOut displayableOptOut = 
+            displayableScheduledOptOutDao.getLastDisplayableScheduledOptOut(customerAccount,
+                                                                   yukonUserContext);
         map.addAttribute("displayableOptOut", displayableOptOut);
         
         return viewName;

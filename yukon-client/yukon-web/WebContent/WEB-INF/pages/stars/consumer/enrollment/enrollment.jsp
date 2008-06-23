@@ -97,6 +97,7 @@ function submitEnrollment() {
                         <th><cti:msg key="yukon.dr.consumer.enrollment.category"/></th>
                         <th><cti:msg key="yukon.dr.consumer.enrollment.programName"/></th>
                         <th><cti:msg key="yukon.dr.consumer.enrollment.description"/></th>
+                        <th>&nbsp;</th>
                     </tr>
                     <cti:getProperty var="perProgram" property="ResidentialCustomerRole.ENROLLMENT_MULTIPLE_PROGRAMS_PER_CATEGORY" />
 
@@ -174,6 +175,11 @@ function submitEnrollment() {
 		                                <td class="${programClass}" rowspan="${inventoryRowspan}">
 		                                    <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
 		                                </td>
+		                                <td class="${programClass}" rowspan="${inventoryRowspan}">
+                                            <a href="/spring/stars/consumer/enrollment/details?categoryId=${applianceCategoryId}&programId=${programId}">
+                                                <cti:msg key="yukon.dr.consumer.enrollment.details"/>
+                                            </a>
+		                                </td>
 		                                
 		                                <script type="text/javascript">
 		                                    enrollmentAction('${inventoryIds}',${programId}, ${applianceCategoryId}, ${enrollmentProgram.enrolled}, '');        
@@ -195,6 +201,11 @@ function submitEnrollment() {
 		                                <td class="${programClass}" rowspan="${inventoryRowspan}">
 		                                    <spring:escapeBody htmlEscape="true">${enrollmentProgram.program.description}</spring:escapeBody>
 		                                </td>
+		                                <td class="${programClass}" rowspan="${inventoryRowspan}">
+                                            <a href="/spring/stars/consumer/enrollment/details?programId=${programId}">
+                                                <cti:msg key="yukon.dr.consumer.enrollment.details"/>
+                                            </a>
+                                        </td>
 		                                
 		                                <script type="text/javascript">
 		                                    enrollmentAction('${inventoryIds}',${programId}, ${applianceCategoryId}, ${enrollmentProgram.enrolled}, '');        

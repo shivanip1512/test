@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsInventories.java,v 1.95 2006/06/21 17:12:11 alauinger Exp $
+ * $Id: StarsInventories.java,v 1.96 2008/06/23 20:01:33 nmeverden Exp $
  */
 
 package com.cannontech.stars.xml.serialize;
@@ -13,15 +13,12 @@ package com.cannontech.stars.xml.serialize;
 
 import java.util.Vector;
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-
 /**
  * 
  * 
- * @version $Revision: 1.95 $ $Date: 2006/06/21 17:12:11 $
+ * @version $Revision: 1.96 $ $Date: 2008/06/23 20:01:33 $
 **/
-public class StarsInventories implements java.io.Serializable {
+public class StarsInventories {
 
 
       //--------------------------/
@@ -112,43 +109,6 @@ public class StarsInventories implements java.io.Serializable {
 
     /**
     **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
-
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
-
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-    **/
     public void removeAllStarsInventory()
     {
         _starsInventoryList.removeAllElements();
@@ -195,25 +155,5 @@ public class StarsInventories implements java.io.Serializable {
             _starsInventoryList.addElement(starsInventoryArray[i]);
         }
     } //-- void setStarsInventory(StarsInventory) 
-
-    /**
-     * 
-     * 
-     * @param reader
-    **/
-    public static com.cannontech.stars.xml.serialize.StarsInventories unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        return (com.cannontech.stars.xml.serialize.StarsInventories) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsInventories.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsInventories unmarshal(java.io.Reader) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
 
 }

@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
-import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.hardware.dao.InventoryDao;
 import com.cannontech.stars.dr.hardware.model.Thermostat;
-import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
 
@@ -33,8 +31,8 @@ public class ThermostatController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL)
     @RequestMapping(value = "/consumer/thermostat/view/all", method = RequestMethod.GET)
-    public String viewAll(HttpServletRequest request, ModelMap map,
-            @ModelAttribute("customerAccount") CustomerAccount account) {
+    public String viewAll(@ModelAttribute("customerAccount") CustomerAccount account, 
+            ModelMap map) {
 
         List<Thermostat> thermostats = inventoryDao.getThermostatsByAccount(account);
         map.addAttribute("thermostats", thermostats);
@@ -45,12 +43,10 @@ public class ThermostatController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL)
     @RequestMapping(value = "/consumer/thermostat/view/allSelected", method = RequestMethod.POST)
-    public String allSelected(HttpServletRequest request, ModelMap map,
-            @ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
-            @ModelAttribute("customerAccount") CustomerAccount account) {
+    public String allSelected(@ModelAttribute("thermostatIds") List<Integer> thermostatIds, 
+            @ModelAttribute("customerAccount") CustomerAccount account,
+            LiteYukonUser user, HttpServletRequest request, ModelMap map) {
 
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
-        LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         

@@ -56,6 +56,7 @@
     <entry key="yukon.dr.consumer.controlhistory.todaysProgramControl">Today''s Program Control: {0}</entry>
     <entry key="yukon.dr.consumer.controlhistory.noProgramControl">No Program Control</entry>
     <entry key="yukon.dr.consumer.controlhistory.notEnrolledMessage">You are not enrolled in any viewable programs.</entry>
+    <entry key="yukon.dr.consumer.controlhistory.viewCompleteHistory">View Complete History</entry>
     
     <!-- completeControlHistory.jsp -->
     <entry key="yukon.dr.consumer.completecontrolhistory.header">Program - Complete Control History</entry>
@@ -268,6 +269,7 @@
     <entry key="yukon.dr.consumer.enrollment.category">Category</entry>
     <entry key="yukon.dr.consumer.enrollment.programName">Program Name</entry>
     <entry key="yukon.dr.consumer.enrollment.description">Description</entry>
+    <entry key="yukon.dr.consumer.enrollment.details">Details</entry>
     <entry key="yukon.dr.consumer.enrollment.enrolledHardware">Enrolled Hardware</entry>
     <entry key="yukon.dr.consumer.enrollment.save">Save</entry>
     <entry key="yukon.dr.consumer.enrollment.reset">Reset</entry>
@@ -279,7 +281,7 @@
     <entry key="yukon.dr.consumer.enrollment.result.NOT_CONFIGURED_CORRECTLY">&lt;i&gt;** Program not defined correctly.  Contact your administrator.&lt;/i&gt;</entry>
 
     <!-- enrollmentDetail.jsp -->
-    <entry key="yukon.dr.consumer.enrollmentDetail.header">Programs - Enrollment Detail</entry>
+    <entry key="yukon.dr.consumer.enrollmentDetail.header">Programs - Enrollment Detailddd</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.enrollmentDetailComplete.rightColumnLogo">/WebConfig/yukon/Family.jpg</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.enrollmentTitle">Program Enrollment</entry>
@@ -289,6 +291,10 @@
     <entry key="yukon.dr.consumer.enrollmentDetail.enrolledHardware">Enrolled Hardware</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.save">Save</entry>
     <entry key="yukon.dr.consumer.enrollmentDetail.reset">Reset</entry>
+
+    <!-- programDetails.jsp -->
+    <entry key="yukon.dr.consumer.programDetails.header">Programs - Detail</entry>
+    <entry key="yukon.dr.consumer.programDetails.backToEnrollment">Back to Enrollment</entry>
     
     <!-- faq.jsp -->
     <entry key="yukon.dr.consumer.faq.header">Questions - FAQ</entry>
@@ -302,5 +308,63 @@
 
     <!-- trending.jsp -->
     <entry key="yukon.dr.consumer.trending.header">Trending</entry>
+    
+    <!-- optOut.jsp -->
+    <entry key="yukon.dr.consumer.optout.header">Programs - Opt Out</entry>
+    <entry key="yukon.dr.consumer.optout.description">If you would like to temporarily opt out of all programs, select the time frame below.</entry>
+    <entry key="yukon.dr.consumer.optout.startDate">Start Date:</entry>
+    <entry key="yukon.dr.consumer.optout.duration">Duration:</entry>
+    <entry key="yukon.dr.consumer.optout.day">Day</entry>
+    <entry key="yukon.dr.consumer.optout.days">Days</entry>
+    <entry key="yukon.dr.consumer.optout.apply">Apply</entry>
+    
+    <!-- optOutList.jsp -->
+    <entry key="yukon.dr.consumer.optoutlist.header">Programs - Opt Out</entry>
+    <entry key="yukon.dr.consumer.optoutlist.description">Please select the hardware you want to opt out of.</entry>
+    <entry key="yukon.dr.consumer.optoutlist.programOptOutTitle">Program Opt Out</entry>
+    <entry key="yukon.dr.consumer.optoutlist.hardware">Hardware</entry>
+    <entry key="yukon.dr.consumer.optoutlist.programAssigned">Program Assigned</entry>
+    <entry key="yukon.dr.consumer.optoutlist.relay">Relay {0}</entry>
+    <entry key="yukon.dr.consumer.optoutlist.noRelay">Relay (N/A)</entry>
+    <entry key="yukon.dr.consumer.optoutlist.save">Opt Out</entry>
+    
+    <!--  optOutConfirm.jsp -->
+    <entry key="yukon.dr.consumer.optoutconfirm.header">Programs - Opt Out</entry>
+    <entry key="yukon.dr.consumer.optoutconfirm.description">Please complete the following form to opt out of your program:</entry>
+    <entry key="yukon.dr.consumer.optoutconfirm.save">Opt Out</entry>
+    <entry key="yukon.dr.consumer.optoutconfirm.cancel">Cancel</entry>
+    <entry key="yukon.dr.consumer.optoutconfirm.question.1">Question 1</entry>
+    <entry key="yukon.dr.consumer.optoutconfirm.question.2">Question 2</entry>
+    <entry key="yukon.dr.consumer.optoutconfirm.question.3">Question 3</entry>
+    
+    <!-- optOutResult.jsp -->
+    <entry key="yukon.dr.consumer.optoutresult.header">Opt Out Result</entry>
+    <entry key="yukon.dr.consumer.optoutresult.ok">Ok</entry>
+    <!-- result messages -->
+    <entry key="yukon.dr.consumer.optoutresult.success"><![CDATA[<i>Your programs have been opted out.</i>]]></entry>
+    <entry key="yukon.dr.consumer.optoutresult.failure"><![CDATA[<i>Failed to opt out the programs.</i>]]></entry>
+    <entry key="yukon.dr.consumer.optoutresult.checkRule"><![CDATA[Wrong format in the opt out rules &apos;{0}&apos;]]></entry>
+    <entry key="yukon.dr.consumer.optoutresult.invalidStartDate"><![CDATA[<i>The start date cannot be earlier than today.</i>]]></entry>
+    <entry key="yukon.dr.consumer.optoutresult.timesConstraintViolated"><![CDATA[<i>Opt out constraint violated!  You can only opt out the programs {0} {0,choice,0#times|1#time|1<times} each {2} but you have already opted out {1} {1,choice,0#times|1#time|1<times} this {2}.</i>]]></entry>
+    <entry key="yukon.dr.consumer.optoutresult.hoursConstraintViolated"><![CDATA[<i>Opt out constraint violated!  You can only opt out the programs {0} {0,choice,0#hours|1#hour|1<hours} each {2} but you have already opted out {1} {1,choice,0#hours|1#hour|1<hours} this {2}.</i>]]></entry>
+    <entry key="yukon.dr.consumer.optoutresult.dueDateConstraintViolated"><![CDATA[Opt out constraint violated!  You must submit your request by {0} the day before.]]></entry>
+    <!-- Opt Out Notifications -->
+    <entry key="yukon.dr.consumer.optoutnotification.subject">Opt Out/Reenable Notification</entry>
+    <!-- *** The whitespace in the messageBody CDATA value will be displayed as is in the notification email. -->
+    <entry key="yukon.dr.consumer.optoutnotification.messageBody">
+<![CDATA[======================================================
+    
+{accountInfo}
+======================================================
+    
+OPT OUT
+
+Opt Out Time:  {optOutDate}
+Reenable Time: {reenableDate}
+    
+{programInfo}
+======================================================
+    
+{questions}]]></entry>
     
 </properties>    

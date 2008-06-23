@@ -48,7 +48,6 @@ import com.cannontech.stars.web.action.UpdateServiceRequestAction;
 import com.cannontech.stars.web.action.UpdateThermostatManualOptionAction;
 import com.cannontech.stars.web.action.UpdateThermostatScheduleAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
-import com.cannontech.stars.xml.util.SOAPUtil;
 import com.cannontech.stars.xml.util.StarsConstants;
 import com.cannontech.util.ServletUtil;
 import com.cannontech.web.navigation.CtiNavObject;
@@ -455,12 +454,9 @@ public class SOAPClientController implements Controller {
             reqMsg = clientAction.build(request, session);
 
             if (reqMsg != null) {
-                SOAPUtil.logSOAPMsgForOperation( reqMsg, "*** Send Message *** " );
                 respMsg = clientAction.process(reqMsg, session);
 
                 if (respMsg != null) {
-                    SOAPUtil.logSOAPMsgForOperation( respMsg, "*** Receive Message *** " );
-                    
                     int status = clientAction.parse(reqMsg, respMsg, session);
                     if (session.getAttribute( ServletUtils.ATT_REDIRECT ) != null)
                         destURL = request.getContextPath() + (String) session.getAttribute( ServletUtils.ATT_REDIRECT );

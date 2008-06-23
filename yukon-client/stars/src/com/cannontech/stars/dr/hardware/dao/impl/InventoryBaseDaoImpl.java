@@ -188,7 +188,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getAll() {
         try {
-            List<InventoryBase> list = simpleJdbcTemplate.query(selectAllSql, rowMapper, new Object[]{});
+            List<InventoryBase> list = simpleJdbcTemplate.query(selectAllSql, rowMapper);
             return list;
         } catch (DataAccessException e) {
             return Collections.emptyList();

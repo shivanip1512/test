@@ -306,6 +306,14 @@ public class StarsFactory {
 		return failure;
 	}
 	
+	public static StarsFailure newStarsFailure(int statusCode, Exception exception) {
+	    StarsFailure failure = new StarsFailure();
+	    failure.setStatusCode(statusCode);
+	    failure.setDescription(exception.getMessage());
+	    failure.setException(exception);
+	    return failure;
+	}
+
 	
 	/* StarsCustomerAddress factory methods */
 	

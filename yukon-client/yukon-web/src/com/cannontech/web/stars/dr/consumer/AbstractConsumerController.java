@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.stars.core.service.AccountCheckerService;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
@@ -19,10 +20,12 @@ import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.service.ProgramEnrollmentService;
 import com.cannontech.stars.dr.program.service.ProgramService;
 import com.cannontech.user.YukonUserContext;
-import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableOptOutDao;
+import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableInventoryDao;
 import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableProgramDao;
+import com.cannontech.web.stars.dr.consumer.displayable.dao.DisplayableScheduledOptOutDao;
 
 public abstract class AbstractConsumerController {
+    protected YukonUserContextMessageSourceResolver messageSourceResolver;
     protected CustomerAccountDao customerAccountDao;
     protected ApplianceDao applianceDao;
     protected ProgramDao programDao;
@@ -30,7 +33,8 @@ public abstract class AbstractConsumerController {
     protected ProgramEnrollmentService programEnrollmentService;
     protected InventoryBaseDao inventoryBaseDao;
     protected DisplayableProgramDao displayableProgramDao;
-    protected DisplayableOptOutDao displayableOptOutDao;
+    protected DisplayableScheduledOptOutDao displayableScheduledOptOutDao;
+    protected DisplayableInventoryDao displayableInventoryDao;
     protected ControlHistoryDao controlHistoryDao;
     protected AccountCheckerService accountCheckerService;
     
@@ -42,6 +46,12 @@ public abstract class AbstractConsumerController {
         List<CustomerAccount> accountList = customerAccountDao.getByUser(user);
         CustomerAccount account = accountList.get(0);
         return account;
+    }
+    
+    @Autowired
+    public void setMessageSourceResolver(
+            YukonUserContextMessageSourceResolver messageSourceResolver) {
+        this.messageSourceResolver = messageSourceResolver;
     }
     
     @Autowired
@@ -81,9 +91,9 @@ public abstract class AbstractConsumerController {
     }
     
     @Autowired
-    public void setDisplayableOptOutDao(
-            DisplayableOptOutDao displayableOptOutDao) {
-        this.displayableOptOutDao = displayableOptOutDao;
+    public void setDisplayableScheduledOptOutDao(
+            DisplayableScheduledOptOutDao displayableScheduledOptOutDao) {
+        this.displayableScheduledOptOutDao = displayableScheduledOptOutDao;
     }
     
     @Autowired
@@ -95,6 +105,12 @@ public abstract class AbstractConsumerController {
     public void setAccountCheckerService(
             AccountCheckerService accountCheckerService) {
         this.accountCheckerService = accountCheckerService;
+    }
+    
+    @Autowired
+    public void setDisplayableInventoryDao(
+            DisplayableInventoryDao displayableInventoryDao) {
+        this.displayableInventoryDao = displayableInventoryDao;
     }
     
 }

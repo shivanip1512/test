@@ -7,13 +7,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.appliance.model.ApplianceCategory;
 import com.cannontech.stars.dr.appliance.model.ApplianceType;
-import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
 import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
@@ -25,7 +23,6 @@ import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableEnrollm
 
 @Repository
 public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao implements DisplayableEnrollmentDao {
-    private InventoryBaseDao inventoryBaseDao;
     
     @Override
     public List<DisplayableEnrollment> getDisplayableEnrollments(final CustomerAccount customerAccount,
@@ -98,11 +95,6 @@ public class DisplayableEnrollmentDaoImpl extends AbstractDisplayableDao impleme
         }
         
         return resultList;
-    }
-    
-    @Autowired
-    public void setInventoryBaseDao(InventoryBaseDao inventoryBaseDao) {
-        this.inventoryBaseDao = inventoryBaseDao;
     }
     
 }

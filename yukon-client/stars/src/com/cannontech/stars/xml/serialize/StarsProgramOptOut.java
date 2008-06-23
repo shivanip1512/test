@@ -11,17 +11,15 @@ package com.cannontech.stars.xml.serialize;
  //- Imported classes and packages -/
 //---------------------------------/
 
+import java.util.Collection;
 import java.util.Vector;
-
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
 
 /**
  * 
  * 
  * @version $Revision$ $Date$
 **/
-public class StarsProgramOptOut implements java.io.Serializable {
+public class StarsProgramOptOut {
 
 
       //--------------------------/
@@ -65,6 +63,10 @@ public class StarsProgramOptOut implements java.io.Serializable {
         _inventoryIDList.addElement(new Integer(vInventoryID));
     } //-- void addInventoryID(int) 
 
+    public void addAllInventoryIds(Collection<Integer> inventoryIds) {
+        this._inventoryIDList.addAll(inventoryIds);
+    }
+    
     /**
      * 
      * 
@@ -148,43 +150,6 @@ public class StarsProgramOptOut implements java.io.Serializable {
 
     /**
     **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
-
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
-
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-    **/
     public void removeAllInventoryID()
     {
         _inventoryIDList.removeAllElements();
@@ -252,25 +217,5 @@ public class StarsProgramOptOut implements java.io.Serializable {
     {
         this._startDateTime = startDateTime;
     } //-- void setStartDateTime(java.util.Date) 
-
-    /**
-     * 
-     * 
-     * @param reader
-    **/
-    public static com.cannontech.stars.xml.serialize.StarsProgramOptOut unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        return (com.cannontech.stars.xml.serialize.StarsProgramOptOut) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsProgramOptOut.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsProgramOptOut unmarshal(java.io.Reader) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
 
 }

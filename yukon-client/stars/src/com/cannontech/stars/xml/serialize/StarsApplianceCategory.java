@@ -1,390 +1,148 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id: StarsApplianceCategory.java,v 1.95 2006/06/21 17:12:11 alauinger Exp $
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
+import java.util.Enumeration;
 import java.util.Vector;
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-
-/**
- * 
- * 
- * @version $Revision: 1.95 $ $Date: 2006/06/21 17:12:11 $
-**/
-public class StarsApplianceCategory implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private int _applianceCategoryID;
-
-    /**
-     * keeps track of state for field: _applianceCategoryID
-    **/
-    private boolean _has_applianceCategoryID;
-
-    private int _categoryID;
-
-    /**
-     * keeps track of state for field: _categoryID
-    **/
-    private boolean _has_categoryID;
-
-    private boolean _inherited;
-
-    /**
-     * keeps track of state for field: _inherited
-    **/
-    private boolean _has_inherited;
-
-    private java.lang.String _description;
-
-    private StarsWebConfig _starsWebConfig;
-
-    private java.util.Vector _starsEnrLMProgramList;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+public class StarsApplianceCategory {
+    private int applianceCategoryID;
+    private boolean hasApplianceCategoryID;
+    private int categoryID;
+    private boolean hasCategoryID;
+    private boolean inherited;
+    private boolean hasInherited;
+    private String description;
+    private StarsWebConfig starsWebConfig;
+    private Vector<StarsEnrLMProgram> starsEnrLMProgramList;
 
     public StarsApplianceCategory() {
-        super();
-        _starsEnrLMProgramList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsApplianceCategory()
+        starsEnrLMProgramList = new Vector<StarsEnrLMProgram>();
+    }
 
+    public void addStarsEnrLMProgram(StarsEnrLMProgram vStarsEnrLMProgram) {
+        starsEnrLMProgramList.addElement(vStarsEnrLMProgram);
+    }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    public void addStarsEnrLMProgram(int index, StarsEnrLMProgram vStarsEnrLMProgram) {
+        starsEnrLMProgramList.insertElementAt(vStarsEnrLMProgram, index);
+    }
 
-    /**
-     * 
-     * 
-     * @param vStarsEnrLMProgram
-    **/
-    public void addStarsEnrLMProgram(StarsEnrLMProgram vStarsEnrLMProgram)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsEnrLMProgramList.addElement(vStarsEnrLMProgram);
-    } //-- void addStarsEnrLMProgram(StarsEnrLMProgram) 
+    public void deleteApplianceCategoryID() {
+        this.hasApplianceCategoryID = false;
+    } 
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsEnrLMProgram
-    **/
-    public void addStarsEnrLMProgram(int index, StarsEnrLMProgram vStarsEnrLMProgram)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsEnrLMProgramList.insertElementAt(vStarsEnrLMProgram, index);
-    } //-- void addStarsEnrLMProgram(int, StarsEnrLMProgram) 
+    public void deleteCategoryID() {
+        this.hasCategoryID = false;
+    } 
 
-    /**
-    **/
-    public void deleteApplianceCategoryID()
-    {
-        this._has_applianceCategoryID= false;
-    } //-- void deleteApplianceCategoryID() 
+    public void deleteInherited() {
+        this.hasInherited = false;
+    } 
 
-    /**
-    **/
-    public void deleteCategoryID()
-    {
-        this._has_categoryID= false;
-    } //-- void deleteCategoryID() 
+    public Enumeration<StarsEnrLMProgram> enumerateStarsEnrLMProgram() {
+        return starsEnrLMProgramList.elements();
+    }
 
-    /**
-    **/
-    public void deleteInherited()
-    {
-        this._has_inherited= false;
-    } //-- void deleteInherited() 
+    public int getApplianceCategoryID() {
+        return this.applianceCategoryID;
+    }
 
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsEnrLMProgram()
-    {
-        return _starsEnrLMProgramList.elements();
-    } //-- java.util.Enumeration enumerateStarsEnrLMProgram() 
+    public int getCategoryID() {
+        return this.categoryID;
+    }
 
-    /**
-     * Returns the value of field 'applianceCategoryID'.
-     * 
-     * @return the value of field 'applianceCategoryID'.
-    **/
-    public int getApplianceCategoryID()
-    {
-        return this._applianceCategoryID;
-    } //-- int getApplianceCategoryID() 
+    public String getDescription() {
+        return this.description;
+    } 
 
-    /**
-     * Returns the value of field 'categoryID'.
-     * 
-     * @return the value of field 'categoryID'.
-    **/
-    public int getCategoryID()
-    {
-        return this._categoryID;
-    } //-- int getCategoryID() 
+    public boolean getInherited() {
+        return this.inherited;
+    }
 
-    /**
-     * Returns the value of field 'description'.
-     * 
-     * @return the value of field 'description'.
-    **/
-    public java.lang.String getDescription()
-    {
-        return this._description;
-    } //-- java.lang.String getDescription() 
-
-    /**
-     * Returns the value of field 'inherited'.
-     * 
-     * @return the value of field 'inherited'.
-    **/
-    public boolean getInherited()
-    {
-        return this._inherited;
-    } //-- boolean getInherited() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsEnrLMProgram getStarsEnrLMProgram(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public StarsEnrLMProgram getStarsEnrLMProgram(int index) {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsEnrLMProgramList.size())) {
+        if ((index < 0) || (index > starsEnrLMProgramList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (StarsEnrLMProgram) _starsEnrLMProgramList.elementAt(index);
-    } //-- StarsEnrLMProgram getStarsEnrLMProgram(int) 
+        return starsEnrLMProgramList.elementAt(index);
+    } 
 
-    /**
-    **/
-    public StarsEnrLMProgram[] getStarsEnrLMProgram()
-    {
-        int size = _starsEnrLMProgramList.size();
+    public StarsEnrLMProgram[] getStarsEnrLMProgram() {
+        int size = starsEnrLMProgramList.size();
         StarsEnrLMProgram[] mArray = new StarsEnrLMProgram[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsEnrLMProgram) _starsEnrLMProgramList.elementAt(index);
+            mArray[index] = starsEnrLMProgramList.elementAt(index);
         }
         return mArray;
-    } //-- StarsEnrLMProgram[] getStarsEnrLMProgram() 
+    }
 
-    /**
-    **/
-    public int getStarsEnrLMProgramCount()
-    {
-        return _starsEnrLMProgramList.size();
-    } //-- int getStarsEnrLMProgramCount() 
+    public int getStarsEnrLMProgramCount() {
+        return starsEnrLMProgramList.size();
+    }
 
-    /**
-     * Returns the value of field 'starsWebConfig'.
-     * 
-     * @return the value of field 'starsWebConfig'.
-    **/
-    public StarsWebConfig getStarsWebConfig()
-    {
-        return this._starsWebConfig;
-    } //-- StarsWebConfig getStarsWebConfig() 
+    public StarsWebConfig getStarsWebConfig() {
+        return this.starsWebConfig;
+    }
 
-    /**
-    **/
-    public boolean hasApplianceCategoryID()
-    {
-        return this._has_applianceCategoryID;
-    } //-- boolean hasApplianceCategoryID() 
+    public boolean hasApplianceCategoryID() {
+        return this.hasApplianceCategoryID;
+    }
 
-    /**
-    **/
-    public boolean hasCategoryID()
-    {
-        return this._has_categoryID;
-    } //-- boolean hasCategoryID() 
+    public boolean hasCategoryID() {
+        return this.hasCategoryID;
+    }
 
-    /**
-    **/
-    public boolean hasInherited()
-    {
-        return this._has_inherited;
-    } //-- boolean hasInherited() 
+    public boolean hasInherited() {
+        return this.hasInherited;
+    }
 
-    /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
+    public void removeAllStarsEnrLMProgram() {
+        starsEnrLMProgramList.removeAllElements();
+    }
 
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
+    public StarsEnrLMProgram removeStarsEnrLMProgram(int index) {
+        StarsEnrLMProgram obj = starsEnrLMProgramList.elementAt(index);
+        starsEnrLMProgramList.removeElementAt(index);
+        return obj;
+    } 
 
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
+    public void setApplianceCategoryID(int applianceCategoryID) {
+        this.applianceCategoryID = applianceCategoryID;
+        this.hasApplianceCategoryID = true;
+    }
 
-    /**
-    **/
-    public void removeAllStarsEnrLMProgram()
-    {
-        _starsEnrLMProgramList.removeAllElements();
-    } //-- void removeAllStarsEnrLMProgram() 
+    public void setCategoryID(int categoryID) {
+        this.categoryID = categoryID;
+        this.hasCategoryID = true;
+    }
 
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsEnrLMProgram removeStarsEnrLMProgram(int index)
-    {
-        java.lang.Object obj = _starsEnrLMProgramList.elementAt(index);
-        _starsEnrLMProgramList.removeElementAt(index);
-        return (StarsEnrLMProgram) obj;
-    } //-- StarsEnrLMProgram removeStarsEnrLMProgram(int) 
+    public void setDescription(String description) {
+        this.description = description;
+    } 
 
-    /**
-     * Sets the value of field 'applianceCategoryID'.
-     * 
-     * @param applianceCategoryID the value of field
-     * 'applianceCategoryID'.
-    **/
-    public void setApplianceCategoryID(int applianceCategoryID)
-    {
-        this._applianceCategoryID = applianceCategoryID;
-        this._has_applianceCategoryID = true;
-    } //-- void setApplianceCategoryID(int) 
+    public void setInherited(boolean inherited) {
+        this.inherited = inherited;
+        this.hasInherited = true;
+    } 
 
-    /**
-     * Sets the value of field 'categoryID'.
-     * 
-     * @param categoryID the value of field 'categoryID'.
-    **/
-    public void setCategoryID(int categoryID)
-    {
-        this._categoryID = categoryID;
-        this._has_categoryID = true;
-    } //-- void setCategoryID(int) 
-
-    /**
-     * Sets the value of field 'description'.
-     * 
-     * @param description the value of field 'description'.
-    **/
-    public void setDescription(java.lang.String description)
-    {
-        this._description = description;
-    } //-- void setDescription(java.lang.String) 
-
-    /**
-     * Sets the value of field 'inherited'.
-     * 
-     * @param inherited the value of field 'inherited'.
-    **/
-    public void setInherited(boolean inherited)
-    {
-        this._inherited = inherited;
-        this._has_inherited = true;
-    } //-- void setInherited(boolean) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsEnrLMProgram
-    **/
-    public void setStarsEnrLMProgram(int index, StarsEnrLMProgram vStarsEnrLMProgram)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public void setStarsEnrLMProgram(int index, StarsEnrLMProgram vStarsEnrLMProgram) {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsEnrLMProgramList.size())) {
+        if ((index < 0) || (index > starsEnrLMProgramList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _starsEnrLMProgramList.setElementAt(vStarsEnrLMProgram, index);
-    } //-- void setStarsEnrLMProgram(int, StarsEnrLMProgram) 
+        starsEnrLMProgramList.setElementAt(vStarsEnrLMProgram, index);
+    }
 
-    /**
-     * 
-     * 
-     * @param starsEnrLMProgramArray
-    **/
-    public void setStarsEnrLMProgram(StarsEnrLMProgram[] starsEnrLMProgramArray)
-    {
+    public void setStarsEnrLMProgram(StarsEnrLMProgram[] starsEnrLMProgramArray) {
         //-- copy array
-        _starsEnrLMProgramList.removeAllElements();
+        starsEnrLMProgramList.removeAllElements();
         for (int i = 0; i < starsEnrLMProgramArray.length; i++) {
-            _starsEnrLMProgramList.addElement(starsEnrLMProgramArray[i]);
+            starsEnrLMProgramList.addElement(starsEnrLMProgramArray[i]);
         }
-    } //-- void setStarsEnrLMProgram(StarsEnrLMProgram) 
+    }
 
-    /**
-     * Sets the value of field 'starsWebConfig'.
-     * 
-     * @param starsWebConfig the value of field 'starsWebConfig'.
-    **/
-    public void setStarsWebConfig(StarsWebConfig starsWebConfig)
-    {
-        this._starsWebConfig = starsWebConfig;
-    } //-- void setStarsWebConfig(StarsWebConfig) 
-
-    /**
-     * 
-     * 
-     * @param reader
-    **/
-    public static com.cannontech.stars.xml.serialize.StarsApplianceCategory unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        return (com.cannontech.stars.xml.serialize.StarsApplianceCategory) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsApplianceCategory.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsApplianceCategory unmarshal(java.io.Reader) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
+    public void setStarsWebConfig(StarsWebConfig starsWebConfig) {
+        this.starsWebConfig = starsWebConfig;
+    }
 
 }

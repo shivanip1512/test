@@ -1,350 +1,118 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id: SA305.java,v 1.15 2006/06/21 17:12:13 alauinger Exp $
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-
-/**
- * 
- * 
- * @version $Revision: 1.15 $ $Date: 2006/06/21 17:12:13 $
-**/
-public class SA305 implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private int _utility;
-
-    /**
-     * keeps track of state for field: _utility
-    **/
-    private boolean _has_utility;
-
-    private int _group;
-
-    /**
-     * keeps track of state for field: _group
-    **/
-    private boolean _has_group;
-
-    private int _division;
-
-    /**
-     * keeps track of state for field: _division
-    **/
-    private boolean _has_division;
-
-    private int _substation;
-
-    /**
-     * keeps track of state for field: _substation
-    **/
-    private boolean _has_substation;
-
-    private int _rateFamily;
-
-    /**
-     * keeps track of state for field: _rateFamily
-    **/
-    private boolean _has_rateFamily;
-
-    private int _rateMember;
-
-    /**
-     * keeps track of state for field: _rateMember
-    **/
-    private boolean _has_rateMember;
-
-    private int _rateHierarchy;
-
-    /**
-     * keeps track of state for field: _rateHierarchy
-    **/
-    private boolean _has_rateHierarchy;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+public class SA305 {
+    private int utility;
+    private boolean hasUtility;
+    private int group;
+    private boolean hasGroup;
+    private int division;
+    private boolean hasDivision;
+    private int substation;
+    private boolean hasSubstation;
+    private int rateFamily;
+    private boolean hasRateFamily;
+    private int rateMember;
+    private boolean hasRateMember;
+    private int rateHierarchy;
+    private boolean hasRateHierarchy;
 
     public SA305() {
-        super();
-    } //-- com.cannontech.stars.xml.serialize.SA305()
-
-
-      //-----------/
-     //- Methods -/
-    //-----------/
-
-    /**
-     * Returns the value of field 'division'.
-     * 
-     * @return the value of field 'division'.
-    **/
-    public int getDivision()
-    {
-        return this._division;
-    } //-- int getDivision() 
-
-    /**
-     * Returns the value of field 'group'.
-     * 
-     * @return the value of field 'group'.
-    **/
-    public int getGroup()
-    {
-        return this._group;
-    } //-- int getGroup() 
-
-    /**
-     * Returns the value of field 'rateFamily'.
-     * 
-     * @return the value of field 'rateFamily'.
-    **/
-    public int getRateFamily()
-    {
-        return this._rateFamily;
-    } //-- int getRateFamily() 
-
-    /**
-     * Returns the value of field 'rateHierarchy'.
-     * 
-     * @return the value of field 'rateHierarchy'.
-    **/
-    public int getRateHierarchy()
-    {
-        return this._rateHierarchy;
-    } //-- int getRateHierarchy() 
-
-    /**
-     * Returns the value of field 'rateMember'.
-     * 
-     * @return the value of field 'rateMember'.
-    **/
-    public int getRateMember()
-    {
-        return this._rateMember;
-    } //-- int getRateMember() 
-
-
-	public int getRateRate()
-	{
-		return 16*this._rateFamily + this._rateMember;
-	} //-- int getRateMember() 
-    /**
-     * Returns the value of field 'substation'.
-     * 
-     * @return the value of field 'substation'.
-    **/
-    public int getSubstation()
-    {
-        return this._substation;
-    } //-- int getSubstation() 
-
-    /**
-     * Returns the value of field 'utility'.
-     * 
-     * @return the value of field 'utility'.
-    **/
-    public int getUtility()
-    {
-        return this._utility;
-    } //-- int getUtility() 
-
-    /**
-    **/
-    public boolean hasDivision()
-    {
-        return this._has_division;
-    } //-- boolean hasDivision() 
-
-    /**
-    **/
-    public boolean hasGroup()
-    {
-        return this._has_group;
-    } //-- boolean hasGroup() 
-
-    /**
-    **/
-    public boolean hasRateFamily()
-    {
-        return this._has_rateFamily;
-    } //-- boolean hasRateFamily() 
-
-    /**
-    **/
-    public boolean hasRateHierarchy()
-    {
-        return this._has_rateHierarchy;
-    } //-- boolean hasRateHierarchy() 
-
-    /**
-    **/
-    public boolean hasRateMember()
-    {
-        return this._has_rateMember;
-    } //-- boolean hasRateMember() 
-
-    /**
-    **/
-    public boolean hasSubstation()
-    {
-        return this._has_substation;
-    } //-- boolean hasSubstation() 
-
-    /**
-    **/
-    public boolean hasUtility()
-    {
-        return this._has_utility;
-    } //-- boolean hasUtility() 
-
-    /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
-
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
         
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
+    }
 
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
+    public int getDivision() {
+        return this.division;
+    }
 
-    /**
-     * Sets the value of field 'division'.
-     * 
-     * @param division the value of field 'division'.
-    **/
-    public void setDivision(int division)
-    {
-        this._division = division;
-        this._has_division = true;
-    } //-- void setDivision(int) 
+    public int getGroup() {
+        return this.group;
+    }
 
-    /**
-     * Sets the value of field 'group'.
-     * 
-     * @param group the value of field 'group'.
-    **/
-    public void setGroup(int group)
-    {
-        this._group = group;
-        this._has_group = true;
-    } //-- void setGroup(int) 
+    public int getRateFamily() {
+        return this.rateFamily;
+    } 
 
-    /**
-     * Sets the value of field 'rateFamily'.
-     * 
-     * @param rateFamily the value of field 'rateFamily'.
-    **/
-    public void setRateFamily(int rateFamily)
-    {
-        this._rateFamily = rateFamily;
-        this._has_rateFamily = true;
-    } //-- void setRateFamily(int) 
+    public int getRateHierarchy() {
+        return this.rateHierarchy;
+    }
 
-    /**
-     * Sets the value of field 'rateHierarchy'.
-     * 
-     * @param rateHierarchy the value of field 'rateHierarchy'.
-    **/
-    public void setRateHierarchy(int rateHierarchy)
-    {
-        this._rateHierarchy = rateHierarchy;
-        this._has_rateHierarchy = true;
-    } //-- void setRateHierarchy(int) 
+    public int getRateMember() {
+        return this.rateMember;
+    }
 
-    /**
-     * Sets the value of field 'rateMember'.
-     * 
-     * @param rateMember the value of field 'rateMember'.
-    **/
-    public void setRateMember(int rateMember)
-    {
-        this._rateMember = rateMember;
-        this._has_rateMember = true;
-    } //-- void setRateMember(int) 
+	public int getRateRate() {
+		return 16*this.rateFamily + this.rateMember;
+	}
+	
+    public int getSubstation() {
+        return this.substation;
+    }
 
-    /**
-     * Sets the value of field 'substation'.
-     * 
-     * @param substation the value of field 'substation'.
-    **/
-    public void setSubstation(int substation)
-    {
-        this._substation = substation;
-        this._has_substation = true;
-    } //-- void setSubstation(int) 
+    public int getUtility() {
+        return this.utility;
+    }
 
-    /**
-     * Sets the value of field 'utility'.
-     * 
-     * @param utility the value of field 'utility'.
-    **/
-    public void setUtility(int utility)
-    {
-        this._utility = utility;
-        this._has_utility = true;
-    } //-- void setUtility(int) 
+    public boolean hasDivision() {
+        return this.hasDivision;
+    }
 
-    /**
-     * 
-     * 
-     * @param reader
-    **/
-    public static com.cannontech.stars.xml.serialize.SA305 unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        return (com.cannontech.stars.xml.serialize.SA305) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.SA305.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.SA305 unmarshal(java.io.Reader) 
+    public boolean hasGroup() {
+        return this.hasGroup;
+    }
 
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
+    public boolean hasRateFamily() {
+        return this.hasRateFamily;
+    }
+
+    public boolean hasRateHierarchy() {
+        return this.hasRateHierarchy;
+    }
+
+    public boolean hasRateMember() {
+        return this.hasRateMember;
+    }
+
+    public boolean hasSubstation() {
+        return this.hasSubstation;
+    }
+
+    public boolean hasUtility() {
+        return this.hasUtility;
+    }
+
+    public void setDivision(int division) {
+        this.division = division;
+        this.hasDivision = true;
+    }
+
+    public void setGroup(int group) {
+        this.group = group;
+        this.hasGroup = true;
+    }
+
+    public void setRateFamily(int rateFamily) {
+        this.rateFamily = rateFamily;
+        this.hasRateFamily = true;
+    }
+
+    public void setRateHierarchy(int rateHierarchy) {
+        this.rateHierarchy = rateHierarchy;
+        this.hasRateHierarchy = true;
+    }
+
+    public void setRateMember(int rateMember) {
+        this.rateMember = rateMember;
+        this.hasRateMember = true;
+    }
+
+    public void setSubstation(int substation) {
+        this.substation = substation;
+        this.hasSubstation = true;
+    }
+
+    public void setUtility(int utility) {
+        this.utility = utility;
+        this.hasUtility = true;
+    }
 
 }

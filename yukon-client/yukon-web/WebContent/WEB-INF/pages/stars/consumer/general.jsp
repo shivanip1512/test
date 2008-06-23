@@ -12,7 +12,8 @@
     <div id="description"><cti:msg key="yukon.dr.consumer.general.description" /></div>
     <br>
     <br>
-    <div id="programs"><cti:msg key="yukon.dr.consumer.general.enrolledProgramsTitle" var="programsTitle" />
+    <div id="programs">
+        <cti:msg key="yukon.dr.consumer.general.enrolledProgramsTitle" var="programsTitle" />
         <ct:boxContainer title="${programsTitle}" hideEnabled="false">
             <c:choose>
                 <c:when test="${isNotEnrolled}">

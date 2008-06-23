@@ -52,10 +52,9 @@ function viewCompleteControlHistory(programId) {
                                     
                                     <table>
                                         <c:forEach var="displayableControlHistory" items="${displayableProgram.displayableControlHistoryList}">
-                                            <tr>
+                                            <tr style="font-size: .9em; white-space: nowrap;">
                                                 <td></td>
                                                 <c:choose>
-                                                    
                                                     <c:when test="${displayableControlHistory.controlStatusDisplay}">
                                                         <td colspan="3"><cti:msg key="${displayableControlHistory.controlHistory.currentStatus}"/></td>
                                                     </c:when>
@@ -71,7 +70,7 @@ function viewCompleteControlHistory(programId) {
                                     </table>
                                 </td>
                                 <td width="25%" align="right" class="${viewClass}">
-                                    <input type="button" value="View Complete History" onclick="viewCompleteControlHistory(${program.programId})"/>
+                                    <input type="button" value="<cti:msg key='yukon.dr.consumer.controlhistory.viewCompleteHistory'/>" onclick="viewCompleteControlHistory(${program.programId})"/>
                                     <c:set var="totalDuration" value="${totalDurationMap[program.programId]}"/>
                                     <br>
                                     <br>

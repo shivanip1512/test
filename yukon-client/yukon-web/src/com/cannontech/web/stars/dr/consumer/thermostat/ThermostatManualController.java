@@ -32,7 +32,6 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.SpringWebUtil;
 
 /**
  * Controller for Manual thermostat operations
@@ -47,10 +46,9 @@ public class ThermostatManualController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/view", method = RequestMethod.GET)
-    public String view(ModelMap map, @ModelAttribute("thermostatIds") List<Integer> thermostatIds) 
-            throws Exception {
+    public String view(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            LiteYukonUser user, ModelMap map) throws Exception {
         
-        LiteYukonUser user = SpringWebUtil.getYukonUser();
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
@@ -85,10 +83,9 @@ public class ThermostatManualController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/saveLabel", method = RequestMethod.POST)
-    public String saveLabel(ModelMap map, String displayLabel,
-            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) throws Exception {
+    public String saveLabel(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            String displayLabel, LiteYukonUser user, ModelMap map) throws Exception {
 
-        LiteYukonUser user = SpringWebUtil.getYukonUser();
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
@@ -111,11 +108,10 @@ public class ThermostatManualController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/manual", method = RequestMethod.POST)
-    public String manual(HttpServletRequest request, ModelMap map, String mode,
-            String fan, String temperatureUnit,
-            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) throws Exception {
+    public String manual(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            String mode, String fan, String temperatureUnit, LiteYukonUser user,
+            HttpServletRequest request, ModelMap map) throws Exception {
 
-        LiteYukonUser user = SpringWebUtil.getYukonUser();
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
@@ -194,10 +190,9 @@ public class ThermostatManualController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/manualComplete", method = RequestMethod.GET)
-    public String manualComplete(ModelMap map, String message,
-            @ModelAttribute("thermostatIds") List<Integer> thermostatIds) throws Exception {
+    public String manualComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            String message, LiteYukonUser user, ModelMap map) throws Exception {
 
-        LiteYukonUser user = SpringWebUtil.getYukonUser();
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         

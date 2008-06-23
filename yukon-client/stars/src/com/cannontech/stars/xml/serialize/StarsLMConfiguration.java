@@ -1,31 +1,6 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id: StarsLMConfiguration.java,v 1.14 2006/06/21 17:12:16 alauinger Exp $
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-
-/**
- * 
- * 
- * @version $Revision: 1.14 $ $Date: 2006/06/21 17:12:16 $
-**/
-public class StarsLMConfiguration implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
+public class StarsLMConfiguration {
     private java.lang.String _coldLoadPickup;
 
     private java.lang.String _tamperDetect;
@@ -125,43 +100,6 @@ public class StarsLMConfiguration implements java.io.Serializable {
     } //-- VersaCom getVersaCom() 
 
     /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
-
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
-
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
      * Sets the value of field 'coldLoadPickup'.
      * 
      * @param coldLoadPickup the value of field 'coldLoadPickup'.
@@ -230,25 +168,5 @@ public class StarsLMConfiguration implements java.io.Serializable {
     {
         this._versaCom = versaCom;
     } //-- void setVersaCom(VersaCom) 
-
-    /**
-     * 
-     * 
-     * @param reader
-    **/
-    public static com.cannontech.stars.xml.serialize.StarsLMConfiguration unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        return (com.cannontech.stars.xml.serialize.StarsLMConfiguration) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsLMConfiguration.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsLMConfiguration unmarshal(java.io.Reader) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
 
 }

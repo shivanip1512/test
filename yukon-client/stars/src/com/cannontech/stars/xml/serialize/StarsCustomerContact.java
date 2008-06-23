@@ -1,305 +1,119 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id: StarsCustomerContact.java,v 1.96 2006/06/21 17:12:19 alauinger Exp $
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
+import java.util.Enumeration;
 import java.util.Vector;
 
-/**
- * 
- * 
- * @version $Revision: 1.96 $ $Date: 2006/06/21 17:12:19 $
-**/
-public abstract class StarsCustomerContact implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private int _contactID;
-
-    /**
-     * keeps track of state for field: _contactID
-    **/
-    private boolean _has_contactID;
-
-    private java.lang.String _lastName;
-
-    private java.lang.String _firstName;
-
-	private int _loginID;
-
-    private java.util.Vector _contactNotificationList;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+public abstract class StarsCustomerContact {
+    private int contactId;
+    private boolean hasContactId;
+    private String lastName;
+    private String firstName;
+	private int loginID;
+    private Vector<ContactNotification> contactNotificationList;
 
     public StarsCustomerContact() {
-        super();
-        _contactNotificationList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsCustomerContact()
+        contactNotificationList = new Vector<ContactNotification>();
+    }
 
+    public void addContactNotification(ContactNotification vContactNotification) {
+        contactNotificationList.addElement(vContactNotification);
+    } 
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    public void addContactNotification(int index, ContactNotification vContactNotification) {
+        contactNotificationList.insertElementAt(vContactNotification, index);
+    }
 
-    /**
-     * 
-     * 
-     * @param vContactNotification
-    **/
-    public void addContactNotification(ContactNotification vContactNotification)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _contactNotificationList.addElement(vContactNotification);
-    } //-- void addContactNotification(ContactNotification) 
+    public void deleteContactID() {
+        this.hasContactId= false;
+    } 
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vContactNotification
-    **/
-    public void addContactNotification(int index, ContactNotification vContactNotification)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _contactNotificationList.insertElementAt(vContactNotification, index);
-    } //-- void addContactNotification(int, ContactNotification) 
+    public Enumeration<ContactNotification> enumerateContactNotification() {
+        return contactNotificationList.elements();
+    } 
 
-    /**
-    **/
-    public void deleteContactID()
-    {
-        this._has_contactID= false;
-    } //-- void deleteContactID() 
+    public int getContactID() {
+        return this.contactId;
+    } 
 
-    /**
-    **/
-    public java.util.Enumeration enumerateContactNotification()
-    {
-        return _contactNotificationList.elements();
-    } //-- java.util.Enumeration enumerateContactNotification() 
+	public int getLoginID() {
+		return this.loginID;
+	} 
 
-    /**
-     * Returns the value of field 'contactID'.
-     * 
-     * @return the value of field 'contactID'.
-    **/
-    public int getContactID()
-    {
-        return this._contactID;
-    } //-- int getContactID() 
-
-	/**
-	 * Returns the value of field 'loginID'.
-	 * 
-	 * @return the value of field 'loginID'.
-	**/
-	public int getLoginID()
-	{
-		return this._loginID;
-	} //-- int getLoginID() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public ContactNotification getContactNotification(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public ContactNotification getContactNotification(int index) {
         //-- check bounds for index
-        if ((index < 0) || (index > _contactNotificationList.size())) {
+        if ((index < 0) || (index > contactNotificationList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (ContactNotification) _contactNotificationList.elementAt(index);
-    } //-- ContactNotification getContactNotification(int) 
+        return (ContactNotification) contactNotificationList.elementAt(index);
+    }
 
-    /**
-    **/
-    public ContactNotification[] getContactNotification()
-    {
-        int size = _contactNotificationList.size();
+    public ContactNotification[] getContactNotification() {
+        int size = contactNotificationList.size();
         ContactNotification[] mArray = new ContactNotification[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (ContactNotification) _contactNotificationList.elementAt(index);
+            mArray[index] = contactNotificationList.elementAt(index);
         }
         return mArray;
-    } //-- ContactNotification[] getContactNotification() 
+    }
 
-    /**
-    **/
-    public int getContactNotificationCount()
-    {
-        return _contactNotificationList.size();
-    } //-- int getContactNotificationCount() 
+    public int getContactNotificationCount() {
+        return contactNotificationList.size();
+    } 
 
-    /**
-     * Returns the value of field 'firstName'.
-     * 
-     * @return the value of field 'firstName'.
-    **/
-    public java.lang.String getFirstName()
-    {
-        return this._firstName;
-    } //-- java.lang.String getFirstName() 
+    public String getFirstName() {
+        return this.firstName;
+    } 
 
-    /**
-     * Returns the value of field 'lastName'.
-     * 
-     * @return the value of field 'lastName'.
-    **/
-    public java.lang.String getLastName()
-    {
-        return this._lastName;
-    } //-- java.lang.String getLastName() 
+    public String getLastName() {
+        return this.lastName;
+    } 
 
-    /**
-    **/
-    public boolean hasContactID()
-    {
-        return this._has_contactID;
-    } //-- boolean hasContactID() 
+    public boolean hasContactID() {
+        return this.hasContactId;
+    } 
 
-    /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
+    public void removeAllContactNotification() {
+        contactNotificationList.removeAllElements();
+    } 
 
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public ContactNotification removeContactNotification(int index) {
+        ContactNotification obj = contactNotificationList.elementAt(index);
+        contactNotificationList.removeElementAt(index);
+        return obj;
+    } 
 
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void setContactID(int contactID) {
+        this.contactId = contactID;
+        this.hasContactId = true;
+    } 
 
-    /**
-    **/
-    public void removeAllContactNotification()
-    {
-        _contactNotificationList.removeAllElements();
-    } //-- void removeAllContactNotification() 
+	public void setLoginID(int loginID) {
+		this.loginID = loginID;
+	} 
 
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public ContactNotification removeContactNotification(int index)
-    {
-        java.lang.Object obj = _contactNotificationList.elementAt(index);
-        _contactNotificationList.removeElementAt(index);
-        return (ContactNotification) obj;
-    } //-- ContactNotification removeContactNotification(int) 
-
-    /**
-     * Sets the value of field 'contactID'.
-     * 
-     * @param contactID the value of field 'contactID'.
-    **/
-    public void setContactID(int contactID)
-    {
-        this._contactID = contactID;
-        this._has_contactID = true;
-    } //-- void setContactID(int) 
-
-	/**
-	 * Sets the value of field 'loginID'.
-	 * 
-	 * @param contactID the value of field 'loginID'.
-	**/
-	public void setLoginID(int loginID)
-	{
-		this._loginID = loginID;
-	} //-- void setLoginID(int) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vContactNotification
-    **/
-    public void setContactNotification(int index, ContactNotification vContactNotification)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public void setContactNotification(int index, ContactNotification vContactNotification) {
         //-- check bounds for index
-        if ((index < 0) || (index > _contactNotificationList.size())) {
+        if ((index < 0) || (index > contactNotificationList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _contactNotificationList.setElementAt(vContactNotification, index);
-    } //-- void setContactNotification(int, ContactNotification) 
+        contactNotificationList.setElementAt(vContactNotification, index);
+    } 
 
-    /**
-     * 
-     * 
-     * @param contactNotificationArray
-    **/
-    public void setContactNotification(ContactNotification[] contactNotificationArray)
-    {
+    public void setContactNotification(ContactNotification[] contactNotificationArray) {
         //-- copy array
-        _contactNotificationList.removeAllElements();
+        contactNotificationList.removeAllElements();
         for (int i = 0; i < contactNotificationArray.length; i++) {
-            _contactNotificationList.addElement(contactNotificationArray[i]);
+            contactNotificationList.addElement(contactNotificationArray[i]);
         }
-    } //-- void setContactNotification(ContactNotification) 
+    } 
 
-    /**
-     * Sets the value of field 'firstName'.
-     * 
-     * @param firstName the value of field 'firstName'.
-    **/
-    public void setFirstName(java.lang.String firstName)
-    {
-        this._firstName = firstName;
-    } //-- void setFirstName(java.lang.String) 
+    public void setFirstName(String firstName) {
+        this.firstName = firstName;
+    } 
 
-    /**
-     * Sets the value of field 'lastName'.
-     * 
-     * @param lastName the value of field 'lastName'.
-    **/
-    public void setLastName(java.lang.String lastName)
-    {
-        this._lastName = lastName;
-    } //-- void setLastName(java.lang.String) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
+    public void setLastName(java.lang.String lastName) {
+        this.lastName = lastName;
+    } 
 
 }

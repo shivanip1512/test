@@ -1,330 +1,119 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id: LMHardware.java,v 1.34 2006/06/21 17:12:11 alauinger Exp $
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
+import java.util.Enumeration;
 import java.util.Vector;
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-
-/**
- * 
- * 
- * @version $Revision: 1.34 $ $Date: 2006/06/21 17:12:11 $
-**/
-public class LMHardware implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private int _routeID;
-
-    /**
-     * keeps track of state for field: _routeID
-    **/
-    private boolean _has_routeID;
-
-    private java.lang.String _manufacturerSerialNumber;
-
-    private java.util.Vector _starsLMHardwareConfigList;
-
-    private StarsThermostatSettings _starsThermostatSettings;
-
-    private StarsLMConfiguration _starsLMConfiguration;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+public class LMHardware {
+    private int routeID;
+    private boolean hasRouteID;
+    private String manufacturerSerialNumber;
+    private Vector<StarsLMHardwareConfig> starsLMHardwareConfigList;
+    private StarsThermostatSettings starsThermostatSettings;
+    private StarsLMConfiguration starsLMConfiguration;
 
     public LMHardware() {
-        super();
-        _starsLMHardwareConfigList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.LMHardware()
+        starsLMHardwareConfigList = new Vector<StarsLMHardwareConfig>();
+    }
 
+    public void addStarsLMHardwareConfig(StarsLMHardwareConfig vStarsLMHardwareConfig) {
+        starsLMHardwareConfigList.addElement(vStarsLMHardwareConfig);
+    }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    public void addStarsLMHardwareConfig(int index, StarsLMHardwareConfig vStarsLMHardwareConfig) {
+        starsLMHardwareConfigList.insertElementAt(vStarsLMHardwareConfig, index);
+    }
 
-    /**
-     * 
-     * 
-     * @param vStarsLMHardwareConfig
-    **/
-    public void addStarsLMHardwareConfig(StarsLMHardwareConfig vStarsLMHardwareConfig)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsLMHardwareConfigList.addElement(vStarsLMHardwareConfig);
-    } //-- void addStarsLMHardwareConfig(StarsLMHardwareConfig) 
+    public void deleteRouteID() {
+        this.hasRouteID = false;
+    }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsLMHardwareConfig
-    **/
-    public void addStarsLMHardwareConfig(int index, StarsLMHardwareConfig vStarsLMHardwareConfig)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsLMHardwareConfigList.insertElementAt(vStarsLMHardwareConfig, index);
-    } //-- void addStarsLMHardwareConfig(int, StarsLMHardwareConfig) 
+    public Enumeration<StarsLMHardwareConfig> enumerateStarsLMHardwareConfig() {
+        return starsLMHardwareConfigList.elements();
+    } 
 
-    /**
-    **/
-    public void deleteRouteID()
-    {
-        this._has_routeID= false;
-    } //-- void deleteRouteID() 
+    public String getManufacturerSerialNumber() {
+        return this.manufacturerSerialNumber;
+    } 
 
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsLMHardwareConfig()
-    {
-        return _starsLMHardwareConfigList.elements();
-    } //-- java.util.Enumeration enumerateStarsLMHardwareConfig() 
+    public int getRouteID() {
+        return this.routeID;
+    }
 
-    /**
-     * Returns the value of field 'manufacturerSerialNumber'.
-     * 
-     * @return the value of field 'manufacturerSerialNumber'.
-    **/
-    public java.lang.String getManufacturerSerialNumber()
-    {
-        return this._manufacturerSerialNumber;
-    } //-- java.lang.String getManufacturerSerialNumber() 
+    public StarsLMConfiguration getStarsLMConfiguration() {
+        return this.starsLMConfiguration;
+    }
 
-    /**
-     * Returns the value of field 'routeID'.
-     * 
-     * @return the value of field 'routeID'.
-    **/
-    public int getRouteID()
-    {
-        return this._routeID;
-    } //-- int getRouteID() 
-
-    /**
-     * Returns the value of field 'starsLMConfiguration'.
-     * 
-     * @return the value of field 'starsLMConfiguration'.
-    **/
-    public StarsLMConfiguration getStarsLMConfiguration()
-    {
-        return this._starsLMConfiguration;
-    } //-- StarsLMConfiguration getStarsLMConfiguration() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsLMHardwareConfig getStarsLMHardwareConfig(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public StarsLMHardwareConfig getStarsLMHardwareConfig(int index) {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsLMHardwareConfigList.size())) {
+        if ((index < 0) || (index > starsLMHardwareConfigList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (StarsLMHardwareConfig) _starsLMHardwareConfigList.elementAt(index);
-    } //-- StarsLMHardwareConfig getStarsLMHardwareConfig(int) 
+        return starsLMHardwareConfigList.elementAt(index);
+    }
 
-    /**
-    **/
-    public StarsLMHardwareConfig[] getStarsLMHardwareConfig()
-    {
-        int size = _starsLMHardwareConfigList.size();
+    public StarsLMHardwareConfig[] getStarsLMHardwareConfig() {
+        int size = starsLMHardwareConfigList.size();
         StarsLMHardwareConfig[] mArray = new StarsLMHardwareConfig[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsLMHardwareConfig) _starsLMHardwareConfigList.elementAt(index);
+            mArray[index] = starsLMHardwareConfigList.elementAt(index);
         }
         return mArray;
-    } //-- StarsLMHardwareConfig[] getStarsLMHardwareConfig() 
+    }
 
-    /**
-    **/
-    public int getStarsLMHardwareConfigCount()
-    {
-        return _starsLMHardwareConfigList.size();
-    } //-- int getStarsLMHardwareConfigCount() 
+    public int getStarsLMHardwareConfigCount() {
+        return starsLMHardwareConfigList.size();
+    }
 
-    /**
-     * Returns the value of field 'starsThermostatSettings'.
-     * 
-     * @return the value of field 'starsThermostatSettings'.
-    **/
-    public StarsThermostatSettings getStarsThermostatSettings()
-    {
-        return this._starsThermostatSettings;
-    } //-- StarsThermostatSettings getStarsThermostatSettings() 
+    public StarsThermostatSettings getStarsThermostatSettings() {
+        return this.starsThermostatSettings;
+    }
 
-    /**
-    **/
-    public boolean hasRouteID()
-    {
-        return this._has_routeID;
-    } //-- boolean hasRouteID() 
+    public boolean hasRouteID() {
+        return this.hasRouteID;
+    }
 
-    /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
+    public void removeAllStarsLMHardwareConfig() {
+        starsLMHardwareConfigList.removeAllElements();
+    }
 
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
-
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-    **/
-    public void removeAllStarsLMHardwareConfig()
-    {
-        _starsLMHardwareConfigList.removeAllElements();
-    } //-- void removeAllStarsLMHardwareConfig() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsLMHardwareConfig removeStarsLMHardwareConfig(int index)
-    {
-        java.lang.Object obj = _starsLMHardwareConfigList.elementAt(index);
-        _starsLMHardwareConfigList.removeElementAt(index);
+    public StarsLMHardwareConfig removeStarsLMHardwareConfig(int index) {
+        java.lang.Object obj = starsLMHardwareConfigList.elementAt(index);
+        starsLMHardwareConfigList.removeElementAt(index);
         return (StarsLMHardwareConfig) obj;
-    } //-- StarsLMHardwareConfig removeStarsLMHardwareConfig(int) 
+    }
 
-    /**
-     * Sets the value of field 'manufacturerSerialNumber'.
-     * 
-     * @param manufacturerSerialNumber the value of field
-     * 'manufacturerSerialNumber'.
-    **/
-    public void setManufacturerSerialNumber(java.lang.String manufacturerSerialNumber)
-    {
-        this._manufacturerSerialNumber = manufacturerSerialNumber;
-    } //-- void setManufacturerSerialNumber(java.lang.String) 
+    public void setManufacturerSerialNumber(java.lang.String manufacturerSerialNumber) {
+        this.manufacturerSerialNumber = manufacturerSerialNumber;
+    }
 
-    /**
-     * Sets the value of field 'routeID'.
-     * 
-     * @param routeID the value of field 'routeID'.
-    **/
-    public void setRouteID(int routeID)
-    {
-        this._routeID = routeID;
-        this._has_routeID = true;
-    } //-- void setRouteID(int) 
+    public void setRouteID(int routeID) {
+        this.routeID = routeID;
+        this.hasRouteID = true;
+    }
 
-    /**
-     * Sets the value of field 'starsLMConfiguration'.
-     * 
-     * @param starsLMConfiguration the value of field
-     * 'starsLMConfiguration'.
-    **/
-    public void setStarsLMConfiguration(StarsLMConfiguration starsLMConfiguration)
-    {
-        this._starsLMConfiguration = starsLMConfiguration;
-    } //-- void setStarsLMConfiguration(StarsLMConfiguration) 
+    public void setStarsLMConfiguration(StarsLMConfiguration starsLMConfiguration) {
+        this.starsLMConfiguration = starsLMConfiguration;
+    }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsLMHardwareConfig
-    **/
-    public void setStarsLMHardwareConfig(int index, StarsLMHardwareConfig vStarsLMHardwareConfig)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public void setStarsLMHardwareConfig(int index, StarsLMHardwareConfig vStarsLMHardwareConfig) {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsLMHardwareConfigList.size())) {
+        if ((index < 0) || (index > starsLMHardwareConfigList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _starsLMHardwareConfigList.setElementAt(vStarsLMHardwareConfig, index);
-    } //-- void setStarsLMHardwareConfig(int, StarsLMHardwareConfig) 
+        starsLMHardwareConfigList.setElementAt(vStarsLMHardwareConfig, index);
+    }
 
-    /**
-     * 
-     * 
-     * @param starsLMHardwareConfigArray
-    **/
-    public void setStarsLMHardwareConfig(StarsLMHardwareConfig[] starsLMHardwareConfigArray)
-    {
+    public void setStarsLMHardwareConfig(StarsLMHardwareConfig[] starsLMHardwareConfigArray) {
         //-- copy array
-        _starsLMHardwareConfigList.removeAllElements();
+        starsLMHardwareConfigList.removeAllElements();
         for (int i = 0; i < starsLMHardwareConfigArray.length; i++) {
-            _starsLMHardwareConfigList.addElement(starsLMHardwareConfigArray[i]);
+            starsLMHardwareConfigList.addElement(starsLMHardwareConfigArray[i]);
         }
-    } //-- void setStarsLMHardwareConfig(StarsLMHardwareConfig) 
+    }
 
-    /**
-     * Sets the value of field 'starsThermostatSettings'.
-     * 
-     * @param starsThermostatSettings the value of field
-     * 'starsThermostatSettings'.
-    **/
-    public void setStarsThermostatSettings(StarsThermostatSettings starsThermostatSettings)
-    {
-        this._starsThermostatSettings = starsThermostatSettings;
-    } //-- void setStarsThermostatSettings(StarsThermostatSettings) 
-
-    /**
-     * 
-     * 
-     * @param reader
-    **/
-    public static com.cannontech.stars.xml.serialize.LMHardware unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        return (com.cannontech.stars.xml.serialize.LMHardware) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.LMHardware.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.LMHardware unmarshal(java.io.Reader) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
+    public void setStarsThermostatSettings(StarsThermostatSettings starsThermostatSettings) {
+        this.starsThermostatSettings = starsThermostatSettings;
+    }
 
 }

@@ -43,7 +43,6 @@ import com.cannontech.stars.dr.thermostat.service.ThermostatService;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.util.SpringWebUtil;
 
 /**
  * Controller for Thermostat schedule operations
@@ -59,12 +58,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/view", method = RequestMethod.GET)
-    public String view(HttpServletRequest request, ModelMap map,
-            Integer scheduleId, @ModelAttribute("thermostatIds")
-            List<Integer> thermostatIds, @ModelAttribute("customerAccount")
-            CustomerAccount account) {
+    public String view(@ModelAttribute("customerAccount") CustomerAccount account, 
+            @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            Integer scheduleId, YukonUserContext yukonUserContext, ModelMap map) {
 
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkThermostatSchedule(user, scheduleId);
         accountCheckerService.checkInventory(user, 
@@ -148,13 +145,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/save", method = RequestMethod.POST)
-    public String save(HttpServletRequest request, ModelMap map, String mode,
-            String timeOfWeek, String temperatureUnit, Integer scheduleId,
-            String scheduleName, @ModelAttribute("thermostatIds")
-            List<Integer> thermostatIds, @ModelAttribute("customerAccount")
-            CustomerAccount account) throws ServletRequestBindingException {
+    public String save(@ModelAttribute("customerAccount") CustomerAccount account,
+            @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            String mode, String timeOfWeek, String temperatureUnit, Integer scheduleId,
+            String scheduleName, YukonUserContext yukonUserContext, 
+            HttpServletRequest request, ModelMap map) throws ServletRequestBindingException {
 
-        YukonUserContext yukonUserContext = YukonUserContextUtils.getYukonUserContext(request);
         LiteYukonUser user = yukonUserContext.getYukonUser();
         accountCheckerService.checkThermostatSchedule(user, scheduleId);
         accountCheckerService.checkInventory(user, 
@@ -260,11 +256,9 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/complete", method = RequestMethod.GET)
-    public String updateComplete(ModelMap map, String message,
-            @ModelAttribute("thermostatIds")
-            List<Integer> thermostatIds) throws Exception {
+    public String updateComplete(@ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            String message, LiteYukonUser user, ModelMap map) throws Exception {
 
-        LiteYukonUser user = SpringWebUtil.getYukonUser();
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         
@@ -304,11 +298,10 @@ public class ThermostatScheduleController extends AbstractThermostatController {
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT)
     @RequestMapping(value = "/consumer/thermostat/schedule/view/saved", method = RequestMethod.GET)
-    public String viewSaved(ModelMap map, @ModelAttribute("thermostatIds")
-    List<Integer> thermostatIds, @ModelAttribute("customerAccount")
-    CustomerAccount account) throws Exception {
+    public String viewSaved(@ModelAttribute("customerAccount") CustomerAccount account,
+            @ModelAttribute("thermostatIds") List<Integer> thermostatIds,
+            LiteYukonUser user, ModelMap map) throws Exception {
 
-        LiteYukonUser user = SpringWebUtil.getYukonUser();
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
         

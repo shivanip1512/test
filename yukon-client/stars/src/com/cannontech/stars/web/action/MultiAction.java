@@ -62,7 +62,6 @@ public class MultiAction implements ActionBase {
 	public SOAPMessage build(HttpServletRequest req, HttpSession session) {
 		try {
 			SOAPMessage reqMsg = SOAPUtil.createMessage();
-			reqMsg.getSOAPPart().getEnvelope().getBody().addChildElement( StarsConstants.STARS_OPERATION );
 			
 			for (int i = 0; i < actionList.size(); i++) {
 				ActionBase action = (ActionBase) actionList.get(i);
@@ -86,7 +85,6 @@ public class MultiAction implements ActionBase {
 	public SOAPMessage process(SOAPMessage reqMsg, HttpSession session) {
 		try {
 			SOAPMessage respMsg = SOAPUtil.createMessage();
-			respMsg.getSOAPPart().getEnvelope().getBody().addChildElement( StarsConstants.STARS_OPERATION );
 			
 			for (int i = 0; i < actionList.size(); i++) {
 				ActionBase action = (ActionBase) actionList.get(i);

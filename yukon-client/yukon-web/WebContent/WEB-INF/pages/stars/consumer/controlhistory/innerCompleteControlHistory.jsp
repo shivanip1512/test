@@ -1,6 +1,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="ct"%>
 
 <table align="center" width="99%">
@@ -17,7 +18,7 @@
         </tr>
         
         <tr>
-            <td valign="top" rowspan="${rowspan + 1}">${controlHistoryEvent.key}</td>
+            <td valign="top" rowspan="${rowspan + 1}"><spring:escapeBody htmlEscape="true">${controlHistoryEvent.key}</spring:escapeBody></td>
         </tr>
         
         <c:choose>

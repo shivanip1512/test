@@ -17,7 +17,7 @@ package com.cannontech.stars.xml.serialize;
  * 
  * @version $Revision$ $Date$
 **/
-public abstract class StarsLMCustomerEvent implements java.io.Serializable {
+public abstract class StarsLMCustomerEvent {
 
 
       //--------------------------/
@@ -106,35 +106,6 @@ public abstract class StarsLMCustomerEvent implements java.io.Serializable {
     } //-- boolean hasYukonDefID() 
 
     /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
-
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
-
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
-
-    /**
      * Sets the value of field 'eventAction'.
      * 
      * @param eventAction the value of field 'eventAction'.
@@ -174,14 +145,5 @@ public abstract class StarsLMCustomerEvent implements java.io.Serializable {
         this._yukonDefID = yukonDefID;
         this._has_yukonDefID = true;
     } //-- void setYukonDefID(int) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
 
 }

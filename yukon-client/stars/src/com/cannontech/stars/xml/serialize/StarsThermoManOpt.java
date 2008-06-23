@@ -1,23 +1,6 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id$
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
-
-/**
- * 
- * 
- * @version $Revision$ $Date$
-**/
-public abstract class StarsThermoManOpt implements java.io.Serializable {
+public abstract class StarsThermoManOpt {
 
 
       //--------------------------/
@@ -111,35 +94,6 @@ public abstract class StarsThermoManOpt implements java.io.Serializable {
     } //-- boolean hasTemperature() 
 
     /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
-
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
-
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
-
-    /**
      * Sets the value of field 'fan'.
      * 
      * @param fan the value of field 'fan'.
@@ -180,14 +134,5 @@ public abstract class StarsThermoManOpt implements java.io.Serializable {
         this._temperature = temperature;
         this._has_temperature = true;
     } //-- void setTemperature(int) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
 
 }

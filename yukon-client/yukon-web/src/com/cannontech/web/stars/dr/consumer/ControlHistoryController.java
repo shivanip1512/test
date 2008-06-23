@@ -23,7 +23,7 @@ import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
 import com.cannontech.web.security.annotation.CheckRoleProperty;
-import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableOptOut;
+import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableScheduledOptOut;
 import com.cannontech.web.stars.dr.consumer.displayable.model.DisplayableProgram;
 
 @Controller
@@ -51,13 +51,17 @@ public class ControlHistoryController extends AbstractConsumerController {
         
         if (isNotEnrolled) return viewName; // if there are no programs enrolled there is nothing more to show
 
-        Map<Integer, Integer> totalDurationMap = controlHistoryService.calculateTotalDuration(controlHistoryMap);
+        Map<Integer, Integer> totalDurationMap = 
+            controlHistoryService.calculateTotalDuration(controlHistoryMap);
         map.addAttribute("totalDurationMap", totalDurationMap);
         
-        List<DisplayableProgram> displayablePrograms = displayableProgramDao.getAllDisplayablePrograms(customerAccount, yukonUserContext);
+        List<DisplayableProgram> displayablePrograms = 
+            displayableProgramDao.getAllDisplayablePrograms(customerAccount, yukonUserContext);
         map.addAttribute("displayablePrograms", displayablePrograms);
         
-        DisplayableOptOut displayableOptOut = displayableOptOutDao.getDisplayableOptOut(customerAccount, yukonUserContext);
+        DisplayableScheduledOptOut displayableOptOut = 
+            displayableScheduledOptOutDao.getLastDisplayableScheduledOptOut(customerAccount,
+                                                                   yukonUserContext);
         map.addAttribute("displayableOptOut", displayableOptOut);
         
         return viewName;

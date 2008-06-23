@@ -1,51 +1,15 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id: StarsDefaultThermostatSchedules.java,v 1.23 2007/05/11 22:28:33 jdayton Exp $
- */
-
 package com.cannontech.stars.xml.serialize;
-
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
 
 import java.util.Vector;
 
-import org.exolab.castor.xml.Marshaller;
-import org.exolab.castor.xml.Unmarshaller;
-
 import com.cannontech.stars.xml.serialize.types.StarsThermostatTypes;
 
-/**
- * 
- * 
- * @version $Revision: 1.23 $ $Date: 2007/05/11 22:28:33 $
-**/
-public class StarsDefaultThermostatSchedules implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
+public class StarsDefaultThermostatSchedules {
     private java.util.Vector _starsThermostatProgramList;
 
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
-
     public StarsDefaultThermostatSchedules() {
-        super();
         _starsThermostatProgramList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules()
-
-
-      //-----------/
-     //- Methods -/
-    //-----------/
+    }
 
     /**
      * 
@@ -118,45 +82,6 @@ public class StarsDefaultThermostatSchedules implements java.io.Serializable {
         return _starsThermostatProgramList.size();
     } //-- int getStarsThermostatProgramCount() 
 
-    /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
-
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, out);
-    } //-- void marshal(java.io.Writer) 
-
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        
-        Marshaller.marshal(this, handler);
-    } //-- void marshal(org.xml.sax.ContentHandler) 
-
-    /**
-    **/
     public void removeAllStarsThermostatProgram()
     {
         _starsThermostatProgramList.removeAllElements();
@@ -206,25 +131,5 @@ public class StarsDefaultThermostatSchedules implements java.io.Serializable {
             _starsThermostatProgramList.addElement(starsThermostatProgramArray[i]);
         }
     } //-- void setStarsThermostatProgram(StarsThermostatProgram) 
-
-    /**
-     * 
-     * 
-     * @param reader
-    **/
-    public static com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules unmarshal(java.io.Reader reader)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException
-    {
-        return (com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules) Unmarshaller.unmarshal(com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules.class, reader);
-    } //-- com.cannontech.stars.xml.serialize.StarsDefaultThermostatSchedules unmarshal(java.io.Reader) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
 
 }

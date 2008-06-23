@@ -323,7 +323,7 @@
             </option>
 		    <option id="optOut">
 			  <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_PROGRAMS_OPT_OUT" />
-              <link>/user/ConsumerStat/stat/OptOut.jsp</link>
+              <link>/spring/stars/consumer/optout</link>
             </option>
           </links>
 	    </option>

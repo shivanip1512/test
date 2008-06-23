@@ -1,608 +1,274 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id: StarsCustAccount.java,v 1.99 2006/06/21 17:12:12 alauinger Exp $
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
+import java.util.Enumeration;
 import java.util.Vector;
 
-/**
- * 
- * 
- * @version $Revision: 1.99 $ $Date: 2006/06/21 17:12:12 $
-**/
-public abstract class StarsCustAccount implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private int _accountID;
-
-    /**
-     * keeps track of state for field: _accountID
-    **/
-    private boolean _has_accountID;
-
-    private int _customerID;
-
-    /**
-     * keeps track of state for field: _customerID
-    **/
-    private boolean _has_customerID;
-
-    private java.lang.String _accountNumber;
-
-    private boolean _isCommercial;
-
-    /**
-     * keeps track of state for field: _isCommercial
-    **/
-    private boolean _has_isCommercial;
-
-    private java.lang.String _company;
-    
-    private int _custType;
-
-    private java.lang.String _accountNotes;
-
-    private java.lang.String _propertyNumber;
-
-    private java.lang.String _propertyNotes;
-
-    private StreetAddress _streetAddress;
-
-    private StarsSiteInformation _starsSiteInformation;
-
-    private BillingAddress _billingAddress;
-
-    private PrimaryContact _primaryContact;
-
-    private java.util.Vector _additionalContactList;
-
-    private java.lang.String _timeZone;
-    
-    private java.lang.String _customerNumber;
-    
-    private int _rateScheduleID;
-    
-	private java.lang.String _altTrackNumber;
-    
-    private String _custAtHome;
-    
-    private String _custStatus;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+public abstract class StarsCustAccount {
+    private int accountID;
+    private boolean hasAccountID;
+    private int customerID;
+    private boolean hasCustomerID;
+    private String accountNumber;
+    private boolean isCommercial;
+    private boolean hasIsCommercial;
+    private String company;
+    private int custType;
+    private String accountNotes;
+    private String propertyNumber;
+    private String propertyNotes;
+    private StreetAddress streetAddress;
+    private StarsSiteInformation starsSiteInformation;
+    private BillingAddress billingAddress;
+    private PrimaryContact primaryContact;
+    private Vector<AdditionalContact> additionalContactList;
+    private String timeZone;
+    private String customerNumber;
+    private int rateScheduleID;
+	private String altTrackNumber;
+    private String custAtHome;
+    private String custStatus;
 
     public StarsCustAccount() {
-        super();
-        _additionalContactList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsCustAccount()
+        additionalContactList = new Vector<AdditionalContact>();
+    }
 
+    public void addAdditionalContact(AdditionalContact vAdditionalContact) {
+        additionalContactList.addElement(vAdditionalContact);
+    }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    public void addAdditionalContact(int index, AdditionalContact vAdditionalContact) {
+        additionalContactList.insertElementAt(vAdditionalContact, index);
+    }
 
-    /**
-     * 
-     * 
-     * @param vAdditionalContact
-    **/
-    public void addAdditionalContact(AdditionalContact vAdditionalContact)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _additionalContactList.addElement(vAdditionalContact);
-    } //-- void addAdditionalContact(AdditionalContact) 
+    public void deleteAccountID() {
+        this.hasAccountID = false;
+    } 
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vAdditionalContact
-    **/
-    public void addAdditionalContact(int index, AdditionalContact vAdditionalContact)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _additionalContactList.insertElementAt(vAdditionalContact, index);
-    } //-- void addAdditionalContact(int, AdditionalContact) 
+    public void deleteCustomerID() {
+        this.hasCustomerID = false;
+    } 
 
-    /**
-    **/
-    public void deleteAccountID()
-    {
-        this._has_accountID= false;
-    } //-- void deleteAccountID() 
+    public void deleteIsCommercial() {
+        this.hasIsCommercial = false;
+    }
 
-    /**
-    **/
-    public void deleteCustomerID()
-    {
-        this._has_customerID= false;
-    } //-- void deleteCustomerID() 
+    public Enumeration<AdditionalContact> enumerateAdditionalContact() {
+        return additionalContactList.elements();
+    } 
 
-    /**
-    **/
-    public void deleteIsCommercial()
-    {
-        this._has_isCommercial= false;
-    } //-- void deleteIsCommercial() 
+    public int getAccountID() {
+        return this.accountID;
+    }
 
-    /**
-    **/
-    public java.util.Enumeration enumerateAdditionalContact()
-    {
-        return _additionalContactList.elements();
-    } //-- java.util.Enumeration enumerateAdditionalContact() 
+    public String getAccountNotes() {
+        return this.accountNotes;
+    } 
 
-    /**
-     * Returns the value of field 'accountID'.
-     * 
-     * @return the value of field 'accountID'.
-    **/
-    public int getAccountID()
-    {
-        return this._accountID;
-    } //-- int getAccountID() 
+    public String getAccountNumber() {
+        return this.accountNumber;
+    }
 
-    /**
-     * Returns the value of field 'accountNotes'.
-     * 
-     * @return the value of field 'accountNotes'.
-    **/
-    public java.lang.String getAccountNotes()
-    {
-        return this._accountNotes;
-    } //-- java.lang.String getAccountNotes() 
-
-    /**
-     * Returns the value of field 'accountNumber'.
-     * 
-     * @return the value of field 'accountNumber'.
-    **/
-    public java.lang.String getAccountNumber()
-    {
-        return this._accountNumber;
-    } //-- java.lang.String getAccountNumber() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public AdditionalContact getAdditionalContact(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public AdditionalContact getAdditionalContact(int index) {
         //-- check bounds for index
-        if ((index < 0) || (index > _additionalContactList.size())) {
+        if ((index < 0) || (index > additionalContactList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (AdditionalContact) _additionalContactList.elementAt(index);
-    } //-- AdditionalContact getAdditionalContact(int) 
-
-    /**
-    **/
-    public AdditionalContact[] getAdditionalContact()
-    {
-        int size = _additionalContactList.size();
-        AdditionalContact[] mArray = new AdditionalContact[size];
-        for (int index = 0; index < size; index++) {
-            mArray[index] = (AdditionalContact) _additionalContactList.elementAt(index);
-        }
-        return mArray;
-    } //-- AdditionalContact[] getAdditionalContact() 
-
-    /**
-    **/
-    public int getAdditionalContactCount()
-    {
-        return _additionalContactList.size();
-    } //-- int getAdditionalContactCount() 
-
-    /**
-     * Returns the value of field 'billingAddress'.
-     * 
-     * @return the value of field 'billingAddress'.
-    **/
-    public BillingAddress getBillingAddress()
-    {
-        return this._billingAddress;
-    } //-- BillingAddress getBillingAddress() 
-
-    /**
-     * Returns the value of field 'company'.
-     * 
-     * @return the value of field 'company'.
-    **/
-    public java.lang.String getCompany()
-    {
-        return this._company;
-    } //-- java.lang.String getCompany() 
-
-    public int getCICustomerType()
-    {
-        return this._custType;
-    }
-    
-    /**
-     * Returns the value of field 'customerID'.
-     * 
-     * @return the value of field 'customerID'.
-    **/
-    public int getCustomerID()
-    {
-        return this._customerID;
-    } //-- int getCustomerID() 
-
-    /**
-     * Returns the value of field 'isCommercial'.
-     * 
-     * @return the value of field 'isCommercial'.
-    **/
-    public boolean getIsCommercial()
-    {
-        return this._isCommercial;
-    } //-- boolean getIsCommercial() 
-
-    /**
-     * Returns the value of field 'primaryContact'.
-     * 
-     * @return the value of field 'primaryContact'.
-    **/
-    public PrimaryContact getPrimaryContact()
-    {
-        return this._primaryContact;
-    } //-- PrimaryContact getPrimaryContact() 
-
-    /**
-     * Returns the value of field 'propertyNotes'.
-     * 
-     * @return the value of field 'propertyNotes'.
-    **/
-    public java.lang.String getPropertyNotes()
-    {
-        return this._propertyNotes;
-    } //-- java.lang.String getPropertyNotes() 
-
-    /**
-     * Returns the value of field 'propertyNumber'.
-     * 
-     * @return the value of field 'propertyNumber'.
-    **/
-    public java.lang.String getPropertyNumber()
-    {
-        return this._propertyNumber;
-    } //-- java.lang.String getPropertyNumber() 
-
-    /**
-     * Returns the value of field 'starsSiteInformation'.
-     * 
-     * @return the value of field 'starsSiteInformation'.
-    **/
-    public StarsSiteInformation getStarsSiteInformation()
-    {
-        return this._starsSiteInformation;
-    } //-- StarsSiteInformation getStarsSiteInformation() 
-
-    /**
-     * Returns the value of field 'streetAddress'.
-     * 
-     * @return the value of field 'streetAddress'.
-    **/
-    public StreetAddress getStreetAddress()
-    {
-        return this._streetAddress;
-    } //-- StreetAddress getStreetAddress() 
-
-    /**
-     * Returns the value of field 'timeZone'.
-     * 
-     * @return the value of field 'timeZone'.
-    **/
-    public java.lang.String getTimeZone()
-    {
-        return this._timeZone;
-    } //-- java.lang.String getTimeZone() 
-    
-    public java.lang.String getCustomerNumber()
-    {
-    	return this._customerNumber;
-    }
-     
-    public int getRateScheduleID()
-    {
-    	return this._rateScheduleID;
+        return additionalContactList.elementAt(index);
     } 
 
-	public java.lang.String getAltTrackingNumber()
-	{
-		return this._altTrackNumber;
+    public AdditionalContact[] getAdditionalContact() {
+        int size = additionalContactList.size();
+        AdditionalContact[] mArray = new AdditionalContact[size];
+        for (int index = 0; index < size; index++) {
+            mArray[index] = (AdditionalContact) additionalContactList.elementAt(index);
+        }
+        return mArray;
+    } 
+
+    public int getAdditionalContactCount() {
+        return additionalContactList.size();
+    }
+
+    public BillingAddress getBillingAddress() {
+        return this.billingAddress;
+    }
+
+    public String getCompany() {
+        return this.company;
+    }
+
+    public int getCICustomerType() {
+        return this.custType;
+    }
+    
+    public int getCustomerID() {
+        return this.customerID;
+    }
+
+    public boolean getIsCommercial() {
+        return this.isCommercial;
+    }
+
+    public PrimaryContact getPrimaryContact() {
+        return this.primaryContact;
+    }
+
+    public String getPropertyNotes() {
+        return this.propertyNotes;
+    }
+
+    public String getPropertyNumber() {
+        return this.propertyNumber;
+    }
+
+    public StarsSiteInformation getStarsSiteInformation() {
+        return this.starsSiteInformation;
+    }
+
+    public StreetAddress getStreetAddress() {
+        return this.streetAddress;
+    }
+
+    public String getTimeZone() {
+        return this.timeZone;
+    }
+    
+    public String getCustomerNumber() {
+    	return this.customerNumber;
+    }
+     
+    public int getRateScheduleID() {
+    	return this.rateScheduleID;
+    } 
+
+	public String getAltTrackingNumber() {
+		return this.altTrackNumber;
 	}
-    /**
-    **/
-    public boolean hasAccountID()
-    {
-        return this._has_accountID;
-    } //-- boolean hasAccountID() 
 
-    /**
-    **/
-    public boolean hasCustomerID()
-    {
-        return this._has_customerID;
-    } //-- boolean hasCustomerID() 
+	public boolean hasAccountID() {
+        return this.hasAccountID;
+    }
 
-    /**
-    **/
-    public boolean hasIsCommercial()
-    {
-        return this._has_isCommercial;
-    } //-- boolean hasIsCommercial() 
+    public boolean hasCustomerID() {
+        return this.hasCustomerID;
+    }
 
-    /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
+    public boolean hasIsCommercial() {
+        return this.hasIsCommercial;
+    }
 
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public AdditionalContact removeAdditionalContact(int index) {
+        AdditionalContact obj = additionalContactList.elementAt(index);
+        additionalContactList.removeElementAt(index);
+        return obj;
+    } 
 
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void removeAllAdditionalContact() {
+        additionalContactList.removeAllElements();
+    }
 
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public AdditionalContact removeAdditionalContact(int index)
-    {
-        java.lang.Object obj = _additionalContactList.elementAt(index);
-        _additionalContactList.removeElementAt(index);
-        return (AdditionalContact) obj;
-    } //-- AdditionalContact removeAdditionalContact(int) 
+    public void setAccountID(int accountID) {
+        this.accountID = accountID;
+        this.hasAccountID = true;
+    }
 
-    /**
-    **/
-    public void removeAllAdditionalContact()
-    {
-        _additionalContactList.removeAllElements();
-    } //-- void removeAllAdditionalContact() 
+    public void setAccountNotes(String accountNotes) {
+        this.accountNotes = accountNotes;
+    }
 
-    /**
-     * Sets the value of field 'accountID'.
-     * 
-     * @param accountID the value of field 'accountID'.
-    **/
-    public void setAccountID(int accountID)
-    {
-        this._accountID = accountID;
-        this._has_accountID = true;
-    } //-- void setAccountID(int) 
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
+    }
 
-    /**
-     * Sets the value of field 'accountNotes'.
-     * 
-     * @param accountNotes the value of field 'accountNotes'.
-    **/
-    public void setAccountNotes(java.lang.String accountNotes)
-    {
-        this._accountNotes = accountNotes;
-    } //-- void setAccountNotes(java.lang.String) 
-
-    /**
-     * Sets the value of field 'accountNumber'.
-     * 
-     * @param accountNumber the value of field 'accountNumber'.
-    **/
-    public void setAccountNumber(java.lang.String accountNumber)
-    {
-        this._accountNumber = accountNumber;
-    } //-- void setAccountNumber(java.lang.String) 
-
-    /**
-     * 
-     * 
-     * @param index
-     * @param vAdditionalContact
-    **/
-    public void setAdditionalContact(int index, AdditionalContact vAdditionalContact)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public void setAdditionalContact(int index, AdditionalContact vAdditionalContact) {
         //-- check bounds for index
-        if ((index < 0) || (index > _additionalContactList.size())) {
+        if ((index < 0) || (index > additionalContactList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _additionalContactList.setElementAt(vAdditionalContact, index);
-    } //-- void setAdditionalContact(int, AdditionalContact) 
-
-    /**
-     * 
-     * 
-     * @param additionalContactArray
-    **/
-    public void setAdditionalContact(AdditionalContact[] additionalContactArray)
-    {
-        //-- copy array
-        _additionalContactList.removeAllElements();
-        for (int i = 0; i < additionalContactArray.length; i++) {
-            _additionalContactList.addElement(additionalContactArray[i]);
-        }
-    } //-- void setAdditionalContact(AdditionalContact) 
-
-    /**
-     * Sets the value of field 'billingAddress'.
-     * 
-     * @param billingAddress the value of field 'billingAddress'.
-    **/
-    public void setBillingAddress(BillingAddress billingAddress)
-    {
-        this._billingAddress = billingAddress;
-    } //-- void setBillingAddress(BillingAddress) 
-
-    /**
-     * Sets the value of field 'company'.
-     * 
-     * @param company the value of field 'company'.
-    **/
-    public void setCompany(java.lang.String company)
-    {
-        this._company = company;
-    } //-- void setCompany(java.lang.String) 
-
-    public void setCICustomerType(int custType)
-    {
-        this._custType = custType;
+        additionalContactList.setElementAt(vAdditionalContact, index);
     }
-    /**
-     * Sets the value of field 'customerID'.
-     * 
-     * @param customerID the value of field 'customerID'.
-    **/
-    public void setCustomerID(int customerID)
-    {
-        this._customerID = customerID;
-        this._has_customerID = true;
-    } //-- void setCustomerID(int) 
 
-    /**
-     * Sets the value of field 'isCommercial'.
-     * 
-     * @param isCommercial the value of field 'isCommercial'.
-    **/
-    public void setIsCommercial(boolean isCommercial)
-    {
-        this._isCommercial = isCommercial;
-        this._has_isCommercial = true;
-    } //-- void setIsCommercial(boolean) 
+    public void setAdditionalContact(AdditionalContact[] additionalContactArray) {
+        //-- copy array
+        additionalContactList.removeAllElements();
+        for (int i = 0; i < additionalContactArray.length; i++) {
+            additionalContactList.addElement(additionalContactArray[i]);
+        }
+    }
 
-    /**
-     * Sets the value of field 'primaryContact'.
-     * 
-     * @param primaryContact the value of field 'primaryContact'.
-    **/
-    public void setPrimaryContact(PrimaryContact primaryContact)
-    {
-        this._primaryContact = primaryContact;
-    } //-- void setPrimaryContact(PrimaryContact) 
+    public void setBillingAddress(BillingAddress billingAddress) {
+        this.billingAddress = billingAddress;
+    }
 
-    /**
-     * Sets the value of field 'propertyNotes'.
-     * 
-     * @param propertyNotes the value of field 'propertyNotes'.
-    **/
-    public void setPropertyNotes(java.lang.String propertyNotes)
-    {
-        this._propertyNotes = propertyNotes;
-    } //-- void setPropertyNotes(java.lang.String) 
+    public void setCompany(String company) {
+        this.company = company;
+    }
 
-    /**
-     * Sets the value of field 'propertyNumber'.
-     * 
-     * @param propertyNumber the value of field 'propertyNumber'.
-    **/
-    public void setPropertyNumber(java.lang.String propertyNumber)
-    {
-        this._propertyNumber = propertyNumber;
-    } //-- void setPropertyNumber(java.lang.String) 
-
-    /**
-     * Sets the value of field 'starsSiteInformation'.
-     * 
-     * @param starsSiteInformation the value of field
-     * 'starsSiteInformation'.
-    **/
-    public void setStarsSiteInformation(StarsSiteInformation starsSiteInformation)
-    {
-        this._starsSiteInformation = starsSiteInformation;
-    } //-- void setStarsSiteInformation(StarsSiteInformation) 
-
-    /**
-     * Sets the value of field 'streetAddress'.
-     * 
-     * @param streetAddress the value of field 'streetAddress'.
-    **/
-    public void setStreetAddress(StreetAddress streetAddress)
-    {
-        this._streetAddress = streetAddress;
-    } //-- void setStreetAddress(StreetAddress) 
-
-    /**
-     * Sets the value of field 'timeZone'.
-     * 
-     * @param timeZone the value of field 'timeZone'.
-    **/
-    public void setTimeZone(java.lang.String tZone)
-    {
-        this._timeZone = tZone;
-    } //-- void setTimeZone(java.lang.String)    
+    public void setCICustomerType(int custType) {
+        this.custType = custType;
+    }
     
-    public void setCustomerNumber(java.lang.String custNum)
-	{
-		this._customerNumber = custNum;
-	} //-- void setCustomerNumber(java.lang.String) 
+    public void setCustomerID(int customerID) {
+        this.customerID = customerID;
+        this.hasCustomerID = true;
+    }
 
-	public void setRateScheduleID(int rSched)
-	{
-		this._rateScheduleID = rSched;
-	} //-- void setRateSchedule(java.lang.String) 
+    public void setIsCommercial(boolean isCommercial) {
+        this.isCommercial = isCommercial;
+        this.hasIsCommercial = true;
+    }
+
+    public void setPrimaryContact(PrimaryContact primaryContact) {
+        this.primaryContact = primaryContact;
+    } 
+
+    public void setPropertyNotes(String propertyNotes) {
+        this.propertyNotes = propertyNotes;
+    }
+
+    public void setPropertyNumber(String propertyNumber) {
+        this.propertyNumber = propertyNumber;
+    }
+
+    public void setStarsSiteInformation(StarsSiteInformation starsSiteInformation) {
+        this.starsSiteInformation = starsSiteInformation;
+    } 
+
+    public void setStreetAddress(StreetAddress streetAddress) {
+        this.streetAddress = streetAddress;
+    } 
+
+    public void setTimeZone(String tZone) {
+        this.timeZone = tZone;
+    }
+    
+    public void setCustomerNumber(String custNum) {
+		this.customerNumber = custNum;
+	}
+
+	public void setRateScheduleID(int rSched) {
+		this.rateScheduleID = rSched;
+	}
 	
-	public void setAltTrackingNumber(java.lang.String altNum)
-	{
-		this._altTrackNumber = altNum;
-	} //-- void setCustomerNumber(java.lang.String) 
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
-
+	public void setAltTrackingNumber(String altNum) {
+		this.altTrackNumber = altNum;
+	}
+	
     public String getCustAtHome() {
-        return _custAtHome;
+        return custAtHome;
     }
 
     public void setCustAtHome(String _custAtHome) {
-        this._custAtHome = _custAtHome;
+        this.custAtHome = _custAtHome;
     }
 
     public String getCustStatus() {
-        return _custStatus;
+        return custStatus;
     }
 
     public void setCustStatus(String _custStatus) {
-        this._custStatus = _custStatus;
+        this.custStatus = _custStatus;
     }
+    
 }

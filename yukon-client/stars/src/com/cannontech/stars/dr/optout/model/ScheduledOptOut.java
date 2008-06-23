@@ -2,32 +2,17 @@ package com.cannontech.stars.dr.optout.model;
 
 import java.util.Date;
 
+
 public class ScheduledOptOut {
     private int customerAccountId;
     private Date startDate;
     private Date endDate;
-    private int duration;
+    private int durationInHours;
     
     public ScheduledOptOut() {
         
     }
     
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
     public int getCustomerAccountId() {
         return customerAccountId;
     }
@@ -36,12 +21,28 @@ public class ScheduledOptOut {
         this.customerAccountId = customerAccountId;
     }
     
-    public int getDuration() {
-        return duration;
+    public Date getStartDate() {
+        return startDate;
     }
-
-    public void setDuration(int duration) {
-        this.duration = duration;
+    
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+    
+    public Date getEndDate() {
+        return endDate;
+    }
+    
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+    
+    public int getDurationInHours() {
+        return durationInHours;
+    }
+    
+    public void setDurationInHours(int durationInHours) {
+        this.durationInHours = durationInHours;
     }
 
     @Override
@@ -49,7 +50,7 @@ public class ScheduledOptOut {
         final int prime = 31;
         int result = 1;
         result = prime * result + customerAccountId;
-        result = prime * result + duration;
+        result = prime * result + durationInHours;
         result = prime * result + ((endDate == null) ? 0 : endDate.hashCode());
         result = prime * result + ((startDate == null) ? 0
                 : startDate.hashCode());
@@ -67,7 +68,7 @@ public class ScheduledOptOut {
         final ScheduledOptOut other = (ScheduledOptOut) obj;
         if (customerAccountId != other.customerAccountId)
             return false;
-        if (duration != other.duration)
+        if (durationInHours != other.durationInHours)
             return false;
         if (endDate == null) {
             if (other.endDate != null)

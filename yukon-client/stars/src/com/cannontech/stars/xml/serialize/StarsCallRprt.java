@@ -1,231 +1,75 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id$
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
+import java.util.Date;
 
-
-/**
- * 
- * 
- * @version $Revision$ $Date$
-**/
-public abstract class StarsCallRprt implements java.io.Serializable {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private int _callID;
-
-    /**
-     * keeps track of state for field: _callID
-    **/
-    private boolean _has_callID;
-
-    private java.lang.String _callNumber;
-
-    private java.util.Date _callDate;
-
-    private CallType _callType;
-
-    private java.lang.String _takenBy;
-
-    private java.lang.String _description;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+public abstract class StarsCallRprt {
+    private int callID;
+    private boolean hasCallID;
+    private String callNumber;
+    private Date callDate;
+    private CallType callType;
+    private String takenBy;
+    private String description;
 
     public StarsCallRprt() {
-        super();
-    } //-- com.cannontech.stars.xml.serialize.StarsCallRprt()
+        
+    }
 
+    public void deleteCallID() {
+        this.hasCallID = false;
+    } 
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    public Date getCallDate() {
+        return this.callDate;
+    } 
 
-    /**
-    **/
-    public void deleteCallID()
-    {
-        this._has_callID= false;
-    } //-- void deleteCallID() 
+    public int getCallID() {
+        return this.callID;
+    }
 
-    /**
-     * Returns the value of field 'callDate'.
-     * 
-     * @return the value of field 'callDate'.
-    **/
-    public java.util.Date getCallDate()
-    {
-        return this._callDate;
-    } //-- java.util.Date getCallDate() 
+    public String getCallNumber() {
+        return this.callNumber;
+    } 
 
-    /**
-     * Returns the value of field 'callID'.
-     * 
-     * @return the value of field 'callID'.
-    **/
-    public int getCallID()
-    {
-        return this._callID;
-    } //-- int getCallID() 
+    public CallType getCallType() {
+        return this.callType;
+    }
 
-    /**
-     * Returns the value of field 'callNumber'.
-     * 
-     * @return the value of field 'callNumber'.
-    **/
-    public java.lang.String getCallNumber()
-    {
-        return this._callNumber;
-    } //-- java.lang.String getCallNumber() 
+    public String getDescription() {
+        return this.description;
+    } 
 
-    /**
-     * Returns the value of field 'callType'.
-     * 
-     * @return the value of field 'callType'.
-    **/
-    public CallType getCallType()
-    {
-        return this._callType;
-    } //-- CallType getCallType() 
+    public String getTakenBy() {
+        return this.takenBy;
+    } 
 
-    /**
-     * Returns the value of field 'description'.
-     * 
-     * @return the value of field 'description'.
-    **/
-    public java.lang.String getDescription()
-    {
-        return this._description;
-    } //-- java.lang.String getDescription() 
+    public boolean hasCallID() {
+        return this.hasCallID;
+    }
 
-    /**
-     * Returns the value of field 'takenBy'.
-     * 
-     * @return the value of field 'takenBy'.
-    **/
-    public java.lang.String getTakenBy()
-    {
-        return this._takenBy;
-    } //-- java.lang.String getTakenBy() 
+    public void setCallDate(Date callDate) {
+        this.callDate = callDate;
+    } 
 
-    /**
-    **/
-    public boolean hasCallID()
-    {
-        return this._has_callID;
-    } //-- boolean hasCallID() 
+    public void setCallID(int callID) {
+        this.callID = callID;
+        this.hasCallID = true;
+    }
 
-    /**
-    **/
-    public boolean isValid()
-    {
-        try {
-            validate();
-        }
-        catch (org.exolab.castor.xml.ValidationException vex) {
-            return false;
-        }
-        return true;
-    } //-- boolean isValid() 
+    public void setCallNumber(String callNumber) {
+        this.callNumber = callNumber;
+    } 
 
-    /**
-     * 
-     * 
-     * @param out
-    **/
-    public abstract void marshal(java.io.Writer out)
-        throws org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void setCallType(CallType callType) {
+        this.callType = callType;
+    } 
 
-    /**
-     * 
-     * 
-     * @param handler
-    **/
-    public abstract void marshal(org.xml.sax.ContentHandler handler)
-        throws java.io.IOException, org.exolab.castor.xml.MarshalException, org.exolab.castor.xml.ValidationException;
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-    /**
-     * Sets the value of field 'callDate'.
-     * 
-     * @param callDate the value of field 'callDate'.
-    **/
-    public void setCallDate(java.util.Date callDate)
-    {
-        this._callDate = callDate;
-    } //-- void setCallDate(java.util.Date) 
-
-    /**
-     * Sets the value of field 'callID'.
-     * 
-     * @param callID the value of field 'callID'.
-    **/
-    public void setCallID(int callID)
-    {
-        this._callID = callID;
-        this._has_callID = true;
-    } //-- void setCallID(int) 
-
-    /**
-     * Sets the value of field 'callNumber'.
-     * 
-     * @param callNumber the value of field 'callNumber'.
-    **/
-    public void setCallNumber(java.lang.String callNumber)
-    {
-        this._callNumber = callNumber;
-    } //-- void setCallNumber(java.lang.String) 
-
-    /**
-     * Sets the value of field 'callType'.
-     * 
-     * @param callType the value of field 'callType'.
-    **/
-    public void setCallType(CallType callType)
-    {
-        this._callType = callType;
-    } //-- void setCallType(CallType) 
-
-    /**
-     * Sets the value of field 'description'.
-     * 
-     * @param description the value of field 'description'.
-    **/
-    public void setDescription(java.lang.String description)
-    {
-        this._description = description;
-    } //-- void setDescription(java.lang.String) 
-
-    /**
-     * Sets the value of field 'takenBy'.
-     * 
-     * @param takenBy the value of field 'takenBy'.
-    **/
-    public void setTakenBy(java.lang.String takenBy)
-    {
-        this._takenBy = takenBy;
-    } //-- void setTakenBy(java.lang.String) 
-
-    /**
-    **/
-    public void validate()
-        throws org.exolab.castor.xml.ValidationException
-    {
-        org.exolab.castor.xml.Validator validator = new org.exolab.castor.xml.Validator();
-        validator.validate(this);
-    } //-- void validate() 
+    public void setTakenBy(String takenBy) {
+        this.takenBy = takenBy;
+    } 
 
 }

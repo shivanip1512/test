@@ -3,7 +3,6 @@ package com.cannontech.web.stars.dr.consumer;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.NoSuchMessageException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -11,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.cannontech.common.i18n.MessageSourceAccessor;
-import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.web.security.annotation.CheckRole;
@@ -24,8 +22,6 @@ public class ConsumerFAQController extends AbstractConsumerController {
     private static final String question = ".question";
     private static final String answer = ".answer";
     private static final String subject = ".subject";
-    
-    private YukonUserContextMessageSourceResolver messageSourceResolver;
 
     @CheckRole(ResidentialCustomerRole.ROLEID)
     @CheckRoleProperty(ResidentialCustomerRole.CONSUMER_INFO_QUESTIONS_FAQ)
@@ -74,12 +70,6 @@ public class ConsumerFAQController extends AbstractConsumerController {
         }
         
         return resultMap;
-    }
-    
-    @Autowired
-    public void setMessageSourceResolver(
-            YukonUserContextMessageSourceResolver messageSourceResolver) {
-        this.messageSourceResolver = messageSourceResolver;
     }
     
 }
