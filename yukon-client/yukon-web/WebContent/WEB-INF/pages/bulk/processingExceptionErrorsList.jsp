@@ -4,6 +4,6 @@
 
 <ul>
 <c:forEach var="e" items="${exceptionRowNumberMap}">
-   <li><div style="font-size:11px;">Line ${e.key + 1} - ${e.value.message}"</div></li>
+   <li><div style="font-size:11px;">Line ${e.key + 1} - ${e.value.message}</div></li>
 </c:forEach>
 </ul>
