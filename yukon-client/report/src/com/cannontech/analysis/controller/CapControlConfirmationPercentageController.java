@@ -21,8 +21,7 @@ public class CapControlConfirmationPercentageController extends CapControlReport
             ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
             ReportFilter.CAPCONTROLSUBBUS,
-            ReportFilter.CAPCONTROLFEEDER,
-            ReportFilter.CAPBANK
+            ReportFilter.CAPCONTROLFEEDER
             };
     private TimeZone timeZone = TimeZone.getDefault();
     
@@ -77,19 +76,19 @@ public class CapControlConfirmationPercentageController extends CapControlReport
             filterableModel.setAreaIdsFilter(null);
             filterableModel.setSubbusIdsFilter(idsSet);
             filterableModel.setSubstationIdsFilter(null);
+        } else if (filterModelType == ReportFilter.CAPCONTROLSUBSTATION.ordinal()) {
+            filterableModel.setCapBankIdsFilter(null);
+            filterableModel.setFeederIdsFilter(null);
+            filterableModel.setAreaIdsFilter(null);
+            filterableModel.setSubbusIdsFilter(null);
+            filterableModel.setSubstationIdsFilter(idsSet);
         } else if (filterModelType == ReportFilter.AREA.ordinal()) {
             filterableModel.setCapBankIdsFilter(null);
             filterableModel.setFeederIdsFilter(null);
             filterableModel.setAreaIdsFilter(idsSet);
             filterableModel.setSubbusIdsFilter(null);
             filterableModel.setSubstationIdsFilter(null);
-        }   else if (filterModelType == ReportFilter.CAPCONTROLSUBSTATION.ordinal()) {
-            filterableModel.setCapBankIdsFilter(null);
-            filterableModel.setFeederIdsFilter(null);
-            filterableModel.setAreaIdsFilter(null);
-            filterableModel.setSubbusIdsFilter(null);
-            filterableModel.setSubstationIdsFilter(idsSet);
-        } 
+        }
         
         String param = request.getParameter(ReportModelBase.ATT_START_DATE);
         if( param != null)
