@@ -75,6 +75,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
             public String getValueString(PointValueHolder data, String format, YukonUserContext userContext) {
                 FormattingTemplateProcessor templateProcessor = templateProcessorFactory.getFormattingTemplateProcessor(userContext);
                 Object value = "";
+                Double rawValue = data.getValue();
                 String valueStr = "";
                 String unitString = "";
                 String state = "";
@@ -144,6 +145,7 @@ public class PointFormattingServiceImpl implements PointFormattingService {
                 }
                 Map<String,Object> params = new HashMap<String, Object>();
                 params.put("value", value);
+                params.put("rawValue", rawValue);
                 params.put("decimals", decimalDigits);
                 params.put("default", valueStr);
                 params.put("status", statusPoint);

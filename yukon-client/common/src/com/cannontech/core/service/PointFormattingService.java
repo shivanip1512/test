@@ -21,7 +21,8 @@ public interface PointFormattingService {
         FULL,
         SHORT,
         SHORTDATE,
-        DATE;
+        DATE,
+        RAWVALUE;
         
         private final static String keyPrefix = "yukon.common.pointFormatting.";
 
