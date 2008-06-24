@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
@@ -19,9 +20,12 @@ import org.jfree.report.modules.output.csv.CSVQuoter;
 
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.Reportable;
+import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.util.ServletUtil;
@@ -669,5 +673,43 @@ public abstract class ReportModelBase<E> extends javax.swing.table.AbstractTable
         Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(getBillingGroups()));
         return deviceGroupService.getDeviceGroupSqlWhereClause(deviceGroups, identifier);
     }
+    
+    protected boolean isDeviceInSelectedGroups(int paoId) {
+        
+        DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
+        DeviceDao deviceDao = YukonSpringHook.getBean("deviceDao", DeviceDao.class);
+        DeviceGroupProviderDao deviceGroupDao = YukonSpringHook.getBean("deviceGroupDao", DeviceGroupProviderDao.class);
+        
+        YukonDevice device = deviceDao.getYukonDevice(paoId);
+        Set<? extends DeviceGroup> deviceGroups = deviceGroupService.resolveGroupNames(Arrays.asList(getBillingGroups()));
+        Iterator<? extends DeviceGroup> it = deviceGroups.iterator();
+        while (it.hasNext()) {
+            
+            DeviceGroup group = it.next();
+            if (deviceGroupDao.isDeviceInGroup(group, device)) {
+                return true;
+            }
+        }
+        
+        // not found to be in any of the selected group, don't add result
+        return false;
+    }
+    
+    protected String getPaoIdWhereClause(String fieldIdentifer) {
+        
+        String sql = "";
+        int[] paoIds = getPaoIDs();
+        
+        if (paoIds != null && paoIds.length > 0)
+        {
+            sql = " " + fieldIdentifer + " IN (" + paoIds[0];
+            for (int i = 1; i < paoIds.length; i++)
+                sql += ", " + paoIds[i];
+            sql += ") ";
+        }   
+        
+        return sql;
+    }
+    
 
 }

@@ -2,20 +2,19 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
@@ -117,6 +116,12 @@ public class MeterOutageCountModel extends ReportModelBase
 	public MeterOutageCountModel(Date start_, Date stop_)
 	{
 		super(start_, stop_);
+		setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.METER,
+                ReportFilter.DEVICE,
+                ReportFilter.GROUPS}
+                );
+		
 	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
@@ -138,11 +143,11 @@ public class MeterOutageCountModel extends ReportModelBase
             }
             String groupName = deviceGroup.getFullName();
             
-            final String[] groups = getBillingGroups();
-            if (groups != null && groups.length > 0) {  //Device Groups were specified, only include groups that were selected 
-                List<String> deviceGroupNames = Arrays.asList(groups);
-                if( !deviceGroupNames.contains(groupName) )
+            // RESTRICT BY GROUPS (if any)
+            if (getBillingGroups() != null && getBillingGroups().length > 0) {
+                if (!isDeviceInSelectedGroups(rset.getInt(6))) {
                     return;
+                }
             }
             
 			String paoName = rset.getString(2);
@@ -337,7 +342,7 @@ public class MeterOutageCountModel extends ReportModelBase
 	 */
 	public StringBuffer buildSQLStatement()
 	{
-		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DGM.DEVICEGROUPID, PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE " + 
+		StringBuffer sql = new StringBuffer	("SELECT DISTINCT DGM.DEVICEGROUPID, PAO.PAONAME, P.POINTNAME, RPH.TIMESTAMP, RPH.VALUE, PAO.PAOBJECTID " + 
 			" FROM YUKONPAOBJECT PAO, DEVICEMETERGROUP DMG, DEVICEGROUPMEMBER DGM, " +
 			" POINT P "  + (isIncompleteDataReport() ? " left outer " : "") + " join RAWPOINTHISTORY RPH "+
 			" ON P.POINTID = RPH.POINTID AND RPH.TIMESTAMP > ? AND TIMESTAMP <= ? " + //this is the join clause
@@ -347,24 +352,12 @@ public class MeterOutageCountModel extends ReportModelBase
 			" AND P.POINTOFFSET = 20 " + 
 			" AND P.POINTTYPE = 'PulseAccumulator' ");
 			
-//		Use paoIDs in query if they exist			
-		if( getPaoIDs() != null && getPaoIDs().length > 0)
-		{
-			sql.append(" AND PAO.PAOBJECTID IN (" + getPaoIDs()[0]);
-			for (int i = 1; i < getPaoIDs().length; i++)
-				sql.append(", " + getPaoIDs()[i]);
-			sql.append(") ");
-		} 	
-					
-        final DeviceGroupService deviceGroupService = YukonSpringHook.getBean("deviceGroupService", DeviceGroupService.class);
-        final String[] groups = getBillingGroups();
-        
-		if (groups != null && groups.length > 0) {
-            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
-            sql.append(" AND " + deviceGroupSqlWhereClause);
+		// RESTRICT BY DEVICE/METER PAOID (if any)
+		String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
+		if (!StringUtils.isBlank(paoIdWhereClause)) {
+		    sql.append(" AND " + paoIdWhereClause);
 		}
-
-			 
+					
 		sql.append("ORDER BY DGM.DEVICEGROUPID, PAO.PAONAME, P.POINTNAME, TIMESTAMP");
 		return sql;
 	

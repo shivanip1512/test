@@ -9,6 +9,8 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.DisconnectMeterAndPointData;
@@ -106,7 +108,12 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
 
     public DisconnectModel()
     {
-        this(false);		
+        this(false);	
+        setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.METER,
+                ReportFilter.DEVICE,
+                ReportFilter.GROUPS}
+                );
     }
 
     /**
@@ -118,6 +125,11 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
     {
         super();
         setShowHistory(showHist);
+        setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.METER,
+                ReportFilter.DEVICE,
+                ReportFilter.GROUPS}
+                );
     }
     @Override
     public void collectData()
@@ -229,6 +241,13 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
             sql.append(" AND RPH1.TIMESTAMP = ( SELECT MAX(RPH2.TIMESTAMP) FROM RAWPOINTHISTORY RPH2 " + 
             " WHERE RPH1.POINTID = RPH2.POINTID) " );
         }
+        
+        // RESTRICT BY DEVICE/METER PAOID (if any)
+        String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
+        if (!StringUtils.isBlank(paoIdWhereClause)) {
+            sql.append(" AND " + paoIdWhereClause);
+        } 
+        
         return sql;
     }
 
@@ -238,6 +257,14 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
      */
     public void addDataRow(ResultSet rs) {
         try {
+            
+            // RESTRICT BY GROUPS (if any)
+            if (getBillingGroups() != null && getBillingGroups().length > 0) {
+                if (!isDeviceInSelectedGroups(rs.getInt("PAOBJECTID"))) {
+                    return;
+                }
+            }
+            
             final Meter meter = new Meter();
             meter.setDeviceId(rs.getInt("PAOBJECTID"));
             meter.setName(rs.getString("PAONAME"));

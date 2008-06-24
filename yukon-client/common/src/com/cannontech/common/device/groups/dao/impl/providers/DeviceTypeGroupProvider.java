@@ -142,7 +142,7 @@ public class DeviceTypeGroupProvider extends DeviceGroupProviderBase {
 
         if (deviceGroup instanceof DeviceTypeDeviceGroup) {
             DeviceTypeDeviceGroup deviceTypeGroup = (DeviceTypeDeviceGroup) deviceGroup;
-            if(PAOGroups.getPAOTypeString(devicePao.getType()) == deviceTypeGroup.type){
+            if(PAOGroups.getPAOTypeString(devicePao.getType()).equals(deviceTypeGroup.type)){
                 return true;
             }else{
                 return false;

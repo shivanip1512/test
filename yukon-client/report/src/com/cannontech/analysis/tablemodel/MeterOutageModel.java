@@ -6,6 +6,8 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.MeterAndPointData;
@@ -71,6 +73,11 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 	public MeterOutageModel()
 	{
 		this(null);
+		setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.METER,
+                ReportFilter.DEVICE,
+                ReportFilter.GROUPS}
+                );
 	}
 	/**
 	 * 
@@ -79,6 +86,11 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 	{
 		//Long.MIN_VALUE is the default (null) value for time
 		super(start_, null);
+		setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.METER,
+                ReportFilter.DEVICE,
+                ReportFilter.GROUPS}
+                );
 	}
 	/**
 	 * Add MissedMeter objects to data, retrieved from rset.
@@ -88,6 +100,14 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 	{
 		try
 		{
+		    
+		    // RESTRICT BY GROUPS (if any)
+		    if (getBillingGroups() != null && getBillingGroups().length > 0) {
+		        if (!isDeviceInSelectedGroups(rset.getInt(1))) {
+		            return;
+		        }
+		    }
+		    
 		    Meter meter = new Meter();
             
             int paobjectID = rset.getInt(1);
@@ -152,6 +172,12 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 					" AND VALUE >= " + getMinOutageSecs() +
                     " AND TIMESTAMP > ? AND TIMESTAMP <= ? ");
 		
+        // RESTRICT BY DEVICE/METER PAOID (if any)
+        String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
+        if (!StringUtils.isBlank(paoIdWhereClause)) {
+            sql.append(" AND " + paoIdWhereClause);
+        }
+        
 		sql.append(" ORDER BY ");	//TODO what to order by?
 		if (getOrderBy() == ORDER_BY_TIMESTAMP)
 			sql.append(" TIMESTAMP " );		

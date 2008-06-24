@@ -8,6 +8,8 @@ import java.util.Comparator;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.analysis.ColumnProperties;
 import com.cannontech.analysis.data.device.LPMeterData;
@@ -75,6 +77,11 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	public LPSetupDBModel()
 	{
 		super();
+		setFilterModelTypes(new ReportFilter[]{
+                ReportFilter.METER,
+                ReportFilter.DEVICE,
+                ReportFilter.GROUPS}
+                );
 	}
 
 	/**
@@ -83,6 +90,14 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	 */
 	public void addDataRow(ResultSet rs) {
 		try {
+		    
+		    // RESTRICT BY GROUPS (if any)
+            if (getBillingGroups() != null && getBillingGroups().length > 0) {
+                if (!isDeviceInSelectedGroups(rs.getInt("PAOBJECTID"))) {
+                    return;
+                }
+            }
+		    
             final Meter meter = new Meter();
             meter.setDeviceId(rs.getInt("PAOBJECTID"));
             meter.setName(rs.getString("PAONAME"));
@@ -136,6 +151,12 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
         sql.append(" AND PAO.PAOBJECTID = DCS.DEVICEID ");
         sql.append(" AND PAO.PAOBJECTID = DR.DEVICEID ");
         sql.append(" AND ROUTE.PAOBJECTID = DR.ROUTEID ");
+        
+        // RESTRICT BY DEVICE/METER PAOID (if any)
+        String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
+        if (!StringUtils.isBlank(paoIdWhereClause)) {
+            sql.append(" AND " + paoIdWhereClause);
+        }
         
         //ORDER
 		sql.append("ORDER BY PAO.PAOBJECTID");
