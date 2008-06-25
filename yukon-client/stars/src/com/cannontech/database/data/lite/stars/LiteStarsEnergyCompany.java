@@ -2465,23 +2465,22 @@ public class LiteStarsEnergyCompany extends LiteBase {
             }
         }
         
-        if (!isAccountsLoaded()) {
-            try {
-                int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( accountNo, getLiteID() );
-                if (accountIDs == null || accountIDs.length == 0) return null;
+        /*Apparently has not been found in cache.  Let us conduct a righteous search upon the database*/
+        try {
+            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByAccountNumber( accountNo, getLiteID() );
+            if (accountIDs == null || accountIDs.length == 0) return null;
 
-                // There shouldn't be more than one customer accounts with the same account number
-                com.cannontech.database.data.stars.customer.CustomerAccount account =
-                        new com.cannontech.database.data.stars.customer.CustomerAccount();
-                account.setAccountID( new Integer(accountIDs[0]) );
-                account = (com.cannontech.database.data.stars.customer.CustomerAccount)
-                        Transaction.createTransaction(Transaction.RETRIEVE, account).execute();
-                
-                return addCustAccountInformation( account );
-            }
-            catch (Exception e) {
-                CTILogger.error( e.getMessage(), e );
-            }
+            // There shouldn't be more than one customer accounts with the same account number
+            com.cannontech.database.data.stars.customer.CustomerAccount account =
+                    new com.cannontech.database.data.stars.customer.CustomerAccount();
+            account.setAccountID( new Integer(accountIDs[0]) );
+            account = (com.cannontech.database.data.stars.customer.CustomerAccount)
+                    Transaction.createTransaction(Transaction.RETRIEVE, account).execute();
+            
+            return addCustAccountInformation( account );
+        }
+        catch (Exception e) {
+            CTILogger.error( e.getMessage(), e );
         }
         
         return null;
