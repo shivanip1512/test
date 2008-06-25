@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/06/13 13:39:49 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/06/25 15:55:40 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -32,75 +32,10 @@
 #include "prot_idlc.h"
 //#include "dnp_datalink.h"  //  DNP should be reimplemented as a wrapper protocol
 
+#include "fifo_multiset.h"
 
 namespace Cti       {
 namespace Protocol  {
-
-template <class Element, class Compare=less<Element> >
-struct ordered_pair_less : public std::binary_function<std::pair<Element, unsigned>,
-                                                       std::pair<Element, unsigned>, bool>
-{
-    bool operator()(const std::pair<Element, unsigned> &lhs,
-                    const std::pair<Element, unsigned> &rhs) const
-    {
-        bool less = Compare()(lhs.first, rhs.first);
-
-        //  if the .first elements are equal, then compare the ordering element
-        if( !less && !Compare()(rhs.first, lhs.first) )
-        {
-            less = lhs.second < rhs.second;
-        }
-
-        return less;
-    }
-};
-
-
-template <class Element, class Compare=less<Element> >
-class fifo_multiset : public std::set<std::pair<Element, unsigned>, ordered_pair_less<Element, Compare> >
-{
-    //  we cannot exhaust this count - 10 requests every second would
-    //     take 13+ years to hit 4 billion.  We can't talk that fast.
-    unsigned count;
-
-    typedef std::set<std::pair<Element, unsigned>, ordered_pair_less<Element, Compare> > Inherited;
-
-public:
-
-    class iterator : public Inherited::iterator
-    {
-        typedef Inherited::iterator set_itr;
-
-    public:
-
-        iterator(set_itr itr) : set_itr(itr) { }
-        iterator() : set_itr() { }
-
-        operator bool()      const  {  return (*(static_cast<const set_itr *>(this)))->first;  /*return *this;*/  }
-        Element operator->() const  {  return (*(static_cast<const set_itr *>(this)))->first;  /*return *this;*/  }
-        Element operator*()  const  {  return (*(static_cast<const set_itr *>(this)))->first;  }
-    };
-
-    iterator begin() const  {  return iterator((static_cast<const Inherited *>(this))->begin());  }
-    iterator end()   const  {  return iterator((static_cast<const Inherited *>(this))->end());    }
-
-    Inherited::_Pairib insert(Element element)
-    {
-        if( empty() )  count = 0;  //  if we ever get a breather, reset the FIFO count
-
-        return Inherited::insert(std::make_pair(element, ++count));
-    }
-};
-
-
-struct outmessage_ptr_less : public std::binary_function<OUTMESS *, OUTMESS *, bool>
-{
-    bool operator()(const OUTMESS *lhs, const OUTMESS *rhs)
-    {
-        return (lhs && rhs)?(lhs->Priority < rhs->Priority):(rhs);
-    }
-};
-
 
 class IM_EX_PROT Klondike : public Interface
 {
@@ -147,9 +82,9 @@ private:
     int _protocol_errors;
     int _read_toggle;
 
-    typedef fifo_multiset<const OUTMESS *, outmessage_ptr_less> local_work_t;
-    typedef std::map<unsigned, local_work_t::iterator>          pending_work_t;
-    typedef std::map<unsigned, const OUTMESS *>                 remote_work_t;
+    typedef fifo_multiset<const OUTMESS *, ptr_priority_sort<OUTMESS> > local_work_t;
+    typedef std::map<unsigned, local_work_t::iterator>                  pending_work_t;
+    typedef std::map<unsigned, const OUTMESS *>                         remote_work_t;
 
     local_work_t   _waiting_requests;
     pending_work_t _pending_requests;
