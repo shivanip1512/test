@@ -64,7 +64,7 @@ public:
 
    virtual ~CtiPILServer()
    {
-       delete_list(_inList);
+       delete_container(_inList);
        _inList.clear();
    }
 

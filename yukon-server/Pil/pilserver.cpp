@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.100 $
-* DATE         :  $Date: 2008/04/09 19:54:47 $
+* REVISION     :  $Revision: 1.101 $
+* DATE         :  $Date: 2008/06/25 18:02:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1015,7 +1015,7 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                 {
                     pExecReq->setSOE( SystemLogIdGen() );  // Get us a new number to deal with
                 }
-                delete_list(temp_outList);
+                delete_container(temp_outList);
                 temp_outList.clear();              // Just make sure!
 
                 if(Dev->isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
@@ -1185,13 +1185,13 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         VanGoghConnection.WriteConnQue((CtiMessage*)pVg);
     }
 
-    delete_list(vgList);
+    delete_container(vgList);
     vgList.clear();
 
-    delete_list(retList);
+    delete_container(retList);
     retList.clear();
 
-    delete_list(execList);
+    delete_container(execList);
     execList.clear();
 
     return status;
