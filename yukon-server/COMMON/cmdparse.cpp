@@ -502,6 +502,10 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
                 }
             }
         }
+        else if(CmdStr.contains(" usage"))
+        {
+            flag |= CMD_FLAG_GV_USAGE;
+        }
         else if(CmdStr.contains(" lp "))
         {
             if(!(token = CmdStr.match(re_lp)).empty())
@@ -5101,7 +5105,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         {
             //This code is this way to match what verscom does.
             CtiTokenizer   tok(token);
-            
+
             _cmd["xccold"] = CtiParseValue(TRUE);
 
             if(!(strnum = token.match("r[=][0-9]+[hms]?")).empty())

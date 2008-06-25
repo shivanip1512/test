@@ -157,11 +157,11 @@ public:
 #define CMD_FLAG_GV_PEAK         0x00000200
 #define CMD_FLAG_GV_MINMAX       0x00000400
 #define CMD_FLAG_GV_VOLTAGE      0x00000800
-#define CMD_FLAG_GV_CHMASK       0x00000FE0
 
 #define CMD_FLAG_GV_IED          0x00001000     // The reading is to be from a connected ied!
 
 #define CMD_FLAG_GV_PFCOUNT      0x00002000
+#define CMD_FLAG_GV_USAGE        0x00004000     // This is for all channels on a residential meter
 /* Defined below.... be careful
 #define CMD_FLAG_OFFSET          0x10000000     // A specific offset is defined in the next cmd field
 */

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.159 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.160 $
+* DATE         :  $Date: 2008/06/25 21:14:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2440,6 +2440,14 @@ INT CtiDeviceMCT410::decodeGetValueKWH(INMESS *InMessage, CtiTime &TimeNow, list
 
         if( !status )
         {
+            int channels = ChannelCount;
+
+            //  cheaper than looking for parse.getFlags() & CMD_FLAG_GV_KWH
+            if( strstr(InMessage->Return.CommandStr, " kwh") )
+            {
+                channels = 1;
+            }
+
             for( int i = 0; i < ChannelCount; i++ )
             {
                 int offset = (i * 3);

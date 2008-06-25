@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct.cpp-arc  $
-* REVISION     :  $Revision: 1.129 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.130 $
+* DATE         :  $Date: 2008/06/25 21:14:38 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1543,7 +1543,8 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
             found = getOperation(function, OutMessage->Buffer.BSt);
         }
     }
-    else if( parse.getFlags() & CMD_FLAG_GV_KWH )
+    else if( parse.getFlags() & CMD_FLAG_GV_KWH ||
+             parse.getFlags() & CMD_FLAG_GV_USAGE )
     {
         if( parse.getFlags() & CMD_FLAG_FROZEN )  //  Read the frozen values...
         {
@@ -1563,27 +1564,32 @@ INT CtiDeviceMCT::executeGetValue( CtiRequestMsg              *pReq,
         {
             channels = CtiDeviceMCT31X::ChannelCount;
         }
-        else if( getType() == TYPEMCT470 )
-        {
-            channels = CtiDeviceMCT470::ChannelCount;
-        }
         else if( getType() == TYPEMCT410 )
         {
             channels = CtiDeviceMCT410::ChannelCount;
         }
-
-        for( int i = channels; i > 1; i-- )
+        else if( getType() == TYPEMCT470 )
         {
-            if( !getDevicePointOffsetTypeEqual(i, PulseAccumulatorPointType ) )
+            channels = CtiDeviceMCT470::ChannelCount;
+        }
+
+        //  "getvalue kwh" is the short-form request for the MCT-410;  "getvalue usage" is the long form.
+        //    I don't like this type-specific code in the base class...  but I also don't want to add a virtual function for just this.
+        if( getType() == TYPEMCT410 && parse.getFlags() & CMD_FLAG_GV_KWH )
+        {
+            OutMessage->Buffer.BSt.Length -= 6;
+        }
+        else
+        {
+            for( int i = channels; i > 1; i-- )
             {
+                if( getDevicePointOffsetTypeEqual(i, PulseAccumulatorPointType ) )
+                {
+                    break;
+                }
+
                 OutMessage->Buffer.BSt.Length -= 3;
             }
-            else
-            {
-                break;
-            }
-
-            channels--;
         }
     }
 
