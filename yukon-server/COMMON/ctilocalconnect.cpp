@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2006/04/20 17:15:13 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/06/25 21:12:44 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -19,23 +19,22 @@
 #include "logger.h"
 #include "ctilocalconnect.h"
 
-CtiLocalConnect::~CtiLocalConnect()
+template <class Outbound, class Inbound>
+CtiLocalConnect<Outbound, Inbound>::~CtiLocalConnect()
 {
-    DirectDataKeeper* data;
-    while( !_outQueue.empty() )
-    {
-        data = &(_outQueue.front());
-        delete [] data->data;
-        _outQueue.pop();
-    }
+    delete_container(_outQueue);
+
+    _outQueue.clear();
 }
 
-ULONG CtiLocalConnect::CtiGetNexusState()
+template <class Outbound, class Inbound>
+ULONG CtiLocalConnect<Outbound, Inbound>::CtiGetNexusState()
 {
     return _nexusState;
 }
 
-INT CtiLocalConnect::CTINexusClose()
+template <class Outbound, class Inbound>
+INT CtiLocalConnect<Outbound, Inbound>::CTINexusClose()
 {
     _nexusState = CTINEXUS_STATE_NULL;
     {
@@ -46,20 +45,18 @@ INT CtiLocalConnect::CTINexusClose()
     return _nexusState;
 }
 
-INT CtiLocalConnect::CTINexusWrite(VOID *buf, ULONG len, PULONG BWritten, LONG TimeOut)
+template <class Outbound, class Inbound>
+INT CtiLocalConnect<Outbound, Inbound>::CTINexusWrite(VOID *buf, ULONG len, PULONG BWritten, LONG TimeOut)
 {
     int retVal = 1;
-    DirectDataKeeper data;
 
-    if( _nexusState && buf && len)
+    if( _nexusState && buf && len && len == sizeof(Outbound) )
     {
-        BYTE *bufStore = new BYTE[len];
-        data.data = bufStore;
-        data.len = len;
+        Outbound *o = 0;
 
         try
         {
-            memcpy(bufStore, buf, len);
+            Outbound *o = new Outbound(*(static_cast<Outbound *>(buf)));
 
             if( gConfigParms.getValueAsULong("DEBUGLEVEL_NEXUS",0, 16) & 0x00000010 )
             {
@@ -69,7 +66,7 @@ INT CtiLocalConnect::CTINexusWrite(VOID *buf, ULONG len, PULONG BWritten, LONG T
 
             {
                 CtiLockGuard< CtiCriticalSection > g(_crit);
-                _outQueue.push(data);
+                _outQueue.insert(o);
             }
 
             if( BWritten )
@@ -83,11 +80,7 @@ INT CtiLocalConnect::CTINexusWrite(VOID *buf, ULONG len, PULONG BWritten, LONG T
         {
             retVal = 1;
 
-            if( bufStore )
-            {
-                delete bufStore;
-                bufStore = 0;
-            }
+            delete o;
 
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -97,6 +90,14 @@ INT CtiLocalConnect::CTINexusWrite(VOID *buf, ULONG len, PULONG BWritten, LONG T
     }
     else
     {
+        if( len != sizeof(Outbound) )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** CtiNexusWrite with len != sizeof(Outbound) (" << len << " != " << sizeof(Outbound) << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
         if( BWritten )
         {
             *BWritten = 0;
@@ -106,7 +107,8 @@ INT CtiLocalConnect::CTINexusWrite(VOID *buf, ULONG len, PULONG BWritten, LONG T
     return retVal;
 }
 
-INT CtiLocalConnect::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
+template <class Outbound, class Inbound>
+INT CtiLocalConnect<Outbound, Inbound>::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut)
 {
     int retVal = 0;
 
@@ -123,7 +125,8 @@ INT CtiLocalConnect::CTINexusRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeO
     return retVal;
 }
 
-INT CtiLocalConnect::CTINexusPeek(VOID *buf, ULONG len, PULONG BRead)
+template <class Outbound, class Inbound>
+INT CtiLocalConnect<Outbound, Inbound>::CTINexusPeek(VOID *buf, ULONG len, PULONG BRead)
 {
     int retVal = 0;
 
@@ -140,11 +143,11 @@ INT CtiLocalConnect::CTINexusPeek(VOID *buf, ULONG len, PULONG BRead)
     return retVal;
 }
 
-INT CtiLocalConnect::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags)
+template <class Outbound, class Inbound>
+INT CtiLocalConnect<Outbound, Inbound>::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags)
 {
     int retVal = 1;
     ULONG count = 0;
-    DirectDataKeeper *data;
 
     if( TimeOut < 0 )
     {
@@ -162,21 +165,20 @@ INT CtiLocalConnect::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LON
         };
     }
 
-    if( !_outQueue.empty() )
+    if( !_outQueue.empty() && len == sizeof(Outbound) )
     {
         try
         {
             {
                 CtiLockGuard< CtiCriticalSection > g(_crit);
-                data = &(_outQueue.front());
-                memcpy(buf, data->data, len);
+                memcpy(buf, *(_outQueue.begin()), len);
                 *BRead = len;
                 retVal = 0;
 
                 if( flags != MESSAGE_PEEK )
                 {
-                    delete [] data->data;
-                    _outQueue.pop();
+                    delete *(_outQueue.begin());
+                    _outQueue.erase(_outQueue.begin());
                 }
             }
 
@@ -195,6 +197,14 @@ INT CtiLocalConnect::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LON
     }
     else
     {
+        if( len != sizeof(Outbound) )
+        {
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** CtiLocalConnectRead with len != sizeof(Outbound) (" << len << " != " << sizeof(Outbound) << ") **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+            }
+        }
+
         *BRead = 0;
         retVal = ERR_CTINEXUS_READTIMEOUT;
     }
@@ -202,21 +212,25 @@ INT CtiLocalConnect::CtiLocalConnectRead(VOID *buf, ULONG len, PULONG BRead, LON
     return retVal;
 }
 
-bool  CtiLocalConnect::CTINexusValid() const
+template <class Outbound, class Inbound>
+bool CtiLocalConnect<Outbound, Inbound>::CTINexusValid() const
 {
     return _nexusState;
 }
 
-bool CtiLocalConnect::setMatchingConnection( CtiLocalConnect &connection )
+template <class Outbound, class Inbound>
+bool CtiLocalConnect<Outbound, Inbound>::setMatchingConnection( CtiLocalConnect<Inbound, Outbound> &connection )
 {
     _directConnection = &connection;
     CtiLocalConnectOpen();
     return false;
 }
 
-int CtiLocalConnect::CtiLocalConnectOpen()
+template <class Outbound, class Inbound>
+int CtiLocalConnect<Outbound, Inbound>::CtiLocalConnectOpen()
 {
     _nexusState = CTINEXUS_STATE_CONNECTED;
     return 0;
 }
+
 

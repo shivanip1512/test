@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.41 $
-* DATE         :  $Date: 2007/09/04 16:40:52 $
+* REVISION     :  $Revision: 1.42 $
+* DATE         :  $Date: 2008/06/25 21:12:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -977,6 +977,15 @@ public:
        ::memset(this, 0, sizeof(INMESS));
     }
 
+    bool operator>(const INMESS &rhs) const
+    {
+       return Priority < rhs.Priority; // Bigger is sorted first in terms of priority.
+    }
+
+    bool operator<(const INMESS &rhs) const
+    {
+       return Priority > rhs.Priority; // Bigger is sorted first in terms of priority.
+    }
 };
 
 #define PEXEC_DEVID        -1;

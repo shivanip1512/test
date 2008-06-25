@@ -67,7 +67,7 @@ public:
 private:
     boost::condition           dataAvailable;
     mutable boost::timed_mutex mux;
-    
+
     std::set<QueueDataStruct, std::greater<struct QueueDataStruct> > *_col;
     string                      _name;
     unsigned int                _insertValue;
@@ -294,6 +294,16 @@ public:
         return sz;
     }
 
+    BOOL  isEmpty(void)        // how big may it be?
+    {
+        bool empty = true;
+        if(_col)
+        {
+            empty = _col->empty();
+        }
+        return empty;
+    }
+
     BOOL  isFull(void)
     {
         return(FALSE);
@@ -302,7 +312,7 @@ public:
     void clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
         boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        delete_list();
+        deleteCollection();
         getCollection().clear();
     }
 
@@ -338,7 +348,7 @@ public:
             {
                 try
                 {
-                    delete_list();
+                    deleteCollection();
                 }
                 catch(...)
                 {
@@ -374,7 +384,7 @@ public:
         _col = 0;     // No matter what, I exit leaving the old one behind!
     }
 
-    inline void delete_list( )
+    inline void deleteCollection( )
     {
         QueueDataStruct data;
         try
@@ -432,7 +442,7 @@ private:
             {
                 try
                 {
-                    delete_list();
+                    deleteCollection();
                     _col->clear();
                 }
                 catch(...)
@@ -468,7 +478,7 @@ public:
     virtual ~CtiFIFOQueue()
     {
         boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        delete_list();
+        deleteCollection();
         getCollection().clear();
     }
 
@@ -612,7 +622,7 @@ public:
     void clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
         boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
-        delete_list();
+        deleteCollection();
         getCollection().clear();
     }
 
@@ -642,7 +652,7 @@ public:
         }
     }
 
-    inline void delete_list( )
+    inline void deleteCollection( )
     {
         if(_col)
         {

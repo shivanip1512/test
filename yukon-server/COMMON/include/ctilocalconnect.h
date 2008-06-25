@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/08/07 21:04:52 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/06/25 21:12:44 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -28,19 +28,17 @@
 #include "netports.h"
 #include "cticonnect.h"
 
-struct DirectDataKeeper
-{
-    BYTE *data;
-    UINT len;
-};
+#include "fifo_multiset.h"
 
+template <class Outbound, class Inbound>
 class IM_EX_CTIBASE CtiLocalConnect : public CtiConnect
 {
 private:
-    typedef std::queue<DirectDataKeeper> DataKeeperQueue;
 
-    DataKeeperQueue _outQueue;
-    CtiLocalConnect *_directConnection;
+    typedef fifo_multiset<Outbound *, ptr_priority_sort<Outbound> > queue_t;
+
+    queue_t _outQueue;
+    CtiLocalConnect<Inbound, Outbound> *_directConnection;
     ULONG _nexusState;
 
     CtiCriticalSection _crit;
@@ -49,6 +47,7 @@ private:
     CHAR                    Name[64];         // Text Description of connection
 
 public:
+
     CtiLocalConnect() {};
 
     ~CtiLocalConnect();
@@ -70,8 +69,13 @@ public:
     int   CtiLocalConnectOpen ();
     INT   CtiLocalConnectRead (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags = NOFLAG);
 
-    bool setMatchingConnection( CtiLocalConnect &connection );
+    bool setMatchingConnection( CtiLocalConnect<Inbound, Outbound> &connection );
 };
+
+#include "dsm2.h"
+
+template class IM_EX_CTIBASE CtiLocalConnect<CtiOutMessage, INMESS>;
+template class IM_EX_CTIBASE CtiLocalConnect<INMESS, CtiOutMessage>;
 
 #endif   // #ifdef  __CTILOCALCONNECT_H__
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.55 $
-* DATE         :  $Date: 2008/06/25 17:18:17 $
+* REVISION     :  $Revision: 1.56 $
+* DATE         :  $Date: 2008/06/25 21:12:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -94,7 +94,7 @@ using namespace std;
 
 extern HCTIQUEUE*   QueueHandle(LONG pid);
 extern CtiQueue< CtiOutMessage, std::greater<CtiOutMessage> > GatewayOutMessageQueue;
-extern CtiLocalConnect PorterToPil;
+extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
 
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);

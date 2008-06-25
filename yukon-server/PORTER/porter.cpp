@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.118 $
-* DATE         :  $Date: 2008/06/25 17:18:17 $
+* REVISION     :  $Revision: 1.119 $
+* DATE         :  $Date: 2008/06/25 21:12:45 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -226,8 +226,8 @@ CtiRouteManager    RouteManager;
 map< long, CtiPortShare * > PortShareManager;
 
 //These form the connection between Pil and Porter
-extern DLLIMPORT CtiLocalConnect PilToPorter; //Pil handles this one
-CtiLocalConnect PorterToPil; //Porter handles this one
+extern DLLIMPORT CtiLocalConnect<OUTMESS, INMESS> PilToPorter; //Pil handles this one
+CtiLocalConnect<INMESS, OUTMESS> PorterToPil; //Porter handles this one
 extern DLLIMPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
 
 Cti::Porter::SystemMsgThread _sysMsgThread(&PorterSystemMessageQueue);

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.101 $
-* DATE         :  $Date: 2008/06/25 18:02:59 $
+* REVISION     :  $Revision: 1.102 $
+* DATE         :  $Date: 2008/06/25 21:12:44 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -78,7 +78,7 @@ CtiConnection           VanGoghConnection;
 CtiPILExecutorFactory   ExecFactory;
 
 /* Define the return nexus handle */
-DLLEXPORT CtiLocalConnect PilToPorter; //Pil handles this one
+DLLEXPORT CtiLocalConnect<OUTMESS, INMESS> PilToPorter; //Pil handles this one
 DLLEXPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
 
 static vector< CtiPointDataMsg > pdMsgCol;
@@ -526,44 +526,21 @@ void CtiPILServer::resultThread()
     {
         try
         {
-            // Let's go look at the inbound sList, if we can!
-            while( _inList.empty() && !bServerClosing)
-            {
-                Sleep( 500 );
+            InMessage = _inQueue.getQueue(500);
 
-                try
-                {
-                    rwServiceCancellation();
-                }
-                catch(const RWCancellation& cMsg)
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
-                    bServerClosing = TRUE;
-                    break;  // the while!
-                }
+            try
+            {
+                rwServiceCancellation();
+            }
+            catch(const RWCancellation& cMsg)
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " ResThread : " << rwThreadId() << " " <<  cMsg.why() << endl;
+
+                bServerClosing = true;
             }
 
-            if( !bServerClosing && !_inList.empty() )
-            {
-                CtiLockGuard< CtiMutex > ilguard( _inMux, 15000 );
-
-                if(ilguard.isAcquired())
-                {
-                    InMessage = _inList.front();_inList.pop_front();
-                }
-                else
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << CtiTime() << " Unable to lock PIL's INMESS list. You should not see this much." << endl;
-                }
-            }
-
-            if(bServerClosing || InMessage == 0)
-            {
-                continue;
-            }
-
+            if( !bServerClosing && InMessage )
             {
                 LONG id = InMessage->TargetID;
 
@@ -825,11 +802,10 @@ void CtiPILServer::nexusThread()
         }
 
         // Enqueue the INMESS into the appropriate list
-
         if(InMessage)
         {
-            CtiLockGuard< CtiMutex > inguard( _inMux );
-            _inList.push_back( InMessage );
+            _inQueue.putQueue(InMessage);
+
             InMessage = 0;
         }
     } /* End of for */
@@ -971,12 +947,22 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     CtiMessage     *pMsg  = NULL;
     CtiMessage     *pVg  = NULL;
 
-    CtiCommandParser parse(pReq->CommandString());
+    if( pReq->UserMessageId() != _currentUserMessageId ||
+        stringCompareIgnoreCase(pReq->CommandString(), _currentParse.getCommandStr()) != 0 )
+    {
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << " **** new parse **** " << endl;
+        }
+
+        _currentParse = CtiCommandParser(pReq->CommandString());
+        _currentUserMessageId = pReq->UserMessageId();
+    }
 
     try
     {
         // Note that any and all arguments into this method may be altered on exit!
-        analyzeWhiteRabbits(*pReq, parse, execList, retList);
+        analyzeWhiteRabbits(*pReq, _currentParse, execList, retList);
     }
     catch(...)
     {
@@ -999,10 +985,10 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
             if(Dev)
             {
-                if( stringCompareIgnoreCase(parse.getCommandStr(),pExecReq->CommandString()) )
+                if( stringCompareIgnoreCase(_currentParse.getCommandStr(),pExecReq->CommandString()) )
                 {
                     // They did not match!  We MUST re-parse!
-                    parse = CtiCommandParser(pExecReq->CommandString());
+                    _currentParse = CtiCommandParser(pExecReq->CommandString());
                 }
 
                 pExecReq->setMacroOffset( Dev->selectInitialMacroRouteOffset(pReq->RouteId() != 0 ? pReq->RouteId() : Dev->getRouteID()) );
@@ -1020,13 +1006,13 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
 
                 if(Dev->isGroup())                          // We must indicate any group which is protocol/heirarchy controlled!
                 {
-                    indicateControlOnSubGroups(Dev, pExecReq, parse, temp_vgList, temp_retList);
+                    indicateControlOnSubGroups(Dev, pExecReq, _currentParse, temp_vgList, temp_retList);
                 }
 
                 try
                 {
-                    status = Dev->ExecuteRequest(pExecReq, parse, temp_vgList, temp_retList, temp_outList);    // Defined ONLY in dev_base.cpp
-                    reportClientRequests(Dev, parse, pReq, pExecReq, temp_vgList, temp_retList);
+                    status = Dev->ExecuteRequest(pExecReq, _currentParse, temp_vgList, temp_retList, temp_outList);    // Defined ONLY in dev_base.cpp
+                    reportClientRequests(Dev, _currentParse, pReq, pExecReq, temp_vgList, temp_retList);
                 }
                 catch(...)
                 {
@@ -1543,7 +1529,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
 
                 getDeviceGroupMembers(groupname, members);
-
+                /*
                 if( members.size() > gConfigParms.getValueAsInt("BULK_POINT_LOAD_THRESHOLD", 10) )
                 {
                     if( parse.getFlags() & CMD_FLAG_GV_KWH ||
@@ -1552,12 +1538,17 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                         loadDevicePoints(members);
                     }
                 }
+                */
             }
 
             vector<long>::iterator itr, members_end = members.end();
 
+            //  the parser eliminates only the parse keywords that have already been acted on (select device, route)
+            pReq->setCommandString(parse.getCommandStr());
+
             for( itr = members.begin(); itr != members_end; itr++ )
             {
+                /*
                 CtiDeviceManager::ptr_type device = DeviceManager->getEqual(*itr);
 
                 if( device )
@@ -1566,17 +1557,22 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                         CtiLockGuard<CtiLogger> doubt_guard(dout);
                         dout << CtiTime() << " Adding device " << device->getID() << " / " << device->getName() << " for group execution" << endl;
                     }
-
+                */
                     // Create a message for this one!
-                    pReq->setDeviceId(device->getID());
+                    //   Note that we're going to let PIL fail us on a failed device lookup to save us the device lookup here
+                    pReq->setDeviceId(*itr);  //  pReq->setDeviceId(device->getID());
 
                     CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
                     pNew->setConnectionHandle( pReq->getConnectionHandle() );
 
-                    execList.push_back( pNew );
+                    //execList.push_back( pNew );
+                    //  put it back on the queue to be processed in order
+                    putQueue(pNew);
 
                     groupsubmitcnt++;
+                /*
                 }
+                */
             }
 
             {

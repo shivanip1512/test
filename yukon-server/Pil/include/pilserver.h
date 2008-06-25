@@ -40,8 +40,11 @@ private:
    RWThreadFunction     _nexusThread;
    RWThreadFunction     _nexusWriteThread;
 
+   CtiCommandParser     _currentParse;
+   long                 _currentUserMessageId;
+
    CtiMutex             _inMux;            // Protects the _inList.
-   list< INMESS* >      _inList;           // Nexus dumps out into this list!
+   CtiQueue< INMESS, std::greater<INMESS> > _inQueue;           // Nexus dumps out into this list!
 
    CtiFIFOQueue< CtiOutMessage > _porterOMQueue;    // Queue for items to be sent to Porter!
    bool                          _broken;           // When the PILServer knows he's sick.
@@ -59,13 +62,17 @@ public:
       RouteManager (RM),
       ConfigManager(CM),
       ListenerAvailable(0),
-      bServerClosing(FALSE)
+      bServerClosing(FALSE),
+      _currentParse(""),
+      _currentUserMessageId(0)
    {}
 
    virtual ~CtiPILServer()
    {
-       delete_container(_inList);
-       _inList.clear();
+      while( !_inQueue.isEmpty() )
+      {
+         delete _inQueue.getQueue();
+      }
    }
 
    virtual void  clientShutdown(CtiServer::ptr_type CM);
