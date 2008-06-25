@@ -21,7 +21,8 @@ public class CapControlConfirmationPercentageController extends CapControlReport
             ReportFilter.AREA,
             ReportFilter.CAPCONTROLSUBSTATION,
             ReportFilter.CAPCONTROLSUBBUS,
-            ReportFilter.CAPCONTROLFEEDER
+            ReportFilter.CAPCONTROLFEEDER,
+            ReportFilter.CAPBANK
             };
     private TimeZone timeZone = TimeZone.getDefault();
     

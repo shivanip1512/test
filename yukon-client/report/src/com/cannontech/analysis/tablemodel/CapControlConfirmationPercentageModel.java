@@ -346,7 +346,7 @@ public class CapControlConfirmationPercentageModel extends BareDatedReportModelB
         String result = null;
 
         if (capBankIds != null && !capBankIds.isEmpty()) {
-            result = "bankId in ( ";
+            result = "CapBankId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(capBankIds);
             result += wheres;
             result += " ) ";

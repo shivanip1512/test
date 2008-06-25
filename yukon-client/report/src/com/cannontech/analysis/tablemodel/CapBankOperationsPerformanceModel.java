@@ -3,12 +3,15 @@ package com.cannontech.analysis.tablemodel;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowCallbackHandler;
+import org.springframework.jdbc.core.RowMapper;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.SqlStatementBuilder;
@@ -18,7 +21,6 @@ import com.cannontech.database.JdbcTemplateHelper;
 public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<CapBankOperationsPerformanceModel.ModelRow> implements CapControlFilterable {
     
     private List<ModelRow> data = new ArrayList<ModelRow>();
-    private JdbcOperations jdbcOps = JdbcTemplateHelper.getYukonTemplate();
     private Set<Integer> capBankIds;
     private Set<Integer> feederIds;
     private Set<Integer> subbusIds;
@@ -26,6 +28,9 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
     private Set<Integer> areaIds;
     private String queryType;
     private String queryPercent = "100";
+    private HashMap<String, AttemptsRow> attemptsMap;
+    private HashMap<String, ResultsRow> resultsMap;
+    private JdbcOperations yukonTemplate = JdbcTemplateHelper.getYukonTemplate(); 
     
     public CapBankOperationsPerformanceModel() {
     }
@@ -37,9 +42,27 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
         public String subbusName;
         public String region;
         public String text;
-        public String qCount;
-        public String totCount;
-        public Double qPercent;
+        public Integer qCount;
+        public Integer totCount;
+        public String qPercent;
+    }
+    
+    static public class AttemptsRow {
+        public String capBankName;
+        public String cbcName;
+        public String feederName;
+        public String subBusName;
+        public String region;
+        public Integer totCount;
+    }
+    
+    static public class ResultsRow {
+        public String capBankName;
+        public String cbcName;
+        public String feederName;
+        public String subBusName;
+        public String region;
+        public Integer count;
     }
     
     @Override
@@ -59,96 +82,187 @@ public class CapBankOperationsPerformanceModel extends BareDatedReportModelBase<
     public int getRowCount() {
         return data.size();
     }
-
-    public void doLoadData() {
+    
+    /**
+     * Returns a new HashMap<String, AttemptsRow> data from the ccoperations_view.
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    private HashMap<String, AttemptsRow> getAttempts(Timestamp start, Timestamp stop) {
         
-        StringBuffer sql = buildSQLStatement();
-        CTILogger.info(sql.toString()); 
-        
-        Timestamp[] dateRange = {new java.sql.Timestamp(getStartDate().getTime()), new java.sql.Timestamp(getStopDate().getTime()),
-                new java.sql.Timestamp(getStartDate().getTime()), new java.sql.Timestamp(getStopDate().getTime()),
-                new java.sql.Timestamp(getStartDate().getTime()), new java.sql.Timestamp(getStopDate().getTime())};
-        jdbcOps.query(sql.toString(), dateRange, new RowCallbackHandler() {
-            public void processRow(ResultSet rs) throws SQLException {
-                
-                CapBankOperationsPerformanceModel.ModelRow row = new CapBankOperationsPerformanceModel.ModelRow();
-
-                row.bankName = rs.getString("capbankName");
-                row.cbcName = rs.getString("cbcName");
-                row.feederName = rs.getString("feederName");
-                row.subbusName = rs.getString("subbusName");
-                row.region = rs.getString("region");
-                row.text = rs.getString("text");
-                row.qCount = rs.getString("qCount");
-                row.totCount = rs.getString("totCount");
-                row.qPercent = rs.getDouble("qPercent");
-                data.add(row);
+        if(attemptsMap == null) {
+            attemptsMap = new HashMap<String, AttemptsRow>();
+            String attempts = "select CapBankName, count(*) as totCount, CBCName, FeederName, FeederId, SubBusName, SubBusId, SubstationId, Region, AreaId ";
+            attempts += "from ccoperations_view "; 
+            attempts += "where operation like '%sent, %' ";
+            attempts += "and opTime > ? "; 
+            attempts += "and opTime <= ? "; 
+            if(getFilters() != null) {
+                attempts += getFilters();
             }
-        });
-        
-        CTILogger.info("Report Records Collected from Database: " + data.size());
+            attempts += "group by CapBankName, CBCName, FeederName, FeederId, SubBusName, SubBusId, SubstationId, Region, AreaId";
+            
+            final RowMapper mapper = new RowMapper() {
+                public AttemptsRow mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    AttemptsRow row = new AttemptsRow(); 
+                    row.capBankName = rs.getString("CapBankName");
+                    row.cbcName = rs.getString("CBCName");
+                    row.feederName = rs.getString("FeederName");
+                    row.subBusName = rs.getString("SubBusName");
+                    row.region = rs.getString("Region");
+                    row.totCount = rs.getInt("totCount");
+                    return row;
+                }
+            };
+    
+            yukonTemplate.query(attempts, new Object[] {start, stop}, new RowCallbackHandler() {
+                @Override
+                public void processRow(ResultSet rs) throws SQLException {
+                    String key = rs.getString("CBCName")
+                        + rs.getString("Region")
+                        + rs.getString("SubBusName")
+                        + rs.getString("FeederName")
+                        + rs.getString("CapBankName");
+                    AttemptsRow row = (AttemptsRow) mapper.mapRow(rs, rs.getRow());
+                    attemptsMap.put(key, row);
+                }
+            });
+        }
+        return attemptsMap;
     }
     
-    public StringBuffer buildSQLStatement()
-    {
-        StringBuffer sql = new StringBuffer ("select d.capbankname, cbcname,  feedername, subbusName, region, '" + queryType+"' as text, qCount, totCount, qPercent from (select tot.capbankname, q.qCount, tot.totCount, cast(q.qCount as float) / cast(tot.totCount as float) * 100 as qPercent from ");
-        sql.append("(select capbankname, count(*) as totCount from ccoperations_view where operation like '%Sent, %'  and opTime > ? and opTime <= ? group by capbankname) tot ");
-        sql.append("left outer join (select capbankname, count(*) as qCount from ccoperations_view where ");
-        if(queryType.equalsIgnoreCase("Success")) {
-            sql.append("(confstatus like '%, Close' or confstatus like '%, Closed' or confstatus like '%, Open') ");
-        }else if (queryType.equalsIgnoreCase("Failed")){
-           sql.append("confstatus like '%Fail%' ");
-        }else if (queryType.equalsIgnoreCase("Questionable")) {
-            sql.append("confstatus like '%Questionable%' ");
-        }else if (queryType.equalsIgnoreCase("Failed-Questionable")) {
-            sql.append("(confstatus like '%Questionable%' or confstatus like '%Failed%') ");
+    /**
+     * Returns a new HashMap<String, AttemptsRow> data from the ccoperations_view.
+     * 
+     */
+    @SuppressWarnings("unchecked")
+    private HashMap<String, ResultsRow> getResults(Timestamp start, Timestamp stop) {
+        
+        if(resultsMap == null) {
+            resultsMap = new HashMap<String, ResultsRow>();
+            String resultQuery = "select CapBankName, count(*) as qCount, CBCName, FeederName, FeederId, SubBusName, SubBusId, SubstationId, Region, AreaId ";
+            resultQuery += "from ccoperations_view "; 
+            resultQuery += "where ";
+            
+            if(queryType.equalsIgnoreCase("Success")) {
+                resultQuery +="(confstatus like '%, Close' or confstatus like '%, Closed' or confstatus like '%, Open') ";
+            }else if (queryType.equalsIgnoreCase("Failed")){
+                resultQuery +="confstatus like '%Fail%' ";
+            }else if (queryType.equalsIgnoreCase("Questionable")) {
+                resultQuery +="confstatus like '%Questionable%' ";
+            }else if (queryType.equalsIgnoreCase("Failed-Questionable")) {
+                resultQuery +="(confstatus like '%Questionable%' or confstatus like '%Failed%') ";
+            }
+            
+            resultQuery += "and opTime > ? "; 
+            resultQuery += "and opTime <= ? "; 
+            if(getFilters() != null) {
+                resultQuery += getFilters();
+            }
+            resultQuery += "group by CapBankName, CBCName, FeederName, FeederId, SubBusName, SubBusId, SubstationId, Region, AreaId";
+            
+            final RowMapper mapper = new RowMapper() {
+                public ResultsRow mapRow(ResultSet rs, int rowNum) throws SQLException {
+                    ResultsRow row = new ResultsRow(); 
+                    row.capBankName = rs.getString("CapBankName");
+                    row.cbcName = rs.getString("CBCName");
+                    row.feederName = rs.getString("FeederName");
+                    row.subBusName = rs.getString("SubBusName");
+                    row.region = rs.getString("Region");
+                    row.count = rs.getInt("qCount");
+                    return row;
+                }
+            };
+    
+            yukonTemplate.query(resultQuery, new Object[] {start, stop}, new RowCallbackHandler() {
+                @Override
+                public void processRow(ResultSet rs) throws SQLException {
+                    String key = rs.getString("CBCName")
+                        + rs.getString("Region")
+                        + rs.getString("SubBusName")
+                        + rs.getString("FeederName")
+                        + rs.getString("CapBankName");
+                    ResultsRow row = (ResultsRow) mapper.mapRow(rs, rs.getRow());
+                    resultsMap.put(key, row);
+                }
+            });
         }
-        sql.append("and opTime > ? and opTime <= ? group by capbankname) q on tot.capbankname = q.capbankname ) abc ");
-        sql.append("left outer join (select yp.paoname, yp.paobjectid, s.text as text from dynamiccccapbank dcb ");
-        sql.append("join state s on s.rawstate = dcb.controlstatus and s.stategroupid = 3 ");
-        sql.append("join yukonpaobject yp on yp.paobjectid = dcb.capbankid) status on status.paoname = abc.capbankname ");
-        sql.append("join (select distinct (capbankname), cbcname, feedername, feederid, subbusname, substationid, subbusid, region from ccoperations_view ");
-        sql.append("where  operation like '%Sent, %'  and opTime > ? and opTime <= ?) d on abc.capbankname = d.capbankname ");
-        sql.append("left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = d.subbusid ");
- 	 	sql.append("left outer join ccsubareaassignment saa on saa.substationbusid = ssb.substationid ");
- 	 	sql.append("left outer join (select paobjectid from yukonpaobject where type ='ccarea' ) ca on ca.paobjectid = saa.areaid ");
-        sql.append("where abc.qPercent >= " + queryPercent + " ");
+        return resultsMap;
+    }
+    
+    public void doLoadData() {
         
+        for(String currentRow : getAttempts(new Timestamp(getStartDate().getTime()), new Timestamp(getStopDate().getTime())).keySet()) {
+            CapBankOperationsPerformanceModel.ModelRow row = new CapBankOperationsPerformanceModel.ModelRow();
+            row.bankName = attemptsMap.get(currentRow).capBankName;
+            row.cbcName = attemptsMap.get(currentRow).cbcName;
+            row.feederName = attemptsMap.get(currentRow).feederName;
+            row.subbusName = attemptsMap.get(currentRow).subBusName;
+            row.region = attemptsMap.get(currentRow).region;
+            row.totCount = attemptsMap.get(currentRow).totCount;
+            row.text = queryType;
+            ResultsRow resultsRow = getResults(new Timestamp(getStartDate().getTime()), new Timestamp(getStopDate().getTime())).get(currentRow);
+            if( resultsRow != null) {
+                row.qCount = resultsRow.count;
+            }else {
+                row.qCount = 0;
+            }
+            
+            double successRate = 0;
+            if(row.totCount > 0 ){
+                successRate = (row.qCount.doubleValue()  / (row.totCount.doubleValue())* 100.0);
+            }
+            DecimalFormat twoPlaces = new DecimalFormat("00.00");
+            String successString = twoPlaces.format(successRate);
+            successString += "%";
+            row.qPercent = successString;
+            if(successRate >= Integer.parseInt(queryPercent)) {
+                data.add(row);
+            }
+        }
+                            
+        CTILogger.info("Report Records Collected from Database: " + data.size());
+        return;
+    }
+
+    private String getFilters() {
         String result = null;
-        
-        if(capBankIds != null && !capBankIds.isEmpty()) {
-            result = "status.paobjectid in ( ";
+
+        if (capBankIds != null && !capBankIds.isEmpty()) {
+            result = "CapBankId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(capBankIds);
             result += wheres;
             result += " ) ";
-        }else if(feederIds != null && !feederIds.isEmpty()) {
-            result = "d.feederid in ( ";
+        }
+        if (feederIds != null && !feederIds.isEmpty()) {
+            result = " FeederId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(feederIds);
             result += wheres;
             result += " ) ";
-        }else if(subbusIds != null && !subbusIds.isEmpty()) {
-            result = "d.subbusid in ( ";
+        }
+        if (subbusIds != null && !subbusIds.isEmpty()) {
+            result = " SubBusId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(subbusIds);
             result += wheres;
             result += " ) ";
-        }else if(substationIds != null && !substationIds.isEmpty()) {
-            result = "d.substationid in ( ";
+        }
+        if (substationIds != null && !substationIds.isEmpty()) {
+            result = " SubstationId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(substationIds);
             result += wheres;
             result += " ) ";
-        }else if(areaIds != null && !areaIds.isEmpty()) {
-            result = "ca.paobjectid in ( ";
+        }
+        if (areaIds != null && !areaIds.isEmpty()) {
+            result = " AreaId in ( ";
             String wheres = SqlStatementBuilder.convertToSqlLikeList(areaIds);
             result += wheres;
             result += " ) ";
         }
-        
+
         if (result != null) {
-            sql.append(" and ");
-            sql.append(result);
+            result = " and " + result;
         }
-        
-        return sql;
+        return result;
     }
 
     public void setCapBankIdsFilter(Set<Integer> capBankIds) {
