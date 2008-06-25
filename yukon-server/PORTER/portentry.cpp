@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.54 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
+* REVISION     :  $Revision: 1.55 $
+* DATE         :  $Date: 2008/06/25 17:18:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1211,8 +1211,8 @@ INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutMessage)
                         dout << NowTime << "   Sending " << outList.size() << " requests through porter on error condition" << endl;
                     }
                 }
-                delete_list(vgList);
-                delete_list(retList);
+                delete_container(vgList);
+                delete_container(retList);
                 retList.clear();
                 vgList.clear();
             }

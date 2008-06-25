@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.117 $
-* DATE         :  $Date: 2008/06/03 15:06:23 $
+* REVISION     :  $Revision: 1.118 $
+* DATE         :  $Date: 2008/06/25 17:18:17 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1987,7 +1987,7 @@ void DisplayTraceList( CtiPortSPtr Port, list< CtiMessage* > &traceList, bool co
 
         if(consume)
         {
-            delete_list( traceList );
+            delete_container( traceList );
             traceList.clear();
         }
     }
