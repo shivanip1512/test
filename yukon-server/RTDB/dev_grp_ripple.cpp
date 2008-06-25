@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_grp_ripple.cpp-arc  $
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2008/02/29 17:05:14 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/06/25 17:08:41 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -338,7 +338,7 @@ bool CtiDeviceGroupRipple::isShedProtocolParent(CtiDeviceBase *otherdev)
                     CtiMessage *pMsg = vgList.back();
                     otherGroup->setRsvpToDispatch(pMsg);   // Removes and returns the first list item...
                 }
-                delete_list(vgList);
+                delete_container(vgList);
                 vgList.clear();
             }
         }
@@ -384,7 +384,7 @@ bool CtiDeviceGroupRipple::isRestoreProtocolParent(CtiDeviceBase *otherdev)
                     CtiMessage *pMsg = vgList.back();
                     otherGroup->setRsvpToDispatch(pMsg);   // Removes and returns the first list item...
                 }
-                delete_list(vgList);
+                delete_container(vgList);
                 vgList.clear();
             }
         }

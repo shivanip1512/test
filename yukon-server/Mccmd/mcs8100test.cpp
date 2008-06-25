@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mcs8100test.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/04/24 20:47:30 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -33,7 +33,7 @@ void main(int argc, char* argv[])
     if( DecodeCFDATAFile( file, &result ) == false)
     {
         cout << "decode failed" << endl;
-        delete_vector<result>;
+        delete_container<result>;
         result.clear();
         return;
     }

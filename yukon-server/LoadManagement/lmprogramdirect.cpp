@@ -80,7 +80,7 @@ CtiLMProgramDirect::CtiLMProgramDirect(const CtiLMProgramDirect& directprog)
 ---------------------------------------------------------------------------*/
 CtiLMProgramDirect::~CtiLMProgramDirect()
 {
-    delete_vector(_lmprogramdirectgears);
+    delete_container(_lmprogramdirectgears);
     _lmprogramdirectgears.clear();
 }
 
@@ -1002,7 +1002,7 @@ DOUBLE CtiLMProgramDirect::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG cu
                             {
                                 multiDispatchMsg->insert( currentLMGroup->createLatchingCommandMsg(gearStartRawState, defaultLMStartPriority) );
                             }
-                            
+
 
                             setLastControlSent(CtiTime());
                             setLastGroupControlled(currentLMGroup->getPAOId());
@@ -4355,7 +4355,7 @@ BOOL CtiLMProgramDirect::stopProgramControl(CtiMultiMsg* multiPilMsg, CtiMultiMs
                     {
                         multiDispatchMsg->insert( currentLMGroup->createLatchingCommandMsg(currentGearObject->getMethodRateCount()?0:1, defaultLMStartPriority) );
                     }
-                    
+
                     setLastControlSent(CtiTime());
                     currentLMGroup->setLastControlSent(CtiTime());
                 }
@@ -5065,7 +5065,7 @@ void CtiLMProgramDirect::restoreGuts(RWvistream& istrm)
     {
         _currentgearnumber = _currentgearnumber - 1;
     }
-    //delete_vector(rw_groups);
+    //delete_container(rw_groups);
     rw_groups.clearAndDestroy();
 }
 
@@ -5407,8 +5407,8 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
     else if( method == CtiLMProgramDirectGear::ThermostatRampingMethod.c_str() )
     {
         CtiLMProgramThermoStatGear *thermoGear = (CtiLMProgramThermoStatGear *)cur_gear;
-        return ( thermoGear->getPrecoolTime() + thermoGear->getPrecoolHoldTime() + 
-                 thermoGear->getControlTime() + thermoGear->getControlHoldTime() + 
+        return ( thermoGear->getPrecoolTime() + thermoGear->getPrecoolHoldTime() +
+                 thermoGear->getControlTime() + thermoGear->getControlHoldTime() +
                  thermoGear->getRestoreTime() ) * 60;
     }
     else if( method == CtiLMProgramDirectGear::NoControlMethod.c_str() )
@@ -5897,7 +5897,7 @@ bool CtiLMProgramDirect::sendSimpleThermostatMessage(CtiLMProgramDirectGear* cur
                     }
                 }
 
-                
+
                 retVal = true;
 
                 if( currentGearObject->getPercentReduction() > 0.0 )

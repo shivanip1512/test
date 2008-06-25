@@ -1,12 +1,12 @@
 /*-----------------------------------------------------------------------------
     Filename:  ccmessage.cpp
-    
+
     Programmer:  Josh Wolberg
-    
+
     Description:    Source file for message classes.
 
     Initial Date:  9/04/2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
 #include "yukon.h"
@@ -23,13 +23,13 @@
 extern ULONG _CC_DEBUG;
 /*===========================================================================
     CtiCCMessage
-    
+
     Base class for all Cap Control messages
 ===========================================================================*/
 
 /*---------------------------------------------------------------------------
     Message
-    
+
     Returns text describing the message
 ---------------------------------------------------------------------------*/
 const string& CtiCCMessage::getMessage() const
@@ -39,7 +39,7 @@ const string& CtiCCMessage::getMessage() const
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self given a RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCMessage::restoreGuts(RWvistream& strm)
@@ -53,7 +53,7 @@ void CtiCCMessage::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCMessage::saveGuts(RWvostream& strm) const
@@ -90,32 +90,32 @@ CtiCCMessage& CtiCCMessage::operator=(const CtiCCMessage& right)
 
 /*===========================================================================
     CtiCCCommand
-    
+
     Represents a command message to Cap Control
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiCCCommand, CTICCCOMMAND_ID ) 
+RWDEFINE_COLLECTABLE( CtiCCCommand, CTICCCOMMAND_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
 ---------------------------------------------------------------------------*/
-CtiCCCommand::CtiCCCommand(LONG command) : 
+CtiCCCommand::CtiCCCommand(LONG command) :
     CtiCCMessage( string("" + command) ),
     _command(command)
 {
 }
-    
+
 CtiCCCommand::CtiCCCommand(LONG command, LONG id) :
     CtiCCMessage( string("CtiCCCommand" + command) ),
     _command(command),
     _id( id )
 {
-}                                           
+}
 
 CtiCCCommand::CtiCCCommand(const CtiCCCommand& commandMsg)
 {
     operator=( commandMsg );
-}                                           
+}
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -126,7 +126,7 @@ CtiCCCommand::~CtiCCCommand()
 
 /*---------------------------------------------------------------------------
     Command
-    
+
     Returns the specific command that self represents
 ---------------------------------------------------------------------------*/
 LONG CtiCCCommand::getCommand() const
@@ -136,17 +136,17 @@ LONG CtiCCCommand::getCommand() const
 
 /*---------------------------------------------------------------------------
     Id
-    
+
     Returns the id of the object that is associated with command.
 ---------------------------------------------------------------------------*/
 LONG CtiCCCommand::getId() const
 {
     return _id;
 }
-    
+
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCCommand::restoreGuts(RWvistream& strm)
@@ -154,13 +154,13 @@ void CtiCCCommand::restoreGuts(RWvistream& strm)
     CtiCCMessage::restoreGuts(strm);
     strm >> _command
          >> _id;
- 
+
     return;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCCommand::saveGuts(RWvostream& strm) const
@@ -236,10 +236,10 @@ float CtiCCCapBankMoveMsg::getCloseOrder() const
 float CtiCCCapBankMoveMsg::getTripOrder() const
 {
     return _tripOrder;
-}   
+}
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCCapBankMoveMsg::restoreGuts(RWvistream& strm)
@@ -252,13 +252,13 @@ void CtiCCCapBankMoveMsg::restoreGuts(RWvistream& strm)
          >> _capswitchingorder
          >> _closeOrder
          >> _tripOrder;
- 
+
     return;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCCapBankMoveMsg::saveGuts(RWvostream& strm) const
@@ -315,10 +315,10 @@ CtiCCSubstationVerificationMsg::~CtiCCSubstationVerificationMsg()
 {
     return _strategy;
 } */
-   
+
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationVerificationMsg::restoreGuts(RWvistream& strm)
@@ -334,17 +334,17 @@ void CtiCCSubstationVerificationMsg::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationVerificationMsg::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
 
-    strm <<  _action             
-         <<  _id                 
-         << _strategy            
-         << _cbInactivityTime;   
+    strm <<  _action
+         <<  _id
+         << _strategy
+         << _cbInactivityTime;
 
     return;
 }
@@ -391,7 +391,7 @@ CtiCCEventLogMsg::~CtiCCEventLogMsg()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCEventLogMsg::restoreGuts(RWvistream& strm)
@@ -412,8 +412,8 @@ void CtiCCEventLogMsg::restoreGuts(RWvistream& strm)
          >> _kvarChange
          >> _ipAddress
          >> _actionId
-         >> _aVar 
-         >> _bVar 
+         >> _aVar
+         >> _bVar
          >> _cVar
          >> _stationId
          >> _areaId
@@ -424,25 +424,25 @@ void CtiCCEventLogMsg::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCEventLogMsg::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
 
-    strm << _logId    
+    strm << _logId
          << _timeStamp
-         << _pointId  
-         << _subId    
-         << _feederId 
+         << _pointId
+         << _subId
+         << _feederId
          << _eventType
-         << _seqId    
-         << _value    
-         << _text     
+         << _seqId
+         << _value
+         << _text
          << _userName
          << _kvarBefore
-         << _kvarAfter 
+         << _kvarAfter
          << _kvarChange
          << _ipAddress
          << _actionId
@@ -464,21 +464,21 @@ CtiCCEventLogMsg& CtiCCEventLogMsg::operator=(const CtiCCEventLogMsg& right)
     if( this != &right )
     {
         CtiCCMessage::operator=(right);
-        _logId      = right._logId;    
+        _logId      = right._logId;
         _timeStamp  = right._timeStamp;
-        _pointId    = right._pointId;  
-        _spAreaId      = right._spAreaId;    
-        _areaId      = right._areaId;    
-        _stationId      = right._stationId;    
-        _subId      = right._subId;    
-        _feederId   = right._feederId; 
+        _pointId    = right._pointId;
+        _spAreaId      = right._spAreaId;
+        _areaId      = right._areaId;
+        _stationId      = right._stationId;
+        _subId      = right._subId;
+        _feederId   = right._feederId;
         _eventType  = right._eventType;
-        _seqId      = right._seqId;    
-        _value      = right._value;    
-        _text       = right._text;     
+        _seqId      = right._seqId;
+        _value      = right._value;
+        _text       = right._text;
         _userName   = right._userName;
         _kvarBefore = right._kvarBefore;
-        _kvarAfter  = right._kvarAfter; 
+        _kvarAfter  = right._kvarAfter;
         _kvarChange = right._kvarChange;
         _ipAddress  = right._ipAddress;
         _actionId   = right._actionId;
@@ -510,14 +510,14 @@ RWDEFINE_COLLECTABLE( CtiCCAreaMsg, CTICCAREA_MSG_ID )
 CtiCCAreaMsg::CtiCCAreaMsg(CtiCCArea_vec& areas, ULONG bitMask) : CtiCCMessage("CCAreas"), _ccAreas(NULL), _msgInfoBitMask(bitMask)
 {
     _ccAreas = new CtiCCArea_vec;
-    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCAreaMsg has "<< areas.size()<<" entries." << endl;
     }
-    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
-        for (int h=0;h < areas.size(); h++) 
+        for (int h=0;h < areas.size(); h++)
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -544,7 +544,7 @@ CtiCCAreaMsg::~CtiCCAreaMsg()
     if( _ccAreas != NULL &&
         _ccAreas->size() > 0 )
     {
-        delete_vector(_ccAreas);
+        delete_container(*_ccAreas);
         _ccAreas->clear();
         delete _ccAreas;
     }
@@ -571,12 +571,12 @@ CtiCCAreaMsg& CtiCCAreaMsg::operator=(const CtiCCAreaMsg& right)
         if( _ccAreas != NULL &&
             _ccAreas->size() > 0 )
         {
-            delete_vector(_ccAreas);
+            delete_container(*_ccAreas);
             _ccAreas->clear();
             delete _ccAreas;
         }
-		if ( _ccAreas == NULL )
-			_ccAreas = new CtiCCArea_vec;
+        if ( _ccAreas == NULL )
+            _ccAreas = new CtiCCArea_vec;
         for(int i=0;i<(right.getCCAreas())->size();i++)
         {
             _ccAreas->push_back(((CtiCCArea*)(*right.getCCAreas()).at(i))->replicate());
@@ -588,19 +588,19 @@ CtiCCAreaMsg& CtiCCAreaMsg::operator=(const CtiCCAreaMsg& right)
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self fromt he given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCAreaMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
-	strm >> _msgInfoBitMask
+    strm >> _msgInfoBitMask
          >> _ccAreas;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCAreaMsg::saveGuts(RWvostream& strm) const
@@ -628,14 +628,14 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationBusMsg, CTICCSUBSTATIONBUS_MSG_ID )
 CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULONG bitMask) : CtiCCMessage("CCSubstationBuses"), _ccSubstationBuses(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstationBuses = new CtiCCSubstationBus_vec;
-    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSubstationBusMsg has "<< buses.size()<<" entries." << endl;
     }
-    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
-        for (int h=0;h < buses.size(); h++) 
+        for (int h=0;h < buses.size(); h++)
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -643,7 +643,7 @@ CtiCCSubstationBusMsg::CtiCCSubstationBusMsg(CtiCCSubstationBus_vec& buses, ULON
                     ((CtiCCSubstationBus*)buses[h])->getPeakLead()<<" "<<((CtiCCSubstationBus*)buses[h])->getPeakLag()<< endl;
             }
             CtiFeeder_vec& feeds =   ((CtiCCSubstationBus*)buses[h])->getCCFeeders();
-            for (int hh = 0; hh < feeds.size(); hh++) 
+            for (int hh = 0; hh < feeds.size(); hh++)
             {
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -672,7 +672,7 @@ CtiCCSubstationBusMsg::~CtiCCSubstationBusMsg()
     if( _ccSubstationBuses != NULL &&
         _ccSubstationBuses->size() > 0 )
     {
-        delete_vector(_ccSubstationBuses);
+        delete_container(*_ccSubstationBuses);
         _ccSubstationBuses->clear();
         delete _ccSubstationBuses;
     }
@@ -699,12 +699,12 @@ CtiCCSubstationBusMsg& CtiCCSubstationBusMsg::operator=(const CtiCCSubstationBus
         if( _ccSubstationBuses != NULL &&
             _ccSubstationBuses->size() > 0 )
         {
-            delete_vector(_ccSubstationBuses);
+            delete_container(*_ccSubstationBuses);
             _ccSubstationBuses->clear();
             delete _ccSubstationBuses;
         }
-		if ( _ccSubstationBuses == NULL )
-			_ccSubstationBuses = new CtiCCSubstationBus_vec;
+        if ( _ccSubstationBuses == NULL )
+            _ccSubstationBuses = new CtiCCSubstationBus_vec;
         for(int i=0;i<(right.getCCSubstationBuses())->size();i++)
         {
             _ccSubstationBuses->push_back(((CtiCCSubstationBus*)(*right.getCCSubstationBuses()).at(i))->replicate());
@@ -716,19 +716,19 @@ CtiCCSubstationBusMsg& CtiCCSubstationBusMsg::operator=(const CtiCCSubstationBus
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self fromt he given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
-	strm >> _msgInfoBitMask
+    strm >> _msgInfoBitMask
          >> _ccSubstationBuses;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationBusMsg::saveGuts(RWvostream& strm) const
@@ -758,7 +758,7 @@ CtiCCCapBankStatesMsg::CtiCCCapBankStatesMsg(CtiCCState_vec& ccCapBankStates) : 
 {
     _ccCapBankStates = new CtiCCState_vec;
     int y = ccCapBankStates.size();
-	for(int i=0;i<y;i++)
+    for(int i=0;i<y;i++)
     {
         _ccCapBankStates->push_back(((CtiCCState*)ccCapBankStates.at(i))->replicate());
     }
@@ -777,7 +777,7 @@ CtiCCCapBankStatesMsg::~CtiCCCapBankStatesMsg()
     if( _ccCapBankStates != NULL &&
             _ccCapBankStates->size() > 0 )
         {
-            delete_vector(_ccCapBankStates);
+            delete_container(*_ccCapBankStates);
             _ccCapBankStates->clear();
             delete _ccCapBankStates;
         }
@@ -805,17 +805,17 @@ CtiCCCapBankStatesMsg& CtiCCCapBankStatesMsg::operator=(const CtiCCCapBankStates
         if( _ccCapBankStates != NULL &&
             _ccCapBankStates->size() > 0 )
         {
-            delete_vector(_ccCapBankStates);
+            delete_container(*_ccCapBankStates);
             _ccCapBankStates->clear();
             delete _ccCapBankStates;
         }
-		
-		int y = (right.getCCCapBankStates())->size();
-		
-		if ( _ccCapBankStates == NULL )
-			_ccCapBankStates = new CtiCCState_vec;
-		
-		for(int i=0;i < y;i++)
+
+        int y = (right.getCCCapBankStates())->size();
+
+        if ( _ccCapBankStates == NULL )
+            _ccCapBankStates = new CtiCCState_vec;
+
+        for(int i=0;i < y;i++)
         {
             _ccCapBankStates->push_back(((CtiCCState*)(*right.getCCCapBankStates()).at(i))->replicate());
         }
@@ -826,18 +826,18 @@ CtiCCCapBankStatesMsg& CtiCCCapBankStatesMsg::operator=(const CtiCCCapBankStates
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self fromt he given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCCapBankStatesMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
-	strm >> _ccCapBankStates;
+    strm >> _ccCapBankStates;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCCapBankStatesMsg::saveGuts(RWvostream& strm) const
@@ -859,14 +859,14 @@ RWDEFINE_COLLECTABLE( CtiCCGeoAreasMsg, CTICCGEOAREAS_MSG_ID )
 CtiCCGeoAreasMsg::CtiCCGeoAreasMsg(CtiCCArea_vec& ccGeoAreas) : CtiCCMessage("CCGeoAreas"), _ccGeoAreas(NULL)
 {
     _ccGeoAreas = new CtiCCArea_vec;
-    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCGeoAreasMsg has "<< ccGeoAreas.size()<<" entries." << endl;
     }
-    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
-        for (int h=0;h < ccGeoAreas.size(); h++) 
+        for (int h=0;h < ccGeoAreas.size(); h++)
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -895,7 +895,7 @@ CtiCCGeoAreasMsg::~CtiCCGeoAreasMsg()
     if( _ccGeoAreas != NULL &&
             _ccGeoAreas->size() > 0 )
         {
-            delete_vector(_ccGeoAreas);
+            delete_container(*_ccGeoAreas);
             _ccGeoAreas->clear();
             delete _ccGeoAreas;
         }
@@ -921,14 +921,14 @@ CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
         if( _ccGeoAreas != NULL &&
             _ccGeoAreas->size() > 0 )
         {
-            delete_vector(_ccGeoAreas);
+            delete_container(*_ccGeoAreas);
             _ccGeoAreas->clear();
             delete _ccGeoAreas;
         }
-        
-		if ( _ccGeoAreas == NULL )
-			_ccGeoAreas = new CtiCCArea_vec;
-		for(int i=0;i<(right.getCCGeoAreas())->size();i++)
+
+        if ( _ccGeoAreas == NULL )
+            _ccGeoAreas = new CtiCCArea_vec;
+        for(int i=0;i<(right.getCCGeoAreas())->size();i++)
         {
             _ccGeoAreas->push_back(((CtiCCArea*)(*right.getCCGeoAreas()).at(i))->replicate());
         }
@@ -939,18 +939,18 @@ CtiCCGeoAreasMsg& CtiCCGeoAreasMsg::operator=(const CtiCCGeoAreasMsg& right)
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self fromt he given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCGeoAreasMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
-	strm >> _ccGeoAreas;
+    strm >> _ccGeoAreas;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCGeoAreasMsg::saveGuts(RWvostream& strm) const
@@ -973,14 +973,14 @@ RWDEFINE_COLLECTABLE( CtiCCSpecialAreasMsg, CTICCSPECIALAREAS_MSG_ID )
 CtiCCSpecialAreasMsg::CtiCCSpecialAreasMsg(CtiCCSpArea_vec& ccSpecialAreas) : CtiCCMessage("CCSpecialAreas"), _ccSpecialAreas(NULL)
 {
     _ccSpecialAreas = new CtiCCSpArea_vec;
-    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< ccSpecialAreas.size()<<" entries." << endl;
     }
-    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
-        for (int h=0;h < ccSpecialAreas.size(); h++) 
+        for (int h=0;h < ccSpecialAreas.size(); h++)
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1008,7 +1008,7 @@ CtiCCSpecialAreasMsg::~CtiCCSpecialAreasMsg()
     if( _ccSpecialAreas != NULL &&
             _ccSpecialAreas->size() > 0 )
         {
-            delete_vector(_ccSpecialAreas);
+            delete_container(*_ccSpecialAreas);
             _ccSpecialAreas->clear();
             delete _ccSpecialAreas;
         }
@@ -1034,12 +1034,12 @@ CtiCCSpecialAreasMsg& CtiCCSpecialAreasMsg::operator=(const CtiCCSpecialAreasMsg
         if( _ccSpecialAreas != NULL &&
             _ccSpecialAreas->size() > 0 )
         {
-            delete_vector(_ccSpecialAreas);
+            delete_container(*_ccSpecialAreas);
             _ccSpecialAreas->clear();
             delete _ccSpecialAreas;
         }
-		if ( _ccSpecialAreas == NULL )
-			_ccSpecialAreas = new CtiCCSpArea_vec;
+        if ( _ccSpecialAreas == NULL )
+            _ccSpecialAreas = new CtiCCSpArea_vec;
         for(int i=0;i<(right.getCCSpecialAreas())->size();i++)
         {
 
@@ -1052,30 +1052,30 @@ CtiCCSpecialAreasMsg& CtiCCSpecialAreasMsg::operator=(const CtiCCSpecialAreasMsg
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self fromt he given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCSpecialAreasMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
-	strm >> _ccSpecialAreas;
+    strm >> _ccSpecialAreas;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCSpecialAreasMsg::saveGuts(RWvostream& strm) const
 {
     CtiCCMessage::saveGuts(strm);
-    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - CtiCCSpecialAreasMsg has "<< _ccSpecialAreas->size()<<" entries." << endl;
         }
-        for (int h=0;h < _ccSpecialAreas->size(); h++) 
+        for (int h=0;h < _ccSpecialAreas->size(); h++)
         {
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1083,7 +1083,7 @@ void CtiCCSpecialAreasMsg::saveGuts(RWvostream& strm) const
                     " : "<<((CtiCCSpecial*)_ccSpecialAreas->at(h))->getPAOId()<< endl;
             }
         }
-    }  
+    }
 
 
     strm << _ccSpecialAreas;
@@ -1105,15 +1105,15 @@ RWDEFINE_COLLECTABLE( CtiCCSubstationsMsg, CTICCSUBSTATION_MSG_ID )
 CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULONG bitMask) : CtiCCMessage("CCSubstations"), _ccSubstations(NULL), _msgInfoBitMask(bitMask)
 {
     _ccSubstations = new CtiCCSubstation_vec;
-    if( _CC_DEBUG & CC_DEBUG_EXTENDED )  
+    if( _CC_DEBUG & CC_DEBUG_EXTENDED )
     {
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - CtiCCSubstationsMsg has "<< ccSubstations.size()<<" entries." << endl;
     }
-    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )  
+    if( _CC_DEBUG & CC_DEBUG_RIDICULOUS )
     {
-        for (int h=0;h < ccSubstations.size(); h++) 
-        {   
+        for (int h=0;h < ccSubstations.size(); h++)
+        {
             CtiCCSubstation* station = (CtiCCSubstation*)ccSubstations[h];
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1121,7 +1121,7 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULO
             }
             std::list <LONG>::const_iterator iterBus = station->getCCSubIds()->begin();
             while (iterBus  != station->getCCSubIds()->end())
-            { 
+            {
                 LONG busId = *iterBus;
                 {
                     CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -1136,7 +1136,7 @@ CtiCCSubstationsMsg::CtiCCSubstationsMsg(CtiCCSubstation_vec& ccSubstations, ULO
     {
         _ccSubstations->push_back((CtiCCSubstation*)(ccSubstations.at(i))->replicate());
     }
-    
+
 }
 
 
@@ -1153,7 +1153,7 @@ CtiCCSubstationsMsg::~CtiCCSubstationsMsg()
     if( _ccSubstations != NULL &&
             _ccSubstations->size() > 0 )
         {
-            delete_vector(_ccSubstations);
+            delete_container(*_ccSubstations);
             _ccSubstations->clear();
             delete _ccSubstations;
         }
@@ -1179,12 +1179,12 @@ CtiCCSubstationsMsg& CtiCCSubstationsMsg::operator=(const CtiCCSubstationsMsg& r
         if( _ccSubstations != NULL &&
             _ccSubstations->size() > 0 )
         {
-            delete_vector(_ccSubstations);
+            delete_container(*_ccSubstations);
             _ccSubstations->clear();
             delete _ccSubstations;
         }
-		if ( _ccSubstations == NULL )
-			_ccSubstations = new CtiCCSubstation_vec;
+        if ( _ccSubstations == NULL )
+            _ccSubstations = new CtiCCSubstation_vec;
         for(int i=0;i<(right.getCCSubstations())->size();i++)
         {
             _ccSubstations->push_back(((CtiCCSubstation*)(*right.getCCSubstations()).at(i))->replicate());
@@ -1196,19 +1196,19 @@ CtiCCSubstationsMsg& CtiCCSubstationsMsg::operator=(const CtiCCSubstationsMsg& r
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self fromt he given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationsMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
     strm >> _msgInfoBitMask;
-	strm >> _ccSubstations;
+    strm >> _ccSubstations;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCSubstationsMsg::saveGuts(RWvostream& strm) const
@@ -1227,7 +1227,7 @@ RWDEFINE_COLLECTABLE( CtiCCShutdown, CTICCSHUTDOWN_ID )
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self fromt he given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCShutdown::restoreGuts(RWvistream& strm)
@@ -1237,7 +1237,7 @@ void CtiCCShutdown::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCShutdown::saveGuts(RWvostream& strm) const
@@ -1266,23 +1266,23 @@ RWDEFINE_COLLECTABLE( CtiPAOScheduleMsg, CTIPAOSCHEDULEMSG_ID )
 CtiPAOScheduleMsg::~CtiPAOScheduleMsg()
 {
 }
- 
+
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiPAOScheduleMsg::restoreGuts(RWvistream& strm)
 {
     CtiCCMessage::restoreGuts(strm);
     strm >> _scheduleId;
- 
+
     return;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiPAOScheduleMsg::saveGuts(RWvostream& strm) const
@@ -1312,7 +1312,7 @@ CtiPAOScheduleMsg& CtiPAOScheduleMsg::operator=(const CtiPAOScheduleMsg& right)
     CtiCCServerResponse
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiCCServerResponse, CTICCSERVERRESPONSE_ID ) 
+RWDEFINE_COLLECTABLE( CtiCCServerResponse, CTICCSERVERRESPONSE_ID )
 
 /*---------------------------------------------------------------------------
     Constructors
@@ -1323,12 +1323,12 @@ CtiCCServerResponse::CtiCCServerResponse(long type, string res) :
 {
     response = res;
     responseType = type;
-}                                           
+}
 
 CtiCCServerResponse::CtiCCServerResponse(const CtiCCServerResponse& commandMsg)
 {
     operator=( commandMsg );
-}                                           
+}
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -1344,17 +1344,17 @@ long CtiCCServerResponse::getResponseType() const
 
 /*---------------------------------------------------------------------------
     Id
-    
+
     Returns the id of the object that is associated with command.
 ---------------------------------------------------------------------------*/
 string CtiCCServerResponse::getResponse() const
 {
     return response;
 }
-    
+
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiCCServerResponse::restoreGuts(RWvistream& strm)
@@ -1362,13 +1362,13 @@ void CtiCCServerResponse::restoreGuts(RWvistream& strm)
     CtiCCMessage::restoreGuts(strm);
     strm >> responseType
          >> response;
- 
+
     return;
 }
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiCCServerResponse::saveGuts(RWvostream& strm) const

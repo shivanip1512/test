@@ -48,7 +48,7 @@ CtiLMEnergyExchangeCustomerReply::CtiLMEnergyExchangeCustomerReply(const CtiLMEn
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomerReply::~CtiLMEnergyExchangeCustomerReply()
 {
-    delete_vector( _lmenergyexchangehourlycustomers );
+    delete_container( _lmenergyexchangehourlycustomers );
     _lmenergyexchangehourlycustomers.clear();
 }
 
@@ -355,7 +355,7 @@ CtiLMEnergyExchangeCustomerReply& CtiLMEnergyExchangeCustomerReply::operator=(co
         _nameofacceptperson = right._nameofacceptperson;
         _energyexchangenotes = right._energyexchangenotes;
 
-        delete_vector( _lmenergyexchangehourlycustomers );
+        delete_container( _lmenergyexchangehourlycustomers );
         _lmenergyexchangehourlycustomers.clear();
         for(LONG i=0;i<right._lmenergyexchangehourlycustomers.size();i++)
         {

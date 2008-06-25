@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/prot_fpcbc.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/05/31 21:41:19 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -139,7 +139,7 @@ INT CtiProtocolFisherPierceCBC::assemblePutStatus(CtiCommandParser  &parse, cons
     {
         // Oh my, this one failed.... we should get rid of the 'prime' FPSTRUCT since it was never
         // modified
-        delete_list(_fst);
+        delete_container(_fst);
         _fst.clear();
     }
 

@@ -1,14 +1,14 @@
 /*---------------------------------------------------------------------------
         Filename:  lmprogramenergyexchange.cpp
-        
+
         Programmer:  Josh Wolberg
-        
+
         Description:    Source file for CtiLMProgramEnergyExchange.
                         CtiLMProgramEnergyExchange maintains the state and handles
                         the persistence of programs for Load Management.
 
         Initial Date:  5/7/2001
-         
+
         COPYRIGHT:  Copyright (C) Cannon Technologies, Inc., 2001
 ---------------------------------------------------------------------------*/
 #include "yukon.h"
@@ -35,12 +35,12 @@ RWDEFINE_COLLECTABLE( CtiLMProgramEnergyExchange, CTILMPROGRAMENERGYEXCHANGE_ID 
     Constructors
 ---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange()
-{   
+{
 }
 
 CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange(RWDBReader& rdr)
 {
-    restore(rdr);   
+    restore(rdr);
 }
 
 CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange(const CtiLMProgramEnergyExchange& energyexchangeprog)
@@ -53,15 +53,15 @@ CtiLMProgramEnergyExchange::CtiLMProgramEnergyExchange(const CtiLMProgramEnergyE
 ---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange::~CtiLMProgramEnergyExchange()
 {
-    delete_vector(_lmenergyexchangeoffers);
+    delete_container(_lmenergyexchangeoffers);
     _lmenergyexchangeoffers.clear();
-    delete_vector(_lmenergyexchangecustomers);
+    delete_container(_lmenergyexchangecustomers);
     _lmenergyexchangecustomers.clear();
 }
 
 /*---------------------------------------------------------------------------
     getMinNotifyTime
-    
+
     Returns the minimum notify time in seconds of the energy exchange program
 ---------------------------------------------------------------------------*/
 LONG CtiLMProgramEnergyExchange::getMinNotifyTime() const
@@ -72,7 +72,7 @@ LONG CtiLMProgramEnergyExchange::getMinNotifyTime() const
 
 /*---------------------------------------------------------------------------
     getHeading
-    
+
     Returns the heading of the energy exchange program
 ---------------------------------------------------------------------------*/
 const string& CtiLMProgramEnergyExchange::getHeading() const
@@ -83,7 +83,7 @@ const string& CtiLMProgramEnergyExchange::getHeading() const
 
 /*---------------------------------------------------------------------------
     getMessageHeader
-    
+
     Returns the message header of the energy exchange program
 ---------------------------------------------------------------------------*/
 const string& CtiLMProgramEnergyExchange::getMessageHeader() const
@@ -94,7 +94,7 @@ const string& CtiLMProgramEnergyExchange::getMessageHeader() const
 
 /*---------------------------------------------------------------------------
     getMessageFooter
-    
+
     Returns the message footer of the energy exchange program
 ---------------------------------------------------------------------------*/
 const string& CtiLMProgramEnergyExchange::getMessageFooter() const
@@ -127,7 +127,7 @@ const string& CtiLMProgramEnergyExchange::getStoppedEarlyMsg() const
 
 /*---------------------------------------------------------------------------
     getLMEnergyExchangeOffers
-    
+
     Returns a list of offer revisions for this energy exchange program
 ---------------------------------------------------------------------------*/
 std::vector<CtiLMEnergyExchangeOffer*>& CtiLMProgramEnergyExchange::getLMEnergyExchangeOffers()
@@ -138,7 +138,7 @@ std::vector<CtiLMEnergyExchangeOffer*>& CtiLMProgramEnergyExchange::getLMEnergyE
 
 /*---------------------------------------------------------------------------
     getLMEnergyExchangeCustomers
-    
+
     Returns a list of customers for this energy exchange program
 ---------------------------------------------------------------------------*/
 std::vector<CtiLMEnergyExchangeCustomer*>& CtiLMProgramEnergyExchange::getLMEnergyExchangeCustomers()
@@ -149,9 +149,9 @@ std::vector<CtiLMEnergyExchangeCustomer*>& CtiLMProgramEnergyExchange::getLMEner
 
 /*---------------------------------------------------------------------------
     setMinNotifyTime
-    
+
     Sets the minimum notify time of the energy exchange program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMinNotifyTime(LONG notifytime)
 {
 
@@ -162,9 +162,9 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMinNotifyTime(LONG no
 
 /*---------------------------------------------------------------------------
     setHeading
-    
+
     Sets the heading of the energy exchange program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setHeading(const string& head)
 {
 
@@ -175,9 +175,9 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setHeading(const string&
 
 /*---------------------------------------------------------------------------
     setMessageHeader
-    
+
     Sets the message header of the energy exchange program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageHeader(const string& msgheader)
 {
 
@@ -188,9 +188,9 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageHeader(const s
 
 /*---------------------------------------------------------------------------
     setMessageFooter
-    
+
     Sets the message footer of the energy exchange program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageFooter(const string& msgfooter)
 {
 
@@ -201,9 +201,9 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setMessageFooter(const s
 
 /*---------------------------------------------------------------------------
     setCanceledMsg
-    
+
     Sets the canceled msg of the energy exchange program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setCanceledMsg(const string& canceled)
 {
 
@@ -214,9 +214,9 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setCanceledMsg(const str
 
 /*---------------------------------------------------------------------------
     setStoppedEarlyMsg
-    
+
     Sets the stopped early msg of the energy exchange program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const string& stoppedearly)
 {
 
@@ -228,9 +228,9 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::setStoppedEarlyMsg(const
 
 /*---------------------------------------------------------------------------
     reduceProgramLoad
-    
+
     Sets the group selection method of the energy exchange program
----------------------------------------------------------------------------*/    
+---------------------------------------------------------------------------*/
 DOUBLE CtiLMProgramEnergyExchange::reduceProgramLoad(DOUBLE loadReductionNeeded, LONG currentPriority, vector<CtiLMControlAreaTrigger*> controlAreaTriggers, LONG secondsFromBeginningOfDay, ULONG secondsFrom1901, CtiMultiMsg* multiPilMsg, CtiMultiMsg* multiDispatchMsg, CtiMultiMsg* multiNotifMsg, BOOL isTriggerCheckNeeded)
 {
 
@@ -253,7 +253,7 @@ BOOL CtiLMProgramEnergyExchange::stopProgramControl(CtiMultiMsg* multiPilMsg, Ct
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - stopProgramControl isn't implemented yet, in: " << __FILE__ << " at:" << __LINE__ << endl;
     }
-    
+
     return returnBool;
 }
 
@@ -500,7 +500,7 @@ void CtiLMProgramEnergyExchange::notifyCustomersOfCancel(CtiLMEnergyExchangeOffe
     Returns boolean if groups in this program are below the max hours
     daily/monthly/seasonal/annually.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramEnergyExchange::hasControlHoursAvailable() 
+BOOL CtiLMProgramEnergyExchange::hasControlHoursAvailable()
 {
     BOOL returnBoolean = TRUE;
     return returnBoolean;
@@ -508,7 +508,7 @@ BOOL CtiLMProgramEnergyExchange::hasControlHoursAvailable()
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restore self's state from the given stream
 --------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::restoreGuts(RWvistream& istrm)
@@ -527,18 +527,18 @@ void CtiLMProgramEnergyExchange::restoreGuts(RWvistream& istrm)
           >> _lmenergyexchangeoffers
           >> _lmenergyexchangecustomers;
 
-}  
-   
+}
+
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Save self's state onto the given stream
 ---------------------------------------------------------------------------*/
-void CtiLMProgramEnergyExchange::saveGuts(RWvostream& ostrm ) const  
+void CtiLMProgramEnergyExchange::saveGuts(RWvostream& ostrm ) const
 {
 
 
-        
+
     CtiLMProgramBase::saveGuts( ostrm );
 
     ostrm << _minnotifytime
@@ -570,14 +570,14 @@ CtiLMProgramEnergyExchange& CtiLMProgramEnergyExchange::operator=(const CtiLMPro
         _canceledmsg = right._canceledmsg;
         _stoppedearlymsg = right._stoppedearlymsg;
 
-        delete_vector(_lmenergyexchangeoffers);
+        delete_container(_lmenergyexchangeoffers);
         _lmenergyexchangeoffers.clear();
         for(LONG i=0;i<right._lmenergyexchangeoffers.size();i++)
         {
             _lmenergyexchangeoffers.push_back(((CtiLMEnergyExchangeOffer*)right._lmenergyexchangeoffers[i])->replicate());
         }
 
-        delete_vector(_lmenergyexchangecustomers);
+        delete_container(_lmenergyexchangecustomers);
         _lmenergyexchangecustomers.clear();
         for(LONG j=0;j<right._lmenergyexchangecustomers.size();j++)
         {
@@ -633,7 +633,7 @@ BOOL CtiLMProgramEnergyExchange::isOfferWithId(LONG offerid)
 /*---------------------------------------------------------------------------
     isOfferRevisionOpen
 
-    Returns a boolean if there is a offer 
+    Returns a boolean if there is a offer
 ---------------------------------------------------------------------------*/
 BOOL CtiLMProgramEnergyExchange::isOfferRevisionOpen(LONG offerID, LONG revisionNumber)
 {
@@ -697,7 +697,7 @@ CtiLMEnergyExchangeOffer* CtiLMProgramEnergyExchange::getOfferWithId(LONG offeri
 
 /*---------------------------------------------------------------------------
     replicate
-    
+
     Restores self's operation fields
 ---------------------------------------------------------------------------*/
 CtiLMProgramBaseSPtr CtiLMProgramEnergyExchange::replicate() const
@@ -707,7 +707,7 @@ CtiLMProgramBaseSPtr CtiLMProgramEnergyExchange::replicate() const
 
 /*---------------------------------------------------------------------------
     restore
-    
+
     Restores given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
@@ -732,7 +732,7 @@ void CtiLMProgramEnergyExchange::restore(RWDBReader& rdr)
 
 /*---------------------------------------------------------------------------
     restoreEnergyExchangeSpecificDatabaseEntries
-    
+
     Restores the database entries for a energy exchange program that are not
     contained in the base table.
 ---------------------------------------------------------------------------*/
@@ -761,7 +761,7 @@ void CtiLMProgramEnergyExchange::dumpDynamicData()
 
 /*---------------------------------------------------------------------------
     dumpDynamicData
-    
+
     Writes out the dynamic information for this energy exchange program.
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::dumpDynamicData(RWDBConnection& conn, CtiTime& currentDateTime)
@@ -777,7 +777,7 @@ void CtiLMProgramEnergyExchange::dumpDynamicData(RWDBConnection& conn, CtiTime& 
 
 /*---------------------------------------------------------------------------
     restoreDynamicData
-    
+
     Restores self's dynamic data given a RWDBReader
 ---------------------------------------------------------------------------*/
 void CtiLMProgramEnergyExchange::restoreDynamicData(RWDBReader& rdr)
@@ -791,5 +791,5 @@ void CtiLMProgramEnergyExchange::restoreDynamicData(RWDBReader& rdr)
 
 // Static Members
 
-// Possible 
+// Possible
 

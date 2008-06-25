@@ -49,7 +49,7 @@ CtiLMEnergyExchangeOffer::CtiLMEnergyExchangeOffer(const CtiLMEnergyExchangeOffe
 CtiLMEnergyExchangeOffer::~CtiLMEnergyExchangeOffer()
 {
 
-    delete_vector(_lmenergyexchangeofferrevisions);
+    delete_container(_lmenergyexchangeofferrevisions);
     _lmenergyexchangeofferrevisions.clear();
 }
 
@@ -439,7 +439,7 @@ CtiLMEnergyExchangeOffer& CtiLMEnergyExchangeOffer::operator=(const CtiLMEnergyE
         _runstatus = right._runstatus;
         _offerdate = right._offerdate;
 
-        delete_vector(_lmenergyexchangeofferrevisions);
+        delete_container(_lmenergyexchangeofferrevisions);
         _lmenergyexchangeofferrevisions.clear();
         for(LONG i=0;i<right._lmenergyexchangeofferrevisions.size();i++)
         {

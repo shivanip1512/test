@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_multi.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/02/17 17:04:33 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,7 +116,7 @@ CtiMultiMsg::CtiMultiMsg(CtiMultiMsg_vec& pointData, int Pri) :
 
 CtiMultiMsg::~CtiMultiMsg()
 {
-    delete_vector(_bag);
+   delete_container(_bag);
    _bag.clear();    // Clean up any leftovers.
 }
 
@@ -133,7 +133,7 @@ CtiMultiMsg& CtiMultiMsg::operator=(const CtiMultiMsg& aRef)
    if(this != &aRef)
    {
       Inherited::operator=(aRef);
-      delete_vector(_bag);
+      delete_container(_bag);
       _bag.clear();     // Make sure it is empty!
 
       for(int i = 0; i < aRef.getCount(); i++)
@@ -162,7 +162,7 @@ CtiPointDataMsg* CtiMultiMsg::operator[](size_t i) const
 // Clear out the list.
 void CtiMultiMsg::clear()
 {
-    delete_vector(_bag);
+    delete_container(_bag);
    _bag.clear();
 }
 

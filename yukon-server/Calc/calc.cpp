@@ -145,7 +145,7 @@ void CtiCalc::appendComponent( CtiCalcComponent *componentToAdd )
 
 void CtiCalc::cleanup( void )
 {
-    delete_list( _components );
+    delete_container( _components );
     _components.clear( );
 }
 

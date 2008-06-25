@@ -76,7 +76,7 @@ public:
    virtual ~CtiRTDB()
    {
       LockGuard guard(monitor());
-      delete_list(_orphans);
+      delete_container(_orphans);
       _orphans.clear();       // Clean up the leftovers if there are any.
       //deletes memory pointed to in the value pointer
       for (MapIterator itr = Map.begin(); itr != Map.end(); itr++) {
@@ -205,7 +205,7 @@ public:
            itr = Map.erase(*itr);
        }//TSFLAG
 
-       delete_list(deleteObjs);
+       delete_container(deleteObjs);
        deleteKeys.clear();
        deleteObjs.clear();
 

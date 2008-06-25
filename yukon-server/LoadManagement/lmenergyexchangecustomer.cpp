@@ -48,7 +48,7 @@ CtiLMEnergyExchangeCustomer::CtiLMEnergyExchangeCustomer(const CtiLMEnergyExchan
 ---------------------------------------------------------------------------*/
 CtiLMEnergyExchangeCustomer::~CtiLMEnergyExchangeCustomer()
 {
-    delete_vector( _lmenergyexchangecustomerreplies );
+    delete_container( _lmenergyexchangecustomerreplies );
     _lmenergyexchangecustomerreplies.clear();
 }
 
@@ -129,7 +129,7 @@ CtiLMEnergyExchangeCustomer& CtiLMEnergyExchangeCustomer::operator=(const CtiLME
     {
         CtiLMCICustomerBase::operator=(right);
 
-        delete_vector(_lmenergyexchangecustomerreplies );
+        delete_container(_lmenergyexchangecustomerreplies );
         _lmenergyexchangecustomerreplies.clear();
         for(LONG i=0;i<right._lmenergyexchangecustomerreplies.size();i++)
         {

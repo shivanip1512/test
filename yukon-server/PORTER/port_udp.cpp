@@ -7,8 +7,8 @@
 * Author: Matt Fisher
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.29 $
-* DATE         :  $Date: 2008/04/23 20:26:39 $
+* REVISION     :  $Revision: 1.30 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 2004 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -313,10 +313,10 @@ bool UDPInterface::getOutMessages( unsigned wait )
                     dout << CtiTime() << " Cti::Porter::UDPInterface::getOutMessages - !vg_list.empty() || !ret_list.empty() while creating keepalive request for device \"" << dr->device->getName() << "\" " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                delete_list(vg_list);
+                delete_container(vg_list);
                 vg_list.clear();
 
-                delete_list(ret_list);
+                delete_container(ret_list);
                 ret_list.clear();
             }
 
@@ -2303,7 +2303,7 @@ void UDPInterface::trace( void )
         SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE) , FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
     }
 
-    delete_list(_traceList);
+    delete_container(_traceList);
     _traceList.clear();
 }
 

@@ -51,7 +51,7 @@ CtiLMEnergyExchangeOfferRevision::CtiLMEnergyExchangeOfferRevision(const CtiLMEn
 CtiLMEnergyExchangeOfferRevision::~CtiLMEnergyExchangeOfferRevision()
 {
 
-    delete_vector(_lmenergyexchangehourlyoffers);
+    delete_container(_lmenergyexchangehourlyoffers);
     _lmenergyexchangehourlyoffers.clear();
 }
 
@@ -347,7 +347,7 @@ CtiLMEnergyExchangeOfferRevision& CtiLMEnergyExchangeOfferRevision::operator=(co
         _offerexpirationdatetime = right._offerexpirationdatetime;
         _additionalinfo = right._additionalinfo;
 
-        delete_vector(_lmenergyexchangehourlyoffers);
+        delete_container(_lmenergyexchangehourlyoffers);
         _lmenergyexchangehourlyoffers.clear();
         for(LONG i=0;i<right._lmenergyexchangehourlyoffers.size();i++)
         {

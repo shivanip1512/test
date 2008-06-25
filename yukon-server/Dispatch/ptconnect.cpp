@@ -123,7 +123,7 @@ CtiPointConnection::CtiPointConnection()
 CtiPointConnection::~CtiPointConnection()
 {
     // Blow away everything. // Connection Managers must be deleted by VanGogh
-    // delete_list( ConnectionManagerCollection );  // Release of the reference allows a delete to occur.
+    // delete_container( ConnectionManagerCollection );  // Release of the reference allows a delete to occur.
     ConnectionManagerCollection.clear();
 }
 

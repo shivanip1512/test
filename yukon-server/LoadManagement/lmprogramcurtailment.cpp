@@ -51,7 +51,7 @@ CtiLMProgramCurtailment::CtiLMProgramCurtailment(const CtiLMProgramCurtailment& 
 ---------------------------------------------------------------------------*/
 CtiLMProgramCurtailment::~CtiLMProgramCurtailment()
 {
-    delete_vector(_lmprogramcurtailmentcustomers);
+    delete_container(_lmprogramcurtailmentcustomers);
     _lmprogramcurtailmentcustomers.clear();
 }
 
@@ -924,7 +924,7 @@ void CtiLMProgramCurtailment::deleteLMCurtailProgramActivityTable()
     Returns boolean if groups in this program are below the max hours
     daily/monthly/seasonal/annually.
 ---------------------------------------------------------------------------*/
-BOOL CtiLMProgramCurtailment::hasControlHoursAvailable() 
+BOOL CtiLMProgramCurtailment::hasControlHoursAvailable()
 {
     BOOL returnBoolean = TRUE;
     return returnBoolean;
@@ -1022,7 +1022,7 @@ CtiLMProgramCurtailment& CtiLMProgramCurtailment::operator=(const CtiLMProgramCu
         _runstatus = right._runstatus;
         _additionalinfo = right._additionalinfo;
 
-        delete_vector(_lmprogramcurtailmentcustomers);
+        delete_container(_lmprogramcurtailmentcustomers);
         _lmprogramcurtailmentcustomers.clear();
         for(LONG i=0;i<right._lmprogramcurtailmentcustomers.size();i++)
         {

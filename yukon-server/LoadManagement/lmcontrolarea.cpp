@@ -65,7 +65,7 @@ CtiLMControlArea::CtiLMControlArea(const CtiLMControlArea& controlarea)
 ---------------------------------------------------------------------------*/
 CtiLMControlArea::~CtiLMControlArea()
 {
-    delete_vector(_lmcontrolareatriggers);
+    delete_container(_lmcontrolareatriggers);
     _lmcontrolareatriggers.clear();
 
     _lmprograms.clear();
@@ -1587,7 +1587,7 @@ void CtiLMControlArea::manuallyStartAllProgramsNow(LONG secondsFromBeginningOfDa
                 CtiLMProgramConstraintChecker con_checker(*((CtiLMProgramDirect*)currentLMProgram.get()), secondsFrom1901);
                 //Check manual but not notification time
                 if( con_checker.checkSeason(secondsFrom1901, gEndOfCtiTimeSeconds) &&
-                    con_checker.checkWeekDays(secondsFrom1901, gEndOfCtiTimeSeconds) && 
+                    con_checker.checkWeekDays(secondsFrom1901, gEndOfCtiTimeSeconds) &&
                     con_checker.checkMasterActive() &&
                     con_checker.checkControlWindows(secondsFrom1901, gEndOfCtiTimeSeconds) &&
                     con_checker.checkControlAreaControlWindows(*this, secondsFrom1901, gEndOfCtiTimeSeconds) )
@@ -2562,7 +2562,7 @@ CtiLMControlArea& CtiLMControlArea::operator=(const CtiLMControlArea& right)
         _currentdailystarttime = right._currentdailystarttime;
         _currentdailystoptime = right._currentdailystoptime;
 
-        delete_vector(_lmcontrolareatriggers);
+        delete_container(_lmcontrolareatriggers);
         _lmcontrolareatriggers.clear();
         for( LONG i=0;i<right._lmcontrolareatriggers.size();i++ )
         {

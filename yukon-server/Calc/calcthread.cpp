@@ -30,24 +30,24 @@ extern bool _runCalcBaseline;
 CtiCalculateThread::~CtiCalculateThread( void )
 {
     _auAffectedPoints.clear();
-    if( _periodicPoints.size() > 0 )
+    if( !_periodicPoints.empty() )
     {
-        delete_map(_periodicPoints);
+        delete_assoc_container(_periodicPoints);
         _periodicPoints.clear();
     }
-    if( _onUpdatePoints.size() > 0 )
+    if( !_onUpdatePoints.empty() )
     {
-        delete_map(_onUpdatePoints);
+        delete_assoc_container(_onUpdatePoints);
         _onUpdatePoints.clear();
     }
-    if( _constantPoints.size() > 0 )
+    if( !_constantPoints.empty() )
     {
-        delete_map(_constantPoints);
+        delete_assoc_container(_constantPoints);
         _constantPoints.clear();
     }
-    if( _historicalPoints.size() > 0 )
+    if( !_historicalPoints.empty() )
     {
-        delete_map(_historicalPoints);
+        delete_assoc_container(_historicalPoints);
         _historicalPoints.clear();
     }
 };
@@ -1503,7 +1503,7 @@ BOOL CtiCalculateThread::isACalcPointID(const long aPointID)
 BOOL CtiCalculateThread::isAPeriodicCalcPointID(const long aPointID)
 {
     BOOL foundPoint(FALSE);
-    
+
     if(_periodicPoints.find(aPointID) != _periodicPoints.end())
     {
         foundPoint = TRUE;
@@ -1570,7 +1570,7 @@ void CtiCalculateThread::setPeriodicPointMap(const CtiCalcPointMap &points)
 {
     if( _periodicPoints.size() > 0 )
     {
-        delete_map(_periodicPoints);
+        delete_assoc_container(_periodicPoints);
         _periodicPoints.clear();
     }
     _periodicPoints = points;
@@ -1580,7 +1580,7 @@ void CtiCalculateThread::setOnUpdatePointMap(const CtiCalcPointMap &points)
 {
     if( _onUpdatePoints.size() > 0 )
     {
-        delete_map(_onUpdatePoints);
+        delete_assoc_container(_onUpdatePoints);
         _onUpdatePoints.clear();
     }
     _onUpdatePoints = points;
@@ -1590,7 +1590,7 @@ void CtiCalculateThread::setConstantPointMap(const CtiCalcPointMap &points)
 {
     if( _constantPoints.size() > 0 )
     {
-        delete_map(_constantPoints);
+        delete_assoc_container(_constantPoints);
         _constantPoints.clear();
     }
     _constantPoints = points;
@@ -1600,7 +1600,7 @@ void CtiCalculateThread::setHistoricalPointMap(const CtiCalcPointMap &points)
 {
     if( _historicalPoints.size() > 0 )
     {
-        delete_map(_historicalPoints);
+        delete_assoc_container(_historicalPoints);
         _historicalPoints.clear();
     }
     _historicalPoints = points;
@@ -1612,25 +1612,25 @@ void CtiCalculateThread::clearAndDestroyPointMaps()
     {
         if( _constantPoints.size() > 0 )
         {
-            delete_map(_constantPoints);
+            delete_assoc_container(_constantPoints);
             _constantPoints.clear();
         }
 
         if( _onUpdatePoints.size() > 0 )
         {
-            delete_map(_onUpdatePoints);
+            delete_assoc_container(_onUpdatePoints);
             _onUpdatePoints.clear();
         }
 
         if( _periodicPoints.size() > 0 )
         {
-            delete_map(_periodicPoints);
+            delete_assoc_container(_periodicPoints);
             _periodicPoints.clear();
         }
 
         if( _historicalPoints.size() > 0 )
         {
-            delete_map(_historicalPoints);
+            delete_assoc_container(_historicalPoints);
             _historicalPoints.clear();
         }
     }

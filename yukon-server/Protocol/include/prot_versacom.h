@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/11/12 16:47:15 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -182,7 +182,7 @@ public:
 
    virtual ~CtiProtocolVersacom()
    {
-       delete_list(_vst);
+       delete_container(_vst);
       _vst.clear();
    }
 
@@ -195,7 +195,7 @@ public:
    {
       if(this != &aRef)
       {
-         delete_list(_vst);
+         delete_container(_vst);
          _vst.clear();
 
          for( int i = 0; i < aRef.entries(); i++ )

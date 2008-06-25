@@ -6,8 +6,8 @@
 *
 *    PVCS KEYWORDS:
 *    ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/FDR/fdrlodestarimport.cpp-arc  $
-*    REVISION     :  $Revision: 1.31 $
-*    DATE         :  $Date: 2007/08/08 14:10:05 $
+*    REVISION     :  $Revision: 1.32 $
+*    DATE         :  $Date: 2008/06/25 17:08:41 $
 *
 *
 *    AUTHOR: Josh Wolberg
@@ -19,6 +19,10 @@
 *    ---------------------------------------------------
 *    History:
       $Log: fdrlodestarimport.cpp,v $
+      Revision 1.32  2008/06/25 17:08:41  mfisher
+      YUK-6109 utility.h contains excessive delete_<type> functions
+      Consolidated duplicate functions
+
       Revision 1.31  2007/08/08 14:10:05  tspar
       YUK-4192
 
@@ -239,7 +243,7 @@ USHORT CtiFDR_LodeStarImportBase::ForeignToYukonQuality (string aQuality)
     if (!stringCompareIgnoreCase(aQuality,"M"))
         Quality = ManualQuality;*/
 
-	return(Quality);
+    return(Quality);
 }
 
 bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispatchMsg, list< CtiMultiMsg* > &dispatchList, const CtiTime& savedStartTime,const CtiTime& savedStopTime,long stdLsSecondsPerInterval, string savedCustomerIdentifier)
@@ -250,7 +254,7 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
     CtiMultiMsg_vec pointDataList = multiDispatchMsg->getData();
     CtiMultiMsg* msgPtr;
     int nbrPoints = pointDataList.size();
-    
+
     if (getDebugLevel() & MAJOR_DETAIL_FDR_DEBUGLEVEL)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -286,7 +290,7 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
         pData = new CtiPointDataMsg;
         pData = (CtiPointDataMsg *)currentPointData->replicateMessage();
 
-        msgPtr->insert(pData); 
+        msgPtr->insert(pData);
 
         if (msgCnt >= 500 || i == (nbrPoints - 1) || i > nbrPoints)
         {
@@ -302,7 +306,7 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
         pData = NULL;
 
     }
-    
+
     if( savedStopTime.seconds() != savedStartTime.seconds()+(nbrPoints*stdLsSecondsPerInterval)-getSubtractValue() )
     {
         string text = "NbrPoints * SecondsPerInterval != StopTime - StartTime";
@@ -318,8 +322,8 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
                               << (savedStopTime.seconds() - savedStartTime.seconds()) <<endl;
         }
         queueMessageToDispatch(new CtiSignalMsg(SYS_PID_SYSTEM,1,text,additional,GeneralLogType,SignalEvent,"fdr lodestar"));
-        
-        delete_list(dispatchList);
+
+        delete_container(dispatchList);
         dispatchList.clear();
         returnBool = false;
     }
@@ -328,7 +332,7 @@ bool CtiFDR_LodeStarImportBase::fillUpMissingTimeStamps(CtiMultiMsg* multiDispat
 }
 
 int CtiFDR_LodeStarImportBase::readConfig( void )
-{    
+{
     int         successful = TRUE;
     string   tempStr;
 
@@ -430,7 +434,7 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
             dout << CtiTime() << " Import file will NOT be rename and saved after import" << endl;
     }
 
-     
+
 
     return successful;
 }
@@ -439,9 +443,9 @@ int CtiFDR_LodeStarImportBase::readConfig( void )
 /************************************************************************
 * Function Name: CtiFDRTextFileBase::loadTranslationLists()
 *
-* Description: Creates a collection of points and their translations for the 
-*				specified direction
-* 
+* Description: Creates a collection of points and their translations for the
+*               specified direction
+*
 *************************************************************************
 */
 bool CtiFDR_LodeStarImportBase::loadTranslationLists()
@@ -457,7 +461,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
     RWDBStatus          listStatus;
     CHAR fileName[200];
     CHAR fileName2[200];
-    
+
     try
     {
         getFileInfoList().clear();
@@ -500,17 +504,17 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                         }
                         //123 1 C:/ASD ASD.EXE
                         translationName = translationPoint->getDestinationList()[x].getTranslationValue("Customer");
-                        if ( translationName.empty() ) 
+                        if ( translationName.empty() )
                             successful = false;
                         string translationChannel = translationPoint->getDestinationList()[x].getTranslationValue("Channel");
-                        if ( translationChannel.empty() ) 
+                        if ( translationChannel.empty() )
                             successful = false;
 
                         translationName += (string)" " + translationChannel;
 
 
                         translationFolderName = translationPoint->getDestinationList()[x].getTranslationValue("DrivePath");
-                        if ( translationFolderName.empty() ) 
+                        if ( translationFolderName.empty() )
                             successful = false;
                         translationDrivePath = getFileImportBaseDrivePath();
 
@@ -518,11 +522,11 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                         translationDrivePath += translationFolderName;
 
                         translationFilename = translationPoint->getDestinationList()[x].getTranslationValue("Filename");
-                        if ( translationFilename.empty() ) 
+                        if ( translationFilename.empty() )
                             successful = false;
                         translationName += (string)" " + translationFilename;
                         transform(translationName.begin(), translationName.end(), translationName.begin(), toupper);
-                        
+
 
                         CtiFDR_LodeStarInfoTable tempFileInfoList (translationDrivePath, translationFilename, translationFolderName);
                         string t1 = tempFileInfoList.getLodeStarDrivePath();
@@ -544,8 +548,8 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                         {
                             getFileInfoList().push_back(tempFileInfoList);
                         }
-                        translationPoint->getDestinationList()[x].setTranslation(translationName);                      
-                        
+                        translationPoint->getDestinationList()[x].setTranslation(translationName);
+
 
                         if (getDebugLevel() & DATABASE_FDR_DEBUGLEVEL)
                         {
@@ -555,7 +559,7 @@ bool CtiFDR_LodeStarImportBase::loadTranslationLists()
                         }
                     }
                 }   // end for interator
-                            
+
 
                 // lock the receive list and remove the old one
                 CtiLockGuard<CtiMutex> receiveGuard(getReceiveFromList().getMutex());
@@ -658,7 +662,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                         string t2 = getFileInfoList()[fileIndex].getLodeStarFileName();
                          _snprintf(fileName, 200, "%s\\%s",t1.c_str(),t2.c_str());
                          hSearch = FindFirstFile(fileName, fileData);
-                                                           
+
 
                          //_snprintf(fileNameAndPath, 250, "%s",fileName);
                          string t3 = getFileInfoList()[fileIndex].getLodeStarDrivePath();
@@ -666,7 +670,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                          _snprintf(fileNameAndPath, 250, "%s\\%s",t3.c_str(),t4.c_str());
                          if (hSearch != INVALID_HANDLE_VALUE)
                          {
-                         
+
                              if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                              {
                                  CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -743,35 +747,35 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                  // retrieve each line in order
                                  int totalLines = recordVector.size();
                                  int lineCnt = 0;
-                                 long secondsPerInterval = 0;                        
+                                 long secondsPerInterval = 0;
                                  char tempTest1[9];
                                  char tempTest2[9];
                                  strncpy(tempTest1,recordVector[lineCnt].data(),4);
                                  tempTest1[4] = '\0';
                                  strncpy(tempTest2,recordVector[lineCnt].data(),8);
                                  tempTest2[8] = '\0';
-                                 if ((string) tempTest1 == "0001") 
+                                 if ((string) tempTest1 == "0001")
                                  {
                                      if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                                      {
                                          CtiLockGuard<CtiLogger> doubt_guard(dout);
                                          dout << "LodeStar STANDARD total lines = "<< totalLines << endl;
                                      }
-                                       
+
                                  }
-                                 else if ((string) tempTest2 == "00000001") 
+                                 else if ((string) tempTest2 == "00000001")
                                  {
                                      if (getDebugLevel() & DETAIL_FDR_DEBUGLEVEL)
                                      {
                                          CtiLockGuard<CtiLogger> doubt_guard(dout);
                                          dout << "LodeStar ENHANCED total lines = "<< totalLines << endl;
-                                     }  
+                                     }
                                  }
                                  else
                                  {
                                      lineCnt = totalLines;
                                  }
-                                                         
+
                                  //information obtained from the fourth header record
                                  string savedCustomerIdentifier = string();
                                  CtiTime savedStartTime = CtiTime(CtiDate(1,1,1990));
@@ -784,19 +788,19 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                      savedStartTime = getlodeStarStartTime();
                                      savedStopTime = getlodeStarStopTime();
                                      if (decodeFirstHeaderRecord(recordVector[lineCnt], fileIndex))
-                                     {    
+                                     {
                                          if( multiDispatchMsg->getCount() > 0 )
                                          {
                                              secondsPerInterval = getlodeStarSecsPerInterval();
                                              list< CtiMultiMsg* > dispatchList;
-                                             delete_list(dispatchList);
+                                             delete_container(dispatchList);
                                              dispatchList.clear();
                                              if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval, savedCustomerIdentifier) )
                                              {
                                                  CtiMultiMsg *dispatchMsg = NULL;
 
                                                  while( !dispatchList.empty())
-                                                 {       
+                                                 {
                                                      dispatchMsg = dispatchList.front();dispatchList.pop_front();
                                                      queueMessageToDispatch(dispatchMsg);
                                                  }
@@ -808,8 +812,8 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                                  }
                                              }
                                              else
-                                             {  
-                                                 delete_list(dispatchList);
+                                             {
+                                                 delete_container(dispatchList);
                                                  dispatchList.clear();
                                                  if (multiDispatchMsg != NULL)
                                                  {
@@ -820,7 +824,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                                      CtiLockGuard<CtiLogger> doubt_guard(dout);
                                                      dout << "Not sending a multi msg for customer: " << savedCustomerIdentifier << endl;
                                                  }
-                                             }                                          
+                                             }
                                          }
                                          reinitialize();
                                      }
@@ -832,7 +836,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                          //do nothing because the extraction of settings or point values are handled in the decode methods themselves
                                      }
                                      else
-                                     {   
+                                     {
                                          const char *charPtr;
                                          charPtr = recordVector[lineCnt].c_str();
                                          for (int xyz = 0; xyz < recordVector[lineCnt].length(); xyz++)
@@ -849,21 +853,21 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                      lineCnt++;
                                  }
                                  recordVector.erase(recordVector.begin(), recordVector.end());
-                                                                
+
                                  if( multiDispatchMsg->getCount() > 0 )
-                                 {   
+                                 {
                                      secondsPerInterval = getlodeStarSecsPerInterval();
                                      list< CtiMultiMsg* > dispatchList;
-                                     delete_list(dispatchList);
+                                     delete_container(dispatchList);
                                      dispatchList.clear();
                                      if( fillUpMissingTimeStamps(multiDispatchMsg, dispatchList, savedStartTime,savedStopTime,secondsPerInterval, savedCustomerIdentifier) )
                                      {
                                          while( !dispatchList.empty())
-                                         {       
+                                         {
                                              CtiMultiMsg *dispatchMsg = (CtiMultiMsg*)dispatchList.front();dispatchList.pop_front();
                                              queueMessageToDispatch(dispatchMsg);
                                          }
-                                         delete_list(dispatchList);
+                                         delete_container(dispatchList);
                                          dispatchList.clear();
                                      }
                                      else
@@ -878,7 +882,7 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                              CtiLockGuard<CtiLogger> doubt_guard(dout);
                                              dout << "Not sending a multi msg for customer: " << savedCustomerIdentifier << endl;
                                          }
-                                     } 
+                                     }
                                  }
                              }
                              if( shouldRenameSaveFileAfterImport() )
@@ -915,24 +919,24 @@ void CtiFDR_LodeStarImportBase::threadFunctionReadFromFile( void )
                                     }
                                     else
                                     {
-                                        tempTime = tempTime.replace(pos,1,"_"); 
+                                        tempTime = tempTime.replace(pos,1,"_");
                                     }
                                 }
-                                
-                                _snprintf(newFileName, 250, "%s%s%s%s", fileNameAndPath, ".", tempTime.c_str(),".txt" ); 
 
-                                bool success = MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED); 
+                                _snprintf(newFileName, 250, "%s%s%s%s", fileNameAndPath, ".", tempTime.c_str(),".txt" );
+
+                                bool success = MoveFileEx(oldFileName,newFileName, MOVEFILE_REPLACE_EXISTING | MOVEFILE_COPY_ALLOWED);
                                 if ( !success )
                                 {
-                                    DWORD lastError = GetLastError(); 
-                                    CtiLockGuard<CtiLogger> doubt_guard(dout); 
+                                    DWORD lastError = GetLastError();
+                                    CtiLockGuard<CtiLogger> doubt_guard(dout);
                                     dout << "Last Error Code: " << lastError << " for MoveFile()" << endl;
                                 }
                              }
                              if( shouldDeleteFileAfterImport() )
                              {
                                  DeleteFile(fileName);
-                             } 
+                             }
                          }
                      }
                      catch(...)

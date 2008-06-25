@@ -268,7 +268,7 @@ void CtiCCClientListener::_listen()
             CtiLockGuard<CtiLogger> logger_guard(dout);
             dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
         }
-        
+
 
 
     } while ( !_doquit );
@@ -339,7 +339,7 @@ void CtiCCClientListener::_check()
             {
                 ThreadMonitor.tickle( CTIDBG_new CtiThreadRegData( rwThreadId(), "CapControl _clientCheck", CtiThreadRegData::Action, CtiThreadMonitor::StandardMonitorTime, &CtiCCSubstationBusStore::sendUserQuit, CTIDBG_new string("CapControl _clientCheck")) );
             //}*/
-        }  
+        }
 
 
     } while ( !_doquit );
@@ -348,7 +348,7 @@ void CtiCCClientListener::_check()
     {
 
         RWRecursiveLock<RWMutexLock>::LockGuard guard( _connmutex );
-        delete_vector(_connections);
+        delete_container(_connections);
         _connections.clear();
     }
 }

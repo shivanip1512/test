@@ -1939,7 +1939,7 @@ void CtiLMControlAreaStore::reset()
 
             // Clear out our old working objects
             _all_control_area_map.clear();
-            delete_vector(_controlAreas);
+            delete_container(*_controlAreas);
             _controlAreas->clear(); //89
             _all_group_map.clear();
             _all_program_map.clear();
@@ -2019,7 +2019,7 @@ void CtiLMControlAreaStore::shutdown()
         CtiLockGuard<CtiLogger> logger_guard(dout);
         dout << CtiTime() << " - Done with dumpAllDynamicData()" << endl;
     }*/
-    delete_vector(_controlAreas);
+    delete_container(*_controlAreas);
     _controlAreas->clear();
     delete _controlAreas;
 }

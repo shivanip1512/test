@@ -37,7 +37,7 @@ RWDEFINE_COLLECTABLE( CtiCCStrategy, CTICCSTRATEGY_ID )
     Constructors
 ---------------------------------------------------------------------------*/
 CtiCCStrategy::CtiCCStrategy()
-{      
+{
     //_todc.clear();
 }
 
@@ -59,9 +59,9 @@ CtiCCStrategy::~CtiCCStrategy()
 {
     if (!_todc.empty())
     {
-        delete_vector(_todc);
+        delete_container(_todc);
         _todc.clear();
-    } 
+    }
 }
 
 BOOL CtiCCStrategy::isDirty() const
@@ -113,10 +113,10 @@ void CtiCCStrategy::saveGuts( RWvostream& ostrm ) const
     << _controlunits
     << _controldelaytime
     << _controlsendretries
-    << _peaklag    
-    << _peaklead   
-    << _offpklag   
-    << _offpklead; 
+    << _peaklag
+    << _peaklead
+    << _offpklag
+    << _offpklead;
 }
 
 CtiCCStrategy& CtiCCStrategy::operator=(const CtiCCStrategy& right)
@@ -182,14 +182,14 @@ CtiCCStrategy* CtiCCStrategy::replicate() const
 void CtiCCStrategy::setTimeAndCloseValues(RWDBReader &rdr)
 {
     CtiTimeOfDayController *todc = new CtiTimeOfDayController;
-    
+
     rdr["starttimeseconds"]  >> todc->_secsFromMidnight;
     rdr["percentclose"] >> todc->_percentToClose;
 
     _todc.push_back(todc);
 
     return;
-}                         
+}
 
 CtiTODC_SVector& CtiCCStrategy::getTimeOfDayControllers()
 {
@@ -207,11 +207,11 @@ void  CtiCCStrategy::dumpTimeOfDayControllers()
         CtiTimeOfDayController* tempCtrl = (CtiTimeOfDayController*)_todc[i];
         {
             CtiLockGuard<CtiLogger> logger_guard(dout);
-            dout << "\t\t - %Close: " <<tempCtrl->_percentToClose 
+            dout << "\t\t - %Close: " <<tempCtrl->_percentToClose
                 << " SecsFromMid: "<<tempCtrl->_secsFromMidnight<< endl;
         }
     }
-    
+
 }
 
 void CtiCCStrategy::restore(RWDBReader &rdr)
@@ -243,8 +243,8 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     rdr["peaklead"] >> _peaklead;
     if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::KVARControlUnits)||
         !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits)||
-        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KQControlUnits)) 
-    {   
+        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KQControlUnits))
+    {
         _peaklag = fabs(_peaklag);
         _peaklead =  -fabs(_peaklead);
     }
@@ -252,28 +252,28 @@ void CtiCCStrategy::restore(RWDBReader &rdr)
     rdr["offpklead"] >> _offpklead;
     if (!stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::KVARControlUnits)||
         !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KVARControlUnits)||
-        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KQControlUnits)) 
+        !stringCompareIgnoreCase(_controlunits, CtiCCSubstationBus::PF_BY_KQControlUnits))
     {
         _offpklag = fabs(_offpklag);
-        _offpklead =  -fabs(_offpklead);  
+        _offpklead =  -fabs(_offpklead);
     }
     rdr["peakvarlag"] >> _peakVARlag;
     rdr["peakvarlead"] >> _peakVARlead;
     rdr["offpkvarlag"] >> _offpkVARlag;
     rdr["offpkvarlead"] >> _offpkVARlead;
-    
-    _peakVARlag = fabs(_peakVARlag);    
+
+    _peakVARlag = fabs(_peakVARlag);
     _peakVARlead =  -fabs(_peakVARlead);
-    _offpkVARlag = fabs(_offpkVARlag);      
-    _offpkVARlead =  -fabs(_offpkVARlead); 
+    _offpkVARlag = fabs(_offpkVARlag);
+    _offpkVARlead =  -fabs(_offpkVARlead);
 
     rdr["peakpfsetpoint"] >> _peakPFSetPoint;
-    if (_peakPFSetPoint > 100) 
+    if (_peakPFSetPoint > 100)
     {
         _peakPFSetPoint = -(200 - _peakPFSetPoint);
     }
     rdr["offpkpfsetpoint"] >> _offpkPFSetPoint;
-    if (_offpkPFSetPoint > 100) 
+    if (_offpkPFSetPoint > 100)
     {
         _offpkPFSetPoint = -(200 - _offpkPFSetPoint);
     }
@@ -541,7 +541,7 @@ CtiCCStrategy& CtiCCStrategy::setControlInterval(LONG interval)
 }
 
 CtiCCStrategy& CtiCCStrategy::setMaxConfirmTime(LONG confirm)
-{   
+{
     _maxconfirmtime = confirm;
     return *this;
 }

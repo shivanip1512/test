@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MCCMD/mccmd.cpp-arc  $
-* REVISION     :  $Revision: 1.73 $
-* DATE         :  $Date: 2008/03/24 20:50:49 $
+* REVISION     :  $Revision: 1.74 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -737,7 +737,7 @@ int mcu8100(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         RWCollectableString* str = *iter;
         Tcl_Eval( interp, (char*) str->data());
     }
-    delete_vector(results);
+    delete_container(results);
     results.clear();
     return TCL_OK;
 }
@@ -771,7 +771,7 @@ int mcu9000eoi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[]
         RWCollectableString* str = *iter;
         Tcl_Eval( interp, (char*) str->data());
     }
-    delete_vector(results);
+    delete_container(results);
     results.clear();
     return TCL_OK;
 }
@@ -809,7 +809,7 @@ int mcu8100wepco(ClientData clientData, Tcl_Interp* interp, int argc, char* argv
             break;
         }
     }
-    delete_vector(results);
+    delete_container(results);
     results.clear();
     return tcl_ret;
 }
@@ -850,7 +850,7 @@ int mcu8100service(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
             break;
         }
     }
-    delete_vector(results);
+    delete_container(results);
     results.clear();
 
     // set the number of pil requests sent to be the return val
@@ -893,7 +893,7 @@ int mcu8100program(ClientData clientData, Tcl_Interp* interp, int argc, char* ar
             break;
         }
     }
-    delete_vector(results);
+    delete_container(results);
     results.clear();
 
     // set the number of pil requests sent to be the return val
@@ -932,7 +932,7 @@ int pmsi(ClientData clientData, Tcl_Interp* interp, int argc, char* argv[])
         RWCollectableString* str = *iter;
         Tcl_Eval( interp, (char*) str->data());
     }
-    delete_vector(results);
+    delete_container(results);
     results.clear();
     return TCL_OK;
 }
@@ -1195,7 +1195,7 @@ int importCommandFile (ClientData clientData, Tcl_Interp* interp, int argc, char
             RWCollectableString* str = *itr;
             Tcl_Eval( interp, (char*) str->data());
         }
-        delete_vector(results);
+        delete_container(results);
         results.clear();
     }
     return retVal;

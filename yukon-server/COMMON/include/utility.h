@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.45 $
-* DATE         :  $Date: 2007/12/18 19:51:37 $
+* REVISION     :  $Revision: 1.46 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -289,128 +289,45 @@ inline string char2string(char c)
     s = c;
     return s;
 }
-//This is for a vector of pointers. It will have compiler errors if used on a vector of none pointers
-//It was written to replace  rwordered.clearAndDestroy
-template < class T >
-inline void delete_vector( std::vector<T> V )
-{
 
-   for (std::vector<T>::iterator itr = V.begin(); itr != V.end(); itr++) {
+//  This is for a container of pointers. It will have compiler errors if used on a container of non-pointer types.
+template <class Container>
+inline void delete_container( Container C )
+{
+    for( Container::iterator itr = C.begin(); itr != C.end(); itr++)
+    {
         delete *itr;
         *itr = NULL;
-   }
+    }
 }
-//For Standard Vectors, this will go through and release the memory in a vector of pointers
-template < class T >
-inline void delete_vector( std::vector<T> *V )
-{
 
-   for (std::vector<T>::iterator itr = V->begin(); itr != V->end(); itr++) {
-        delete *itr;
-        *itr = NULL;
-   }
-}
-//For Sorted Vectors
-template<class K, bool bNoDuplicates,class Pr, class A >
-inline void delete_vector( codeproject::sorted_vector<K,bNoDuplicates,Pr,A> V )
-{
 
-   for (codeproject::sorted_vector<K,bNoDuplicates,Pr,A>::iterator itr = V.begin();
-        itr != V.end();
-        itr++)
-   {
-        delete *itr;
-        *itr = NULL;
-   }
-}
-template<class K, bool bNoDuplicates,class Pr, class A >
-inline void delete_vector( codeproject::sorted_vector<K,bNoDuplicates,Pr,A> *V )
+template <class AssocContainer>
+inline void delete_assoc_container( AssocContainer AC )
 {
-
-   for (codeproject::sorted_vector<K,bNoDuplicates,Pr,A>::iterator itr = V->begin();
-        itr != V->end();
-        itr++)
-   {
-        delete *itr;
-        *itr = NULL;
-   }
+    for( AssocContainer::iterator itr = AC.begin(); itr != AC.end(); itr++)
+    {
+        if( (*itr).second != NULL )
+        {
+            delete (*itr).second;
+            (*itr).second = NULL;
+        }
+    }
 }
-template < class T >
-inline void delete_list( std::list<T> V )
-{
 
-   for (std::list<T>::iterator itr = V.begin(); itr != V.end(); itr++) {
-        delete *itr;
-        *itr = NULL;
-   }
-}
-template < class T >
-inline void delete_list( std::list<T> *V )
-{
 
-   for (std::list<T>::iterator itr = V->begin(); itr != V->end(); itr++) {
-        delete *itr;
-        *itr = NULL;
-   }
-}
-template < class T >
+template <class T>
 inline bool list_contains( std::list<T> V, T x )
 {
-
-   for (std::list<T>::iterator itr = V.begin(); itr != V.end(); itr++) {
-        if (**itr == *x) {
+    for( std::list<T>::iterator itr = V.begin(); itr != V.end(); itr++ )
+    {
+        if( **itr == *x )
+        {
             return true;
         }
    }
-   return false;
-}
-template < class T >
-inline bool list_contains( std::list<T> *V, T x )
-{
 
-   for (std::list<T>::iterator itr = V->begin(); itr != V->end(); itr++) {
-        if (**itr == *x) {
-            return true;
-        }
-   }
    return false;
 }
 
-template < class K, class T >
-inline void delete_map( std::map<K,T> V )
-{
-
-   for (std::map<K,T>::iterator itr = V.begin(); itr != V.end(); itr++) {
-       if( (*itr).second != NULL )
-       {
-           delete (*itr).second;
-           (*itr).second = NULL;
-       }
-   }
-}
-template < class K, class T >
-inline void delete_map( std::map<K,T> *V )
-{
-
-   for (std::map<K,T>::iterator itr = V->begin(); itr != V->end(); itr++) {
-       if( (*itr).second != NULL )
-       {
-           delete (*itr).second;
-           (*itr).second = NULL;
-       }
-   }
-}
-
-template < class K, class T >
-inline void delete_multimap( std::multimap<K,T> V )
-{
-
-   for (std::multimap<K,T>::iterator itr = V.begin(); itr != V.end(); itr++) {
-       if( (*itr).second != NULL )
-       {
-           delete (*itr).second;
-           (*itr).second = NULL;
-       }
-   }
-}
 #endif // #ifndef __UTILITY_H__

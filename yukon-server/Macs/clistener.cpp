@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clistener.cpp-arc  $
-* REVISION     :  $Revision: 1.10 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
+* REVISION     :  $Revision: 1.11 $
+* DATE         :  $Date: 2008/06/25 17:08:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -230,7 +230,7 @@ void CtiMCClientListener::run()
                 _connections.push_back(conn);
             }
 
-	    conn->initialize(portal);
+        conn->initialize(portal);
         }
     }
     catch ( RWxmsg& msg )
@@ -257,7 +257,7 @@ void CtiMCClientListener::run()
             conn->close();
         }
 
-        delete_vector(_connections);
+        delete_container(_connections);
         _connections.clear();
     }
 
@@ -287,7 +287,7 @@ void CtiMCClientListener::_check()
             {
                 RWMutexLock::LockGuard conn_guard( _connmutex );
                 vector<CtiMCConnection*>::iterator itr = _connections.begin();
-                while( itr != _connections.end() ){               
+                while( itr != _connections.end() ){
                 {
                     CtiMCConnection* temp = *itr;
                     if ( !temp->isValid() )

@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PROTOCOL/INCLUDE/prot_fpcbc.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2006/03/02 23:03:19 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -54,7 +54,7 @@ public:
     {
        if(this != &aRef)
        {
-          delete_list(_fst);
+          delete_container(_fst);
           _fst.clear();
 
           for( int i = 0; i < aRef.entries(); i++ )

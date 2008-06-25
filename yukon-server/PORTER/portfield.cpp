@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.217 $
-* DATE         :  $Date: 2008/04/11 15:47:41 $
+* REVISION     :  $Revision: 1.218 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1496,7 +1496,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 Sleep(1000);
                                 list< CtiReturnMsg* >  retList;
-                                delete_list(retList);
+                                delete_container(retList);
                                 retList.clear();
 
                                 kv2dev->processDispatchReturnMessage( retList, ansi.getParseFlags() );
@@ -1505,7 +1505,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     CtiReturnMsg *retMsg = (CtiReturnMsg*)retList.front();retList.pop_front();
                                     VanGoghConnection.WriteConnQue(retMsg);
                                 }
-                                delete_list(retList);
+                                delete_container(retList);
                                 retList.clear();
 
                                 InMessage->EventCode = NORMAL;
@@ -1585,7 +1585,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                             {
                                 Sleep(1000);
                                 list< CtiReturnMsg* >  retList;
-                                delete_list(retList);
+                                delete_container(retList);
                                 retList.clear();
 
                                 sentinelDev->processDispatchReturnMessage( retList, ansi.getParseFlags() );
@@ -1595,7 +1595,7 @@ INT CommunicateDevice(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage, 
                                     VanGoghConnection.WriteConnQue(retMsg);
 
                                 }
-                                delete_list(retList);
+                                delete_container(retList);
                                 retList.clear();
 
                                 InMessage->EventCode = NORMAL;

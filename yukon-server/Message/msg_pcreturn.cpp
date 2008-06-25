@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MESSAGE/msg_pcreturn.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2006/06/23 03:32:44 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -263,7 +263,7 @@ CtiReturnMsg& CtiReturnMsg::operator=(const CtiReturnMsg& aRef)
        _user_message_id    = aRef.UserMessageId();
        _expectMore         = aRef.ExpectMore();
 
-       delete_vector( PointData() );
+       delete_container( PointData() );
        PointData().clear();     // Make sure it is empty!
 
        for(int i = 0; i < aRef.PointData().size(); i++)

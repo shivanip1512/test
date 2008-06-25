@@ -11,8 +11,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/04/26 19:43:31 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/06/25 17:08:42 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -43,7 +43,7 @@ _notifGroupID(0)
 
 CtiNotifEmailMsg::~CtiNotifEmailMsg()
 {
-    delete_vector( _attachments );
+    delete_container( _attachments );
     _attachments.clear();
 }
 

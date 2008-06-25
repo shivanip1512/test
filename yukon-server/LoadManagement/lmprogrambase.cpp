@@ -56,7 +56,7 @@ _lastsentstate(-1), _controlArea(NULL)
 ---------------------------------------------------------------------------*/
 CtiLMProgramBase::~CtiLMProgramBase()
 {
-    delete_vector(_lmprogramcontrolwindows);
+    delete_container(_lmprogramcontrolwindows);
     _lmprogramcontrolwindows.clear();
 }
 
@@ -932,7 +932,7 @@ CtiLMProgramBase& CtiLMProgramBase::operator=(const CtiLMProgramBase& right)
         _lastcontrolsent = right._lastcontrolsent;
         _manualcontrolreceivedflag = right._manualcontrolreceivedflag;
 
-        delete_vector(_lmprogramcontrolwindows);
+        delete_container(_lmprogramcontrolwindows);
         _lmprogramcontrolwindows.clear();
         for( LONG i=0;i<right._lmprogramcontrolwindows.size();i++ )
         {

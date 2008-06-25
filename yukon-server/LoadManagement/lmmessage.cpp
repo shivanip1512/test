@@ -1,12 +1,12 @@
 /*-----------------------------------------------------------------------------
     Filename:  lmmessage.cpp
-    
+
     Programmer:  Josh Wolberg
-    
+
     Description:    Source file for message classes.
 
     Initial Date:  2/13/2001
-    
+
     COPYRIGHT: Copyright (C) Cannon Technologies, Inc., 2001
 -----------------------------------------------------------------------------*/
 #include "yukon.h"
@@ -22,15 +22,15 @@ using std::vector;
 
 /*===========================================================================
     CtiLMMessage
-    
+
     Base class for all Load Management messages
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMMessage, CTILMMESSAGE_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMMessage, CTILMMESSAGE_ID )
 
 /*---------------------------------------------------------------------------
     getMessage
-    
+
     Returns text describing the message
 ---------------------------------------------------------------------------*/
 const string& CtiLMMessage::getMessage() const
@@ -44,7 +44,7 @@ const string& CtiLMMessage::getMessage() const
   Returns a shared pointer to the connecition that produced this message.
   It is possible for the shared_ptr that is returned to be invalid and it
   must be tested against NULL or 0 before used!
------------------------------------------------------------------------------*/  
+-----------------------------------------------------------------------------*/
 CtiLMConnectionPtr CtiLMMessage::getConnection()
 {
     return _connection.lock();
@@ -52,7 +52,7 @@ CtiLMConnectionPtr CtiLMMessage::getConnection()
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self given a RWvistream
 ---------------------------------------------------------------------------*/
 void CtiLMMessage::restoreGuts(RWvistream& strm)
@@ -66,7 +66,7 @@ void CtiLMMessage::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMMessage::saveGuts(RWvostream& strm) const
@@ -88,11 +88,11 @@ CtiLMMessage::CtiLMMessage(const string& message) :  _message(message)
 
 /*===========================================================================
     CtiLMCommand
-    
+
     Represents a command message to Load Management
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMCommand, CTILMCOMMAND_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMCommand, CTILMCOMMAND_ID )
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -103,7 +103,7 @@ CtiLMCommand::~CtiLMCommand()
 
 /*---------------------------------------------------------------------------
     getCommand
-    
+
     Returns the specific lm command that self represents
 ---------------------------------------------------------------------------*/
 LONG CtiLMCommand::getCommand() const
@@ -113,7 +113,7 @@ LONG CtiLMCommand::getCommand() const
 
 /*---------------------------------------------------------------------------
     getPAOId
-    
+
     Returns the id of the object that is associated with command.
 ---------------------------------------------------------------------------*/
 LONG CtiLMCommand::getPAOId() const
@@ -123,7 +123,7 @@ LONG CtiLMCommand::getPAOId() const
 
 /*---------------------------------------------------------------------------
     getNumber
-    
+
     Returns the number of the object that is associated with command.
 ---------------------------------------------------------------------------*/
 LONG CtiLMCommand::getNumber() const
@@ -133,7 +133,7 @@ LONG CtiLMCommand::getNumber() const
 
 /*---------------------------------------------------------------------------
     getValue
-    
+
     Returns the Value of the object that is associated with command.
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMCommand::getValue() const
@@ -163,7 +163,7 @@ LONG CtiLMCommand::getAuxId() const
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiLMCommand::restoreGuts(RWvistream& strm)
@@ -181,7 +181,7 @@ void CtiLMCommand::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMCommand::saveGuts(RWvostream& strm) const
@@ -219,12 +219,12 @@ CtiLMCommand& CtiLMCommand::operator=(const CtiLMCommand& right)
 
 /*===========================================================================
     CtiLMManualControlRequest
-    
+
     Represents a manual program control message from the Load Management
     Client
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMManualControlRequest, CTILMMANUALCONTROLREQUEST_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMManualControlRequest, CTILMMANUALCONTROLREQUEST_ID )
 
 CtiLMManualControlRequest::CtiLMManualControlRequest(LONG cmd,
                                                      LONG pao_id,
@@ -264,7 +264,7 @@ CtiLMManualControlRequest::~CtiLMManualControlRequest()
   dump
 
   Sends information about this request to the logs/screen.
----------------------------------------------------------------------------*/ 
+---------------------------------------------------------------------------*/
 void CtiLMManualControlRequest::dump() const
 {
     CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -283,7 +283,7 @@ void CtiLMManualControlRequest::dump() const
 
 /*---------------------------------------------------------------------------
     getCommand
-    
+
     Returns the specific manual control command that self represents
 ---------------------------------------------------------------------------*/
 LONG CtiLMManualControlRequest::getCommand() const
@@ -324,7 +324,7 @@ const CtiTime& CtiLMManualControlRequest::getStartTime() const
 
 /*---------------------------------------------------------------------------
     getStopTime
-    
+
     Returns the stop time of the object that is associated with control.
 ---------------------------------------------------------------------------*/
 const CtiTime& CtiLMManualControlRequest::getStopTime() const
@@ -334,7 +334,7 @@ const CtiTime& CtiLMManualControlRequest::getStopTime() const
 
 /*---------------------------------------------------------------------------
     getStartGear
-    
+
     Returns the start gear of the object that is associated with control.
 ---------------------------------------------------------------------------*/
 LONG CtiLMManualControlRequest::getStartGear() const
@@ -344,7 +344,7 @@ LONG CtiLMManualControlRequest::getStartGear() const
 
 /*---------------------------------------------------------------------------
     setStartGear
-    
+
     Sets the start gear of the object that is associated with control.
 ---------------------------------------------------------------------------*/
 void CtiLMManualControlRequest::setStartGear(LONG gear)
@@ -354,7 +354,7 @@ void CtiLMManualControlRequest::setStartGear(LONG gear)
 
 /*---------------------------------------------------------------------------
     getStartPriority
-    
+
     Returns the start priority of the object that is associated with control.
 ---------------------------------------------------------------------------*/
 LONG CtiLMManualControlRequest::getStartPriority() const
@@ -364,7 +364,7 @@ LONG CtiLMManualControlRequest::getStartPriority() const
 
 /*---------------------------------------------------------------------------
     getAdditionalInfo
-    
+
     Returns the additional info string of the object that is associated with
     control.
 ---------------------------------------------------------------------------*/
@@ -377,7 +377,7 @@ const string& CtiLMManualControlRequest::getAdditionalInfo() const
   getConstraintCmd
 
   Returns the constraint command (how to handle constraints) for this request
----------------------------------------------------------------------------*/ 
+---------------------------------------------------------------------------*/
 LONG CtiLMManualControlRequest::getConstraintCmd() const
 {
     return _constraint_cmd;
@@ -393,7 +393,7 @@ CtiMessage* CtiLMManualControlRequest::replicateMessage() const
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
@@ -421,7 +421,7 @@ void CtiLMManualControlRequest::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMManualControlRequest::saveGuts(RWvostream& strm) const
@@ -465,7 +465,7 @@ CtiLMManualControlRequest& CtiLMManualControlRequest::operator=(const CtiLMManua
 
 /*===========================================================================
     CtiLMManualControlResponse
-    
+
     Represents a manual program control response from the Load Management
     Server
 ===========================================================================*/
@@ -487,7 +487,7 @@ CtiMessage* CtiLMManualControlResponse::replicateMessage() const
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
@@ -508,7 +508,7 @@ void CtiLMManualControlResponse::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMManualControlResponse::saveGuts(RWvostream& strm) const
@@ -578,7 +578,7 @@ const vector<string>& CtiLMManualControlResponse::getConstraintViolations() cons
   setPAOId
 
   Sets the program id
-----------------------------------------------------------------------------*/  
+----------------------------------------------------------------------------*/
 CtiLMManualControlResponse& CtiLMManualControlResponse::setPAOId(LONG paoid)
 {
     _paoid = paoid;
@@ -609,12 +609,12 @@ CtiLMManualControlResponse& CtiLMManualControlResponse::setConstraintViolations(
 
 /*===========================================================================
     CtiLMEnergyExchangeControlMsg
-    
+
     Represents a energy exchange program offer message from a Load Management
     Client
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeControlMsg, CTILMENERGYEXCHANGECONTROLMSG_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeControlMsg, CTILMENERGYEXCHANGECONTROLMSG_ID )
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -625,7 +625,7 @@ CtiLMEnergyExchangeControlMsg::~CtiLMEnergyExchangeControlMsg()
 
 /*---------------------------------------------------------------------------
     getCommand
-    
+
     Returns the specific manual control command that self represents
 ---------------------------------------------------------------------------*/
 LONG CtiLMEnergyExchangeControlMsg::getCommand() const
@@ -686,7 +686,7 @@ const CtiTime& CtiLMEnergyExchangeControlMsg::getExpirationDateTime() const
 
 /*---------------------------------------------------------------------------
     getAdditionalInfo
-    
+
     Returns the additional info string of the object that is associated with
     control.
 ---------------------------------------------------------------------------*/
@@ -697,7 +697,7 @@ const string& CtiLMEnergyExchangeControlMsg::getAdditionalInfo() const
 
 /*---------------------------------------------------------------------------
     getAmountRequested
-    
+
     Returns the list of amounts requested for each hour for the offer date.
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMEnergyExchangeControlMsg::getAmountRequested(int i) const
@@ -714,7 +714,7 @@ DOUBLE CtiLMEnergyExchangeControlMsg::getAmountRequested(int i) const
 
 /*---------------------------------------------------------------------------
     getPriceOffered
-    
+
     Returns the list of prices for each hour for the offer date.
 ---------------------------------------------------------------------------*/
 LONG CtiLMEnergyExchangeControlMsg::getPriceOffered(int i) const
@@ -731,7 +731,7 @@ LONG CtiLMEnergyExchangeControlMsg::getPriceOffered(int i) const
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeControlMsg::restoreGuts(RWvistream& strm)
@@ -767,7 +767,7 @@ void CtiLMEnergyExchangeControlMsg::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeControlMsg::saveGuts(RWvostream& strm) const
@@ -827,12 +827,12 @@ CtiLMEnergyExchangeControlMsg& CtiLMEnergyExchangeControlMsg::operator=(const Ct
 
 /*===========================================================================
     CtiLMEnergyExchangeAcceptMsg
-    
+
     Represents a energy exchange program offer message from a Load Management
     Client
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeAcceptMsg, CTILMENERGYEXCHANGEACCEPTMSG_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMEnergyExchangeAcceptMsg, CTILMENERGYEXCHANGEACCEPTMSG_ID )
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -873,7 +873,7 @@ LONG CtiLMEnergyExchangeAcceptMsg::getRevisionNumber() const
 
 /*---------------------------------------------------------------------------
     getAcceptStatus
-    
+
     Returns the accept status string for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -884,7 +884,7 @@ const string& CtiLMEnergyExchangeAcceptMsg::getAcceptStatus() const
 
 /*---------------------------------------------------------------------------
     getIPAddressOfAcceptUser
-    
+
     Returns the ip address of accept user for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -895,7 +895,7 @@ const string& CtiLMEnergyExchangeAcceptMsg::getIPAddressOfAcceptUser() const
 
 /*---------------------------------------------------------------------------
     getUserIdName
-    
+
     Returns the user id name for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -906,7 +906,7 @@ const string& CtiLMEnergyExchangeAcceptMsg::getUserIdName() const
 
 /*---------------------------------------------------------------------------
     getNameOfAcceptPerson
-    
+
     Returns the name of accept person for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -917,7 +917,7 @@ const string& CtiLMEnergyExchangeAcceptMsg::getNameOfAcceptPerson() const
 
 /*---------------------------------------------------------------------------
     getEnergyExchangeNotes
-    
+
     Returns the energy exchange notes for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -928,7 +928,7 @@ const string& CtiLMEnergyExchangeAcceptMsg::getEnergyExchangeNotes() const
 
 /*---------------------------------------------------------------------------
     getAmountCommitted
-    
+
     Returns the list of amounts requested for each hour for the offer date.
 ---------------------------------------------------------------------------*/
 DOUBLE CtiLMEnergyExchangeAcceptMsg::getAmountCommitted(int i) const
@@ -945,7 +945,7 @@ DOUBLE CtiLMEnergyExchangeAcceptMsg::getAmountCommitted(int i) const
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeAcceptMsg::restoreGuts(RWvistream& strm)
@@ -973,7 +973,7 @@ void CtiLMEnergyExchangeAcceptMsg::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMEnergyExchangeAcceptMsg::saveGuts(RWvostream& strm) const
@@ -1051,7 +1051,7 @@ CtiLMControlAreaMsg::CtiLMControlAreaMsg(const CtiLMControlAreaMsg& contAreaMsg)
 ---------------------------------------------------------------------------*/
 CtiLMControlAreaMsg::~CtiLMControlAreaMsg()
 {
-    delete_vector(_controlAreas);
+    delete_container(*_controlAreas);
     _controlAreas->clear();
     delete _controlAreas;
 }
@@ -1075,7 +1075,7 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
         if( _controlAreas != NULL &&
             _controlAreas->size() > 0 )
         {
-            delete_vector(_controlAreas);
+            delete_container(*_controlAreas);
             _controlAreas->clear();
             delete _controlAreas;
         }
@@ -1091,7 +1091,7 @@ CtiLMControlAreaMsg& CtiLMControlAreaMsg::operator=(const CtiLMControlAreaMsg& r
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self fromt he given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaMsg::restoreGuts(RWvistream& strm)
@@ -1103,7 +1103,7 @@ void CtiLMControlAreaMsg::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMControlAreaMsg::saveGuts(RWvostream& strm) const
@@ -1120,11 +1120,11 @@ ULONG CtiLMControlAreaMsg::ControlAreaDeleted  = 0x00000002;
 
 /*===========================================================================
     CtiLMCurtailmentAcknowledgeMsg
-    
+
     Represents a curtailment acknowledge message to Load Management
 ===========================================================================*/
 
-RWDEFINE_COLLECTABLE( CtiLMCurtailmentAcknowledgeMsg, CTILMCURTAILMENTACK_MSG_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMCurtailmentAcknowledgeMsg, CTILMCURTAILMENTACK_MSG_ID )
 
 /*---------------------------------------------------------------------------
     Destructor
@@ -1155,7 +1155,7 @@ LONG CtiLMCurtailmentAcknowledgeMsg::getCurtailReferenceId() const
 
 /*---------------------------------------------------------------------------
     getAcknowledgeStatus
-    
+
     Returns the acknowledge status string for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -1166,7 +1166,7 @@ const string& CtiLMCurtailmentAcknowledgeMsg::getAcknowledgeStatus() const
 
 /*---------------------------------------------------------------------------
     getIPAddressOfAckUser
-    
+
     Returns the ip address of ack user for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -1177,7 +1177,7 @@ const string& CtiLMCurtailmentAcknowledgeMsg::getIPAddressOfAckUser() const
 
 /*---------------------------------------------------------------------------
     getUserIdName
-    
+
     Returns the user id name for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -1188,7 +1188,7 @@ const string& CtiLMCurtailmentAcknowledgeMsg::getUserIdName() const
 
 /*---------------------------------------------------------------------------
     getNameOfAckPerson
-    
+
     Returns the name of ack person for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -1199,7 +1199,7 @@ const string& CtiLMCurtailmentAcknowledgeMsg::getNameOfAckPerson() const
 
 /*---------------------------------------------------------------------------
     getCurtailmentNotes
-    
+
     Returns the curtailment notes for the object that is associated
     with command.
 ---------------------------------------------------------------------------*/
@@ -1210,7 +1210,7 @@ const string& CtiLMCurtailmentAcknowledgeMsg::getCurtailmentNotes() const
 
 /*-------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self from the given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailmentAcknowledgeMsg::restoreGuts(RWvistream& strm)
@@ -1229,7 +1229,7 @@ void CtiLMCurtailmentAcknowledgeMsg::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMCurtailmentAcknowledgeMsg::saveGuts(RWvostream& strm) const
@@ -1276,7 +1276,7 @@ RWDEFINE_COLLECTABLE( CtiLMShutdown, CTILMSHUTDOWN_ID )
 
 /*---------------------------------------------------------------------------
     restoreGuts
-    
+
     Restores the state of self fromt he given RWvistream
 ---------------------------------------------------------------------------*/
 void CtiLMShutdown::restoreGuts(RWvistream& strm)
@@ -1286,7 +1286,7 @@ void CtiLMShutdown::restoreGuts(RWvistream& strm)
 
 /*---------------------------------------------------------------------------
     saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMShutdown::saveGuts(RWvostream& strm) const
@@ -1294,10 +1294,10 @@ void CtiLMShutdown::saveGuts(RWvostream& strm) const
     CtiLMMessage::saveGuts(strm);
 }
 
-RWDEFINE_COLLECTABLE( CtiLMDynamicGroupDataMsg, CTILMDYNAMICGROUPMSG_ID ) 
-RWDEFINE_COLLECTABLE( CtiLMDynamicProgramDataMsg, CTILMDYNAMICPROGRAMMSG_ID ) 
-RWDEFINE_COLLECTABLE( CtiLMDynamicControlAreaDataMsg, CTILMDYNAMICCONTROLAREAMSG_ID ) 
-RWDEFINE_COLLECTABLE( CtiLMDynamicTriggerDataMsg, CTILMDYNAMICLMTRIGGERMSG_ID ) 
+RWDEFINE_COLLECTABLE( CtiLMDynamicGroupDataMsg, CTILMDYNAMICGROUPMSG_ID )
+RWDEFINE_COLLECTABLE( CtiLMDynamicProgramDataMsg, CTILMDYNAMICPROGRAMMSG_ID )
+RWDEFINE_COLLECTABLE( CtiLMDynamicControlAreaDataMsg, CTILMDYNAMICCONTROLAREAMSG_ID )
+RWDEFINE_COLLECTABLE( CtiLMDynamicTriggerDataMsg, CTILMDYNAMICLMTRIGGERMSG_ID )
 
 /* ==========================================================================
    Save Guts
@@ -1305,7 +1305,7 @@ RWDEFINE_COLLECTABLE( CtiLMDynamicTriggerDataMsg, CTILMDYNAMICLMTRIGGERMSG_ID )
 
 /*---------------------------------------------------------------------------
     CtiLMDynamicGroupDataMsg::saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMDynamicGroupDataMsg::saveGuts(RWvostream& strm) const
@@ -1327,7 +1327,7 @@ void CtiLMDynamicGroupDataMsg::saveGuts(RWvostream& strm) const
 
 /*---------------------------------------------------------------------------
     CtiLMDynamicProgramDataMsg::saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMDynamicProgramDataMsg::saveGuts(RWvostream& strm) const
@@ -1347,7 +1347,7 @@ void CtiLMDynamicProgramDataMsg::saveGuts(RWvostream& strm) const
 
 /*---------------------------------------------------------------------------
     CtiLMDynamicControlAreaDataMsg::saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMDynamicControlAreaDataMsg::saveGuts(RWvostream& strm) const
@@ -1364,7 +1364,7 @@ void CtiLMDynamicControlAreaDataMsg::saveGuts(RWvostream& strm) const
 
 /*---------------------------------------------------------------------------
     CtiLMDynamicControlAreaDataMsg::saveGuts
-    
+
     Saves the state of self into the given RWvostream
 ---------------------------------------------------------------------------*/
 void CtiLMDynamicTriggerDataMsg::saveGuts(RWvostream& strm) const

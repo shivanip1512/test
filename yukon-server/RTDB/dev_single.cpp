@@ -5,8 +5,8 @@
 * Date:   10/4/2001
 *
 * PVCS KEYWORDS:
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2008/06/06 20:28:01 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2008/06/25 17:08:41 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -469,8 +469,8 @@ INT CtiDeviceSingle::initiateGeneralScan(list< OUTMESS* > &outList, INT ScanPrio
 
                     if( !vgList.empty() || !retList.empty() )
                     {
-                        delete_list( vgList  );
-                        delete_list( retList );
+                        delete_container( vgList  );
+                        delete_container( retList );
                         vgList.clear();
                         retList.clear();
                     }
