@@ -274,7 +274,7 @@ function setCommercial() {
                           <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LABEL_ALT_TRACK_NUM %>" defaultvalue="Alt Tracking #"/> </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="AltTrackNum" maxlength="30" size="24" value="<%= account.getCustomerNumber().compareTo("(none)") != 0 ? StringEscapeUtils.escapeHtml(account.getAltTrackingNumber()) : "" %>" onchange="setContentChanged(true)">
+                          <input type="text" name="AltTrackNum" maxlength="30" size="24" value="<%= account.getAltTrackingNumber().compareTo("(none)") != 0 ? StringEscapeUtils.escapeHtml(account.getAltTrackingNumber()) : "" %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 

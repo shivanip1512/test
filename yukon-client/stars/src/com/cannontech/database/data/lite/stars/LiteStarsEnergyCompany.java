@@ -2569,7 +2569,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     /**
-     * Search customer accounts by account alternate tracking # (customerNumber from Customer table).
+     * Search customer accounts by account alternate tracking # (AltTrackingNum from Customer table).
      * If searchMembers is true, it returns a list of Pair(LiteStarsCustAccountInformation, LiteStarsEnergyCompany);
      * otherwise it returns a list of LiteStarsCustAccountInformation.
      */
@@ -2580,7 +2580,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             List<LiteStarsCustAccountInformation> custAcctInfoList = getAllCustAccountInformation();
             for (final LiteStarsCustAccountInformation liteAcctInfo : custAcctInfoList) {
                 LiteCustomer liteDude = liteAcctInfo.getCustomer();
-                if (liteDude.getCustomerNumber().toUpperCase().startsWith( altTrackNo.toUpperCase() )) {
+                if (liteDude.getAltTrackingNumber().toUpperCase().startsWith( altTrackNo.toUpperCase() )) {
                     if (searchMembers)
                         accountList.add( new Pair<LiteStarsCustAccountInformation,LiteStarsEnergyCompany>(liteAcctInfo, this) );
                     else
@@ -2589,7 +2589,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
             }
         }
         else {
-            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByCustomerNumber( altTrackNo + "%", getLiteID() );
+            int[] accountIDs = com.cannontech.database.db.stars.customer.CustomerAccount.searchByCustomerAltTrackingNumber( altTrackNo + "%", getLiteID() );
             if (accountIDs != null) {
                for (int i = 0; i < accountIDs.length; i++) {
                    LiteStarsCustAccountInformation liteAcctInfo = getBriefCustAccountInfo( accountIDs[i], true );

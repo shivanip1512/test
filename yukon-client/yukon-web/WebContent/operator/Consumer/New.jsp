@@ -275,7 +275,7 @@ are present in page, session, etc. as an attribute. -->
                           <div align="right"><cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_LABEL_ALT_TRACK_NUM %>"/> </div>
                         </td>
                         <td width="210"> 
-                          <input type="text" name="AltTrackNum" maxlength="30" size="24" value="<%= account.getCustomerNumber().compareTo("(none)") != 0 ? account.getAltTrackingNumber() : "" %>" onchange="setContentChanged(true)">
+                          <input type="text" name="AltTrackNum" maxlength="30" size="24" value="<%= account.getAltTrackingNumber().compareTo("(none)") != 0 ? account.getAltTrackingNumber() : "" %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
