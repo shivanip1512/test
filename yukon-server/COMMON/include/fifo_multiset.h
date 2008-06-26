@@ -45,7 +45,7 @@ public:
         iterator() : set_itr() { }
 
         operator bool()        {  return (*(static_cast<set_itr *>(this)))->first;  /*return *this;*/  }
-        Element &operator->()  {  return (*(static_cast<set_itr *>(this)))->first;  /*return *this;*/  }
+        Element *operator->()  {  return &((*(static_cast<set_itr *>(this)))->first);  /*return *this;*/  }
         Element &operator*()   {  return (*(static_cast<set_itr *>(this)))->first;  }
     };
 

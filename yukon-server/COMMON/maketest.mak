@@ -29,17 +29,15 @@ test_resolvers.obj \
 test_queue.obj \
 test_hash.obj \
 test_CtiPCPtrQueue.obj \
-test_ctistring.obj
-
-TESTEXES=\
-test_ctidate.obj
+test_ctistring.obj \
+test_fifo_multiset.obj
 
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib
 
 
 CMTEST=\
-cmdparsetestgenerator.exe 
+cmdparsetestgenerator.exe
 
 
 ALL:            ctibasetest
