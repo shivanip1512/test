@@ -1,5 +1,6 @@
 package com.cannontech.stars.dr.account.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
@@ -28,4 +29,7 @@ public interface CustomerAccountDao {
 
     public CustomerAccount getAccountByContactId(int contactId);
     
+    public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds,
+                                                                            Date startDate, Date stopDate);
+    public CustomerAccountWithNames getAccountWithNamesByCustomerId(final int customerId, final int ecId);
 }

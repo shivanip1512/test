@@ -1,7 +1,6 @@
 package com.cannontech.analysis.controller;
 
 import java.util.HashSet;
-import java.util.StringTokenizer;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -12,6 +11,7 @@ import com.cannontech.analysis.report.YukonReportBase;
 import com.cannontech.analysis.tablemodel.LMControlDetailModel;
 import com.cannontech.analysis.tablemodel.ReportModelBase;
 import com.cannontech.analysis.tablemodel.ReportModelBase.ReportFilter;
+import com.cannontech.util.ServletUtil;
 
 public class LMControlDetailController extends ReportControllerBase {
     
@@ -26,7 +26,12 @@ public class LMControlDetailController extends ReportControllerBase {
     }
 
     public String getHTMLOptionsTable() {
-        return "";
+        return "   <table width=\'100%\' border=\'0\' cellspacing=\'0\' cellpadding=\'0\' class=\'TableCell\'>\r\n" + 
+               "        <tr valign=\"top\">\r\n" + 
+               "          <td width=\"110px\">Account Number: </td>\r\n" +
+               "          <td><textarea rows=\"5\" name=\"accountNumbers\" ></textarea></td>\r\n" + 
+               "        </tr>\r\n" + 
+               "      </table>\r\n";
     }
 
     public YukonReportBase getReport() {
@@ -48,6 +53,8 @@ public class LMControlDetailController extends ReportControllerBase {
     public void setRequestParameters(HttpServletRequest request) {
         LMControlDetailModel lmControlDetailModel = (LMControlDetailModel) model;
         super.setRequestParameters(request);
+        lmControlDetailModel.setAccountNumbers(request.getParameter("accountNumbers"));
+        lmControlDetailModel.setLiteUser(ServletUtil.getYukonUser(request));
         int filterModelType = ServletRequestUtils.getIntParameter(request, ReportModelBase.ATT_FILTER_MODEL_TYPE, -1);
         if (filterModelType == ReportFilter.PROGRAM.ordinal()) {
             int idsArray[] = ServletRequestUtils.getIntParameters(request, ReportModelBase.ATT_FILTER_MODEL_VALUES);

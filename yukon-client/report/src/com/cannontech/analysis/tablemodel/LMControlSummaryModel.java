@@ -3,14 +3,13 @@ package com.cannontech.analysis.tablemodel;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 
-import com.cannontech.analysis.tablemodel.LMControlDetailModel.ModelRow;
+import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
@@ -36,6 +35,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
     private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
     private static DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
+    private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("programDao");
     
     private List<ModelRow> data = Collections.emptyList();
     
@@ -74,26 +74,30 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
         Validate.notNull(getStartDate(), "Start date must not be null");
         Validate.notNull(getStopDate(), "End date must not be null");
         
-        List<CustomerAccountWithNames> accounts = customerAccountDao.getAllAccountsWithNamesByEC(energyCompanyId);
+        List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
+        List<CustomerAccountWithNames> accountsFromSQL = customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, 
+                                                                                                              groupIdsFromSQL,
+                                                                                                              getStartDate(),
+                                                                                                              getStopDate());
+
         List<ProgramLoadGroup> ecPrograms = applianceAndProgramDao.getAllProgramsForAnEC(energyCompanyId);
-        /*These are sorted by paobjectId (groupId)*/
-        //List<LMControlHistory> controlHistory = lmControlHistoryDao.getByStartDateRange(getStartDate(), getLoadDate());
-        
+
         /*Normal LMControlHistory data is useless to me without the active restore being considered and actual control
          *ranges being assembled out of individual events.  May have to do something unpleasant.
          */
-        //SUPERHACK-------------------------------------------------------------------------
         HashMap<Integer, List<ProgramLoadGroup>> groupIdToProgram = new HashMap<Integer, List<ProgramLoadGroup>>(10);
         HashMap<Integer, StarsLMControlHistory> groupIdToSTARSControlHistory = new HashMap<Integer, StarsLMControlHistory>(10);
         
         data = new ArrayList<ModelRow>(ecPrograms.size());
         HashMap<Integer, Double[]> programTotals = new HashMap<Integer, Double[]>();
-        
-        for (CustomerAccountWithNames account : accounts) {
-            try {
+
+        for (CustomerAccountWithNames account : accountsFromSQL) {
+            try{
                 List<Integer> groupIds = lmHardwareControlGroupDao.getDistinctGroupIdsByAccountId(account.getAccountId());
                 for (Integer groupId : groupIds) {
-                    //row.accountNumberAndName = "#" + account.getAccountNumber() + " ---- " + account.getLastName() + ", " + account.getFirstName();
+                    if(!groupIdsFromSQL.contains(groupId)) {
+                        continue;
+                    }
                     
                     List<ProgramLoadGroup> groupPrograms = groupIdToProgram.get(groupId);
                     if(groupPrograms == null) {
@@ -123,7 +127,8 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                 allControlEventsForAGroup = LMControlHistoryUtil.getSTARSFormattedLMControlHistory(groupId, getStartDate(), energyCompanyId);
                                 groupIdToSTARSControlHistory.put(groupId, allControlEventsForAGroup);
                             }
-                            
+
+
                             List<LMHardwareControlGroup> enrollments = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.ENROLLMENT_ENTRY);
                             List<LMHardwareControlGroup> optOuts = lmHardwareControlGroupDao.getByLMGroupIdAndAccountIdAndType(groupId, account.getAccountId(), LMHardwareControlGroup.OPT_OUT_ENTRY);
                             
@@ -141,7 +146,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                     break;
                                 }
                             }
-                            
+                        
                             /*These are sorted by date.  For reporting purposes, we'll take the first enrollment start date we can find for
                              * this group, and the last enrollment stop we can find for this group.
                              */
@@ -151,6 +156,7 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                                 if(enrollments.get(enrollments.size() - 1).getGroupEnrollStop() != null)
                                 row.enrollmentStop = enrollments.get(enrollments.size() - 1).getGroupEnrollStop();
                             }*/
+
                         }
                     }
                 }
@@ -159,34 +165,36 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
                 CTILogger.error("Unable to generate row of report for account " + account.getAccountNumber(), e);
             }
         }
+            
         //----------------------------------------------------------------------------------
         
-        for(ProgramLoadGroup prog : ecPrograms) {
-            if(programIds != null && programIds.size() > 0 && ! programIds.contains(prog.getPaobjectId())) 
-                continue;
-            else {
-                ModelRow row = new ModelRow();
-                row.program = prog.getProgramName();
-                Double[] totals = programTotals.get(prog.getPaobjectId());
-                if(totals == null) {
-                    row.controlHours = 0.0;
-                    row.enrolledCustomers = 0;
-                    row.optOutEvents = 0;
-                    row.totalOptOutHours = 0.0;
-                    row.totalOptOutHoursDuringControl = 0.0;
-                }
+        if(accountsFromSQL.size() > 0) {
+            for(ProgramLoadGroup prog : ecPrograms) {
+                if(programIds != null && programIds.size() > 0 && ! programIds.contains(prog.getPaobjectId())) 
+                    continue;
                 else {
-                    row.controlHours = totals[TOTAL_CONTROL_HOURS];
-                    row.enrolledCustomers = (int)totals[ENROLLED_CUSTOMERS].doubleValue();
-                    row.optOutEvents = (int)totals[TOTAL_OPT_OUT_EVENTS].doubleValue();
-                    row.totalOptOutHours = totals[TOTAL_OPT_OUT_HOURS];
-                    row.totalOptOutHoursDuringControl = totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL];
+                    ModelRow row = new ModelRow();
+                    row.program = prog.getProgramName();
+                    Double[] totals = programTotals.get(prog.getPaobjectId());
+                    if(totals == null) {
+                        row.controlHours = 0.0;
+                        row.enrolledCustomers = 0;
+                        row.optOutEvents = 0;
+                        row.totalOptOutHours = 0.0;
+                        row.totalOptOutHoursDuringControl = 0.0;
+                    } else {
+                        row.controlHours = totals[TOTAL_CONTROL_HOURS];
+                        row.enrolledCustomers = (int)totals[ENROLLED_CUSTOMERS].doubleValue();
+                        row.optOutEvents = (int)totals[TOTAL_OPT_OUT_EVENTS].doubleValue();
+                        row.totalOptOutHours = totals[TOTAL_OPT_OUT_HOURS];
+                        row.totalOptOutHoursDuringControl = totals[TOTAL_OPT_OUT_HOURS_DURING_CONTROL];
+                    }
+                    data.add(row);
                 }
-                data.add(row);
             }
         }
     }
-
+    
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }
@@ -198,5 +206,5 @@ public class LMControlSummaryModel extends BareDatedReportModelBase<LMControlSum
     public void setProgramIds(Set<Integer> programIds) {
         this.programIds = programIds;
     }
-
+    
 }

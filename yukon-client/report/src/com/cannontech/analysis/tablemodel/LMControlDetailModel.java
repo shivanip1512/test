@@ -9,11 +9,15 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.dao.EmptyResultDataAccessException;
 
+import com.cannontech.cc.dao.ProgramDao;
 import com.cannontech.clientutils.CTILogger;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.dr.account.dao.ApplianceAndProgramDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
+import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.account.model.CustomerAccountWithNames;
 import com.cannontech.stars.dr.account.model.ProgramLoadGroup;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
@@ -24,12 +28,14 @@ import com.cannontech.stars.xml.serialize.StarsLMControlHistory;
 public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDetailModel.ModelRow> {
     private int energyCompanyId;
     private Set<Integer> programIds;
+    private String accountNumbers;
+    private LiteYukonUser liteUser;
     
     private CustomerAccountDao customerAccountDao = (CustomerAccountDao) YukonSpringHook.getBean("customerAccountDao");
     private LMHardwareControlGroupDao lmHardwareControlGroupDao = (LMHardwareControlGroupDao) YukonSpringHook.getBean("lmHardwareControlGroupDao");
     private ApplianceAndProgramDao applianceAndProgramDao = (ApplianceAndProgramDao) YukonSpringHook.getBean("applianceAndProgramDao");
     private static DecimalFormat decFormat = new java.text.DecimalFormat("0.#");
-    
+    private ProgramDao programDao = (ProgramDao)YukonSpringHook.getBean("programDao");
     private List<ModelRow> data = Collections.emptyList();
     
     public LMControlDetailModel() {
@@ -68,20 +74,35 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
         // get all of the customers
         Validate.notNull(getStartDate(), "Start date must not be null");
         Validate.notNull(getStopDate(), "End date must not be null");
-        
-        List<CustomerAccountWithNames> accounts = customerAccountDao.getAllAccountsWithNamesByEC(energyCompanyId);
-        /*These are sorted by paobjectId (groupId)*/
-        //List<LMControlHistory> controlHistory = lmControlHistoryDao.getByStartDateRange(getStartDate(), getLoadDate());
-        
+
         /*Normal LMControlHistory data is useless to me without the active restore being considered and actual control
          *ranges being assembled out of individual events.  May have to do something unpleasant.
          */
-        //SUPERHACK-------------------------------------------------------------------------
         HashMap<Integer, List<ProgramLoadGroup>> groupIdToProgram = new HashMap<Integer, List<ProgramLoadGroup>>(10);
         HashMap<Integer, StarsLMControlHistory> groupIdToSTARSControlHistory = new HashMap<Integer, StarsLMControlHistory>(10);
-        
+
+        List<CustomerAccountWithNames> accounts = null;
+        if(accountNumbers.trim() != "") {
+            accounts = new ArrayList<CustomerAccountWithNames>();
+            String[] accountNumbersArr = accountNumbers.split(";");
+            for (String accountNumber : accountNumbersArr) {
+                try {
+                    CustomerAccount custAccount = customerAccountDao.getByAccountNumber(accountNumber, liteUser);
+                    CustomerAccountWithNames customerAccountWithNames = customerAccountDao.getAccountWithNamesByCustomerId(custAccount.getCustomerId(), energyCompanyId);
+                    accounts.add(customerAccountWithNames);
+                } catch(EmptyResultDataAccessException ex) {
+                    // No results from the given accountNumber.  
+                }
+            }
+        } else {
+            List<Integer> groupIdsFromSQL = programDao.getDistinctGroupIdsByYukonProgramIds(programIds);
+            accounts = customerAccountDao.getAllAccountsWithNamesByGroupIds(energyCompanyId, 
+                                                                            groupIdsFromSQL,
+                                                                            getStartDate(),
+                                                                            getStopDate());
+        }
+
         data = new ArrayList<ModelRow>(accounts.size());
-        
         for (CustomerAccountWithNames account : accounts) {
             try {
                 List<Integer> groupIds = lmHardwareControlGroupDao.getDistinctGroupIdsByAccountId(account.getAccountId());
@@ -140,6 +161,8 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
         //----------------------------------------------------------------------------------
     }
 
+    
+    
     public void setEnergyCompanyId(int energyCompanyId) {
         this.energyCompanyId = energyCompanyId;
     }
@@ -147,9 +170,21 @@ public class LMControlDetailModel extends BareDatedReportModelBase<LMControlDeta
     public Set<Integer> getProgramIds() {
         return programIds;
     }
-
     public void setProgramIds(Set<Integer> programIds) {
         this.programIds = programIds;
     }
 
+    public String getAccountNumbers() {
+        return accountNumbers;
+    }
+    public void setAccountNumbers(String accountNumbers) {
+        this.accountNumbers = accountNumbers;
+    }
+   
+    public LiteYukonUser getLiteUser() {
+        return liteUser;
+    }
+    public void setLiteUser(LiteYukonUser liteUser) {
+        this.liteUser = liteUser;
+    }
 }

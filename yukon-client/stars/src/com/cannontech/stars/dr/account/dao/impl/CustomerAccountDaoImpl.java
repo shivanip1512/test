@@ -2,9 +2,12 @@ package com.cannontech.stars.dr.account.dao.impl;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
@@ -26,6 +29,7 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
     private static final String selectSql;
     private static final String selectByIdSql;
     private static final String selectAllUsefulAccountInfoFromECSql;
+    private static final String selectAllUsefulAccountInfoFromCustomerIdSql;
     private static final ParameterizedRowMapper<CustomerAccount> rowMapper;
     private static final ParameterizedRowMapper<CustomerAccountWithNames> specialAccountInfoRowMapper;
     
@@ -48,7 +52,14 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         selectAllUsefulAccountInfoFromECSql = "SELECT ca.AccountId, ca.AccountNumber, cont.ContLastName, cont.ContFirstName" +
                 " FROM CustomerAccount ca, Contact cont, Customer cust WHERE AccountId IN" +
                 " (SELECT AccountId FROM ECToAccountMapping WHERE EnergyCompanyId = ?) " +
-                "AND cust.CustomerId = ca.CustomerId AND cont.ContactId = cust.PrimaryContactId";
+                " AND cust.CustomerId = ca.CustomerId AND cont.ContactId = cust.PrimaryContactId";
+        
+        selectAllUsefulAccountInfoFromCustomerIdSql = "SELECT ca.AccountId, ca.AccountNumber, cont.ContLastName, cont.ContFirstName" +
+                " FROM CustomerAccount ca, Contact cont, Customer cust WHERE AccountId IN" +
+                " (SELECT AccountId FROM ECToAccountMapping WHERE EnergyCompanyId = ?) " +
+                " AND cust.CustomerId = ca.CustomerId AND cont.ContactId = cust.PrimaryContactId " +
+                " AND cust.CustomerId = ? ";
+
         
         rowMapper = CustomerAccountDaoImpl.createRowMapper();
         
@@ -161,6 +172,39 @@ public class CustomerAccountDaoImpl implements CustomerAccountDao {
         CustomerAccount account = simpleJdbcTemplate.queryForObject(sql.toString(), rowMapper, inventoryId);
         
         return account;
+    }
+            
+    public List<CustomerAccountWithNames> getAllAccountsWithNamesByGroupIds(final int ecId, List<Integer> groupIds,
+                                                                             Date startDate, Date stopDate){
+
+        try {
+            SqlStatementBuilder sql = new SqlStatementBuilder();
+            sql.append(" SELECT ca.AccountId, ca.AccountNumber, cont.ContLastName, cont.ContFirstName ");
+            sql.append(" FROM CustomerAccount ca, Contact cont, Customer cust ");
+            sql.append(" WHERE AccountId IN (SELECT AccountId ");
+            sql.append("                     FROM ECToAccountMapping ");
+            sql.append("                     WHERE EnergyCompanyId = ?) ");
+            sql.append(" AND cust.CustomerId = ca.CustomerId ");
+            sql.append(" AND cont.ContactId = cust.PrimaryContactId ");
+            sql.append(" AND ca.AccountId in (SELECT LMHCG.AccountId ");
+            sql.append("                         FROM LMHardwareControlGroup LMHCG ");
+            sql.append("                         WHERE LMHCG.LMGroupId in (", groupIds, ") ");
+            sql.append("                         AND (LMHCG.GroupEnrollStart < ?) ");
+            sql.append("                         AND ((LMHCG.GroupEnrollStop IS NULL) ");
+            sql.append("                               OR (LMHCG.GroupEnrollStop > ?))) ");
+            
+            List<CustomerAccountWithNames> list = simpleJdbcTemplate.query(sql.toString(), specialAccountInfoRowMapper, ecId, stopDate, startDate);
+            return list;        
+        } catch (DataAccessException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        } 
+    }
+    
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public CustomerAccountWithNames getAccountWithNamesByCustomerId(final int customerId, final int ecId) {
+        List<CustomerAccountWithNames> rs = simpleJdbcTemplate.query(selectAllUsefulAccountInfoFromCustomerIdSql, specialAccountInfoRowMapper, ecId, customerId);
+        return rs.get(0);
     }
 
     @Override
