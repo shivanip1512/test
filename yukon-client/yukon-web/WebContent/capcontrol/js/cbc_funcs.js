@@ -926,10 +926,8 @@ function pause(numberMillis) {
 	    var rows = $$('#capBankTable tr.altTableCell', '#capBankTable tr.tableCell');
     	for (var i=0; i < rows.length; i++) {
             var row = rows[i];
-            var cells = row.getElementsByTagName('td');
-            var fdr = cells[7];
-            var spans = fdr.getElementsByTagName('span');
-	        var fdrName = new String (spans[0].innerHTML);
+            var spans = row.getElementsByTagName('span');
+	        var fdrName = new String (spans[12].innerHTML);
     		var index = feederNames.indexOf(trim(fdrName));
     		if(index > -1){
 				row.setStyle({'display' : ''});
