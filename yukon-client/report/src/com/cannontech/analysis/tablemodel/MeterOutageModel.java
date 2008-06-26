@@ -73,11 +73,6 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 	public MeterOutageModel()
 	{
 		this(null);
-		setFilterModelTypes(new ReportFilter[]{
-                ReportFilter.METER,
-                ReportFilter.DEVICE,
-                ReportFilter.GROUPS}
-                );
 	}
 	/**
 	 * 

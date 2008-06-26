@@ -109,11 +109,6 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
     public DisconnectModel()
     {
         this(false);	
-        setFilterModelTypes(new ReportFilter[]{
-                ReportFilter.METER,
-                ReportFilter.DEVICE,
-                ReportFilter.GROUPS}
-                );
     }
 
     /**
