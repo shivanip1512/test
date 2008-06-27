@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.102 $
-* DATE         :  $Date: 2008/06/25 21:12:44 $
+* REVISION     :  $Revision: 1.103 $
+* DATE         :  $Date: 2008/06/27 19:00:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -950,11 +950,6 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
     if( pReq->UserMessageId() != _currentUserMessageId ||
         stringCompareIgnoreCase(pReq->CommandString(), _currentParse.getCommandStr()) != 0 )
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << " **** new parse **** " << endl;
-        }
-
         _currentParse = CtiCommandParser(pReq->CommandString());
         _currentUserMessageId = pReq->UserMessageId();
     }
