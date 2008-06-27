@@ -356,21 +356,25 @@ public class InventoryManagerUtil {
 			}
 			xcom.setFeeder( feeder );
 			
-			String[] programs = req.getParameterValues("XCOM_Program");
 			String program = "";
-			for (int i = 0; i < programs.length; i++) {
-				ServletUtils.parseNumber(programs[i], 0, 254, 0, "Program" );
-				program += programs[i].trim();
-				if (i < programs.length - 1) program += ",";
+			String[] programs = req.getParameterValues("XCOM_Program");
+			if (programs != null) {
+			    for (int i = 0; i < programs.length; i++) {
+			        ServletUtils.parseNumber(programs[i], 0, 254, 0, "Program" );
+			        program += programs[i].trim();
+			        if (i < programs.length - 1) program += ",";
+			    }
 			}
 			xcom.setProgram( program );
 			
-			String[] splinters = req.getParameterValues("XCOM_Splinter");
 			String splinter = "";
-			for (int i = 0; i < splinters.length; i++) {
-				ServletUtils.parseNumber(splinters[i], 0, 254, 0, "Splinter" );
-				splinter += splinters[i].trim();
-				if (i < splinters.length - 1) splinter += ",";
+			String[] splinters = req.getParameterValues("XCOM_Splinter");
+			if (splinters != null) {
+			    for (int i = 0; i < splinters.length; i++) {
+			        ServletUtils.parseNumber(splinters[i], 0, 254, 0, "Splinter" );
+			        splinter += splinters[i].trim();
+			        if (i < splinters.length - 1) splinter += ",";
+			    }
 			}
 			xcom.setSplinter( splinter );
 			
