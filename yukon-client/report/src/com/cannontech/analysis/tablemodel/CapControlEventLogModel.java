@@ -132,31 +132,31 @@ public class CapControlEventLogModel extends ReportModelBase
 												" AND CCLOG2.DATETIME <= ?");
 												if (getPaoIDs() != null && getPaoIDs().length > 0)
 												{
-												    if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) { //fix
-    												    sql.append(" AND CCLOG2.SUBID IN ( " + getPaoIDs()[0] +" ");
-    												    for (int i = 1; i < getPaoIDs().length; i++)
-    												        sql.append(" , " + getPaoIDs()[i]);
-    												            
-    												    sql.append(")");
-												    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) { //fix
-                                                        sql.append(" AND CCLOG2.StationId IN ( " + getPaoIDs()[0] +" ");
-                                                        for (int i = 1; i < getPaoIDs().length; i++)
-                                                            sql.append(" , " + getPaoIDs()[i]);
-                                                                
-                                                        sql.append(")");
-                                                    }else if(getFilterModelType().equals(ReportFilter.AREA)) { //fix
-                                                        sql.append(" AND CCLOG2.areaId IN ( " + getPaoIDs()[0] +" ");
-                                                        for (int i = 1; i < getPaoIDs().length; i++)
-                                                            sql.append(" , " + getPaoIDs()[i]);
-                                                                
-                                                        sql.append(")");
-                                                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) { //fix
-                                                        sql.append(" AND CCLOG2.feederId IN ( " + getPaoIDs()[0] +" ");
-                                                        for (int i = 1; i < getPaoIDs().length; i++)
-                                                            sql.append(" , " + getPaoIDs()[i]);
-                                                                
-                                                        sql.append(")");
-                                                    }
+												    if(getFilterModelType().equals(ReportFilter.AREA)) { 
+								                        sql.append(" AND CCLOG.areaid IN ( " + getPaoIDs()[0] +" ");
+								                        for (int i = 1; i < getPaoIDs().length; i++)
+								                            sql.append(" , " + getPaoIDs()[i]);
+								                                
+								                        sql.append(")");
+								                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLFEEDER)) { 
+								                        sql.append(" AND CCLOG.FEEDERID IN ( " + getPaoIDs()[0] +" ");
+								                        for (int i = 1; i < getPaoIDs().length; i++)
+								                            sql.append(" , " + getPaoIDs()[i]);
+								                                
+								                        sql.append(")");
+								                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) { 
+								                        sql.append(" AND CCLOG.SUBID IN ( " + getPaoIDs()[0] +" ");
+								                        for (int i = 1; i < getPaoIDs().length; i++)
+								                            sql.append(" , " + getPaoIDs()[i]);
+								                                
+								                        sql.append(")");
+								                    }else if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) { 
+								                        sql.append(" AND CCLOG.STATIONID IN ( " + getPaoIDs()[0] +" ");
+								                        for (int i = 1; i < getPaoIDs().length; i++)
+								                            sql.append(" , " + getPaoIDs()[i]);
+								                                
+								                        sql.append(")");
+								                    }
 												}
 												sql.append(" ) ");	//ending paren for IN statement
 												

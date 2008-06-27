@@ -110,6 +110,7 @@ public class CapBankRecentMaxDailyOpsModel extends ReportModelBase {
         sql.append( "left outer join ccfeedersubassignment fs on fs.feederid = fb.feederid ");
         sql.append( "join yukonpaobject yp3 on yp3.paobjectid = fs.substationbusid ");
         sql.append( "left outer join ccsubstationsubbuslist ssb on ssb.substationbusid = fs.substationbusid ");
+        sql.append( "join yukonpaobject yp4 on yp4.paobjectid = ssb.substationid ");
         sql.append( "left outer join ccsubareaassignment sa on sa.substationbusid = ssb.substationid ");
         sql.append( "join yukonpaobject ca on ca.paobjectid = sa.areaid ");
         sql.append( "and (slTemp6.prevWeek6Count > 0 or slTemp5.prevWeek5Count > 0 or "); 
@@ -136,6 +137,14 @@ public class CapBankRecentMaxDailyOpsModel extends ReportModelBase {
         
             if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBBUS)) {
                 sql.append( "where yp3.paobjectid in ('" + getPaoIDs()[0]);
+                for (int i = 1; i < getPaoIDs().length; i++) {
+                    sql.append("', '" + getPaoIDs()[i]);
+                }
+                sql.append("') ");
+            }
+            
+            if(getFilterModelType().equals(ReportFilter.CAPCONTROLSUBSTATION)) {
+                sql.append( "where yp4.paobjectid in ('" + getPaoIDs()[0]);
                 for (int i = 1; i < getPaoIDs().length; i++) {
                     sql.append("', '" + getPaoIDs()[i]);
                 }
