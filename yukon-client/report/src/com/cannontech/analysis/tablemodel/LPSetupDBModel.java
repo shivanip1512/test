@@ -91,13 +91,6 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
 	public void addDataRow(ResultSet rs) {
 		try {
 		    
-		    // RESTRICT BY GROUPS (if any)
-            if (getBillingGroups() != null && getBillingGroups().length > 0) {
-                if (!isDeviceInSelectedGroups(rs.getInt("PAOBJECTID"))) {
-                    return;
-                }
-            }
-		    
             final Meter meter = new Meter();
             meter.setDeviceId(rs.getInt("PAOBJECTID"));
             meter.setName(rs.getString("PAONAME"));
@@ -156,6 +149,13 @@ public class LPSetupDBModel extends ReportModelBase<LPMeterData> implements Comp
         String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
         if (!StringUtils.isBlank(paoIdWhereClause)) {
             sql.append(" AND " + paoIdWhereClause);
+        }
+        
+        // RESTRICT BY GROUPS (if any)
+        String[] groups = getBillingGroups();
+        if (groups != null && groups.length > 0) {
+            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND " + deviceGroupSqlWhereClause);
         }
         
         //ORDER

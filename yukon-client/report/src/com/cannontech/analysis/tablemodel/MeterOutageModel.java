@@ -95,14 +95,6 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
 	{
 		try
 		{
-		    
-		    // RESTRICT BY GROUPS (if any)
-		    if (getBillingGroups() != null && getBillingGroups().length > 0) {
-		        if (!isDeviceInSelectedGroups(rset.getInt(1))) {
-		            return;
-		        }
-		    }
-		    
 		    Meter meter = new Meter();
             
             int paobjectID = rset.getInt(1);
@@ -171,6 +163,13 @@ public class MeterOutageModel extends ReportModelBase<MeterAndPointData>
         String paoIdWhereClause = getPaoIdWhereClause("PAO.PAOBJECTID");
         if (!StringUtils.isBlank(paoIdWhereClause)) {
             sql.append(" AND " + paoIdWhereClause);
+        }
+        
+        // RESTRICT BY GROUPS (if any)
+        final String[] groups = getBillingGroups();
+        if (groups != null && groups.length > 0) {
+            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND " + deviceGroupSqlWhereClause);
         }
         
 		sql.append(" ORDER BY ");	//TODO what to order by?

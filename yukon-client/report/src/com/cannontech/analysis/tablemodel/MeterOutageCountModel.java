@@ -2,8 +2,10 @@ package com.cannontech.analysis.tablemodel;
 
 import java.sql.ResultSet;
 import java.sql.Timestamp;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
@@ -143,11 +145,18 @@ public class MeterOutageCountModel extends ReportModelBase
             }
             String groupName = deviceGroup.getFullName();
             
-            // RESTRICT BY GROUPS (if any)
-            if (getBillingGroups() != null && getBillingGroups().length > 0) {
-                if (!isDeviceInSelectedGroups(rset.getInt(6))) {
+//            // RESTRICT BY GROUPS (if any)
+//            if (getBillingGroups() != null && getBillingGroups().length > 0) {
+//                if (!isDeviceInSelectedGroups(rset.getInt(6))) {
+//                    return;
+//                }
+//            }
+            
+            final String[] groups = getBillingGroups();
+            if (groups != null && groups.length > 0) {  //Device Groups were specified, only include groups that were selected 
+                List<String> deviceGroupNames = Arrays.asList(groups);
+                if( !deviceGroupNames.contains(groupName) )
                     return;
-                }
             }
             
 			String paoName = rset.getString(2);
@@ -357,6 +366,13 @@ public class MeterOutageCountModel extends ReportModelBase
 		if (!StringUtils.isBlank(paoIdWhereClause)) {
 		    sql.append(" AND " + paoIdWhereClause);
 		}
+		
+		// RESTRICT BY GROUPS (if any)
+		final String[] groups = getBillingGroups();
+        if (groups != null && groups.length > 0) {
+            String deviceGroupSqlWhereClause = getGroupSqlWhereClause("PAO.PAOBJECTID");
+            sql.append(" AND " + deviceGroupSqlWhereClause);
+        }
 					
 		sql.append("ORDER BY DGM.DEVICEGROUPID, PAO.PAONAME, P.POINTNAME, TIMESTAMP");
 		return sql;
