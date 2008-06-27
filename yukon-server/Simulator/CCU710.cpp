@@ -18,15 +18,19 @@
 #include "numstr.h"
 #include "cticalls.h"
 #include "color.h"
+#include "logger.h"
+
+#include <boost/thread/mutex.hpp>
 
 using namespace std;
 
+DLLIMPORT extern CtiLogger   dout;
 
 /**************************************************
 /*  CCU710 functions
 ***************************************************/
 
-CCU710::CCU710() :
+CCU710::CCU710() : 
       _indexOfEnd(0),
       _indexOfWords(0),
       _outindexOfEnd(0),
@@ -44,6 +48,132 @@ CCU710::CCU710() :
       memset(_messageData, 0, 100);
       memset(_outmessageData, 0, 100);
 }
+
+void CCU710::handleRequest(CTINEXUS* socket) 
+{
+    CtiTime AboutToRead;
+    unsigned char ReadBuffer[300];
+    int BytesToFollow;
+    int counter = 0;
+    int ccuNumber = 0;
+    int mctNumber = 0;
+    unsigned long bytesRead = 0;
+    BytesToFollow = 3;
+
+    //  Read first few bytes
+    while( bytesRead < BytesToFollow )
+    {
+        socket->CTINexusRead(ReadBuffer + counter  ,1, &bytesRead, 15);
+        counter++;
+    }
+
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        //SET_FOREGROUND_BRIGHT_YELLOW;
+        dout << AboutToRead.asString();
+        //SET_FOREGROUND_BRIGHT_CYAN;
+        dout << " IN:" << endl;
+        //SET_FOREGROUND_BRIGHT_GREEN;
+        for( int byteitr = 0; byteitr < (bytesRead); byteitr++ )
+        {
+            dout << string(CtiNumStr(ReadBuffer[byteitr]).hex().zpad(2)) << ' ';
+        }
+    }
+
+
+    BytesToFollow = ReceiveMsg(ReadBuffer, ccuNumber);
+
+    if( BytesToFollow>0 )
+    {
+        bytesRead=0;
+        //  Read any additional bytes
+        while( bytesRead < BytesToFollow )
+        {
+            socket->CTINexusRead(ReadBuffer + counter, 1, &bytesRead, 15);
+            counter++;
+        }
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            for( int byteitr = 0; byteitr < BytesToFollow; byteitr++ )
+            {
+                dout << string(CtiNumStr(ReadBuffer[byteitr+3]).hex().zpad(2)) << ' ';
+            }
+        
+            ReceiveMore(ReadBuffer, mctNumber,counter);
+            PrintInput();
+        }
+    }
+
+
+    if( BytesToFollow>0 )
+    {
+        CreateMsg(ccuNumber, mctNumber);
+
+        unsigned char SendData[300];
+
+        int MsgSize = SendMsg(SendData);
+
+        if( MsgSize>0 )
+        {
+            int napTime = ((MsgSize*8)/1200)*2*1000;  //  Delay at 1200 baud in both directions
+            CTISleep(napTime);
+            unsigned long bytesWritten = 0;
+            socket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15);
+
+            CtiTime DateSent;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                //SET_FOREGROUND_BRIGHT_YELLOW;
+                dout << DateSent.asString();
+                //SET_FOREGROUND_BRIGHT_CYAN;
+                dout << " OUT:" << endl;
+                //SET_FOREGROUND_BRIGHT_MAGNETA;
+
+                for( int byteitr = 0; byteitr < bytesWritten; byteitr++ )
+                {
+                    dout << string(CtiNumStr(SendData[byteitr]).hex().zpad(2)) << ' ';
+                }
+                dout << endl;
+                PrintMessage();
+            }
+        }
+    }
+    else
+    {
+        unsigned char SendData[300];
+
+        int MsgSize = SendMsg(SendData);
+
+        if( MsgSize>0 )
+        {
+            int napTime = ((MsgSize*8)/1200)*2*1000;  //  Delay at 1200 baud in both directions
+            CTISleep(napTime);
+            unsigned long bytesWritten = 0;
+            socket->CTINexusWrite(&SendData, MsgSize, &bytesWritten, 15);
+
+            CtiTime DateSent;
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                //SET_FOREGROUND_BRIGHT_YELLOW;
+                dout << DateSent.asString();
+                //SET_FOREGROUND_BRIGHT_CYAN;
+                dout << " OUT:" << endl;
+
+                //SET_FOREGROUND_BRIGHT_MAGNETA;
+    
+                for( int byteitr = 0; byteitr < bytesWritten; byteitr++ )
+                {
+                    dout << string(CtiNumStr(SendData[byteitr]).hex().zpad(2))<<' ';
+                }
+    
+                dout << endl;
+                PrintMessage();
+            }
+        }
+    }
+
+}
+
 
 //Listen for and store an incoming message
 int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
@@ -98,7 +228,7 @@ int CCU710::ReceiveMsg(unsigned char Data[], int &setccuNumber)
 
             // ///////////////////////////////////////////////////////////////////////////
             // /////////////////////////////////////////// ////////////////////////////
-            // ///  MAKE THE ADDRESS IN PREAMBLE GENERAL FOR ALL CUU ADDRESSES !!!
+            // ///  MAKE THE ADDRESS IN PREAMBLE GENERAL FOR ALL CUU ADDfRESSES !!!
             _messageData[Ctr++] = 0xc3;
             _messageData[Ctr++] = 0xc3;
             _messageData[Ctr++] = 0x82;
@@ -178,7 +308,10 @@ int CCU710::ReceiveMore(unsigned char Data[], int &setmctNumber, int counter)
             _indexOfWords++;
         }
     }
-    cout<<endl;
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << endl;
+    }
     return setmctNumber;
 }
 
@@ -190,8 +323,8 @@ void CCU710::PrintInput()
 
     TranslateInfo(INCOMING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-    cout<<"Pre: "<<printPre;
-    cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
+    dout<<"Pre: "<<printPre;
+    dout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
 }
 
 
@@ -224,7 +357,7 @@ void CCU710::CreateMsg(int ccuNumber, int mctNumber){
 int CCU710::SendMsg(unsigned char SendData[]){
     int MsgSize = _outindexOfEnd;
 
-    if(activeStrategy()==4)
+    if(getStrategy()==4)
     {
         for(int i = 0; i<100; i++)
         {
@@ -242,6 +375,7 @@ int CCU710::SendMsg(unsigned char SendData[]){
 
 
 void CCU710::PrintMessage(){
+
     SET_FOREGROUND_WHITE;
     string printType;
     switch(_outmessageType){
@@ -266,9 +400,9 @@ void CCU710::PrintMessage(){
 
     TranslateInfo(OUTGOING, printMsg, printCmd, printPre, printWrd, printFnc);
 
-    cout<<"Pre: "<<printPre;
-    cout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
-    cout<<"________________________________________________________________________________"<<endl;
+    dout<<"Pre: "<<printPre;
+    dout<<"    Wrd: "<<printWrd<<"    Fnc: "<<printFnc<<endl;
+    dout<<"________________________________________________________________________________"<<endl;
 }
 
 
@@ -332,18 +466,6 @@ void CCU710::TranslateInfo(bool direction, string & printMsg, string & printCmd,
             case WRITE:     printFnc.append("WRITE");       break;
         }
     }
-}
-
-//Returns a pointer to the listening socket
-CTINEXUS * CCU710::getListenSocket(){
-    CTINEXUS * ListenSocket = listenSocket;
-    return(ListenSocket);
-}
-
-//Returns a pointer to newSocket
-CTINEXUS * CCU710::getNewSocket(){
-    CTINEXUS * Socket = newSocket;
-    return(Socket);
 }
 
 int CCU710::DecodePreamble(int &setccuNumber)
@@ -464,10 +586,10 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             EmetconWord newWord;
             newWord.setStrategy(_strategy);
             int Function = 0;
-            if((activeStrategy()==DEFAULT)||(_strategy==2)) {
+            if((getStrategy()==DEFAULT)||(_strategy==2)) {
                 Ctr = newWord.InsertWord(D_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             }
-            else if(activeStrategy()==BAD_D_WORD) {
+            else if(getStrategy()==BAD_D_WORD) {
                 Ctr = newWord.InsertWord(X_WORD,  _outmessageData, Function, mctNumber, Ctr, (getRepeaters()));
             }
             else
@@ -659,18 +781,17 @@ int CCU710::DecodeCCUAddress()
     return setCCUAddress;
 }
 
-void CCU710::setStrategy(int strategy)
-{
-    _strategy = strategy;
-}
-
-int CCU710::activeStrategy()
-{
-    return _strategy;
-}
-
 int CCU710::getWordFunction(int wordNum)    {   return _words[wordNum].getWordFunction();   }
 int CCU710::getWordsRequested()             {   return _wordsRequested;                     }
 int CCU710::getRepeaters()                  {   return (_messageData[1] & 0x07);            }
 int CCU710::getWordsInbound()               {   return (_indexOfEnd)/6;                     }
 
+void CCU710::setStrategy(int strategy)
+{
+    _strategy = strategy;
+}
+
+int CCU710::getStrategy()
+{
+    return _strategy;
+}
