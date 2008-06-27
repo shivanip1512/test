@@ -793,12 +793,13 @@ INT CtiDeviceWctpTerminal::generateCommand(CtiXfer  &xfer, list< CtiMessage* > &
             CHAR  temp[8];
             CHAR  prefix[8] = { 0,0,0,0,0,0,0,0};
 
+            getPageCount()++;
             if( gDoPrefix && allowPrefix() )
             {
                 /* Stick a little TAPTerm fakey in there */
                 msgPayload[sendCnt++] = incrementPagePrefix();
 
-                sprintf(temp, "%05d", (getPageCount()++ & 0x0000ffff));
+                sprintf(temp, "%05d", (getPageCount() & 0x0000ffff));
 
                 for(i = 0; i < 5; i++)
                 {
