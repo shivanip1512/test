@@ -54,7 +54,7 @@ BOOST_AUTO_UNIT_TEST(test_delete_assoc_container)
 {
     std::map<int, test_wrapper *> test_map;
     const int max_size = 4;
-    int i, counter = 0;
+    int i;
 
     test_wrapper::counter = 0;
 
@@ -62,7 +62,7 @@ BOOST_AUTO_UNIT_TEST(test_delete_assoc_container)
 
     for( i = max_size; i; i-- )
     {
-        test_map.insert(std::make_pair(1, new test_wrapper));
+        test_map.insert(std::make_pair(i, new test_wrapper));
         BOOST_CHECK_EQUAL(test_map.size(), test_wrapper::counter);
     }
 
