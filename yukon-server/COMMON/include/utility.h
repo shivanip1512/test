@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2008/06/25 17:08:42 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2008/06/27 17:18:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -292,7 +292,7 @@ inline string char2string(char c)
 
 //  This is for a container of pointers. It will have compiler errors if used on a container of non-pointer types.
 template <class Container>
-inline void delete_container( Container C )
+inline void delete_container( Container &C )
 {
     for( Container::iterator itr = C.begin(); itr != C.end(); itr++)
     {
@@ -303,7 +303,7 @@ inline void delete_container( Container C )
 
 
 template <class AssocContainer>
-inline void delete_assoc_container( AssocContainer AC )
+inline void delete_assoc_container( AssocContainer &AC )
 {
     for( AssocContainer::iterator itr = AC.begin(); itr != AC.end(); itr++)
     {
@@ -317,9 +317,9 @@ inline void delete_assoc_container( AssocContainer AC )
 
 
 template <class T>
-inline bool list_contains( std::list<T> V, T x )
+inline bool list_contains( const std::list<T> &V, T x )
 {
-    for( std::list<T>::iterator itr = V.begin(); itr != V.end(); itr++ )
+    for( std::list<T>::const_iterator itr = V.begin(); itr != V.end(); itr++ )
     {
         if( **itr == *x )
         {

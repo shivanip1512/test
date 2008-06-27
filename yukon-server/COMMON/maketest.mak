@@ -30,7 +30,9 @@ test_queue.obj \
 test_hash.obj \
 test_CtiPCPtrQueue.obj \
 test_ctistring.obj \
-test_fifo_multiset.obj
+test_fifo_multiset.obj \
+test_utility.obj \
+
 
 LIBS=\
 kernel32.lib user32.lib advapi32.lib wsock32.lib

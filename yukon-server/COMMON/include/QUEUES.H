@@ -2,7 +2,9 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
+#include "cticalls.h"
 #include "types.h"
+#include <map>
 
 #ifndef MAXPRIORITY
    #define MAXPRIORITY 15
