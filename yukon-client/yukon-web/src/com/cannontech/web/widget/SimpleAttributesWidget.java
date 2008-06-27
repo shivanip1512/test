@@ -6,6 +6,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -17,6 +18,7 @@ import com.cannontech.amr.deviceread.dao.MeterReadService;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
@@ -33,7 +35,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     private DeviceDao deviceDao;
     private MeterDao meterDao;
     
-    public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public ModelAndView render(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
 
         ModelAndView mav = new ModelAndView("simpleAttributesWidget/render.jsp");
         LiteYukonUser user = ServletUtil.getYukonUser(request);
@@ -45,7 +47,10 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         
         // get attributes
         String attributesStr = WidgetParameterHelper.getRequiredStringParameter(request, "attributes");
-        Set<BuiltInAttribute> attributes = getAttributesFromString(attributesStr);
+        Set<Attribute> attributes = getAttributesFromString(attributesStr);
+        if (attributes.size() <= 0) {
+            throw new ServletException("No Attributes Provided");
+        }
         
         // get labels
         String labelsStr = WidgetParameterHelper.getStringParameter(request, "labels");
@@ -57,12 +62,19 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         // build infos
         int attrIndx = 0;
         List<AttributeInfo> attributeInfos = new ArrayList<AttributeInfo>();
-        for (BuiltInAttribute attr : attributes) {
+        for (Attribute attr : attributes) {
             
             AttributeInfo attrInfo = new AttributeInfo();
             attrInfo.setAttribute(attr);
             attrInfo.setSupported(attributeService.isAttributeSupported(device, attr));
-            attrInfo.setExists(attributeService.pointExistsForAttribute(device, attr));
+            
+            boolean exists = false;
+            try {
+                exists = attributeService.pointExistsForAttribute(device, attr);
+            }
+            catch (IllegalArgumentException e) {
+            }
+            attrInfo.setExists(exists);
             
             if (labelsStr != null) {
                 attrInfo.setDescription(labels.get(attrIndx));
@@ -94,11 +106,15 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         int deviceId = WidgetParameterHelper.getRequiredIntParameter(request, "deviceId");
         String attributesStr = WidgetParameterHelper.getRequiredStringParameter(request, "attributes");
-        Set<BuiltInAttribute> attributes = getAttributesFromString(attributesStr);
+        Set<Attribute> attributes = getAttributesFromString(attributesStr);
         
         // command
         Meter meter = meterDao.getForId(deviceId);
-        CommandResultHolder result = meterReadService.readMeter(meter, attributes, user);
+        
+        Set<Attribute> allExistingAttributes = attributeService.getAllExistingAttributes(meter);
+        allExistingAttributes.retainAll(attributes);
+        
+        CommandResultHolder result = meterReadService.readMeter(meter, allExistingAttributes, user);
         
         //result
         mav.addObject("result", result);
@@ -106,9 +122,9 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         return mav;
     }
 
-    private Set<BuiltInAttribute> getAttributesFromString(String attributesStr) {
+    private Set<Attribute> getAttributesFromString(String attributesStr) {
 
-        Set<BuiltInAttribute> attrs = new LinkedHashSet<BuiltInAttribute>();
+        Set<Attribute> attrs = new LinkedHashSet<Attribute>();
         for(String attrStr : StringUtils.split(attributesStr, ",")) {
             attrs.add(BuiltInAttribute.valueOf(attrStr));
         }
@@ -119,7 +135,7 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
     public class AttributeInfo {
         
         private String description;
-        private BuiltInAttribute attribute;
+        private Attribute attribute;
         private boolean supported;
         private boolean exists;
 
@@ -129,10 +145,10 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
         public String getDescription() {
             return description;
         }
-        public BuiltInAttribute getAttribute() {
+        public Attribute getAttribute() {
             return attribute;
         }
-        public void setAttribute(BuiltInAttribute attribute) {
+        public void setAttribute(Attribute attribute) {
             this.attribute = attribute;
         }
         public boolean isSupported() {
