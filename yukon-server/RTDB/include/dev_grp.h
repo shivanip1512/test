@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_alm_nloc.h-arc  $
-* REVISION     :  $Revision: 1.26 $
-* DATE         :  $Date: 2008/04/24 19:41:51 $
+* REVISION     :  $Revision: 1.27 $
+* DATE         :  $Date: 2008/06/27 20:01:11 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -175,6 +175,26 @@ public:
     {
         string match = " count";
         int begin, end;
+        if( (begin = command.find(match)) != string::npos )
+        {
+            //control xcom cycle 50 count 8 period 30 truecycle
+
+            //We start at the " " after count and look for the number
+            end = command.find_first_not_of(" ", begin + match.length());
+
+            if( end != string::npos )
+            {
+                //Here we start at the number (8) and try to find a " "
+                end = command.find_first_of(" ", end);
+            }
+
+            if( end != string::npos )
+            {
+                command.erase(begin, end - begin);
+            }
+        }
+
+        match = " bump stage";
         if( (begin = command.find(match)) != string::npos )
         {
             //control xcom cycle 50 count 8 period 30 truecycle
