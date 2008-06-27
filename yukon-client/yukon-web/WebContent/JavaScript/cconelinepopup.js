@@ -77,7 +77,18 @@ function submitOnelineCommand(cmdId, params) {
 function submitTagMenu(isCapBank) {
 
     var disableChange = $("disableCheckBox").checked != eval($("disableCheckBox_orig").value);
-    var disableOVUVChange = $("disableOVUVCheckBox").checked != eval($("disableOVUVCheckBox_orig").value);
+    var disableOVUVChange = false;
+    var disableOVUVValue = false;
+    var disableOVUVCheckBox = $("disableOVUVCheckBox");
+    if(disableOVUVCheckBox != null){
+        disableOVUVChange = $("disableOVUVCheckBox").checked != eval($("disableOVUVCheckBox_orig").value);
+        disableOVUVValue = $("disableOVUVCheckBox").checked; 
+    }
+    var disableOVUVReasonValue = "";
+    var disableOVUVReason = $('disableOVUVReason');
+    if(disableOVUVReason != null){
+        disableOVUVReasonValue = disableOVUVReason.value;
+    }
     var operationalStateChange = false;
 
     if (isCapBank) {
@@ -87,25 +98,25 @@ function submitTagMenu(isCapBank) {
         operationalStateChange = state != origState;
     }
     
-	if (!(disableChange || disableOVUVChange || operationalStateChange)) {
-	    alert("No Change Was Made.");
-        return false;	
+    if (!(disableChange || disableOVUVChange || operationalStateChange)) {
+        alert("No Change Was Made.");
+        return false;   
     }    
         
     params = {};
-	params['paoId'] = $('paoId').value;
-	params['controlType'] = $('controlType').value;
-		
-	params['disableValue'] = $('disableCheckBox').checked;
-	params['disableOVUVValue'] = $('disableOVUVCheckBox').checked;
+    params['paoId'] = $('paoId').value;
+    params['controlType'] = $('controlType').value;
+        
+    params['disableValue'] = $('disableCheckBox').checked;
+    params['disableOVUVValue'] = disableOVUVValue;
     if (isCapBank) params['operationalStateValue'] = $('operationalStateValue').options[$('operationalStateValue').selectedIndex].value;
         
-	params['disableChange'] = disableChange;
-	params['disableOVUVChange'] = disableOVUVChange;
-	params['operationalStateChange'] = operationalStateChange;
-		
+    params['disableChange'] = disableChange;
+    params['disableOVUVChange'] = disableOVUVChange;
+    params['operationalStateChange'] = operationalStateChange;
+        
     params['disableReason'] = $('disableReason').value;
-    params['disableOVUVReason'] = $('disableOVUVReason').value;
+    params['disableOVUVReason'] = disableOVUVReasonValue;
     if (isCapBank) params['operationalStateReason'] = $('operationalStateReason').value;
         
     var confirmMessage = '';
@@ -117,7 +128,7 @@ function submitTagMenu(isCapBank) {
         
     var url = $('url').value;
     submitToCapControlCommandController(url, params);
-    closePopupWindow();  
+    closePopupWindow(); 
 }
 
 function toggleReason(element, reasonElementId) {
