@@ -1,7 +1,6 @@
 package com.cannontech.web.widget;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -52,13 +51,6 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
             throw new ServletException("No Attributes Provided");
         }
         
-        // get labels
-        String labelsStr = WidgetParameterHelper.getStringParameter(request, "labels");
-        List<String> labels = new ArrayList<String>();
-        if (labelsStr != null) {
-            labels.addAll(Arrays.asList(StringUtils.split(labelsStr, ",")));
-        }
-        
         // build infos
         int attrIndx = 0;
         List<AttributeInfo> attributeInfos = new ArrayList<AttributeInfo>();
@@ -66,22 +58,17 @@ public class SimpleAttributesWidget extends WidgetControllerBase {
             
             AttributeInfo attrInfo = new AttributeInfo();
             attrInfo.setAttribute(attr);
-            attrInfo.setSupported(attributeService.isAttributeSupported(device, attr));
+            
+            boolean supported = attributeService.isAttributeSupported(device, attr);
+            attrInfo.setSupported(supported);
             
             boolean exists = false;
-            try {
+            if (supported) {
                 exists = attributeService.pointExistsForAttribute(device, attr);
-            }
-            catch (IllegalArgumentException e) {
             }
             attrInfo.setExists(exists);
             
-            if (labelsStr != null) {
-                attrInfo.setDescription(labels.get(attrIndx));
-            }
-            else {
-                attrInfo.setDescription(attr.getDescription());
-            }
+            attrInfo.setDescription(attr.getDescription());
             
             attributeInfos.add(attrInfo);
             attrIndx++;
