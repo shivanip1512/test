@@ -10,7 +10,7 @@ public class YukonDeviceDto {
     private String name;
     private String route; 
     private Integer substation;
-    private Integer deviceType;
+    private String deviceType;
     private Integer disconnectAddress;
     
     
@@ -45,10 +45,10 @@ public class YukonDeviceDto {
     public void setEnable(Boolean enable) {
         this.enable = enable;
     }
-    public Integer getDeviceType() {
+    public String getDeviceType() {
         return deviceType;
     }
-    public void setDeviceType(Integer deviceType) {
+    public void setDeviceType(String deviceType) {
         this.deviceType = deviceType;
     }
     public String getRoute() {

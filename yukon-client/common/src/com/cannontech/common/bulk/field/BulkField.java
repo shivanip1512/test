@@ -1,5 +1,6 @@
 package com.cannontech.common.bulk.field;
 
+import com.cannontech.common.bulk.field.processor.BlankHandlingEnum;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.web.input.InputSource;
 
@@ -21,4 +22,6 @@ public interface BulkField<T, O> {
    public InputSource<T> getInputSource();
    
    public ObjectMapper<T, O> getIdentifierMapper();
+   
+   public BlankHandlingEnum getBlankHandlingEnum();
 }

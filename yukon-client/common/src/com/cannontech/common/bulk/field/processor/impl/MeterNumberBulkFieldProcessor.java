@@ -16,7 +16,6 @@ public class MeterNumberBulkFieldProcessor extends BulkYukonDeviceFieldProcessor
     public void updateField(YukonDevice device, YukonDeviceDto value) {
 
         try {
-        
             deviceDao.changeMeterNumber(device.getDeviceId(), value.getMeterNumber());
         }
         catch (DataAccessException e) {

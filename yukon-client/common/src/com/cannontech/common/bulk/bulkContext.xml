@@ -61,6 +61,7 @@
         class="com.cannontech.common.bulk.field.impl.AddressBulkField">
 
         <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -90,6 +91,7 @@
         class="com.cannontech.common.bulk.field.impl.DisconnectAddressBulkField">
 
         <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="ALWAYS_PROCESS" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -119,6 +121,7 @@
         class="com.cannontech.common.bulk.field.impl.EnableBulkField">
 
         <property name="massChangable" value="true" />
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -175,6 +178,7 @@
         class="com.cannontech.common.bulk.field.impl.MeterNumberBulkField">
 
         <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -205,6 +209,7 @@
         class="com.cannontech.common.bulk.field.impl.NameBulkField">
 
         <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -234,6 +239,7 @@
         class="com.cannontech.common.bulk.field.impl.RouteBulkField">
 
         <property name="massChangable" value="true" />
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -261,6 +267,7 @@
     <!-- SUBSTATION BULK FIELD 
         <bean id="substationBulkField" parent="bulkFieldBase" class="com.cannontech.common.bulk.field.impl.SubstationBulkField">
         <property name="massChangable" value="true"/>
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
         
         <property name="inputSource">
         <bean class="com.cannontech.web.input.InputBase">
@@ -287,6 +294,7 @@
     <bean id="deviceTypeBulkField" parent="bulkFieldBase"
         class="com.cannontech.common.bulk.field.impl.DeviceTypeBulkField">
         <property name="massChangable" value="true" />
+        <property name="blankHandlingEnum" value="IGNORE_BLANK" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -306,6 +314,7 @@
         parent="bulkFieldProcessorBase"
         class="com.cannontech.common.bulk.field.processor.impl.DeviceTypeBulkFieldProcessor">
         <property name="paoDao" ref="paoDao" />
+        <property name="paoGroupsWrapper" ref="paoGroupsWrapper" />
         <property name="deviceDefinitionService" ref="deviceService" />
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
         <property name="updateableFields">
@@ -319,6 +328,7 @@
     <bean id="deviceIdBulkField" parent="bulkFieldBase"
         class="com.cannontech.common.bulk.field.impl.DeviceIdBulkField">
         <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="NOT_APPLICABLE" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">
@@ -338,6 +348,7 @@
     <bean id="templateBulkField" parent="bulkFieldBase"
         class="com.cannontech.common.bulk.field.impl.TemplateBulkField">
         <property name="massChangable" value="false" />
+        <property name="blankHandlingEnum" value="NOT_APPLICABLE" />
 
         <property name="inputSource">
             <bean class="com.cannontech.web.input.InputBase">

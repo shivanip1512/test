@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import org.springframework.beans.BeanWrapper;
 import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.PropertyAccessorFactory;
 
 import com.cannontech.web.input.type.InputType;
 
@@ -18,7 +19,7 @@ public class InputUtil {
         for (Entry<String, ? extends InputSource<?>> entry : inputs.entrySet()) {
             String inputProperty = properties.get(entry.getKey());
             if (inputProperty != null) {
-                BeanWrapper beanWrapper = new BeanWrapperImpl(task);
+                BeanWrapper beanWrapper = PropertyAccessorFactory.forBeanPropertyAccess(task);
                 InputType<?> type = entry.getValue().getType();
                 PropertyEditor propertyEditor = type.getPropertyEditor();
                 beanWrapper.registerCustomEditor(type.getTypeClass(), propertyEditor);

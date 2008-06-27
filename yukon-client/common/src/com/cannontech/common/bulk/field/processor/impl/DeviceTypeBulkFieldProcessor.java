@@ -14,10 +14,12 @@ import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public class DeviceTypeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
 
     private PaoDao paoDao = null;
+    private PaoGroupsWrapper paoGroupsWrapper = null;
     private DeviceDefinitionService deviceDefinitionService = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
     
@@ -27,7 +29,12 @@ public class DeviceTypeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor 
         try {
             
             // get the definition for the type selected
-            DeviceDefinition selectedDeviceDefinition = deviceDefinitionDao.getDeviceDefinition(value.getDeviceType());
+            int deviceType = paoGroupsWrapper.getDeviceType(value.getDeviceType());
+            if (deviceType == device.getType()) {
+                return;
+            }
+            
+            DeviceDefinition selectedDeviceDefinition = deviceDefinitionDao.getDeviceDefinition(deviceType);
             
             // get set of all definition applicable for this device to be changed to
             Set<DeviceDefinition> applicableDefinitions = deviceDefinitionService.getChangeableDevices(device);
@@ -43,6 +50,9 @@ public class DeviceTypeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor 
                 deviceDefinitionService.changeDeviceType(device, selectedDeviceDefinition);
             }
         
+        }
+        catch (IllegalArgumentException e) {
+            throw new ProcessingException("Invalid device type: " + value.getDeviceType());
         } catch (DataRetrievalFailureException e) {
             throw new ProcessingException("Could not find device with id: " + device.getDeviceId(),
                                           e);
@@ -54,6 +64,11 @@ public class DeviceTypeBulkFieldProcessor extends BulkYukonDeviceFieldProcessor 
     @Required
     public void setDeviceDefinitionService(DeviceDefinitionService deviceDefinitionService) {
         this.deviceDefinitionService = deviceDefinitionService;
+    }
+    
+    @Required
+    public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
+        this.paoGroupsWrapper = paoGroupsWrapper;
     }
     
     @Required

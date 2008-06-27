@@ -1,9 +1,8 @@
 package com.cannontech.common.bulk.service.impl;
 
 import java.io.IOException;
-import java.util.HashSet;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -56,7 +55,7 @@ public class BulkUpdateServiceImpl extends BaseBulkService implements BulkUpdate
             }
             
             // remove identifier, set on info
-            Set<BulkFieldColumnHeader> updateBulkFieldColumnHeaders = new HashSet<BulkFieldColumnHeader>(headerColumnList);
+            List<BulkFieldColumnHeader> updateBulkFieldColumnHeaders = new ArrayList<BulkFieldColumnHeader>(headerColumnList);
             updateBulkFieldColumnHeaders.remove(identifierColunHeader);
             result.setIdentifierBulkFieldColumnHeader(identifierColunHeader);
             

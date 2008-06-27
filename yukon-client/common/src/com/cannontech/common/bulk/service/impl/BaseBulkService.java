@@ -12,6 +12,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.apache.commons.lang.StringUtils;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.PropertyAccessorFactory;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.core.io.FileSystemResource;
@@ -26,6 +28,7 @@ import com.cannontech.common.bulk.field.BulkFieldService;
 import com.cannontech.common.bulk.field.impl.BulkYukonDeviceFieldFactory;
 import com.cannontech.common.bulk.field.impl.UpdateableDevice;
 import com.cannontech.common.bulk.field.impl.YukonDeviceDto;
+import com.cannontech.common.bulk.field.processor.BlankHandlingEnum;
 import com.cannontech.common.bulk.field.processor.impl.BulkYukonDeviceFieldProcessor;
 import com.cannontech.common.bulk.iterator.CsvReaderIterator;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
@@ -65,7 +68,7 @@ public abstract class BaseBulkService {
     private RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache = null;
     private TemporaryDeviceGroupService temporaryDeviceGroupService = null;
 
-    protected boolean checkForDuplicates(Set<BulkFieldColumnHeader> headerColumnSet, ParsedBulkFileInfo result) {
+    protected boolean checkForDuplicates(List<BulkFieldColumnHeader> headerColumnSet, ParsedBulkFileInfo result) {
         boolean foundDuplicate = false;
         Set<BulkFieldColumnHeader> duplicateCheckSet = new HashSet<BulkFieldColumnHeader>();
         for (BulkFieldColumnHeader headerColumn : headerColumnSet) {
@@ -161,23 +164,6 @@ public abstract class BaseBulkService {
         return resultsId;
     }
 
-    protected BulkYukonDeviceFieldProcessor findYukonDeviceFieldProcessor(BulkField<?, YukonDevice> bulkField) {
-
-        Set<BulkField<?, YukonDevice>> requiredSet = new HashSet<BulkField<?, YukonDevice>>(1);
-        requiredSet.add(bulkField);
-
-        // the following is a naive implementation and should be changed when more
-        // complete processors are added
-        List<BulkYukonDeviceFieldProcessor> allBulkFieldProcessors = bulkFieldService.getBulkFieldProcessors();
-        BulkYukonDeviceFieldProcessor bulkFieldProcessor = null;
-        for (BulkYukonDeviceFieldProcessor processor : allBulkFieldProcessors) {
-            if (requiredSet.equals(processor.getUpdatableFields())) {
-                bulkFieldProcessor = processor;
-            }
-        }
-
-        return bulkFieldProcessor;
-    }
 
     protected Map<BulkField<?, YukonDevice>, Integer> getBulkFieldIndexes(FileSystemResource fileResource) throws IOException {
 
@@ -223,14 +209,6 @@ public abstract class BaseBulkService {
 
     protected Processor<UpdateableDevice> getMultiBulkFieldUpdateProcessor(final List<BulkField<?, YukonDevice>> bulkFields) {
 
-        // pre-determine procssor for each field so findYukonDeviceFieldProcessor() is called less often
-        final Map<BulkField<?, YukonDevice>, BulkYukonDeviceFieldProcessor> fieldToProcessorMap = new HashMap<BulkField<?, YukonDevice>, BulkYukonDeviceFieldProcessor>();
-        for (BulkField<?, YukonDevice> bulkField : bulkFields) {
-
-            BulkYukonDeviceFieldProcessor bulkFieldProcessor = findYukonDeviceFieldProcessor(bulkField);
-            fieldToProcessorMap.put(bulkField, bulkFieldProcessor);
-        }
-
         return new SingleProcessor<UpdateableDevice>() {
 
             @Override
@@ -238,12 +216,80 @@ public abstract class BaseBulkService {
 
                 YukonDevice device = updateableDevice.getDevice();
                 YukonDeviceDto deviceDto = updateableDevice.getDeviceDto();
-
-                for (BulkField<?, YukonDevice> bulkField : bulkFields) {
-                    fieldToProcessorMap.get(bulkField).updateField(device, deviceDto);
+                
+                // get list of processors that should get run
+                // takes into account those fields that don't need updating
+                List<BulkYukonDeviceFieldProcessor> bulkFieldProcessors = findYukonDeviceFieldProcessors(updateableDevice, bulkFields);
+                
+                // run processors
+                for (BulkYukonDeviceFieldProcessor bulkFieldProcessor : bulkFieldProcessors) {
+                    bulkFieldProcessor.updateField(device, deviceDto);
                 }
             }
         };
+    }
+
+    //
+    protected List<BulkYukonDeviceFieldProcessor> findYukonDeviceFieldProcessors(UpdateableDevice updateableDevice,
+                                                                                 List<BulkField<?, YukonDevice>> bulkFields) {
+        
+        // dto wraper
+        YukonDeviceDto deviceDto = updateableDevice.getDeviceDto();
+        BeanWrapper dtoAccessor = PropertyAccessorFactory.forBeanPropertyAccess(deviceDto);
+        
+        // narrow list down to just those fields that need to process (i.e. cannot be ignored)
+        // based on their blankness, and BlankHandlingEnum value
+        List<BulkField<?, YukonDevice>> nonIgnorableFields = new ArrayList<BulkField<?,YukonDevice>>();
+        for (BulkField<?, YukonDevice> updateableField : bulkFields) {
+            
+            BlankHandlingEnum fieldBlankHandlingEnum = updateableField.getBlankHandlingEnum();
+            
+            // NOT_APPLICABLE
+            if (fieldBlankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE)) {
+                continue;
+            }
+
+            // IGNORE_BLANK
+            if (fieldBlankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK)) {
+
+                String fieldName = updateableField.getInputSource().getField();
+                Object fieldValue = dtoAccessor.getPropertyValue(fieldName);
+
+                // blank data for IGNORE_BLANK fields has been normalized to null already
+                if (fieldValue == null) {
+                    continue;
+                }
+            }
+            
+            // if you've gotten to this line you are not a special case scuh that you
+            // do not need to be processed
+            nonIgnorableFields.add(updateableField);
+        }
+
+        return findYukonDeviceFieldProcessors(nonIgnorableFields);
+    }
+
+    protected List<BulkYukonDeviceFieldProcessor> findYukonDeviceFieldProcessors(List<BulkField<?, YukonDevice>> bulkFields) {
+        
+        List<BulkYukonDeviceFieldProcessor> processors = new ArrayList<BulkYukonDeviceFieldProcessor>();
+
+        // this guy is kinda dumb, will always be 1-to-1 field-to-processor
+        // will be more complicated if multi-field processors ever exist
+        for (BulkField<?, YukonDevice> updateableField : bulkFields) {
+            
+            // the fields the processor needs to handle
+            Set<BulkField<?, YukonDevice>> requiredSet = new HashSet<BulkField<?, YukonDevice>>(1);
+            requiredSet.add(updateableField);
+            
+            // find that processor
+            for (BulkYukonDeviceFieldProcessor processor : bulkFieldService.getBulkFieldProcessors()) {
+                if (requiredSet.equals(processor.getUpdatableFields())) {
+                    processors.add(processor);
+                    break;
+                }
+            } 
+        }
+        return processors;
     }
 
     protected String runProcess(CsvReaderIterator csvReaderIterator, 
@@ -354,6 +400,17 @@ public abstract class BaseBulkService {
         
                     InputSource<?> inputSource = bulkField.getInputSource();
                     inputList.add(inputSource);
+                    
+                    // normalized blank data
+                    // if its blank and is to be ignored, set to null
+                    // if its blank and blank handling is not applicable, set to null
+                    // otherwise set as-is
+                    BlankHandlingEnum blankHandlingEnum = bulkField.getBlankHandlingEnum();
+                    if (StringUtils.isBlank(fieldStringValue) 
+                            && (blankHandlingEnum.equals(BlankHandlingEnum.IGNORE_BLANK) || 
+                                blankHandlingEnum.equals(BlankHandlingEnum.NOT_APPLICABLE))) {
+                        fieldStringValue = null;
+                    }
         
                     valueMap.put(inputSource.getField(), fieldStringValue);
                 
@@ -377,7 +434,7 @@ public abstract class BaseBulkService {
             
         }
         catch (TypeMismatchException e) {
-            throw new ObjectMappingException("Contains invalid value.", e);
+            throw new ObjectMappingException("Contains invalid value: " + (e.getValue() == null ? "":e.getValue()), e);
         }
 
         return updateableDevice;

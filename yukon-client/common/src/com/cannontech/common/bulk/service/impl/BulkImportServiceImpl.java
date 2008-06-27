@@ -1,6 +1,7 @@
 package com.cannontech.common.bulk.service.impl;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +41,7 @@ public class BulkImportServiceImpl extends BaseBulkService implements BulkImport
             }
 
             // look for duplicates
-            Set<BulkFieldColumnHeader> headerColumnSet = new HashSet<BulkFieldColumnHeader>(headerColumnList);
+            List<BulkFieldColumnHeader> headerColumnSet = new ArrayList<BulkFieldColumnHeader>(headerColumnList);
             boolean foundDuplicate = checkForDuplicates(headerColumnSet, result);
             if (foundDuplicate) {
                 return result;

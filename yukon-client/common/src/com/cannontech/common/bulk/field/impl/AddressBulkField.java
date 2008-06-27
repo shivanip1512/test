@@ -16,7 +16,7 @@ public class AddressBulkField extends BulkFieldBase<String, YukonDevice> {
         
         return addressToYukonDeviceMapper;
     }
-
+    
     @Autowired
     public void setAddressToYukonDeviceMapper(
             AddressToYukonDeviceMapper addressToYukonDeviceMapper) {

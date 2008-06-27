@@ -33,7 +33,7 @@ public class DeviceTypeEnumeratedType extends BaseEnumeratedType<Integer> {
                 
                 InputOption option = new InputOption();
                 option.setText(def.getDisplayName());
-                option.setValue(String.valueOf(def.getType()));
+                option.setValue(def.getDisplayName());
                 optionList.add(option);
             }
         }

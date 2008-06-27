@@ -3,6 +3,7 @@ package com.cannontech.common.bulk.field.impl;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.common.bulk.field.BulkField;
+import com.cannontech.common.bulk.field.processor.BlankHandlingEnum;
 import com.cannontech.common.bulk.mapper.ObjectMapperFactory;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.PaoDao;
@@ -16,6 +17,7 @@ public abstract class BulkFieldBase<T, O> implements BulkField<T, O> {
     protected ObjectMapperFactory objectMapperFactory = null;
     
     private boolean massChangable;
+    private BlankHandlingEnum blankHandlingEnum;
     private InputSource<T> inputSource;
     
     @Override
@@ -55,11 +57,20 @@ public abstract class BulkFieldBase<T, O> implements BulkField<T, O> {
         return massChangable;
     }
     
+    public BlankHandlingEnum getBlankHandlingEnum() {
+        return blankHandlingEnum;
+    }
+    
     @Required
     public void setMassChangable(boolean massChangable) {
         this.massChangable = massChangable;
     }
 
+    @Required
+    public void setBlankHandlingEnum(BlankHandlingEnum blankHandlingEnum) {
+        this.blankHandlingEnum = blankHandlingEnum;
+    }
+    
     @Required
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;

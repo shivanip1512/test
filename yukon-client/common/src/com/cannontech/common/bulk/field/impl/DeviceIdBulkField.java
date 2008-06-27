@@ -8,6 +8,7 @@ import com.cannontech.common.util.ObjectMapper;
 
 
 public class DeviceIdBulkField extends BulkFieldBase<Integer, YukonDevice> {
+    
     private PaoIdToYukonDeviceMapper paoIdToYukonDeviceMapper;
     
     @Autowired

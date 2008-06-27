@@ -16,7 +16,7 @@ public class NameBulkField extends BulkFieldBase<String, YukonDevice> {
         
         return paoNameToYukonDeviceMapper;
     }
-
+    
     @Autowired
     public void setPaoNameToYukonDeviceMapper(
             PaoNameToYukonDeviceMapper paoNameToYukonDeviceMapper) {
