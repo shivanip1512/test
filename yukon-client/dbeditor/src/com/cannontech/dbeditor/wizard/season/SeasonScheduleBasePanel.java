@@ -698,6 +698,19 @@ public boolean isInputValid()
 			        return false;
 			    }
 			}
+			
+			if(nextEndMonth < nextStartMonth) {
+			    // season B jumps the end of the year
+			    if(nextEndMonth > startMonth) {
+			        setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
+                    return false;
+			    }else if(nextEndMonth == startMonth) {
+			        if(nextEndDay >= startDay) {
+			            setErrorString("Rows " + (i + 1) + " and " + (j+ 1) + " contain seasons that overlap.  Seasons can't overlap in a season schedule." );
+	                    return false;
+			        }
+			    }
+			}
 		}
 		
 	}
