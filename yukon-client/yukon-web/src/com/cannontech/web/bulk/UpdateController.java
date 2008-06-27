@@ -45,16 +45,7 @@ public class UpdateController extends MultiActionController {
         ModelAndView mav = new ModelAndView("update/updateUpload.jsp");
         
         // column info
-        Set<BulkFieldColumnHeader> updateableFields = bulkFieldService.getUpdateableBulkFieldColumnHeaders();
-        Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
-        
-        Set<BulkFieldColumnHeader> allFields = new HashSet<BulkFieldColumnHeader>();
-        allFields.addAll(updateableFields);
-        allFields.addAll(identifierFields);
-        
-        mav.addObject("allFields", allFields);
-        Map<BulkFieldColumnHeader, Boolean> identifierFieldsMap = ServletUtil.convertSetToMap(identifierFields);
-        mav.addObject("identifierFieldsMap", identifierFieldsMap);
+        addColumnInfoToMav(mav);
         
         // errors
         String errors = ServletRequestUtils.getStringParameter(request, "fileErrorKeys", "");
@@ -119,17 +110,18 @@ public class UpdateController extends MultiActionController {
         ParsedBulkUpdateFileInfo parsedResult = bulkUpdateService.createParsedBulkUpdateFileInfo(bulkUpdateFileInfo);
         mav.addObject("parsedResult", parsedResult);
         
-        // header errors
+        // has file errors
         if (parsedResult.hasErrors()) {
             
+            // options
             ModelAndView errorMav = new ModelAndView("update/updateUpload.jsp");
             errorMav.addObject("ignoreInvalidCols", bulkUpdateFileInfo.isIgnoreInvalidCols());
             errorMav.addObject("ignoreInvalidIdentifiers", bulkUpdateFileInfo.isIgnoreInvalidIdentifiers());
             
-            Set<BulkFieldColumnHeader> updateableFields = bulkFieldService.getUpdateableBulkFieldColumnHeaders();
-            Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
-            errorMav.addObject("updateableFields", updateableFields);
-            errorMav.addObject("identifierFields", identifierFields);
+            // column info
+            addColumnInfoToMav(errorMav);
+            
+            // errors
             errorMav.addObject("headersErrorResolverList", parsedResult.getErrorResolvers());
             
             return errorMav;
@@ -171,6 +163,21 @@ public class UpdateController extends MultiActionController {
         mav.addObject("bulkUpdateOperationResults", bulkOperationCallbackResults);
 
         return mav;
+    }
+    
+    private void addColumnInfoToMav(ModelAndView mav) {
+        
+        // column info
+        Set<BulkFieldColumnHeader> updateableFields = bulkFieldService.getUpdateableBulkFieldColumnHeaders();
+        Set<BulkFieldColumnHeader> identifierFields = bulkFieldService.getUpdateIdentifierBulkFieldColumnHeaders();
+        
+        Set<BulkFieldColumnHeader> allFields = new HashSet<BulkFieldColumnHeader>();
+        allFields.addAll(updateableFields);
+        allFields.addAll(identifierFields);
+        
+        mav.addObject("allFields", allFields);
+        Map<BulkFieldColumnHeader, Boolean> identifierFieldsMap = ServletUtil.convertSetToMap(identifierFields);
+        mav.addObject("identifierFieldsMap", identifierFieldsMap);
     }
 
     @Required
