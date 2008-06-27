@@ -49,7 +49,8 @@
                     referer = "Inventory.jsp";
                 } else if (src.equalsIgnoreCase("Inventory") || src.equalsIgnoreCase("ResultSet")) {
                     referer = ((CtiNavObject) session.getAttribute(ServletUtils.NAVIGATE)).getPreviousPage();
-                    if (referer == null)
+                    if (referer == null || 
+                       (!(referer.contains("Inventory.jsp") || referer.contains("Filter.jsp"))))
                         referer = "Inventory.jsp";
 
                     if (referer.indexOf("page=") < 0) {
