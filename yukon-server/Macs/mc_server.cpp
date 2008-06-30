@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/mc_server.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2007/03/08 21:56:10 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2008/06/30 21:23:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -771,7 +771,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                 }
 
                 // This goes out to all clients
-                _client_listener.BroadcastMessage(multi);
+                _client_listener.BroadcastMessage(multi, msg->getConnectionHandle());
             }
             else
             {
@@ -780,7 +780,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
                 if( sched != NULL )
                 {
-                    _client_listener.BroadcastMessage( sched->replicateMessage() );
+                    _client_listener.BroadcastMessage( sched->replicateMessage(), msg->getConnectionHandle() );
                 }
             }
             break;
@@ -854,7 +854,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
                    errorMsg->setInfo("An error occured reading the script");
                }
 
-               _client_listener.BroadcastMessage( script.replicateMessage() );
+               _client_listener.BroadcastMessage( script.replicateMessage(), msg->getConnectionHandle() );
            }
             break;
 
@@ -1030,7 +1030,7 @@ bool CtiMCServer::processMessage(CtiMessage* msg)
 
    if( errorMsg != NULL )
    {
-       _client_listener.BroadcastMessage(errorMsg);
+       _client_listener.BroadcastMessage(errorMsg, msg->getConnectionHandle());
    }
 
    return ret_val;

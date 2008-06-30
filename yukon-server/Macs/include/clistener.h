@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/INCLUDE/clistener.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/12/10 23:02:57 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/06/30 21:23:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -49,7 +49,7 @@ public:
     ~CtiMCClientListener();
 
     // Send a message to all attached clients
-    void BroadcastMessage(CtiMessage* msg);
+    void BroadcastMessage(CtiMessage* msg, void *Connection = NULL);
 
     // check all out connections to see if they
     // are still good

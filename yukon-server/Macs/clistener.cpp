@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/MACS/clistener.cpp-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2008/06/25 17:08:41 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/06/30 21:23:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -95,7 +95,7 @@ void CtiMCClientListener::interrupt(int id)
 
 ----------------------------------------------------------------------------*/
 
-void CtiMCClientListener::BroadcastMessage(CtiMessage* msg)
+void CtiMCClientListener::BroadcastMessage(CtiMessage* msg, void *ConnectionPtr)
 {
     RWMutexLock::LockGuard conn_guard( _connmutex );
 
@@ -104,7 +104,7 @@ void CtiMCClientListener::BroadcastMessage(CtiMessage* msg)
         for( int i = 0; i < _connections.size(); i++ )
         {
             // replicate message makes a deep copy
-            if( _connections[i]->isValid() )
+            if( _connections[i]->isValid() && (ConnectionPtr == NULL || _connections[i] == ConnectionPtr) )
             {
                 CtiMessage* replicated_msg = msg->replicateMessage();
 
@@ -188,6 +188,7 @@ void CtiMCClientListener::update(CtiObservable& observable)
             CtiMessage* msg;
             while( (msg = (CtiMessage*) conn.read(0)) != NULL )
             {
+                msg->setConnectionHandle((void *)&conn);
                 _conn_in_queue->putQueue(msg);
             }
         }
