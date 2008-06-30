@@ -17,6 +17,10 @@
 		 ? 1 : Integer.parseInt(request.getParameter("page"))) );
 %>
 <script type="text/javascript">
+window.onload = function() {
+	init();
+}
+
 function dispStatusMsg(msgStr) 
 {
   status=msgStr;
