@@ -1,19 +1,15 @@
 // initiate profile collection
 function peakDayProfile_start(divId, profileRequestOrigin) {
     
-    $(divId + '_startImg').src = '/WebConfig/yukon/Icons/indicator_arrows.gif';
-    $(divId + '_startImg').show();
     $(divId + '_startButton').disable();
         
     var onStartFailure = function(transport, json) {
         $(divId + '_startButton').enable();
-        $(divId + '_startImg').hide();
         alert(json['errorMsg']);
     };
 
     var onStartComplete = function(transport, json) {
         $(divId + '_startButton').enable();
-        $(divId + '_startImg').hide();
     };
 
     var args = {};

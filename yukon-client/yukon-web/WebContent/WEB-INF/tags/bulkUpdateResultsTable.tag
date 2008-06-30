@@ -24,7 +24,7 @@
             $('percentComplete${resultsId}').innerHTML = percentDone + '%';  
             
             if (completedLines < lineCount) {
-                $('progressDescription${resultsId}').innerHTML = 'In Progress...   ';
+                $('progressDescription${resultsId}').innerHTML = 'Running...   ';
             }
             else {
                 $('progressDescription${resultsId}').innerHTML = 'Complete.   ';

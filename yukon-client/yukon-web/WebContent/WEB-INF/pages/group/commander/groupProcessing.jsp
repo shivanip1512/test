@@ -81,6 +81,10 @@
                   
             <%-- EXECUTE BUTTON --%>
             <tags:slowInput myFormId="groupCommanderForm" label="Execute" labelBusy="Execute" />
+            
+            <br><br>
+            <span class="largeBoldLabel">Recent Results: </span> 
+            <a href="/spring/group/commander/resultList">View</a>
     			 
     		</form>
     	</div>

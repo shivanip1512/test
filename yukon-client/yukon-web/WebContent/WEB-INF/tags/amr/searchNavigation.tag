@@ -98,11 +98,12 @@
 		</td>
         
         <td>
-            <form method="get" action="/spring/bulk/collectionActions">
-            <input type="submit" name="submit" value="Perform Collection Action">
-    
-            <cti:deviceCollection deviceCollection="${deviceCollection}" />
-            </form>
+            <span class="navLink">
+                <cti:link href="/spring/bulk/collectionActions" key="yukon.web.metering.deviceSelection.performCollectionAction">
+                    <cti:mapParam value="${deviceCollection.collectionParameters}"/>
+                </cti:link>
+            </span>
+        
         </td>
         
 		<td align="right">

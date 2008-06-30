@@ -71,7 +71,7 @@
 <entry key="yukon.web.deviceGroups.editor.operationsContainer.removeFromGroupDescription">Remove devices in this group from a another Device Group.</entry>
 
 <entry key="yukon.web.deviceGroups.editor.membersContainer.membersLabel">Members:</entry>
-<entry key="yukon.web.deviceGroups.editor.membersContainer.noChildGroups">No child groups</entry>
+<entry key="yukon.web.deviceGroups.editor.membersContainer.noChildGroups">No Sub Groups</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.noDevices">No devices</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.cannotDeleteGroupLinkTitle">Cannot Delete Group</entry>
 <entry key="yukon.web.deviceGroups.editor.membersContainer.groupContainsCountLabel">This group contains {0} devices.</entry>

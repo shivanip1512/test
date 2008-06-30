@@ -342,7 +342,9 @@
     
     </td>
     
-    
+    <td>
+        <div style="width:20px;"></div>
+    </td>
     
     <%-- RIGHT SIDE: METER INFO WIDGET, PENDING COLLECTIONS WIDGET --%>
     <td>

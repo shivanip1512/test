@@ -81,6 +81,11 @@
             newOpt.text = optVal;
        });
     }
+    
+    function alertProfileCollectionStarted() {
+    
+        alert('Profile Data Collection has been requested and will begin shortly.\n\nSee the Pending Profile Collections area for status updates.\n ');
+    }
 
 </script>
 
@@ -131,8 +136,7 @@
         </td>
         
         <td>
-            <input type="button" id="${id}_startButton" value="Start" onclick="peakDayProfile_start('${id}', '${profileRequestOrigin}')">
-            <img id="${id}_startImg" style="display:none;" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>">
+            <input type="button" id="${id}_startButton" value="Start" onclick="peakDayProfile_start('${id}', '${profileRequestOrigin}');alertProfileCollectionStarted();">
         </td>
         
     </tr>

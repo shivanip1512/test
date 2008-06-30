@@ -205,7 +205,7 @@
         <li>Files must contain a header row with valid column idenifiers as listed in the table below.</li><br>
         <li>The first column is always the <i><b>Idendifier Column</b></i>. <br>It will be used to determine which device is to be updated.</li><br>
         <li>One of the following column idenifiers must be used in the <i><b>Idendifier Column</b></i>: <br><b>ADDRESS</b>, <b>METER_NUMBER</b>, <b>NAME</b>, or <b>DEVICE_ID</b>.</li><br>
-        <li>Leaving a field blank indicates that the field should not be changed. <br>Choosen columns should be included for each row even if they contain no value.</li><br>
+        <li>Leaving a field blank indicates that the field should not be changed. <br>Chosen columns should be included for each row even if they contain no value.</li><br>
     ]]></entry>
     <entry key="yukon.common.device.bulk.updateUpload.sampleFilesLabel">Sample Files</entry>
     
@@ -234,7 +234,7 @@
     <entry key="yukon.common.device.bulk.columnHeader.update.description.ROUTE">Name of route to change to.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.ROUTE">Invalid route names will not cause a change.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.description.DEVICE_TYPE">Device type to change to.</entry>
-    <entry key="yukon.common.device.bulk.columnHeader.update.instruction.DEVICE_TYPE">Device type will not change if type choosen type is not valid for the device.</entry>
+    <entry key="yukon.common.device.bulk.columnHeader.update.instruction.DEVICE_TYPE">Device type will not change if type chosen type is not valid for the device.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.description.DEVICE_ID">Internal system ID for the device.</entry>
     <entry key="yukon.common.device.bulk.columnHeader.update.instruction.DEVICE_ID">Cannot be updated, use only as an identifier column.</entry>
     
