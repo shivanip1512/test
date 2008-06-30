@@ -19,6 +19,7 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.FILE
 import static com.cannontech.database.data.schedule.script.ScriptParameters.GROUP_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.GROUP_TYPE_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_FLAG_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_TYPE_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.MAX_RETRY_HOURS_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.MISSED_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.NOTIFICATION_FLAG_PARAM;
@@ -34,7 +35,6 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRI
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SUCCESS_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.TOU_RATE_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_TYPE_PARAM;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -44,10 +44,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.device.groups.service.FixedDeviceGroups;
+import com.cannontech.common.util.CtiUtilities;
 
 /**
  * @author stacey
@@ -74,8 +76,11 @@ public class ScriptTemplate {
     //VERY CUSTOM, string command to Read Frozen 
     public static final String READ_FROZEN_ALPHA_COMMAND_STRING = "putconfig emetcon ied class 72 02";
     public static final String READ_FROZEN_S4_COMMAND_STRING = "putconfig emetcon ied class 0 1";
-
     
+    // build safe filepath to yukon dir to use as default location for script/billing file
+    private final String[] exportBaseFilePathParts = {CtiUtilities.getYukonBase(), "server", "export"};
+    private final String exportBaseFilePath = StringUtils.join(exportBaseFilePathParts, System.getProperty("file.separator"));
+
     //Map of Param<String> to VALUE<String>, param Strings are listed below
     private Map<ScriptParameters, String> paramToValueMap = null;
     //Map of Param<String> to DESCRIPTION<String>, param Strings are listed below
@@ -90,7 +95,7 @@ public class ScriptTemplate {
         paramToValueMap.put(GROUP_NAME_PARAM, "");
         paramToValueMap.put(GROUP_TYPE_PARAM, "group"); // this isn't so much a group as a keyword now
         paramToValueMap.put(PORTER_TIMEOUT_PARAM, "1800");
-        paramToValueMap.put(FILE_PATH_PARAM, "C:/yukon/server/export/");
+        paramToValueMap.put(FILE_PATH_PARAM, exportBaseFilePath);
         paramToValueMap.put(MISSED_FILE_NAME_PARAM, "Missed.txt");
         paramToValueMap.put(SUCCESS_FILE_NAME_PARAM, "Success.txt");
         //Notification parameters
@@ -105,7 +110,7 @@ public class ScriptTemplate {
         //Billing parameters
         paramToValueMap.put(BILLING_FLAG_PARAM, "false");
         paramToValueMap.put(BILLING_FILE_NAME_PARAM, "Billing.txt");
-        paramToValueMap.put(BILLING_FILE_PATH_PARAM, "C:/yukon/server/export/");
+        paramToValueMap.put(BILLING_FILE_PATH_PARAM, exportBaseFilePath);
         paramToValueMap.put(BILLING_FORMAT_PARAM, "none");
         paramToValueMap.put(BILLING_GROUP_NAME_PARAM, "");
         paramToValueMap.put(BILLING_GROUP_TYPE_PARAM, "group"); // this isn't so much a group as a keyword now
