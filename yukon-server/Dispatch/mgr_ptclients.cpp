@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.30 $
-* DATE         :  $Date: 2008/06/05 17:53:04 $
+* REVISION     :  $Revision: 1.31 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,6 +27,10 @@
 #include "msg_pcreturn.h"
 #include "msg_signal.h"
 #include "pt_dyn_dispatch.h"
+#include "pt_analog.h"
+#include "pt_accum.h"
+#include "pt_status.h"
+
 
 #include "con_mgr_vg.h"
 #include "pointdefs.h"
@@ -101,16 +105,10 @@ void verifyInitialDynamicData(CtiPointSPtr &pTempPoint)
             pDyn->getDispatch().setTags(statictags);
             pDyn->getDispatch().setDirty( TRUE );                           // Make it update if it doesn't get reloaded!
 
-            if(pDyn->getAttachment() == NULL)
-            {
-                pDyn->setAttachment((VOID*)(CTIDBG_new CtiPointConnection));
-            }
-
             pTempPoint->setDynamic(pDyn);
         }
     }
-    else
-    {
+    else   {
         UINT statictags = pDyn->getDispatch().getTags();
         pTempPoint->adjustStaticTags(statictags);
 
@@ -141,6 +139,8 @@ void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void
 
     Inherited::refreshList(testFunc, arg, pntID, paoID);                // Load all points in the system
     Inherited::refreshAlarming(pntID, paoID);
+    refreshReasonabilityLimits(pntID);
+    refreshPointLimits(pntID);
 
     if(pntID != 0)
     {
@@ -272,28 +272,42 @@ int CtiPointClientManager::InsertConnectionManager(CtiServer::ptr_type CM, const
                         }
                     }
 
-                    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)temp->getDynamic();
-
-                    if(pDyn != NULL)
+                    if(aReg.getFlags() & REG_REMOVE_POINTS)
                     {
-                        if(pDyn->getAttachment() != NULL)
+                        PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
+                        if(iter != _pointConnectionMap.end())
                         {
-                            if(aReg.getFlags() & REG_REMOVE_POINTS)
+                            iter->second.RemoveConnectionManager(CM);
+                            if(iter->second.IsEmpty())
                             {
-                                ((CtiPointConnection*)(pDyn->getAttachment()))->RemoveConnectionManager(CM);
-                                if( conIter != _conMgrPointMap.end() )
-                                {
-                                    conIter->second.erase(temp->getPointID());
-                                }
+                                _pointConnectionMap.erase(iter);
                             }
-                            else
+                        }
+
+                        if( conIter != _conMgrPointMap.end() )
+                        {
+                            conIter->second.erase(temp->getPointID());
+                        }
+                    }
+                    else
+                    {
+                        PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
+                        if(iter == _pointConnectionMap.end())
+                        {
+                            pair<PointConnectionMap::iterator, bool> insertResult = _pointConnectionMap.insert(PointConnectionMap::value_type(temp->getPointID(), CtiPointConnection()));
+                            if(insertResult.second == true)
                             {
-                                ((CtiPointConnection*)(pDyn->getAttachment()))->AddConnectionManager(CM);
-                                if( conIter != _conMgrPointMap.end() )
-                                {
-                                    conIter->second.insert(PointMap::value_type(temp->getPointID(), temp));
-                                }
+                                iter = insertResult.first;
                             }
+                        }
+                        if(iter != _pointConnectionMap.end())
+                        {
+                            iter->second.AddConnectionManager(CM);
+                        }
+
+                        if( conIter != _conMgrPointMap.end() )
+                        {
+                            conIter->second.insert(PointMap::value_type(temp->getPointID(), temp));
                         }
                     }
                 }
@@ -321,13 +335,13 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type CM)
 
                 if( temp )
                 {
-                    CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)temp->getDynamic();
-
-                    if(pDyn != NULL)
+                    PointConnectionMap::iterator iter = _pointConnectionMap.find(temp->getPointID());
+                    if(iter != _pointConnectionMap.end())
                     {
-                        if(pDyn->getAttachment() != NULL)
+                        iter->second.RemoveConnectionManager(CM);
+                        if(iter->second.IsEmpty())
                         {
-                            ((CtiPointConnection*)(pDyn->getAttachment()))->RemoveConnectionManager(CM);
+                            _pointConnectionMap.erase(iter);
                         }
                     }
                 }
@@ -500,22 +514,11 @@ CtiPointClientManager::~CtiPointClientManager()
 void CtiPointClientManager::DeleteList(void)
 {
     LockGuard  guard(getMux());
-    spiterator itr = Inherited::begin();
-    spiterator end = Inherited::end();
-
-    for( ;itr != end; itr++)
-    {
-        CtiPointSPtr temp = itr->second;
-
-        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)temp->getDynamic();
-
-        if(pDyn != NULL &&  pDyn->getAttachment() != NULL)
-        {
-            delete ((CtiPointConnection*)(pDyn->getAttachment()));
-        }
-    }
 
     _conMgrPointMap.clear();
+    _pointConnectionMap.clear();
+    _reasonabilityLimits.clear();
+    _limits.clear();
 
     Inherited::ClearList();
 
@@ -601,6 +604,121 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
     }
 }
 
+//Grab reasonability limits from TBL_UOM
+void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID)
+{
+    LockGuard  guard(getMux());
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    CtiTime start, stop;
+    string sql;
+
+    if(DebugLevel & 0x00000001)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Looking for Reasonability limits" << endl;
+    }
+    sql = "select pointid, highreasonabilitylimit, lowreasonabilitylimit from pointunit where "
+          "(highreasonabilitylimit != 1E30 OR lowreasonabilitylimit != -1E30) "
+          "AND highreasonabilitylimit != lowreasonabilitylimit";
+
+    if(pntID)
+    {
+        sql += " AND pointid = " + CtiNumStr(pntID);
+        _reasonabilityLimits.erase(pntID);
+    }
+    else
+    {
+        _reasonabilityLimits.clear();
+    }
+
+    start = start.now();
+    RWDBReader rdr = ExecuteQuery( conn, sql );
+
+    if(DebugLevel & 0x00000001)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
+    }
+
+    int pointid;
+    double highlimit, lowlimit;
+    while( (rdr.status().errorCode() == RWDBStatus::ok) && rdr() )
+    {
+        rdr >> pointid >> highlimit >> lowlimit;
+
+        _reasonabilityLimits.insert(std::make_pair(pointid, std::make_pair(highlimit, lowlimit)));
+    }
+
+    if((stop = stop.now()).seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Reasonability Limits" << endl;
+    }
+
+    if(DebugLevel & 0x00000001)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << CtiTime() << " Done looking for Reasonability Limits" << endl;
+    }
+}
+
+
+void CtiPointClientManager::refreshPointLimits(LONG pntID)
+{
+    LONG        lTemp = 0;
+    CtiTablePointLimit limitTable;
+    string sql;
+
+    LockGuard guard(getMux());
+
+    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
+    RWDBConnection conn = getConnection();
+    RWDBDatabase   db       = conn.database();
+    RWDBReader     rdr;
+    CtiTime         start, stop;
+
+    start = start.now();
+
+    if(pntID != 0)
+    {
+        limitTable.setPointID(pntID);
+        limitTable.setLimitNumber(0);
+        _limits.erase(limitTable);
+        limitTable.setLimitNumber(1);
+        _limits.erase(limitTable);
+    }
+    else
+    {
+        _limits.clear();
+    }
+    if(DebugLevel & 0x00010000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Limits" << endl;
+    }
+    /* Go after the point limits! */
+    CtiTablePointLimit().getSQL( sql, pntID );
+
+    rdr = ExecuteQuery( conn, sql );
+
+    if(DebugLevel & 0x00010000)
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
+    }
+
+    while( rdr() )
+    {
+        limitTable.DecodeDatabaseReader(rdr);
+        _limits.insert(limitTable);
+    }
+
+    if((stop = stop.now()).seconds() - start.seconds() > 5 )
+    {
+        CtiLockGuard<CtiLogger> doubt_guard(dout);
+        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Limits " << endl;
+    }
+}
+
+
+
 //Virtual function, removes all internal references to a single point
 void CtiPointClientManager::removePoint(Inherited::ptr_type pTempCtiPoint)
 {
@@ -631,3 +749,69 @@ CtiPointClientManager::PointMap CtiPointClientManager::getRegistrationMap(LONG m
 }
 
 
+bool CtiPointClientManager::hasReasonabilityLimits(LONG pointid)
+{
+    bool retVal = false;
+    LockGuard guard(getMux());
+
+    if(!_reasonabilityLimits.empty())
+    {
+        if(_reasonabilityLimits.find(pointid) != _reasonabilityLimits.end())
+        {
+            retVal = true;
+        }
+    }
+
+    return retVal;
+}
+
+//Returns pair<HighLimit, LowLimit>
+//returns pair<0, 0> if the limit is invalid.
+pair<DOUBLE, DOUBLE> CtiPointClientManager::getReasonabilityLimits(LONG pointID)
+{
+    pair<DOUBLE, DOUBLE> retVal(0,0);
+    LockGuard guard(getMux());
+
+    if(!_reasonabilityLimits.empty())
+    {
+        ReasonabilityLimitMap::iterator iter;
+        iter = _reasonabilityLimits.find(pointID);
+        if(iter != _reasonabilityLimits.end())
+        {
+            retVal = iter->second;
+        }
+    }
+
+    return retVal;
+}
+
+CtiTablePointLimit CtiPointClientManager::getPointLimit(LONG pointID, LONG limitNum)
+{
+    LockGuard guard(getMux());
+
+    CtiTablePointLimit retVal;
+    retVal.setPointID(pointID);
+    retVal.setLimitNumber(limitNum);
+
+    PointLimitSet::iterator iter = _limits.find(retVal);
+    if(iter != _limits.end())
+    {
+        retVal = *iter;
+    }
+    
+    return retVal;
+}
+
+bool CtiPointClientManager::pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn)
+{
+    bool retVal = false;
+    LockGuard guard(getMux());
+
+    PointConnectionMap::iterator iter = _pointConnectionMap.find(pointID);
+    if(iter != _pointConnectionMap.end())
+    {
+        retVal = iter->second.HasConnection(Conn);
+    }
+
+    return retVal;
+}

@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_analog.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -47,7 +47,7 @@ protected:
    DOUBLE      _multiplier;
    DOUBLE      _dataOffset;
    DOUBLE      _deadband;
-   string   _transducerType;
+   //string   _transducerType;
 
 private:
 
@@ -66,12 +66,12 @@ public:
    DOUBLE      getMultiplier() const;
    DOUBLE      getDataOffset() const;
    DOUBLE      getDeadband() const;
-   string   getTransducerType() const;
+   //string   getTransducerType() const;
 
    CtiTablePointAnalog& setMultiplier(DOUBLE d);
    CtiTablePointAnalog& setDataOffset(DOUBLE d);
    CtiTablePointAnalog& setDeadband(DOUBLE d);
-   CtiTablePointAnalog& setTransducerType(string &str);
+   //CtiTablePointAnalog& setTransducerType(string &str);
 
 };
 #endif // #ifndef __TBL_PT_ANALOG_H__

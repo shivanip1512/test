@@ -43,7 +43,7 @@ protected:
 
     CtiTime   _nextArchiveTime;
     UINT           _tags;
-    UINT           _staleCount;
+    //UINT           _staleCount;
 
     ULONG          _lastAlarmLogID;
 

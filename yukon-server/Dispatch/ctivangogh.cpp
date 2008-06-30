@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.185 $
-* DATE         :  $Date: 2008/04/24 19:41:50 $
+* REVISION     :  $Revision: 1.186 $
+* DATE         :  $Date: 2008/06/30 15:24:28 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2545,28 +2545,7 @@ BOOL CtiVanGogh::isPointDataNewInformation(const CtiPointDataMsg &Msg, CtiDynami
 
 BOOL CtiVanGogh::isConnectionAttachedToMsgPoint(const CtiServer::ptr_type &Conn, const LONG pID)
 {
-    BOOL bStatus = FALSE;
-
-    CtiPointSPtr TempPoint = PointMgr.getEqual(pID);
-
-    if(TempPoint)      // We do know this point..
-    {
-        CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)TempPoint->getDynamic();
-
-        if(pDyn != NULL)
-        {
-            CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
-            if(pPC != NULL)
-            {
-                if( list_contains(pPC->getManagerList(), Conn ) )
-                {
-                    bStatus = TRUE;
-                }
-            }
-        }
-    }
-
-    return bStatus;
+    return PointMgr.pointHasConnection(pID, Conn);;
 }
 
 int CtiVanGogh::processCommErrorMessage(CtiCommErrorHistoryMsg *pMsg)
@@ -2893,31 +2872,99 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 
                 if(pDyn != NULL)
                 {
-                    CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
-                    if(pPC != NULL)
+                    if( ((const CtiVanGoghConnectionManager *)CM.get())->isRegForChangeType(TempPoint->getType()) )
                     {
-                        if( list_contains(pPC->getManagerList(), CM ) || (((const CtiVanGoghConnectionManager *)CM.get())->isRegForChangeType(TempPoint->getType())))
+                        CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
+                                                                           pDyn->getValue(),
+                                                                           pDyn->getQuality(),
+                                                                           TempPoint->getType(),
+                                                                           string(),
+                                                                           pDyn->getDispatch().getTags());
+
+                        if(pDat != NULL)
                         {
-                            CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
-                                                                               pDyn->getValue(),
-                                                                               pDyn->getQuality(),
-                                                                               TempPoint->getType(),
-                                                                               string(),
-                                                                               pDyn->getDispatch().getTags());
-
-                            if(pDat != NULL)
+                            if(flags & REG_TAG_MARKMOA)
                             {
-                                if(flags & REG_TAG_MARKMOA)
-                                {
-                                    pDat->setTags(TAG_POINT_MOA_REPORT);
-                                }
-
-                                // Make the time match the entered time
-                                pDat->setTime( pDyn->getTimeStamp() );
-                                pDat->setSource(DISPATCH_APPLICATION_NAME);
-                                pMulti->getData().push_back(pDat);
+                                pDat->setTags(TAG_POINT_MOA_REPORT);
                             }
+
+                            // Make the time match the entered time
+                            pDat->setTime( pDyn->getTimeStamp() );
+                            pDat->setSource(DISPATCH_APPLICATION_NAME);
+                            pMulti->getData().push_back(pDat);
                         }
+                    }
+                }
+            }
+
+            /*
+             *  Block the MOA into 1000 element multis.
+             */
+            if( pMulti->getCount() >= gConfigParms.getValueAsULong("DISPATCH_MAX_MULTI_MOA", 1000) )
+            {
+                if(gDispatchDebugLevel & DISPATCH_DEBUG_MSGSTOCLIENT)
+                {
+                    {
+                        CtiTime Now;
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << Now << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        dout << Now << " Client Connection " << CM->getClientName() << " on " << CM->getPeer() << endl;
+                    }
+                    pMulti->dump();
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " **** MOA UPLOAD **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                    }
+                }
+
+                if(isFullBoat && isFullBoatAged && pFullBoat)
+                {
+                    // We need to store a copy of this since we are building up our message
+                    pFullBoat->insert(pMulti->replicateMessage());
+                }
+
+                if(CM->WriteConnQue(pMulti, 5000))
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << "**** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << " Connection is having issues : " << CM->getClientName() << " / " << CM->getClientAppId() << endl;
+                }
+
+                pMulti  = CTIDBG_new CtiMultiMsg;
+            }
+        }
+
+        //This is a copy of what happens below....
+        map<LONG, CtiPointWPtr> pointMap = PointMgr.getRegistrationMap(CM->hash(*CM.get()));
+        CtiPointSPtr TempPoint;
+
+        for( map<LONG, CtiPointWPtr>::iterator iter = pointMap.begin(); iter != pointMap.end(); iter++ )
+        {
+            TempPoint = iter->second.lock();
+
+            if( TempPoint )
+            {
+                CtiDynamicPointDispatch *pDyn = (CtiDynamicPointDispatch*)TempPoint->getDynamic();
+
+                if(pDyn != NULL)
+                {
+                    CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
+                                                                           pDyn->getValue(),
+                                                                           pDyn->getQuality(),
+                                                                           TempPoint->getType(),
+                                                                           string(),
+                                                                           pDyn->getDispatch().getTags());
+
+                    if(pDat != NULL)
+                    {
+                        if(flags & REG_TAG_MARKMOA)
+                        {
+                            pDat->setTags(TAG_POINT_MOA_REPORT);
+                        }
+
+                        // Make the time match the entered time
+                        pDat->setTime( pDyn->getTimeStamp() );
+                        pDat->setSource(DISPATCH_APPLICATION_NAME);
+                        pMulti->getData().push_back(pDat);
                     }
                 }
             }
@@ -3039,28 +3086,24 @@ INT CtiVanGogh::postMOAUploadToConnection(CtiServer::ptr_type &CM, int flags)
 
                 if(pDyn != NULL)
                 {
-                    CtiPointConnection *pPC = (CtiPointConnection*)(pDyn->getAttachment());
-                    if(pPC != NULL)
+                    CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
+                                                                           pDyn->getValue(),
+                                                                           pDyn->getQuality(),
+                                                                           TempPoint->getType(),
+                                                                           string(),
+                                                                           pDyn->getDispatch().getTags());
+
+                    if(pDat != NULL)
                     {
-                        CtiPointDataMsg *pDat = CTIDBG_new CtiPointDataMsg(TempPoint->getID(),
-                                                                               pDyn->getValue(),
-                                                                               pDyn->getQuality(),
-                                                                               TempPoint->getType(),
-                                                                               string(),
-                                                                               pDyn->getDispatch().getTags());
-
-                        if(pDat != NULL)
+                        if(flags & REG_TAG_MARKMOA)
                         {
-                            if(flags & REG_TAG_MARKMOA)
-                            {
-                                pDat->setTags(TAG_POINT_MOA_REPORT);
-                            }
-
-                            // Make the time match the entered time
-                            pDat->setTime( pDyn->getTimeStamp() );
-                            pDat->setSource(DISPATCH_APPLICATION_NAME);
-                            pMulti->getData().push_back(pDat);
+                            pDat->setTags(TAG_POINT_MOA_REPORT);
                         }
+
+                        // Make the time match the entered time
+                        pDat->setTime( pDyn->getTimeStamp() );
+                        pDat->setSource(DISPATCH_APPLICATION_NAME);
+                        pMulti->getData().push_back(pDat);
                     }
                 }
             }
@@ -6458,19 +6501,23 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
 {
     int alarm = NORMAL;
     string text;
+    pair<DOUBLE, DOUBLE> limits = PointMgr.getReasonabilityLimits(pointNumeric->getPointID());
+    DOUBLE highLimit = limits.first;
+    DOUBLE lowLimit = limits.second;
 
     try
     {
-        if(pointNumeric->getPointUnits().getHighReasonabilityLimit() != pointNumeric->getPointUnits().getLowReasonabilityLimit() &&       // They must be different.
-           pointNumeric->getPointUnits().getHighReasonabilityLimit() >  pointNumeric->getPointUnits().getLowReasonabilityLimit() )
+        
+        if(highLimit != lowLimit &&       // They must be different.
+           highLimit >  lowLimit )
         {
             // Evaluate High Limit
-            if(pointNumeric->getPointUnits().getHighReasonabilityLimit() < MAX_HIGH_REASONABILITY)  // Is the reasonability reasonable?
+            if(highLimit < MAX_HIGH_REASONABILITY)  // Is the reasonability reasonable?
             {
                 alarm = CtiTablePointAlarming::highReasonability;
                 double val = pData->getValue();
 
-                if(val > pointNumeric->getPointUnits().getHighReasonabilityLimit())
+                if(val > highLimit)
                 {
                     pData->setValue( pDyn->getValue() );          // Value of the CtiPointDataMsg must be be modified.
                     pData->setQuality( UnreasonableQuality );
@@ -6479,7 +6526,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                     {
                         {
                             char tstr[120];
-                            _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded High. %.3f > %.3f", val, pointNumeric->getPointUnits().getHighReasonabilityLimit());
+                            _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded High. %.3f > %.3f", val, highLimit);
                             text = string(tstr);
                         }
 
@@ -6511,12 +6558,12 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                 }
             }
 
-            if(pointNumeric->getPointUnits().getLowReasonabilityLimit() > MIN_LOW_REASONABILITY)  // Is the reasonability reasonable?
+            if(lowLimit > MIN_LOW_REASONABILITY)  // Is the reasonability reasonable?
             {
                 alarm = CtiTablePointAlarming::lowReasonability;
                 double val = pData->getValue();
 
-                if(val < pointNumeric->getPointUnits().getLowReasonabilityLimit())
+                if(val < lowLimit)
                 {
                     pData->setValue( pDyn->getValue() );          // Value of the CtiPointDataMsg must be be modified.
                     pData->setQuality( UnreasonableQuality );
@@ -6525,7 +6572,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
                     {
                         {
                             char tstr[120];
-                            _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded Low. %.3f < %.3f", val, pointNumeric->getPointUnits().getLowReasonabilityLimit());
+                            _snprintf(tstr, sizeof(tstr), "Reasonability Limit Exceeded Low. %.3f < %.3f", val, lowLimit);
                             text = string(tstr);
                         }
 
@@ -6640,22 +6687,25 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
 
     try
     {
-        if(pointNumeric->limitStateCheck(alarm, limitnumber, val, exceeds))
+        CtiTablePointLimit limit;
+        limit = PointMgr.getPointLimit(pointNumeric->getPointID(), limitnumber);
+
+        if(limit.getLowLimit() != -DBL_MAX && limit.getHighLimit() != DBL_MAX && limitStateCheck(alarm, limit, val, exceeds))
         {
             if(!_signalManager.isAlarmed(pointNumeric->getID(), alarm) && !pDyn->isConditionActive(alarm))
             {
-                INT duration = pointNumeric->getLimit(limitnumber).getLimitDuration();
+                INT duration = limit.getLimitDuration();
 
                 if(exceeds == LIMIT_EXCEEDS_LO )
                 {
                     char tstr[120];
                     if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
                     {
-                        _snprintf(tstr, sizeof(tstr), "Low Limit %d Exceeded. %.3f < %.3f", alarm - CtiTablePointAlarming::limitLow0 + 1, val, pointNumeric->getLowLimit(limitnumber));
+                        _snprintf(tstr, sizeof(tstr), "Low Limit %d Exceeded. %.3f < %.3f", alarm - CtiTablePointAlarming::limitLow0 + 1, val, limit.getLowLimit());
                     }
                     else
                     {
-                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded Low. %.3f < %.3f", limitnumber+1, val, pointNumeric->getLowLimit(limitnumber));
+                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded Low. %.3f < %.3f", limitnumber+1, val, limit.getLowLimit());
                     }
                     text = string(tstr);
                 }
@@ -6664,18 +6714,18 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
                     char tstr[120];
                     if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
                     {
-                        _snprintf(tstr, sizeof(tstr), "High Limit %d Exceeded. %.3f > %.3f", alarm - CtiTablePointAlarming::limitHigh0 + 1, val, pointNumeric->getHighLimit(limitnumber));
+                        _snprintf(tstr, sizeof(tstr), "High Limit %d Exceeded. %.3f > %.3f", alarm - CtiTablePointAlarming::limitHigh0 + 1, val, limit.getHighLimit());
                     }
                     else
                     {
-                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded High. %.3f > %.3f", limitnumber+1, val, pointNumeric->getHighLimit(limitnumber));
+                        _snprintf(tstr, sizeof(tstr), "Limit %d Exceeded High. %.3f > %.3f", limitnumber+1, val, limit.getHighLimit());
                     }
                     text = string(tstr);
                 }
                 else if(exceeds == LIMIT_SETUP_ERROR)
                 {
                     char tstr[120];
-                    _snprintf(tstr, sizeof(tstr), "Limit %d Invalid Setup. Is %.3f < %.3f < %.3f?", limitnumber+1, pointNumeric->getLowLimit(limitnumber), val, pointNumeric->getHighLimit(limitnumber));
+                    _snprintf(tstr, sizeof(tstr), "Limit %d Invalid Setup. Is %.3f < %.3f < %.3f?", limitnumber+1, limit.getLowLimit(), val, limit.getHighLimit());
                     text = string(tstr);
                     CtiLockGuard<CtiLogger> doubt_guard(dout);
                     dout << CtiTime() << " **** Checkpoint **** Invalid limit setup" << __FILE__ << " (" << __LINE__ << ")" << endl;
@@ -6729,7 +6779,7 @@ void CtiVanGogh::checkNumericLimits(int alarm, CtiPointDataMsg *pData, CtiMultiW
         }
         else
         {
-            if( pointNumeric->getLowLimit(limitnumber) != -DBL_MAX && pointNumeric->getHighLimit(limitnumber) != DBL_MAX )    // No limits set, no limits can be exceeded!
+            if( limit.getLowLimit() != -DBL_MAX && limit.getHighLimit() != DBL_MAX )    // No limits set, no limits can be exceeded!
             {
                 // Remove any possible pending limit violator.
                 CtiPendable *pPend = CTIDBG_new CtiPendable(pData->getId(), CtiPendable::CtiPendableAction_RemoveLimit);
@@ -8421,3 +8471,57 @@ void CtiVanGogh::checkForStalePoints(CtiMultiWrapper &aWrap)
         }
     }
 }
+
+// Takes a numeric alarm and the id of the limit and checks for exceeding the limits
+// This currently assumes that you know the limitID, if not it could be changed to call
+// GetNumericStateLimitFromHighLow
+bool CtiVanGogh::limitStateCheck( const int alarm, CtiTablePointLimit &limit, double val, int &direction)
+{
+   direction = LIMIT_IN_RANGE;
+
+   if(limit.getLowLimit() >= limit.getHighLimit())
+   {
+       direction = LIMIT_SETUP_ERROR;
+   }
+   else if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
+   {
+       switch(alarm)
+       {
+           case CtiTablePointAlarming::limitLow0:
+           case CtiTablePointAlarming::limitLow1:
+           {
+               if( val < limit.getLowLimit() )
+               {
+                   direction = LIMIT_EXCEEDS_LO;
+               }
+               break;
+           }
+           case CtiTablePointAlarming::limitHigh0:
+           case CtiTablePointAlarming::limitHigh1:
+           {
+               if( val > limit.getHighLimit() )
+               {
+                   direction = LIMIT_EXCEEDS_HI;
+               }
+               break;
+           }
+       }
+   }
+   else
+   {
+       if( val < limit.getLowLimit() )
+       {
+          // Lo limit has been breached!
+          direction = LIMIT_EXCEEDS_LO;
+       }
+       else if( limit.getHighLimit() < val )
+       {
+          // Hi limit has been breached!
+           direction = LIMIT_EXCEEDS_HI;
+       }
+   }
+
+
+   return (direction != LIMIT_IN_RANGE);
+}
+

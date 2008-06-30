@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_limit.h-arc  $
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2005/12/20 17:16:08 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -41,6 +41,10 @@
 
 #include "pointtypes.h"
 
+#define  LIMIT_IN_RANGE    0
+#define  LIMIT_EXCEEDS_LO  1
+#define  LIMIT_EXCEEDS_HI  2
+#define  LIMIT_SETUP_ERROR 3
 
 class IM_EX_CTIYUKONDB CtiTablePointLimit : public CtiMemDBObject
 {
@@ -62,7 +66,9 @@ public:
    virtual ~CtiTablePointLimit();
 
 
-   CtiTablePointLimit& operator=(const CtiTablePointLimit& aRef);
+   CtiTablePointLimit& operator=(const CtiTablePointLimit &aRef);
+   bool operator<(const CtiTablePointLimit &aRef) const;
+   bool operator==(const CtiTablePointLimit &rhs) const;
 
    INT getLimitNumber() const;
    DOUBLE getHighLimit() const;
@@ -78,7 +84,7 @@ public:
    CtiTablePointLimit& setLimitDuration(const INT aInt);
 
    static string getTableName();
-   static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
+   static void getSQL(string &sql, LONG pointID);
    void DecodeDatabaseReader(RWDBReader &rdr);
    void dump() const;
 };

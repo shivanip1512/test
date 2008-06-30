@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ptconnect.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/11/12 16:47:40 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,8 @@ class IM_EX_CTIVANGOGH CtiPointConnection : public RWMonitor< RWRecursiveLock< R
 protected:
 
    // Vector of managers who care about this point.
-   list< CtiServer::ptr_type >   ConnectionManagerCollection;
+   typedef set< CtiServer::ptr_type > CollectionType;
+   CollectionType ConnectionManagerCollection;
 
 public:
 
@@ -47,11 +48,12 @@ public:
    void AddConnectionManager(CtiServer::ptr_type cm);
    void RemoveConnectionManager(CtiServer::ptr_type cm);
    int PostPointChangeToConnections(const CtiPointDataMsg& Msg);
-
+   bool HasConnection(const CtiServer::ptr_type cm);
+   bool CtiPointConnection::IsEmpty();
    CtiPointConnection& operator=(const CtiPointConnection &aRef);
 
-   list< CtiServer::ptr_type >& getManagerList();
-   list< CtiServer::ptr_type >  getManagerList() const;
+   CollectionType& getManagerList();
+   CollectionType  getManagerList() const;
 };
 
 #endif // __PTCONNECT_H__

@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/09/28 15:38:00 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -34,7 +34,7 @@ CtiTablePointAlarming& CtiTablePointAlarming::operator=(const CtiTablePointAlarm
 {
     if(this != &aRef)
     {
-        setPointID( aRef.getPointID() );
+        //setPointID( aRef.getPointID() );
 
         for(int i = 0; i < ALARM_STATE_SIZE; i++)
         {
@@ -136,10 +136,10 @@ string CtiTablePointAlarming::excludeAsString( )
 }
 
 
-LONG CtiTablePointAlarming::getPointID() const
+/*LONG CtiTablePointAlarming::getPointID() const
 {
     return _pointID;
-}
+}*/
 
 LONG CtiTablePointAlarming::getRecipientID() const
 {
@@ -173,11 +173,11 @@ BOOL CtiTablePointAlarming::getNotifyOnClear() const
     return _notifyOnClear;
 }
 
-CtiTablePointAlarming& CtiTablePointAlarming::setPointID( const LONG &aLong )
+/*CtiTablePointAlarming& CtiTablePointAlarming::setPointID( const LONG &aLong )
 {
     _pointID = aLong;
     return *this;
-}
+}*/
 
 CtiTablePointAlarming& CtiTablePointAlarming::setRecipientID( const LONG &aLong )
 {
@@ -239,7 +239,7 @@ string CtiTablePointAlarming::getTableName()
     return string("PointAlarming");
 }
 
-RWDBStatus CtiTablePointAlarming::Insert()
+/*RWDBStatus CtiTablePointAlarming::Insert()
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -280,9 +280,9 @@ RWDBStatus CtiTablePointAlarming::Update()
     ExecuteUpdater(conn,updater,__FILE__,__LINE__);
 
     return updater.status();
-}
+}*/
 
-RWDBStatus CtiTablePointAlarming::Restore()
+/*RWDBStatus CtiTablePointAlarming::Restore()
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -302,19 +302,16 @@ RWDBStatus CtiTablePointAlarming::Restore()
 
     RWDBReader reader = selector.reader( conn );
 
-    /*
-     *  If we are in the database, we reload and ARE NOT dirty... otherwise, we are dirty and need to be
-     *  written into the database
-     */
+
     if( reader() )
     {
         DecodeDatabaseReader( reader );
     }
 
     return reader.status();
-}
+}*/
 
-RWDBStatus CtiTablePointAlarming::Delete()
+/*RWDBStatus CtiTablePointAlarming::Delete()
 {
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -325,7 +322,7 @@ RWDBStatus CtiTablePointAlarming::Delete()
     deleter.where( table["pointid"] == getPointID() );
 
     return deleter.execute( conn ).status();
-}
+}*/
 
 void CtiTablePointAlarming::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {

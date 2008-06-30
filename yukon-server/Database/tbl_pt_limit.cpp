@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/09/28 15:38:00 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,22 +91,15 @@ CtiTablePointLimit& CtiTablePointLimit::setLowLimit(DOUBLE d)
    return *this;
 }
 
-void CtiTablePointLimit::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
+void CtiTablePointLimit::getSQL(string &sql, LONG pointID)
 {
-   keyTable =  db.table("Point");
-   RWDBTable tbl = db.table(getTableName().c_str() );
 
-   selector <<
-      keyTable["pointid"] <<
-      tbl["limitnumber"] <<
-      tbl["highlimit"] <<
-      tbl["lowlimit"] <<
-      tbl["limitduration"];// <<
+   sql = "select pointid, limitnumber, highlimit, lowlimit, limitduration from pointlimits";
 
-   selector.from(keyTable);
-   selector.from(tbl);
-
-   selector.where( selector.where() && keyTable["pointid"] == tbl["pointid"] );
+   if(pointID != 0)
+   {
+      sql += " where pointid = " + CtiNumStr(pointID);
+   }
 }
 
 void CtiTablePointLimit::DecodeDatabaseReader(RWDBReader &rdr)
@@ -114,7 +107,7 @@ void CtiTablePointLimit::DecodeDatabaseReader(RWDBReader &rdr)
    static const RWCString pointid = "pointid";
    INT iTemp;
 
-   rdr[pointid] >> _pointID;
+   rdr >> _pointID;
    rdr >> _limitNumber;
    rdr >> _highLimit;
    rdr >> _lowLimit;
@@ -124,6 +117,7 @@ void CtiTablePointLimit::DecodeDatabaseReader(RWDBReader &rdr)
 void CtiTablePointLimit::dump() const
 {
    CtiLockGuard<CtiLogger> doubt_guard(dout);
+   dout << " PointID                                  : " << _pointID << endl;
    dout << " Limit Number Value                       : " << _limitNumber << endl;
    dout << " Hi Limit Value                           : " << _highLimit << endl;
    dout << " Lo Limt Value                            : " << _lowLimit << endl;
@@ -147,7 +141,7 @@ CtiTablePointLimit& CtiTablePointLimit::setLimitDuration(const INT aInt)
 }
 
 CtiTablePointLimit::CtiTablePointLimit() :
-   _limitNumber(0),                          //generate an alarm right away...
+   _limitNumber(0),
    _limitDuration(-1),
    _highLimit(DBL_MAX),
    _lowLimit(DBL_MIN)
@@ -165,4 +159,12 @@ string CtiTablePointLimit::getTableName()
    return "PointLimits";
 }
 
+bool CtiTablePointLimit::operator<(const CtiTablePointLimit &rhs) const
+{
+    return (_pointID < rhs.getPointID() || (_pointID == rhs.getLimitNumber() && _limitNumber < rhs.getLimitNumber()));
+}
 
+bool CtiTablePointLimit::operator==(const CtiTablePointLimit &rhs) const
+{
+    return (_pointID == rhs.getPointID() && _limitNumber == rhs.getLimitNumber());
+}

@@ -43,7 +43,7 @@ CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef
 int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg &ChgMsg)
 {
    CtiReturnMsg* ConnMgrMsg = NULL;
-   std::list< CtiServer::ptr_type >::iterator itr = ConnectionManagerCollection.begin();
+   CollectionType::iterator itr = ConnectionManagerCollection.begin();
    while ( itr != ConnectionManagerCollection.end() )
    {
       CtiServer::ptr_type CtiM = *itr;
@@ -130,13 +130,13 @@ CtiPointConnection::~CtiPointConnection()
 void CtiPointConnection::AddConnectionManager(CtiServer::ptr_type cm)
 {
    LockGuard guard(monitor());
-   ConnectionManagerCollection.push_back(cm);
+   ConnectionManagerCollection.insert(cm);
 }
 void CtiPointConnection::RemoveConnectionManager(CtiServer::ptr_type cm)
 {
    LockGuard guard(monitor());
    bool present = false;
-   std::list< CtiServer::ptr_type >::iterator itr = ConnectionManagerCollection.begin();
+   CollectionType::iterator itr = ConnectionManagerCollection.begin();
    while(itr != ConnectionManagerCollection.end() ){
        if ( *itr == cm) {//Note  this is removing based off the pointer address
            itr = ConnectionManagerCollection.erase(itr);
@@ -145,18 +145,32 @@ void CtiPointConnection::RemoveConnectionManager(CtiServer::ptr_type cm)
    }
 }
 
+bool CtiPointConnection::IsEmpty()
+{
+   LockGuard guard(monitor());
+   return ConnectionManagerCollection.empty();
+}
+
 int CtiPointConnection::PostPointChangeToConnections(const CtiPointDataMsg& Msg);
 
 CtiPointConnection& CtiPointConnection::operator=(const CtiPointConnection &aRef);
 
-list< CtiServer::ptr_type >& CtiPointConnection::getManagerList()
+CtiPointConnection::CollectionType& CtiPointConnection::getManagerList()
 {
     return ConnectionManagerCollection;
 }
-list< CtiServer::ptr_type >  CtiPointConnection::getManagerList() const
+CtiPointConnection::CollectionType  CtiPointConnection::getManagerList() const
 {
     return ConnectionManagerCollection;
 }
 
-
+bool CtiPointConnection::HasConnection(const CtiServer::ptr_type cm)
+{
+   CollectionType::iterator iter = ConnectionManagerCollection.find(cm);
+   if(iter != ConnectionManagerCollection.end())
+   {
+      return true;
+   }
+   return false;
+}
 

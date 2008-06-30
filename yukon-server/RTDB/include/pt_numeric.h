@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_numeric.h-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/02/09 20:53:57 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,31 +27,13 @@ using boost::shared_ptr;
 #include "pt_base.h"
 #include "resolvers.h"
 #include "tbl_pt_unit.h"
-#include "tbl_pt_limit.h"
-
-#define  LIMIT_IN_RANGE    0
-#define  LIMIT_EXCEEDS_LO  1
-#define  LIMIT_EXCEEDS_HI  2
-#define  LIMIT_SETUP_ERROR 3
-
 
 class IM_EX_PNTDB CtiPointNumeric : public CtiPointBase
 {
 protected:
-
-
    CtiTablePointUnit    _pointUnits;
 
    INT                  _rateOfChange;
-
-   // CtiTablePointLimits  _pointLimits[MAX_POINTLIMITS];
-
-   /* Data Elements from Table PointLimits */
-   BOOL                 _limitValid[MAX_POINTLIMITS];  // Is this limit defined?
-   CtiTablePointLimit   _limit[MAX_POINTLIMITS];
-
-   /* Data Elements from Table PointHISsettings */
-   // History settings may be added here later
 
 protected:
 
@@ -68,25 +50,11 @@ public:
    static void getLimitSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
 
    virtual void DecodeDatabaseReader(RWDBReader &rdr);
-   void DecodeLimitsDatabaseReader(RWDBReader &rdr);
-   BOOL  inLimitRange(int i) const;
-   BOOL is_limitValid(int i) const;
-   DOUBLE getHighLimit(int i)  const;
-   DOUBLE getLowLimit(int i)  const;
-   /*nukepao string getLimitName(int i)  const;*/
-   /*nukepao CtiFilter_t   getFilterType(int i)  const;*/
    INT getRateOfChange() const;
    CtiPointNumeric setRateOfChange(INT rate);
 
    CtiTablePointUnit   getPointUnits() const;
    CtiTablePointUnit&  getPointUnits();
-
-   CtiTablePointLimit   getLimit(INT i) const;
-   CtiTablePointLimit&  getLimit(INT i);
-
-   // setters
-   void invalidateLimits();
-   void set_limitValid(int i, BOOL b = TRUE);
 
    virtual DOUBLE      getMultiplier() const;
    virtual DOUBLE      getDataOffset() const;
@@ -94,7 +62,6 @@ public:
    virtual void        setMultiplier(DOUBLE d);
    virtual void        setDataOffset(DOUBLE d);
 
-   virtual bool limitStateCheck( const int limitOrState, const int limitnumber, double val, int &direction);
    virtual UINT getStaticTags();
    virtual UINT adjustStaticTags(UINT &tag) const;
    virtual double getDefaultValue( ) const;

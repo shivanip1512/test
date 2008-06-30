@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_unit.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/07/13 21:14:11 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -45,18 +45,13 @@ class IM_EX_CTIYUKONDB CtiTablePointUnit : public CtiMemDBObject
 {
 protected:
 
-   LONG                 _pointID;
    INT                  _unitID;            // FK constraint against table  UnitMeasure
    INT                  _decimalPlaces;     // Number of " " for display purposes.
    INT                  _decimalDigits;     // Maximum digits allowed (forced rollover).
-   DOUBLE               _highReasonablityLimit;
-   DOUBLE               _lowReasonablityLimit;
 
    CtiTableUnitMeasure  _unitMeasure;
 
-   INT                  _calcType;          // What calculation is required to compute the units defined above.
    INT                  _logFrequency;
-   DOUBLE               _defaultValue;
 
 private:
 
@@ -76,10 +71,6 @@ public:
    CtiTablePointUnit&   setDecimalPlaces(const INT &id);
    INT                  getDecimalDigits() const;
    CtiTablePointUnit&   setDecimalDigits(const INT &digits);
-   DOUBLE               getHighReasonabilityLimit() const;
-   CtiTablePointUnit&   setHighReasonabilityLimit(DOUBLE d);
-   DOUBLE               getLowReasonabilityLimit() const;
-   CtiTablePointUnit&   setLowReasonabilityLimit(DOUBLE d);
 
    INT                  getCalcType() const;
    CtiTablePointUnit&   setCalcType(INT i);
@@ -88,10 +79,6 @@ public:
    CtiTablePointUnit&   setLogFrequency(INT i);
 
    DOUBLE               getDefaultValue() const;
-   CtiTablePointUnit&   setDefaultValue(DOUBLE d);
-
-   LONG                 getPointID() const;
-   CtiTablePointUnit&   setPointID( LONG pid );
 
    CtiTableUnitMeasure  getUnitMeasure() const;
    CtiTableUnitMeasure& getUnitMeasure();

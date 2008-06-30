@@ -14,8 +14,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/INCLUDE/tbl_pt_alarm.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/02/22 16:30:59 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -151,10 +151,10 @@ public:
    static void getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector);
    static string getTableName();
 
-   virtual RWDBStatus Insert();
-   virtual RWDBStatus Update();
-   virtual RWDBStatus Restore();
-   virtual RWDBStatus Delete();
+   //virtual RWDBStatus Insert();
+   //virtual RWDBStatus Update();
+   //virtual RWDBStatus Restore();
+   //virtual RWDBStatus Delete();
 
    virtual void DecodeDatabaseReader(RWDBReader& rdr);
 

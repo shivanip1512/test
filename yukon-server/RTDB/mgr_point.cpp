@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2008/05/30 20:19:45 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -40,11 +40,6 @@ using namespace std;
 using namespace std;
 
 #define PERF_TO_MS(b,a,p) (UINT)(((b).QuadPart - (a).QuadPart) / ((p).QuadPart / 1000L))
-
-bool findHasAlarming(CtiPointSPtr &pTP, void* d)
-{
-    return pTP->hasAlarming();
-}
 
 
 BOOL APIENTRY DllMain(HANDLE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
@@ -112,18 +107,6 @@ ApplyInvalidateNotUpdated(const long key, CtiPointSPtr pPoint, void* d)
     return;
 }
 
-static void
-ApplyInvalidateLimtsForPAO(const long key, CtiPointSPtr pPoint, void* d)
-{
-    LONG paoID = (LONG)d;
-
-    if(pPoint->getDeviceID() == paoID && pPoint->isNumeric())
-    {
-        ((CtiPointNumeric*)pPoint.get())->invalidateLimits();
-    }
-
-    return;
-}
 
 void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *arg, LONG pntID, LONG paoID)
 {
@@ -211,7 +194,6 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
             }
-
             if((stop = stop.now()).seconds() - start.seconds() > 5 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -239,7 +221,6 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
             }
-
             if((stop = stop.now()).seconds() - start.seconds() > 5 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -333,9 +314,6 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             //  paoid == 0 and pntid == 0 means all points were loaded
             _all_paoids_loaded = true;
         }
-
-        // Now load the properties onto the points we have collected.
-        refreshPointProperties(pntID,paoID);
 
     }
     catch(RWExternalErr e )
@@ -969,7 +947,8 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
     CtiTablePointAlarming::getSQL( db, keyTable, selector );
 
     if(pntID) selector.where( keyTable["pointid"] == pntID && selector.where() );
-    // There is no pao in this table!// if(paoID) selector.where( keyTable["paobjectid"] == paoID && selector.where() );
+    //If we are doing a single point, always reload. We only do all points
+    if(!pntID) selector.where(keyTable["alarmstates"] != "" && selector.where());
 
     rdr = selector.reader( conn );
 
@@ -1038,86 +1017,6 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
     }
 }
 
-
-
-void CtiPointManager::refreshPointLimits(LONG pntID, LONG paoID)
-{
-    LONG        lTemp = 0;
-    ptr_type    pTempCtiPoint;
-
-    // Make sure any limits this point previously had are marked as removed!
-    if(pntID != 0 && _smartMap.entries() > 0)
-    {
-        if(((pTempCtiPoint = _smartMap.find(pntID))) && pTempCtiPoint->isNumeric())
-        {
-            ((CtiPointNumeric*)pTempCtiPoint.get())->invalidateLimits();
-        }
-    }
-    else if(pntID == 0 && paoID != 0)       // This is much more work...
-    {
-        _smartMap.apply(ApplyInvalidateLimtsForPAO, (void*)paoID);
-    }
-
-    CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
-    RWDBConnection conn = getConnection();
-    RWDBDatabase   db       = conn.database();
-    RWDBSelector   selector = conn.database().selector();
-    RWDBTable      keyTable;
-    RWDBReader     rdr;
-    CtiTime         start, stop;
-
-    start = start.now();
-    selector = conn.database().selector();    // Clear the selector.
-
-    if(DebugLevel & 0x00010000)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Limits" << endl;
-    }
-    /* Go after the point limits! */
-    CtiTablePointLimit().getSQL( db, keyTable, selector );
-    if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-    if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-
-    rdr = selector.reader(conn);
-    if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-    }
-
-    while( rdr() )
-    {
-        rdr["pointid"] >> lTemp;            // get the PointID
-
-        if( _smartMap.entries() > 0 && (pTempCtiPoint = _smartMap.find(lTemp)) )
-        {
-            /*
-             *  The point just returned from the rdr already was in my list.  We need to
-             *  update my list entry to the new limit settings!
-             */
-            ((CtiPointNumeric*)pTempCtiPoint.get())->DecodeLimitsDatabaseReader(rdr);        // Fills himself in from the reader
-        }
-    }
-
-    if((stop = stop.now()).seconds() - start.seconds() > 5 )
-    {
-        CtiLockGuard<CtiLogger> doubt_guard(dout);
-        dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Limits " << endl;
-    }
-}
-
-/*
- *
- */
-void CtiPointManager::refreshPointProperties(LONG pntID, LONG paoID)
-{
-    refreshPointLimits(pntID, paoID);
-
-    //This was removed from here and is now ONLY called from Dispatch.
-    /*if(_smartMap.find(findHasAlarming, NULL)) // If there is at least one point with alarming data available.
-    {
-        refreshAlarming(pntID, paoID);
-    }*/
-}
 
 void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)
 {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/ctivangogh.h-arc  $
-* REVISION     :  $Revision: 1.53 $
-* DATE         :  $Date: 2008/02/21 18:56:08 $
+* REVISION     :  $Revision: 1.54 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,6 +57,7 @@ using std::iostream;
 #include "tbl_alm_ngroup.h"
 #include "tbl_lm_controlhist.h"
 #include "tbl_commerrhist.h"
+#include "tbl_pt_limit.h"
 #include "tbl_rawpthistory.h"
 #include "tbl_signal.h"
 #include "tbl_ci_cust.h"
@@ -155,6 +156,7 @@ private:
     static void sendbGCtrlC(void *who);
     void sendPointTriggers( const CtiPointDataMsg &aPD , CtiPointSPtr point );
     void sendPendingControlRequest(const CtiPointDataMsg &aPD, CtiPointSPtr point, PtVerifyTriggerSPtr verificationPtr);
+    bool limitStateCheck( const int alarm, CtiTablePointLimit &limit, double val, int &direction);
 
     CtiPointDataMsg* createPointDataMsg(const CtiDynamicPointDispatch& pDyn);
 

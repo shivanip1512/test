@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/03/04 18:47:30 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -53,10 +53,6 @@ private:
 
     void addPoint(CtiPointBase *point);  //  also used by the unit test
     void updatePointMaps(const CtiPointBase &point, long old_pao, CtiPointType_t old_type, int old_offset, int old_control_offset );
-
-    // These are properties of already collected points.
-    void refreshPointProperties(LONG pntID = 0, LONG paoID = 0);
-    void refreshPointLimits(LONG pntID = 0, LONG paoID = 0);
 
     struct pao_offset_t
     {

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_ptdispatch.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/09/28 15:38:00 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,7 +30,7 @@ _timeStamp( CtiDate( (UINT)1, (UINT)1, (UINT)1990 )),
 _quality(UnintializedQuality),
 _value(0),
 _tags(0),
-_staleCount(0),
+//_staleCount(0),
 _lastAlarmLogID(0),
 _nextArchiveTime(CtiTime(YUKONEOT+86400))
 {
@@ -47,7 +47,7 @@ _timeStamp(timestamp),
 _quality(quality),
 _value(value),
 _tags(0),
-_staleCount(0),
+//_staleCount(0),
 _lastAlarmLogID(0),
 _nextArchiveTime(CtiTime(YUKONEOT - 86400))
 {
@@ -81,7 +81,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::operator=(const CtiTablePointDispa
         resetTags();
         setTags( right.getTags() );
         setNextArchiveTime( right.getNextArchiveTime() );
-        setStaleCount( right.getStaleCount() );
+        //setStaleCount( right.getStaleCount() );
         setLastAlarmLogID( right.getLastAlarmLogID() );
     }
 
@@ -109,7 +109,7 @@ void CtiTablePointDispatch::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
     keyTable["value"]       <<
     keyTable["tags"]        <<
     keyTable["nextarchive"] <<
-    keyTable["stalecount"]  <<
+    //keyTable["stalecount"]  <<
     keyTable["lastalarmlogid"] <<
     keyTable["millis"];
 
@@ -131,7 +131,7 @@ RWDBStatus CtiTablePointDispatch::Restore()
     table["value"] <<
     table["tags"] <<
     table["nextarchive"] <<
-    table["stalecount"]  <<
+    //table["stalecount"]  <<
     table["lastalarmlogid"] <<
     table["millis"];
 
@@ -271,7 +271,7 @@ void CtiTablePointDispatch::DecodeDatabaseReader(RWDBReader& rdr )
     rdr >> _value;
     rdr >> _tags;
     rdr >> _nextArchiveTime;
-    rdr >> _staleCount;
+    //rdr >> _staleCount;
     rdr >> _lastAlarmLogID;
     rdr >> millis;
 
@@ -391,13 +391,13 @@ UINT CtiTablePointDispatch::resetTags(UINT mask)
 
 UINT CtiTablePointDispatch::getStaleCount() const
 {
-    return _staleCount;
+    return 0; //_stalecount
 }
 
 CtiTablePointDispatch& CtiTablePointDispatch::setStaleCount(UINT stalecount)
 {
-    setDirty(TRUE);
-    _staleCount = stalecount;
+    //setDirty(TRUE);
+   // _staleCount = stalecount;
     return *this;
 }
 
@@ -432,7 +432,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const CtiTime& tim
 
         setTags( tags );
         setNextArchiveTime( archivetime );
-        setStaleCount( count );
+        //setStaleCount( count );
 
         setDirty(TRUE);
     }
@@ -445,7 +445,7 @@ CtiTablePointDispatch& CtiTablePointDispatch::applyNewReading(const CtiTime& tim
 
         setTags( tags );
         setNextArchiveTime( archivetime );
-        setStaleCount( count );
+        //setStaleCount( count );
 
         setDirty(TRUE);
     }
@@ -466,7 +466,7 @@ void CtiTablePointDispatch::dump()
         dout << " Quality                                  : " << _quality << endl;
         dout << " Next Archive Time                        : " << _nextArchiveTime << endl;
         dout << " Tags                                     : 0x" << hex << setw(8) << _tags << dec << endl;
-        dout << " Stale Count                              : " << _staleCount << endl;
+        //dout << " Stale Count                              : " << _staleCount << endl;
 
         dout.fill(oldFill);
     }

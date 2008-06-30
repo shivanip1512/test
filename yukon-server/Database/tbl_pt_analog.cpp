@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_analog.cpp-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2007/09/28 15:38:00 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -27,7 +27,7 @@ CtiTablePointAnalog& CtiTablePointAnalog::operator=(const CtiTablePointAnalog& a
       _multiplier       = aRef.getMultiplier();
       _dataOffset       = aRef.getDataOffset();
       _deadband         = aRef.getDeadband();
-      _transducerType   = aRef.getTransducerType();
+      //_transducerType   = aRef.getTransducerType();
    }
    return *this;
 }
@@ -39,8 +39,8 @@ void CtiTablePointAnalog::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSel
    selector <<
    tbl["multiplier"] <<
    tbl["dataoffset"] <<
-   tbl["deadband"] <<
-   tbl["transducertype"];
+   tbl["deadband"];
+   //tbl["transducertype"];
 
    selector.from(tbl);
 
@@ -55,7 +55,7 @@ void CtiTablePointAnalog::DecodeDatabaseReader(RWDBReader &rdr)
    rdr >> _multiplier;
    rdr >> _dataOffset;
    rdr >> _deadband;
-   rdr >> _transducerType;
+   //rdr >> _transducerType;
 }
 
 void CtiTablePointAnalog::dump() const
@@ -64,7 +64,7 @@ void CtiTablePointAnalog::dump() const
    dout << " Multiplier                               : " << _multiplier << endl;
    dout << " Data Offset                              : " << _dataOffset << endl;
    dout << " Deadband  +/-                            : " << _deadband << endl;
-   dout << " Transducer Type                          : " << _transducerType << endl;
+   //dout << " Transducer Type                          : " << _transducerType << endl;
 }
 
 DOUBLE CtiTablePointAnalog::getMultiplier() const
@@ -80,10 +80,10 @@ DOUBLE CtiTablePointAnalog::getDeadband() const
 {
    return _deadband;
 }
-string CtiTablePointAnalog::getTransducerType() const
+/*string CtiTablePointAnalog::getTransducerType() const
 {
    return _transducerType;
-}
+}*/
 
 
 CtiTablePointAnalog& CtiTablePointAnalog::setMultiplier(DOUBLE d)
@@ -102,11 +102,11 @@ CtiTablePointAnalog& CtiTablePointAnalog::setDeadband(DOUBLE d)
    _deadband = d;
    return *this;
 }
-CtiTablePointAnalog& CtiTablePointAnalog::setTransducerType(string &str)
+/*CtiTablePointAnalog& CtiTablePointAnalog::setTransducerType(string &str)
 {
    _transducerType = str;
    return *this;
-}
+}*/
 
 CtiTablePointAnalog::CtiTablePointAnalog() {}
 

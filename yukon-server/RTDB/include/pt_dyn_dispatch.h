@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_dyn_dispatch.h-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2005/12/20 17:20:31 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -30,9 +30,6 @@ protected:
 
    // Attributes found from the previous execution..
    CtiTablePointDispatch      _dispatch;
-
-   // This is a little kludge to attach additional functionality to a point.
-   VOID                       *_attachment;
 
    BOOL                       _archivePending;
    INT                        _lastSignal;
@@ -68,10 +65,6 @@ public:
    BOOL           isArchivePending() const;
    CtiDynamicPointDispatch&  setArchivePending(BOOL b = TRUE);
    CtiDynamicPointDispatch&  setPoint(const CtiTime &NewTime, UINT millis, double Val, int Qual, UINT tag_mask);
-
-   VOID*          getAttachment();
-   void           setAttachment(VOID *aptr);
-
 
    CtiTime         getNextArchiveTime() const;
    // CtiTime&        getNextArchiveTime();

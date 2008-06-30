@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/pt_base.h-arc  $
-* REVISION     :  $Revision: 1.21 $
-* DATE         :  $Date: 2008/02/21 23:10:17 $
+* REVISION     :  $Revision: 1.22 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -61,6 +61,8 @@ protected:
 
    bool                    _triggerPoint;
    bool                    _verificationPoint;
+
+   static CtiTablePointAlarming _StaticAlarm; //const but yet not...
 
 public:
 
@@ -121,7 +123,7 @@ public:
    void setArchivePending(BOOL b = 1);
    void resetArchivePending(BOOL b = 0);
 
-   CtiTablePointAlarming& getAlarming(bool refresh = false);
+   CtiTablePointAlarming& getAlarming();
 
    CtiDynamicPointBase*    getDynamic();
    CtiTablePointProperty* getProperties();

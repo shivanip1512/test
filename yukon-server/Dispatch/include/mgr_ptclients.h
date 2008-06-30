@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/11/02 19:09:34 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,6 +31,7 @@ using std::list;
 #include "msg_pdata.h"
 #include "ptconnect.h"
 #include "pt_dyn_dispatch.h"
+#include "tbl_pt_limit.h"
 #include "queue.h"
 #include "rtdb.h"
 #include "tbl_rawpthistory.h"
@@ -46,11 +47,20 @@ class IM_EX_CTIVANGOGH CtiPointClientManager : public CtiPointManager
 private:
    typedef map<LONG, CtiPointWPtr>     PointMap;
    typedef map<LONG, PointMap>         ConnectionMgrPointMap;
+   typedef map<LONG, pair<double, double> > ReasonabilityLimitMap;
+   typedef set<CtiTablePointLimit>     PointLimitSet;
    typedef ConnectionMgrPointMap::iterator ConMgrPtMapIter;
+   typedef map<LONG, CtiPointConnection> PointConnectionMap;
 
    ConnectionMgrPointMap _conMgrPointMap;
+   ReasonabilityLimitMap _reasonabilityLimits;
+   PointLimitSet         _limits;
+   PointConnectionMap    _pointConnectionMap;
 
    typedef CtiPointManager Inherited;
+
+   void refreshReasonabilityLimits(LONG pntID);
+   void refreshPointLimits(LONG pntID);
 
 protected:
 
@@ -68,6 +78,7 @@ public:
 
    int InsertConnectionManager(CtiServer::ptr_type CM, const CtiPointRegistrationMsg &aReg, bool debugprint = false);
    int RemoveConnectionManager(CtiServer::ptr_type CM);
+   bool pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn);
 
    CtiTime findNextNearestArchivalTime();
    void scanForArchival(const CtiTime &Now, CtiFIFOQueue<CtiTableRawPointHistory> &Que);
@@ -75,6 +86,10 @@ public:
    void validateConnections();
    void storeDirtyRecords();
    void RefreshDynamicData(LONG id = 0);
+
+   bool hasReasonabilityLimits(LONG pointid);
+   pair<DOUBLE, DOUBLE> getReasonabilityLimits(LONG pointID);
+   CtiTablePointLimit getPointLimit(LONG pointID, LONG limitNum);
 
    PointMap getRegistrationMap(LONG mgrID);
 

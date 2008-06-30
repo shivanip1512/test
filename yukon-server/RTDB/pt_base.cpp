@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_base.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/02/21 23:17:42 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -18,6 +18,8 @@
 #include "tbl_pt_alarm.h"
 #include "logger.h"
 #include "rwutil.h"
+
+CtiTablePointAlarming CtiPointBase::_StaticAlarm = CtiTablePointAlarming(0);
 
 void IM_EX_PNTDB DefDynamicFactory(const CtiPointBase& pt)
 {
@@ -92,30 +94,16 @@ bool CtiPointBase::hasAlarming() const
     return(_alarming != 0);
 }
 
-CtiTablePointAlarming& CtiPointBase::getAlarming(bool refresh)
+CtiTablePointAlarming& CtiPointBase::getAlarming()
 {
-    try
+    if(_alarming == NULL)
     {
-        if(_alarming == NULL)
-        {
-            _alarming = CTIDBG_new CtiTablePointAlarming( getPointID() );
-            refresh = true;
-        }
-
-        if(refresh)
-        {
-            _alarming->Restore();
-        }
+        return _StaticAlarm;
     }
-    catch( ... )
+    else
     {
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " **** Checkpoint - MEMORY in point \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        }
+        return *_alarming;
     }
-
-    return *_alarming;
 }
 
 bool CtiPointBase::isNumeric() const

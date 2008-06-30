@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/pt_numeric.cpp-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2007/09/28 15:38:00 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/06/30 15:24:29 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -25,10 +25,6 @@
 CtiPointNumeric::CtiPointNumeric() :
 _rateOfChange(-1)
 {
-   for(int i = 0; i < MAX_POINTLIMITS; i++)
-   {
-      _limitValid[i] = FALSE;
-   }
 }
 
 CtiPointNumeric::CtiPointNumeric(const CtiPointNumeric& aRef)
@@ -46,19 +42,6 @@ CtiPointNumeric& CtiPointNumeric::operator=(const CtiPointNumeric& aRef)
    {
       Inherited::operator=(aRef);
 
-      for(int i = 0; i < MAX_POINTLIMITS; i++)
-      {
-         if(aRef.is_limitValid(i))
-         {
-            _limitValid[i] = TRUE;
-            _limit[i]      = aRef.getLimit(i);
-         }
-         else
-         {
-            _limitValid[i]  = FALSE;
-         }
-      }
-
       _pointUnits       = aRef.getPointUnits();
       _rateOfChange     = aRef.getRateOfChange();
    }
@@ -70,11 +53,6 @@ void CtiPointNumeric::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelecto
 {
    Inherited::getSQL(db, keyTable, selector);       // get the base class handled
    CtiTablePointUnit::getSQL(db, keyTable, selector);
-}
-
-void CtiPointNumeric::getLimitSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
-{
-   CtiTablePointLimit::getSQL(db, keyTable, selector);
 }
 
 void CtiPointNumeric::DecodeDatabaseReader(RWDBReader &rdr)
@@ -93,85 +71,6 @@ void CtiPointNumeric::DecodeDatabaseReader(RWDBReader &rdr)
     }*/
 }
 
-void CtiPointNumeric::DecodeLimitsDatabaseReader(RWDBReader &rdr)
-{
-   INT iTemp;
-   RWDBNullIndicator isNull;
-
-   rdr["limitnumber"] >> isNull; // Used for verification of existance.
-   rdr["limitnumber"] >> iTemp;
-
-   if(!isNull)
-   {
-      if( inLimitRange(iTemp - 1))
-      {
-         _limitValid[iTemp - 1] = TRUE;
-         _limit[iTemp - 1].DecodeDatabaseReader(rdr);
-      }
-   }
-}
-
-BOOL  CtiPointNumeric::inLimitRange(int i) const
-{
-   BOOL bRet = FALSE;
-
-   if( 0 <= i && i < MAX_POINTLIMITS)
-   {
-      bRet = TRUE;
-   }
-   return bRet;
-}
-
-BOOL CtiPointNumeric::is_limitValid(int i) const
-{
-   BOOL bRet = FALSE;
-
-   if(inLimitRange(i))
-   {
-      bRet = _limitValid[i];
-   }
-   return bRet;
-}
-
-DOUBLE CtiPointNumeric::getHighLimit(int i)  const
-{
-   DOUBLE Ret = DBL_MAX;
-
-   try {
-      if(is_limitValid(i))
-      {
-         Ret = _limit[i].getHighLimit();
-      }
-   }
-   catch(...)
-   {
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
-   }
-   return Ret;
-}
-
-DOUBLE CtiPointNumeric::getLowLimit(int i)  const
-{
-   DOUBLE Ret = -DBL_MAX;
-
-   try {
-      if(is_limitValid(i))
-      {
-         Ret = _limit[i].getLowLimit();
-      }
-   }
-   catch(...)
-   {
-      {
-         CtiLockGuard<CtiLogger> doubt_guard(dout);
-         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-      }
-   }
-   return Ret;
-}
 
 /*nukepao string CtiPointNumeric::getLimitName(int i)  const
 {
@@ -222,7 +121,7 @@ CtiTablePointUnit&  CtiPointNumeric::getPointUnits()
    return _pointUnits;
 }
 
-CtiTablePointLimit   CtiPointNumeric::getLimit(INT i) const
+/*CtiTablePointLimit   CtiPointNumeric::getLimit(INT i) const
 {
    return _limit[i];
 }
@@ -245,7 +144,7 @@ void CtiPointNumeric::set_limitValid(int i, BOOL b)
             dout << CtiTime() << " **** Checkpoint - Limit is out of range (" << i << ") in point \"" << getName() << "\" **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
    }
-}
+}*/
 
 void CtiPointNumeric::DumpData()
 {
@@ -253,13 +152,6 @@ void CtiPointNumeric::DumpData()
 
    _pointUnits.dump();
 
-   for(int i = 0; i <  MAX_POINTLIMITS; i++)
-   {
-      if(_limitValid[i])
-      {
-         _limit[i].dump();
-      }
-   }
 }
 
 DOUBLE      CtiPointNumeric::getMultiplier() const
@@ -278,59 +170,6 @@ void        CtiPointNumeric::setMultiplier(DOUBLE d)
 void        CtiPointNumeric::setDataOffset(DOUBLE d)
 {
    return;
-}
-
-// Takes a numeric alarm and the id of the limit and checks for exceeding the limits
-// This currently assumes that you know the limitID, if not it could be changed to call
-// GetNumericStateLimitFromHighLow
-bool CtiPointNumeric::limitStateCheck( const int alarm, const int limitID, double val, int &direction)
-{
-   direction = LIMIT_IN_RANGE;          // This indicates that
-
-   if(getLowLimit(limitID) >= getHighLimit(limitID))
-   {
-       direction = LIMIT_SETUP_ERROR;
-   }
-   else if( alarm >= CtiTablePointAlarming::limitLow0 && alarm <= CtiTablePointAlarming::limitHigh1 )
-   {
-       switch(alarm)
-       {
-           case CtiTablePointAlarming::limitLow0:
-           case CtiTablePointAlarming::limitLow1:
-           {
-               if( val < getLowLimit(limitID) )
-               {
-                   direction = LIMIT_EXCEEDS_LO;
-               }
-               break;
-           }
-           case CtiTablePointAlarming::limitHigh0:
-           case CtiTablePointAlarming::limitHigh1:
-           {
-               if( val > getHighLimit(limitID) )
-               {
-                   direction = LIMIT_EXCEEDS_HI;
-               }
-               break;
-           }
-       }
-   }
-   else
-   {
-       if( val < getLowLimit(limitID) )
-       {
-          // Lo limit has been breached!
-          direction = LIMIT_EXCEEDS_LO;
-       }
-       else if( getHighLimit(limitID) < val )
-       {
-          // Hi limit has been breached!
-           direction = LIMIT_EXCEEDS_HI;
-       }
-   }
-
-
-   return (direction != LIMIT_IN_RANGE);
 }
 
 UINT CtiPointNumeric::adjustStaticTags(UINT &tag) const
@@ -389,13 +228,4 @@ DOUBLE CtiPointNumeric::computeValueForUOM(DOUBLE Value) const
 
     return Value;
 }
-
-void CtiPointNumeric::invalidateLimits()
-{
-   for(int i = 0; i <  MAX_POINTLIMITS; i++)
-   {
-       set_limitValid(i,FALSE);
-   }
-}
-
 
