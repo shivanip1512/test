@@ -611,56 +611,12 @@ public class Multispeak implements MessageListener {
                                                 if (err2 != null) { //Address is already active
                                                     errorObjects.add(err2);
                                                 } else {  //Address object is disabled, so we can update and activate the Meter Number object
-                                                    //Load the CIS serviceLocation.
-                                                    ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
-                                                    String billingCycle = mspServiceLocation.getBillingCycle();
-                                                    //TODO deleteRawPointHistory(yukonPaobject);
-                
-                                                    // Remove meter from Inventory
-                                                    removeFromGroup(meter, SystemGroupEnum.INVENTORY, "MeterAddNotification", mspVendor);
-                
-                                                    // update the billing group from CIS billingCyle
-                                                    updateBillingCyle(billingCycle, meter, "MeterAddNotification", mspVendor);
-                                                        
-                                                    LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
-                                                    YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
-                                                    DeviceCarrierSettings deviceCarrierSettings = ((MCTBase)yukonPaobject).getDeviceCarrierSettings();
-                 
-                                                    String currentAddress = meter.getAddress();
-                                                    deviceCarrierSettings.setAddress(Integer.valueOf(mspAddress));
-                                                    
-                                                    String currentPaoName = yukonPaobject.getPAOName();
-                                                    String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName);
-            
-                                                    String logTemp;
-                                                    if( newPaoName == null)
-                                                        logTemp = "; PAOName(" + paoAliasStr + ") No Change - MSP " + paoAliasStr + " is empty.";
-                                                    else if (newPaoName.equalsIgnoreCase(currentPaoName))
-                                                        logTemp = "; PAOName(" + paoAliasStr + ") No change in value.";
-                                                    else {
-                                                        logTemp = "; PAOName(" + paoAliasStr + ") - Old:" + currentPaoName + " New:" + newPaoName;
-                                                        newPaoName = getNewPaoName(newPaoName);
-                                                        yukonPaobject.setPAOName(newPaoName);
-                                                    }
-                
-                                                    yukonPaobject.setDisabled(false);
-                                                    dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
-                                                    logMSPActivity("MeterAddNotification",
-                                                                   "MeterNumber(" + meterNo + ") - Address - Old:" + currentAddress + " New:" + deviceCarrierSettings.getAddress().toString() + ".", 
-                                                                   mspVendor.getCompanyName());
-                                                    logMSPActivity("MeterAddNotification",
-                                                                   "MeterNumber(" + meterNo + ") - Meter Enabled" + logTemp, 
-                                                                   mspVendor.getCompanyName());
-                
-                                                    changeDeviceType(mspMeter, meter, mspVendor, "MeterAddNotification");
-                                                    //TODO Read the Meter.
-                                                                                        
+                                                    addExistingMeter(mspMeter, meter, mspVendor, paoAlias);              
                                                 }
                                             }
                                         }
                                     }
                                 }
-                               
                             } 
                             catch (NotFoundException e) {
                                 //Meter Number not currently found in Yukon
@@ -691,47 +647,7 @@ public class Multispeak implements MessageListener {
                                     if (err != null) { //Address is already active
                                         errorObjects.add(err);
                                     } else { //Address object is disabled, so we can update and activate the Address object
-                                        //TODO deleteRawPointHistory(yukonPaobject);
-                                        //Load the CIS serviceLocation.
-                                        ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNo, mspVendor);
-                                        String billingCycle = mspServiceLocation.getBillingCycle();
-                                        
-                                        YukonPAObject yukonPaobjectByAddress = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaoByAddress);
-                                        yukonPaobjectByAddress.setDisabled(false);
-                
-                                        String currentPaoName = meterByAddress.getName();
-                                        String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName);
-                                        
-                                        String logTemp;
-                                        if( newPaoName == null)
-                                            logTemp = "; PAOName(" + paoAliasStr + ") No Change - MSP " + paoAliasStr + " is empty.";
-                                        else if (newPaoName.equalsIgnoreCase(currentPaoName))
-                                            logTemp = "; PAOName(" + paoAliasStr + ") No change in value.";
-                                        else {
-                                            logTemp = "; PAOName(" + paoAliasStr + ") - Old:" + currentPaoName + " New:" + newPaoName;
-                                            newPaoName = getNewPaoName(newPaoName);
-                                            yukonPaobjectByAddress.setPAOName(newPaoName);
-                                        }
-                
-                                        DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobjectByAddress).getDeviceMeterGroup();
-                                        
-                                        // Remove meter from Inventory
-                                        removeFromGroup(meterByAddress, SystemGroupEnum.INVENTORY, "MeterAddNotification", mspVendor);
-                
-                                        // update the billing group from CIS billingCyle
-                                        updateBillingCyle(billingCycle, meterByAddress, "MeterAddNotification", mspVendor);
-                
-                                        String oldMeterNo = deviceMeterGroup.getMeterNumber();
-                                        deviceMeterGroup.setMeterNumber(meterNo);
-                
-                                        dbPersistentDao.performDBChange(yukonPaobjectByAddress, Transaction.UPDATE);
-                                        logMSPActivity("MeterAddNotification",
-                                                       "MeterNumber(" + meterNo + " Old:" +oldMeterNo + "); Meter Enabled" + logTemp,
-                                                       mspVendor.getCompanyName());
-
-                                        changeDeviceType(mspMeter, meterByAddress, mspVendor, "MeterAddNotification");
-                                        //TODO Read the Meter.
-                                                                            
+                                        addExistingMeter(mspMeter, meterByAddress, mspVendor, paoAlias);
                                     }
                                 }
                             }
@@ -1548,11 +1464,12 @@ public class Multispeak implements MessageListener {
         String templateName = getMeterTemplate(mspMeter, mspVendor.getTemplateNameDefault());
         try {
             com.cannontech.amr.meter.model.Meter templateMeter = meterDao.getForPaoName(templateName);
+            String existingType = meter.getTypeStr();
             if( templateMeter.getType() != meter.getType()) {   //different types of meters...change type
                 try {
                     DeviceDefinition deviceDefinition = deviceDefinitionDao.getDeviceDefinition(templateMeter.getType());
                     deviceDefinitionService.changeDeviceType(meter, deviceDefinition);
-                    logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + templateMeter.getTypeStr() + " to:" + meter.getTypeStr() + ").", mspVendor.getCompanyName());
+                    logMSPActivity(method, "MeterNumber (" + meter.getMeterNumber() + ") - Changed DeviceType from:" + existingType + " to:" + templateMeter.getTypeStr() + ").", mspVendor.getCompanyName());
                 } catch (DataRetrievalFailureException e) {
                     CTILogger.warn(e);
                 } catch (PersistenceException e) {
