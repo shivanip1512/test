@@ -82,11 +82,11 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 
 		//Add all customer Graphs
 		for (int i = 0; i < getGraphVector().size(); i++)
-			 ((com.cannontech.database.db.DBPersistent) getGraphVector().elementAt(i)).add();			
+			 ((DBPersistent) getGraphVector().elementAt(i)).add();			
 
 		//Add all customer devices
 		for (int i = 0; i < getDeviceVector().size(); i++)
-			 ((com.cannontech.database.db.DBPersistent) getDeviceVector().elementAt(i)).add();			
+			 ((DBPersistent) getDeviceVector().elementAt(i)).add();			
 	}
 	
 	@Override
@@ -133,7 +133,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 				getGraphVector().addElement( graphs[i] );
 			}
 		}
-		catch(java.sql.SQLException e )
+		catch(SQLException e )
 		{
 			//not necessarily an error
 		}
@@ -150,7 +150,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 				
 			setCustomerContactIDs( cntIDs );
 		}
-		catch(java.sql.SQLException e )
+		catch(SQLException e )
 		{
 			//not necessarily an error
 		}
@@ -167,7 +167,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 				getDeviceVector().addElement( devices[i] );
 			}
 		}
-		catch(java.sql.SQLException e )
+		catch(SQLException e )
 		{
 			//not necessarily an error
 		}
@@ -241,7 +241,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 
 	public Vector<DeviceCustomerList> getDeviceVector() {
 		if (deviceVector == null)
-			deviceVector = new java.util.Vector<DeviceCustomerList>(10);
+			deviceVector = new Vector<DeviceCustomerList>(10);
 
 		return deviceVector;
 	}
