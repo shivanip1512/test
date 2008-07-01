@@ -8,14 +8,6 @@ public class StarsServiceCompanies {
         new Vector<StarsServiceCompany>();
 
     public StarsServiceCompanies() {
-        init();
-    }
-
-    private void init() {
-        StarsServiceCompany starsServCompany = new StarsServiceCompany();
-        starsServCompany.setCompanyID( 0 );
-        starsServCompany.setCompanyName( "(none)" );
-        starsServiceCompanyList.add(starsServCompany);
     }
     
     public void addStarsServiceCompany(StarsServiceCompany vStarsServiceCompany) {

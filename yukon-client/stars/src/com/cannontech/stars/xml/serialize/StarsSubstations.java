@@ -8,15 +8,6 @@ public class StarsSubstations {
         new Vector<StarsSubstation>();
 
     public StarsSubstations() {
-        init();
-    }
-    
-    private void init() {
-        StarsSubstation starsSub = new StarsSubstation();
-        starsSub.setSubstationID( 0 );
-        starsSub.setSubstationName( "(none)" );
-        starsSub.setRouteID( 0 );
-        starsSubstationList.add(starsSub);
     }
 
     public void addStarsSubstation(StarsSubstation vStarsSubstation) {
