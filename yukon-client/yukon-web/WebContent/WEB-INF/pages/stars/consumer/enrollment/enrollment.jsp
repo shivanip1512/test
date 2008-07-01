@@ -56,6 +56,9 @@ function categoryAction(categoryId, checked, programIds) {
         var ids = programIds.split(',');
         var programId = ids[0];
         $('program_' + programId).checked = true;
+        
+        $('program_' + programId).onclick();
+        
     } else {
         // Category checkbox unchecked, unselect each program's radio button
         var ids = programIds.split(',');
