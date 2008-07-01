@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_snpp.cpp-arc  $
-* REVISION     :  $Revision: 1.8 $
-* DATE         :  $Date: 2006/02/27 23:58:31 $
+* REVISION     :  $Revision: 1.9 $
+* DATE         :  $Date: 2008/07/01 21:32:43 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -244,16 +244,16 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             //The next set of data is optional, and falls through to the next optional piece until a used piece is found..
         case StateSendLoginInformation:
             {
-                if (getLoginName() != NULL)
+                if (getLoginName().length() != 0)
                 {
 
                     strncpy((char *)xfer.getOutBuffer(),_command_login,10);//LOGIn command
                     strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getLoginName(),50);
-                    if(getLoginPass() != NULL)
+                    strncat((char *)xfer.getOutBuffer(),getLoginName().c_str(),50);
+                    if(getLoginPass().length() != 0)
                     {
                         strncat((char *)xfer.getOutBuffer()," ",10);
-                        strncat((char *)xfer.getOutBuffer(),getLoginPass(),25);
+                        strncat((char *)xfer.getOutBuffer(),getLoginPass().c_str(),25);
                     }
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
@@ -269,12 +269,12 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendLevelNumber:
             {
-                if (getLevelNumber() != NULL)
+                if (getLevelNumber().length() != 0)
                 {
 
                     strncpy((char *)xfer.getOutBuffer(),_command_level,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getLevelNumber(),50);
+                    strncat((char *)xfer.getOutBuffer(),getLevelNumber().c_str(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
@@ -287,12 +287,12 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendAlertNumber:
             {
-                if (getAlertNumber() != NULL)
+                if (getAlertNumber().length() != 0)
                 {
 
                     strncpy((char *)xfer.getOutBuffer(),_command_alert,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getAlertNumber(),50);
+                    strncat((char *)xfer.getOutBuffer(),getAlertNumber().c_str(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
@@ -304,12 +304,12 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendCoverageNumber:
             {
-                if (getCoverageNumber() != NULL)
+                if (getCoverageNumber().length() != 0)
                 {
 
                     strncpy((char *)xfer.getOutBuffer(),_command_coverage,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getCoverageNumber(),50);
+                    strncat((char *)xfer.getOutBuffer(),getCoverageNumber().c_str(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
@@ -322,12 +322,12 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendHoldTime:
             {
-                if (getHoldTime() != NULL)
+                if (getHoldTime().length() != 0)
                 {
 
                     strncpy((char *)xfer.getOutBuffer(),_command_hold,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getHoldTime(),50);
+                    strncat((char *)xfer.getOutBuffer(),getHoldTime().c_str(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
@@ -340,14 +340,14 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendPageWithPass:
             {
-                if (getPagePass() != NULL)
+                if (getPagePass().length() != 0)
                 {
 
                     strncpy((char *)xfer.getOutBuffer(),_command_page,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getPageNumber(),50);
+                    strncat((char *)xfer.getOutBuffer(),getPageNumber().c_str(),50);
                     strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getPagePass(),50);
+                    strncat((char *)xfer.getOutBuffer(),getPagePass().c_str(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
@@ -362,7 +362,7 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             {
                 strncpy((char *)xfer.getOutBuffer(),_command_page,10);
                 strncat((char *)xfer.getOutBuffer()," ",10);
-                strncat((char *)xfer.getOutBuffer(),getPageNumber(),50);
+                strncat((char *)xfer.getOutBuffer(),getPageNumber().c_str(),50);
                 strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                 xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                 xfer.setInCountExpected( 0 );
@@ -373,12 +373,12 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendCallerID:
             {
-                if (getCallerID() != NULL)
+                if (getCallerID().length() != 0)
                 {
 
                     strncpy((char *)xfer.getOutBuffer(),_command_caller_id,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getCallerID(),50);
+                    strncat((char *)xfer.getOutBuffer(),getCallerID().c_str(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
@@ -391,12 +391,12 @@ INT CtiDeviceSnppPagingTerminal::generate(CtiXfer  &xfer)
             }
         case StateSendSubject:
             {
-                if (getSubject() != NULL)
+                if (getSubject().length() != 0)
                 {
 
                     strncpy((char *)xfer.getOutBuffer(),_command_subject,10);
                     strncat((char *)xfer.getOutBuffer()," ",10);
-                    strncat((char *)xfer.getOutBuffer(),getSubject(),50);
+                    strncat((char *)xfer.getOutBuffer(),getSubject().c_str(),50);
                     strncat((char *)xfer.getOutBuffer(),_char_cr_lf,10);
                     xfer.setOutCount(strlen((char *)xfer.getOutBuffer()));
                     xfer.setInCountExpected( 0 );
@@ -566,66 +566,66 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
     return nRet;
 }
 
-char* CtiDeviceSnppPagingTerminal::getLoginName()
+string CtiDeviceSnppPagingTerminal::getLoginName()
 {
-    if(!_table.getSenderID().empty() && !_table.getSenderID().find("none")!=string::npos)
+    if(!_table.getSenderID().empty() && _table.getSenderID().find("none") == string::npos)
     {
-        return const_cast<char *>(_table.getSenderID().c_str());
+        return _table.getSenderID();
     }
-    return NULL;
+    return string();
 }
 
-char* CtiDeviceSnppPagingTerminal::getLoginPass()
+string CtiDeviceSnppPagingTerminal::getLoginPass()
 {
-    if(!_table.getSecurityCode().empty() && !_table.getSecurityCode().find("none")!=string::npos)
+    if(!_table.getSecurityCode().empty() && _table.getSecurityCode().find("none") == string::npos)
     {
-        return const_cast<char *>(_table.getSecurityCode().c_str());
+        return _table.getSecurityCode();
     }
-    return NULL;
+    return string();
 }
 
-char* CtiDeviceSnppPagingTerminal::getLevelNumber()
+string CtiDeviceSnppPagingTerminal::getLevelNumber()
 {
-    return NULL;
+    return string();
 }
 
-char* CtiDeviceSnppPagingTerminal::getAlertNumber()
+string CtiDeviceSnppPagingTerminal::getAlertNumber()
 {
-    return NULL;
+    return string();
 }
 
-char* CtiDeviceSnppPagingTerminal::getCoverageNumber()
+string CtiDeviceSnppPagingTerminal::getCoverageNumber()
 {
-    return NULL;
+    return string();
 }
 
-char* CtiDeviceSnppPagingTerminal::getCallerID()
+string CtiDeviceSnppPagingTerminal::getCallerID()
 {
-    return NULL;
+    return string();
 }
 
-char* CtiDeviceSnppPagingTerminal::getHoldTime()
+string CtiDeviceSnppPagingTerminal::getHoldTime()
 {
-    return NULL;
+    return string();
 }
 
-char* CtiDeviceSnppPagingTerminal::getSubject()
+string CtiDeviceSnppPagingTerminal::getSubject()
 {
-    return NULL;
+    return string();
 }
 
-char* CtiDeviceSnppPagingTerminal::getPagePass()
+string CtiDeviceSnppPagingTerminal::getPagePass()
 {
-    return NULL;
+    return string();
 }
 
-char* CtiDeviceSnppPagingTerminal::getPageNumber()
+string CtiDeviceSnppPagingTerminal::getPageNumber()
 {
-    if(!_table.getPagerNumber().empty() && !_table.getPagerNumber().find("none")!=string::npos)
+    if(!_table.getPagerNumber().empty() && _table.getPagerNumber().find("none") == string::npos)
     {
-        return const_cast<char *>(_table.getPagerNumber().c_str());
+        return _table.getPagerNumber();
     }
-    return NULL;
+    return string();
 }
 
 CtiDeviceSnppPagingTerminal::StateMachine CtiDeviceSnppPagingTerminal::getCurrentState()

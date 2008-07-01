@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_tap.h-arc  $
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/07/01 21:32:43 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -129,16 +129,16 @@ private:
     static const char *_command_quit;
     static const char *_char_cr_lf;
 
-    char* getLoginName();
-    char* getLoginPass();
-    char* getLevelNumber();
-    char* getAlertNumber();
-    char* getCoverageNumber();
-    char* getCallerID();
-    char* getHoldTime();
-    char* getSubject();
-    char* getPagePass();
-    char* getPageNumber();
+    string getLoginName();
+    string getLoginPass();
+    string getLevelNumber();
+    string getAlertNumber();
+    string getCoverageNumber();
+    string getCallerID();
+    string getHoldTime();
+    string getSubject();
+    string getPagePass();
+    string getPageNumber();
 };
 /*
 #define CHAR_CR         0x0D
