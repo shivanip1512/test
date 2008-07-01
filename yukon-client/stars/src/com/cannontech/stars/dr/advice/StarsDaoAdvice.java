@@ -58,16 +58,17 @@ public class StarsDaoAdvice {
         Integer thermostatId = event.getThermostatId();
         LiteStarsEnergyCompany energyCompany = mappingDao.getInventoryEC(thermostatId);
 
-        // Clear account info cache entry
+        // Clear and reload account info cache entry
         CustomerAccount account = customerAccountDao.getAccountByInventoryId(thermostatId);
         int accountId = account.getAccountId();
 
         LiteStarsCustAccountInformation custAccountInformation = energyCompany.getCustAccountInformation(accountId,
                                                                                                          false);
         energyCompany.deleteCustAccountInformation(custAccountInformation);
+        energyCompany.getCustAccountInformation(accountId, true);
 
         // Clear inventory cache entry
-        energyCompany.deleteInventory(thermostatId);
+        energyCompany.reloadInventory(thermostatId);
 
     }
 
@@ -78,15 +79,16 @@ public class StarsDaoAdvice {
         Integer accountId = schedule.getAccountId();
         LiteStarsEnergyCompany energyCompany = mappingDao.getCustomerAccountEC(accountId);
 
-        // Clear account info cache entry
+        // Clear and reload account info cache entry
         LiteStarsCustAccountInformation custAccountInformation = energyCompany.getCustAccountInformation(accountId,
                                                                                                          false);
         energyCompany.deleteCustAccountInformation(custAccountInformation);
+        energyCompany.getCustAccountInformation(accountId, true);
 
         // Clear inventory cache entry
         Integer inventoryId = schedule.getInventoryId();
         if (inventoryId != 0) {
-            energyCompany.deleteInventory(inventoryId);
+            energyCompany.reloadInventory(inventoryId);
         }
 
     }
