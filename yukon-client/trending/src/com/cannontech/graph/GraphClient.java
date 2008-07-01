@@ -19,6 +19,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Vector;
+import java.util.List;
 import java.util.prefs.Preferences;
 
 import javax.swing.JLabel;
@@ -47,6 +48,7 @@ import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.graph.GraphDataSeries;
@@ -504,32 +506,11 @@ public void actionPerformed(java.awt.event.ActionEvent event)
 	}
 	else if( event.getSource() == getTrendMenu().getGetDataNowSelectedTrendMenuItem())
 	{
-		java.util.List trendPaobjects = DaoFactory.getGraphDao().getLiteYukonPaobjects(getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
+		List<LiteYukonPAObject> trendPaobjects = DaoFactory.getGraphDao().getLiteYukonPaobjects(getGraph().getGraphDefinition().getGraphDefinition().getGraphDefinitionID().intValue());
 		getGraph().getDataNow(trendPaobjects);
-	}
-	/*else if( event.getSource() == getOptionsMenu().getStatCarrierCommReportMenuItem())
+	}else
 	{
-		com.cannontech.analysis.data.statistic.StatisticCarrierCommData data = new com.cannontech.analysis.data.statistic.StatisticCarrierCommData("DEVICE", "CARRIER", "Monthly");
-		runReport(data);
-	}
-	else if( event.getSource() == getOptionsMenu().getStatCommChannelReportMenuItem())
-	{
-		com.cannontech.analysis.data.statistic.StatisticCommChannelData data = new com.cannontech.analysis.data.statistic.StatisticCommChannelData("PORT", "PORT", "Monthly");
-		runReport(data);
-	}
-	else if( event.getSource() == getOptionsMenu().getStatDeviceCommReportMenuItem())
-	{
-		com.cannontech.analysis.data.statistic.StatisticDeviceCommData data = new com.cannontech.analysis.data.statistic.StatisticDeviceCommData("DEVICE", "Monthly");
-		runReport(data);
-	}
-	else if( event.getSource() == getOptionsMenu().getStatTransmitterCommReportMenuItem())
-	{
-		com.cannontech.analysis.data.statistic.StatisticTransmitterCommData data = new com.cannontech.analysis.data.statistic.StatisticTransmitterCommData("DEVICE", "TRANSMITTER", "Monthly");
-		runReport(data);
-	}*/
-	else
-	{
-		com.cannontech.clientutils.CTILogger.info(" other action");
+		CTILogger.info(" other action");
 	}
 }
 
@@ -713,49 +694,45 @@ public void refresh( )
 /**
  * Updates currentWeek and period values based on TimePeriod selected. 
  */
-public void updateTimePeriod( )
-{
-    String period = getTimePeriodComboBox().getSelectedItem().toString();
-	getGraph().setPeriod(period);
-    if (getCurrentRadioButton().isSelected()
-    	|| period.equalsIgnoreCase(ServletUtil.ONEDAY)
-    	|| period.equalsIgnoreCase(ServletUtil.THREEDAYS)
-    	|| period.equalsIgnoreCase(ServletUtil.ONEWEEK))
-    	currentWeek = NO_WEEK;
-    else
-    	currentWeek = FIRST_WEEK;
-    	
-    if( !period.equalsIgnoreCase(ServletUtil.TODAY) &&
-    	!period.equalsIgnoreCase(ServletUtil.ONEDAY) )
-    {
-    	getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
-    	getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
-    }
-    else
-    {
-    	getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
-    }
+public void updateTimePeriod() {
+        Object selected = getTimePeriodComboBox().getSelectedItem();
+        if(selected != null) {
+            String period = selected.toString();
+            getGraph().setPeriod(period);
+            if (getCurrentRadioButton().isSelected() || period.equalsIgnoreCase(ServletUtil.ONEDAY) || period.equalsIgnoreCase(ServletUtil.THREEDAYS) || period.equalsIgnoreCase(ServletUtil.ONEWEEK))
+                currentWeek = NO_WEEK;
+            else
+                currentWeek = FIRST_WEEK;
     
-    // Enable / Disable the load duration and event controls
-    if (ServletUtil.EVENT.equals(period)) {
-        if(getCurrentRadioButton().isSelected()){
-            // Set date to tomorrow for Event so all of today's events are displayed
-            getStartDateComboBox().setSelectedDate(ServletUtil.getTomorrow());
-        }
-        getOptionsMenu().getLoadDurationMenuItem().setEnabled(false);
-        getEventJSpinner().setEnabled(true);
-        getEventLabel().setEnabled(true);
-    } else {
-        if (getCurrentRadioButton().isSelected()) {
-            getStartDateComboBox().setSelectedDate(ServletUtil.getToday());
-        }
-        getOptionsMenu().getLoadDurationMenuItem().setEnabled(true);
-        getEventJSpinner().setEnabled(false);
-        getEventLabel().setEnabled(false);
-    }
+            if (!period.equalsIgnoreCase(ServletUtil.TODAY) && !period.equalsIgnoreCase(ServletUtil.ONEDAY)) {
+                getOptionsMenu().getPlotYesterdayMenuItem().setSelected(false);
+                getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(false);
+            } else {
+                getOptionsMenu().getPlotYesterdayMenuItem().setEnabled(true);
+            }
     
-	getGraph().setUpdateTrend(true);
-}
+            // Enable / Disable the load duration and event controls
+            if (ServletUtil.EVENT.equals(period)) {
+                if (getCurrentRadioButton().isSelected()) {
+                    // Set date to tomorrow for Event so all of today's events are
+                    // displayed
+                    getStartDateComboBox().setSelectedDate(ServletUtil.getTomorrow());
+                }
+                getOptionsMenu().getLoadDurationMenuItem().setEnabled(false);
+                getEventJSpinner().setEnabled(true);
+                getEventLabel().setEnabled(true);
+            } else {
+                if (getCurrentRadioButton().isSelected()) {
+                    getStartDateComboBox().setSelectedDate(ServletUtil.getToday());
+                }
+                getOptionsMenu().getLoadDurationMenuItem().setEnabled(true);
+                getEventJSpinner().setEnabled(false);
+                getEventLabel().setEnabled(false);
+            }
+    
+            getGraph().setUpdateTrend(true);
+        }
+    }
 /**
  * Updates the editable items and start date display when period selection changes between current and historical.
  */
@@ -2395,7 +2372,7 @@ public void updateCurrentPane()
 {
 	synchronized (com.cannontech.graph.GraphClient.class)
 	{
-		trendDataAutoUpdater.ignoreAutoUpdate = true;
+	    trendDataAutoUpdater.ignoreAutoUpdate = true;
 	}	
 	
 	Object selectedItem = getTreeViewPanel().getSelectedItem();
@@ -2443,7 +2420,7 @@ public void updateCurrentPane()
 
 	synchronized (com.cannontech.graph.GraphClient.class)
 	{
-		trendDataAutoUpdater.ignoreAutoUpdate = false;
+	    trendDataAutoUpdater.ignoreAutoUpdate = false;
 	}	
 
 }

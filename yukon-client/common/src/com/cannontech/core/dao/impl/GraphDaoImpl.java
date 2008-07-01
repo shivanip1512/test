@@ -70,51 +70,51 @@ public final class GraphDaoImpl implements GraphDao {
 		return liteYukonPaobjectsVector;
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.GraphDao#getAllGraphDataSeries()
+	/**
+     * Returns a new List<GraphDataSeries>
      */
-	public java.util.List getAllGraphDataSeries()
+	public List<GraphDataSeries> getAllGraphDataSeries()
 	{
-		List graphDataSeriesVector = new ArrayList();
+		List<GraphDataSeries> graphDataSeriesList = new ArrayList<GraphDataSeries>();
 		
 		synchronized(databaseCache)
 		{
-			Iterator iter = databaseCache.getAllGraphDefinitions().iterator();
+			Iterator<LiteGraphDefinition> iter = databaseCache.getAllGraphDefinitions().iterator();
 			while(iter.hasNext())
 			{
-				LiteGraphDefinition liteGdef = (LiteGraphDefinition) iter.next();
+				LiteGraphDefinition liteGdef = iter.next();
 				GraphDataSeries [] allGDSSeries = GraphDataSeries.getAllGraphDataSeries(new Integer(liteGdef.getLiteID()));
 				for(int i = 0; i < allGDSSeries.length; i++)
 				{
-					graphDataSeriesVector.add(allGDSSeries[i]);
+					graphDataSeriesList.add(allGDSSeries[i]);
 				}
 			}
 		}
-		return graphDataSeriesVector;
+		return graphDataSeriesList;
 	}
 	
-	/* (non-Javadoc)
-     * @see com.cannontech.core.dao.GraphDao#getAllGraphDataSeries(int)
-     */
-	public java.util.List getAllGraphDataSeries(int type_)
+	/**
+	 * Returns a new List<GraphDataSeries>
+	 */
+	public List<GraphDataSeries> getAllGraphDataSeries(int type_)
 	{
-		java.util.List graphDataSeriesVector = new java.util.Vector(10);
+		List<GraphDataSeries> graphDataSeriesList = new ArrayList<GraphDataSeries>();
 		
 		synchronized(databaseCache)
 		{
-			Iterator iter = databaseCache.getAllGraphDefinitions().iterator();
+			Iterator<LiteGraphDefinition> iter = databaseCache.getAllGraphDefinitions().iterator();
 			while(iter.hasNext())
 			{
-				LiteGraphDefinition liteGdef = (LiteGraphDefinition) iter.next();
+				LiteGraphDefinition liteGdef = iter.next();
 				GraphDataSeries [] allGDSSeries = GraphDataSeries.getAllGraphDataSeries(new Integer(liteGdef.getLiteID()));
 				for(int i = 0; i < allGDSSeries.length; i++)
 				{
 					if( (allGDSSeries[i].getType().intValue() & type_) == type_)
-						graphDataSeriesVector.add(allGDSSeries[i]);
+						graphDataSeriesList.add(allGDSSeries[i]);
 				}
 			}
 		}
-		return graphDataSeriesVector;
+		return graphDataSeriesList;
 	}
 
     public void setDatabaseCache(IDatabaseCache databaseCache) {
