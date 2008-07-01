@@ -45,11 +45,8 @@ import com.cannontech.stars.web.action.ProgramSignUpAction;
 import com.cannontech.stars.web.action.UpdateLMHardwareConfigAction;
 import com.cannontech.stars.web.action.YukonSwitchCommandAction;
 import com.cannontech.stars.xml.serialize.SULMProgram;
-import com.cannontech.stars.xml.serialize.StarsAppliances;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsInventories;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsLMPrograms;
 import com.cannontech.stars.xml.serialize.StarsOperation;
 import com.cannontech.stars.xml.serialize.StarsProgramSignUp;
 import com.cannontech.stars.xml.serialize.StarsSULMPrograms;
@@ -138,38 +135,6 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
                                 customerAccount.getCustomerId(),
                                 ActivityLogActions.PROGRAM_ENROLLMENT_ACTION,
                                 logMessage);
-
-//        StarsProgramSignUpResponse resp = new StarsProgramSignUpResponse();
-//        resp.setStarsInventories(starsInvs);
-//        resp.setStarsLMPrograms(StarsLiteFactory.createStarsLMPrograms(liteCustomerAccount, energyCompany));
-//        resp.setStarsAppliances(StarsLiteFactory.createStarsAppliances(liteCustomerAccount.getAppliances(), energyCompany));
-//        operation.setStarsProgramSignUpResponse(resp);
-        
-        StarsCustAccountInformation custInfo = 
-            energyCompany.getStarsCustAccountInformation(customerAccountId, true);
-        
-        StarsLMPrograms starsPrograms = StarsLiteFactory.createStarsLMPrograms(liteCustomerAccount, energyCompany);
-        if (starsPrograms != null)
-            custInfo.setStarsLMPrograms(starsPrograms);
-
-        StarsAppliances starsAppliances = StarsLiteFactory.createStarsAppliances(liteCustomerAccount.getAppliances(), energyCompany);
-        if (starsAppliances != null && custInfo.getStarsAppliances() != null)
-            custInfo.setStarsAppliances(starsAppliances);
-
-        if (custInfo.getStarsInventories() != null) {
-            for (int i = 0; i < starsInvs.getStarsInventoryCount(); i++) {
-                StarsInventory starsInv = starsInvs.getStarsInventory(i);
-
-                StarsInventories inventories = custInfo.getStarsInventories();
-                for (int j = 0; j < inventories.getStarsInventoryCount(); j++) {
-                    StarsInventory inv = inventories.getStarsInventory(j);
-                    if (inv.getInventoryID() == starsInv.getInventoryID()) {
-                        inventories.setStarsInventory(j, starsInv);
-                        break;
-                    }
-                }
-            }
-        }
         
         ProgramEnrollmentResult result = (useHardwareAddressing) ?
                 ProgramEnrollmentResult.SUCCESS_HARDWARE_CONFIG : ProgramEnrollmentResult.SUCCESS;

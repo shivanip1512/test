@@ -51,7 +51,6 @@ import com.cannontech.stars.xml.serialize.StarsEnergyCompany;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
-import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.stars.xml.serialize.StarsServiceCompany;
 import com.cannontech.stars.xml.serialize.StarsServiceRequest;
 import com.cannontech.stars.xml.serialize.StarsServiceRequestHistory;
@@ -562,7 +561,6 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 			case DBChangeMsg.CHANGE_TYPE_UPDATE:
 			case DBChangeMsg.CHANGE_TYPE_DELETE:
 				energyCompany.deleteCustAccountInformation( liteAcctInfo );
-				energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 				break;
 		}
 	}
@@ -674,19 +672,6 @@ public class StarsDatabaseCache implements DBChangeLiteListener {
 				catch (java.sql.SQLException e) {
 					CTILogger.error( e.getMessage(), e );
 				}
-				
-				String newProgName = StarsUtils.getPublishedProgramName( liteProg );
-				
-                List<StarsCustAccountInformation> accounts = energyCompany.getActiveAccounts();
-				for (final StarsCustAccountInformation starsAcctInfo : accounts) {
-                    for (int j = 0; j < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); j++) {
-                        StarsLMProgram program = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(j);
-                        if (program.getProgramID() == liteProg.getProgramID()) {
-                            program.setProgramName( newProgName );
-                            break;
-                        }
-                    }
-                }
 				
 				break;
 				

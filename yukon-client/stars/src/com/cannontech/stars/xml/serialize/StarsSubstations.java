@@ -1,159 +1,82 @@
-/*
- * This class was automatically generated with 
- * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
- * XML Schema.
- * $Id: StarsSubstations.java,v 1.4 2008/06/23 20:01:31 nmeverden Exp $
- */
-
 package com.cannontech.stars.xml.serialize;
 
-  //---------------------------------/
- //- Imported classes and packages -/
-//---------------------------------/
-
+import java.util.Enumeration;
 import java.util.Vector;
 
-/**
- * 
- * 
- * @version $Revision: 1.4 $ $Date: 2008/06/23 20:01:31 $
-**/
 public class StarsSubstations {
-
-
-      //--------------------------/
-     //- Class/Member Variables -/
-    //--------------------------/
-
-    private java.util.Vector _starsSubstationList;
-
-
-      //----------------/
-     //- Constructors -/
-    //----------------/
+    private final Vector<StarsSubstation> starsSubstationList =
+        new Vector<StarsSubstation>();
 
     public StarsSubstations() {
-        super();
-        _starsSubstationList = new Vector();
-    } //-- com.cannontech.stars.xml.serialize.StarsSubstations()
+        init();
+    }
+    
+    private void init() {
+        StarsSubstation starsSub = new StarsSubstation();
+        starsSub.setSubstationID( 0 );
+        starsSub.setSubstationName( "(none)" );
+        starsSub.setRouteID( 0 );
+        starsSubstationList.add(starsSub);
+    }
 
+    public void addStarsSubstation(StarsSubstation vStarsSubstation) {
+        starsSubstationList.addElement(vStarsSubstation);
+    }
 
-      //-----------/
-     //- Methods -/
-    //-----------/
+    public void addStarsSubstation(int index, StarsSubstation vStarsSubstation) {
+        starsSubstationList.insertElementAt(vStarsSubstation, index);
+    }
 
-    /**
-     * 
-     * 
-     * @param vStarsSubstation
-    **/
-    public void addStarsSubstation(StarsSubstation vStarsSubstation)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsSubstationList.addElement(vStarsSubstation);
-    } //-- void addStarsSubstation(StarsSubstation) 
+    public Enumeration<StarsSubstation> enumerateStarsSubstation() {
+        return starsSubstationList.elements();
+    } 
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsSubstation
-    **/
-    public void addStarsSubstation(int index, StarsSubstation vStarsSubstation)
-        throws java.lang.IndexOutOfBoundsException
-    {
-        _starsSubstationList.insertElementAt(vStarsSubstation, index);
-    } //-- void addStarsSubstation(int, StarsSubstation) 
-
-    /**
-    **/
-    public java.util.Enumeration enumerateStarsSubstation()
-    {
-        return _starsSubstationList.elements();
-    } //-- java.util.Enumeration enumerateStarsSubstation() 
-
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsSubstation getStarsSubstation(int index)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public StarsSubstation getStarsSubstation(int index) {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsSubstationList.size())) {
+        if ((index < 0) || (index > starsSubstationList.size())) {
             throw new IndexOutOfBoundsException();
         }
         
-        return (StarsSubstation) _starsSubstationList.elementAt(index);
-    } //-- StarsSubstation getStarsSubstation(int) 
+        return starsSubstationList.elementAt(index);
+    } 
 
-    /**
-    **/
-    public StarsSubstation[] getStarsSubstation()
-    {
-        int size = _starsSubstationList.size();
+    public StarsSubstation[] getStarsSubstation() {
+        int size = starsSubstationList.size();
         StarsSubstation[] mArray = new StarsSubstation[size];
         for (int index = 0; index < size; index++) {
-            mArray[index] = (StarsSubstation) _starsSubstationList.elementAt(index);
+            mArray[index] = starsSubstationList.elementAt(index);
         }
         return mArray;
-    } //-- StarsSubstation[] getStarsSubstation() 
+    } 
 
-    /**
-    **/
-    public int getStarsSubstationCount()
-    {
-        return _starsSubstationList.size();
-    } //-- int getStarsSubstationCount() 
+    public int getStarsSubstationCount() {
+        return starsSubstationList.size();
+    }
 
-    /**
-    **/
-    public void removeAllStarsSubstation()
-    {
-        _starsSubstationList.removeAllElements();
-    } //-- void removeAllStarsSubstation() 
+    public void removeAllStarsSubstation() {
+        starsSubstationList.removeAllElements();
+    }
 
-    /**
-     * 
-     * 
-     * @param index
-    **/
-    public StarsSubstation removeStarsSubstation(int index)
-    {
-        java.lang.Object obj = _starsSubstationList.elementAt(index);
-        _starsSubstationList.removeElementAt(index);
+    public StarsSubstation removeStarsSubstation(int index) {
+        java.lang.Object obj = starsSubstationList.elementAt(index);
+        starsSubstationList.removeElementAt(index);
         return (StarsSubstation) obj;
-    } //-- StarsSubstation removeStarsSubstation(int) 
+    }
 
-    /**
-     * 
-     * 
-     * @param index
-     * @param vStarsSubstation
-    **/
-    public void setStarsSubstation(int index, StarsSubstation vStarsSubstation)
-        throws java.lang.IndexOutOfBoundsException
-    {
+    public void setStarsSubstation(int index, StarsSubstation vStarsSubstation) {
         //-- check bounds for index
-        if ((index < 0) || (index > _starsSubstationList.size())) {
+        if ((index < 0) || (index > starsSubstationList.size())) {
             throw new IndexOutOfBoundsException();
         }
-        _starsSubstationList.setElementAt(vStarsSubstation, index);
-    } //-- void setStarsSubstation(int, StarsSubstation) 
+        starsSubstationList.setElementAt(vStarsSubstation, index);
+    }
 
-    /**
-     * 
-     * 
-     * @param starsSubstationArray
-    **/
-    public void setStarsSubstation(StarsSubstation[] starsSubstationArray)
-    {
+    public void setStarsSubstation(StarsSubstation[] starsSubstationArray) {
         //-- copy array
-        _starsSubstationList.removeAllElements();
+        starsSubstationList.removeAllElements();
         for (int i = 0; i < starsSubstationArray.length; i++) {
-            _starsSubstationList.addElement(starsSubstationArray[i]);
+            starsSubstationList.addElement(starsSubstationArray[i]);
         }
-    } //-- void setStarsSubstation(StarsSubstation) 
+    }
 
 }

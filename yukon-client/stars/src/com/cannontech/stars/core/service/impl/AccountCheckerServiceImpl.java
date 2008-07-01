@@ -26,6 +26,7 @@ import com.cannontech.stars.dr.hardware.model.InventoryBase;
 import com.cannontech.stars.dr.program.dao.ProgramDao;
 import com.cannontech.stars.dr.program.model.Program;
 import com.cannontech.stars.dr.thermostat.dao.ThermostatScheduleDao;
+import com.cannontech.stars.dr.thermostat.model.ScheduleDropDownItem;
 import com.cannontech.stars.util.StarsUtils;
 
 public class AccountCheckerServiceImpl implements AccountCheckerService {
@@ -51,14 +52,23 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     public void checkThermostatSchedule(final LiteYukonUser user, final Integer... scheduleIds)
             throws NotAuthorizedException {
     	
-    	if(!this.isEmptyIds(scheduleIds)) {
-    		
-	        // Check schedule authorization by looking at the inventory that each schedule is
-	    	// associated with.
-	    	List<Integer> inventoryIds = thermostatScheduleDao.getInventoryIdsForSchedules(scheduleIds);
-	    	
-	        this.checkInventory(user, inventoryIds.toArray(new Integer[]{}));
-    	}
+        if (isEmptyIds(scheduleIds)) return;
+        
+        final List<Integer> actualSchedulIds = getScheduleIdsByUser(user);
+        final List<Integer> badScheduleIds = new ArrayList<Integer>(0);
+        
+        for (final Integer scheduleId : scheduleIds) {
+            boolean containsId = actualSchedulIds.contains(scheduleId);
+            if (!containsId) badScheduleIds.add(scheduleId);
+        }
+        
+        if (badScheduleIds.size() == 0) return;
+        
+        final List<Integer> inventoryIds = 
+            thermostatScheduleDao.getInventoryIdsForSchedules(badScheduleIds.toArray(
+                new Integer[badScheduleIds.size()]));
+
+        checkInventory(user, inventoryIds.toArray(new Integer[inventoryIds.size()]));
     }
     
     @Override
@@ -294,7 +304,6 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
     }
 
     private List<Integer> getGraphDefinitionIdsByUser(LiteYukonUser user) {
-
 		final List<LiteGraphDefinition> definitions = graphDao.getGraphDefinitionsForUser(user.getUserID());
 		final List<Integer> definitionIds = new ArrayList<Integer>();
 		for(final LiteGraphDefinition definition : definitions) {
@@ -303,6 +312,21 @@ public class AccountCheckerServiceImpl implements AccountCheckerService {
 		}
     	
     	return definitionIds;
+    }
+    
+    private List<Integer> getScheduleIdsByUser(LiteYukonUser user) {
+        final int accountId = getCustomerAccountId(user);
+        final List<ScheduleDropDownItem> schedules = 
+            thermostatScheduleDao.getSavedThermostatSchedulesByAccountId(accountId);
+
+        final List<Integer> scheduleIdList = new ArrayList<Integer>(schedules.size());
+        
+        for (final ScheduleDropDownItem item : schedules) {
+            Integer id = item.getId();
+            scheduleIdList.add(id);
+        }
+        
+        return scheduleIdList;
     }
     
     private int getCustomerAccountId(LiteYukonUser user) {

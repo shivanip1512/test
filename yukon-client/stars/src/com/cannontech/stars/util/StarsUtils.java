@@ -84,10 +84,10 @@ public class StarsUtils {
 		}
 	};
 	
-	public static final Comparator SUBSTATION_CMPTR = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			LiteSubstation sub1 = (LiteSubstation) o1;
-			LiteSubstation sub2 = (LiteSubstation) o2;
+	public static final Comparator<LiteSubstation> SUBSTATION_CMPTR = new Comparator<LiteSubstation>() {
+		public int compare(LiteSubstation o1, LiteSubstation o2) {
+			LiteSubstation sub1 = o1;
+			LiteSubstation sub2 = o2;
 			int res = sub1.getSubstationName().compareToIgnoreCase( sub2.getSubstationName() );
 			if (res == 0) res = sub1.getSubstationID() - sub2.getSubstationID();
 			return res;

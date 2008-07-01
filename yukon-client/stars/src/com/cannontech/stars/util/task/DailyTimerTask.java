@@ -105,9 +105,6 @@ public class DailyTimerTask extends StarsTimerTask {
                     Map<Integer,Object[]> batchConfig = InventoryManagerUtil.getBatchConfigSubmission();
     				batchConfig.put( company.getEnergyCompanyID(), new Object[]{new Date(), msg} );
     			}
-    			
-    			// Clear all the *active* account information
-    			company.clearActiveAccounts();
     		}
         }
         

@@ -126,15 +126,6 @@ public class UpdateSelectionListController extends StarsAdminActionController {
                 }
             }
             
-            List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-            for (int i = 0; i < descendants.size(); i++) {
-                LiteStarsEnergyCompany ec = descendants.get(i);
-                ec.updateStarsCustomerSelectionLists();
-                
-                if (listName.equalsIgnoreCase(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE))
-                    ec.updateStarsDefaultThermostatSchedules();
-            }
-            
             session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Customer selection list updated successfully");
         }
         catch (WebClientException e) {

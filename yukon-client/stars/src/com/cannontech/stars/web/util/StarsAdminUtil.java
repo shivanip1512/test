@@ -352,8 +352,6 @@ public class StarsAdminUtil {
 					if (Arrays.binarySearch(programIDs, progID) >= 0)
 						it.remove();
 				}
-				
-				company.updateStarsCustAccountInformation( liteAcctInfo );
 			}
 		}
 		
@@ -374,11 +372,6 @@ public class StarsAdminUtil {
 			Transaction.createTransaction( Transaction.DELETE, cfg ).execute();
 			
 			StarsDatabaseCache.getInstance().deleteWebConfiguration( liteProg.getWebSettingsID() );
-		}
-		
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = descendants.get(i);
-			company.updateStarsEnrollmentPrograms();
 		}
 	}
 	
@@ -410,13 +403,6 @@ public class StarsAdminUtil {
 		
 		LiteServiceCompany liteCompany = (LiteServiceCompany) StarsLiteFactory.createLite( companyDB );
 		energyCompany.addServiceCompany( liteCompany );
-		
-        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany ec = descendants.get(i);
-			ec.updateStarsServiceCompanies();
-		}
-		
 		return liteCompany;
 	}
 	
@@ -497,11 +483,6 @@ public class StarsAdminUtil {
 		
 		LiteContact liteContact = DaoFactory.getContactDao().getContact( liteCompany.getPrimaryContactID() );
 		ServerUtils.handleDBChange( liteContact, DBChangeMsg.CHANGE_TYPE_DELETE );
-		
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = descendants.get(i);
-			company.updateStarsServiceCompanies();
-		}
 	}
 	
 	public static void deleteAllServiceCompanies(LiteStarsEnergyCompany energyCompany)
@@ -529,13 +510,6 @@ public class StarsAdminUtil {
 		
 		LiteSubstation liteSub = (LiteSubstation) StarsLiteFactory.createLite( subDB );
 		energyCompany.addSubstation( liteSub );
-		
-        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany ec = descendants.get(i);
-			ec.updateStarsSubstations();
-		}
-		
 		return liteSub;
 	}
 	
@@ -571,11 +545,6 @@ public class StarsAdminUtil {
 		Transaction.createTransaction( Transaction.DELETE, sub ).execute();
 		
 		energyCompany.deleteSubstation( subID );
-		
-		for (int i = 0; i < descendants.size(); i++) {
-			LiteStarsEnergyCompany company = descendants.get(i);
-			company.updateStarsSubstations();
-		}
 	}
 	
 	public static void deleteAllSubstations(LiteStarsEnergyCompany energyCompany)
@@ -1017,8 +986,6 @@ public class StarsAdminUtil {
 					if (newDevTypeID != null) liteHw.setLmHardwareTypeID( newDevTypeID.intValue() );
 				}
 			}
-			
-			company.clearActiveAccounts();
 		}
 	}
 	

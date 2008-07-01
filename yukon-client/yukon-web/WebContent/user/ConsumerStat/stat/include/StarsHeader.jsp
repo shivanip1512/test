@@ -131,18 +131,12 @@
 	StarsUser userLogin = null;
 	LiteStarsCustAccountInformation liteAcctInfo = null;
 	
-	accountInfo = (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-	
-	// Register the account as active
-	while (accountInfo != null && !liteEC.registerActiveAccount(accountInfo)) {
-		accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID(), true);
-		if (accountInfo != null)
-			session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
-		else
-			ServletUtils.removeTransientAttributes(session);
-	}
-	
+	accountInfo = ServletUtils.removeAccountInformation(session);
+
 	if (accountInfo != null) {
+        accountInfo = liteEC.getStarsCustAccountInformation(accountInfo.getStarsCustomerAccount().getAccountID(), true);
+        session.setAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
+        
 		account = accountInfo.getStarsCustomerAccount();
 		liteAcctInfo = liteEC.getBriefCustAccountInfo(account.getAccountID(), true);
 		propAddr = account.getStreetAddress();

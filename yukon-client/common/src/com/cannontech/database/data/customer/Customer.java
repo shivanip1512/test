@@ -1,92 +1,65 @@
 package com.cannontech.database.data.customer;
 
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Vector;
+
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.contact.Contact;
 import com.cannontech.database.db.customer.DeviceCustomerList;
 import com.cannontech.database.db.graph.GraphCustomerList;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 
-/**
- * This type was created in VisualAge.
- */
-public class Customer extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange
-{	
+public class Customer extends com.cannontech.database.db.DBPersistent implements com.cannontech.database.db.CTIDbChange {	
 	private com.cannontech.database.db.customer.Customer customer = null;
-	
-	//contains com.cannontech.database.db.graph.GraphCustomerList
-	private java.util.Vector graphVector = null;
-
-	//contains com.cannontech.database.db.customer.DeviceCustomerList
-	private java.util.Vector deviceVector = null;
+	private Vector<GraphCustomerList> graphVector = null;
+	private Vector<DeviceCustomerList> deviceVector = null;
 
 	//contains ints of ContactIDs
 	private int[] customerContactIDs = new int[0];
 
-	
-	/**
-	 * Customer constructor comment.
-	 */
-	public Customer() 
-	{
-		this( new Integer(CustomerTypes.CUSTOMER_RESIDENTIAL) );
+	public Customer() {
+		this(CustomerTypes.CUSTOMER_RESIDENTIAL);
 	}
 
-	/**
-	 * Customer constructor comment.
-	 */
-	protected Customer( Integer typeID_ ) 
-	{
+	protected Customer(Integer typeId) {
 		super();
-		getCustomer().setCustomerTypeID( typeID_ );
+		getCustomer().setCustomerTypeID(typeId);
 	}
 
-	/**
-	 * Insert the method's description here.
-	 * @return java.util.Vector
-	 */
-	public int[] getCustomerContactIDs() 
-	{
+	public int[] getCustomerContactIDs() {
 		return customerContactIDs;
 	}
 
-	public void setCustomerContactIDs( int[] ids_ )
-	{
-		customerContactIDs = ids_;
+	public void setCustomerContactIDs(int[] ids) {
+		customerContactIDs = ids;
 	}
 
-	public void setCustomer( com.cannontech.database.db.customer.Customer customer_ ) {
-		customer = customer_;
+	public void setCustomer( com.cannontech.database.db.customer.Customer customer) {
+		this.customer = customer;
 	}
 
-	public com.cannontech.database.db.customer.Customer getCustomer()
-	{
-		if( customer == null )
+	public final com.cannontech.database.db.customer.Customer getCustomer() {
+		if (customer == null )
 			customer = new com.cannontech.database.db.customer.Customer();
 		
 		return customer;
 	}
-	
 
-	public void setCustomerID( Integer cstID_ )
-	{
-		getCustomer().setCustomerID( cstID_ );
+	public void setCustomerID(Integer cstId) {
+		getCustomer().setCustomerID(cstId);
 	}
 	
-	public Integer getCustomerID()
-	{
+	public Integer getCustomerID() {
 		return getCustomer().getCustomerID();
 	}
 
-	/**
-	 * This method was created in VisualAge.
-	 * @exception java.sql.SQLException The exception description.
-	 */
-	public void add() throws java.sql.SQLException 
-	{
-		if( getCustomerID() == null )
+	@Override
+    public void add() throws SQLException  {
+		if (getCustomerID() == null) {
 			setCustomerID( 
 				com.cannontech.database.db.customer.Customer.getNextCustomerID() );
-				
+		}		
 		getCustomer().add();
 		
 		// add all the contacts for this customers
@@ -116,12 +89,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 			 ((com.cannontech.database.db.DBPersistent) getDeviceVector().elementAt(i)).add();			
 	}
 	
-	/** 
-	 * This method was created in VisualAge.
-	 * @exception java.sql.SQLException The exception description.
-	 */
-	public void delete() throws java.sql.SQLException 
-	{
+	@Override
+    public void delete() throws SQLException {
 		// delete all the relations from a graph to this customer
 		GraphCustomerList.deleteGraphCustomerList( getCustomerID(), getDbConnection() );
 		
@@ -136,8 +105,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		getCustomer().delete();	
 	}
 
-	public void setDbConnection( java.sql.Connection conn )
-	{
+	@Override
+    public void setDbConnection(Connection conn) {
 		super.setDbConnection( conn );
 		getCustomer().setDbConnection(conn);
 
@@ -149,12 +118,8 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 
 	}
 	
-	/**
-	 * This method was created in VisualAge.
-	 * @exception java.sql.SQLException The exception description.
-	 */
-	public void retrieve() throws java.sql.SQLException 
-	{
+	@Override
+    public void retrieve() throws SQLException {
 		getCustomer().retrieve();
 	
 		try
@@ -208,26 +173,21 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		}
 	}
 	
-	
-	/**
-	 * This method was created in VisualAge.
-	 * @exception java.sql.SQLException The exception description.
-	 */
-	public void update() throws java.sql.SQLException 
-	{	
+	@Override
+    public void update() throws SQLException {	
 		getCustomer().update();
 		
 		// delete all the graph references for this customer
 		GraphCustomerList.deleteGraphCustomerList( getCustomerID(), getDbConnection() );
 		// add all the graphs for this customer
 		for (int i = 0; i < getGraphVector().size(); i++)
-			 ((GraphCustomerList) getGraphVector().elementAt(i)).add();
+			 getGraphVector().elementAt(i).add();
 
 		// delete all the device references for this customer
 		DeviceCustomerList.deleteDeviceCustomerList( getCustomerID() ,getDbConnection());
 		// add all the devices for this customer
 		for (int i = 0; i < getDeviceVector().size(); i++)
-			 ((DeviceCustomerList) getDeviceVector().elementAt(i)).add();
+			 getDeviceVector().elementAt(i).add();
 
 			 
 		// delete all the customer contacts for this customer
@@ -252,21 +212,7 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 		}
 	}
 
-
-	/**
-	 * Insert the method's description here.
-	 * Creation date: (12/19/2001 1:45:25 PM)
-	 * @return com.cannontech.message.dispatch.message.DBChangeMsg[]
-	 */
-	public DBChangeMsg[] getDBChangeMsgs( int typeOfChange )
-	{
-/*
-		DBChangeMsg[] msgs =
-			new DBChangeMsg
-					[1 + (getCustomerContactIDs().length == 0 
-							? 1  //at least have room to put the Global Change into the array
-							: getCustomerContactIDs().length)  ];
-*/
+	public DBChangeMsg[] getDBChangeMsgs(int typeOfChange) {
 		String categoryType = DBChangeMsg.CAT_CUSTOMER;
 		if( getCustomer().getCustomerTypeID().intValue() == CustomerTypes.CUSTOMER_CI)
 			categoryType= DBChangeMsg.CAT_CI_CUSTOMER;
@@ -279,71 +225,28 @@ public class Customer extends com.cannontech.database.db.DBPersistent implements
 						categoryType,
 						typeOfChange);
 
-/*
-		//if CustomerContacts have already been deleted, we must send a Change All CustomerContact Cache out
-		if( getCustomerContactIDs().length == 0 )
-		{
-			msgs[ msgs.length - 1 ] = 	
-				new DBChangeMsg( 
-					DBChangeMsg.CHANGE_INVALID_ID,
-					DBChangeMsg.CHANGE_CUSTOMER_CONTACT_DB,
-					DBChangeMsg.CAT_CUSTOMERCONTACT,
-					DBChangeMsg.CAT_CUSTOMERCONTACT,
-					typeOfChange);
-		}
-		else
-		{
-			//add the CustomerContact DBChangeMsg to the new array
-			for( int i = 0; i < getCustomerContactIDs().length; i++ )
-				msgs[ msgs.length + i ] =
-					new DBChangeMsg( 
-						getCustomerContactIDs()[i],
-						DBChangeMsg.CHANGE_CUSTOMER_CONTACT_DB,
-						DBChangeMsg.CAT_CUSTOMERCONTACT,
-						DBChangeMsg.CAT_CUSTOMERCONTACT,
-						typeOfChange);
-		}
-	
-*/
 		return msgs;
 	}
 
-	/**
-	 * Returns the graphVector.
-	 * @return java.util.Vector
-	 */
-	public java.util.Vector getGraphVector() 
-	{	
-		if( graphVector == null )
-			graphVector = new java.util.Vector(10);
+	public Vector<GraphCustomerList> getGraphVector() {	
+		if (graphVector == null )
+			graphVector = new Vector<GraphCustomerList>(10);
 
 		return graphVector;
 	}
 
-	/**
-	 * Sets the graphVector.
-	 * @param graphVector The graphVector to set
-	 */
-	public void setGraphVector(java.util.Vector graphVector) {
+	public void setGraphVector(Vector<GraphCustomerList> graphVector) {
 		this.graphVector = graphVector;
 	}
 
-	/**
-	 * @return
-	 */
-	public java.util.Vector getDeviceVector()
-	{
-		if( deviceVector == null )
-			deviceVector = new java.util.Vector(10);
+	public Vector<DeviceCustomerList> getDeviceVector() {
+		if (deviceVector == null)
+			deviceVector = new java.util.Vector<DeviceCustomerList>(10);
 
 		return deviceVector;
 	}
 
-	/**
-	 * @param vector
-	 */
-	public void setDeviceVector(java.util.Vector deviceVector)
-	{
+	public void setDeviceVector(Vector<DeviceCustomerList> deviceVector) {
 		this.deviceVector = deviceVector;
 	}
 }

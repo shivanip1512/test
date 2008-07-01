@@ -2,11 +2,12 @@
 	Main portal for operators
 -->
 
+<%@ page import="com.cannontech.roles.operator.InventoryRole" %>
+<%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
+
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
-
-<%@ include file="Consumer/include/StarsHeader.jsp" %>
 
 <cti:verifyRolesAndProperties value="
     ConsumerInfoRole, 
@@ -37,29 +38,7 @@
 
 <div id="main">
 
-<!-- Consumer Account Information section -->
-<%
-	Integer lastAcctOption = null;
-	List<StarsSelectionListEntry> selectionList = null;
-	
-	if (selectionListTable != null) {
-		lastAcctOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_ACCOUNT_SEARCH_OPTION);
-		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get( YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE );
-		
-		StarsSelectionListEntry[] selectionListValues = searchByList.getStarsSelectionListEntry();
-		selectionList = new ArrayList<StarsSelectionListEntry>();
-
-		for(StarsSelectionListEntry entry : selectionListValues) {
-			if(entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_SEARCH_TYPE_METER_NO){
-				selectionList.add(entry);
-			}
-		}
-	}
-%>
-
-<c:set var="selectionListTable" scope="page" value="<%=selectionListTable%>" />
-<c:set var="lastAcctOption" scope="page" value="<%=lastAcctOption%>" />
-<c:set var="custSearchByList" scope="page" value="<%=selectionList%>" />
+<cti:starsOperations/>
 
 <cti:checkRole role="ConsumerInfoRole.ROLEID">
 
@@ -94,24 +73,24 @@
 		</c:choose>
 		
 		<!-- Customer search form -->
-		<div class="sectionForm">
-			<form name="custSearchForm" method="POST" action="<c:url value="/servlet/SOAPClient"/>">
-				<input type="hidden" name="action" value="SearchCustAccount" />
-				<div class="sectionFormLabel">Search for existing customer:</div>
-				<div>
-					<select name="SearchBy" onchange="document.custSearchForm.SearchValue.value=''">
-						<c:if test="${pageScope.selectionListTable != null}">
-							<c:forEach items="${pageScope.custSearchByList}" var="entry">
+		<c:if test="${showStarsList}">
+			<div class="sectionForm">
+				<form name="custSearchForm" method="POST" action="<c:url value="/servlet/SOAPClient"/>">
+					<input type="hidden" name="action" value="SearchCustAccount" />
+					<div class="sectionFormLabel">Search for existing customer:</div>
+					<div>
+						<select name="SearchBy" onchange="document.custSearchForm.SearchValue.value=''">
+							<c:forEach items="${customerSearchList}" var="entry">
 								<option value="${entry.entryID}" >${entry.content}</option>
 							</c:forEach>
-						</c:if>
-					</select>
-		
-					<input type="text" name="SearchValue" size="15" value='${LAST_ACCOUNT_SEARCH_VALUE}'>
-					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm.submit();"> 
-				</div>
-			</form>
-		</div>
+						</select>
+			
+						<input type="text" name="SearchValue" size="15" value=''>
+						<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.custSearchForm.submit();"> 
+					</div>
+				</form>
+			</div>
+        </c:if>
 	</tags:operationSection>
 	
 </cti:checkRole>
@@ -190,40 +169,6 @@
 </cti:checkRole>
 
 <!-- Hardware Inventory section -->
-<%
-	Integer lastInvOption = null;
-	List<StarsSelectionListEntry> invSelectionList = null;
-
-	if (selectionListTable != null) {
-		lastInvOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_INVENTORY_SEARCH_OPTION);
-		YukonListEntry devTypeMCT = liteEC.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_MCT);
-		
-		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_INV_SEARCH_BY);
-		invSelectionList = new ArrayList<StarsSelectionListEntry>();
-		
-		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
-			if (entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_METER_NO 
-				&& entry.getYukonDefID() != YukonListEntryTypes.YUK_DEF_ID_INV_SEARCH_BY_DEVICE_NAME 
-				&& devTypeMCT != null)
-			{
-				invSelectionList.add(entry);
-			}
-		}
-	}
-
-	String hardwarePage = "Hardware/Inventory.jsp";
-	if(((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)) == null || 
-		((ArrayList)session.getAttribute(ServletUtil.FILTER_INVEN_LIST)).size() < 1) { 
-		hardwarePage = "Hardware/Filter.jsp";
-
-	}
-%>
-
-<c:set var="lastInvOption" scope="page" value="<%=lastInvOption%>" />
-<c:set var="invSearchByList" scope="page" value="<%=invSelectionList%>" />
-<c:set var="hardwarePage" scope="page" value="<%=hardwarePage%>" />	
-
 <cti:checkRole roleid="<%= InventoryRole.ROLEID %>">
 
 	<tags:operationSection sectionName="Hardware Inventory" sectionImageName="HardwareInventoryLogo">
@@ -239,59 +184,30 @@
 	    </cti:checkProperty>
         
         <!-- Hardware search form -->
-		<div class="sectionForm">
-			<form name="invSearchForm" method="POST" action="<c:url value="/servlet/InventoryManager"/>">
-				<input type="hidden" name="action" value="SearchInventory">
-				<input type="hidden" name="REDIRECT" value="<c:url value="/operator/Hardware/ResultSet.jsp"/>">
-				<div class="sectionFormLabel">Search for existing hardware:</div>
-				<div>
-					<select name="SearchBy" onchange="document.invSearchForm.SearchValue.value=''">
-						<c:if test="${pageScope.selectionListTable != null}">
-							<c:forEach items="${pageScope.invSearchByList}" var="entry">
+        <c:if test="${showStarsList}">
+			<div class="sectionForm">
+				<form name="invSearchForm" method="POST" action="<c:url value="/servlet/InventoryManager"/>">
+					<input type="hidden" name="action" value="SearchInventory">
+					<input type="hidden" name="REDIRECT" value="<c:url value="/operator/Hardware/ResultSet.jsp"/>">
+					<div class="sectionFormLabel">Search for existing hardware:</div>
+					<div>
+						<select name="SearchBy" onchange="document.invSearchForm.SearchValue.value=''">
+							<c:forEach items="${inventorySearchList}" var="entry">
 								<option value="${entry.yukonDefID}" >${entry.content}</option>
 							</c:forEach>
-						</c:if>
-					</select>
-		
-					<input type="text" name="SearchValue" size="15" value="${LAST_INVENTORY_SEARCH_VALUE}">
-					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onclick="Javascript:document.invSearchForm.submit();" >
-				</div>
-			</form>
-		</div>
+						</select>
+			
+						<input type="text" name="SearchValue" size="15" value="">
+						<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onclick="Javascript:document.invSearchForm.submit();" >
+					</div>
+				</form>
+			</div>
+		</c:if>
 	</tags:operationSection>
 
 </cti:checkRole>
 
 <!-- Work Orders section -->
-
-<%
-	Integer lastSrvcOption = null;
-	List<StarsSelectionListEntry> srvcSearchByList = null;
-
-	if (selectionListTable != null) {
-
-		lastSrvcOption = (Integer) session.getAttribute(ServletUtils.ATT_LAST_SERVICE_SEARCH_OPTION);
-
-		StarsCustSelectionList searchByList = (StarsCustSelectionList) selectionListTable.get(YukonSelectionListDefs.YUK_LIST_NAME_SO_SEARCH_BY);
-		srvcSearchByList = new ArrayList<StarsSelectionListEntry>();
-		
-		for (int i = 0; i < searchByList.getStarsSelectionListEntryCount(); i++) {
-			StarsSelectionListEntry entry = searchByList.getStarsSelectionListEntry(i);
-			srvcSearchByList.add(entry);
-		}
-	}
-	
-	String serviceOrderPage = "WorkOrder/WorkOrder.jsp";
-	if(((ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)) == null || 
-		((ArrayList)session.getAttribute(ServletUtil.FILTER_WORKORDER_LIST)).size() < 1) { 
-		serviceOrderPage = "WorkOrder/WOFilter.jsp";
-	}
-%>
-
-<c:set var="lastSrvcOption" scope="page" value="<%=lastSrvcOption%>" />
-<c:set var="srvcSearchByList" scope="page" value="<%=srvcSearchByList%>" />
-<c:set var="serviceOrderPage" scope="page" value="<%=serviceOrderPage%>" />
-
 <cti:checkRole roleid="<%= WorkOrderRole.ROLEID %>">
 
 	<tags:operationSection sectionName="Work Orders" sectionImageName="WorkOrdersLogo">
@@ -302,26 +218,26 @@
 		</cti:checkProperty>
 		
 		<!-- Service order search form -->
-		<div class="sectionForm">
-			<form name="soSearchForm" method="post" action="<c:url value="/servlet/WorkOrderManager"/>">
-				<input type="hidden" name="action" value="SearchWorkOrder">
-				<input type="hidden" name="REDIRECT" value="<c:url value="/operator/WorkOrder/SearchResults.jsp"/>">
-				
-				<div class="sectionFormLabel">Search for existing service order:</div>
-				<div>
-					<select name="SearchBy" onchange="document.soSearchForm.SearchValue.value=''">
-						<c:if test="${pageScope.selectionListTable != null}">
-							<c:forEach items="${pageScope.srvcSearchByList}" var="entry">
+		<c:if test="${showStarsList}">
+			<div class="sectionForm">
+				<form name="soSearchForm" method="post" action="<c:url value="/servlet/WorkOrderManager"/>">
+					<input type="hidden" name="action" value="SearchWorkOrder">
+					<input type="hidden" name="REDIRECT" value="<c:url value="/operator/WorkOrder/SearchResults.jsp"/>">
+					
+					<div class="sectionFormLabel">Search for existing service order:</div>
+					<div>
+						<select name="SearchBy" onchange="document.soSearchForm.SearchValue.value=''">
+							<c:forEach items="${serviceOrderSearchList}" var="entry">
 								<option value="${entry.yukonDefID}" >${entry.content}</option>
 							</c:forEach>
-						</c:if>
-					</select>
-		
-					<input type="text" name="SearchValue" size="15" value="${LAST_SERVICE_SEARCH_VALUE}">
-					<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.soSearchForm.submit();" >
-				</div>
-			</form>
-		</div>
+						</select>
+			
+						<input type="text" name="SearchValue" size="15" value="">
+						<img class="cssicon" src="<c:url value="/WebConfig/yukon/Icons/clearbits/search.gif"/>" alt="search" onClick="Javascript:document.soSearchForm.submit();" >
+					</div>
+				</form>
+			</div>
+		</c:if>
 	</tags:operationSection>
 
 </cti:checkRole> 

@@ -65,7 +65,6 @@ public class StarsDaoAdvice {
         LiteStarsCustAccountInformation custAccountInformation = energyCompany.getCustAccountInformation(accountId,
                                                                                                          false);
         energyCompany.deleteCustAccountInformation(custAccountInformation);
-        energyCompany.deleteStarsCustAccountInformation(accountId);
 
         // Clear inventory cache entry
         energyCompany.deleteInventory(thermostatId);
@@ -83,7 +82,6 @@ public class StarsDaoAdvice {
         LiteStarsCustAccountInformation custAccountInformation = energyCompany.getCustAccountInformation(accountId,
                                                                                                          false);
         energyCompany.deleteCustAccountInformation(custAccountInformation);
-        energyCompany.deleteStarsCustAccountInformation(accountId);
 
         // Clear inventory cache entry
         Integer inventoryId = schedule.getInventoryId();

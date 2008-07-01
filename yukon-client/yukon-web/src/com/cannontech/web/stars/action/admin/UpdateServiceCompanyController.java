@@ -156,12 +156,6 @@ public class UpdateServiceCompanyController extends StarsAdminActionController {
                 }
             }
 
-            List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-            for (int i = 0; i < descendants.size(); i++) {
-                LiteStarsEnergyCompany ec = descendants.get(i);
-                ec.updateStarsServiceCompanies();
-            }
-
             session.removeAttribute( StarsAdminUtil.SERVICE_COMPANY_TEMP );
             if (newCompany)
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Service company created successfully");

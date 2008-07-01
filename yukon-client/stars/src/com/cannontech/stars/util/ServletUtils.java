@@ -34,8 +34,10 @@ import com.cannontech.stars.xml.serialize.ControlSummary;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsApplianceCategory;
 import com.cannontech.stars.xml.serialize.StarsAppliances;
+import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
 import com.cannontech.stars.xml.serialize.StarsCustomerAddress;
 import com.cannontech.stars.xml.serialize.StarsCustomerContact;
+import com.cannontech.stars.xml.serialize.StarsEnergyCompanySettings;
 import com.cannontech.stars.xml.serialize.StarsEnrLMProgram;
 import com.cannontech.stars.xml.serialize.StarsEnrollmentPrograms;
 import com.cannontech.stars.xml.serialize.StarsInventory;
@@ -90,6 +92,8 @@ public class ServletUtils {
 	public static final String ATT_CUSTOMER_SELECTION_LISTS = "CUSTOMER_SELECTION_LISTS";
 	public static final String ATT_DEFAULT_THERMOSTAT_SETTINGS = "DEFAULT_THERMOSTAT_SETTINGS";
 	public static final String ATT_CUSTOMER_ACCOUNT_INFO = "CUSTOMER_ACCOUNT_INFORMATION";
+	public static final String TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO = 
+	    ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO;
 	
 	public static final String ATT_LM_PROGRAM_HISTORY = "LM_PROGRAM_HISTORY";
 	public static final String ATT_CHANGED_THERMOSTAT_SETTINGS = "CHANGED_THERMOSTAT_SETTINGS";
@@ -702,7 +706,30 @@ public class ServletUtils {
     public static StarsYukonUser getStarsYukonUser(final HttpSession session ) {
         return (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
     }
+    
+    public static StarsEnergyCompanySettings getEnergyCompanySettings(final HttpSession session) {
+        return (StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+    }
+    
+    public static String removeErrorMessage(final HttpSession session) {
+        String errorMsg = (String) session.getAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+        session.removeAttribute(ServletUtils.ATT_ERROR_MESSAGE);
+        return errorMsg;
+    }
 
+    public static String removeConfirmMessage(final HttpSession session) {
+        String confirmMsg = (String) session.getAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
+        session.removeAttribute(ServletUtils.ATT_CONFIRM_MESSAGE);
+        return confirmMsg;
+    }
+
+    public static StarsCustAccountInformation removeAccountInformation(final HttpSession session) {
+        StarsCustAccountInformation accountInfo = 
+            (StarsCustAccountInformation) session.getAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
+        session.removeAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO);
+        return accountInfo;
+    }
+    
     /**
      * @return the current StarsYukonUser Object found in the request.
      * @throws NotLoggedInException if no session exists

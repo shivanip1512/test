@@ -24,10 +24,7 @@ import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
-import com.cannontech.stars.xml.serialize.StarsLMProgram;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
 public class UpdateApplianceCategoryController extends StarsAdminActionController {
@@ -167,29 +164,8 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
                         liteProg.setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
                         liteProg.setProgramOrder( pubProg.getLMProgramWebPublishing().getProgramOrder().intValue() );
 
-                        String oldDispName = StarsUtils.getPublishedProgramName( liteProg );
-
                         LiteWebConfiguration liteCfg = this.starsDatabaseCache.getWebConfiguration( liteProg.getWebSettingsID() );
                         StarsLiteFactory.setLiteWebConfiguration( liteCfg, pubProg.getWebConfiguration() );
-
-                        // If program display name changed, we need to update all the accounts enrolled in this program
-                        if (!newDispName.equals( oldDispName )) {
-                            for (int j = 0; j < descendants.size(); j++) {
-                                LiteStarsEnergyCompany company = descendants.get(j);
-
-                                List<StarsCustAccountInformation> accounts = company.getActiveAccounts();
-                                for (int k = 0; k < accounts.size(); k++) {
-                                    StarsCustAccountInformation starsAcctInfo = accounts.get(k);
-                                    for (int l = 0; l < starsAcctInfo.getStarsLMPrograms().getStarsLMProgramCount(); l++) {
-                                        StarsLMProgram program = starsAcctInfo.getStarsLMPrograms().getStarsLMProgram(l);
-                                        if (program.getProgramID() == liteProg.getProgramID()) {
-                                            program.setProgramName( newDispName );
-                                            break;
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                     else {
                         pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
@@ -243,8 +219,6 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
                             if (((LiteLMProgramEvent) it.next()).getProgramID() == liteProg.getProgramID())
                                 it.remove();
                         }
-
-                        company.updateStarsCustAccountInformation( liteAcctInfo );
                     }
                 }
 
@@ -257,11 +231,6 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
 
                 energyCompany.deleteProgram( liteProg.getProgramID() );
                 this.starsDatabaseCache.deleteWebConfiguration( liteProg.getWebSettingsID() );
-            }
-
-            for (int i = 0; i < descendants.size(); i++) {
-                LiteStarsEnergyCompany company = descendants.get(i);
-                company.updateStarsEnrollmentPrograms();
             }
 
             if (newAppCat)

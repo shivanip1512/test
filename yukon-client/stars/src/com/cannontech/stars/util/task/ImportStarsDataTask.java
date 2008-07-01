@@ -2823,7 +2823,6 @@ public class ImportStarsDataTask extends TimeConsumingTask {
 					}
 					
 					StarsAdminUtil.updateYukonListEntries( cList, entryData, energyCompany );
-					energyCompany.updateStarsCustomerSelectionLists();
 					
 					for (int i = 0; i < newEntries.size(); i++) {
 						for (int j = 0; j < cList.getYukonListEntries().size(); j++) {

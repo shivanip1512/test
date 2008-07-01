@@ -174,6 +174,7 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
         sql.append("SELECT ScheduleId, ScheduleName");
         sql.append("FROM LMThermostatSchedule");
         sql.append("WHERE AccountId = ?");
+        sql.append("ORDER BY ScheduleName");
 
         List<ScheduleDropDownItem> items = simpleJdbcTemplate.query(sql.toString(),
                                                                     new ScheduleDropDownItemMapper(),

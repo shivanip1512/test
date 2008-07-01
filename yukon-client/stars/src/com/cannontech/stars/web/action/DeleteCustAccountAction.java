@@ -204,7 +204,6 @@ public class DeleteCustAccountAction implements ActionBase {
 		
 		// Delete lite and stars objects
 		energyCompany.deleteCustAccountInformation( liteAcctInfo );
-		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 		ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_DELETE );
 	}
 

@@ -669,16 +669,6 @@ public class ImportManagerUtil {
 			StarsUpdateLogin login = createStarsUpdateLogin( fields, energyCompany );
 			UpdateLoginAction.updateLogin( login, liteAcctInfo, energyCompany, isValidLocationForImport(energyCompany, automatedImport) );
 		}
-		
-		// Delete the stars object from cache, so the user will see a fresh new copy
-        /* TODO: do I want this line, or is it better to do similar to in the UpdateCustAccountAction.process
-         * where I do this to make sure the currently viewed account gets updated:
-         *  StarsCustAccountInformation starsCust = energyCompany.getStarsCustAccountInformation(updateAccount.getAccountID(), true);
-         *  session.setAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO, starsCust);
-         *  I think this would adjust only the active account, which could be a problem since the importer either doesn't have
-         *  an active account (auto) or just viewed a different account (manual).  Leave this be for now, I think it is better this way.
-         */
-		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	
 	private static int getDeviceTypeID(LiteStarsEnergyCompany energyCompany, String deviceType) {
@@ -852,10 +842,6 @@ public class ImportManagerUtil {
 		setStarsInventory( createHw, fields, energyCompany, problem );
 	    
 		liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );
-		
-		if (liteAcctInfo != null)
-			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-	    
 		return liteInv;
 	}
 	
@@ -877,10 +863,6 @@ public class ImportManagerUtil {
 		setStarsInventory( updateHw, fields, energyCompany, problem );
 		
 		UpdateLMHardwareAction.updateInventory( updateHw, liteInv, energyCompany );
-		
-		if (liteAcctInfo != null)
-			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
-		
 		return energyCompany.getInventory( liteInv.getInventoryID(), true );
 	}
 	
@@ -914,7 +896,6 @@ public class ImportManagerUtil {
 		}
 		
 		DeleteLMHardwareAction.removeInventory( deleteHw, liteAcctInfo, energyCompany );
-		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	
 	/**
@@ -964,8 +945,6 @@ public class ImportManagerUtil {
                 }
             }
         }
-        
-		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	
     public static boolean isValidLocationForImport(LiteStarsEnergyCompany energyCompany, boolean automatedTask) {
@@ -1206,7 +1185,6 @@ public class ImportManagerUtil {
 		setStarsAppliance( newApp, fields, energyCompany );
 		
 		CreateApplianceAction.createAppliance( newApp, liteAcctInfo, energyCompany );
-		energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
 	}
 	
 	public static void updateAppliance(String[] fields, int appID, LiteStarsCustAccountInformation liteAcctInfo,
@@ -1228,7 +1206,6 @@ public class ImportManagerUtil {
 			setStarsAppliance( updateApp, fields, energyCompany );
 			
 			UpdateApplianceAction.updateAppliance( updateApp, liteAcctInfo );
-			energyCompany.deleteStarsCustAccountInformation( liteAcctInfo.getAccountID() );
         }
 		else
 			newAppliance( fields, liteAcctInfo, energyCompany );

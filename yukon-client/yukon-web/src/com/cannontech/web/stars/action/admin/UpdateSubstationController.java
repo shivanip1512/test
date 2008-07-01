@@ -56,12 +56,6 @@ public class UpdateSubstationController extends StarsAdminActionController {
                 StarsLiteFactory.setLiteSubstation( liteSub, subDB );
             }
 
-            List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
-            for (int i = 0; i < descendants.size(); i++) {
-                LiteStarsEnergyCompany ec = descendants.get(i);
-                ec.updateStarsSubstations();
-            }
-
             if (newSubstation)
                 session.setAttribute(ServletUtils.ATT_CONFIRM_MESSAGE, "Substation created successfully");
             else
