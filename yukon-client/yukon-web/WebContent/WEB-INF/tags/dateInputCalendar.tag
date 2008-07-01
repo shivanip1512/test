@@ -11,7 +11,12 @@
 
 <input id="${uniqueId}" name="${fieldName}" type="text" size="10" maxlength="10" value="${fieldValue}" style="width:70px;">&nbsp;
 
-<span onclick="javascript:showCalendarControl($('${uniqueId}'));" style="cursor:pointer;">
+<cti:msg key="yukon.common.calendarcontrol.months" var="months"/>
+<cti:msg key="yukon.common.calendarcontrol.days" var="days"/>
+<cti:msg key="yukon.common.calendarcontrol.clear" var="clear"/>
+<cti:msg key="yukon.common.calendarcontrol.close" var="close"/>
+
+<span onclick="javascript:showCalendarControl($('${uniqueId}'), '${months}', '${days}', '${clear}', '${close}');" style="cursor:pointer;">
 	<img src="<c:url value="/WebConfig/yukon/Icons/StartCalendar.gif"/>" width="20" height="15" border="0" />
 </span>
 

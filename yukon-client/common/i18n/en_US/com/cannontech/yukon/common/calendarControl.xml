@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
+<properties>
+
+    <!-- months and days must both be comma separated lists -->
+    <entry key="yukon.common.calendarcontrol.months">January,February,March,April,May,June,July,August,September,October,November,December</entry>
+    <entry key="yukon.common.calendarcontrol.days">S,M,T,W,T,F,S</entry>
+
+    <entry key="yukon.common.calendarcontrol.clear">Clear</entry>
+    <entry key="yukon.common.calendarcontrol.close">Close</entry>
+
+</properties>
