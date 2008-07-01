@@ -78,9 +78,39 @@ function CalendarControl() {
   var selectedMonth = 0;
   var selectedDay = 0;
 
-  var months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var months = null;
+  var days = null;
   var dateField = null;
 
+  var clear = null;
+  var close = null;
+  
+  this.setMonths = setMonths;
+  function setMonths(localeMonths) {
+	  var array = localeMonths.split(",")
+	  months = array;
+  }
+  
+  this.setDays = setDays;
+  function setDays(localeDays) {
+	  var htmlDays = '';
+	  var array = localeDays.split(",");
+	  for (var i = 0; i < array.length; i++) {
+		  htmlDays += '<th>' + array[i] + '</th>';
+	  }
+	  days = htmlDays;
+  }	  
+  
+  this.setClear = setClear;
+  function setClear(clearText) {
+	  clear = clearText;
+  }
+  
+  this.setClose = setClose;
+  function setClose(closeText) {
+	  close = closeText;
+  }	  
+  
   function getProperty(p_property){
     var p_elm = calendarId;
     var elm = null;
@@ -203,7 +233,7 @@ function CalendarControl() {
     table = table + "  <td colspan='3' class='title'>" + months[currentMonth-1] + "<br>" + currentYear + "</td>";
     table = table + "  <td colspan='2' class='next'><a href='javascript:changeCalendarControlYear(1);'>&raquo;</a> <a href='javascript:changeCalendarControlMonth(1);'>&gt;</a></td>";
     table = table + "</tr>";
-    table = table + "<tr><th>S</th><th>M</th><th>T</th><th>W</th><th>T</th><th>F</th><th>S</th></tr>";
+    table = table + "<tr>" + days + "</tr>";
 
     for(var week=0; week < 6; week++) {
       table = table + "<tr>";
@@ -232,7 +262,7 @@ function CalendarControl() {
       table = table + "</tr>";
     }
 
-    table = table + "<tr class='header'><th colspan='7' style='padding: 3px;'><a href='javascript:clearCalendarControl();'>Clear</a> | <a href='javascript:hideCalendarControl();'>Close</a></td></tr>";
+    table = table + "<tr class='header'><th colspan='7' style='padding: 3px;'><a href='javascript:clearCalendarControl();'>" + clear + "</a> | <a href='javascript:hideCalendarControl();'>" + close + "</a></td></tr>";
     table = table + "</table>";
 
     return table;
@@ -317,9 +347,12 @@ function CalendarControl() {
 
 var calendarControl = new CalendarControl();
 
-function showCalendarControl(textField) {
-  // textField.onblur = hideCalendarControl;
-  calendarControl.show(textField);
+function showCalendarControl(textField, months, days, clear, close) {
+	calendarControl.setMonths(months);
+	calendarControl.setDays(days);
+	calendarControl.setClear(clear);
+	calendarControl.setClose(close);
+	calendarControl.show(textField);
 }
 
 function clearCalendarControl() {
