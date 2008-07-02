@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_snpp.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2008/07/01 21:32:43 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/07/02 19:05:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -568,7 +568,8 @@ INT CtiDeviceSnppPagingTerminal::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandP
 
 string CtiDeviceSnppPagingTerminal::getLoginName()
 {
-    if(!_table.getSenderID().empty() && _table.getSenderID().find("none") == string::npos)
+    if(!_table.getSenderID().empty() && 
+       _table.getSenderID().find("none") == string::npos && _table.getSenderID() != " ")
     {
         return _table.getSenderID();
     }
@@ -577,7 +578,8 @@ string CtiDeviceSnppPagingTerminal::getLoginName()
 
 string CtiDeviceSnppPagingTerminal::getLoginPass()
 {
-    if(!_table.getSecurityCode().empty() && _table.getSecurityCode().find("none") == string::npos)
+    if(!_table.getSecurityCode().empty() && 
+       _table.getSecurityCode().find("none") == string::npos && _table.getSecurityCode() != " ")
     {
         return _table.getSecurityCode();
     }
@@ -621,7 +623,8 @@ string CtiDeviceSnppPagingTerminal::getPagePass()
 
 string CtiDeviceSnppPagingTerminal::getPageNumber()
 {
-    if(!_table.getPagerNumber().empty() && _table.getPagerNumber().find("none") == string::npos)
+    if(!_table.getPagerNumber().empty() &&
+        _table.getPagerNumber().find("none") == string::npos && _table.getPagerNumber() != " ")
     {
         return _table.getPagerNumber();
     }
