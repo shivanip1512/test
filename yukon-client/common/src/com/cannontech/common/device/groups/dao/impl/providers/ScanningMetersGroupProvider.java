@@ -1,5 +1,5 @@
-package com.cannontech.common.device.groups.dao.impl.providers;
 
+package com.cannontech.common.device.groups.dao.impl.providers;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -27,9 +27,8 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderBase {
         // return devices that are scanning load profile
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid, ypo.type");
-        sql.append("FROM DeviceMeterGroup d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("WHERE d.deviceid IN (" + scanIndicatingDevice.getDeviceIdSql() + ")");
+        sql.append("FROM YukonPaObject ypo");
+        sql.append("WHERE ypo.paobjectid IN (" + scanIndicatingDevice.getDeviceIdSql() + ")");
         
         YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
         List<YukonDevice> devices = jdbcTemplate.query(sql.toString(), mapper);
@@ -59,10 +58,8 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderBase {
         // is this device scanning? if so, it belongs to the base group
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT COUNT(*) AS c");
-        sql.append("FROM DeviceMeterGroup d");
-        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-        sql.append("WHERE d.deviceid IN (" + scanIndicatingDevice.getDeviceIdSql() + ")");
-        sql.append("AND d.deviceid = ?");
+        sql.append("FROM (" + scanIndicatingDevice.getDeviceIdSql() + ") ypo ");
+        sql.append("WHERE ypo.deviceid = ?");
         
         Integer deviceCount = jdbcTemplate.queryForInt(sql.toString(), device.getDeviceId());
         
@@ -71,16 +68,7 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderBase {
 
 	@Override
     public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
-	    
-	    // gather pao id's for all devices that are scanning
-	    SqlStatementBuilder paoIdSql = new SqlStatementBuilder();
-	    paoIdSql.append("SELECT ypo.paobjectid");
-	    paoIdSql.append("FROM DeviceMeterGroup d");
-	    paoIdSql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
-	    paoIdSql.append("WHERE d.deviceid IN (" + scanIndicatingDevice.getDeviceIdSql() + ")");
-        
-	    String whereString = identifier + " IN ( " + paoIdSql.toString() + ") ";
-	    
+	    String whereString = identifier + " IN ( " +  scanIndicatingDevice.getDeviceIdSql()  + ") ";
 	    return whereString;
     }
 
