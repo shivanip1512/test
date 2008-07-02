@@ -13,10 +13,14 @@
 	<c:if test='${meter.route != null}'>${meter.route}</c:if>
     <c:if test='${meter.route == null}'>n/a</c:if>
     </tags:nameValue>
-	
+	<tags:nameValue name="Status">
+	<c:if test='${meter.disabled}'><div style="font-weight:bold;color:#CC0000;">Disabled</div></c:if>
+    <c:if test='${!meter.disabled}'><div style="font-weight:bold;color:#006633;">Enabled</div></c:if>
+    </tags:nameValue>
+    	
 	<tr><td><div style="height:8px;"></div></td></tr>
     <tr>
-        <td><tags:widgetActionUpdate method="ping" label="Ping" labelBusy="Pinging" container="${widgetParameters.widgetId}_results" /></td>
+        <td><tags:widgetActionUpdate method="ping" label="Ping" labelBusy="Pinging" container="${widgetParameters.widgetId}_results" />
         <td>
         <div id="${widgetParameters.widgetId}_results">
             <c:if test="${state == 'RESTORED' && empty errorsExist}">
