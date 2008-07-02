@@ -627,13 +627,23 @@ public class Multispeak implements MessageListener {
                                     //Lookup meter by PaoName
                                     String paoName = getPaoNameFromMspMeter(mspMeter, paoAlias, null);
                                     if (paoName != null) {
-                                        //We have a meter with the same deviceName as the meter being added.
-                                        com.cannontech.amr.meter.model.Meter meterByDeviceName = meterDao.getForPaoName(paoName);
-                                        ErrorObject err = isMeterDisabled(meterByDeviceName, mspVendor);
-                                        if (err != null) {
-                                            errorObjects.add(err);
-                                        } else { //Disabled Meter found
-                                            addExistingMeter(mspMeter, meterByDeviceName, mspVendor, paoAlias);
+                                        
+                                        // check if meter with this name already exists
+                                        try {
+                                            com.cannontech.amr.meter.model.Meter meterByDeviceName = meterDao.getForPaoName(paoName);
+                                            
+                                            //We have a meter with the same deviceName as the meter being added.
+                                            ErrorObject err = isMeterDisabled(meterByDeviceName, mspVendor);
+                                            if (err != null) {
+                                                errorObjects.add(err);
+                                            } else { //Disabled Meter found
+                                                addExistingMeter(mspMeter, meterByDeviceName, mspVendor, paoAlias);
+                                            }
+                                        } // doesn't exist, Add New Hardware
+                                        catch (NotFoundException ex) {
+                                            
+                                            List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
+                                            errorObjects.addAll(addMeterErrors);
                                         }
                                     } else { //Add New Hardware
                                         List<ErrorObject> addMeterErrors = addNewMeter(mspMeter, mspVendor);
