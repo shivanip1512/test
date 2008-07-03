@@ -1446,4 +1446,12 @@ public static Date roundToMinute(Date toRound) {
         
         return existingMap;
     }
+    
+    public static String urlEncode(String input) {
+        try {
+            return URLEncoder.encode(input, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException("could not encode string", e);
+        }
+    }
 }
