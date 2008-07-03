@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2008/06/25 17:08:41 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2008/07/03 16:04:24 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -489,6 +489,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                         }
 
                         arm_req->setMessagePriority(pReq->getMessagePriority());
+                        arm_req->setConnectionHandle(0);  //  this should disappear into the aether - we don't want the CSR stuff to get confused by the expectMore
 
                         CtiCommandParser arm_parse(arm_req->CommandString());
 
