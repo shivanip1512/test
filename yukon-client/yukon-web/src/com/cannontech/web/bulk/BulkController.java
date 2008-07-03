@@ -1,6 +1,11 @@
 package com.cannontech.web.bulk;
 
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.io.Writer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -28,6 +33,8 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.tools.csv.CSVWriter;
+import com.cannontech.util.ServletUtil;
 import com.cannontech.web.group.DeviceGroupTreeUtils;
 import com.cannontech.web.util.ExtTreeNode;
 
@@ -38,7 +45,7 @@ public class BulkController extends BulkControllerBase {
 
     private PaoDao paoDao = null;
     private DeviceGroupService deviceGroupService = null;
-    private RecentResultsCache<BulkOperationCallbackResults> recentResultsCache = null;
+    private RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache = null;
     
     // BULK HOME
     public ModelAndView bulkHome(HttpServletRequest request, HttpServletResponse response) throws ServletException {
@@ -49,14 +56,14 @@ public class BulkController extends BulkControllerBase {
         //------------------------------------------------------------------------------------------
         
         // bulk update operations (add both completed and pending to same list)
-        List<BulkOperationCallbackResults> bulkUpdateOperationResultsList = new ArrayList<BulkOperationCallbackResults>();
+        List<BulkOperationCallbackResults<?>> bulkUpdateOperationResultsList = new ArrayList<BulkOperationCallbackResults<?>>();
         
         // ADD RESULTS TO LISTS
         // -----------------------------------------------------------------------------------------
         
         // results
-        bulkUpdateOperationResultsList.addAll(new ReverseList<BulkOperationCallbackResults>(recentResultsCache.getPending()));
-        bulkUpdateOperationResultsList.addAll(new ReverseList<BulkOperationCallbackResults>(recentResultsCache.getCompleted()));
+        bulkUpdateOperationResultsList.addAll(new ReverseList<BulkOperationCallbackResults<?>>(recentResultsCache.getPending()));
+        bulkUpdateOperationResultsList.addAll(new ReverseList<BulkOperationCallbackResults<?>>(recentResultsCache.getCompleted()));
         
         // add lists to mav
         mav.addObject("bulkUpdateOperationResultsList", bulkUpdateOperationResultsList);
@@ -108,23 +115,36 @@ public class BulkController extends BulkControllerBase {
         ModelAndView mav = new ModelAndView("processingExceptionErrorsList.jsp");
 
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
+        BulkOperationCallbackResults<?> bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
         
         mav.addObject("exceptionRowNumberMap", bulkUpdateOperationResults.getProcessingExceptionRowNumberMap());
         return mav;
     }
     
-    public ModelAndView mappingExceptionErrorsRefresh(HttpServletRequest request, HttpServletResponse response) throws ServletException {
+    @SuppressWarnings("unchecked")
+    public ModelAndView processingExceptionFileDownload(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
 
-        ModelAndView mav = new ModelAndView("mappingExceptionErrorsList.jsp");
-        
+
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
+        BulkOperationCallbackResults<?> bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
         
-        mav.addObject("exceptionRowNumberMap", bulkUpdateOperationResults.getMappingExceptionRowNumberMap());
-        return mav;
+        List<String[]> fileLines = (List<String[]>)bulkUpdateOperationResults.getProcesingExceptionObjects();
+        
+        response.setContentType("text/csv");
+        response.setHeader("Content-Type", "application/force-download");
+        response.setHeader("Content-Disposition","attachment; filename=\"" + ServletUtil.makeWindowsSafeFileName("ExceptionsFile_" + resultsId) + ".csv\"");
+        OutputStream outputStream = response.getOutputStream();
+        
+        Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
+        CSVWriter csvWriter = new CSVWriter(writer);
+        
+        for (String[] line : fileLines) {
+            csvWriter.writeNext(line);
+        }
+        csvWriter.close();
+        
+        return null;
     }
-    
     
     // SELECT DEVICES BY GROUP TREE JSON
     public ModelAndView selectDevicesByGroupTreeJson(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
@@ -191,7 +211,7 @@ public class BulkController extends BulkControllerBase {
     }
     
     @Required
-    public void setRecentBulkOperationResultsCache(RecentResultsCache<BulkOperationCallbackResults> recentResultsCache) {
+    public void setRecentBulkOperationResultsCache(RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
     }
 

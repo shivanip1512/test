@@ -40,6 +40,7 @@ import com.cannontech.common.bulk.service.BulkFileInfo;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
 import com.cannontech.common.bulk.service.ParsedBulkFileInfo;
+import com.cannontech.common.bulk.service.UpdateImportCallbackResults;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -65,7 +66,7 @@ public abstract class BaseBulkService {
     private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory = null;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
-    private RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache = null;
+    private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
     private TemporaryDeviceGroupService temporaryDeviceGroupService = null;
 
     protected boolean checkForDuplicates(List<BulkFieldColumnHeader> headerColumnSet, ParsedBulkFileInfo result) {
@@ -266,30 +267,7 @@ public abstract class BaseBulkService {
             nonIgnorableFields.add(updateableField);
         }
 
-        return findYukonDeviceFieldProcessors(nonIgnorableFields);
-    }
-
-    protected List<BulkYukonDeviceFieldProcessor> findYukonDeviceFieldProcessors(List<BulkField<?, YukonDevice>> bulkFields) {
-        
-        List<BulkYukonDeviceFieldProcessor> processors = new ArrayList<BulkYukonDeviceFieldProcessor>();
-
-        // this guy is kinda dumb, will always be 1-to-1 field-to-processor
-        // will be more complicated if multi-field processors ever exist
-        for (BulkField<?, YukonDevice> updateableField : bulkFields) {
-            
-            // the fields the processor needs to handle
-            Set<BulkField<?, YukonDevice>> requiredSet = new HashSet<BulkField<?, YukonDevice>>(1);
-            requiredSet.add(updateableField);
-            
-            // find that processor
-            for (BulkYukonDeviceFieldProcessor processor : bulkFieldService.getBulkFieldProcessors()) {
-                if (requiredSet.equals(processor.getUpdatableFields())) {
-                    processors.add(processor);
-                    break;
-                }
-            } 
-        }
-        return processors;
+        return bulkFieldService.findProcessorsForFields(nonIgnorableFields);
     }
 
     protected String runProcess(CsvReaderIterator csvReaderIterator, 
@@ -307,9 +285,9 @@ public abstract class BaseBulkService {
         StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
 
         // init callcback, use a TranslatingBulkProcessorCallback to get from UpdateableDevice to YukonDevice
-        BulkOperationCallbackResults bulkOperationCallbackResults = new BulkOperationCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, updateBulkFieldColumnHeaders, bulkOperationType);
+        UpdateImportCallbackResults bulkOperationCallbackResults = new UpdateImportCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, updateBulkFieldColumnHeaders, bulkOperationType);
 
-        BulkProcessorCallback<UpdateableDevice> bulkProcessorCallback = new TranslatingBulkProcessorCallback<UpdateableDevice, YukonDevice>(bulkOperationCallbackResults, new UpdateableDeviceMapper());
+        BulkProcessorCallback<String[],UpdateableDevice> bulkProcessorCallback = new TranslatingBulkProcessorCallback<String[],UpdateableDevice, YukonDevice>(bulkOperationCallbackResults, new UpdateableDeviceMapper());
 
         // save reference to callback in cache
         String id = StringUtils.replace(UUID.randomUUID().toString(), "-", "");
@@ -371,7 +349,7 @@ public abstract class BaseBulkService {
 
     @Required
     public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache) {
+            RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
         this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
     }
 
@@ -382,7 +360,7 @@ public abstract class BaseBulkService {
         this.temporaryDeviceGroupService = temporaryDeviceGroupService;
     }
 
-    protected UpdateableDevice setupUpdateableDevice(String[] row, YukonDevice device, List<BulkField<?, YukonDevice>> bulkFields, Map<BulkField<?, YukonDevice>, Integer> bulkFieldIndexMap) {
+    public static UpdateableDevice setupUpdateableDevice(String[] row, YukonDevice device, List<BulkField<?, YukonDevice>> bulkFields, Map<BulkField<?, YukonDevice>, Integer> bulkFieldIndexMap) {
 
         UpdateableDevice updateableDevice = null;
         

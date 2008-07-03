@@ -6,42 +6,35 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.bulk.processor.ProcessingException;
+import com.cannontech.common.bulk.processor.ProcessorCallbackException;
 
 /**
  * Class which serves as a callback and result holder for bulk processing
  */
-public class CollectingBulkProcessorCallback<T> implements BulkProcessorCallback<T>, BulkProcessingResultHolder<T> {
+public class CollectingBulkProcessorCallback<I,O> implements BulkProcessorCallback<I,O>, BulkProcessingResultHolder<I,O> {
 
     private boolean complete = false;
     private Exception failedException = null;
 
     // map of row number to success object
-    private Map<Integer, T> successObjectRowNumberMap = new LinkedHashMap<Integer, T>();
+    private Map<Integer, O> successObjectRowNumberMap = new LinkedHashMap<Integer, O>();
     
     // maps of row number to exception
-    private Map<Integer, ObjectMappingException> mappingExceptionRowNumberMap = new LinkedHashMap<Integer, ObjectMappingException>();
-    private Map<Integer, ProcessingException> processingExceptionRowNumberMap = new LinkedHashMap<Integer, ProcessingException>();
+    private Map<Integer, ProcessorCallbackException> processingExceptionRowNumberMap = new LinkedHashMap<Integer, ProcessorCallbackException>();
     
     // map of row number to the object that failed to process
-    private Map<Integer, T> processingExceptionObjectRowNumberMap = new HashMap<Integer, T>();
+    private Map<Integer, I> processingExceptionObjectRowNumberMap = new HashMap<Integer, I>();
     
     
     // CALL BACK METHODS
     //----------------------------------------------------------------------------------------------
-    public void receivedObjectMappingException(int rowNumber, ObjectMappingException e) {
-        
-        this.mappingExceptionRowNumberMap.put(rowNumber, e);
-    }
-
-    public void receivedProcessingException(int rowNumber, T object, ProcessingException e) {
+    public void receivedProcessingException(int rowNumber, I object, ProcessorCallbackException e) {
         
         this.processingExceptionRowNumberMap.put(rowNumber, e);
         this.processingExceptionObjectRowNumberMap.put(rowNumber, object);
     }
 
-    public void processedObject(int rowNumber, T object) {
+    public void processedObject(int rowNumber, O object) {
         
         this.successObjectRowNumberMap.put(rowNumber, object);
     }
@@ -64,21 +57,13 @@ public class CollectingBulkProcessorCallback<T> implements BulkProcessorCallback
     //----------------------------------------------------------------------------------------------
     
     // EXCEPTION LISTS
-    public List<ObjectMappingException> getMappingExceptionList() {
-        return new ArrayList<ObjectMappingException>(this.mappingExceptionRowNumberMap.values());
-    }
-    
-    public List<ProcessingException> getProcessingExceptionList() {
-        return new ArrayList<ProcessingException>(this.processingExceptionRowNumberMap.values());
+    public List<ProcessorCallbackException> getProcessingExceptionList() {
+        return new ArrayList<ProcessorCallbackException>(this.processingExceptionRowNumberMap.values());
     }
     
     
     // EXCEPTION ROW NUMBER MAPS
-    public Map<Integer, ObjectMappingException> getMappingExceptionRowNumberMap() {
-        return this.mappingExceptionRowNumberMap;
-    }
-    
-    public Map<Integer, ProcessingException> getProcessingExceptionRowNumberMap() {
+    public Map<Integer, ProcessorCallbackException> getProcessingExceptionRowNumberMap() {
         return this.processingExceptionRowNumberMap;
     }
 
@@ -92,10 +77,6 @@ public class CollectingBulkProcessorCallback<T> implements BulkProcessorCallback
         return this.processingExceptionRowNumberMap.size();
     }
     
-    public int getMappingExceptionCount() {
-        return this.mappingExceptionRowNumberMap.size();
-    }
-
     
     // STATUS
     public boolean isComplete() {
@@ -120,12 +101,12 @@ public class CollectingBulkProcessorCallback<T> implements BulkProcessorCallback
 
     
     // SUCCESS AND FAIL (processing) OBJECTS
-    public List<T> getSuccessObjects() {
-        return new ArrayList<T>(this.successObjectRowNumberMap.values());
+    public List<O> getSuccessObjects() {
+        return new ArrayList<O>(this.successObjectRowNumberMap.values());
     }
 
-    public List<T> getProcesingExceptionObjects() {
-        return new ArrayList<T>(this.processingExceptionObjectRowNumberMap.values());
+    public List<I> getProcesingExceptionObjects() {
+        return new ArrayList<I>(this.processingExceptionObjectRowNumberMap.values());
     }
 
 }

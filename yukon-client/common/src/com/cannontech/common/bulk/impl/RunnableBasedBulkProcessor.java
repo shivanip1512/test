@@ -21,7 +21,7 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
     public <I, O> void bulkProcess(Iterator<I> iterator,
             ObjectMapper<I, O> mapper, 
             Processor<O> processor,
-            BulkProcessorCallback<O> callback) {
+            BulkProcessorCallback<I,O> callback) {
 
         // Get the bulk processor runnable and run it in this thread (will
         // block)
@@ -33,7 +33,7 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
 
     public <I, O> void backgroundBulkProcess(Iterator<I> iterator,
             ObjectMapper<I, O> mapper, Processor<O> processor,
-            BulkProcessorCallback<O> callback) {
+            BulkProcessorCallback<I,O> callback) {
 
 
         // Get the bulk processor runnable and ask the ScheduledExecutor to run
@@ -47,6 +47,6 @@ public abstract class RunnableBasedBulkProcessor extends BulkProcessorBase {
     
     protected abstract <I, O> Runnable getBulkProcessorRunnable(
             final Iterator<I> iterator, final ObjectMapper<I, O> mapper,
-            final Processor<O> processor, final BulkProcessorCallback<O> callback);
+            final Processor<O> processor, final BulkProcessorCallback<I,O> callback);
     
 }

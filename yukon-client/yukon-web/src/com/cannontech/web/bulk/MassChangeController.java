@@ -24,7 +24,7 @@ public class MassChangeController extends BulkControllerBase {
 
     private BulkFieldService bulkFieldService = null;
     private DeviceDao deviceDao = null;
-    private RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache = null;
+    private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
     
     /**
      * SELECT MASS CHANGE TYPE
@@ -58,7 +58,7 @@ public class MassChangeController extends BulkControllerBase {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
+        BulkOperationCallbackResults<?> bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
         
         // file info
         MassChangeFileInfo massChangeFileInfo = (MassChangeFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
@@ -161,7 +161,7 @@ public class MassChangeController extends BulkControllerBase {
     
     @Required
     public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache) {
+            RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
         this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
     }
     

@@ -34,7 +34,7 @@ public class ImportController extends MultiActionController {
 
     private BulkFieldService bulkFieldService = null;
     private BulkImportService bulkImportService = null;
-    private RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache = null;
+    private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
     
     private List<BulkImportMethod> importMethods = null;
     private Map<String, BulkImportFileInfo> bulkImportFileInfoMap = new HashMap<String, BulkImportFileInfo>();
@@ -161,7 +161,7 @@ public class ImportController extends MultiActionController {
         
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
+        BulkOperationCallbackResults<?> bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
         
         BulkImportFileInfo bulkImportFileInfo = (BulkImportFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
         
@@ -178,7 +178,7 @@ public class ImportController extends MultiActionController {
     
     @Required
     public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache) {
+            RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
         this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
     }
 

@@ -4,5 +4,5 @@ import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 
 public interface BulkResultValueAccessor {
 
-    public Object getValue(BulkOperationCallbackResults bulkOperationCallbackResults);
+    public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults);
 }

@@ -12,8 +12,7 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.updateTime">Time</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.fields">Fields</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.success">Success</entry>
-    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException"><![CDATA[Processing<br>Failures]]></entry>
-    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.mappingException"><![CDATA[Invalid<br>Data]]></entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException">Failures</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailHeader">Detail</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailLink">View</entry>
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detail">Detail</entry>
@@ -23,7 +22,9 @@
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE">{isComplete|Complete|In Progress}</entry>
     
     <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.performNewActionLinkTitle">Perform another action on these devices</entry>
-
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.downloadErrorFileLabel">Download</entry>
+    <entry key="yukon.common.device.bulk.bulkHome.recentBulkOperations.downloadErrorFileTitle">Download CSV File Of Failed Lines</entry>
+    
     <!-- Device Collections -->
     <entry key="yukon.common.device.bulk.bulkAction.collection.addressRange">All devices in address range: {0} - {1}</entry>
     <entry key="yukon.common.device.bulk.bulkAction.collection.group">All devices in device group: {0}</entry>
@@ -147,14 +148,11 @@
     <entry key="yukon.common.device.bulk.massChangeResults.progressLabel">Progress</entry>
     <entry key="yukon.common.device.bulk.massChangeResults.successLabel">Successfully Updated</entry>
     <entry key="yukon.common.device.bulk.massChangeResults.processingExceptionLabel">Failed To Process</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.mappingExceptionLabel">Invalid Data</entry>
     
     <entry key="yukon.common.device.bulk.massChangeResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
     <entry key="yukon.common.device.bulk.massChangeResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.mappingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.massChangeResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.noMappingExceptionErrorListLabel">No invalid data errors.</entry>
 
     <!-- Mass Change Fields -->
     <entry key="yukon.common.device.bulk.massChange.route">Change Route</entry>
@@ -269,14 +267,11 @@
     <entry key="yukon.common.device.bulk.updateResults.progressLabel">Progress</entry>
     <entry key="yukon.common.device.bulk.updateResults.successLabel">Successfully Updated</entry>
     <entry key="yukon.common.device.bulk.updateResults.processingExceptionLabel">Failed To Update</entry>
-    <entry key="yukon.common.device.bulk.updateResults.mappingExceptionLabel">Invalid Data</entry>
     
     <entry key="yukon.common.device.bulk.updateResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
     <entry key="yukon.common.device.bulk.updateResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
-    <entry key="yukon.common.device.bulk.updateResults.mappingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.updateResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
-    <entry key="yukon.common.device.bulk.updateResults.noMappingExceptionErrorListLabel">No invalid data errors.</entry>
     
     <entry key="yukon.common.device.bulk.updateResults.backToUpload">Back To Upload Page</entry>
     
@@ -367,15 +362,12 @@
     ]]></entry>
     <entry key="yukon.common.device.bulk.importResults.progressLabel">Progress</entry>
     <entry key="yukon.common.device.bulk.importResults.successLabel">Successfully Imported</entry>
-    <entry key="yukon.common.device.bulk.importResults.processingExceptionLabel">Failed To Update</entry>
-    <entry key="yukon.common.device.bulk.importResults.mappingExceptionLabel">Invalid Data</entry>
+    <entry key="yukon.common.device.bulk.importResults.processingExceptionLabel">Failed To Import</entry>
     
     <entry key="yukon.common.device.bulk.importResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
     <entry key="yukon.common.device.bulk.importResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
-    <entry key="yukon.common.device.bulk.importResults.mappingExceptionErrorListLabel">View Failure Reasons</entry>
     
     <entry key="yukon.common.device.bulk.importResults.noProcessingExceptionErrorListLabel">No processing errors.</entry>
-    <entry key="yukon.common.device.bulk.importResults.noMappingExceptionErrorListLabel">No invalid data errors.</entry>
     
     <entry key="yukon.common.device.bulk.importResults.backToUpload">Back To Upload Page</entry>
     

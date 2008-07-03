@@ -7,32 +7,26 @@ import com.cannontech.common.util.ResolvableTemplate;
 public enum BulkResultTypeEnum {
 
     SUCCESS_COUNT(new BulkResultValueAccessor() {
-        public Object getValue(BulkOperationCallbackResults bulkOperationCallbackResults) {
+        public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             return bulkOperationCallbackResults.getSuccessCount();
         }
     }),
     
     PROCESSING_EXCEPTION_COUNT(new BulkResultValueAccessor() {
-        public Object getValue(BulkOperationCallbackResults bulkOperationCallbackResults) {
+        public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             return bulkOperationCallbackResults.getProcessingExceptionCount();
         }
     }),
     
-    MAPPING_EXCEPTION_COUNT(new BulkResultValueAccessor() {
-        public Object getValue(BulkOperationCallbackResults bulkOperationCallbackResults) {
-           return bulkOperationCallbackResults.getMappingExceptionCount();
-        }
-    }),
-    
     COMPLETED_LINES(new BulkResultValueAccessor() {
-        public Object getValue(BulkOperationCallbackResults bulkOperationCallbackResults) {
+        public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             
-            return (bulkOperationCallbackResults.getSuccessCount() + bulkOperationCallbackResults.getProcessingExceptionCount() + bulkOperationCallbackResults.getMappingExceptionCount());
+            return (bulkOperationCallbackResults.getSuccessCount() + bulkOperationCallbackResults.getProcessingExceptionCount());
         }
     }),
     
     STOP_TIME(new BulkResultValueAccessor() {
-        public Object getValue(BulkOperationCallbackResults bulkOperationCallbackResults) {
+        public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             
             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME");
             resolvableTemplate.addData("stopTime", bulkOperationCallbackResults.getStopTime());
@@ -48,7 +42,7 @@ public enum BulkResultTypeEnum {
     }),
     
     IS_COMPLETE(new BulkResultValueAccessor() {
-        public Object getValue(BulkOperationCallbackResults bulkOperationCallbackResults) {
+        public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             
             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE");
             resolvableTemplate.addData("isComplete", bulkOperationCallbackResults.isComplete());
@@ -66,7 +60,7 @@ public enum BulkResultTypeEnum {
         this.bulkResultValueAccessor = bulkResultValueAccessor;
     }
     
-    public Object getValue(BulkOperationCallbackResults bulkOperationCallbackResults) {
+    public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
         return this.bulkResultValueAccessor.getValue(bulkOperationCallbackResults);
     }
 }

@@ -22,4 +22,7 @@ public interface BulkFieldService {
     public BulkFieldColumnHeader getColumnHeaderForFieldName(String fieldName);
     
     public <T, O> O getYukonDeviceForIdentifier(BulkField<T, O> bulkField, String identifier) throws ObjectMappingException, IllegalArgumentException;
+
+    // also hard coded to YukonDevice to make things simpler for now...
+    public <T> List<BulkYukonDeviceFieldProcessor> findProcessorsForFields(List<BulkField<?, T>> bulkFields);
 }

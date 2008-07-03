@@ -12,18 +12,18 @@ import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.util.Completable;
 import com.cannontech.common.util.TimedOperation;
 
-public class BulkOperationCallbackResults extends DeviceGroupAddingBulkProcessorCallback implements Completable, TimedOperation {
+public class BulkOperationCallbackResults<I> extends DeviceGroupAddingBulkProcessorCallback<I> implements Completable, TimedOperation {
 
-    private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
-    private List<BulkFieldColumnHeader> bulkFieldColumnHeaders = null;
+    protected DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
+    protected List<BulkFieldColumnHeader> bulkFieldColumnHeaders = null;
 
     private BulkFileInfo bulkFileInfo = null;
     private String resultsId = "";
     
-    private Date startTime = null;
-    private Date stopTime = null;
+    protected Date startTime = null;
+    protected Date stopTime = null;
     
-    private BulkOperationTypeEnum bulkOperationType = null;
+    protected BulkOperationTypeEnum bulkOperationType = null;
     
     public BulkOperationCallbackResults(StoredDeviceGroup successGroup, StoredDeviceGroup processingExceptionGroup, DeviceGroupMemberEditorDao deviceGroupMemberEditorDao, DeviceGroupCollectionHelper deviceGroupCollectionHelper, List<BulkFieldColumnHeader> bulkFieldColumnHeaders, BulkOperationTypeEnum bulkOperationType) {
         

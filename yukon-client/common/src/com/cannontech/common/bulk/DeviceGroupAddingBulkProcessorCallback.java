@@ -1,15 +1,14 @@
 package com.cannontech.common.bulk;
 
-import com.cannontech.common.bulk.processor.ProcessingException;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 
-public class DeviceGroupAddingBulkProcessorCallback extends CollectingBulkProcessorCallback<YukonDevice> {
+public class DeviceGroupAddingBulkProcessorCallback<I> extends CollectingBulkProcessorCallback<I,YukonDevice> {
     
     protected StoredDeviceGroup successGroup = null;
     protected StoredDeviceGroup processingExceptionGroup = null;
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
+    protected DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
     
     public DeviceGroupAddingBulkProcessorCallback(StoredDeviceGroup successGroup, StoredDeviceGroup processingExceptionGroup, DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
         this.successGroup = successGroup;
@@ -18,14 +17,6 @@ public class DeviceGroupAddingBulkProcessorCallback extends CollectingBulkProces
     }
     
     
-    // ADD DEVICE TO GROUP
-    @Override
-    public void receivedProcessingException(int rowNumber, YukonDevice object, ProcessingException e) {
-        
-        super.receivedProcessingException(rowNumber, object, e);
-        deviceGroupMemberEditorDao.addDevices(processingExceptionGroup, object);
-    }
-
     @Override
     public void processedObject(int rowNumber, YukonDevice object) {
         

@@ -114,9 +114,11 @@
             </table>
             
             <%-- device collection action --%>
+            <br>
             <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
                 <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
             </cti:link>
+            <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
            
         </div>
     
@@ -131,6 +133,7 @@
            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
                 <cti:mapParam value="${result.successCollection.collectionParameters}"/>
             </cti:link>
+            <tags:selectedDevicesPopup deviceCollection="${result.successCollection}" />
             
             <%-- success list --%>
             <div style="height:8px;"></div>
@@ -143,7 +146,7 @@
     
         <%-- PROCESSING EXCEPTION --%>
         <br>
-        <div class="normalBoldLabel">Failed: <span style="color:#CC0000;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span></div>
+        <div class="normalBoldLabel">Failed To Execute: <span style="color:#CC0000;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span></div>
         
         <div style="padding:10px;">
             

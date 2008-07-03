@@ -36,7 +36,7 @@ public class OneAtATimeProcessor extends RunnableBasedBulkProcessor implements B
      */
     protected <I, O> Runnable getBulkProcessorRunnable(
             final Iterator<I> iterator, final ObjectMapper<I, O> mapper,
-            final Processor<O> processor, final BulkProcessorCallback<O> callback) {
+            final Processor<O> processor, final BulkProcessorCallback<I,O> callback) {
 
         return new Runnable() {
             public void run() {
@@ -48,17 +48,14 @@ public class OneAtATimeProcessor extends RunnableBasedBulkProcessor implements B
                         O out = null;
                         
                         try {
-                            
-//                            Thread.sleep(1000);
-                            
                             out = mapper.map(in);
                             processor.process(out);
                             callback.processedObject(rowNumber, out);
 
                         } catch (ObjectMappingException e) {
-                            callback.receivedObjectMappingException(rowNumber, e);
+                            callback.receivedProcessingException(rowNumber, in, e);
                         } catch (ProcessingException e) {
-                            callback.receivedProcessingException(rowNumber, out, e);
+                            callback.receivedProcessingException(rowNumber, in, e);
                         }
                         
                         rowNumber++;

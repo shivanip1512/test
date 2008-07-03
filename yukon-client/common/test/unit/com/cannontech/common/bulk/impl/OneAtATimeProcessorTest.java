@@ -72,9 +72,9 @@ public class OneAtATimeProcessorTest extends TestCase {
         testList.add("two");
         testList.add("three");
 
-        BulkProcessingResultHolder<String> holder;
+        BulkProcessingResultHolder<String, String> holder;
         {
-            CollectingBulkProcessorCallback<String> callback = new CollectingBulkProcessorCallback<String>();
+            CollectingBulkProcessorCallback<String, String> callback = new CollectingBulkProcessorCallback<String, String>();
 
             oneAtATimeProcessor.backgroundBulkProcess(testList.iterator(), mapper, processor, callback);
             holder = callback;
@@ -82,29 +82,18 @@ public class OneAtATimeProcessorTest extends TestCase {
 
         assertEquals("Didn't process correct number of items",
                      3,
-                     holder.getMappingExceptionCount() + holder.getMappingExceptionCount() + holder.getProcessingExceptionCount());
+                     holder.getProcessingExceptionCount() + holder.getSuccessCount());
 
         assertEquals("Didn't process the correct number items successfully",
                      1,
                      holder.getSuccessCount());
 
-        assertEquals("Didn't map the correct number items unsuccessfully ",
-                     1,
-                     holder.getMappingExceptionCount());
-        
         assertEquals("Didn't process the correct number items unsuccessfully ",
-                     1,
+                     2,
                      holder.getProcessingExceptionCount());
 
-        assertEquals("Mapping exception list not populated", 1, holder.getMappingExceptionList()
-                                                                        .size());
-
         assertEquals("Processing exception list not populated",
-                     1,
-                     holder.getProcessingExceptionList().size());
-
-        assertEquals("Processing exception list not populated",
-                     1,
+                     2,
                      holder.getProcessingExceptionList().size());
 
         assertTrue("Should be complete", holder.isComplete());
@@ -121,7 +110,7 @@ public class OneAtATimeProcessorTest extends TestCase {
         };
 
         {
-            CollectingBulkProcessorCallback<String> callback = new CollectingBulkProcessorCallback<String>();
+            CollectingBulkProcessorCallback<String, String> callback = new CollectingBulkProcessorCallback<String, String>();
 
             oneAtATimeProcessor.backgroundBulkProcess(testList.iterator(),
                                                       failingMapper,
@@ -150,7 +139,7 @@ public class OneAtATimeProcessorTest extends TestCase {
         };
 
         {
-            CollectingBulkProcessorCallback<String> callback = new CollectingBulkProcessorCallback<String>();
+            CollectingBulkProcessorCallback<String, String> callback = new CollectingBulkProcessorCallback<String, String>();
 
             oneAtATimeProcessor.backgroundBulkProcess(testList.iterator(),
                                                       mapper,

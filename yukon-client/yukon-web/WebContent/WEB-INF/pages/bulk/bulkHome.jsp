@@ -78,7 +78,8 @@
         <tags:boxContainer title="${recentBulkOperationsHeaderTitle}" id="recentBulkOperationsContainer" hideEnabled="false">
         
             <cti:msg var="performNewActionLinkTitle" key="yukon.common.device.bulk.bulkHome.recentBulkOperations.performNewActionLinkTitle"/>
-        
+            <c:url var="downloadImg" value="/WebConfig/yukon/Icons/download_file.gif"/>
+            
             <div style="width:75%">
             <table class="compactResultsTable" style="vertial-align:bottom;">
     
@@ -87,7 +88,6 @@
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.updateTime"/></th>
                     <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.success"/></th>
                     <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.processingException"/></th>
-                    <th style="text-align:right;"><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.mappingException"/></th>
                     <th></th>
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.fields"/></th>
                     <th><cti:msg key="yukon.common.device.bulk.bulkHome.recentBulkOperations.detailHeader"/></th>
@@ -128,21 +128,36 @@
                         
                         <%-- PROCESSING EXCEPTION --%>
                         <td align="right">
-                            <c:set var="processingExceptionFormName" value="processingExceptionForm${b.resultsId}"/>
-                            
-                            <a href="javascript:submitForm('${processingExceptionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/PROCESSING_EXCEPTION_COUNT"/></a> 
-                            <tags:selectedDevicesPopup deviceCollection="${b.processingExceptionDeviceCollection}" />
-                            
-                            <form id="${processingExceptionFormName}" method="post" action="/spring/bulk/collectionActions">
-                                <cti:deviceCollection deviceCollection="${b.processingExceptionDeviceCollection}" />
-                            </form>
-                        </td>
                         
-                        <%-- MAPPING EXCEPTION --%>
-                        <td align="right">
-                            <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/MAPPING_EXCEPTION_COUNT"/>
+                            <c:choose>
+                                
+                                <%-- MASS CHANGE ACTUALLY ADDS ERRORS TO GROUP --%>
+                                <c:when test="${b.bulkOperationType == 'MASS_CHANGE'}">
+                                
+                                    <c:set var="processingExceptionCollectionActionFormName" value="processingExceptionCollectionActionForm${b.resultsId}"/>
+                                
+                                    <a href="javascript:submitForm('${processingExceptionCollectionActionFormName}');" class="small" title="${performNewActionLinkTitle}"><cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/PROCESSING_EXCEPTION_COUNT"/></a> 
+                                    
+                                    <tags:selectedDevicesPopup deviceCollection="${b.processingExceptionDeviceCollection}" />
+                                    
+                                    <form id="${processingExceptionCollectionActionFormName}" method="post" action="/spring/bulk/collectionActions">
+                                        <cti:deviceCollection deviceCollection="${b.processingExceptionDeviceCollection}" />
+                                    </form>
+                                    
+                                </c:when>
+                                
+                                <%-- UPDATE/IMPORT DOES NOT --%>
+                                <c:otherwise>
+                                
+                                    <cti:dataUpdaterValue type="BULKRESULT" identifier="${b.resultsId}/PROCESSING_EXCEPTION_COUNT"/>
+                                    
+                                    <tags:downloadBulkFailuresFile resultsId="${b.resultsId}" showText="false" />
+                                    
+                                </c:otherwise>
+                            
+                            </c:choose>
+                            
                         </td>
-                        
                         
                         
                         <%-- FIELDS --%>

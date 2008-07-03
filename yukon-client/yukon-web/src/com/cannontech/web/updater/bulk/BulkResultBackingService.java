@@ -15,7 +15,7 @@ import com.cannontech.web.updater.UpdateBackingService;
 
 public class BulkResultBackingService implements UpdateBackingService {
 
-    private RecentResultsCache<BulkOperationCallbackResults> recentResultsCache = null;
+    private RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache = null;
     private YukonUserContextMessageSourceResolver messageSourceResolver = null;
     private TemplateProcessorFactory templateProcessorFactory;
     
@@ -28,7 +28,7 @@ public class BulkResultBackingService implements UpdateBackingService {
         String resultTypeStr = idParts[1];
         
         // get result
-        BulkOperationCallbackResults bulkOperationCallbackResults = recentResultsCache.getResult(requestId);
+        BulkOperationCallbackResults<?> bulkOperationCallbackResults = recentResultsCache.getResult(requestId);
         
         if (bulkOperationCallbackResults == null) {
             return "";
@@ -52,7 +52,7 @@ public class BulkResultBackingService implements UpdateBackingService {
     }
 
     @Required
-    public void setRecentBulkOperationResultsCache(RecentResultsCache<BulkOperationCallbackResults> recentResultsCache) {
+    public void setRecentBulkOperationResultsCache(RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
     }
     

@@ -141,6 +141,29 @@ public class BulkFieldServiceImpl implements BulkFieldService, ApplicationContex
             
         return device;
     }
+    
+    public <T> List<BulkYukonDeviceFieldProcessor> findProcessorsForFields(List<BulkField<?, T>> bulkFields) {
+        
+        List<BulkYukonDeviceFieldProcessor> processors = new ArrayList<BulkYukonDeviceFieldProcessor>();
+
+        // this guy is kinda dumb, will always be 1-to-1 field-to-processor
+        // will be more complicated if multi-field processors ever exist
+        for (BulkField<?, T> updateableField : bulkFields) {
+            
+            // the fields the processor needs to handle
+            Set<BulkField<?, T>> requiredSet = new HashSet<BulkField<?, T>>(1);
+            requiredSet.add(updateableField);
+            
+            // find that processor
+            for (BulkYukonDeviceFieldProcessor processor : getBulkFieldProcessors()) {
+                if (requiredSet.equals(processor.getUpdatableFields())) {
+                    processors.add(processor);
+                    break;
+                }
+            } 
+        }
+        return processors;
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext context)

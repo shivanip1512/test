@@ -45,7 +45,7 @@ public class TransactionPerItemProcessor extends RunnableBasedBulkProcessor impl
      */
     protected <I, O> Runnable getBulkProcessorRunnable(
             final Iterator<I> iterator, final ObjectMapper<I, O> mapper,
-            final Processor<O> processor, final BulkProcessorCallback<O> callback) {
+            final Processor<O> processor, final BulkProcessorCallback<I, O> callback) {
 
         return new Runnable() {
             @SuppressWarnings("unchecked")
@@ -55,9 +55,8 @@ public class TransactionPerItemProcessor extends RunnableBasedBulkProcessor impl
                     while (iterator.hasNext()) {
                         final int thisRow = rowNumber++;
                         final I in = iterator.next();
-                        O out = null;
                         try {
-                            out = (O) transactionTemplate.execute(new TransactionCallback() {
+                            transactionTemplate.execute(new TransactionCallback() {
                                 public Object doInTransaction(TransactionStatus status) {
                                     O out = mapper.map(in);
                                     processor.process(out);
@@ -67,10 +66,9 @@ public class TransactionPerItemProcessor extends RunnableBasedBulkProcessor impl
                             });
 
                         } catch (ObjectMappingException e) {
-                            callback.receivedObjectMappingException(thisRow, e);
+                            callback.receivedProcessingException(thisRow, in, e);
                         } catch (ProcessingException e) {
-                            out = mapper.map(in);
-                            callback.receivedProcessingException(thisRow, out, e);
+                            callback.receivedProcessingException(thisRow, in, e);
                         }
                     }
                     callback.processingSucceeded();

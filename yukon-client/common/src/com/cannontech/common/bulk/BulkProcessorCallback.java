@@ -1,12 +1,12 @@
 package com.cannontech.common.bulk;
 
-import com.cannontech.common.bulk.mapper.ObjectMappingException;
-import com.cannontech.common.bulk.processor.ProcessingException;
+import com.cannontech.common.bulk.processor.ProcessorCallbackException;
+
 
 /**
  * Interface whose methods are called as a bulk processing operation processes
  */
-public interface BulkProcessorCallback<T> {
+public interface BulkProcessorCallback<I,O> {
 
     
     /**
@@ -14,19 +14,19 @@ public interface BulkProcessorCallback<T> {
      * @param rowNumber 
      * @param e - Exception that occured
      */
-    public void receivedObjectMappingException(int rowNumber, ObjectMappingException e);
+    //public void receivedObjectMappingException(int rowNumber, ObjectMappingException e);
 
     /**
      * Method called when a processing exception occurs during processing
      * @param e - Exception that occured
      */
-    public void receivedProcessingException(int rowNumber, T object, ProcessingException e);
+    public void receivedProcessingException(int rowNumber, I object, ProcessorCallbackException e);
 
     /**
      * Method called each time an object has been processed - is called even if
      * there was an exception
      */
-    public void processedObject(int rowNumber, T out);
+    public void processedObject(int rowNumber, O out);
 
     /**
      * Method called when object processing is complete

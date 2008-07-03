@@ -33,6 +33,7 @@ import com.cannontech.common.bulk.processor.Processor;
 import com.cannontech.common.bulk.processor.SingleProcessor;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.bulk.service.BulkOperationTypeEnum;
+import com.cannontech.common.bulk.service.MassChangeCallbackResults;
 import com.cannontech.common.bulk.service.MassChangeFileInfo;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
@@ -56,7 +57,7 @@ public class MassChangeOptionsController extends InputFormController {
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = null;
     private TemporaryDeviceGroupService temporaryDeviceGroupService = null;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper = null;
-    private RecentResultsCache<BulkOperationCallbackResults> recentResultsCache = null;
+    private RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache = null;
     
     @Override
     public InputRoot getInputRoot(HttpServletRequest request) throws Exception {
@@ -135,7 +136,7 @@ public class MassChangeOptionsController extends InputFormController {
         final StoredDeviceGroup processingExceptionGroup = temporaryDeviceGroupService.createTempGroup(null);
         
         // init callcback, use a TranslatingBulkProcessorCallback to get from UpdateableDevice to YukonDevice
-        BulkOperationCallbackResults bulkOperationCallbackResults = new BulkOperationCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, Collections.singletonList(bulkFieldColumnHeader), BulkOperationTypeEnum.MASS_CHANGE);
+        MassChangeCallbackResults bulkOperationCallbackResults = new MassChangeCallbackResults(successGroup, processingExceptionGroup, deviceGroupMemberEditorDao, deviceGroupCollectionHelper, Collections.singletonList(bulkFieldColumnHeader), BulkOperationTypeEnum.MASS_CHANGE);
         
         ModelAndView mav = new ModelAndView("massChange/massChangeResults.jsp");
         mav.addObject("deviceCollection", deviceCollection);
@@ -236,7 +237,7 @@ public class MassChangeOptionsController extends InputFormController {
     
     @Required
     public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults> recentResultsCache) {
+            RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache) {
         this.recentResultsCache = recentResultsCache;
     }
 

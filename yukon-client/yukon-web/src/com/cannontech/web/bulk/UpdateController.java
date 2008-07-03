@@ -34,7 +34,7 @@ public class UpdateController extends MultiActionController {
 
     private BulkFieldService bulkFieldService = null;
     private BulkUpdateService bulkUpdateService = null;
-    private RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache = null;
+    private RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache = null;
    
     private Map<String, BulkUpdateFileInfo> bulkUpdateFileInfoMap = new HashMap<String, BulkUpdateFileInfo>();
     
@@ -154,7 +154,7 @@ public class UpdateController extends MultiActionController {
 
         // result info
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
-        BulkOperationCallbackResults bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
+        BulkOperationCallbackResults<?> bulkOperationCallbackResults = recentBulkOperationResultsCache.getResult(resultsId);
         
         BulkUpdateFileInfo bulkUpdateFileInfo = (BulkUpdateFileInfo)bulkOperationCallbackResults.getBulkFileInfo();
         
@@ -187,7 +187,7 @@ public class UpdateController extends MultiActionController {
     
     @Required
     public void setRecentBulkOperationResultsCache(
-            RecentResultsCache<BulkOperationCallbackResults> recentBulkOperationResultsCache) {
+            RecentResultsCache<BulkOperationCallbackResults<?>> recentBulkOperationResultsCache) {
         this.recentBulkOperationResultsCache = recentBulkOperationResultsCache;
     }
     

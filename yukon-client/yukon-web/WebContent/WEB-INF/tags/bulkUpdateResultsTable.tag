@@ -54,6 +54,11 @@
             });
         }
     }
+    
+    function submitForm(id) {
+        $(id).submit();
+    }
+        
 </script>
 
 
@@ -107,6 +112,7 @@
     <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
         <cti:mapParam value="${bulkUpdateOperationResults.successDeviceCollection.collectionParameters}"/>
     </cti:link>
+    <tags:selectedDevicesPopup deviceCollection="${bulkUpdateOperationResults.successDeviceCollection}" />
 
 </div>
 
@@ -119,30 +125,38 @@
 
 <div style="padding:10px;">
     
-    <%-- device collection action --%>
-    <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
-        <cti:mapParam value="${bulkUpdateOperationResults.processingExceptionDeviceCollection.collectionParameters}"/>
-    </cti:link>
+    
+    <div style="height:4px;"></div>
+    
+    <c:choose>
+                                
+        <%-- MASS CHANGE --%>
+        <c:when test="${bulkUpdateOperationResults.bulkOperationType == 'MASS_CHANGE'}">
+            
+            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
+                <cti:mapParam value="${bulkUpdateOperationResults.processingExceptionDeviceCollection.collectionParameters}"/>
+            </cti:link>
+            <tags:selectedDevicesPopup deviceCollection="${bulkUpdateOperationResults.processingExceptionDeviceCollection}" />
+            
+            <br>
+                                    
+        </c:when>
+        
+        <%-- UPDATE/IMPORT --%>
+        <c:otherwise>
+        
+            <tags:downloadBulkFailuresFile resultsId="${resultsId}" showText="true" />
+    
+        </c:otherwise>
+        
+    </c:choose>
     
     <%-- errors list --%>
-    <div style="height:8px;"></div>
+    <br>
     <a href="javascript:void(0);" onclick="$('processingErrorsDiv${resultsId}').toggle();refreshErrors('processing', $('processingErrorsDiv${resultsId}'));" class="small"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionErrorListLabel" /></a>
+    
     <div id="processingErrorsDiv${resultsId}" style="display:none;"></div>
 
 </div>  
-
-
-
-
-<%-- MAPPING EXCEPTION --%>
-<br>
-<div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.mappingExceptionLabel" />: <span style="color:#CC0000;"><cti:dataUpdaterValue type="BULKRESULT" identifier="${resultsId}/MAPPING_EXCEPTION_COUNT"/></span></div>
-
-<div style="padding:10px;">
-
-    <%-- errors list --%>
-    <a href="javascript:void(0);" onclick="$('mappingErrorsDiv${resultsId}').toggle();refreshErrors('mapping', $('mappingErrorsDiv${resultsId}'));" class="small"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.mappingExceptionErrorListLabel" /></a>
-    <div id="mappingErrorsDiv${resultsId}" style="display:none;"></div>
-</div>
 
 <cti:dataUpdaterCallback function="updateProgressBar(${lineCount})" initialize="true" completedLines="BULKRESULT/${resultsId}/COMPLETED_LINES" />
