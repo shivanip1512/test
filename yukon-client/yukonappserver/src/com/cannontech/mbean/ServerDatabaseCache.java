@@ -1,7 +1,6 @@
 package com.cannontech.mbean;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -10,8 +9,6 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Required;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.device.configuration.model.Category;
-import com.cannontech.common.device.configuration.model.DeviceConfiguration;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
 import com.cannontech.core.dao.DaoFactory;
@@ -896,7 +893,7 @@ public synchronized List<LiteYukonPAObject> getAllRoutes()
 {
 	if( allRoutes == null )
 	{
-		allRoutes = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 2 );
+		allRoutes = new ArrayList<LiteYukonPAObject>( getAllYukonPAObjects().size() / 100 );
 
 		for( int i = 0; i < getAllYukonPAObjects().size(); i++ )
 		{
