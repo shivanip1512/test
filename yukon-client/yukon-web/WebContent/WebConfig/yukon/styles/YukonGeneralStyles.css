@@ -109,6 +109,7 @@ table.resultsTable {
 	width: 95%;	
   	border: 1px solid #ccc;
 	border-collapse: collapse;
+	font-size:.8em;
 }
 
 table.resultsTable th {
