@@ -22,7 +22,7 @@ struct fun_pair : public pair<int, int>
     };
 };
 
-BOOST_AUTO_UNIT_TEST(test_fifo_multiset)
+BOOST_AUTO_UNIT_TEST(test_fifo_multiset_order)
 {
     fifo_multiset<fun_pair> fifo_multiset_test;
 
@@ -68,6 +68,49 @@ BOOST_AUTO_UNIT_TEST(test_fifo_multiset)
 
     BOOST_CHECK_EQUAL(itr->first,  3);
     BOOST_CHECK_EQUAL(itr->second, 6);
+}
+
+BOOST_AUTO_UNIT_TEST(test_fifo_multiset_insert_erase)
+{
+    fifo_multiset<fun_pair> fifo_multiset_test;
+
+    //  digits of pi, in fifo priority sorted chunks, mixed by hand
+    fifo_multiset_test.insert(fun_pair(2, 1));
+    fifo_multiset_test.insert(fun_pair(3, 9));
+    fifo_multiset_test.insert(fun_pair(1, 3));
+    fifo_multiset_test.insert(fun_pair(1, 1));
+    fifo_multiset_test.insert(fun_pair(1, 4));
+    fifo_multiset_test.insert(fun_pair(3, 2));
+    fifo_multiset_test.insert(fun_pair(2, 5));
+    fifo_multiset_test.insert(fun_pair(3, 6));
+
+    BOOST_CHECK_EQUAL(fifo_multiset_test.size(), 8);
+
+    fifo_multiset_test.erase(fifo_multiset_test.begin());
+    BOOST_CHECK_EQUAL(fifo_multiset_test.size(), 7);
+
+    fifo_multiset_test.erase(fifo_multiset_test.begin());
+    BOOST_CHECK_EQUAL(fifo_multiset_test.size(), 6);
+
+    fifo_multiset_test.erase(fifo_multiset_test.begin());
+    BOOST_CHECK_EQUAL(fifo_multiset_test.size(), 5);
+
+    fifo_multiset_test.erase(fifo_multiset_test.begin());
+    BOOST_CHECK_EQUAL(fifo_multiset_test.size(), 4);
+
+    fifo_multiset_test.erase(fifo_multiset_test.begin());
+    BOOST_CHECK_EQUAL(fifo_multiset_test.size(), 3);
+
+    fifo_multiset_test.erase(fifo_multiset_test.begin());
+    BOOST_CHECK_EQUAL(fifo_multiset_test.size(), 2);
+
+    fifo_multiset_test.erase(fifo_multiset_test.begin());
+    BOOST_CHECK_EQUAL(fifo_multiset_test.size(), 1);
+
+    fifo_multiset_test.erase(fifo_multiset_test.begin());
+    BOOST_CHECK_EQUAL(fifo_multiset_test.size(), 0);
+
+    BOOST_CHECK(fifo_multiset_test.empty());
 }
 
 struct priority_t
