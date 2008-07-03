@@ -11,6 +11,7 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.EMAI
 import static com.cannontech.database.data.schedule.script.ScriptParameters.FILE_PATH_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.GROUP_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_FLAG_PARAM;
+import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_TYPE_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.MAX_RETRY_HOURS_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.MISSED_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.NOTIFICATION_FLAG_PARAM;
@@ -26,7 +27,6 @@ import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRI
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SCRIPT_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.SUCCESS_FILE_NAME_PARAM;
 import static com.cannontech.database.data.schedule.script.ScriptParameters.TOU_RATE_PARAM;
-import static com.cannontech.database.data.schedule.script.ScriptParameters.IED_TYPE_PARAM;
 
 import java.awt.Component;
 import java.awt.Container;
@@ -207,6 +207,8 @@ public class ScriptScheduleSetupPanel extends DataInputPanel implements JCValueL
     	JFileChooser chooser = new JFileChooser();
     	chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
     	chooser.setCurrentDirectory(new java.io.File(directory));
+    	chooser.setDialogTitle("Choose Folder");
+    	chooser.setApproveButtonText("Select Folder");
     	int returnVal = chooser.showOpenDialog(this);
     	if( returnVal == JFileChooser.APPROVE_OPTION ) {
     		String macsSupportedPath = chooser.getSelectedFile().getPath().replace('\\', '/');
