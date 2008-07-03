@@ -3,7 +3,7 @@ package com.cannontech.analysis.service;
 import com.cannontech.analysis.data.group.SimpleReportGroup;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 
 public interface ReportGroupService {
 
@@ -13,7 +13,7 @@ public interface ReportGroupService {
      * @param device
      * @return
      */
-    public SimpleReportGroup getSimpleGroupMembership(StoredDeviceGroup base, YukonDevice device);
+    public SimpleReportGroup getSimpleGroupMembership(DeviceGroup base, YukonDevice device);
     
     /**
      * This method returns a SimpleReportGroup for device that is a member of the SystemGroupEnum group.

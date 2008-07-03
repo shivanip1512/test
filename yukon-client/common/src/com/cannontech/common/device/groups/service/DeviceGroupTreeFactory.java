@@ -83,7 +83,7 @@ public class DeviceGroupTreeFactory {
         final DeviceGroup systemDeviceGrp = deviceGroupService.resolveGroupName(SystemGroupEnum.SYSTEM.getFullPath());   
         return getModel(new Predicate<DeviceGroup>() {
             public boolean evaluate(DeviceGroup object) {
-                return object.getType().equals(DeviceGroupType.STATIC) && !object.isEqualToOrDecendentOf(systemDeviceGrp); 
+                return object.getType().equals(DeviceGroupType.STATIC) && !object.isEqualToOrDescendantOf(systemDeviceGrp); 
             }
         });
     }

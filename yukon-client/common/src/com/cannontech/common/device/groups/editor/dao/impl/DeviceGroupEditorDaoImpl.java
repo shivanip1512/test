@@ -80,6 +80,17 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         List<YukonDevice> devices = jdbcTemplate.query(sql.toString(), mapper, group.getId());
         return devices;
     }
+    
+    @Override
+    public boolean isChildDevice(StoredDeviceGroup group, YukonDevice device) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("select count(*)");
+        sql.append("from DeviceGroupMember dgm");
+        sql.append("where dgm.devicegroupid = ? and dgm.yukonpaoid = ?");
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        int count = jdbcTemplate.queryForInt(sql.toString(), mapper, group.getId(), device.getDeviceId());
+        return count > 0;
+    }
 
     public List<StoredDeviceGroup> getChildGroups(StoredDeviceGroup group) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
@@ -337,8 +348,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         sql.append("join DeviceGroup dg on dg.devicegroupid = dgm.devicegroupid");
         sql.append("where dgm.yukonpaoid = ?");
         List<PartialDeviceGroup> groups = jdbcTemplate.query(sql.toString(), 
-                                                            mapper, 
-                                                            device.getDeviceId());
+                                                             mapper, 
+                                                             device.getDeviceId());
         Set<StoredDeviceGroup> result = new HashSet<StoredDeviceGroup>();
         PartialGroupResolver resolver = new PartialGroupResolver(this);
         resolver.addKnownGroups(base);
@@ -353,7 +364,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         Iterator<StoredDeviceGroup> iterator = result.iterator();
         while (iterator.hasNext()) {
             StoredDeviceGroup next = iterator.next();
-            if (!next.isDescendantOf(base)) {
+            if (!next.isEqualToOrDescendantOf(base)) {
                 iterator.remove();
             }
         }
@@ -389,7 +400,8 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
     @Override
     public StoredDeviceGroup getStoredGroup(DeviceGroup group) throws NotFoundException {
         if (group instanceof StoredDeviceGroup) {
-            return (StoredDeviceGroup) group;
+            // to be safe, we'll copy the group
+            return new StoredDeviceGroup((StoredDeviceGroup) group);
         } else {
             StoredDeviceGroup storedGroup = getStoredGroup(group.getFullName(), false);
             return storedGroup;

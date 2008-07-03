@@ -151,6 +151,18 @@ public interface DeviceGroupProvider {
      * @return - An unmodifiable list of YukonDevices (the order is arbitrary)
      */
     public List<YukonDevice> getChildDevices(DeviceGroup group);
+    
+    /**
+     * Tests if the device is a child of deviceGroup. The following should be true
+     * for any DeviceGroup i and YukonDevice j:
+     * 
+     * isChildDevice(i,j) == getChildDevices(i).contains(j);
+     * 
+     * @param group - The group to look under
+     * @param device - The device
+     * @return - True if the device is found
+     */
+    public boolean isChildDevice(DeviceGroup group, YukonDevice device);
 
     /**
      * Returns the DeviceGroup that is a child of base and has a name (not full name)
@@ -185,9 +197,9 @@ public interface DeviceGroupProvider {
     public boolean isDeviceInGroup(DeviceGroup deviceGroup, YukonDevice device);
 
     /**
-     * Returns a Set of DeviceGroups that are descendants of base and contain device.
+     * Returns a Set of DeviceGroups that are isEqualToOrDescendantOf of base and contain the device.
      * Implementations of this method should just return DeviceGroups of which the device
-     * is a direct child.
+     * is a direct child. If the device is a child of base, base may be returned.
      * 
      * @param base - The group to look under
      * @param device - The device

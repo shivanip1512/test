@@ -2,24 +2,26 @@ package com.cannontech.analysis.service.impl;
 
 import java.util.Set;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.cannontech.analysis.data.group.SimpleReportGroup;
 import com.cannontech.analysis.service.ReportGroupService;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
-import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
-import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.device.groups.service.DeviceGroupService;
 
 public class ReportGroupServiceImpl implements ReportGroupService {
 
-    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private DeviceGroupEditorDao deviceGroupEditorDao;
+    private DeviceGroupService deviceGroupService;
+    private DeviceGroupProviderDao deviceGroupDao;
     
     @Override
-    public SimpleReportGroup getSimpleGroupMembership(StoredDeviceGroup base, YukonDevice device) {
+    public SimpleReportGroup getSimpleGroupMembership(DeviceGroup base, YukonDevice device) {
 
         SimpleReportGroup simpleReportGroup = new SimpleReportGroup();
-        Set<StoredDeviceGroup> membership = deviceGroupMemberEditorDao.getGroupMembership(base, device);
+        Set<DeviceGroup> membership = deviceGroupDao.getGroupMembership(base, device);
         if (!membership.isEmpty()) {
             simpleReportGroup = new SimpleReportGroup();
             simpleReportGroup.setDeviceGroup(membership.iterator().next());
@@ -30,7 +32,7 @@ public class ReportGroupServiceImpl implements ReportGroupService {
 
     @Override
     public SimpleReportGroup getSimpleGroupMembership(SystemGroupEnum systemGroupEnum, YukonDevice device) {
-        StoredDeviceGroup storedDeviceGroup = deviceGroupEditorDao.getSystemGroup(systemGroupEnum);
+        DeviceGroup storedDeviceGroup = deviceGroupService.resolveGroupName(systemGroupEnum.getFullPath());
         return getSimpleGroupMembership(storedDeviceGroup, device);
     }
     
@@ -44,11 +46,14 @@ public class ReportGroupServiceImpl implements ReportGroupService {
         return null;
     }
     
-    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
-        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
+    @Autowired
+    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
+        this.deviceGroupDao = deviceGroupDao;
     }
     
-    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
-        this.deviceGroupEditorDao = deviceGroupEditorDao;
+    @Autowired
+    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
+        this.deviceGroupService = deviceGroupService;
     }
+    
 }

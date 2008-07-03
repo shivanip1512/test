@@ -5,6 +5,7 @@ package com.cannontech.core.dao.impl;
  * @author: alauinger
  */
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
@@ -17,6 +18,7 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.JdbcTemplateHelper;
+import com.cannontech.database.data.lite.LiteComparators;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PAOGroups;
@@ -165,16 +167,11 @@ public final class PaoDaoImpl implements PaoDao {
 
     public LiteYukonPAObject[] getAllLiteRoutes() {
         // Get an instance of the databaseCache.
-        java.util.ArrayList routeList = new java.util.ArrayList(10);
+        List<LiteYukonPAObject> routeList;
         synchronized (databaseCache) {
-            java.util.List routes = databaseCache.getAllRoutes();
-            java.util.Collections.sort(routes,
-                                       com.cannontech.database.data.lite.LiteComparators.liteStringComparator);
-
-            for (int i = 0; i < routes.size(); i++) {
-                LiteYukonPAObject litePao = (LiteYukonPAObject) routes.get(i);
-                routeList.add(litePao);
-            }
+            List<LiteYukonPAObject> routes = databaseCache.getAllRoutes();
+            routeList = new ArrayList<LiteYukonPAObject>(routes);
+            Collections.sort(routeList, LiteComparators.liteStringComparator);
         }
 
         LiteYukonPAObject retVal[] = new LiteYukonPAObject[routeList.size()];

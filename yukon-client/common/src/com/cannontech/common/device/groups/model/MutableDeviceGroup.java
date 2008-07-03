@@ -13,6 +13,16 @@ public abstract class MutableDeviceGroup extends DeviceGroup {
     private String name;
     private DeviceGroup parent;
     private DeviceGroupType type;
+    
+    
+    public MutableDeviceGroup(MutableDeviceGroup group) {
+        this.name = group.name;
+        this.parent = group.parent;
+        this.type = group.type;
+    }
+    
+    public MutableDeviceGroup() {
+    }
 
     public void setName(String name) {
         this.name = name;

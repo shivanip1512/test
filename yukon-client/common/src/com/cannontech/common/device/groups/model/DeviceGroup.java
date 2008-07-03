@@ -64,7 +64,7 @@ public abstract class DeviceGroup implements Comparable<DeviceGroup> {
         }
     }
     
-    public boolean isEqualToOrDecendentOf(DeviceGroup otherGroup) {
+    public boolean isEqualToOrDescendantOf(DeviceGroup otherGroup) {
         return equals(otherGroup) || isDescendantOf(otherGroup);
     }
 

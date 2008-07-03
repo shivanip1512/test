@@ -6,6 +6,15 @@ import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 public class StoredDeviceGroup extends MutableDeviceGroup {
     private int id;
     private DeviceGroupPermission permission;
+    
+    public StoredDeviceGroup(StoredDeviceGroup group) {
+        super(group);
+        this.id = group.id;
+        this.permission = group.permission;
+    }
+    
+    public StoredDeviceGroup() {
+    }
 
     public int getId() {
         return id;

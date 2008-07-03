@@ -8,20 +8,16 @@ import java.util.Set;
 
 import org.apache.commons.lang.Validate;
 import org.springframework.beans.factory.annotation.Required;
-import org.springframework.jdbc.core.simple.SimpleJdbcOperations;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.util.SqlStatementBuilder;
 
 public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private SimpleJdbcOperations jdbcTemplate;
-
     @Override
     public List<YukonDevice> getChildDevices(DeviceGroup group) {
         StoredDeviceGroup sdg = getStoredGroup(group);
@@ -96,6 +92,13 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
     }
     
     @Override
+    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
+        StoredDeviceGroup storedGroup = getStoredGroup(group);
+        boolean result = deviceGroupMemberEditorDao.isChildDevice(storedGroup,device);
+        return result;
+    }
+    
+    @Override
     public DeviceGroup getGroup(DeviceGroup base, String groupName) {
         return deviceGroupEditorDao.getGroupByName(getStoredGroup(base), groupName);
     }
@@ -105,24 +108,6 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
         return rootGroup;
     }
     
-    public boolean isDeviceInGroup(DeviceGroup deviceGroup, YukonDevice device) {
-            StoredDeviceGroup storedGroup = getStoredGroup(deviceGroup);
-            SqlStatementBuilder sql = new SqlStatementBuilder();
-            sql.append("select count(*)");
-            sql.append("from DeviceGroupMember dgm");
-            sql.append("where dgm.DeviceGroupID = ? AND");
-            sql.append("dgm.YukonPaoId = ?");
-            int count = jdbcTemplate.queryForInt(sql.toString(),
-                                           storedGroup.getId(),
-                                           device.getDeviceId());
-            return (count > 0);
-    }
-    
-    @Required
-    public void setJdbcTemplate(SimpleJdbcOperations jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
-
     @Required
     public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
         this.deviceGroupEditorDao = deviceGroupEditorDao;

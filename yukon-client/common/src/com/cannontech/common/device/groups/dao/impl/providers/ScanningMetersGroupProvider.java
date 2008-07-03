@@ -35,6 +35,19 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderBase {
         
         return Collections.unmodifiableList(devices);
     }
+    
+    @Override
+    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
+        // is this device scanning? if so, it belongs to the base group
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT COUNT(*) AS c");
+        sql.append("FROM (" + scanIndicatingDevice.getDeviceIdSql() + ") ypo ");
+        sql.append("WHERE ypo.deviceid = ?");
+        
+        Integer deviceCount = jdbcTemplate.queryForInt(sql.toString(), device.getDeviceId());
+        
+        return deviceCount > 0;
+    }
 
     @Override
     public List<DeviceGroup> getChildGroups(DeviceGroup group) {
@@ -52,20 +65,6 @@ public class ScanningMetersGroupProvider extends DeviceGroupProviderBase {
         return Collections.emptySet();
     }
     
-
-    public boolean isDeviceInGroup(DeviceGroup deviceGroup, YukonDevice device) {
-        
-        // is this device scanning? if so, it belongs to the base group
-        SqlStatementBuilder sql = new SqlStatementBuilder();
-        sql.append("SELECT COUNT(*) AS c");
-        sql.append("FROM (" + scanIndicatingDevice.getDeviceIdSql() + ") ypo ");
-        sql.append("WHERE ypo.deviceid = ?");
-        
-        Integer deviceCount = jdbcTemplate.queryForInt(sql.toString(), device.getDeviceId());
-        
-        return deviceCount > 0;
-    }
-
 	@Override
     public String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier) {
 	    String whereString = identifier + " IN ( " +  scanIndicatingDevice.getDeviceIdSql()  + ") ";

@@ -138,5 +138,10 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     public boolean isDeviceInGroup(DeviceGroup group, YukonDevice device) {
         return getProvider(group).isDeviceInGroup(group,device);
     }
+    
+    @Override
+    public boolean isChildDevice(DeviceGroup group, YukonDevice device) {
+        return getProvider(group).isChildDevice(group,device);
+    }
 
 }

@@ -2,7 +2,9 @@ package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -33,6 +35,27 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     public abstract String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
 
     public abstract List<DeviceGroup> getChildGroups(DeviceGroup group);
+    
+    public abstract boolean isChildDevice(DeviceGroup group, YukonDevice device);
+    
+    public Set<DeviceGroup> getGroupMembership(DeviceGroup base,
+            YukonDevice device) {
+        Set<DeviceGroup> result = new HashSet<DeviceGroup>();
+        
+        // is device a direct child of base
+        if (isChildDevice(base, device)) {
+            result.add(base);
+        }
+        
+        // check child groups
+        List<? extends DeviceGroup> childGroups = getChildGroups(base);
+        for (DeviceGroup childGroup : childGroups) {
+             Set<DeviceGroup> childGroupMembership = mainDelegator.getGroupMembership(childGroup, device);
+             result.addAll(childGroupMembership);
+        }
+        
+        return result;
+    }
     
     public int getChildDeviceCount(DeviceGroup group) {
         return getChildDevices(group).size();
@@ -75,6 +98,7 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     }
 
     public List<YukonDevice> getDevices(DeviceGroup group) {
+        // we should consider rewriting this using getDeviceGroupSqlWhereClause()
         List<YukonDevice> deviceList = new ArrayList<YukonDevice>();
 
         // Get child devices
@@ -99,6 +123,24 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
             result.addAll(grandChildren);
         }
         return Collections.unmodifiableList(result);
+    }
+    
+    @Override
+    public boolean isDeviceInGroup(DeviceGroup base, YukonDevice device) {
+        // is device a direct child of base
+        if (isChildDevice(base, device)) {
+            return true;
+        }
+        
+        // check child groups
+        List<? extends DeviceGroup> childGroups = getChildGroups(base);
+        for (DeviceGroup childGroup : childGroups) {
+             if (mainDelegator.isDeviceInGroup(childGroup, device)) {
+                 return true;
+             }
+        }
+        
+        return false;
     }
     
     @Required

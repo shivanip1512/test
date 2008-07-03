@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
+import com.cannontech.common.device.groups.model.DeviceGroup;
 
 public interface DeviceGroupMemberEditorDao {
     public List<YukonDevice> getChildDevices(StoredDeviceGroup group);
@@ -80,5 +81,13 @@ public interface DeviceGroupMemberEditorDao {
      * @param devices
      */
     public void removeDevices(StoredDeviceGroup group, Collection<? extends YukonDevice> devices);
+
+    /**
+     * Determines if device is a direct child of group.
+     * @param group
+     * @param device
+     * @return
+     */
+    public boolean isChildDevice(StoredDeviceGroup group, YukonDevice device);
 
 }
