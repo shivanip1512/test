@@ -19,9 +19,7 @@ import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.yukon.IDatabaseCache;
-import com.cannontech.yukon.IServerConnection;
-import com.cannontech.yukon.conns.ConnPool;
+import com.cannontech.yukon.BasicServerConnection;
 
 /**
  * @author snebben
@@ -31,8 +29,8 @@ import com.cannontech.yukon.conns.ConnPool;
  */
 public class DBPersistentDaoImpl implements DBPersistentDao
 {
-    private IDatabaseCache databaseCache;
     private CacheDBChangeListener cacheDBChangeListener;
+    private BasicServerConnection dispatchConnection;
     
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.DBPersistentDao#retrieveDBPersistent(com.cannontech.database.data.lite.LiteBase)
@@ -45,7 +43,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         {
             dbPersistent = LiteFactory.createDBPersistent(liteObject);
             try {
-                Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, dbPersistent);
+                Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.RETRIEVE, dbPersistent);
                 dbPersistent = t.execute();
             }
             catch(Exception e) {
@@ -57,7 +55,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     /* (non-Javadoc)
      * @see com.cannontech.core.dao.DBPersistentDao#performDBChange(com.cannontech.database.db.DBPersistent, com.cannontech.yukon.IServerConnection, int)
      */
-    public void performDBChange(DBPersistent item, IServerConnection connToDispatch, int transactionType) throws PersistenceException
+    public void performDBChange(DBPersistent item, int transactionType) throws PersistenceException
     {
         int dbChangeType = -1;
         
@@ -78,17 +76,17 @@ public class DBPersistentDaoImpl implements DBPersistentDao
 
         try
         {
-            Transaction t = Transaction.createTransaction( transactionType, item);
+            Transaction<DBPersistent> t = Transaction.createTransaction( transactionType, item);
             item = t.execute();
             
             //write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
             if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE)
             {
-                DBChangeMsg[] dbChange = databaseCache.createDBChangeMessages((CTIDbChange)item, dbChangeType);
+                DBChangeMsg[] dbChange = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
                 
                 for( int i = 0; i < dbChange.length; i++)
                 {
-                    processDBChange(connToDispatch, dbChange[i]);
+                    processDBChange(dbChange[i]);
                 }
             }
         }
@@ -100,22 +98,8 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     }
     
     public void processDBChange(DBChangeMsg dbChange) {
-        IServerConnection dispatchConn = ConnPool.getInstance().getDefDispatchConn();
-        this.processDBChange(dispatchConn, dbChange);
-    }
-
-    private void processDBChange(IServerConnection connToDispatch, DBChangeMsg dbChange) {
         cacheDBChangeListener.handleDBChangeMessage(dbChange);
-        connToDispatch.queue(dbChange);
-    }
-    
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DBPersistentDao#performDBChange(com.cannontech.database.db.DBPersistent, int)
-     */
-    public void performDBChange(DBPersistent item, int transactionType) {
-        //TODO maybe fix the type mismatch later
-        IServerConnection dispatchConn = ConnPool.getInstance().getDefDispatchConn();
-        performDBChange(item, dispatchConn, transactionType);
+        dispatchConnection.queue(dbChange);
     }
     
     /* (non-Javadoc)
@@ -131,7 +115,7 @@ public class DBPersistentDaoImpl implements DBPersistentDao
                 objectsToDelete.getDBPersistentVector().add(dbPersistentObj);
             }
 
-            Transaction t = Transaction.createTransaction( transactionType, objectsToDelete);
+            Transaction<?> t = Transaction.createTransaction( transactionType, objectsToDelete);
             t.execute();
 
             
@@ -143,11 +127,11 @@ public class DBPersistentDaoImpl implements DBPersistentDao
         }
     }
 
-    public void setDatabaseCache(IDatabaseCache databaseCache) {
-        this.databaseCache = databaseCache;
-    }
     public void setCacheDBChangeListener(CacheDBChangeListener cacheDBChangeListener) {
         this.cacheDBChangeListener = cacheDBChangeListener;
+    }
+    public void setDispatchConnection(BasicServerConnection dispatchConnection) {
+        this.dispatchConnection = dispatchConnection;
     }
     
 }
