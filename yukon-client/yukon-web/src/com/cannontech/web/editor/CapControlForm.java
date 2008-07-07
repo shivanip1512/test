@@ -1542,7 +1542,10 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 			if (element instanceof CCFeederSubAssignment) {
 				CCFeederSubAssignment feeder = (CCFeederSubAssignment) element;
 				feeder.setDisplayOrder(new Integer ( i + 1));
-			} else if (element instanceof CCFeederBankList) {
+			}else if (element instanceof CCSubstationSubBusList) {
+			    CCSubstationSubBusList subBus = (CCSubstationSubBusList) element;
+			    subBus.setDisplayOrder(new Integer ( i + 1));
+            } else if (element instanceof CCFeederBankList) {
 				CCFeederBankList capBank = (CCFeederBankList) element;
 				capBank.setControlOrder(new Float ( i  + 1));
                 capBank.setCloseOrder(new Float ( i + 1));
