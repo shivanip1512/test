@@ -17,7 +17,7 @@
             pointtype - the name of the point type (e.g. "Analog")
             notificationgroup - the name of the notification group to which this is being sent
             abnormal - the abnormal flag {true,false}
-            acknowledged - the acknowledged flag {true,flase}
+            acknowledged - the acknowledged flag {true,false}
             condition - the text of the condition that was violated
             category - the name of the category that caused the alarm
             alarmdate - the date of the alarm (e.g. "Tuesday, May 31")
