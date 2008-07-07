@@ -19,6 +19,7 @@
 #include "cticalls.h"
 #include "color.h"
 #include "logger.h"
+#include "SharedFunctions.h"
 
 #include <boost/thread/mutex.hpp>
 
@@ -569,7 +570,7 @@ unsigned char CCU710::getFrame(){
 
 
 // Constructor to build a new Message
-void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber){
+void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuAddress){
     _messageType = MsgType;
 
     if(_messageType == FEEDEROP) {
@@ -578,7 +579,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             //_messageData[Ctr++] = Address;   //  slave address
             //Ctr++;        // btf -2 filled in @ bottom
 
-            unsigned char ack = makeAck(ccuNumber);
+            unsigned char ack = makeAck(ccuAddress>>1);
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = 0x82;
@@ -610,7 +611,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             //_messageData[Ctr++] = Address;   //  slave address
             //Ctr++;        // btf -2 filled in @ bottom
 
-            unsigned char ack = makeAck(ccuNumber);
+            unsigned char ack = makeAck(ccuAddress);
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = 0x82;
@@ -629,7 +630,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             }*/
         }
         else if(WrdFnc==READREP1) {
-            unsigned char ack = makeAck(ccuNumber);
+            unsigned char ack = makeAck(ccuAddress);
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = 0x82;
@@ -642,7 +643,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             _outmessageData[Ctr++] = ack;
         }
         else if(WrdFnc==READREP1) {
-            unsigned char ack = makeAck(ccuNumber);
+            unsigned char ack = makeAck(ccuAddress);
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = 0x82;
@@ -655,7 +656,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             _outmessageData[Ctr++] = ack;
         }
         else if(WrdFnc==READREP1) {
-            unsigned char ack = makeAck(ccuNumber);
+            unsigned char ack = makeAck(ccuAddress);
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = 0x82;
@@ -668,7 +669,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             _outmessageData[Ctr++] = ack;
         }
         else if(WrdFnc==READREP2) {
-            unsigned char ack = makeAck(ccuNumber);
+            unsigned char ack = makeAck(ccuAddress);
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = 0x82;
@@ -688,7 +689,7 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
             _outmessageData[Ctr++] = ack;
         }
         else if(WrdFnc==READREP3) {
-            unsigned char ack = makeAck(ccuNumber);
+            unsigned char ack = makeAck(ccuAddress);
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = ack;
             _outmessageData[Ctr++] = 0x82;
@@ -718,34 +719,13 @@ void CCU710::CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber
     }
     else if(_messageType == PING) {
         int Ctr = 0;
-        unsigned char ack = makeAck(ccuNumber);
+        unsigned char ack = makeAck(ccuAddress);
         _outmessageData[Ctr++] = ack;
         _outmessageData[Ctr++] = ack;
         _outmessageData[Ctr++] = 0xf5;
         _outmessageData[Ctr++] = 0x55;
         _outindexOfEnd = Ctr;
     }
-}
-
-unsigned char CCU710::makeAck(int ccuSpec)
-{
-    unsigned char ack;
-    switch(ccuSpec)
-    {
-        case 0:
-            ack = 0xc0;
-            break;
-        case 1:
-            ack = 0x41;
-            break;
-        case 2:
-            ack = 0x42;
-            break;
-        case 3:
-            ack = 0xc3;
-            break;
-    }
-    return ack;
 }
 
 int CCU710::DecodeMctAddress()

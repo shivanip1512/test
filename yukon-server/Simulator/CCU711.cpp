@@ -21,6 +21,7 @@
 #include "color.h"
 #include "time.h"
 #include "logger.h"
+#include "SharedFunctions.h"
 #include <queue>
 
 #include <boost/thread/mutex.hpp>
@@ -472,8 +473,14 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
             _outmessageData[Ctr++] = ncocts;    // "    "
             _outmessageData[Ctr++] = 0x00;      // process status items
             _outmessageData[Ctr++] = 0x00;      //    "   "
-            _outmessageData[Ctr++] = 0x42;
-            _outmessageData[Ctr++] = 0x42;
+
+            //Thain: Generate ACK here: For now they will both be the same
+            unsigned char ack = makeAck(_address);
+            //Compute even parity add 1 if needed
+            
+
+            _outmessageData[Ctr++] = ack;
+            _outmessageData[Ctr++] = ack;
             _outmessageData[3] = Ctr-4;      // # of bytes to follow minus two (see note above)
 
             unsigned short CRC = NCrcCalc_C ((_outmessageData + 1), Ctr-1);
@@ -504,7 +511,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 if(subCCU710.getWordFunction(0) == FUNCREAD)
                 {
                     // Use a 710 to form the content in the message
-                    subCCU710.CreateMessage(FEEDEROP, FUNCREAD, _mctNumber, ccuNumber);
+                    subCCU710.CreateMessage(FEEDEROP, FUNCREAD, _mctNumber, _address);
                     unsigned char SendData[300];
                     subCCU710.SendMsg(SendData);
                     int smallCtr = 0;
@@ -537,13 +544,13 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                     switch(subCCU710.getWordsRequested())
                     {
                         case 1:
-                            subCCU710.CreateMessage(FEEDEROP, READREP1, _mctNumber, ccuNumber);
+                            subCCU710.CreateMessage(FEEDEROP, READREP1, _mctNumber, _address);
                             break;
                         case 2:
-                            subCCU710.CreateMessage(FEEDEROP, READREP2, _mctNumber, ccuNumber);
+                            subCCU710.CreateMessage(FEEDEROP, READREP2, _mctNumber, _address);
                             break;
                         case 3:
-                            subCCU710.CreateMessage(FEEDEROP, READREP3, _mctNumber, ccuNumber);
+                            subCCU710.CreateMessage(FEEDEROP, READREP3, _mctNumber, _address);
                             break;
                     }
                     subCCU710.SendMsg(SendData);
@@ -569,7 +576,7 @@ void CCU711::CreateMessage(int MsgType, int WrdFnc, unsigned char Data[], int cc
                 else if(subCCU710.getWordFunction(0) == WRITE)
                 {
                                         // Use a 710 to form the content in the message
-                    subCCU710.CreateMessage(FEEDEROP, FUNCREAD, _mctNumber, ccuNumber);
+                    subCCU710.CreateMessage(FEEDEROP, FUNCREAD, _mctNumber, _address);
                     unsigned char SendData[300];
                     subCCU710.SendMsg(SendData);
                     int smallCtr = 0;

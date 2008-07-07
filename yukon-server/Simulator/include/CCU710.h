@@ -17,8 +17,6 @@
 #include "Winsock2.h"
 #include <iostream>
 #include "EmetconWord.h"
-#include "SimulatedCCU.h"
-
 
 class CCU710
 {
@@ -85,7 +83,7 @@ class CCU710
         int DecodeWTF(int WordType, unsigned char Data[]);
         unsigned char getFrame();
         void CreateMessage(int MsgType, int WrdFnc, int mctNumber, int ccuNumber);
-        unsigned char makeAck(int ccuNumber);
+
         //  Determines the mct address from the incoming word
         int DecodeMctAddress();
         //  Determines the ccu address from the preamble
