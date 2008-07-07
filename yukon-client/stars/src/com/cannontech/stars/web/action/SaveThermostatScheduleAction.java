@@ -133,11 +133,10 @@ public class SaveThermostatScheduleAction implements ActionBase {
 			else {
 				// Save to a new schedule
 				schedule.getLmThermostatSchedule().setScheduleName( saveSchedule.getScheduleName() );
-				// Use the entry ID in the default list as the thermostat type ID, so that
-				// we can delete a thermostat type without deleting all the saved schedules
+
 				int hwTypeDefID = DaoFactory.getYukonListDao().getYukonListEntry( liteNewSched.getThermostatTypeID() ).getYukonDefID();
-				schedule.getLmThermostatSchedule().setThermostatTypeID(
-						new Integer(StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getYukonListEntry(hwTypeDefID).getEntryID()) );
+				int thermostatTypeId = energyCompany.getYukonListEntry(hwTypeDefID).getEntryID();
+				schedule.getLmThermostatSchedule().setThermostatTypeID(thermostatTypeId);
 				
 				schedule = (LMThermostatSchedule) Transaction.createTransaction( Transaction.INSERT, schedule ).execute();
 			}
