@@ -1,8 +1,6 @@
 package com.cannontech.web.login;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.List;
 
 import javax.servlet.Filter;
@@ -139,12 +137,8 @@ public class LoginFilter implements Filter {
         String navUrl = url + ((urlParams != null) ? "?" + urlParams : "");
         // strip any unsafe navigation from the URL before it gets encoded.
         String safeNavUrl = ServletUtil.createSafeRedirectUrl(request, navUrl);
-        try {
-            String encodedNavUrl = URLEncoder.encode(safeNavUrl, "UTF-8");
-            return encodedNavUrl;
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        String encodedNavUrl = ServletUtil.urlEncode(safeNavUrl);
+        return encodedNavUrl;
     }
 
     private void sendLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException{
