@@ -12,6 +12,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.dao.ECMappingDao;
 import com.cannontech.stars.dr.account.dao.CustomerAccountDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
+import com.cannontech.stars.dr.hardware.model.Thermostat;
 import com.cannontech.stars.dr.thermostat.model.ThermostatManualEvent;
 import com.cannontech.stars.dr.thermostat.model.ThermostatSchedule;
 
@@ -92,6 +93,20 @@ public class StarsDaoAdvice {
         }
 
     }
+    
+    @After("bean(inventoryDao) && saveMethodNamePointCut() && args(thermostat)")
+	public void doThermostatSaveAction(Thermostat thermostat) throws Throwable {
+
+		Integer inventoryId = thermostat.getId();
+		LiteStarsEnergyCompany energyCompany = mappingDao
+				.getInventoryEC(inventoryId);
+
+		// Clear inventory cache entry
+		if (inventoryId != 0) {
+			energyCompany.reloadInventory(inventoryId);
+		}
+
+	}
 
     @Autowired
     public void setMappingDao(ECMappingDao mappingDao) {
