@@ -130,7 +130,12 @@
     
     	liteEC = StarsDatabaseCache.getInstance().getEnergyCompany(user.getEnergyCompanyID());
     	
-        ecSettings = ServletUtils.getEnergyCompanySettings(session);
+        ecSettings = ServletUtils.removeEnergyCompanySettings(session);
+        if (ecSettings != null) { // ensure there is a new instance of StarsEnergyCompanySettings for each request
+            ecSettings = liteEC.getStarsEnergyCompanySettings(user);
+            session.setAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS, ecSettings);
+        }
+        
         energyCompany = ecSettings.getStarsEnergyCompany();
     	categories = ecSettings.getStarsEnrollmentPrograms();
     	companies = ecSettings.getStarsServiceCompanies();

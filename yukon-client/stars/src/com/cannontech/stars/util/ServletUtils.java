@@ -707,8 +707,10 @@ public class ServletUtils {
         return (StarsYukonUser) session.getAttribute(ServletUtils.ATT_STARS_YUKON_USER);
     }
     
-    public static StarsEnergyCompanySettings getEnergyCompanySettings(final HttpSession session) {
-        return (StarsEnergyCompanySettings) session.getAttribute( ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+    public static StarsEnergyCompanySettings removeEnergyCompanySettings(final HttpSession session) {
+        StarsEnergyCompanySettings settings = (StarsEnergyCompanySettings) session.getAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+        session.removeAttribute(ServletUtils.ATT_ENERGY_COMPANY_SETTINGS);
+        return settings;
     }
     
     public static String removeErrorMessage(final HttpSession session) {
