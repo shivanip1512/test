@@ -9,7 +9,7 @@ package com.cannontech.multispeak.event;
 
 import java.rmi.RemoteException;
 
-import com.cannontech.amr.meter.dao.impl.MeterDaoImpl;
+import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.impl.PointDaoImpl;
@@ -36,6 +36,8 @@ import com.cannontech.spring.YukonSpringHook;
  */
 public class MeterReadEvent extends MultispeakEvent{
 
+    private final MeterDao meterDao = YukonSpringHook.getBean("meterDao", MeterDao.class);
+    
     private ReadableDevice device = null;
 
     /**
@@ -102,7 +104,7 @@ public class MeterReadEvent extends MultispeakEvent{
 
     public boolean messageReceived(Return returnMsg) {
 
-        Meter meter = ((MeterDaoImpl)YukonSpringHook.getBean("meterDao")).getForId(returnMsg.getDeviceID());
+        Meter meter = meterDao.getForId(returnMsg.getDeviceID());
         
         if( returnMsg.getStatus() != 0) {
             
