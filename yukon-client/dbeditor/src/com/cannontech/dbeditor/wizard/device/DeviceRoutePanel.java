@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.util.List;
 import java.util.Vector;
 
+import javax.swing.JOptionPane;
+
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
@@ -136,6 +138,27 @@ public class DeviceRoutePanel
 			}
 		}
 		return ivjRouteLabel;
+	}
+	
+	@Override
+	public boolean isInputValid() {
+	    
+	    return checkRoutesExist();
+	};
+	
+	private boolean checkRoutesExist() {
+	    
+	    if (getRouteComboBox().getItemCount() < 1) {
+	        
+	        JOptionPane.showConfirmDialog(this,
+	                                      "Unable to save device.\n\nNo routes are setup.\n\n",
+	                                      "No Routes Setup",
+	                                      JOptionPane.DEFAULT_OPTION,
+	                                      JOptionPane.ERROR_MESSAGE);
+	        return false;
+	    }
+	    
+	    return true;
 	}
 	
 	/**
