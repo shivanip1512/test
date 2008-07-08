@@ -109,14 +109,14 @@ public interface DeviceDao {
      * name and checks if it is valid, then delegates here for update.
      * @param newRouteId
      */
-    public void changeRoute(int deviceId, int newRouteId);
+    public void changeRoute(YukonDevice device, int newRouteId);
     
     /**
      * Method to change the pao name of a given device
      * @param device
      * @param newName
      */
-    public void changeName(int deviceId, String newName);
+    public void changeName(YukonDevice device, String newName);
     
     /**
      * Method to change the devicecarriersettings address for givin device
@@ -125,12 +125,12 @@ public interface DeviceDao {
      * @param deviceId
      * @param newAddress
      */
-    public void changeAddress(int deviceId, int newAddress);
+    public void changeAddress(YukonDevice device, int newAddress);
     
     /**
      * Method to change the meter number of givin device
      * @param deviceId
      * @param newMeterNumber
      */
-    public void changeMeterNumber(int deviceId, String newMeterNumber);
+    public void changeMeterNumber(YukonDevice device, String newMeterNumber);
 }

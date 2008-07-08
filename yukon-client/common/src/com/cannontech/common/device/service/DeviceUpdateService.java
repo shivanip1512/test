@@ -21,5 +21,5 @@ public interface DeviceUpdateService {
      * @param newAddress
      * @throws IllegalArgumentException
      */
-    public void changeRoute(int deviceId, String newRouteName) throws IllegalArgumentException;
+    public void changeRoute(YukonDevice device, String newRouteName) throws IllegalArgumentException;
 }

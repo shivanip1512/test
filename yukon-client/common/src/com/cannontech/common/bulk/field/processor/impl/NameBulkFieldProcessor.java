@@ -16,7 +16,7 @@ public class NameBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     public void updateField(YukonDevice device, YukonDeviceDto value) {
 
         try {
-            deviceDao.changeName(device.getDeviceId(), value.getName());
+            deviceDao.changeName(device, value.getName());
         }
         catch (DataAccessException e) {
             throw new ProcessingException("Could not change name of device with id: " + device.getDeviceId(), e);

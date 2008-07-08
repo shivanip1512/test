@@ -16,7 +16,7 @@ public class RouteBulkFieldProcessor extends BulkYukonDeviceFieldProcessor {
     public void updateField(YukonDevice device, YukonDeviceDto value) {
         
         try {
-            this.deviceUpdateService.changeRoute(device.getDeviceId(), value.getRoute());
+            this.deviceUpdateService.changeRoute(device, value.getRoute());
         }
         catch (IllegalArgumentException e) {
             throw new ProcessingException(e.getMessage(), e);

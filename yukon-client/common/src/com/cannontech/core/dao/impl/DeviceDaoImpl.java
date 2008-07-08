@@ -69,13 +69,8 @@ public DeviceDaoImpl() {
         
         String sql = "UPDATE yukonpaobject SET disableflag = ? WHERE paobjectid = ?";
         jdbcOps.update(sql, new Object[] { disableFlag, device.getDeviceId() });
-        DBChangeMsg msg = new DBChangeMsg(device.getDeviceId(),
-                        DBChangeMsg.CHANGE_PAO_DB,
-                        "",
-                        "",
-                        DBChangeMsg.CHANGE_TYPE_UPDATE );
-        
-        dbPersistantDao.processDBChange(msg);
+
+        processDeviceUpdateDBChange(device);
     }
     
     public void removeDevice(YukonDevice device) {
@@ -260,64 +255,50 @@ public List getDevicesByDeviceAddress(Integer masterAddress, Integer slaveAddres
     return devicesByAddress;
 }
 
-public void changeRoute(int deviceId, int newRouteId) {
+public void changeRoute(YukonDevice device, int newRouteId) {
     
     // Updates the meter's meter number
     String sql = " UPDATE DeviceRoutes SET RouteID = ? WHERE DeviceID = ?";
-    jdbcOps.update(sql, new Object[] {newRouteId, deviceId});
+    jdbcOps.update(sql, new Object[] {newRouteId, device.getDeviceId()});
     
-    DBChangeMsg msg = new DBChangeMsg(deviceId,
-                  DBChangeMsg.CHANGE_PAO_DB,
-                  "",
-                  "",
-                  DBChangeMsg.CHANGE_TYPE_UPDATE );
-  
-    dbPersistantDao.processDBChange(msg);
+    processDeviceUpdateDBChange(device);
 }
 
-public void changeName(int deviceId, String newName) {
+public void changeName(YukonDevice device, String newName) {
     
     String sql = " UPDATE YukonPAObject SET PAOName = ? WHERE PAObjectID = ?";
-    jdbcOps.update(sql, new Object[] {newName, deviceId});
+    jdbcOps.update(sql, new Object[] {newName, device.getDeviceId()});
     
-    DBChangeMsg msg = new DBChangeMsg(deviceId,
-                  DBChangeMsg.CHANGE_PAO_DB,
-                  "",
-                  "",
-                  DBChangeMsg.CHANGE_TYPE_UPDATE );
-  
-    dbPersistantDao.processDBChange(msg);
+    processDeviceUpdateDBChange(device);
 }
 
-public void changeAddress(int deviceId, int newAddress) {
+public void changeAddress(YukonDevice device, int newAddress) {
     
     String sql = " UPDATE " + DeviceCarrierSettings.TABLE_NAME +
                  " SET ADDRESS = ? WHERE DeviceID = ?";
-    jdbcOps.update(sql, new Object[] {newAddress, deviceId});
+    jdbcOps.update(sql, new Object[] {newAddress, device.getDeviceId()});
     
-    DBChangeMsg msg = new DBChangeMsg(deviceId,
-                  DBChangeMsg.CHANGE_PAO_DB,
-                  "",
-                  "",
-                  DBChangeMsg.CHANGE_TYPE_UPDATE );
-  
-    dbPersistantDao.processDBChange(msg);
+    processDeviceUpdateDBChange(device);
 }
 
-public void changeMeterNumber(int deviceId, String newMeterNumber) {
+public void changeMeterNumber(YukonDevice device, String newMeterNumber) {
     
     String sql = " UPDATE DEVICEMETERGROUP SET METERNUMBER = ? WHERE DeviceID = ?";
-    jdbcOps.update(sql, new Object[] {newMeterNumber, deviceId});
+    jdbcOps.update(sql, new Object[] {newMeterNumber, device.getDeviceId()});
 
-    DBChangeMsg msg = new DBChangeMsg(deviceId,
-         DBChangeMsg.CHANGE_PAO_DB,
-         "",
-         "",
-         DBChangeMsg.CHANGE_TYPE_UPDATE );
-    
-    dbPersistantDao.processDBChange(msg);
+    processDeviceUpdateDBChange(device);
 }
 
+private void processDeviceUpdateDBChange(YukonDevice device) {
+
+    DBChangeMsg msg = new DBChangeMsg(device.getDeviceId(),
+                                      DBChangeMsg.CHANGE_PAO_DB,
+                                      PAOGroups.STRING_CAT_DEVICE,
+                                      paoGroupsWrapper.getPAOTypeString(device.getType()),
+                                      DBChangeMsg.CHANGE_TYPE_UPDATE );
+
+    dbPersistantDao.processDBChange(msg);
+}
 
 public void setDatabaseCache(IDatabaseCache databaseCache) {
     this.databaseCache = databaseCache;

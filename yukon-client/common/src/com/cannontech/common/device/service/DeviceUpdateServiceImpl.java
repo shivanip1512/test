@@ -20,10 +20,10 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             throw new IllegalArgumentException("Address not in valid range for device type: " + newAddress);
         }
 
-        deviceDao.changeAddress(device.getDeviceId(), newAddress);
+        deviceDao.changeAddress(device, newAddress);
     }
 
-    public void changeRoute(int deviceId, String newRouteName) throws IllegalArgumentException {
+    public void changeRoute(YukonDevice device, String newRouteName) throws IllegalArgumentException {
 
         Integer routeId = paoDao.getRouteIdForRouteName(newRouteName);
 
@@ -31,7 +31,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
             throw new IllegalArgumentException("Invalid route name: " + newRouteName);
         }
 
-        deviceDao.changeRoute(deviceId, routeId);
+        deviceDao.changeRoute(device, routeId);
     }
 
     @Autowired

@@ -384,22 +384,22 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         }
 
         @Override
-        public void changeAddress(int deviceId, int newAddress) {
+        public void changeAddress(YukonDevice device, int newAddress) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeMeterNumber(int deviceId, String newMeterNumber) {
+        public void changeMeterNumber(YukonDevice device, String newMeterNumber) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeName(int deviceId, String newName) {
+        public void changeName(YukonDevice device, String newName) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 
         @Override
-        public void changeRoute(int deviceId, int newRouteId) {
+        public void changeRoute(YukonDevice device, int newRouteId) {
             throw new UnsupportedOperationException("Method not implemented");
         }
 

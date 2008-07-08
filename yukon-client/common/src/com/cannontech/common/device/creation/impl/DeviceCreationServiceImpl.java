@@ -25,6 +25,7 @@ import com.cannontech.database.data.device.MCTBase;
 import com.cannontech.database.data.lite.LiteFactory;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.database.data.multi.MultiDBPersistent;
+import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.db.DBPersistent;
@@ -60,7 +61,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             Transaction.createTransaction(Transaction.INSERT, newDevice).execute();
             
             // db change msg
-            processDeviceDbChange(newDeviceId);
+            processDeviceDbChange(newDevice);
 
             // COPY POINTS
             if (copyPoints) {
@@ -104,11 +105,10 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             newDevice.setAddress(address);
             newDevice.getDeviceRoutes().setRouteID(routeId);
 
-            Transaction t = Transaction.createTransaction(Transaction.INSERT, newDevice);
-            t.execute();
+            Transaction.createTransaction(Transaction.INSERT, newDevice).execute();
             
             // db change msg
-            processDeviceDbChange(newDeviceId);
+            processDeviceDbChange(newDevice);
             
             if (createPoints) {
                 
@@ -138,7 +138,7 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
             int templateDeviceId = templateYukonDevice.getDeviceId();
 
             templateDevice.setDeviceID(templateDeviceId);
-            templateDevice = (MCTBase)Transaction.createTransaction(Transaction.RETRIEVE, templateDevice).execute();
+            templateDevice = Transaction.createTransaction(Transaction.RETRIEVE, templateDevice).execute();
 
         }
         catch (IncorrectResultSizeDataAccessException e) {
@@ -208,12 +208,12 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         return points;
     }
 
-    private void processDeviceDbChange(int paoId) {
+    private void processDeviceDbChange(MCTBase newDevice) {
 
-        DBChangeMsg msg = new DBChangeMsg(paoId,
+        DBChangeMsg msg = new DBChangeMsg(newDevice.getPAObjectID(),
                                           DBChangeMsg.CHANGE_PAO_DB,
-                                          "",
-                                          "",
+                                          PAOGroups.STRING_CAT_DEVICE,
+                                          newDevice.getPAOType(),
                                           DBChangeMsg.CHANGE_TYPE_ADD );
         dbPersistantDao.processDBChange(msg);
     }
