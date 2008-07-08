@@ -61,6 +61,9 @@ public:
 
         //  operator->() requires an address as a return value in order to work properly
         Element *operator->()  {  return &((*(static_cast<set_itr *>(this)))->first);  }
+
+        iterator &operator++()     {  ++(*(static_cast<set_itr *>(this)));  return *this; }
+        iterator  operator++(int)  {  return (*(static_cast<set_itr *>(this)))++; }
     };
 
     class const_iterator : public Inherited::iterator
@@ -76,6 +79,9 @@ public:
         const Element &operator*()  const  {  return (*(static_cast<const set_itr *>(this)))->first;  }
 
         const Element *operator->() const  {  return &((*(static_cast<const set_itr *>(this)))->first);  }
+
+        const_iterator &operator++()     {  ++(*(static_cast<set_itr *>(this)));  return *this; }
+        const_iterator  operator++(int)  {  return (*(static_cast<set_itr *>(this)))++; }
     };
 
     iterator begin()  {  return iterator(Inherited::begin());  }

@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/06/25 21:12:44 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/07/08 22:54:57 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -57,13 +57,13 @@ INT CtiLocalConnect<Outbound, Inbound>::CTINexusWrite(VOID *buf, ULONG len, PULO
         try
         {
             Outbound *o = new Outbound(*(static_cast<Outbound *>(buf)));
-
+            /*
             if( gConfigParms.getValueAsULong("DEBUGLEVEL_NEXUS",0, 16) & 0x00000010 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** ctilocalconnect push to queue **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-
+            */
             {
                 CtiLockGuard< CtiCriticalSection > g(_crit);
                 _outQueue.insert(o);
@@ -181,12 +181,13 @@ INT CtiLocalConnect<Outbound, Inbound>::CtiLocalConnectRead(VOID *buf, ULONG len
                     _outQueue.erase(_outQueue.begin());
                 }
             }
-
+            /*
             if( gConfigParms.getValueAsULong("DEBUGLEVEL_NEXUS",0, 16) & 0x00000020 )
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** ctilocalconnect pop from queue **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
+            */
         }
         catch(...)
         {
@@ -231,6 +232,26 @@ int CtiLocalConnect<Outbound, Inbound>::CtiLocalConnectOpen()
 {
     _nexusState = CTINEXUS_STATE_CONNECTED;
     return 0;
+}
+
+void CtiLocalConnect<OUTMESS, INMESS>::purgeRequest(int request)
+{
+    CtiLockGuard< CtiCriticalSection > g(_crit);
+
+    queue_t::iterator itr = _outQueue.begin();
+
+    while( itr != _outQueue.end() )
+    {
+        if( (*itr)->Request.UserID == request )
+        {
+            delete(*itr);
+            itr = _outQueue.erase(itr);
+        }
+        else
+        {
+            itr++;
+        }
+    }
 }
 
 

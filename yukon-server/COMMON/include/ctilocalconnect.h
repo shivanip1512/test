@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_710.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/06/25 21:12:44 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/07/08 22:54:57 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -70,6 +70,8 @@ public:
     INT   CtiLocalConnectRead (VOID *buf, ULONG len, PULONG BRead, LONG TimeOut, int flags = NOFLAG);
 
     bool setMatchingConnection( CtiLocalConnect<Inbound, Outbound> &connection );
+
+    void purgeRequest(int request);
 };
 
 #include "dsm2.h"

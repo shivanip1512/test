@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.119 $
-* DATE         :  $Date: 2008/06/25 21:12:45 $
+* REVISION     :  $Revision: 1.120 $
+* DATE         :  $Date: 2008/07/08 22:54:57 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -986,6 +986,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     {
         _sysMsgThread.setDeviceManager(&DeviceManager);
         _sysMsgThread.setPortManager(&PortManager);
+        _sysMsgThread.setPilToPorter(&PilToPorter);
         _sysMsgThread.start();
     }
 

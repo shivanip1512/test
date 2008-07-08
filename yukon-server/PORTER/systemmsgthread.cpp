@@ -7,11 +7,18 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.4 $
-* DATE         :  $Date: 2007/10/18 21:12:18 $
+* REVISION     :  $Revision: 1.5 $
+* DATE         :  $Date: 2008/07/08 22:54:57 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.5  2008/07/08 22:54:57  mfisher
+* YUK-6077 Several lists in PIL and Porter are not sorted
+* YUK-6113 Large group reads block out higher-priority commands
+* YUK-6156 MCT-410 "getvalue kwh" command execution is slow
+* removed a slow CPARM lookup
+* added support to purge requests from CtiLocalConnect
+*
 * Revision 1.4  2007/10/18 21:12:18  jotteson
 * Fix for bug in timing code that makes debugging Dispatch difficult.
 *
@@ -82,6 +89,14 @@ void SystemMsgThread::setPortManager(CtiPortManager *portMgr)
     }
 }
 
+void SystemMsgThread::setPilToPorter(CtiLocalConnect<OUTMESS, INMESS> *pilToPorter)
+{
+    if(pilToPorter != NULL)
+    {
+        _pPilToPorter = pilToPorter;
+    }
+}
+
 void SystemMsgThread::run( void )
 {
     UINT sanity = 0;
@@ -91,8 +106,8 @@ void SystemMsgThread::run( void )
     }
 
     SetThreadName(-1, "SysMsgThd");
-    
-	try
+
+    try
     {
         while( !isSet(SHUTDOWN) )
         {
@@ -112,7 +127,7 @@ void SystemMsgThread::run( void )
 
                     delete msg;
                     msg = NULL;
-                    
+
                 }
 
                 if(!(++sanity % 300))
@@ -276,16 +291,16 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
                 {
                     entries += port->getWorkCount(requestID);
                     queuedDevices = port->getQueuedWorkDevices();
-    
+
                     vector<long>::iterator devIter;
                     for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
                     {
                         tempDev = _pDevManager->getEqual(*devIter);
-    
+
                         if( tempDev )
                         {
                             queueInterface = tempDev->getDeviceQueueHandler();
-    
+
                             if( queueInterface != NULL )
                             {
                                 queueInterface->getQueueRequestInfo(requestID, count, priority);
@@ -338,6 +353,11 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
     CtiConnection  *Conn = NULL;
     CtiRequestCancelMsg *response = NULL;
 
+    if( _pPilToPorter != NULL )
+    {
+        _pPilToPorter->purgeRequest(requestID);
+    }
+
     if( _pPortManager != NULL && _pDevManager != NULL )
     {
         if( requestID != 0 )
@@ -356,18 +376,18 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
                         // Here we are trying to save the horrors of CleanQueue from being called without cause.
                         entries += CleanQueue(port->getPortQueueHandle(), (void *)requestID, findRequestIDMatch, cleanupOutMessages);
                     }
-                    
+
                     queuedDevices = port->getQueuedWorkDevices();
-    
+
                     vector<long>::iterator devIter;
                     for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
                     {
                         tempDev = _pDevManager->getEqual(*devIter);
-    
+
                         if( tempDev )
                         {
                             queueInterface = tempDev->getDeviceQueueHandler();
-    
+
                             if( queueInterface != NULL )
                             {
                                 queueInterface->cancelRequest(requestID, count);
