@@ -49,7 +49,7 @@ public class MR_CB_Test {
 			SOAPHeaderElement header = new SOAPHeaderElement("http://www.multispeak.org/Version_3.0", "MultiSpeakMsgHeader", msgHeader);
 			instance.setHeader(header);
 
-			int todo = 2;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
+			int todo = 4;	//0=meterRead, 1=getAMRSupportedMeters, 2=pingURL, 3=getReadingsByMeterNo, 4=meterAddNotification
 			
 			if (todo==0) {
 			    MeterRead mr = instance.getLatestReadingByMeterNo("10620108");	//1068048 whe, 1010156108 sn_head/amr_demo
@@ -99,8 +99,8 @@ public class MR_CB_Test {
 				}
 			} else if( todo == 4) {
 			    Meter meter = new Meter();
-			    meter.setAMRDeviceType("*Default Template"); // this is the "Template" name
-			    meter.setMeterNo("2222223"); //MeterNumber, and value used for PaoName when PaoNameAlias is DeviceName (Default)
+			    meter.setAMRDeviceType("Cart #1 MCT-410cL (0300031)"); // this is the "Template" name
+			    meter.setMeterNo("Cart #1 MCT-410cL (0320819)"); //MeterNumber, and value used for PaoName when PaoNameAlias is DeviceName (Default)
 			    UtilityInfo utilityInfo = new UtilityInfo();
 			    utilityInfo.setAccountNumber("1234567"); //Value used for PaoName when PaoNameAlias = AccountNumber
 			    utilityInfo.setCustID("1234567"); //Value used for PaoName when PaoNameAlias = CustomerNumber
@@ -110,7 +110,7 @@ public class MR_CB_Test {
 			    utilityInfo.setSubstationName("SUBSTATION 1");   //SubstationName that maps to Route in SubstationToRouteMapping
 			    meter.setUtilityInfo(utilityInfo);
 			    Nameplate nameplate = new Nameplate();
-			    nameplate.setTransponderID("2222223");   //This is the Physical Address
+			    nameplate.setTransponderID("320819");   //This is the Physical Address
 			    meter.setNameplate(nameplate);
 			    
 			    ErrorObject[] objects = instance.meterAddNotification(new Meter[]{meter});
