@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.56 $
-* DATE         :  $Date: 2008/06/25 21:12:45 $
+* REVISION     :  $Revision: 1.57 $
+* DATE         :  $Date: 2008/07/08 22:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -99,14 +99,14 @@ extern CtiLocalConnect<INMESS, OUTMESS> PorterToPil;
 INT PorterEntryPoint(OUTMESS *&OutMessage);
 INT RemoteComm(OUTMESS *&OutMessage);
 INT RemotePort(OUTMESS *&OutMessage);
-INT ValidateRemote(OUTMESS *&OutMessage);
+INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev);
 INT ValidatePort(OUTMESS *&OutMessage);
 INT ValidateEmetconMessage(OUTMESS *&OutMessage);
 INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
 INT VersacomMessage(OUTMESS *&OutMessage);
 INT ValidateEncodedFlags(OUTMESS *&OutMessage, INT devicetype);
 INT QueueBookkeeping(OUTMESS *&SendOutMessage);
-INT ExecuteGoodRemote(OUTMESS *&OutMessage);
+INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr Dev);
 INT GenerateCompleteRequest(list< OUTMESS* > &outList, OUTMESS *&OutTemplate);
 
 INT ValidateOutMessage(OUTMESS *&OutMessage);
@@ -839,12 +839,9 @@ INT RemotePort(OUTMESS *&OutMessage)
  * remote.
  *----------------------------------------------------------------------------*/
 
-INT ValidateRemote(OUTMESS *&OutMessage)
+INT ValidateRemote(OUTMESS *&OutMessage, CtiDeviceSPtr TransmitterDev)
 {
-    INT                  status            = NORMAL;
-    CtiDeviceSPtr TransmitterDev   = DeviceManager.getEqual(OutMessage->DeviceID);
-
-    if(!TransmitterDev)
+    if( !TransmitterDev )
     {
         /* This is a unknown remote so shun it */
         {
@@ -852,11 +849,12 @@ INT ValidateRemote(OUTMESS *&OutMessage)
             dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             dout << "  Device ID " << OutMessage->DeviceID << " not found " << endl;
         }
+
         SendError (OutMessage, IDNF);
-        status = IDNF;
+        return IDNF;
     }
 
-    return status;
+    return NORMAL;
 }
 
 /*----------------------------------------------------------------------------*
@@ -870,10 +868,19 @@ INT ValidatePort(OUTMESS *&OutMessage)
 {
     INT j;
     INT status = NORMAL;
-    CtiPortSPtr Port;
+
+    static CtiPortSPtr Port;  //  all access to this must now be single-threaded
+    static long last_portid = -1;
+
+    //  this caching is done because the muxed lookup is very expensive
+    if( OutMessage->Port != last_portid )
+    {
+        Port = PortManager.PortGetEqual((LONG)OutMessage->Port);
+        last_portid = OutMessage->Port;
+    }
 
     /* Check the memory database to see if a port like this exists */
-    if((Port = PortManager.PortGetEqual((LONG)OutMessage->Port)))
+    if( Port )
     {
         Port->verifyPortIsRunnable( hPorterEvents[P_QUIT_EVENT] );
 
@@ -972,7 +979,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
         {
             ULONG Bread = 0;
 
-            for(i = 0; i < 5; i++)
+            for(i = 0; i < 20; i++)
             {
                 Bread = 0;
 
@@ -994,7 +1001,7 @@ INT CCU711Message(OUTMESS *&OutMessage, CtiDeviceSPtr Dev)
                     break;
                 }
 
-                CTISleep(1000);
+                CTISleep(250);
             }
 
             SetEvent(hPorterEvents[P_QUEUE_EVENT]);
@@ -1078,13 +1085,9 @@ INT QueueBookkeeping(OUTMESS *&SendOutMessage)
 }
 
 
-INT ExecuteGoodRemote(OUTMESS *&OutMessage)
+INT ExecuteGoodRemote(OUTMESS *&OutMessage, CtiDeviceSPtr pDev)
 {
     INT            status            = NORMAL;
-    CtiDeviceSPtr pDev;
-
-
-    pDev = DeviceManager.getEqual(OutMessage->DeviceID);
 
     //  if this is a nonqueued port, we will come out of this marked DTRAN
     ValidateEmetconMessage(OutMessage);
@@ -1135,9 +1138,11 @@ INT RemoteComm(OUTMESS *&OutMessage)
     /* Now check if we know about the remote */
     if(OutMessage->Remote != 0xffff)
     {
-        if((status = ValidateRemote(OutMessage)) == NORMAL)
+        CtiDeviceSPtr Device = DeviceManager.getEqual(OutMessage->DeviceID);
+
+        if((status = ValidateRemote(OutMessage, Device)) == NORMAL)
         {
-            status = ExecuteGoodRemote(OutMessage);   // Does a WriteQueue eventually if all is OK.
+            status = ExecuteGoodRemote(OutMessage, Device);   // Does a WriteQueue eventually if all is OK.
         }
     }
     else

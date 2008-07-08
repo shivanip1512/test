@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/resolvers.cpp-arc  $
-* REVISION     :  $Revision: 1.87 $
-* DATE         :  $Date: 2007/11/28 20:36:16 $
+* REVISION     :  $Revision: 1.88 $
+* DATE         :  $Date: 2008/07/08 22:56:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -29,16 +29,13 @@ using std::transform;
 using std::endl;
 
 
-
-
-
 INT resolveRouteType( const string& _rwsTemp)
 {
     INT Ret = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
 
-    trim(rwsTemp);//was missing..
+    in_place_trim(rwsTemp);
     if(rwsTemp == "ccu")
     {
         Ret = RouteTypeCCU;
@@ -105,7 +102,7 @@ INT resolveAmpUseType(const string& _rwsTemp)
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
 
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
     if( rwsTemp == "alternating" )
     {
@@ -158,7 +155,7 @@ CtiPointType_t resolvePointType(const string& _rwsTemp)
     CtiPointType_t Ret;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
     if(rwsTemp == analog)
     {
@@ -212,7 +209,7 @@ INT resolvePointArchiveType(const string& _rwsTemp)
     INT Ret = ArchiveTypeNone;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
     if(rwsTemp == "none")
     {
@@ -278,8 +275,7 @@ INT resolvePAOCategory(const string& _category)
     INT result = -1;
     string category = _category;
     CtiToLower(category);
-    trim(category);
-
+    in_place_trim(category);
 
     if(category == ("device"))
     {
@@ -311,9 +307,19 @@ INT resolveDeviceType(const string& _rwsTemp)
     INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
-    if(rwsTemp == "ccu-711")
+    if(rwsTemp == "mct-410il" || rwsTemp == "mct-410cl" ||
+       rwsTemp == "mct-410fl" || rwsTemp == "mct-410gl")
+    {
+        nRet = TYPEMCT410;
+    }
+    else if(rwsTemp == "mct-470" || rwsTemp == "mct-430a"
+                                 || rwsTemp == "mct-430s4" || rwsTemp == "mct-430sl")
+    {
+        nRet = TYPEMCT470;
+    }
+    else if(rwsTemp == "ccu-711")
     {
         nRet = TYPE_CCU711;
     }
@@ -339,6 +345,86 @@ INT resolveDeviceType(const string& _rwsTemp)
             rwsTemp == "repeater 801")
     {
         nRet = TYPE_REPEATER800;
+    }
+    else if(rwsTemp == "dct-501")
+    {
+        nRet = TYPEDCT501;
+    }
+    else if(rwsTemp == "mct-210")
+    {
+        nRet = TYPEMCT210;
+    }
+    else if(rwsTemp == "mct-212")
+    {
+        nRet = TYPEMCT212;
+    }
+    else if(rwsTemp == "mct-213")
+    {
+        nRet = TYPEMCT213;
+    }
+    else if(rwsTemp == "mct-224")
+    {
+        nRet = TYPEMCT224;
+    }
+    else if(rwsTemp == "mct-226")
+    {
+        nRet = TYPEMCT226;
+    }
+    else if(rwsTemp == "mct-240")
+    {
+        nRet = TYPEMCT240;
+    }
+    else if(rwsTemp == "mct-242")
+    {
+        nRet = TYPEMCT242;
+    }
+    else if(rwsTemp == "mct-248")
+    {
+        nRet = TYPEMCT248;
+    }
+    else if(rwsTemp == "mct-250")
+    {
+        nRet = TYPEMCT250;
+    }
+    else if(rwsTemp == "mct-310")
+    {
+        nRet = TYPEMCT310;
+    }
+    else if(rwsTemp == "mct-310ct")
+    {
+        nRet = TYPEMCT310;
+    }
+    else if(rwsTemp == "mct-310idl")
+    {
+        nRet = TYPEMCT310IDL;
+    }
+    else if(rwsTemp == "mct-310id")
+    {
+        nRet = TYPEMCT310ID;
+    }
+    else if(rwsTemp == "mct-310il")
+    {
+        nRet = TYPEMCT310IL;
+    }
+    else if(rwsTemp == "mct-318")
+    {
+        nRet = TYPEMCT318;
+    }
+    else if(rwsTemp == "mct-318l")
+    {
+        nRet = TYPEMCT318L;
+    }
+    else if(rwsTemp == "mct-360")
+    {
+        nRet = TYPEMCT360;
+    }
+    else if(rwsTemp == "mct-370")
+    {
+        nRet = TYPEMCT370;
+    }
+    else if(rwsTemp == "lmt-2")
+    {
+        nRet = TYPELMT2;
     }
     else if(rwsTemp == "rtu-ilex")
     {
@@ -455,96 +541,6 @@ INT resolveDeviceType(const string& _rwsTemp)
     else if(rwsTemp == "sentinel")
     {
         nRet = TYPE_SENTINEL;
-    }
-    else if(rwsTemp == "dct-501")
-    {
-        nRet = TYPEDCT501;
-    }
-    else if(rwsTemp == "mct-210")
-    {
-        nRet = TYPEMCT210;
-    }
-    else if(rwsTemp == "mct-212")
-    {
-        nRet = TYPEMCT212;
-    }
-    else if(rwsTemp == "mct-213")
-    {
-        nRet = TYPEMCT213;
-    }
-    else if(rwsTemp == "mct-224")
-    {
-        nRet = TYPEMCT224;
-    }
-    else if(rwsTemp == "mct-226")
-    {
-        nRet = TYPEMCT226;
-    }
-    else if(rwsTemp == "mct-240")
-    {
-        nRet = TYPEMCT240;
-    }
-    else if(rwsTemp == "mct-242")
-    {
-        nRet = TYPEMCT242;
-    }
-    else if(rwsTemp == "mct-248")
-    {
-        nRet = TYPEMCT248;
-    }
-    else if(rwsTemp == "mct-250")
-    {
-        nRet = TYPEMCT250;
-    }
-    else if(rwsTemp == "mct-310")
-    {
-        nRet = TYPEMCT310;
-    }
-    else if(rwsTemp == "mct-310ct")
-    {
-        nRet = TYPEMCT310;
-    }
-    else if(rwsTemp == "mct-310idl")
-    {
-        nRet = TYPEMCT310IDL;
-    }
-    else if(rwsTemp == "mct-310id")
-    {
-        nRet = TYPEMCT310ID;
-    }
-    else if(rwsTemp == "mct-310il")
-    {
-        nRet = TYPEMCT310IL;
-    }
-    else if(rwsTemp == "mct-318")
-    {
-        nRet = TYPEMCT318;
-    }
-    else if(rwsTemp == "mct-318l")
-    {
-        nRet = TYPEMCT318L;
-    }
-    else if(rwsTemp == "mct-360")
-    {
-        nRet = TYPEMCT360;
-    }
-    else if(rwsTemp == "mct-370")
-    {
-        nRet = TYPEMCT370;
-    }
-    else if(rwsTemp == "mct-410il" || rwsTemp == "mct-410cl" ||
-            rwsTemp == "mct-410fl" || rwsTemp == "mct-410gl")
-    {
-        nRet = TYPEMCT410;
-    }
-    else if(rwsTemp == "mct-470" || rwsTemp == "mct-430a"
-                                 || rwsTemp == "mct-430s4" || rwsTemp == "mct-430sl")
-    {
-        nRet = TYPEMCT470;
-    }
-    else if(rwsTemp == "lmt-2")
-    {
-        nRet = TYPELMT2;
     }
     else if(rwsTemp == "sixnet")
     {
@@ -735,7 +731,7 @@ INT resolveCapControlType(const string& _rwsTemp)
     INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
     if(rwsTemp == "ccarea")
     {
@@ -773,7 +769,7 @@ INT resolveLoadManagementType(const string& _rwsTemp)
     INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
     if(rwsTemp == "lm direct program")
     {
@@ -812,7 +808,7 @@ INT resolveScanType(const string& _rwsTemp)
     INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
 
     if(rwsTemp == "general")
@@ -854,7 +850,7 @@ LONG resolveDeviceWindowType(const string& _rwsTemp)
     INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
 
     if(rwsTemp == DEVICE_WINDOW_TYPE_SCAN)
@@ -885,7 +881,7 @@ INT resolvePAOClass(const string& _rwsTemp)
     INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
     /* The mantra of a professor I once had... Make the common case fast! */
     if(rwsTemp == "transmitter")
@@ -959,7 +955,7 @@ INT resolveDeviceState(const string& _rwsTemp)
     INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
     if(rwsTemp == "normal")
     {
@@ -988,7 +984,7 @@ INT resolveStatisticsType(const string& _rwsTemp)
     INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
 
     if(rwsTemp == "monthly")
@@ -1018,7 +1014,7 @@ CtiFilter_t resolveFilterType(const string& _rwsTemp)
     CtiFilter_t Ret = InvalidFilter;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
     if(rwsTemp == "none")
     {
@@ -1043,7 +1039,7 @@ INT resolveProtocol(const string& _str)
     INT nRet = 0;
     string str = _str;
     CtiToLower(str);
-    trim(str);
+    in_place_trim(str);
 
     if(str == "idlc")
     {
@@ -1068,7 +1064,7 @@ INT resolvePortType(const string& _str)
     INT nRet = 0;
     string str = _str;
     CtiToLower(str);
-    trim(str);
+    in_place_trim(str);
 
     if(str == "local serial port")
     {
@@ -1113,7 +1109,7 @@ INT resolvePortState(const string& _rwsTemp)
     INT nRet = 0;
     string rwsTemp = _rwsTemp;
     CtiToLower(rwsTemp);
-    trim(rwsTemp);
+    in_place_trim(rwsTemp);
 
     if(rwsTemp == "normal")
     {
@@ -1392,43 +1388,6 @@ INT resolveAWordTime(INT Seconds)
 
  */
 
-#if 0
-    switch(Seconds)
-    {
-    case 0:
-        {
-            // This must be a restore
-            break;
-        }
-    case 450:
-        {
-            nRet = TIME_7_5;
-            break;
-        }
-    case 900:
-        {
-            nRet = TIME_15;
-            break;
-        }
-    case 1800:
-        {
-            nRet = TIME_30;
-            break;
-        }
-    default:
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << "Time " << Seconds << " is not an Emetcon standard time.  Using 1 hour." << endl;
-            // Fall through
-        }
-    case 3600:
-        {
-            nRet = TIME_60;
-            break;
-        }
-    }
-#else
-
     if(Seconds < 5)
     {
         // This must be a restore
@@ -1460,7 +1419,6 @@ INT resolveAWordTime(INT Seconds)
         nRet = TIME_60;
     }
 
-#endif
     return nRet;
 }
 
@@ -1615,7 +1573,7 @@ INT resolveSlaveAddress(const INT DeviceType, const string& _str)
     INT slaveAddress = 0;
     string str = _str;
     CtiToLower(str);
-    trim(str);
+    in_place_trim(str);
 
     switch( DeviceType )
     {
@@ -1782,7 +1740,7 @@ CtiControlType_t  resolveControlType(const string& _str)
     CtiControlType_t Ret = InvalidControlType;
     string str = _str;
     CtiToLower(str);
-    trim(str);
+    in_place_trim(str);
 
     if(str == "none")
     {
@@ -1824,7 +1782,7 @@ INT resolveUomToCalcType(const string& _str)
 #if 0
     string str = _str;
     CtiToLower(str);
-    trim(str);
+    in_place_trim(str);
 
     if(str == "volts")
     {

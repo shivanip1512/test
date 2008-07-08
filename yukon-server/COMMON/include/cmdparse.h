@@ -48,6 +48,9 @@ protected:
 
    map< string, CtiParseValue > _cmd;
 
+   UINT     _flags,
+            _command;
+
 private:
 
     void    doParse(const string &Cmd);
@@ -83,6 +86,8 @@ private:
 
     void    doParsePutConfigCBC(const string &CmdStr);
 
+    void    setFlags(UINT flags);
+    void    setCommand(UINT command);
 
 public:
 
@@ -112,16 +117,17 @@ public:
 
 
    UINT   getCommand() const;
+
    UINT   getFlags()   const;
    UINT   getOffset()  const;
-   bool   isKeyValid(const string key) const;
-   UINT   getOffset (const string key) const;
-   INT    getiValue (const string key, INT valifnotfound = INT_MIN) const;
-   DOUBLE getdValue (const string key, DOUBLE valifnotfound = 0.0) const;
-   string getsValue (const string key) const;
-   CtiCommandParser& setValue(const string key, INT val);
-   CtiCommandParser& setValue(const string key, DOUBLE val);
-   CtiCommandParser& setValue(const string key, string val);
+   bool   isKeyValid(const string &key) const;
+   UINT   getOffset (const string &key) const;
+   INT    getiValue (const string &key, INT valifnotfound = INT_MIN) const;
+   DOUBLE getdValue (const string &key, DOUBLE valifnotfound = 0.0) const;
+   string getsValue (const string &key) const;
+   CtiCommandParser& setValue(const string &key, INT val);
+   CtiCommandParser& setValue(const string &key, DOUBLE val);
+   CtiCommandParser& setValue(const string &key, string val);
 
 
    std::list< string >& getActionItems();
@@ -129,8 +135,6 @@ public:
    void parse();
 
    string asString();
-   CtiCommandParser& parseAsString(const string str);
-
 };
 
 

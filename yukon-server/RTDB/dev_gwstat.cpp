@@ -10,8 +10,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2007/09/11 18:16:19 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/07/08 22:56:58 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2555,7 +2555,7 @@ int CtiDeviceGatewayStat::processParse(SOCKET msgsock, CtiCommandParser &parse, 
 
         int shedminutes = parse.getiValue("shed", 0) / 60;
         int cycle = parse.getiValue("cycle", 0);
-        int parseflags = parse.getiValue("flag", 0);
+        int parseflags = parse.getFlags();
 
         if(parse.getCommand() == ScanRequest)
         {

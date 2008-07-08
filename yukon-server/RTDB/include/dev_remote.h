@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/dev_remote.h-arc  $
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/09/21 21:31:39 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/07/08 22:56:59 $
 *
 * Copyright (c) 1999 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -86,7 +86,7 @@ public:
         return *this;
     }
 
-    CtiTableDeviceDirectComm  getDirect() const
+    const CtiTableDeviceDirectComm &getDirect() const
     {
         return Direct;
     }

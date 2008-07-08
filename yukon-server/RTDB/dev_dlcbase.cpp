@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_dlcbase.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2008/07/03 16:04:24 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/07/08 22:56:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -422,7 +422,8 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                 pOut->EventCode |= TSYNC;
             }
 
-            if( parse.isKeyValid("noqueue") )
+            static const string str_noqueue = "noqueue";
+            if( parse.isKeyValid(str_noqueue) )
             {
                 pOut->EventCode |= DTRAN;
                 //  pOut->EventCode &= ~QUEUED;
@@ -443,10 +444,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                      itr != parse.getActionItems().end();
                      ++itr )
                 {
-                    string actn = *itr;
-                    string desc = getDescription(parse);
-
-                    vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), desc, actn, LoadMgmtLogType, SignalEvent, pReq->getUser()));
+                    vgList.push_back(CTIDBG_new CtiSignalMsg(SYS_PID_SYSTEM, pReq->getSOE(), getDescription(parse), *itr, LoadMgmtLogType, SignalEvent, pReq->getUser()));
                 }
             }
 
@@ -470,7 +468,7 @@ int CtiDeviceDLCBase::executeOnDLCRoute( CtiRequestMsg              *pReq,
                     arm = 0;
                 }
 
-                if( arm && !parse.isKeyValid(arm_name.c_str()) )
+                if( arm && !parse.isKeyValid(arm_name) )
                 {
                     //  for safety, I'll just unset them all at once
                     pOut->Buffer.BSt.IO &= ~(Q_ARML | Q_ARMC | Q_ARMS);

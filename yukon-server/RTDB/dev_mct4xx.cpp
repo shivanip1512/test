@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct4xx-arc  $
-* REVISION     :  $Revision: 1.79 $
-* DATE         :  $Date: 2008/06/09 14:57:51 $
+* REVISION     :  $Revision: 1.80 $
+* DATE         :  $Date: 2008/07/08 22:56:59 $
 *
 * Copyright (c) 2005 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -525,27 +525,28 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
     bool found = false;
     int function;
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   OutMessage->Request.CommandStr,
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
-
-    if( parse.isKeyValid("lp_command") )  //  load profile
+    static const string str_lp_command = "lp_command";
+    if( parse.isKeyValid(str_lp_command) )  //  load profile
     {
+        CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                       OutMessage->Request.CommandStr,
+                                                       string(),
+                                                       nRet,
+                                                       OutMessage->Request.RouteID,
+                                                       OutMessage->Request.MacroOffset,
+                                                       OutMessage->Request.Attempt,
+                                                       OutMessage->Request.TrxID,
+                                                       OutMessage->Request.UserID,
+                                                       OutMessage->Request.SOE,
+                                                       CtiMultiMsg_vec( ));
+
         unsigned long request_time, relative_time;
 
         int request_channel;
         int year, month, day, hour, minute;
         int interval_len, block_len;
 
-        string cmd = parse.getsValue("lp_command");
+        string cmd = parse.getsValue(str_lp_command);
 
         if( !cmd.compare("status") )
         {
@@ -1016,12 +1017,6 @@ INT CtiDeviceMCT4xx::executeGetValue( CtiRequestMsg        *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().data(), COMMAND_STR_SIZE);
 
         nRet = NoError;
-    }
-
-    if( errRet != NULL )
-    {
-        delete errRet;
-        errRet = NULL;
     }
 
     return nRet;

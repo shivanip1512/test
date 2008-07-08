@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2008/06/27 17:18:29 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/07/08 22:56:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -253,34 +253,37 @@ inline string trim ( std::string & source , std::string t = " ")
     return source = trim_left ( trim_right ( str , t ) , t ) ;
 }
 
+inline string &in_place_trim(std::string &source, char trim_char = ' ')
+{
+    //  clever - the "+ 1" turns string::npos into 0 if nothing is found
+    source.erase(source.find_last_not_of(trim_char) + 1);
+    return source.erase(0, source.find_first_not_of(trim_char));
+}
+
+inline bool ci_equal(char ch1, char ch2)
+{
+    return ::tolower((unsigned char)ch1) == ::tolower((unsigned char)ch2);
+}
+
 inline int stringCompareIgnoreCase(const std::string& str1, const std::string& str2)
 {
-    std::string s1 = str1;
-    std::string s2 = str2;
-    std::transform(str1.begin(), str1.end(), s1.begin(), ::tolower);
-    std::transform(str2.begin(), str2.end(), s2.begin(), ::tolower);
-    return s1.compare(s2);
-
+    if( str1.size() != str2.size() )
+        return 1;
+    else
+        return !std::equal(str1.begin(), str1.end(), str2.begin(), ci_equal);
 }
 
 inline int stringContainsIgnoreCase(const std::string& str, const std::string& frag)
 {
-    std::string s1 = str;
-    std::string s2 = frag;
-
-    std::transform(str.begin(), str.end(), s1.begin(), ::tolower);
-    std::transform(frag.begin(), frag.end(), s2.begin(), ::tolower);
-
-    if (str.find(frag) == string::npos)
+    if( std::search(str.begin(), str.end(), frag.begin(), frag.end(), ci_equal) == str.end() )
         return 0;
-    else return 1;
+    else
+        return 1;
 }
 
-inline string::size_type findStringIgnoreCase(std::string str, std::string sub)
+inline string::size_type findStringIgnoreCase(const std::string &str, const std::string &sub)
 {
-    std::transform(str.begin(), str.end(), str.begin(), ::tolower);
-    std::transform(sub.begin(), sub.end(), sub.begin(), ::tolower);
-    return str.find(sub)!=std::string::npos;
+    return stringContainsIgnoreCase(str, sub);
 }
 
 inline string char2string(char c)
@@ -298,6 +301,20 @@ inline void delete_container( Container &C )
     {
         delete *itr;
         *itr = NULL;
+    }
+}
+
+
+template <class Container, class Element, class Argument>
+void delete_container_if( Container &C, bool (*predicate)(const Element *, Argument), Argument arg)
+{
+    for( Container::iterator itr = C.begin(); itr != C.end(); itr++)
+    {
+        if( predicate(*itr, arg) )
+        {
+            delete *itr;
+            *itr = NULL;
+        }
     }
 }
 

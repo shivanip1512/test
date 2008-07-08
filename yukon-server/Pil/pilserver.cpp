@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.103 $
-* DATE         :  $Date: 2008/06/27 19:00:27 $
+* REVISION     :  $Revision: 1.104 $
+* DATE         :  $Date: 2008/07/08 22:56:59 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -135,16 +135,13 @@ int CtiPILServer::execute()
 void CtiPILServer::mainThread()
 {
 
-    BOOL                       bQuit = FALSE;
-    int                        Tag = 100;
-    int                        nCount = 0;
-    int                        status;
+    BOOL          bQuit = FALSE;
+    int           status;
 
-    CtiTime                     TimeNow;
+    CtiTime       TimeNow;
 
-    // CtiConnection::Que_t          *APQueue;
-    CtiExecutor                   *pExec;
-    CtiMessage                    *MsgPtr;
+    CtiExecutor  *pExec;
+    CtiMessage   *MsgPtr;
 
     CtiTime  starttime, finishtime;
 
@@ -197,8 +194,20 @@ void CtiPILServer::mainThread()
     {
         try
         {
-            // Blocks for 1000 ms or until a queue entry exists
-            MsgPtr = MainQueue_.getQueue(500);
+            if( MainQueue_.isEmpty() && !_groupQueue.empty() )
+            {
+                MsgPtr = *(_groupQueue.begin());
+                _groupQueue.erase(_groupQueue.begin());
+            }
+            else
+            {
+                // Blocks for 500 ms or until a queue entry exists
+                MsgPtr = MainQueue_.getQueue(500);
+            }
+
+            //  add a group queue that's also interrogated and is at least one-for-one with the main queue...
+            //    but only priority-wise
+            //  maybe re-inserts into its own queue to maintain priority... ?
 
             try
             {
@@ -241,7 +250,7 @@ void CtiPILServer::mainThread()
                             }
                         }
 
-                        delete pExec;
+                        delete pExec;  //  NOTE - this deletes the MsgPtr!
                     }
                     else
                     {
@@ -954,6 +963,36 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
         _currentUserMessageId = pReq->UserMessageId();
     }
 
+    static const string str_system_message = "system_message";
+    if( !pReq->DeviceId() && _currentParse.isKeyValid(str_system_message) )
+    {
+        //  first, scrub our queue of this request
+        if( _currentParse.isKeyValid("request_cancel") )
+        {
+            group_queue_t::iterator itr     = _groupQueue.begin(),
+                                    itr_end = _groupQueue.end();
+            int user_message_id = pReq->OptionsField();
+
+            while( itr != itr_end )
+            {
+                if( reinterpret_cast<const CtiRequestMsg *>(*itr)->UserMessageId() == user_message_id )
+                {
+                    delete *itr;
+                    itr = _groupQueue.erase(itr);
+                }
+                else
+                {
+                    itr++;
+                }
+            }
+        }
+
+        //This message is a system request for porter, send it to the porter system thread, not a device.
+        PorterSystemMessageQueue.putQueue(pReq->replicateMessage());
+        pReq = NULL;
+        return status;
+    }
+
     try
     {
         // Note that any and all arguments into this method may be altered on exit!
@@ -1418,36 +1457,37 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
     CtiRequestMsg *pReq = (CtiRequestMsg*)Req.replicateMessage();
     pReq->setConnectionHandle( Req.getConnectionHandle() );
 
-    CtiDeviceSPtr Dev = DeviceManager->getEqual(pReq->DeviceId());
-
-    if(parse.isKeyValid("serial"))
+    static const string str_serial = "serial";
+    if(parse.isKeyValid(str_serial))
     {
         pReq->setDeviceId( SYS_DID_SYSTEM );    // Make sure we are targeting the serial/system device;
     }
 
     // Can you say WHITE RABBIT?  This could override the above!
     // This code will not execute in most cases
-    if(parse.isKeyValid("device"))
+    static const string str_device = "device";
+    if(parse.isKeyValid(str_device))
     {
-        if( -1 != (i = parse.getiValue("device")) )
+        if( -1 != (i = parse.getiValue(str_device)) )
         {
             // OK, someone tried to send us an override on the device ID
             pReq->setDeviceId( i ) ;
-            Dev = DeviceManager->getEqual(pReq->DeviceId());
         }
         else
         {
-            string dname = parse.getsValue("device");
-            Dev = DeviceManager->RemoteGetEqualbyName( dname );
+            string dname = parse.getsValue(str_device);
+            CtiDeviceSPtr Dev = DeviceManager->RemoteGetEqualbyName( dname );
             if(Dev)
             {
                 pReq->setDeviceId( Dev->getID() ) ;
             }
         }
     }
-    if(parse.isKeyValid("route"))
+
+    static const string str_route  = "route";
+    if(parse.isKeyValid(str_route))
     {
-        if( (i = parse.getiValue("route")) != -1 )
+        if( (i = parse.getiValue(str_route)) != -1 )
         {
             // OK, someone tried to send us an override on the route ID
             pReq->setRouteId( i );
@@ -1455,7 +1495,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         else
         {
             //  apparently we've been sent a route name
-            string routeName = parse.getsValue("route");
+            string routeName = parse.getsValue(str_route);
             CtiRouteSPtr tmpRoute;
 
             tmpRoute = RouteManager->getEqualByName( routeName );
@@ -1472,15 +1512,20 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
         }
     }
 
-    if(Dev)
+    if(parse.getCommand() != GetValueRequest)
     {
-        if( (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) && parse.isKeyValid("install") )
+        CtiDeviceSPtr Dev = DeviceManager->getEqual(pReq->DeviceId());
+
+        if( Dev )
         {
-            analyzeAutoRole(*pReq,parse,execList,retList);
-        }
-        else if( Dev->getType() == TYPE_LMGROUP_POINT )
-        {
-            analyzePointGroup(*pReq,parse,execList,retList);
+            if( (Dev->getType() == TYPE_REPEATER800 || Dev->getType() == TYPE_REPEATER900) && parse.isKeyValid("install") )
+            {
+                analyzeAutoRole(*pReq,parse,execList,retList);
+            }
+            else if( Dev->getType() == TYPE_LMGROUP_POINT )
+            {
+                analyzePointGroup(*pReq,parse,execList,retList);
+            }
         }
     }
 
@@ -1524,16 +1569,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
                 std::transform(groupname.begin(), groupname.end(), groupname.begin(), ::tolower);
 
                 getDeviceGroupMembers(groupname, members);
-                /*
-                if( members.size() > gConfigParms.getValueAsInt("BULK_POINT_LOAD_THRESHOLD", 10) )
-                {
-                    if( parse.getFlags() & CMD_FLAG_GV_KWH ||
-                        parse.getFlags() & CMD_FLAG_GV_DEMAND )
-                    {
-                        loadDevicePoints(members);
-                    }
-                }
-                */
             }
 
             vector<long>::iterator itr, members_end = members.end();
@@ -1543,31 +1578,17 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
             for( itr = members.begin(); itr != members_end; itr++ )
             {
-                /*
-                CtiDeviceManager::ptr_type device = DeviceManager->getEqual(*itr);
+                // Create a message for this one!
+                //   Note that we're going to let PIL fail us on a failed device lookup to save us the device lookup here
+                pReq->setDeviceId(*itr);
 
-                if( device )
-                {
-                    {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " Adding device " << device->getID() << " / " << device->getName() << " for group execution" << endl;
-                    }
-                */
-                    // Create a message for this one!
-                    //   Note that we're going to let PIL fail us on a failed device lookup to save us the device lookup here
-                    pReq->setDeviceId(*itr);  //  pReq->setDeviceId(device->getID());
+                CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
+                pNew->setConnectionHandle( pReq->getConnectionHandle() );
 
-                    CtiRequestMsg *pNew = (CtiRequestMsg*)pReq->replicateMessage();
-                    pNew->setConnectionHandle( pReq->getConnectionHandle() );
+                //  put it back on the queue to be processed in order
+                _groupQueue.insert(pNew);
 
-                    //execList.push_back( pNew );
-                    //  put it back on the queue to be processed in order
-                    putQueue(pNew);
-
-                    groupsubmitcnt++;
-                /*
-                }
-                */
+                groupsubmitcnt++;
             }
 
             {
@@ -1596,7 +1617,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
             string service = parse.getsValue("templateinservice");
             char newparse[256];
 
-            Dev = DeviceManager->getEqual(SYS_DID_SYSTEM);     // This is the guy who does configs.
             CtiDeviceSPtr GrpDev = DeviceManager->RemoteGetEqualbyName( lmgroup );
             if(GrpDev)
             {
@@ -1619,7 +1639,7 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
              */
             char newparse[256];
 
-            CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)Dev.get();
+            CtiDeviceGroupVersacom *GrpDev = (CtiDeviceGroupVersacom *)DeviceManager->getEqual(pReq->DeviceId()).get();
             // Dev = DeviceManager->getEqual(SYS_DID_SYSTEM);     // This is the guy who does ALL configs.
             if(GrpDev != NULL)
             {
@@ -1702,13 +1722,6 @@ INT CtiPILServer::analyzeWhiteRabbits(CtiRequestMsg& Req, CtiCommandParser &pars
 
             }
         }
-    }
-
-    if(parse.isKeyValid("system_message") && pReq->DeviceId() == 0)
-    {
-        //This message is a system request for porter, send it to the porter system thread, not a device.
-        PorterSystemMessageQueue.putQueue(pReq);
-        pReq = NULL;
     }
 
     if(execList.size() == 0 && pReq != NULL)

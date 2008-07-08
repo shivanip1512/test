@@ -22,6 +22,7 @@ using std::iostream;
 #include "mgr_route.h"
 #include "mgr_config.h"
 #include "ctibase.h"
+#include "fifo_multiset.h"
 
 class IM_EX_CTIPIL CtiPILServer : public CtiServer
 {
@@ -42,6 +43,10 @@ private:
 
    CtiCommandParser     _currentParse;
    long                 _currentUserMessageId;
+
+   typedef fifo_multiset<CtiMessage *, std::greater<CtiMessage *> > group_queue_t;
+
+   group_queue_t _groupQueue;
 
    CtiMutex             _inMux;            // Protects the _inList.
    CtiQueue< INMESS, std::greater<INMESS> > _inQueue;           // Nexus dumps out into this list!

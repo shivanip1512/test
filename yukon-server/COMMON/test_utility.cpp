@@ -80,3 +80,66 @@ BOOST_AUTO_UNIT_TEST(test_delete_assoc_container)
     }
 }
 
+
+BOOST_AUTO_UNIT_TEST(test_stringCompareIgnoreCase)
+{
+    BOOST_CHECK(!stringCompareIgnoreCase("cat", "cat"));
+    BOOST_CHECK(!stringCompareIgnoreCase("Cat", "cat"));
+    BOOST_CHECK(!stringCompareIgnoreCase("cAt", "cat"));
+    BOOST_CHECK(!stringCompareIgnoreCase("CAt", "cat"));
+    BOOST_CHECK(!stringCompareIgnoreCase("caT", "cat"));
+    BOOST_CHECK(!stringCompareIgnoreCase("CaT", "cat"));
+    BOOST_CHECK(!stringCompareIgnoreCase("cAT", "cat"));
+
+    BOOST_CHECK( stringCompareIgnoreCase("CAT", "catt"));
+    BOOST_CHECK( stringCompareIgnoreCase("cat", "ca"));
+
+    BOOST_CHECK( stringCompareIgnoreCase("", "CAT"));
+    BOOST_CHECK( stringCompareIgnoreCase("CAT", ""));
+}
+
+BOOST_AUTO_UNIT_TEST(test_stringContainsIgnoreCase)
+{
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("dog",      "cat"), 0);
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("doggie",   "cat"), 0);
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("do",       "cat"), 0);
+
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("catapult",  "cat"), 1);
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("CAtapult",  "cat"), 1);
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("caTApult",  "cat"), 1);
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("caTApult",  "tap"), 1);
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("catApult",  "tap"), 1);
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("cataPUlt",  "tap"), 1);
+    BOOST_CHECK_EQUAL(stringContainsIgnoreCase("newspaper", "paper"), 1);
+}
+
+
+BOOST_AUTO_UNIT_TEST(test_in_place_trim)
+{
+    string test;
+
+    test = "   I am a space-padded string.  ";
+
+    in_place_trim(test);
+
+    BOOST_CHECK_EQUAL(test, "I am a space-padded string.");
+
+    test = "I am an unpadded string.";
+
+    in_place_trim(test);
+
+    BOOST_CHECK_EQUAL(test, "I am an unpadded string.");
+
+    test = "I am a left-justified string.       ";
+
+    in_place_trim(test);
+
+    BOOST_CHECK_EQUAL(test, "I am a left-justified string.");
+
+    test = "        I am a right-justified string.";
+
+    in_place_trim(test);
+
+    BOOST_CHECK_EQUAL(test, "I am a right-justified string.");
+}
+

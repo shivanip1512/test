@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.161 $
-* DATE         :  $Date: 2008/07/08 21:55:44 $
+* REVISION     :  $Revision: 1.162 $
+* DATE         :  $Date: 2008/07/08 22:56:58 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1422,17 +1422,8 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
     bool found = false;
     int function;
 
-    CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
-                                                   string(OutMessage->Request.CommandStr),
-                                                   string(),
-                                                   nRet,
-                                                   OutMessage->Request.RouteID,
-                                                   OutMessage->Request.MacroOffset,
-                                                   OutMessage->Request.Attempt,
-                                                   OutMessage->Request.TrxID,
-                                                   OutMessage->Request.UserID,
-                                                   OutMessage->Request.SOE,
-                                                   CtiMultiMsg_vec( ));
+    static const string str_daily_read = "daily_read",
+                        str_outage     = "outage";
 
     if( (parse.getFlags() &  CMD_FLAG_GV_KWH) &&
         (parse.getFlags() & (CMD_FLAG_GV_RATEMASK ^ CMD_FLAG_GV_RATET)) )
@@ -1476,7 +1467,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             OutMessage->Buffer.BSt.Function += 1;
         }
     }
-    else if( parse.isKeyValid("daily_read") )
+    else if( parse.isKeyValid(str_daily_read) )
     {
         //  daily reads
         if( InterlockedCompareExchange((PVOID *)&_daily_read_info.in_progress, (PVOID)true, (PVOID)false) )
@@ -1747,7 +1738,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
         }
     }
-    else if( parse.isKeyValid("outage") )  //  outages
+    else if( parse.isKeyValid(str_outage) )  //  outages
     {
         if( !hasDynamicInfo(Keys::Key_MCT_SSpec) )
         {
@@ -1767,7 +1758,7 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
             }
         }
 
-        int outagenum = parse.getiValue("outage");
+        int outagenum = parse.getiValue(str_outage);
 
         function = Emetcon::GetValue_Outage;
         found = getOperation(function, OutMessage->Buffer.BSt);
@@ -1775,6 +1766,18 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         if( outagenum < 0 || outagenum > 6 )
         {
             found = false;
+
+            CtiReturnMsg *errRet = CTIDBG_new CtiReturnMsg(getID( ),
+                                                           string(OutMessage->Request.CommandStr),
+                                                           string(),
+                                                           nRet,
+                                                           OutMessage->Request.RouteID,
+                                                           OutMessage->Request.MacroOffset,
+                                                           OutMessage->Request.Attempt,
+                                                           OutMessage->Request.TrxID,
+                                                           OutMessage->Request.UserID,
+                                                           OutMessage->Request.SOE,
+                                                           CtiMultiMsg_vec( ));
 
             if( errRet )
             {
@@ -1815,12 +1818,6 @@ INT CtiDeviceMCT410::executeGetValue( CtiRequestMsg              *pReq,
         strncpy(OutMessage->Request.CommandStr, pReq->CommandString().c_str(), COMMAND_STR_SIZE);
 
         nRet = NoError;
-    }
-
-    if( errRet != NULL )
-    {
-        delete errRet;
-        errRet = NULL;
     }
 
     return nRet;

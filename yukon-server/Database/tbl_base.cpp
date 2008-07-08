@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_base.cpp-arc  $
-* REVISION     :  $Revision: 1.9 $
-* DATE         :  $Date: 2007/10/30 15:46:27 $
+* REVISION     :  $Revision: 1.10 $
+* DATE         :  $Date: 2008/07/08 22:56:59 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -116,6 +116,9 @@ void CtiTableDeviceBase::DumpData()
 
 void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
 {
+    const RWCString alarminhibit   = "alarminhibit";
+    const RWCString controlinhibit = "controlinhibit";
+
     string sTemp;
 
     if(getDebugLevel() & DEBUGLEVEL_DATABASE)
@@ -124,10 +127,10 @@ void CtiTableDeviceBase::DecodeDatabaseReader(RWDBReader &rdr)
         dout << "Decoding " << __FILE__ << " (" << __LINE__ << ")" << endl;
     }
 
-    rdr["alarminhibit"  ] >> sTemp;
+    rdr[alarminhibit  ] >> sTemp;
     _alarmInhibit   = !sTemp.empty() && (sTemp[0] == 'y' || sTemp[0] == 'Y');
 
-    rdr["controlinhibit"] >> sTemp;
+    rdr[controlinhibit] >> sTemp;
     _controlInhibit = !sTemp.empty() && (sTemp[0] == 'y' || sTemp[0] == 'Y');
 }
 

@@ -109,6 +109,8 @@ CtiCommandParser& CtiCommandParser::operator=(const CtiCommandParser& aRef)
         _cmdString = aRef._cmdString;
         _actionItems = aRef._actionItems;
         _cmd = aRef.getMap();
+        _flags = aRef.getFlags();
+        _command = aRef.getCommand();
     }
     return *this;
 }
@@ -116,18 +118,18 @@ CtiCommandParser& CtiCommandParser::operator=(const CtiCommandParser& aRef)
 
 void  CtiCommandParser::doParse(const string &_Cmd)
 {
+    _command = INT_MIN;
+    _flags = 0;
     parse();
 }
 
 
 void  CtiCommandParser::parse()
 {
-    CHAR            *p;
     CtiString       CmdStr = _cmdString;
     CtiString       token;
     CtiString       cmdstr;
     CtiString       strnum;
-    INT             _num = 0;
 
     _actionItems.clear();   // 20050125 CGP.  Getting duplicate actionItems when I reparse in the groups.  This should be benign.
 
@@ -145,17 +147,20 @@ void  CtiCommandParser::parse()
 
         if(!(token = CmdStr.match(regexp)).empty())
         {
+            INT serial = 0;
+            CHAR *p;
+
             if(!(strnum = token.match(re_hexnum)).empty())
             {
                 // dout << __LINE__ << " " << strnum << endl;
-                _num = strtol(strnum.c_str(), &p, 16);
+                serial = strtol(strnum.c_str(), &p, 16);
             }
             else if(!(strnum = token.match(re_num)).empty())
             {
                 // dout << __LINE__ << " " << strnum << endl;
-                _num = strtol(strnum.c_str(), &p, 10);
+                serial = strtol(strnum.c_str(), &p, 10);
             }
-            _cmd["serial"] = CtiParseValue( _num );
+            _cmd["serial"] = CtiParseValue( serial );
             CmdStr.replace(regexp, "");
         }
     }
@@ -345,58 +350,58 @@ void  CtiCommandParser::parse()
 
         if(cmdstr == "getvalue")
         {
-            _cmd["command"] = CtiParseValue( cmdstr, GetValueRequest );
+            setCommand(GetValueRequest);
             doParseGetValue(CmdStr);
         }
         else if(cmdstr == "putvalue")
         {
-            _cmd["command"] = CtiParseValue( cmdstr, PutValueRequest );
+            setCommand(PutValueRequest);
             doParsePutValue(CmdStr);
         }
         else if(cmdstr == "getstatus")
         {
-            _cmd["command"] = CtiParseValue( cmdstr, GetStatusRequest );
+            setCommand(GetStatusRequest);
             doParseGetStatus(CmdStr);
         }
         else if(cmdstr == "putstatus")
         {
-            _cmd["command"] = CtiParseValue( cmdstr, PutStatusRequest );
+            setCommand(PutStatusRequest);
             doParsePutStatus(CmdStr);
         }
         else if(cmdstr == "getconfig")
         {
-            _cmd["command"] = CtiParseValue( cmdstr, GetConfigRequest );
+            setCommand(GetConfigRequest);
             doParseGetConfig(CmdStr);
         }
         else if(cmdstr == "putconfig")
         {
-            _cmd["command"] = CtiParseValue( cmdstr, PutConfigRequest );
+            setCommand(PutConfigRequest);
             doParsePutConfig(CmdStr);
 
         }
         else if(cmdstr == "loop" || cmdstr == "ping")  //  so "ping" is just an alias
         {
-            _cmd["command"] = CtiParseValue( cmdstr, LoopbackRequest );
+            setCommand(LoopbackRequest);
             _cmd["count"] = CtiParseValue( 1 );
         }
         else if(cmdstr == "control")
         {
-            _cmd["command"] = CtiParseValue( cmdstr, ControlRequest );
+            setCommand(ControlRequest);
             doParseControl(CmdStr);
         }
         else if(cmdstr == "scan")
         {
-            _cmd["command"] = CtiParseValue( cmdstr, ScanRequest );
+            setCommand(ScanRequest);
             doParseScan(CmdStr);
         }
         else
         {
-            _cmd["command"] = CtiParseValue( cmdstr, InvalidRequest );
+            setCommand(InvalidRequest);
         }
     }
     else
     {
-        _cmd["command"] = CtiParseValue( cmdstr, InvalidRequest );
+        setCommand(InvalidRequest);
     }
 
     return;
@@ -744,7 +749,7 @@ void  CtiCommandParser::doParseGetValue(const string &_CmdStr)
         dout << "This better not ever be seen by mortals... " << endl;
     }
 
-    _cmd["flag"]      = CtiParseValue( flag   );
+    setFlags(flag);
     _cmd["offset"]    = CtiParseValue( offset );
 }
 
@@ -846,7 +851,7 @@ void  CtiCommandParser::doParseGetStatus(const string &_CmdStr)
         dout << "This better not ever be seen by mortals... " << endl;
     }
 
-    _cmd["flag"]   = CtiParseValue(flag);
+    setFlags(flag);
     _cmd["offset"] = CtiParseValue(offset);
 }
 
@@ -1201,7 +1206,7 @@ void  CtiCommandParser::doParseControl(const string &_CmdStr)
         }
     }
 
-    _cmd["flag"]      = CtiParseValue( flag   );
+    setFlags(flag);
     _cmd["offset"]    = CtiParseValue( offset );
 
 #if 1
@@ -1324,7 +1329,7 @@ void  CtiCommandParser::doParsePutValue(const string &_CmdStr)
             _cmd["power"] = CtiParseValue(true);
         }
 
-        _cmd["flag"] = CtiParseValue( flag );
+        setFlags(flag);
     }
     else
     {
@@ -1410,14 +1415,7 @@ void  CtiCommandParser::doParsePutStatus(const string &_CmdStr)
         }
         if(CmdStr.contains(" reset"))
         {
-            if( _cmd.find("flag") != _cmd.end() )
-            {
-                flag = _cmd["flag"].getInt();
-            }
-
-            flag |= CMD_FLAG_PS_RESET;
-
-            _cmd["flag"] = CtiParseValue(flag);
+            setFlags(getFlags() | CMD_FLAG_PS_RESET);
         }
     }
     else
@@ -1655,7 +1653,7 @@ void  CtiCommandParser::doParseGetConfig(const string &_CmdStr)
         {
             flag |= CMD_FLAG_UPDATE;
         }
-        _cmd["flag"]  = CtiParseValue( flag );
+        setFlags(flag);
     }
     else
     {
@@ -1950,29 +1948,29 @@ void  CtiCommandParser::doParseScan(const string &_CmdStr)
     {
         flag |= CMD_FLAG_FROZEN;
     }
-    _cmd["flag"]  = CtiParseValue( flag );
+    setFlags(flag);
 
 
 }
 
 UINT     CtiCommandParser::getCommand() const
 {
-    CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
-    map_itr_type itr;
+    return _command;
+}
 
-    itr = _cmd.find("command");
-    if(itr != _cmd.end())
-    {
-        pv = (*itr).second;
-    }
-    //_cmd.findValue("command", pv);
-
-    return pv.getInt();
+void     CtiCommandParser::setCommand(UINT command)
+{
+    _command = command;
 }
 
 UINT     CtiCommandParser::getFlags() const
 {
-    return getiValue("flag",0);
+    return _flags;
+}
+
+void     CtiCommandParser::setFlags(UINT flags)
+{
+    _flags = flags;
 }
 
 UINT     CtiCommandParser::getOffset() const
@@ -1980,12 +1978,12 @@ UINT     CtiCommandParser::getOffset() const
     return getiValue("offset",-1);
 }
 
-bool  CtiCommandParser::isKeyValid(const string key) const
+bool  CtiCommandParser::isKeyValid(const string &key) const
 {
-    return( _cmd.find(key.c_str()) != _cmd.end() );
+    return( _cmd.find(key) != _cmd.end() );
 }
 
-UINT     CtiCommandParser::getOffset(const string key) const
+UINT     CtiCommandParser::getOffset(const string &key) const
 {
     CtiParseValue& pv = CtiParseValue(); // = _cmd["command"];
     map_itr_type itr;
@@ -1997,7 +1995,7 @@ UINT     CtiCommandParser::getOffset(const string key) const
     }
     return pv.getInt();
 }
-INT      CtiCommandParser::getiValue(const string key, INT valifnotfound) const
+INT      CtiCommandParser::getiValue(const string &key, INT valifnotfound) const
 {
     INT val = valifnotfound;
 
@@ -2016,7 +2014,7 @@ INT      CtiCommandParser::getiValue(const string key, INT valifnotfound) const
     return val;
 }
 
-DOUBLE   CtiCommandParser::getdValue(const string key, DOUBLE valifnotfound) const
+DOUBLE   CtiCommandParser::getdValue(const string &key, DOUBLE valifnotfound) const
 {
     DOUBLE val = valifnotfound;
 
@@ -2035,7 +2033,7 @@ DOUBLE   CtiCommandParser::getdValue(const string key, DOUBLE valifnotfound) con
     return val;
 }
 
-string CtiCommandParser::getsValue(const string key) const
+string CtiCommandParser::getsValue(const string &key) const
 {
     CtiParseValue &pv = CtiParseValue();
     map_itr_type itr;
@@ -3464,7 +3462,7 @@ void  CtiCommandParser::doParsePutConfigVersacom(const string &_CmdStr)
 
     if(!(CmdStr.match("test_mode_flag")).empty())
     {
-        _cmd["flag"] = CtiParseValue( CMD_FLAG_TESTMODE );
+        setFlags(CMD_FLAG_TESTMODE);
     }
 }
 
@@ -3484,11 +3482,7 @@ void  CtiCommandParser::doParsePutStatusEmetcon(const string &_CmdStr)
     {
         if(CmdStr.contains(" rovr"))
         {
-            unsigned int flag = getiValue("flag", 0);
-
-            flag |= CMD_FLAG_PS_RESETOVERRIDE;
-
-            _cmd["flag"] = CtiParseValue(flag);
+            setFlags(getFlags() | CMD_FLAG_PS_RESETOVERRIDE);
         }
         if(CmdStr.contains(" peak"))
         {
@@ -4080,17 +4074,17 @@ bool CtiCommandParser::isDisconnect() const
     return bret;
 }
 
-CtiCommandParser& CtiCommandParser::setValue(const string key, INT val)
+CtiCommandParser& CtiCommandParser::setValue(const string &key, INT val)
 {
     _cmd[key.c_str()] = CtiParseValue(val);
     return *this;
 }
-CtiCommandParser& CtiCommandParser::setValue(const string key, DOUBLE val)
+CtiCommandParser& CtiCommandParser::setValue(const string &key, DOUBLE val)
 {
     _cmd[key.c_str()] = CtiParseValue(val);
     return *this;
 }
-CtiCommandParser& CtiCommandParser::setValue(const string key, string val)
+CtiCommandParser& CtiCommandParser::setValue(const string &key, string val)
 {
     _cmd[key.c_str()] = CtiParseValue(val.c_str());
     return *this;
@@ -5920,39 +5914,6 @@ void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
     }
 
 
-}
-
-CtiCommandParser& CtiCommandParser::parseAsString(const string str)
-{
-#if 0
-    _cmdString = CtiString("built from string");
-    _actionItems.clear();
-    _cmd.clear();
-
-    CtiString key;
-    CtiString asStr;
-    INT iValue;
-    DOUBLE dValue;
-
-    CtiTokenizer   tok(str.c_str());
-
-    while( !(key = tok("= \t\n\0")).empty() )
-    {
-        asStr = tok(", \t\n\0");
-        iValue = atoi( CtiString(tok(", \t\n\0")).c_str() );
-        dValue = atof( CtiString(tok(": \t\n\0")).c_str());
-
-
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << key << " " << asStr << " " << iValue << " " << dValue << endl;
-        }
-    }
-
-#endif
-
-
-    return *this;
 }
 
 

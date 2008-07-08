@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/resolvers.h-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2007/10/30 17:59:39 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/07/08 22:56:58 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -38,7 +38,6 @@ typedef enum
 
 IM_EX_CTIBASE CtiPointType_t resolvePointType(const string& rwsTemp);
 IM_EX_CTIBASE INT resolvePointArchiveType(const string& rwsTemp);
-IM_EX_CTIBASE INT resolveDeviceType(const string& rwsTemp);
 IM_EX_CTIBASE INT resolveCapControlType(const string& rwsTemp);
 IM_EX_CTIBASE INT resolveLoadManagementType(const string& rwsTemp);
 
