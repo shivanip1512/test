@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/COMMON/INCLUDE/test_queue.cpp-arc  $
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/01/04 21:27:45 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/07/08 22:47:06 $
 *
 * Copyright (c) 2007 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -31,7 +31,7 @@ inline double xtime_to_double(boost::xtime xt)
 BOOST_AUTO_UNIT_TEST(test_cti_queue_timing)
 {
     CtiQueue<int, std::less<int> > testQueue;
-    
+
     boost::xtime start_xtime,   end_xtime;
     double       start_seconds, end_seconds;
 
@@ -65,7 +65,7 @@ BOOST_AUTO_UNIT_TEST(test_cti_queue_timing)
 BOOST_AUTO_UNIT_TEST(test_fifo_queue_timing)
 {
     CtiFIFOQueue<int> testQueue;
-    
+
     boost::xtime start_xtime,   end_xtime;
     double       start_seconds, end_seconds;
 
@@ -100,25 +100,8 @@ struct queueTestStruct
 {
     long value, insertOrder;
 
-    bool operator>(const queueTestStruct& rhs) const
-    {
-        if( value > rhs.value )
-        {
-            return true;
-        }
-        else
-            return false;
-    }
-
-    bool operator<(const queueTestStruct& rhs) const
-    {
-        if( value < rhs.value )
-        {
-            return true;
-        }
-        else
-            return false;
-    }
+    bool operator>(const queueTestStruct& rhs) const  {  return value > rhs.value;  }
+    bool operator<(const queueTestStruct& rhs) const  {  return value < rhs.value;  }
 };
 
 void applySetInsertOrderToInt(queueTestStruct *&dataStruct, void* d)
@@ -128,8 +111,8 @@ void applySetInsertOrderToInt(queueTestStruct *&dataStruct, void* d)
 
 BOOST_AUTO_UNIT_TEST(test_cti_queue_sort)
 {
-    CtiQueue<struct queueTestStruct, greater<struct queueTestStruct> > greaterQueue;
-    CtiQueue<struct queueTestStruct, less<struct queueTestStruct> > lessQueue;
+    CtiQueue<queueTestStruct, greater<queueTestStruct> > greaterQueue;
+    CtiQueue<queueTestStruct, less<queueTestStruct> > lessQueue;
 
     queueTestStruct *tempMsg = CTIDBG_new queueTestStruct();
     tempMsg->value = 1;
@@ -239,7 +222,7 @@ BOOST_AUTO_UNIT_TEST(test_cti_queue_sort)
 
 BOOST_AUTO_UNIT_TEST(test_cti_queue_apply)
 {
-    CtiQueue<struct queueTestStruct, greater<struct queueTestStruct> > greaterQueue;
+    CtiQueue<queueTestStruct, greater<queueTestStruct> > greaterQueue;
 
     queueTestStruct *tempMsg = CTIDBG_new queueTestStruct();
     tempMsg->value = 1;
@@ -281,7 +264,7 @@ BOOST_AUTO_UNIT_TEST(test_cti_queue_apply)
 //an unreasonable amount of time
 BOOST_AUTO_UNIT_TEST(test_cti_queue_sort_speed)
 {
-    CtiQueue<struct queueTestStruct, greater<struct queueTestStruct> > greaterQueue;
+    CtiQueue<queueTestStruct, greater<queueTestStruct> > greaterQueue;
 
     queueTestStruct *tempMsg = CTIDBG_new queueTestStruct();
     tempMsg->value = 1;

@@ -68,17 +68,20 @@ private:
     boost::condition           dataAvailable;
     mutable boost::timed_mutex mux;
 
-    std::set<QueueDataStruct, std::greater<struct QueueDataStruct> > *_col;
-    string                      _name;
-    unsigned int                _insertValue;
+    typedef std::set<QueueDataStruct, std::greater<struct QueueDataStruct> > queue_t;
+    typedef boost::timed_mutex::scoped_timed_lock lock_t;
+
+    queue_t      *_col;
+    string        _name;
+    unsigned int  _insertValue;
 
     boost::xtime xt_eot;
 
 
-    std::set<QueueDataStruct, std::greater<struct QueueDataStruct> > & getCollection()
+    queue_t &getCollection()
     {
         if(!_col)
-            _col = new std::set<QueueDataStruct, std::greater<struct QueueDataStruct> >;
+            _col = new queue_t;
 
         return *_col;
     }
@@ -104,13 +107,13 @@ public:
 
     virtual ~CtiQueue()
     {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        lock_t scoped_lock(mux, xt_eot);
         resetCollection();
     }
 
     void putQueue(T *pt)
     {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        lock_t scoped_lock(mux, xt_eot);
         try
         {
             if(pt != NULL)
@@ -174,7 +177,7 @@ public:
         QueueDataStruct data;
         try
         {
-            boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+            lock_t scoped_lock(mux, xt_eot);
             while( getCollection().empty() )
             {
                 dataAvailable.wait(scoped_lock);
@@ -205,7 +208,7 @@ public:
             boost::xtime_get(&xt, boost::TIME_UTC);
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000000;
-            boost::timed_mutex::scoped_timed_lock scoped_lock(mux,xt);
+            lock_t scoped_lock(mux,xt);
 
             if(scoped_lock.locked())
             {
@@ -243,7 +246,7 @@ public:
         {
             if(pt != NULL)
             {
-                boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+                lock_t scoped_lock(mux, xt_eot);
                 {
                     QueueDataStruct data;
                     data.insertOrder = getNextInsertValue();
@@ -251,18 +254,6 @@ public:
                     getCollection().insert(data);
                     dataAvailable.notify_one();
                     putWasDone = true;
-
-                    /*if(!gConfigParms.isTrue("YUKON_NOSORT_QUEUES"))
-                    {
-                        try
-                        {
-                            getCollection().sort( std::greater<struct QueueDataStruct>() );
-                        }
-                        catch(...)
-                        {
-                            cerr << " **** EXCEPTION Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-                        }
-                    }*/
                 }
             }
         }
@@ -311,7 +302,7 @@ public:
 
     void clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        lock_t scoped_lock(mux, xt_eot);
         deleteCollection();
         getCollection().clear();
     }
@@ -336,7 +327,7 @@ public:
     }
     void apply(void (*fn)(T*&,void*), void* d)
     {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        lock_t scoped_lock(mux, xt_eot);
         operand_for_each(getCollection().begin(),getCollection().end(),fn,d);
     }
 
@@ -418,7 +409,9 @@ private:
 
     std::list<T*> *_col;
     boost::condition           dataAvailable;
-    mutable boost::timed_mutex                mux;
+    mutable boost::timed_mutex mux;
+
+    typedef boost::timed_mutex::scoped_timed_lock lock_t;
 
     string       _name;
 
@@ -477,7 +470,7 @@ public:
 
     virtual ~CtiFIFOQueue()
     {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        lock_t scoped_lock(mux, xt_eot);
         deleteCollection();
         getCollection().clear();
     }
@@ -489,7 +482,7 @@ public:
             if(pt != NULL)
             {
                 {
-                    boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+                    lock_t scoped_lock(mux, xt_eot);
                     getCollection().push_back(pt);
                     dataAvailable.notify_one();
                     // mutex automatically released in LockGuard destructor
@@ -507,7 +500,7 @@ public:
         T *pval = NULL;
         try
         {
-            boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+            lock_t scoped_lock(mux, xt_eot);
             while( getCollection().empty() )
             {
                 dataAvailable.wait(scoped_lock);
@@ -535,7 +528,7 @@ public:
             xt.sec  += (time/1000);
             xt.nsec += (time%1000)*1000000;
 
-            boost::timed_mutex::scoped_timed_lock scoped_lock(mux,xt);
+            lock_t scoped_lock(mux,xt);
 
             if(scoped_lock.locked())
             {
@@ -573,7 +566,7 @@ public:
             if(pt != NULL)
             {
                 {
-                    boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+                    lock_t scoped_lock(mux, xt_eot);
                     getCollection().push_back(pt);
                     dataAvailable.notify_one();
                     // mutex automatically released in LockGuard destructor
@@ -605,7 +598,7 @@ public:
 
     size_t   size(void) const        // how big may it be?
     {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        lock_t scoped_lock(mux, xt_eot);
         size_t sz = 0;
         if(_col)
         {
@@ -621,7 +614,7 @@ public:
 
     void clearAndDestroy(void)      // Destroys pointed to objects as well.
     {
-        boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+        lock_t scoped_lock(mux, xt_eot);
         deleteCollection();
         getCollection().clear();
     }
@@ -646,7 +639,7 @@ public:
     void apply(void (*fn)(T*&,void*), void* d)
     {
         {
-            boost::timed_mutex::scoped_timed_lock scoped_lock(mux, xt_eot);
+            lock_t scoped_lock(mux, xt_eot);
             //getCollection().apply(fn,d);
             ts_for_each(getCollection().begin(),getCollection().end(),fn,d);
         }
