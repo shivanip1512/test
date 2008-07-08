@@ -130,7 +130,9 @@
           parent="starsInventoryActionController"/>
 	
 	<bean id="inventoryConfigureResultSet" class="com.cannontech.web.stars.action.inventory.ConfigureResultSetController"
-          parent="starsInventoryActionController"/>
+          parent="starsInventoryActionController">
+        <property name="timeConsumingTaskService" ref="timeConsumingTaskService"/>
+    </bean>      
 	
 	<bean id="inventoryStaticLoadGroupMap" class="com.cannontech.web.stars.action.inventory.StaticLoadGroupMapController"
           parent="starsInventoryActionController"/>
