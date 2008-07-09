@@ -50,13 +50,21 @@ public class ThermostatMenuOptionProducer extends DynamicMenuOptionProducer {
                                                                                            label);
 
                 String safeLabel = WidgetUtils.generateSafeJsString(label);
-                SubMenuOption option = new SubMenuOption("thermostat_" + safeLabel, resolvable);
+                SubMenuOption option = new SubMenuOption("thermostat_" + safeLabel, resolvable, false);
                 List<MenuOptionProducer> subOptions = createSubMenu(thermostat);
                 option.setSubOptions(subOptions);
                 optionList.add(option);
             }
         }
 
+        // Add an 'All' option if there is at least two thermostats
+        if(optionList.size() > 1) {
+	        String menuTextKey = "yukon.web.menu.config.consumer.thermostat.all";
+	        SimpleMenuOptionLink option = new SimpleMenuOptionLink("allThermostats", menuTextKey);
+	        option.setLinkUrl("/spring/stars/consumer/thermostat/view/all");
+	        optionList.add(0, option);
+        }
+        
         return optionList;
     }
 

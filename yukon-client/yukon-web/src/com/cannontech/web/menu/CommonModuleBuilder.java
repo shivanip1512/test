@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
 import org.jdom.Document;
 import org.jdom.Element;
@@ -171,7 +172,14 @@ public class CommonModuleBuilder implements ModuleBuilder {
             menuOption = linkMenuOption;
         } else if (subLinks != null) {
             List<MenuOptionProducer> subLinkOptions = processLinksElement(subLinks, key);
-            SubMenuOption subMenuOption = new SubMenuOption(optionId, key);
+
+            // Collapse parent elements by default if there is no children
+            boolean collapseIfEmpty = true;
+            String collapseIfEmptyString = optionElement.getAttributeValue("collapseIfEmpty");
+            if(!StringUtils.isBlank(collapseIfEmptyString)) {
+            	collapseIfEmpty = Boolean.valueOf(collapseIfEmptyString);
+            }
+            SubMenuOption subMenuOption = new SubMenuOption(optionId, key, collapseIfEmpty);
             subMenuOption.setSubOptions(subLinkOptions);
             menuOption = subMenuOption;
         }

@@ -297,20 +297,12 @@
 	          </option>
           </links>	
    		</option>
-		<option id="thermostat">
-   		   <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT" />
-   		   <links>
-	   		   <option id="all">
-	               <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_THERMOSTATS_ALL" />
-	   		       <links>
-		              <option id="select">
-		                <link>/spring/stars/consumer/thermostat/view/all</link>
-		              </option>
-		          </links>  
-	   		   </option>	
-	   		   <dynamicOptions bean="themostatMenuOption"/>
-   		   </links>
-   		</option>
+   		<option id="thermostat">
+		   <requireProperty value="ResidentialCustomerRole.CONSUMER_INFO_HARDWARES_THERMOSTAT" />
+		   <links>
+		       <dynamicOptions bean="themostatMenuOption"/>
+		   </links>
+		</option>
 		<option id="programs">
 		  <links>
 		    <option id="controlHistory">

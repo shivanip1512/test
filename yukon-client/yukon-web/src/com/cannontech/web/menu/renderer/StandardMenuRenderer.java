@@ -139,20 +139,27 @@ public class StandardMenuRenderer implements MenuRenderer {
                 link = createLink(option, "yukon.web.menu.simpleMenuDefaultTitle");
                 SimpleMenuOption simpleOption = (SimpleMenuOption) option;
                 link.setHref(buildUrl(simpleOption.getUrl()));
+
+                link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
+                leftDiv.addElement(link);
             } else if (option instanceof SubMenuOption) {
                 link = createLink(option, "yukon.web.menu.subMenuDefaultTitle");
-                subMenuParents.add((SubMenuOption) option);
+                SubMenuOption subOption = (SubMenuOption)option;
+                subMenuParents.add(subOption);
                 // determine index in list of this option
                 int optionIndex = subMenuParents.size() - 1;
                 String jsId = generateIdForString(optionIndex);
                 
                 link.setHref("#");
                 link.setOnClick(e("ctiMenu.show(this, '" + jsId + "'); return false;"));
+
+                if(!subOption.getMenuOptions(userContext).isEmpty() || !subOption.isCollapseIfEmpty()) {
+	                link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
+	                leftDiv.addElement(link);
+                }
             } else {
                 throw new CommonMenuException("Unknown MenuOption type encountered: " + option.getClass());
             }
-            link.setClass("stdhdr_menuLink" + ((isOptionSelected(option, 0))? " selected":""));
-            leftDiv.addElement(link);
         }
         return leftDiv;
     }

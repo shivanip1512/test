@@ -9,9 +9,9 @@ import com.cannontech.web.menu.option.MenuOption;
 import com.cannontech.web.menu.option.producer.MenuOptionProducer;
 
 public class MenuBase implements MenuOptionProducer {
-    private List<MenuOptionProducer> menuOptionsProducers;
+    private List<? extends MenuOptionProducer> menuOptionsProducers;
 
-    public MenuBase(List<MenuOptionProducer> topLevelOptions) {
+    public MenuBase(List<? extends MenuOptionProducer> topLevelOptions) {
         this.menuOptionsProducers = topLevelOptions;
     }
 

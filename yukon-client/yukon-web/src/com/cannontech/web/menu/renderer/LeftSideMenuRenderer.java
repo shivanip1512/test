@@ -146,6 +146,7 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                     // Selected items are divs (cannot be clicked)
                     optionDiv.addElement(menuText);
                 }
+                menuOptionList.add(optionDiv);
             } else if (option instanceof SubMenuOption) {
                 SubMenuOption subMenuOption = (SubMenuOption) option;
                 // Menu option has children - Create parent menu item
@@ -179,8 +180,11 @@ public class LeftSideMenuRenderer implements MenuRenderer {
                     childrenDiv.addElement(child);
                 }
                 optionDiv.addElement(childrenDiv);
+
+                if(!childOptions.isEmpty() || !subMenuOption.isCollapseIfEmpty()) {
+                	menuOptionList.add(optionDiv);
+                }
             }
-            menuOptionList.add(optionDiv);
         }
 
         return menuOptionList;

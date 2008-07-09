@@ -13,13 +13,17 @@ import com.cannontech.web.menu.option.producer.MenuOptionProducer;
  */
 public class SubMenuOption extends BaseMenuOption implements MenuOptionProducer {
     private MenuBase menuBase = new MenuBase();
+    
+    private boolean collapseIfEmpty = false;
 
-    public SubMenuOption(String id, YukonMessageSourceResolvable menuText) {
+    public SubMenuOption(String id, YukonMessageSourceResolvable menuText, boolean collapseIfEmpty) {
         super(id, menuText);
+        this.collapseIfEmpty = collapseIfEmpty;
     }
     
-    public SubMenuOption(String id, String menuTextKey) {
+    public SubMenuOption(String id, String menuTextKey, boolean collapseIfEmpty) {
         super(id, menuTextKey);
+        this.collapseIfEmpty = collapseIfEmpty;
     }
 
     public List<MenuOption> getMenuOptions(YukonUserContext userContext) {
@@ -27,7 +31,11 @@ public class SubMenuOption extends BaseMenuOption implements MenuOptionProducer 
         return menuOptions;
     }
 
-    public void setSubOptions(List<MenuOptionProducer> subOptions) {
+    public void setSubOptions(List<? extends MenuOptionProducer> subOptions) {
         this.menuBase = new MenuBase(subOptions);
     }
+    
+    public boolean isCollapseIfEmpty() {
+		return collapseIfEmpty;
+	}
 }
