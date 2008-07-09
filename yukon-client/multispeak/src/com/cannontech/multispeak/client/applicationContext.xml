@@ -79,10 +79,9 @@
     <property name="deviceDefinitionDao" ref="deviceDefinitionDao"/>
     <property name="deviceDefinitionService" ref="deviceService"/>
     <property name="deviceCreationService" ref="deviceCreationService"/>
-    <property name="bulkYukonDeviceFieldFactory" ref="bulkYukonDeviceFieldFactory"/>
-    <property name="bulkFieldService" ref="bulkFieldService"/>
-    <property name="scheduledExecutor" ref="globalScheduledExecutor" />
     <property name="deviceGroupService" ref="deviceGroupService" />
+    <property name="deviceUpdateService" ref="deviceUpdateService" />
+    <property name="routeDiscoveryService" ref="routeDiscoveryService" />
   </bean>   
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">

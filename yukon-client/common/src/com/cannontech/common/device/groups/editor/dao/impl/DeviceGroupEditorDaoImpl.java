@@ -226,7 +226,7 @@ public class DeviceGroupEditorDaoImpl implements DeviceGroupEditorDao, DeviceGro
         return resolvedGroup;
     }
     
-    @Transactional(propagation=Propagation.REQUIRED)
+    @Transactional(propagation=Propagation.REQUIRED, noRollbackFor={DuplicateException.class})
     public StoredDeviceGroup addGroup(StoredDeviceGroup group, DeviceGroupType type, String groupName) {
         int nextValue = nextValueHelper.getNextValue("DeviceGroup");
         SqlStatementBuilder sql = new SqlStatementBuilder();

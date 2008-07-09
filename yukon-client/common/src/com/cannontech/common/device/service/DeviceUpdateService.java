@@ -1,5 +1,7 @@
 package com.cannontech.common.device.service;
 
+import java.util.List;
+
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.core.dao.DeviceDao;
 
@@ -22,4 +24,10 @@ public interface DeviceUpdateService {
      * @throws IllegalArgumentException
      */
     public void changeRoute(YukonDevice device, String newRouteName) throws IllegalArgumentException;
+    
+    public void changeRoute(YukonDevice device, int newRouteId) throws IllegalArgumentException;
+    
+    public void changeMeterNumber(YukonDevice device, String newMeterNumber) throws IllegalArgumentException;
+    
+    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, Boolean doPutconfig) throws Exception;
 }

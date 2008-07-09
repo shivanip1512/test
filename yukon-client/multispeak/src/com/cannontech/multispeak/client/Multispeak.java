@@ -16,7 +16,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
@@ -27,28 +26,24 @@ import org.springframework.transaction.support.TransactionTemplate;
 
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.bulk.field.BulkField;
-import com.cannontech.common.bulk.field.BulkFieldColumnHeader;
-import com.cannontech.common.bulk.field.BulkFieldService;
-import com.cannontech.common.bulk.field.impl.BulkYukonDeviceFieldFactory;
-import com.cannontech.common.bulk.field.impl.UpdateableDevice;
-import com.cannontech.common.bulk.field.processor.impl.BulkYukonDeviceFieldProcessor;
-import com.cannontech.common.bulk.service.impl.BaseBulkService;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
+import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.device.groups.service.DeviceGroupService;
+import com.cannontech.common.device.service.DeviceUpdateService;
+import com.cannontech.common.device.service.RouteDiscoveryService;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.ScheduledExecutor;
 import com.cannontech.core.dao.DBPersistentDao;
+import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
@@ -81,14 +76,12 @@ import com.cannontech.multispeak.deploy.service.Meter;
 import com.cannontech.multispeak.deploy.service.MeterRead;
 import com.cannontech.multispeak.deploy.service.ServiceLocation;
 import com.cannontech.multispeak.deploy.service.impl.MultispeakPortFactory;
-import com.cannontech.multispeak.event.AddMeterRouteDiscoveryEvent;
 import com.cannontech.multispeak.event.BlockMeterReadEvent;
 import com.cannontech.multispeak.event.CDEvent;
 import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
-import com.cannontech.multispeak.event.PutconfigEvent;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yukon.BasicServerConnection;
 
@@ -115,12 +108,11 @@ public class Multispeak implements MessageListener {
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private DeviceDefinitionService deviceDefinitionService  = null;
     private DeviceCreationService deviceCreationService = null;
-    private BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory = null;
-    private BulkFieldService bulkFieldService = null;
-    private ScheduledExecutor scheduledExecutor = null;
     private DeviceGroupService deviceGroupService = null;
+    private DeviceUpdateService deviceUpdateService = null;
+    private RouteDiscoveryService routeDiscoveryService = null;
     
-    private String DEFAULT_GROUPNAME = "/Default";
+    private String DEFAULT_GROUPNAME = "Default";
 
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -188,20 +180,17 @@ public class Multispeak implements MessageListener {
         this.deviceCreationService = deviceCreationService;
     }
     @Required
-    public void setBulkYukonDeviceFieldFactory(BulkYukonDeviceFieldFactory bulkYukonDeviceFieldFactory) {
-        this.bulkYukonDeviceFieldFactory = bulkYukonDeviceFieldFactory;
-    }
-    @Required
-    public void setBulkFieldService(BulkFieldService bulkFieldService) {
-        this.bulkFieldService = bulkFieldService;
-    }
-    @Required
-    public void setScheduledExecutor(ScheduledExecutor scheduledExecutor) {
-        this.scheduledExecutor = scheduledExecutor;
-    }
-    @Required
     public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
         this.deviceGroupService = deviceGroupService;
+    }
+    @Required
+    public void setDeviceUpdateService(DeviceUpdateService deviceUpdateService) {
+        this.deviceUpdateService = deviceUpdateService;
+    }
+    @Required
+    public void setRouteDiscoveryService(
+            RouteDiscoveryService routeDiscoveryService) {
+        this.routeDiscoveryService = routeDiscoveryService;
     }
     
     /**
@@ -233,30 +222,36 @@ public class Multispeak implements MessageListener {
 		Message in = e.getMessage();		
 		if(in instanceof Return)
 		{
-			Return returnMsg = (Return) in;
-            MultispeakEvent event = getEventsMap().get(new Long (returnMsg.getUserMessageID()) );
-
-            if( event != null) {    // This message is one that Multispeak is waiting for...
-
-    			synchronized(this)
-    			{
-                    CTILogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
-                                    " DevID:" + returnMsg.getDeviceID() + 
-                                    " Command:" + returnMsg.getCommandString() +
-                                    " Result:" + returnMsg.getResultString() + 
-                                    " Status:" + returnMsg.getStatus() +
-                                    " More:" + returnMsg.getExpectMore()+"]");
-    
-                    if( returnMsg.getExpectMore() == 0) {
+			final Return returnMsg = (Return) in;
+			final MultispeakEvent event = getEventsMap().get(new Long (returnMsg.getUserMessageID()) );
+			
+			if(event != null) {
+			    
+    			Runnable eventRunner = new Runnable() {
+    			
+    			    @Override
+    			    public void run() {
                         
-    					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
-    
-                        boolean doneProcessing = event.messageReceived(returnMsg);
-                        if (doneProcessing)
-                            getEventsMap().remove(new Long(event.getPilMessageID()));
-    				}
-    			}
-            }
+                        CTILogger.info("Message Received [ID:"+ returnMsg.getUserMessageID() + 
+                                        " DevID:" + returnMsg.getDeviceID() + 
+                                        " Command:" + returnMsg.getCommandString() +
+                                        " Result:" + returnMsg.getResultString() + 
+                                        " Status:" + returnMsg.getStatus() +
+                                        " More:" + returnMsg.getExpectMore()+"]");
+        
+                        if(returnMsg.getExpectMore() == 0) {
+                            
+        					CTILogger.info("Received Message From ID:" + returnMsg.getDeviceID() + " - " + returnMsg.getResultString());
+        
+                            boolean doneProcessing = event.messageReceived(returnMsg);
+                            if (doneProcessing)
+                                getEventsMap().remove(new Long(event.getPilMessageID()));
+        				}
+    			    }
+			    };
+			    
+			    eventRunner.run();
+			}
 		}
 	}
     
@@ -954,7 +949,7 @@ public class Multispeak implements MessageListener {
      * @param templatePaoName
      * @param substationName
      */
-    private void addImportData(Meter mspMeter, MultispeakVendor mspVendor, String templatePaoName, String substationName){
+    private void addImportData(Meter mspMeter, MultispeakVendor mspVendor, String templatePaoName, String substationName) {
         
         // METER_NUMBER
         String meterNumber = mspMeter.getMeterNo().trim();
@@ -966,230 +961,42 @@ public class Multispeak implements MessageListener {
         // ADDRESS
         String address = mspMeter.getNameplate().getTransponderID().trim();
         
-        // ROUTE - initially, set to first avilable for substation
-        String route = "";
+        // ROUTES
         List<Integer> routeIds = DBFuncs.getRouteIDsFromSubstationName(substationName);
-        if (routeIds.size() > 0) {
-            route = paoDao.getYukonPAOName(routeIds.get(0));
-        }
         
         // CREATE DEVICE
         YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templatePaoName, paoName, true);
         
-        // VALUES
-        String[] values = {meterNumber, address, route};
-        
-        // BULK FIELDS
-        List<BulkFieldColumnHeader> updateBulkFieldColumnHeaders = new ArrayList<BulkFieldColumnHeader>();
-        updateBulkFieldColumnHeaders.add(BulkFieldColumnHeader.METER_NUMBER);
-        updateBulkFieldColumnHeaders.add(BulkFieldColumnHeader.ADDRESS);
-        updateBulkFieldColumnHeaders.add(BulkFieldColumnHeader.ROUTE);
-        
-        List<BulkField<?, YukonDevice>> bulkFields = bulkYukonDeviceFieldFactory.getBulkFieldsForBulkColumnHeaders(updateBulkFieldColumnHeaders);
-
-        // BULK FIELD INDEX MAP
-        Map<BulkField<?, YukonDevice>, Integer> bulkFieldIndexMap = new HashMap<BulkField<?, YukonDevice>, Integer>();
-        for (int idx = 0; idx < bulkFields.size(); idx++) {
-            bulkFieldIndexMap.put(bulkFields.get(idx), idx);
+        // UPDATE DEVICE
+        deviceUpdateService.changeAddress(newDevice, Integer.valueOf(address));
+        deviceUpdateService.changeMeterNumber(newDevice, meterNumber);
+        if (routeIds.size() > 0) {
+            deviceUpdateService.changeRoute(newDevice, routeIds.get(0));
         }
         
-        // UPDATEABLE DEVICE
-        UpdateableDevice updateableDevice = BaseBulkService.setupUpdateableDevice(values, newDevice, bulkFields, bulkFieldIndexMap);
+        // ADD TO GROUP
+        StoredDeviceGroup groupParentFromRole = deviceGroupEditorDao.getStoredGroup(multispeakFuncs.getBillingCycleDeviceGroup());
         
-        // PROCESSORS
-        List<BulkYukonDeviceFieldProcessor> bulkFieldProcessors = bulkFieldService.findProcessorsForFields(bulkFields);
-        
-        // RUN POCESSORS
-        for (BulkYukonDeviceFieldProcessor bulkFieldProcessor : bulkFieldProcessors) {
-            bulkFieldProcessor.updateField(updateableDevice.getDevice(), updateableDevice.getDeviceDto());
-        }
-        
-        // SET GROUPS 
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
-        String mspBillingCycleGroupName = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? DEFAULT_GROUPNAME : mspServiceLocation.getBillingCycle();
+        String cycleGroupName = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? DEFAULT_GROUPNAME : mspServiceLocation.getBillingCycle();
         
-        DeviceGroup collDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.COLLECTION);
-        String collectionGroupName = (collDeviceGroup != null ? collDeviceGroup.getName() : DEFAULT_GROUPNAME);
+        // in case the cycle group does not yet exist, try to add it
+        try {
+            deviceGroupEditorDao.addGroup(groupParentFromRole, DeviceGroupType.STATIC, cycleGroupName);
+        } catch (DuplicateException e) {
+        }
         
-        DeviceGroup altDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.ALTERNATE);
-        String alternateGroupName = (altDeviceGroup != null ? altDeviceGroup.getName() : DEFAULT_GROUPNAME);
-
-        DeviceGroup billingDeviceGroup = getSystemGroup(mspVendor, templatePaoName, SystemGroupEnum.BILLING);
-        String billingGroupName = (billingDeviceGroup != null ? billingDeviceGroup.getName() : DEFAULT_GROUPNAME);
-
-        //Update one of the possible ImportData group values with the mspBillingCyle based on the RoleProperty
-        DeviceGroup billingCyleFromRole = multispeakFuncs.getBillingCycleDeviceGroup();
-        if (multispeakFuncs.getSystemGroup(SystemGroupEnum.COLLECTION).equals(billingCyleFromRole))
-            collectionGroupName = mspBillingCycleGroupName;
-        else if ( multispeakFuncs.getSystemGroup(SystemGroupEnum.ALTERNATE).equals(billingCyleFromRole))
-            alternateGroupName = mspBillingCycleGroupName;
-        else if ( multispeakFuncs.getSystemGroup(SystemGroupEnum.BILLING).equals(billingCyleFromRole))
-            billingGroupName = mspBillingCycleGroupName;
-        else
-            CTILogger.info("BilingCycle DeviceGroup roleProperty is not a valid parent group for BulkImporter, using template default values for groups.");
+        String fullGroupName = groupParentFromRole.getFullName() + "/" + cycleGroupName;
+        StoredDeviceGroup billingGroup = deviceGroupEditorDao.getStoredGroup(deviceGroupService.resolveGroupName(fullGroupName));
         
-        StoredDeviceGroup collectionGroup = (StoredDeviceGroup)deviceGroupService.resolveGroupName(collectionGroupName);
-        StoredDeviceGroup alternateGroup = (StoredDeviceGroup)deviceGroupService.resolveGroupName(alternateGroupName);
-        StoredDeviceGroup billingGroup = (StoredDeviceGroup)deviceGroupService.resolveGroupName(billingGroupName);
-        
-        deviceGroupMemberEditorDao.addDevices(collectionGroup, newDevice);
-        deviceGroupMemberEditorDao.addDevices(alternateGroup, newDevice);
         deviceGroupMemberEditorDao.addDevices(billingGroup, newDevice);
         
-        // SCHEDULE ROUTE SET
-        scheduleRouteDiscovery(mspVendor, meterNumber, routeIds);
-    }
-    
-    /**
-     * Schedules the runAddMeterRouteDiscoveryEvents() method to run in a scheduled executor.
-     * @param vendor
-     * @param meterNumber
-     * @param routeIds
-     */
-    private void scheduleRouteDiscovery(final MultispeakVendor vendor, final String meterNumber, final List<Integer> routeIds) {
-        
-        scheduledExecutor.schedule(new Runnable() {
-            public void run()  {
-                
-                try {
-                    
-                    // start the discovery process
-                    runAddMeterRouteDiscoveryEvents(vendor, meterNumber, routeIds);
-                }
-                catch (RemoteException e) {
-                }
-            }
-            
-        }, 1, TimeUnit.MILLISECONDS);
-    }
-    
-    /**
-     * Kick off route discovery by sending calling sendRouteDiscoveryRequest for the first route.
-     * @param vendor
-     * @param meterNumber
-     * @param routeIds
-     * @throws RemoteException
-     */
-    public synchronized void runAddMeterRouteDiscoveryEvents(MultispeakVendor vendor, String meterNumber, List<Integer> routeIds) throws RemoteException {
-        sendRouteDiscoveryRequest(meterNumber, vendor, routeIds, 0, 1);
-    }
-    
-    /**
-     * Sends a single route discovey ping command for the route (specified by index of given routeIds)
-     * and sets up a AddMeterRouteDiscoveryEvent to wait for response.
-     * @param meterNumber
-     * @param vendor
-     * @param routeIds
-     * @param routeIdx
-     * @throws RemoteException
-     */
-    public void sendRouteDiscoveryRequest(String meterNumber, MultispeakVendor vendor, List<Integer> routeIds, int routeIdx, int attemptCount) throws RemoteException {
-        
-        // don't attempt discovery if there are no more routes to try
-        if (routeIdx < routeIds.size()) {
-            
-            // check for vendor or porter problems
-            if(vendor.getUrl() == null || vendor.getUrl().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-                throw new RemoteException("OMS vendor unknown.  Please contact Yukon administrator to set the Multispeak Vendor Role Property value in Yukon.");
-            }
-            
-            if (!porterConnection.isValid()) {
-                throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
-            }
-            
-            // pull next routeId from list
-            int routeId = routeIds.get(routeIdx);
-            
-            // setup discovery event
-            try {
-                
-                com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
-                
-                // this is the event listener that will respond to the request and either send another
-                // for the next route if not found, or send config command to device if on this route
-                Long id = generateMessageID();      
-                AddMeterRouteDiscoveryEvent event = new AddMeterRouteDiscoveryEvent(this, vendor, id, id.toString(), routeIds, routeIdx, attemptCount);
-                getEventsMap().put(id, event);
-                
-                // write pil request
-                writePilRequest(meter, "ping", id, 13, routeId); 
-            } 
-            catch (NotFoundException e) {
-                throw new RemoteException(e.getMessage());
-            }
-        }
-        else {
-            throw new RemoteException("Unable to ping meter on any of the available routes.");
-        }
-    }
-    
-    /**
-     * Sends a 'putconfig emetcon intervals' command to the meter.
-     * @param meterNumber
-     * @param vendor
-     * @param routeId
-     * @throws RemoteException
-     */
-    public void sendPutconfigRequest(String meterNumber, MultispeakVendor vendor, int routeId) throws RemoteException {
-
-        // check for vendor or porter problems
-        if(vendor.getUrl() == null || vendor.getUrl().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
-            throw new RemoteException("OMS vendor unknown.  Please contact Yukon administrator to set the Multispeak Vendor Role Property value in Yukon.");
-        }
-
-        if (!porterConnection.isValid()) {
-            throw new RemoteException("Connection to 'Yukon Port Control Service' is not valid.  Please contact your Yukon Administrator.");
-        }
-
-        // setup discovery event
+        // SEND FIRST ROUTE DISCOVERY REQUEST
         try {
-
-            com.cannontech.amr.meter.model.Meter meter = meterDao.getForMeterNumber(meterNumber);
-
-            // this is the event listener that will respond to the request and either send another
-            // for the next route if not found, or send config command to device if on this route
-            Long id = generateMessageID();      
-            PutconfigEvent event = new PutconfigEvent(vendor, id, id.toString());
-            getEventsMap().put(id, event);
-
-            // write pil request
-            writePilRequest(meter, "putconfig emetcon intervals", id, 13, routeId); 
-        } 
-        catch (NotFoundException e) {
-            throw new RemoteException(e.getMessage());
+            routeDiscoveryService.routeDiscovery(newDevice, routeIds, true);
+        } catch (Exception e) {
+            CTILogger.info("Unable to initiate route discovery for imported device: " + e.getMessage());
         }
-    }
-
-    /**
-     * Returns the deviceGroup membership for the SystemGroupEnum.  
-     * If there is more than one group membership, then the first one found in the list 
-     * of children is returned.  If no group memberships are found, then return null.
-     */
-    private DeviceGroup getSystemGroup(MultispeakVendor mspVendor, String templatePaoName, 
-            SystemGroupEnum groupEnum) {
-        
-        com.cannontech.amr.meter.model.Meter meter = meterDao.getForPaoName(templatePaoName);;
-        
-        DeviceGroup deviceGroup = null;
-        StoredDeviceGroup deviceGroupParent = deviceGroupEditorDao.getSystemGroup(groupEnum);
-        Set<DeviceGroup> deviceGroups = deviceGroupDao.getGroupMembership(deviceGroupParent, meter);
-        if( deviceGroups.isEmpty())
-            logMSPActivity("addImportData", "Template '" + meter.getName() + 
-                           "' is not a member of " + groupEnum.getFullPath()+ 
-                           ".  'Default' will be assigned", mspVendor.getUserName());
-        else if( deviceGroups.size() > 1)
-            logMSPActivity("addImportData", "Template '" + meter.getName() + 
-                           "' is a member of more than one " + groupEnum.getFullPath()+ 
-                           ".  '" + deviceGroups.iterator().next().getFullName() + "' will be assigned.", mspVendor.getUserName());
-        else if( deviceGroups.size() == 1)
-            logMSPActivity("addImportData", "Template '" + meter.getName() + 
-                           "' is a member of " + groupEnum.getFullPath()+ 
-                           ".  '" + deviceGroups.iterator().next().getFullName() + "' will be assigned.", mspVendor.getUserName());
-        
-        if( deviceGroups.size() > 0)
-            deviceGroup = deviceGroups.iterator().next();
-        
-        return deviceGroup;
     }
     
     private void logMSPActivity(String method, String description, String userName) {
@@ -1426,7 +1233,7 @@ public class Multispeak implements MessageListener {
         }
     }
 	
-	private List<ErrorObject> addNewMeter(Meter mspMeter, MultispeakVendor mspVendor) {
+	private List<ErrorObject> addNewMeter(Meter mspMeter, MultispeakVendor mspVendor){
 	    
 	    List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
 	    

@@ -1,5 +1,8 @@
 package com.cannontech.common.device.service;
 
+import java.util.List;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.common.device.YukonDevice;
@@ -11,6 +14,7 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
     private DeviceDao deviceDao = null;
     private PaoDao paoDao = null;
+    private RouteDiscoveryService routeDiscoveryService = null;
     
     public void changeAddress(YukonDevice device, int newAddress) throws IllegalArgumentException {
 
@@ -33,7 +37,26 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
 
         deviceDao.changeRoute(device, routeId);
     }
+    
+    public void changeRoute(YukonDevice device, int newRouteId) throws IllegalArgumentException {
 
+        deviceDao.changeRoute(device, newRouteId);
+    }
+
+    public void changeMeterNumber(YukonDevice device, String newMeterNumber) throws IllegalArgumentException {
+    
+        if (StringUtils.isBlank(newMeterNumber)) {
+            throw new IllegalArgumentException("Blank meter number.");
+        }
+        
+        deviceDao.changeMeterNumber(device, newMeterNumber);
+    }
+    
+    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, Boolean doPutconfig) throws Exception {
+        
+        routeDiscoveryService.routeDiscovery(device, routeIds, doPutconfig);
+    }
+    
     @Autowired
     public void setDeviceDao(DeviceDao deviceDao) {
         this.deviceDao = deviceDao;
@@ -42,5 +65,11 @@ public class DeviceUpdateServiceImpl implements DeviceUpdateService {
     @Autowired
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
+    }
+    
+    @Autowired
+    public void setRouteDiscoveryService(
+            RouteDiscoveryService routeDiscoveryService) {
+        this.routeDiscoveryService = routeDiscoveryService;
     }
 }

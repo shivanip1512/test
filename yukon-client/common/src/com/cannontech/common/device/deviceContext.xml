@@ -31,6 +31,14 @@
     <bean id="deviceUpdateService" class="com.cannontech.common.device.service.DeviceUpdateServiceImpl" scope="singleton">
         <property name="deviceDao" ref="deviceDao" />
         <property name="paoDao" ref="paoDao" />
+        <property name="routeDiscoveryService" ref="routeDiscoveryService"/>
+    </bean>
+    
+    <bean id="routeDiscoveryService" class="com.cannontech.common.device.service.RouteDiscoveryServiceImpl" scope="singleton">
+        <property name="deviceDao" ref="deviceDao" />
+        <property name="deviceUpdateService" ref="deviceUpdateService" />
+        <property name="porterConnection" ref="porterConnection" />
+        <property name="scheduledExecutor" ref="globalScheduledExecutor" />
     </bean>
     
     <bean id="simpleDeviceService" class="com.cannontech.common.device.definition.service.SimpleDeviceDefinitionServiceImpl" scope="singleton">
