@@ -138,7 +138,7 @@ public DeviceTypeCommandSetupPanel() {
 				message = "This entry will be deleted from all associated device types, do you want to continue?";
 			
 			javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-			popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(YukonCommander.COMMANDER_GIF));
+			popupFrame.setIconImages(YukonCommander.getIconsImages());
 			int response = javax.swing.JOptionPane.showConfirmDialog(popupFrame, message, "Verify Command Deletion", javax.swing.JOptionPane.YES_NO_OPTION, javax.swing.JOptionPane.QUESTION_MESSAGE);
 			if( response == javax.swing.JOptionPane.OK_OPTION )
 			{

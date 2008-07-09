@@ -5,6 +5,8 @@ package com.cannontech.yc.gui;
  */
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -86,7 +88,24 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	private int [] treeModels = null;
 	private static final String YC_TITLE = "Commander";
 	public static final String HELP_FILE = "Yukon_Commander_Help.chm";
-    public static final URL COMMANDER_GIF = YukonCommander.class.getResource("/CommanderIcon.gif");
+	
+    public static final URL COMMANDER_IMG_16 = YukonCommander.class.getResource("/Commander16.gif");
+    public static final URL COMMANDER_IMG_24 = YukonCommander.class.getResource("/Commander24.gif");
+    public static final URL COMMANDER_IMG_32 = YukonCommander.class.getResource("/Commander32.gif");
+    public static final URL COMMANDER_IMG_48 = YukonCommander.class.getResource("/Commander48.gif");
+    public static final URL COMMANDER_IMG_64 = YukonCommander.class.getResource("/Commander64.gif");
+    
+    public static List<Image> getIconsImages() {
+        
+        List<Image> iconsImages = new ArrayList<Image>();
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(COMMANDER_IMG_16));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(COMMANDER_IMG_24));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(COMMANDER_IMG_32));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(COMMANDER_IMG_48));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(COMMANDER_IMG_64));
+        
+        return iconsImages;
+    }
 
 	private javax.swing.JPanel ivjJFrameContentPane = null;
 	private javax.swing.JPanel ivjOutputPanel = null;
@@ -286,7 +305,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 		}
 		else if( event.getSource() == getYCCommandMenu().installAddressing)
 		{
-			javax.swing.ImageIcon icon = new javax.swing.ImageIcon(COMMANDER_GIF);
+			javax.swing.ImageIcon icon = new javax.swing.ImageIcon(COMMANDER_IMG_24);
 			Object[] selections = null;			
 			// Get an instance of the cache.
 			IDatabaseCache cache = DefaultDatabaseCache.getInstance();
@@ -504,7 +523,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 	private int areYouSure(String message, int messageType )
 	{
 		javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_GIF));
+		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_IMG_24));
 		return javax.swing.JOptionPane.showConfirmDialog(popupFrame, message, YC_TITLE, javax.swing.JOptionPane.YES_NO_OPTION, messageType);
 	}
 
@@ -1513,7 +1532,7 @@ public class YukonCommander extends JFrame implements DBChangeLiteListener, Acti
 			
 			clientStartupHelper.setParentFrame(ycClient);
 			
-			ycClient.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(COMMANDER_GIF));
+			ycClient.setIconImages(getIconsImages());
 						
 			ycClient.setTitle(YC_TITLE);
 	
