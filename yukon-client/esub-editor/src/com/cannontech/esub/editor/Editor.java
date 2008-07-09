@@ -5,6 +5,8 @@ import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Frame;
+import java.awt.Image;
+import java.awt.Toolkit;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.awt.event.MouseAdapter;
@@ -76,7 +78,25 @@ public class Editor extends JPanel {
 	
 	private static final String APPLICATION_NAME = "Esubstation Editor";
 	private static final Dimension defaultSize = new Dimension(800, 600);
-    public static final URL ESUBEDITOR_GIF = Editor.class.getResource("/esubEditorIcon.gif");
+	
+    public static final URL ESUBEDITOR_IMG_16 = Editor.class.getResource("/Esubstation16.gif");
+    public static final URL ESUBEDITOR_IMG_24 = Editor.class.getResource("/Esubstation24.gif");
+    public static final URL ESUBEDITOR_IMG_32 = Editor.class.getResource("/Esubstation32.gif");
+    public static final URL ESUBEDITOR_IMG_48 = Editor.class.getResource("/Esubstation48.gif");
+    public static final URL ESUBEDITOR_IMG_64 = Editor.class.getResource("/Esubstation64.gif");
+    
+    public static List<Image> getIconsImages() {
+        
+        List<Image> iconsImages = new ArrayList<Image>();
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_IMG_16));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_IMG_24));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_IMG_32));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_IMG_48));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_IMG_64));
+        
+        return iconsImages;
+    }
+    
     private static JFrame frame;
     final PropertyPanel lineEditor;
 	// the drawing to edit
@@ -545,7 +565,7 @@ public class Editor extends JPanel {
             }
 		});
 		
-		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(ESUBEDITOR_GIF));
+		frame.setIconImages(getIconsImages());
 
 				
 		Editor editor = new Editor();
