@@ -3955,18 +3955,23 @@ INT CtiCommandParser::convertTimeInputToSeconds(const string& _inStr) const
 
 string CtiCommandParser::asString()
 {
-    CtiString rstr;
+    string rstr;
 
-    map_itr_type itr = _cmd.begin();
+    rstr += "command=" + CtiNumStr(getCommand()) + ":";
+    rstr += "flags="   + CtiNumStr(getFlags())   + ":";
 
-    for(; itr != _cmd.end(); ++itr )
+    for( map_itr_type itr = _cmd.begin(); itr != _cmd.end(); ++itr )
     {
-        if(rstr.length() > 0)
-        {
-            rstr += CtiString(":");
-        }
-        rstr += CtiString((*itr).first) + CtiString("=") + ( (*itr).second.getString().length() ? (*itr).second.getString(): CtiString("(none)")) + CtiString(",") + CtiNumStr((*itr).second.getInt()) + CtiString(",") + CtiNumStr((*itr).second.getReal());
+        rstr += ":";
+        rstr += itr->first;
+        rstr += "=";
+        rstr += (itr->second.getString().empty())?"(none)":itr->second.getString();
+        rstr += ",";
+        rstr += CtiNumStr((*itr).second.getInt());
+        rstr += ",";
+        rstr += CtiNumStr((*itr).second.getReal());
     }
+
     return rstr;
 }
 

@@ -11,37 +11,56 @@
 */
 #include "yukon.h"
 
-
 #include <crtdbg.h>
 #include <windows.h>
 #include <iostream>
 #include <fstream>
+
 #include "cmdparse.h"
+#include "numstr.h"
+
 #include "test_cmdparse_input.h"
 
-using namespace std;  // get the STL into our namespace for use.  Do NOT use iostream.h anymore
+using namespace std;
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
-    char* file = "..\\common\\include\\test_cmdparse_output.h";
+    char *file = "..\\common\\include\\test_cmdparse_output.h";
+
     try
-    {   
+    {
         ofstream outputfile(file);
-        outputfile << "#ifndef _TESTCMDPARSE_OUTPUT_" << endl << "#define _TESTCMDPARSE_OUTPUT_" << endl
-             << "#include \"test_cmdparse_input.h\"" << endl << "std::string  outputString[TEST_SIZE]= {" << endl;
-        for(int i=0; i<TEST_SIZE; i++){
-            string cmd = inputString[i];
-            cout << cmd << endl;
-            CtiCommandParser  parse(cmd);
-            ///parse.parse();
-            string outp = parse.asString();
-            outputfile << "\"" << outp << "\"";
-            if(i!=TEST_SIZE-1){
-                outputfile << ",";
+
+        string parse_asString;
+
+        for( int i = 0; i < TEST_SIZE; i++ )
+        {
+            CtiCommandParser parse(inputString[i]);
+
+            cout << "Processing \"" << inputString[i] << "\"" << endl;
+
+            parse_asString += "\"";
+            parse_asString += parse.asString();
+            parse_asString += "\"";
+
+            if( (i + 1) < TEST_SIZE )
+            {
+                parse_asString += ",\n";
             }
-            outputfile << endl;
         }
-        outputfile << "};" << endl << "#endif" << endl;
+
+        outputfile << "#ifndef _TESTCMDPARSE_OUTPUT_" << endl;
+        outputfile << "#define _TESTCMDPARSE_OUTPUT_" << endl;
+        outputfile << endl;
+        outputfile << "#include \"test_cmdparse_input.h\"" << endl;
+        outputfile << endl;
+
+        outputfile << "std::string parse_asString[TEST_SIZE] = {" << endl;
+        outputfile << parse_asString << endl;
+        outputfile << "};" << endl;
+        outputfile << endl;
+        outputfile << "#endif" << endl;
+
         outputfile.close();
     }
     catch(RWxmsg &msg)
@@ -49,5 +68,6 @@ void main(int argc, char **argv)
         cout << "Exception: ";
         cout << msg.why() << endl;
     }
-    exit(0);
+
+    return 0;
 }
