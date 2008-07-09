@@ -7,7 +7,6 @@ package com.cannontech.graph;
  * @author: 
  */
 import java.awt.Color;
-import java.awt.Dimension;
 
 import javax.swing.DefaultCellEditor;
 import javax.swing.DefaultComboBoxModel;
@@ -1506,7 +1505,7 @@ public GraphDefinition showCreateGraphPanelDialog(java.awt.Frame parent)
 	public void showPopupMessage(String message, int messageType )
 	{
 		javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-		popupFrame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(GraphClient.GRAPH_GIF));
+		popupFrame.setIconImages(GraphClient.getIconsImages());
 		javax.swing.JOptionPane.showMessageDialog(popupFrame,
 		message, "Yukon Trending", messageType);
 		return;

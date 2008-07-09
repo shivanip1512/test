@@ -6,6 +6,7 @@ package com.cannontech.graph;
  */
 
 import java.awt.GridBagConstraints;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.KeyboardFocusManager;
 import java.awt.Toolkit;
@@ -15,11 +16,12 @@ import java.awt.print.PageFormat;
 import java.awt.print.Paper;
 import java.awt.print.PrinterJob;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.Vector;
 import java.util.List;
+import java.util.Vector;
 import java.util.prefs.Preferences;
 
 import javax.swing.JLabel;
@@ -48,8 +50,8 @@ import com.cannontech.database.cache.DBChangeLiteListener;
 import com.cannontech.database.data.graph.GraphDefinition;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteFactory;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteGraphDefinition;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.graph.GraphDataSeries;
 import com.cannontech.database.db.graph.GraphRenderers;
@@ -76,8 +78,24 @@ import com.cannontech.util.ServletUtil;
 
 public class GraphClient extends JPanel implements DBChangeLiteListener, GraphDefines, java.awt.event.ActionListener, java.awt.event.WindowListener, javax.swing.event.ChangeListener, javax.swing.event.TreeSelectionListener
 {
-    public static final URL GRAPH_GIF = GraphClient.class.getResource("/GraphIcon.gif");
-
+    public static final URL GRAPH_IMG_16 = GraphClient.class.getResource("/GraphTrending16.gif");
+    public static final URL GRAPH_IMG_24 = GraphClient.class.getResource("/GraphTrending24.gif");
+    public static final URL GRAPH_IMG_32 = GraphClient.class.getResource("/GraphTrending32.gif");
+    public static final URL GRAPH_IMG_48 = GraphClient.class.getResource("/GraphTrending48.gif");
+    public static final URL GRAPH_IMG_64 = GraphClient.class.getResource("/GraphTrending64.gif");
+    
+    public static List<Image> getIconsImages() {
+        
+        List<Image> iconsImages = new ArrayList<Image>();
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(GRAPH_IMG_16));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(GRAPH_IMG_24));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(GRAPH_IMG_32));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(GRAPH_IMG_48));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(GRAPH_IMG_64));
+        
+        return iconsImages;
+    }
+    
 	private class TrendDataAutoUpdater extends Thread
 	{
 		public boolean ignoreAutoUpdate = false;
@@ -2094,7 +2112,7 @@ public static void main(String[] args)
         // the ClientStartupHelper will use this for picking a Preference node
         javax.swing.JFrame mainFrame = new javax.swing.JFrame() {};
         clientStartupHelper.setParentFrame(mainFrame);
-		mainFrame.setIconImage( Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
+		mainFrame.setIconImages(getIconsImages());
 		mainFrame.setTitle("Yukon Trending");
         
 		clientStartupHelper.doStartup();
@@ -2271,7 +2289,7 @@ public void setSliderSize(int min, int max, int numTicks)
 public void showPopupMessage(String message, int messageType )
 {
 	javax.swing.JFrame popupFrame = new javax.swing.JFrame();
-	popupFrame.setIconImage(Toolkit.getDefaultToolkit().getImage(GRAPH_GIF));
+	popupFrame.setIconImages(getIconsImages());
 	javax.swing.JOptionPane.showMessageDialog(popupFrame,
 	message, "Yukon Trending", messageType);
 	return;
