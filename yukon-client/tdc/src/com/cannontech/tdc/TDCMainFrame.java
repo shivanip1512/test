@@ -6,7 +6,9 @@ package com.cannontech.tdc;
  */
 import java.awt.Component;
 import java.awt.Cursor;
+import java.awt.Image;
 import java.awt.KeyboardFocusManager;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.net.URL;
 import java.util.ArrayList;
@@ -134,8 +136,23 @@ public class TDCMainFrame extends javax.swing.JFrame implements com.cannontech.t
 	private SignalAlarmHandler alarmHandler = null;   
 	private javax.swing.JMenuItem jMenuItemResetCntrlHrs = null;
 
-    public static final URL TDC_GIF = TDCMainFrame.class.getResource("/tdcIcon.gif");
-
+    public static final URL TDC_IMG_16 = TDCMainFrame.class.getResource("/TDC16.gif");
+    public static final URL TDC_IMG_24 = TDCMainFrame.class.getResource("/TDC24.gif");
+    public static final URL TDC_IMG_32 = TDCMainFrame.class.getResource("/TDC32.gif");
+    public static final URL TDC_IMG_48 = TDCMainFrame.class.getResource("/TDC48.gif");
+    public static final URL TDC_IMG_64 = TDCMainFrame.class.getResource("/TDC64.gif");
+    
+    public static List<Image> getIconsImages() {
+        
+        List<Image> iconsImages = new ArrayList<Image>();
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(TDC_IMG_16));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(TDC_IMG_24));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(TDC_IMG_32));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(TDC_IMG_48));
+        iconsImages.add(Toolkit.getDefaultToolkit().getImage(TDC_IMG_64));
+        
+        return iconsImages;
+    }
     
    
 
@@ -2912,7 +2929,7 @@ public void initialize()  {
 	}
 	// user code begin {2}
 
-	setIconImage( com.cannontech.tdc.utils.TDCDefines.ICON_TDC );
+	setIconImages(getIconsImages());
 	
 	initAppearance();
 	TDCMainFrame.messageLog.addMessage("TDC started with MAX_ROWS = " + TDCDefines.MAX_ROWS, MessageBoxFrame.INFORMATION_MSG );	

@@ -12,7 +12,6 @@ import java.util.GregorianCalendar;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.ClientRights;
 import com.cannontech.roles.application.TDCRole;
-import com.cannontech.tdc.TDCMainFrame;
 
 public final class TDCDefines 
 {
@@ -23,7 +22,6 @@ public final class TDCDefines
 
 	public static final String DISPLAY_OUT_FILE_NAME = com.cannontech.common.util.CtiUtilities.getConfigDirPath() + "TDCDisplaySettings.DAT";
 
-	public static final java.awt.Image ICON_TDC = java.awt.Toolkit.getDefaultToolkit().getImage(TDCMainFrame.TDC_GIF);   
    public static final javax.swing.Icon ICON_ALARM = new javax.swing.ImageIcon("/AlarmSqr.gif");
       //new javax.swing.ImageIcon("C:/Documents and Settings/rneuharth/My Documents/My Pictures/AlarmSqr.gif");
 	

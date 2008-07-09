@@ -1065,7 +1065,7 @@ public void showEditorPanel( final Schedule selectedSchedule )
 	
 		frame.setTitle( panel.toString() );
 		frame.setLocation( getEditViewButton().getLocation() );
-		frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage(TDCMainFrame.TDC_GIF));
+		frame.setIconImages(TDCMainFrame.getIconsImages());
 		frame.show();
 
 		// use a clone of the desired Schedule since we do not want our client
@@ -1113,7 +1113,7 @@ private void showWizardPanel(WizardPanel wizard)
 	tempSched.getNonPersistantData().setCategories( getIMACSConnection().getCategoryNames().keys() );
 	wizard.setValue( tempSched );
 	
-	frame.setIconImage(java.awt.Toolkit.getDefaultToolkit().getImage("tdcIcon.gif"));
+	frame.setIconImages(TDCMainFrame.getIconsImages());
 	frame.setTitle("Create Schedule");
 	frame.show();
 }
