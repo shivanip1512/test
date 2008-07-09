@@ -9,12 +9,11 @@ package com.cannontech.multispeak.deploy.service;
 
 import java.rmi.RemoteException;
 
-import com.cannontech.multispeak.deploy.service.impl.CD_CBImpl;
 import com.cannontech.spring.YukonSpringHook;
 
 public class CD_CBSoap_BindingImpl implements com.cannontech.multispeak.deploy.service.CD_CBSoap_PortType{
     
-    private CD_CBSoap_PortType cd_cb = (CD_CBImpl)YukonSpringHook.getBean("cd_cb");
+    private CD_CBSoap_PortType cd_cb = YukonSpringHook.getBean("cd_cb", CD_CBSoap_PortType.class);
 
     public ErrorObject[] CDDeviceAddNotification(CDDevice[] addedCDDs) throws RemoteException {
         return cd_cb.CDDeviceAddNotification(addedCDDs);

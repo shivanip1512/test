@@ -17,8 +17,8 @@ import com.cannontech.analysis.data.device.DisconnectMeterAndPointData;
 import com.cannontech.analysis.data.device.MeterAndPointData;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.core.dao.impl.PointDaoImpl;
-import com.cannontech.core.dao.impl.StateDaoImpl;
+import com.cannontech.core.dao.PointDao;
+import com.cannontech.core.dao.StateDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.lite.LitePoint;
@@ -287,9 +287,9 @@ public class DisconnectModel extends ReportModelBase<DisconnectMeterAndPointData
 
     private String getRPHValueString(int pointID, double value)
     {
-        LitePoint litePoint = ((PointDaoImpl)YukonSpringHook.getBean("pointDao")).getLitePoint(pointID);
+        LitePoint litePoint = (YukonSpringHook.getBean("pointDao", PointDao.class)).getLitePoint(pointID);
         int stateGroupId = litePoint.getStateGroupID();
-        LiteState liteState = ((StateDaoImpl)YukonSpringHook.getBean("stateDao")).getLiteState(stateGroupId, (int) value);
+        LiteState liteState = (YukonSpringHook.getBean("stateDao", StateDao.class)).getLiteState(stateGroupId, (int) value);
         return liteState.getStateText();
     }
 

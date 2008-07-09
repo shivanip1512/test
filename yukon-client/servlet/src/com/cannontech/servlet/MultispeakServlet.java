@@ -17,7 +17,6 @@ import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.lang.StringUtils;
-import org.jfree.report.util.StringUtil;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.DaoFactory;
@@ -32,6 +31,7 @@ import com.cannontech.multispeak.client.MultispeakBean;
 import com.cannontech.multispeak.client.MultispeakDefines;
 import com.cannontech.multispeak.client.MultispeakFuncs;
 import com.cannontech.multispeak.client.MultispeakVendor;
+import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.multispeak.deploy.service.CB_CDSoap_BindingStub;
@@ -92,8 +92,8 @@ public class MultispeakServlet extends HttpServlet
         }
         
         if( action.equalsIgnoreCase("CB_MR")) {
-            MultispeakDaoImpl multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
-            MultispeakFuncs multispeakFuncs = (MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs");
+            MultispeakDao multispeakDao = YukonSpringHook.getBean("multispeakDao", MultispeakDao.class);
+            MultispeakFuncs multispeakFuncs = YukonSpringHook.getBean("multispeakFuncs", MultispeakFuncs.class);
             
             String command = req.getParameter("command");
             MultispeakVendor mspVendor = multispeakDao.getMultispeakVendor(multispeakFuncs.getPrimaryCIS());

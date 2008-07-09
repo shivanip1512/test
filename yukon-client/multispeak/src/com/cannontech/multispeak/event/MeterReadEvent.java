@@ -12,7 +12,7 @@ import java.rmi.RemoteException;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.core.dao.impl.PointDaoImpl;
+import com.cannontech.core.dao.PointDao;
 import com.cannontech.database.data.lite.LitePoint;
 import com.cannontech.message.dispatch.message.PointData;
 import com.cannontech.message.porter.message.Return;
@@ -120,7 +120,7 @@ public class MeterReadEvent extends MultispeakEvent{
             CTILogger.info("MeterReadEvent(" + meter.getMeterNumber() + ") - Reading Successful" );
             if(returnMsg.getVector().size() > 0 )
             {
-                PointDaoImpl pointDao = (PointDaoImpl)YukonSpringHook.getBean("pointDao");
+                PointDao pointDao = YukonSpringHook.getBean("pointDao", PointDao.class);
                 for (int i = 0; i < returnMsg.getVector().size(); i++)
                 {
                     Object o = returnMsg.getVector().elementAt(i);

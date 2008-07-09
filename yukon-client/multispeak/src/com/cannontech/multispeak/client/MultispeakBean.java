@@ -5,14 +5,13 @@ import java.util.Map;
 
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.multispeak.dao.MultispeakDao;
-import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.spring.YukonSpringHook;
 
 public class MultispeakBean
 {
-    private MultispeakDao multispeakDao = (MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao");
-    private MultispeakFuncs multispeakFuncs = (MultispeakFuncs)YukonSpringHook.getBean("multispeakFuncs");
+    private MultispeakDao multispeakDao = YukonSpringHook.getBean("multispeakDao", MultispeakDao.class);
+    private MultispeakFuncs multispeakFuncs = YukonSpringHook.getBean("multispeakFuncs", MultispeakFuncs.class);
     
     private MultispeakVendor selectedMspVendor;
     private LiteYukonUser yukonUser;

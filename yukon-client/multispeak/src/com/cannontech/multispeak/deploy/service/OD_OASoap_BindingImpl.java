@@ -14,7 +14,7 @@ import com.cannontech.multispeak.deploy.service.impl.OD_OAImpl;
 import com.cannontech.spring.YukonSpringHook;
 
 public class OD_OASoap_BindingImpl implements com.cannontech.multispeak.deploy.service.OD_OASoap_PortType{
-    private OD_OASoap_PortType od_oa = (OD_OAImpl)YukonSpringHook.getBean("od_oa");
+    private OD_OASoap_PortType od_oa = YukonSpringHook.getBean("od_oa", OD_OAImpl.class);
 
     public ErrorObject[] cancelODMonitoringRequestByObject(ObjectRef[] objectRef, Calendar requestDate)
             throws RemoteException {

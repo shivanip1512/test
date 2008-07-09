@@ -14,7 +14,7 @@ import com.cannontech.multispeak.deploy.service.impl.MR_EAImpl;
 import com.cannontech.spring.YukonSpringHook;
 
 public class MR_EASoap_BindingImpl implements com.cannontech.multispeak.deploy.service.MR_EASoap_PortType{
-    private MR_EASoap_PortType mr_ea = (MR_EAImpl)YukonSpringHook.getBean("mr_ea");
+    private MR_EASoap_PortType mr_ea = YukonSpringHook.getBean("mr_ea", MR_EAImpl.class);
 
     public Meter[] getAMRSupportedMeters(String lastReceived) throws RemoteException {
         return mr_ea.getAMRSupportedMeters(lastReceived);

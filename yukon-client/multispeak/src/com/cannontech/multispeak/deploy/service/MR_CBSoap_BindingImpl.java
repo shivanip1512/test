@@ -10,11 +10,10 @@ package com.cannontech.multispeak.deploy.service;
 import java.rmi.RemoteException;
 import java.util.Calendar;
 
-import com.cannontech.multispeak.deploy.service.impl.MR_CBImpl;
 import com.cannontech.spring.YukonSpringHook;
 
 public class MR_CBSoap_BindingImpl implements com.cannontech.multispeak.deploy.service.MR_CBSoap_PortType{
-    private MR_CBSoap_PortType mr_cb = (MR_CBImpl)YukonSpringHook.getBean("mr_cb");
+    private MR_CBSoap_PortType mr_cb = YukonSpringHook.getBean("mr_cb", MR_CBSoap_PortType.class);
 
     public ErrorObject[] cancelDisconnectedStatus(String[] meterNos) throws RemoteException {
         return mr_cb.cancelDisconnectedStatus(meterNos);

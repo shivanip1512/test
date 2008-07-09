@@ -16,7 +16,7 @@ import org.apache.axis.message.SOAPHeaderElement;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.multispeak.client.YukonMultispeakMsgHeader;
-import com.cannontech.multispeak.dao.impl.MspMeterDaoImpl;
+import com.cannontech.multispeak.dao.MspMeterDao;
 import com.cannontech.multispeak.deploy.service.EaLoc;
 import com.cannontech.multispeak.deploy.service.ErrorObject;
 import com.cannontech.multispeak.deploy.service.MR_CBSoap_BindingStub;
@@ -61,7 +61,7 @@ public class MR_CB_Test {
 				}
 			}
 			else if( todo == 1) {
-                List<Meter>meters = ((MspMeterDaoImpl)YukonSpringHook.getBean("mspMeterDao")).getAMRSupportedMeters("0", 10000);
+                List<Meter>meters = (YukonSpringHook.getBean("mspMeterDao", MspMeterDao.class)).getAMRSupportedMeters("0", 10000);
 				if (meters != null && meters.size() > 0) {
 				    
 					CTILogger.info("METERS RETURNED: " + meters.size());

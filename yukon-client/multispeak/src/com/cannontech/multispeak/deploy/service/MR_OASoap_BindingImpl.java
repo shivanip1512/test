@@ -13,7 +13,7 @@ import com.cannontech.multispeak.deploy.service.impl.MR_OAImpl;
 import com.cannontech.spring.YukonSpringHook;
 
 public class MR_OASoap_BindingImpl implements com.cannontech.multispeak.deploy.service.MR_OASoap_PortType{
-    private MR_OASoap_PortType mr_oa = (MR_OAImpl)YukonSpringHook.getBean("mr_oa");
+    private MR_OASoap_PortType mr_oa = YukonSpringHook.getBean("mr_oa", MR_OAImpl.class);
 
     public ErrorObject[] customersAffectedByOutageNotification(CustomersAffectedByOutage[] newOutages)
             throws RemoteException {

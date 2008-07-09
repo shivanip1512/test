@@ -12,8 +12,7 @@ import java.util.Map;
 
 import org.apache.axis.message.SOAPHeaderElement;
 
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.multispeak.dao.impl.MultispeakDaoImpl;
+import com.cannontech.multispeak.dao.MultispeakDao;
 import com.cannontech.multispeak.db.MultispeakInterface;
 import com.cannontech.spring.YukonSpringHook;
 
@@ -117,7 +116,7 @@ public class MultispeakVendor
     {
         if( mspInterfaces == null)
             
-            mspInterfaces = ((MultispeakDaoImpl)YukonSpringHook.getBean("multispeakDao")).getMultispeakInterfaces(getVendorID().intValue());
+            mspInterfaces = (YukonSpringHook.getBean("multispeakDao", MultispeakDao.class)).getMultispeakInterfaces(getVendorID().intValue());
         return mspInterfaces;
     }
 
