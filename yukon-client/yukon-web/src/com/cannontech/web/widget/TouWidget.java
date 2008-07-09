@@ -54,15 +54,13 @@ public class TouWidget extends WidgetControllerBase {
         Set<Attribute> touAttributes = getExistingAttributes(meter, touRatesList);
         List<KeyValuePair> touRates = touAttributesToHash(touAttributes, touRatesList);
 
-        // Gets the the attributes available on the given meter
-        Set<Attribute> existingAttributes = attributeService.getAllExistingAttributes(meter);
-        
         // Adds the group to the mav object
         mav.addObject("meter", meter);
         mav.addObject("rateTypes", touRates);
         
         LiteYukonUser user = ServletUtil.getYukonUser(request);
-        boolean readable = meterReadService.isReadable(meter, existingAttributes, user);
+        //IS THERE A PROBLEM HERE?  DOES existingAttributes need to be touAttributes?
+        boolean readable = meterReadService.isReadable(meter, touAttributes, user);
         mav.addObject("readable", readable);
         
         return mav;
@@ -152,7 +150,7 @@ public class TouWidget extends WidgetControllerBase {
                 resultList.add(keyValuePair);
                 
                 if (existingAttributes.contains(tou.getUsage())) {
-                    AttributeValuePair tempValuePair = new AttributeValuePair("Usage Reading", tou.getUsage());
+                    AttributeValuePair tempValuePair = new AttributeValuePair("Usage", tou.getUsage());
                     attributeList.add(tempValuePair);
                 }
                 if (existingAttributes.contains(tou.getPeak())) {
