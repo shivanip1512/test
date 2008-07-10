@@ -10,7 +10,7 @@
 				<table class="miniResultsTable">
 					<c:forEach var="rateType" items="${rateTypes}">
 						<tr class="">
-							<th class="tableHeaders" colspan=3>
+							<th class="tableHeaders" colspan=2>
 								${rateType.key}
 							</th>
 						</tr>
@@ -24,10 +24,7 @@
 								<cti:attributeResolver device="${meter}"
 									attribute="${attributeValuePair.attribute}" var="pointId" />
 								<td>
-									<cti:pointValue pointId="${pointId}" format="SHORT" />
-								</td>
-								<td>
-									<cti:pointValue pointId="${pointId}" format="DATE" />
+									<ct:attributeValue device="${meter}" attribute="${attributeValuePair.attribute}" />
 								</td>
 							</tr>
 						</c:forEach>
