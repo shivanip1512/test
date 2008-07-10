@@ -143,7 +143,7 @@ function saveButton(){
 	
 	//name and fields cannot be empty;
 	if ($("selectedFields").length == 0){
-		errorMsg += "Must select at least 1 field in Selected Fields <br/>";
+		errorMsg += "Selected Fields must contain at least 1 available field<br/>";
 	}
 	if (name.blank()){
 		errorMsg += "Name cannot be empty <br/>";
