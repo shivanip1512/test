@@ -22,6 +22,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.swing.ImageIcon;
@@ -150,8 +151,7 @@ javax.swing.event.PopupMenuListener
 	private javax.swing.JMenuItem jMenuItemCreateTag = null;
 	private javax.swing.JMenuItem jMenuItemAltScanRate = null;
 
-
-
+	private final Map<String, SpecialTDCChild> specialChildMap = new HashMap<String, SpecialTDCChild>();
 
 /**
  * TDC constructor comment.
@@ -1097,25 +1097,14 @@ public javax.swing.JLabel getJLabelDate() {
 	}
 	return ivjJLabelDate;
 }
-/**
- * Return the JLabelDisplayName property value.
- * @return javax.swing.JLabel
- */
-/* WARNING: THIS METHOD WILL BE REGENERATED. */
+
 private javax.swing.JLabel getJLabelDisplayName() {
 	if (ivjJLabelDisplayName == null) {
 		try {
 			ivjJLabelDisplayName = new javax.swing.JLabel();
 			ivjJLabelDisplayName.setName("JLabelDisplayName");
-			ivjJLabelDisplayName.setText("Display");
-			// user code begin {1}
-			
 			ivjJLabelDisplayName.setText("View");
-			
-			// user code end
 		} catch (java.lang.Throwable ivjExc) {
-			// user code begin {2}
-			// user code end
 			handleException(ivjExc);
 		}
 	}
@@ -1843,38 +1832,48 @@ private void initClientDisplays()
 	// just in case we are switching from one special display to another
 	resetMainPanel();
 	
-	Class theClass = null;
+	try {
+	    boolean initSpecialChild = false;
+	    final String className = getCurrentDisplay().getDescription();
+	    
+	    SpecialTDCChild specialChild = specialChildMap.get(className);
+	    if (specialChild == null) {
+	        initSpecialChild = true;
+	        Class<?> clazz = Class.forName(className);
+	        specialChild = (SpecialTDCChild) clazz.newInstance();
+	        specialChildMap.put(className, specialChild);
+	    }
+	    
+		setCurrentSpecialChild(specialChild);
 
-	try
-	{
-		theClass = Class.forName( getCurrentDisplay().getDescription() );
-		setCurrentSpecialChild( (SpecialTDCChild)theClass.newInstance() );
+		synchronized (getCurrentSpecialChild()) {
+		    
+		    if (initSpecialChild) {
+		        // init the new special child right away!
+		        getCurrentSpecialChild().initChild();
+		    } else {
+		        getCurrentSpecialChild().getMainJPanel().setVisible(true); 
+		    }
 
-		synchronized( getCurrentSpecialChild() )
-		{
-			//init the new special child right away!
-			getCurrentSpecialChild().initChild();
-			
-			JPanel p = getCurrentSpecialChild().getMainJPanel();
-			
-			add(p, getScrollPaneGridBagConstraints() );
-			frameAlarmToolBar.setCurrentComponents( getCurrentSpecialChild().getJButtons() );
-			getCurrentSpecialChild().setTableFont( getDisplayTable().getFont() );
-			getCurrentSpecialChild().setGridLines( getDisplayTable().getShowHorizontalLines(), 
-											  getDisplayTable().getShowVerticalLines() );
-			
-			getCurrentSpecialChild().setInitialTitle();
-			getJLabelDisplayName().setText( getCurrentSpecialChild().getJComboLabel() );
+		    JPanel p = getCurrentSpecialChild().getMainJPanel();
 
-			getCurrentSpecialChild().setAlarmMute( getTableDataModel().isMuted() );
-			
+		    add(p, getScrollPaneGridBagConstraints() );
+		    frameAlarmToolBar.setCurrentComponents( getCurrentSpecialChild().getJButtons() );
+		    getCurrentSpecialChild().setTableFont( getDisplayTable().getFont() );
+		    getCurrentSpecialChild().setGridLines( getDisplayTable().getShowHorizontalLines(), 
+		                                           getDisplayTable().getShowVerticalLines() );
 
-			// add the new ActionListener to our combo box
-			getCurrentSpecialChild().addActionListenerToJComponent( getJComboCurrentDisplay() );
-			
-			getJLabelDisplayTitle().setText(getCurrentDisplay().getTitle());			
+		    getCurrentSpecialChild().setInitialTitle();
+		    getJLabelDisplayName().setText( getCurrentSpecialChild().getJComboLabel() );
+
+		    getCurrentSpecialChild().setAlarmMute( getTableDataModel().isMuted() );
+
+
+		    // add the new ActionListener to our combo box
+		    getCurrentSpecialChild().addActionListenerToJComponent( getJComboCurrentDisplay() );
+
+		    getJLabelDisplayTitle().setText(getCurrentDisplay().getTitle());			
 		}
-
 		
 		/************** Set the JTable row colors here ********************************/
 		String query2 = new String
@@ -3466,9 +3465,6 @@ protected void resetMainPanel()
 		getCurrentSpecialChild().getMainJPanel().setVisible( false );
 		frameAlarmToolBar.setOriginalButtons();
 		getJLabelDisplayName().setText("View");
-
-
-		getCurrentSpecialChild().destroy();
 	}
 	
 	setCurrentSpecialChild( null );

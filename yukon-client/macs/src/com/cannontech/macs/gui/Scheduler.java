@@ -78,25 +78,6 @@ public boolean needsComboIniting()
 }
 
 /**
- * Insert the method's description here.
- * Creation date: (8/7/00 3:51:22 PM)
- */
-public void destroy() 
-{
-	//remove all the observers from the connection
-	if( mainPanel != null ) {	
-		getIMACSConnection().removeMessageListener( mainPanel );
-
-		getIMACSConnection().removeMessageListener( mainPanel.getScheduleTableModel() );
-	}
-	
-
-	mainPanel = null;
-	buttonsArray = null;
-	
-	System.gc();	
-}
-/**
  * This method was created in VisualAge.
  * @param scheduler com.cannontech.macs.gui.Scheduler
  * @param pane RootPane
@@ -389,7 +370,6 @@ public static void main(String args[]) {
 			{
 				java.awt.Window win = e.getWindow();
 				win.setVisible(false);
-				s.destroy();
 				win.dispose();				
 				System.exit(0);
 			}

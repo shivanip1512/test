@@ -19,9 +19,6 @@ void addActionListenerToJComponent( javax.swing.JComponent component );/**
  * Insert the method's description here.
  * Creation date: (8/7/00 3:41:18 PM)
  */
-// This message should contain the functions to clean up
-//   resources upon termination
-void destroy();
 void executeRefreshButton();/**
  * Insert the method's description here.
  * Creation date: (8/14/00 9:51:45 AM)

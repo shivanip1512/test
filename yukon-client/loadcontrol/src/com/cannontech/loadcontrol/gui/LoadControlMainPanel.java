@@ -532,20 +532,7 @@ private String[] createPrintableText()
 	
 	return tableData;
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/7/00 3:41:18 PM)
- */
-// This message should contain the functions to clean up
-//   resources upon termination
-public void destroy()
-{
-	ivjButtonBarPanel = null;
 
-	LoadControlClientConnection.getInstance().removeClient(this);
-
-	System.gc();	
-}
 /**
  * Insert the method's description here.
  * Creation date: (4/19/2001 10:18:56 AM)

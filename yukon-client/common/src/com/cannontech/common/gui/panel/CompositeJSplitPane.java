@@ -48,96 +48,12 @@ public javax.swing.JSplitPane getJSplitPaneInner()
 	{
 		jSplitPaneInner = new javax.swing.JSplitPane(javax.swing.JSplitPane.VERTICAL_SPLIT);
 		jSplitPaneInner.setName("JSplitPaneOuter");
-		
-		
 		jSplitPaneInner.setDividerSize(8);
-
-
-		jSplitPaneInner.setOneTouchExpandable(true);
-
-		com.cannontech.common.gui.util.SplitPaneDividerListener list = 
-				new com.cannontech.common.gui.util.SplitPaneDividerListener( jSplitPaneInner );
-
-		jSplitPaneInner.addComponentListener( list );
-		jSplitPaneInner.addPropertyChangeListener( list );
-		jSplitPaneInner.addMouseMotionListener( list );
 	}
 	
 	return jSplitPaneInner;
 }
-/**
- * Insert the method's description here.
- * Creation date: (8/24/00 3:07:26 PM)
- */
-public void initDividerPosition() 
-{	
-	//just have the split pane start open now
-	//setDividerLocation( 100 );
-	//getJSplitPaneInner().setDividerLocation( 100 );
 
-/*-- Crazy Code starts here -------------------------------------------------------*/
-	// The following code is ugly, so is the bug its working around!!!!
-	//  Java 1.3 has some more functions for the JSplitPane, available so change 
-	//  this when we get 1.3.
-/*	
-	Thread t = new Thread( new Runnable()
-	{
-		public void run()
-		{
-			while( getDividerLocation() < (getMaximumDividerLocation() - 10) )
-			{
-				setDividerLocation( getMaximumDividerLocation() );	
-				try
-				{
-					Thread.sleep(100);
-				}
-				catch(InterruptedException e)
-				{
-					com.cannontech.clientutils.CTILogger.info("(1)The thread that sets the divider in the CompositeJSplitPane was interrupted.");
-				}
-
-				repaint();
-			}
-		}
-
-	} );
-	
-	t.setDaemon( true );
-	t.start();
-*/
-
-/*
-	Thread t1 = new Thread( new Runnable()
-	{
-		public void run()
-		{
-			while( getJSplitPaneInner().getDividerLocation() < (getJSplitPaneInner().getMaximumDividerLocation() - 10) )
-			{
-				getJSplitPaneInner().setDividerLocation( getJSplitPaneInner().getMaximumDividerLocation() );	
-				try
-				{
-					Thread.sleep(100);
-				}
-				catch(InterruptedException e)
-				{
-					com.cannontech.clientutils.CTILogger.info("(2)The thread that sets the divider in the CompositeJSplitPane was interrupted.");
-				}
-
-				getJSplitPaneInner().repaint();
-			}
-		}
-
-	} );
-	
-	t1.setDaemon( true );
-	t1.start();
-*/
-//-- Crazy Code ends here -------------------------------------------------------/
-
-}
-/**
- * This method was created in VisualAge.
- */
 private void initialize()
 {
 	setOrientation( javax.swing.JSplitPane.VERTICAL_SPLIT );
@@ -145,22 +61,12 @@ private void initialize()
 	setBounds(23, 236, 582, 307);
 	setDividerSize(8);
 	
-	setOneTouchExpandable(true);
-
-	com.cannontech.common.gui.util.SplitPaneDividerListener list = 
-				new com.cannontech.common.gui.util.SplitPaneDividerListener( this );
-
-	addComponentListener( list );
-	addPropertyChangeListener( list );
-	addMouseMotionListener( list );
-
 	//add our comps to this split pane
 	add( topComp, "top" );
 
 	getJSplitPaneInner().add( middleComp, "top" );
 	getJSplitPaneInner().add( bottomComp, "bottom" );
 	add( getJSplitPaneInner(), "bottom" );	
-	
 	
 	//layout the child compoonents to their intended sizes
 	resetToPreferredSizes();

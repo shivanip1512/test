@@ -1154,9 +1154,6 @@ public void destroySingularities()
 	if( com.cannontech.tdc.roweditor.SendData.classExists() )
 		com.cannontech.tdc.roweditor.SendData.getInstance().destroyConnection();
 
-	// nuke any special clients that may be opened
-	if( getMainPanel().getCurrentSpecialChild() != null )
-		getMainPanel().getCurrentSpecialChild().destroy();
 }/**
  * Insert the method's description here.
  * Creation date: (1/25/2001 10:11:44 AM)
