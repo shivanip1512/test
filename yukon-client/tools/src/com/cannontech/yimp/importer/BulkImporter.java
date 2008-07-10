@@ -36,8 +36,10 @@ import com.cannontech.common.gui.util.TextFieldDocument;
 import com.cannontech.common.login.ClientSession;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.version.VersionTools;
+import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dao.NotFoundException;
+import com.cannontech.core.dao.PersistenceException;
 import com.cannontech.core.dao.RoleDao;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.Transaction;
@@ -51,19 +53,24 @@ import com.cannontech.database.data.device.MCT430A;
 import com.cannontech.database.data.device.MCT430S4;
 import com.cannontech.database.data.device.MCT430SL;
 import com.cannontech.database.data.device.MCT470;
+import com.cannontech.database.data.device.MCTBase;
+import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.multi.MultiDBPersistent;
 import com.cannontech.database.data.pao.DeviceTypes;
+import com.cannontech.database.data.pao.PAOGroups;
+import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
 import com.cannontech.database.data.point.PointTypes;
+import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceRoutes;
 import com.cannontech.database.db.importer.ImportData;
 import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
-import com.cannontech.database.db.pao.YukonPAObject;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -241,6 +248,8 @@ public void runImport(List<ImportData> imps) {
 	Connection conn = null;
     boolean notUpdate = true;
 
+    DBPersistentDao dbPersistentDao = YukonSpringHook.getBean("dbPersistentDao", DBPersistentDao.class);
+    
     DeviceGroupService deviceGroupService = (DeviceGroupService) YukonSpringHook.getBean("deviceGroupService");
     DeviceGroupMemberEditorDao deviceGroupMemberEditorDao = (DeviceGroupMemberEditorDao) YukonSpringHook.getBean("deviceGroupMemberEditorDao");
     DeviceGroupEditorDao deviceGroupEditorDao = (DeviceGroupEditorDao) YukonSpringHook.getBean("deviceGroupEditorDao");
@@ -524,48 +533,36 @@ public void runImport(List<ImportData> imps) {
             log.error("Unable to import or update device with address " + address + " and name " + name + ".");
 		}
 		else if( updateDeviceID != null) {
-			YukonPAObject pao = new YukonPAObject();
-			pao.setPaObjectID(updateDeviceID);
-    
+            LiteYukonPAObject liteYukonPaobject = new LiteYukonPAObject(updateDeviceID);
+            YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
+			boolean updateTransaction = false;
+			
 			try {
 				//update the paobject if the name has changed
-				Transaction t = Transaction.createTransaction(Transaction.RETRIEVE, pao);			    
-				pao = (YukonPAObject)t.execute();
-
-                if( !pao.getPaoName().equals(name) && !StringUtils.isBlank(name)) {
-                    pao.setPaoName(name);
-                    t = Transaction.createTransaction(Transaction.UPDATE, pao);
-                    pao = (YukonPAObject)t.execute();
+                if( !yukonPaobject.getPAOName().equals(name) && !StringUtils.isBlank(name)) {
+                    yukonPaobject.setPAOName(name);
+                    updateTransaction = true;
                 }
         
                 //update the deviceMeterGroup table if meternumber 
-                DeviceMeterGroup dmg = new DeviceMeterGroup();
-                dmg.setDeviceID(updateDeviceID);
-                t = Transaction.createTransaction(Transaction.RETRIEVE, dmg);
-                dmg = (DeviceMeterGroup)t.execute();
+                DeviceMeterGroup dmg = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
                 if( !dmg.getMeterNumber().equals(meterNumber) && StringUtils.isNotBlank(meterNumber)) {
                     dmg.setMeterNumber(meterNumber);
-                    t = Transaction.createTransaction( Transaction.UPDATE, dmg);
-                    dmg = (DeviceMeterGroup)t.execute();
+                    updateTransaction = true;
                 }
                 
                 //update device groups if they changed
-                YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(pao.getPaObjectID());
-                
+                YukonDevice yukonDevice = new YukonDevice(yukonPaobject.getPAObjectID(), PAOGroups.getDeviceType(yukonPaobject.getPAOType()));
                 deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
                 
 				//update the deviceRoutes table if the routeID has changed.
 				if(routeID.intValue() != -12) {
-                    DeviceRoutes dr = new DeviceRoutes();
-    				dr.setDeviceID(updateDeviceID);
-    				t = Transaction.createTransaction(Transaction.RETRIEVE, dr);
-    				dr = (DeviceRoutes)t.execute();
+                    DeviceRoutes dr = ((MCTBase)yukonPaobject).getDeviceRoutes();
     				if( dr.getRouteID().intValue() != routeID.intValue()) {
     					dr.setRouteID(routeID);
-    					t = Transaction.createTransaction(Transaction.UPDATE, dr);
-    					dr = (DeviceRoutes)t.execute();
+    					updateTransaction = true;
     				}
                 }
                 /*else if(routeIDsFromSub.size() > 0) {
@@ -575,9 +572,14 @@ public void runImport(List<ImportData> imps) {
                          * Or will there be porter communication to verify even on an update?
                          
                     }*/
-                log.info("Updated " + pao.getType() + " with name " + name + " with address " + address + ".");  
+				if( updateTransaction) {
+                    dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE); //update transaction and DBChange write
+                    log.info("Updated " + yukonPaobject.getPAOType() + " with name " + name + " with address " + address + ".");
+				} else {
+				    log.info("No updates found to make for device with name " + name + " with address " + address + ".");
+				}
                 successCounter++;
-            } catch (TransactionException e) {
+            } catch (PersistenceException e) {
                 GregorianCalendar now = new GregorianCalendar();
                 String errors = errorMsg.remove(0);
                 for (String error : errorMsg) {
@@ -621,30 +623,24 @@ public void runImport(List<ImportData> imps) {
                 current400Series.getDeviceRoutes().setRouteID(routeID);
             
 			MultiDBPersistent objectsToAdd = new MultiDBPersistent();
+			//Add device to objectsToAdd
 			objectsToAdd.getDBPersistentVector().add(current400Series);
-//			log.info("Added object to Add: Device(" + current400Series.getPAObjectID() + ").");
+			log.debug("Added object to Add: Device(" + current400Series.getPAObjectID() + ").");
 			
 			//grab the points we need off the template
-			Vector points = DBFuncs.getPointsForPAO(templateID);
-			boolean hasPoints = false;
+			Vector<PointBase> points = DBFuncs.getPointsForPAO(templateID);
 			for (int i = 0; i < points.size(); i++) {
 				((PointBase) points.get(i)).setPointID(DaoFactory.getPointDao().getNextPointId());
 				((PointBase) points.get(i)).getPoint().setPaoID(deviceID);
 				objectsToAdd.getDBPersistentVector().add((DBPersistent) points.get(i));
-//				log.info("Added object to Add: Device(" + current400Series.getPAObjectID() + ") Point(" + ((PointBase)points.get(i)).getPoint().getPointID()+").");
-				hasPoints = true;
+				log.debug("Added object to Add: Device(" + current400Series.getPAObjectID() + ") Point(" + ((PointBase)points.get(i)).getPoint().getPointID()+").");
 			}
 			
 			try {
-				if(hasPoints) {
-                    Transaction.createTransaction(Transaction.INSERT, objectsToAdd).execute();
-                }
-				else {
-                    Transaction.createTransaction(Transaction.INSERT, current400Series).execute();
-                }
-				
-                YukonDevice yukonDevice = DaoFactory.getDeviceDao().getYukonDevice(deviceID);
-                
+			    
+			    dbPersistentDao.performDBChange(objectsToAdd, Transaction.INSERT); //update transaction and DBChange write
+			
+                YukonDevice yukonDevice = new YukonDevice(current400Series.getPAObjectID(), PAOGroups.getDeviceType(current400Series.getPAOType()));
                 deviceGroupMemberEditorDao.addDevices(alternateGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(billingGroup, yukonDevice);
                 deviceGroupMemberEditorDao.addDevices(collectionGroup, yukonDevice);
@@ -657,7 +653,6 @@ public void runImport(List<ImportData> imps) {
                 
 				successVector.add(imps.get(j));
 				log.info(current400Series.getPAOType() + " with name " + name + " with address " + address + " successfully imported.");
-				
 				successCounter++;
 			}
 			catch( TransactionException e ) {
@@ -731,13 +726,6 @@ public void runImport(List<ImportData> imps) {
 			e.printStackTrace();
 		}
 	}
-	
-	//send off a big DBChangeMsg so all Yukon entities know what's goin' on...
-    //SN - Changed to only send one PAO db change message.  One for each type is not required since a 0 deviceID reloads everything.
-    //SN - Still send a deviceType that is valid to represent being part of the DeviceMeterGroup table. 
-    DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_PAO_DB, "DEVICE", DeviceTypes.STRING_MCT_410IL[0], getDispatchConnection());
-	DBFuncs.generateBulkDBChangeMsg(DBChangeMsg.CHANGE_POINT_DB, DBChangeMsg.CAT_POINT, PointTypes.getType(PointTypes.SYSTEM_POINT), getDispatchConnection());
-	
 	DBFuncs.writeTotalSuccess(successCounter);
 	DBFuncs.writeTotalAttempted(imps.size());
 	Date now = new Date();

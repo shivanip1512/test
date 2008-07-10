@@ -11,22 +11,25 @@ public interface DBPersistentDao {
     public DBPersistent retrieveDBPersistent(LiteBase liteObject);
 
     /**
-     * Create an UPDATE Transaction and execute.
-     * Write a DBChangeMsg for database CHANGE_TYPE_UPDATE
+     * Create a transactionType Transaction and execute.
+     * Write a DBChangeMsg for database corresponding to the transactionType
      * @param item
+     * @param transactionType
+     * @throws PersistenceException
      */
     public void performDBChange(DBPersistent item, int transactionType) throws PersistenceException;
 
-
     /**
-     * Create an UPDATE Transaction and execute.
-     * Write a DBChangeMsg for database CHANGE_TYPE_UPDATE
-     * @param item
+     * Create a transactionType Transaction and execute.
+     * This method does NOT write a DBChange message.
+     * @param items
+     * @param transactionType
      */
     public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType);
-    
+
     /**
-     * Method process a db change message
+     * Process a db change message
+     * Queues the DBChange message to dispatch.
      * @param dbChange - Change to process
      */
     public void processDBChange(DBChangeMsg dbChange);

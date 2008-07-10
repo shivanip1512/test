@@ -32,35 +32,28 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     private CacheDBChangeListener cacheDBChangeListener;
     private BasicServerConnection dispatchConnection;
     
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DBPersistentDao#retrieveDBPersistent(com.cannontech.database.data.lite.LiteBase)
-     */
-    public DBPersistent retrieveDBPersistent(LiteBase liteObject)
-    {
+    @Override
+    public DBPersistent retrieveDBPersistent(LiteBase liteObject) {
+
         //create a DBPersistent from a liteBase object
         DBPersistent dbPersistent = null;
-        if( liteObject != null)
-        {
+        if( liteObject != null) {
             dbPersistent = LiteFactory.createDBPersistent(liteObject);
             try {
                 Transaction<DBPersistent> t = Transaction.createTransaction(Transaction.RETRIEVE, dbPersistent);
                 dbPersistent = t.execute();
-            }
-            catch(Exception e) {
+            } catch(Exception e) {
                 com.cannontech.clientutils.CTILogger.error(e.getMessage(), e);
             }
         }
         return dbPersistent;
     }
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DBPersistentDao#performDBChange(com.cannontech.database.db.DBPersistent, com.cannontech.yukon.IServerConnection, int)
-     */
-    public void performDBChange(DBPersistent item, int transactionType) throws PersistenceException
-    {
+
+    @Override
+    public void performDBChange(DBPersistent item, int transactionType) throws PersistenceException {
         int dbChangeType = -1;
         
-        switch(transactionType)
-        {
+        switch(transactionType) {
             case Transaction.INSERT:
                 dbChangeType = DBChangeMsg.CHANGE_TYPE_ADD;
                 break;
@@ -74,54 +67,44 @@ public class DBPersistentDaoImpl implements DBPersistentDao
                 dbChangeType = DBChangeMsg.CHANGE_TYPE_NONE;
         }
 
-        try
-        {
+        try {
             Transaction<DBPersistent> t = Transaction.createTransaction( transactionType, item);
             item = t.execute();
             
             //write the DBChangeMessage out to Dispatch since it was a Successfull UPDATE
-            if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE)
-            {
-                DBChangeMsg[] dbChange = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
+            if (dbChangeType != DBChangeMsg.CHANGE_TYPE_NONE) {
                 
-                for( int i = 0; i < dbChange.length; i++)
-                {
-                    processDBChange(dbChange[i]);
+                DBChangeMsg[] dbChangeMsgs = ((CTIDbChange)item).getDBChangeMsgs(dbChangeType);
+                for (DBChangeMsg changeMsg : dbChangeMsgs) {
+                    processDBChange(changeMsg);
                 }
             }
-        }
-        catch( TransactionException e )
-        {
+        } catch( TransactionException e ) {
             throw new PersistenceException("Unable to save DBPersistent (item=" + 
                                            item + ", transactionType=" + transactionType + ")", e);
         }
     }
     
+    @Override
     public void processDBChange(DBChangeMsg dbChange) {
         cacheDBChangeListener.handleDBChangeMessage(dbChange);
         dispatchConnection.queue(dbChange);
     }
     
-    /* (non-Javadoc)
-     * @see com.cannontech.core.dao.DBPersistentDao#performDBChange(com.cannontech.database.db.DBPersistent, com.cannontech.yukon.IServerConnection, int)
-     */
-    public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType)
-    {
-        try
-        {
-            MultiDBPersistent objectsToDelete = new MultiDBPersistent();
+    @Override
+    public void performDBChangeWithNoMsg(List<DBPersistent> items, int transactionType) {
+        
+        try {
+            MultiDBPersistent multiDBPersistent = new MultiDBPersistent();
             
             for (DBPersistent dbPersistentObj : items) {
-                objectsToDelete.getDBPersistentVector().add(dbPersistentObj);
+                multiDBPersistent.getDBPersistentVector().add(dbPersistentObj);
             }
 
-            Transaction<?> t = Transaction.createTransaction( transactionType, objectsToDelete);
+            Transaction<?> t = Transaction.createTransaction( transactionType, multiDBPersistent);
             t.execute();
-
             
-        }
-        catch( TransactionException e )
-        {
+        } catch( TransactionException e ) {
             throw new PersistenceException("Unable to save DBPersistent (items=" + 
                                            items + ", transactionType=" + transactionType + ")", e);
         }
@@ -130,8 +113,8 @@ public class DBPersistentDaoImpl implements DBPersistentDao
     public void setCacheDBChangeListener(CacheDBChangeListener cacheDBChangeListener) {
         this.cacheDBChangeListener = cacheDBChangeListener;
     }
+    
     public void setDispatchConnection(BasicServerConnection dispatchConnection) {
         this.dispatchConnection = dispatchConnection;
     }
-    
 }
