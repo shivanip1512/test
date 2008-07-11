@@ -2,7 +2,6 @@ package com.cannontech.web.bulk.model.collection;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.ServletRequestBindingException;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -41,8 +40,6 @@ public class DeviceGroupCollectionProducer extends DeviceCollectionProducerBase 
         String parameterName = getParameterName("name");
         
         String groupName = ServletRequestUtils.getStringParameter(request, parameterName);
-        
-        groupName = StringEscapeUtils.unescapeXml(groupName);
         
         final DeviceGroup group = deviceGroupService.resolveGroupName(groupName);
 

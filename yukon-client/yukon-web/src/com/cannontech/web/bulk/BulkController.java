@@ -4,10 +4,8 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,8 +14,6 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import net.sf.json.JSONArray;
-
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -25,18 +21,12 @@ import org.springframework.web.servlet.ModelAndView;
 import com.cannontech.common.bulk.collection.DeviceCollection;
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.device.YukonDevice;
-import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.model.DeviceGroupHierarchy;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
-import com.cannontech.common.device.groups.service.NonHiddenDeviceGroupPredicate;
 import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.util.ServletUtil;
-import com.cannontech.web.group.DeviceGroupTreeUtils;
-import com.cannontech.web.util.ExtTreeNode;
 
 /**
  * Spring controller class for bulk operations
@@ -44,7 +34,6 @@ import com.cannontech.web.util.ExtTreeNode;
 public class BulkController extends BulkControllerBase {
 
     private PaoDao paoDao = null;
-    private DeviceGroupService deviceGroupService = null;
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache = null;
     
     // BULK HOME
@@ -146,68 +135,9 @@ public class BulkController extends BulkControllerBase {
         return null;
     }
     
-    // SELECT DEVICES BY GROUP TREE JSON
-    public ModelAndView selectDevicesByGroupTreeJson(HttpServletRequest request, HttpServletResponse response) throws ServletException, Exception {
-        
-        // make a device group hierarchy starting at root, only modifiable groups
-        DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
-        
-        // make tree json
-        ExtTreeNode root = makeDeviceGroupExtTree(groupHierarchy, "Groups");
-        
-        // make a list containing maps which represents each group node
-        List<Map<String, Object>> groupList = new ArrayList<Map<String, Object>>();
-        for (ExtTreeNode n : root.getChildren()) {
-            groupList.add(n.toMap());
-        }
-        
-        // convert list to JSON array
-        JSONArray jsonArray = new JSONArray(groupList);
-        
-        // write JSON to response
-        PrintWriter writer = response.getWriter();
-        String responseJsonStr = jsonArray.toString();
-        writer.write(responseJsonStr);
-        
-        return null;
-    }
-    
-    private static ExtTreeNode makeDeviceGroupExtTree(DeviceGroupHierarchy dgh, String rootName) throws Exception{
-        
-        DeviceGroup deviceGroup = dgh.getGroup();
-        
-        // setup node basics
-        ExtTreeNode node = new ExtTreeNode();
-        String nodeId = deviceGroup.getFullName().replaceAll("[^a-zA-Z0-9]","");;
-        DeviceGroupTreeUtils.setupNodeAttributes(node, deviceGroup, nodeId, rootName);
-        
-        // link info
-        node.setAttribute("href", "javascript:void(0);");
-        
-        Map<String, String> info = new HashMap<String, String>();
-        info.put("groupName", deviceGroup.getFullName());
-        node.setAttribute("info", info);
-        
-        // recursively add child groups
-        for (DeviceGroupHierarchy d : dgh.getChildGroupList()) {
-            node.addChild(makeDeviceGroupExtTree(d, null));
-        }
-        
-        // leaf?
-        DeviceGroupTreeUtils.setLeaf(node);
-        
-        return node;
-    }
-    
     @Required
     public void setPaoDao(PaoDao paoDao) {
         this.paoDao = paoDao;
-    }
-    
-    @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
     }
     
     @Required

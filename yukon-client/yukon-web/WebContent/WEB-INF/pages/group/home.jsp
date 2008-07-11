@@ -207,7 +207,7 @@
                             <div>
                             <cti:link id="moveGroupLink" class="lame" href="javascript:void(0);" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroup"/>
                             
-                            <form id="moveGroupForm" action="/spring/group/editor/moveGroup">
+                            <form id="moveGroupForm" action="/spring/group/editor/moveGroup" method="post">
                                 
                                 <cti:msg var="moveGroupPopupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.title"/>
                                 <cti:msg var="moveGroupPopupSubmitButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.submitButtonText"/>

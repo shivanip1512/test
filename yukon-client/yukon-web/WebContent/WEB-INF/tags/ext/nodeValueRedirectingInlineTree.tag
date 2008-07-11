@@ -22,7 +22,7 @@
         // build url and redirect
         var nodeValue = $H(node.attributes['info'])['${name}'];
         
-        var url = '${hrefBase}' + '?${name}' + '=' + escape(nodeValue);
+        var url = '${hrefBase}' + '?${name}' + '=' + encodeURIComponent(nodeValue);
         
         if ('${otherHrefParameters}' != '') {
             url += '&' + escape('${otherHrefParameters}');

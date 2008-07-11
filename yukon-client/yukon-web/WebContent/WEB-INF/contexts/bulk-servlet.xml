@@ -64,7 +64,6 @@
         
         <property name="paoDao" ref="paoDao" />
         <property name="deviceCollectionFactory" ref="deviceCollectionFactory" />
-        <property name="deviceGroupService" ref="deviceGroupService" />
         <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
         
     </bean>
