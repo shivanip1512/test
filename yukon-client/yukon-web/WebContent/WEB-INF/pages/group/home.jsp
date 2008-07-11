@@ -335,11 +335,11 @@
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             <br>
-                            <cti:link href="/spring/bulk/mass/massChangeSelect" key="yukon.web.deviceGroups.editor.operationsContainer.massChange">
+                            <cti:link href="/spring/bulk/massChange/massChangeSelect" key="yukon.web.deviceGroups.editor.operationsContainer.massChange">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             <br>
-                            <cti:link href="/spring/bulk/mass/massDelete" key="yukon.web.deviceGroups.editor.operationsContainer.massDelete">
+                            <cti:link href="/spring/bulk/massChange/massDelete" key="yukon.web.deviceGroups.editor.operationsContainer.massDelete">
                                 <cti:mapParam value="${deviceCollection.collectionParameters}"/>
                             </cti:link>
                             <br>
