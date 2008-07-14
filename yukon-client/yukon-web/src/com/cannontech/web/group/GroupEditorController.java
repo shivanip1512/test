@@ -507,14 +507,22 @@ public class GroupEditorController extends MultiActionController {
         StoredDeviceGroup parentGroup = deviceGroupEditorDao.getStoredGroup(parentGroupName, false);
 
         // Make sure we can move the group
-        if (group.isEditable()) {
-            group.setParent(parentGroup);
-            deviceGroupEditorDao.updateGroup(group);
-
-            mav.addObject("groupName", group.getFullName());
-
-        } else {
-            mav.addObject("errorMessage", "Cannot move Group: " + group.getFullName());
+        try {
+            
+            if (group.isEditable()) {
+                group.setParent(parentGroup);
+                deviceGroupEditorDao.updateGroup(group);
+    
+                mav.addObject("groupName", group.getFullName());
+    
+            } else {
+                mav.addObject("errorMessage", "Cannot move Group: " + group.getFullName());
+                mav.addObject("groupName", groupName);
+            }
+        }
+        catch(DuplicateException e) {
+            mav.addObject("errorMessage", "Group '" + group.getName() + "' already exists in group '" + parentGroup.getName() +
+                          "'. Please rename the group using a unqiue name and try again.");
             mav.addObject("groupName", groupName);
         }
 
