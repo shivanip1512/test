@@ -16,6 +16,11 @@
         <property name="commandAuthorizationService" ref="paoCommandAuthorizationService" />
     </bean>
     
+    <bean id="commandRequestRouteAndDeviceExecutor" class="com.cannontech.common.device.commands.impl.CommandRequestRouteAndDeviceExecutorImpl">
+        <property name="porterConnection" ref="porterConnection" />
+        <property name="deviceErrorTranslatorDao" ref="deviceErrorTranslator" />
+    </bean>
+    
     <bean id="attributeService" class="com.cannontech.common.device.attribute.service.AttributeServiceImpl" scope="singleton">
         <property name="dbPersistentDao" ref="dbPersistentDao" />
         <property name="deviceDefinitionDao" ref="deviceDefinitionDao" />
@@ -35,10 +40,10 @@
     </bean>
     
     <bean id="routeDiscoveryService" class="com.cannontech.common.device.service.RouteDiscoveryServiceImpl" scope="singleton">
-        <property name="deviceDao" ref="deviceDao" />
-        <property name="deviceUpdateService" ref="deviceUpdateService" />
-        <property name="porterConnection" ref="porterConnection" />
+        <property name="commandRequestRouteAndDeviceExecutor" ref="commandRequestRouteAndDeviceExecutor" />
         <property name="scheduledExecutor" ref="globalScheduledExecutor" />
+        <property name="paoDao" ref="paoDao" />
+        
     </bean>
     
     <bean id="simpleDeviceService" class="com.cannontech.common.device.definition.service.SimpleDeviceDefinitionServiceImpl" scope="singleton">

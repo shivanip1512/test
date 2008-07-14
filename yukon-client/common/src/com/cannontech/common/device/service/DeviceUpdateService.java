@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.user.YukonUserContext;
 
 public interface DeviceUpdateService {
 
@@ -29,5 +30,5 @@ public interface DeviceUpdateService {
     
     public void changeMeterNumber(YukonDevice device, String newMeterNumber) throws IllegalArgumentException;
     
-    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, Boolean doPutconfig) throws Exception;
+    public void routeDiscovery(YukonDevice device, List<Integer> routeIds, YukonUserContext userContext);
 }

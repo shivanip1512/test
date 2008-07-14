@@ -82,6 +82,7 @@ import com.cannontech.multispeak.event.CDStatusEvent;
 import com.cannontech.multispeak.event.MeterReadEvent;
 import com.cannontech.multispeak.event.MultispeakEvent;
 import com.cannontech.multispeak.event.ODEvent;
+import com.cannontech.user.SystemUserContext;
 import com.cannontech.yimp.util.DBFuncs;
 import com.cannontech.yukon.BasicServerConnection;
 
@@ -975,28 +976,29 @@ public class Multispeak implements MessageListener {
         }
         
         // ADD TO GROUP
-        StoredDeviceGroup groupParentFromRole = deviceGroupEditorDao.getStoredGroup(multispeakFuncs.getBillingCycleDeviceGroup());
-        
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
-        String cycleGroupName = StringUtils.isBlank(mspServiceLocation.getBillingCycle())? DEFAULT_GROUPNAME : mspServiceLocation.getBillingCycle();
+        String cycleGroupName = mspServiceLocation.getBillingCycle();
         
-        // in case the cycle group does not yet exist, try to add it
-        try {
-            deviceGroupEditorDao.addGroup(groupParentFromRole, DeviceGroupType.STATIC, cycleGroupName);
-        } catch (DuplicateException e) {
+        if (!StringUtils.isBlank(cycleGroupName)) {
+        
+            StoredDeviceGroup groupParentFromRole = deviceGroupEditorDao.getStoredGroup(multispeakFuncs.getBillingCycleDeviceGroup());
+            
+            // in case the cycle group does not yet exist, try to add it
+            try {
+                deviceGroupEditorDao.addGroup(groupParentFromRole, DeviceGroupType.STATIC, cycleGroupName);
+            } catch (DuplicateException e) {
+            }
+            
+            String fullGroupName = groupParentFromRole.getFullName() + "/" + cycleGroupName;
+            StoredDeviceGroup billingGroup = deviceGroupEditorDao.getStoredGroup(deviceGroupService.resolveGroupName(fullGroupName));
+            
+            deviceGroupMemberEditorDao.addDevices(billingGroup, newDevice);
         }
-        
-        String fullGroupName = groupParentFromRole.getFullName() + "/" + cycleGroupName;
-        StoredDeviceGroup billingGroup = deviceGroupEditorDao.getStoredGroup(deviceGroupService.resolveGroupName(fullGroupName));
-        
-        deviceGroupMemberEditorDao.addDevices(billingGroup, newDevice);
         
         // SEND FIRST ROUTE DISCOVERY REQUEST
-        try {
-            routeDiscoveryService.routeDiscovery(newDevice, routeIds, true);
-        } catch (Exception e) {
-            CTILogger.info("Unable to initiate route discovery for imported device: " + e.getMessage());
-        }
+        SystemUserContext systemUserConext = new SystemUserContext();
+        deviceUpdateService.routeDiscovery(newDevice, routeIds, systemUserConext);
+            
     }
     
     private void logMSPActivity(String method, String description, String userName) {

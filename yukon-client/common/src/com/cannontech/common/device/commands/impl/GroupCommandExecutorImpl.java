@@ -11,7 +11,7 @@ import com.cannontech.common.bulk.collection.DeviceGroupCollectionHelper;
 import com.cannontech.common.bulk.mapper.ObjectMappingException;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandRequestExecutor;
+import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
 import com.cannontech.common.device.commands.GroupCommandCompletionCallback;
 import com.cannontech.common.device.commands.GroupCommandExecutor;
 import com.cannontech.common.device.commands.GroupCommandResult;
@@ -30,7 +30,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
  */
 public class GroupCommandExecutorImpl implements GroupCommandExecutor {
 
-    private CommandRequestExecutor<CommandRequestDevice> commandRequestExecutor;
+    private CommandRequestDeviceExecutor commandRequestExecutor;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     private TemporaryDeviceGroupService temporaryDeviceGroupService;
     private DeviceGroupCollectionHelper deviceGroupCollectionHelper;
@@ -41,7 +41,7 @@ public class GroupCommandExecutorImpl implements GroupCommandExecutor {
     private Logger log = YukonLogManager.getLogger(GroupCommandExecutorImpl.class);
     
     @Autowired
-    public void setCommandRequestExecutor(CommandRequestExecutor<CommandRequestDevice> commandRequestExecutor) {
+    public void setCommandRequestExecutor(CommandRequestDeviceExecutor commandRequestExecutor) {
         this.commandRequestExecutor = commandRequestExecutor;
     }
 
