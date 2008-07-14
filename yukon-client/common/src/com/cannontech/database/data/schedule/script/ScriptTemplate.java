@@ -104,8 +104,8 @@ public class ScriptTemplate {
         paramToValueMap.put(EMAIL_SUBJECT_PARAM, "");
         //Retry (within a read script by collectiongroup, not a retry read of a list)
         paramToValueMap.put(READ_WITH_RETRY_FLAG_PARAM, "false");
-        paramToValueMap.put(RETRY_COUNT_PARAM, "6");
-        paramToValueMap.put(QUEUE_OFF_COUNT_PARAM, "3");
+        paramToValueMap.put(RETRY_COUNT_PARAM, "3");
+        paramToValueMap.put(QUEUE_OFF_COUNT_PARAM, "2");
         paramToValueMap.put(MAX_RETRY_HOURS_PARAM, "-1");
         //Billing parameters
         paramToValueMap.put(BILLING_FLAG_PARAM, "false");
