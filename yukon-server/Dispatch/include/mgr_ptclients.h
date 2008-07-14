@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/INCLUDE/mgr_ptclients.h-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/07/14 14:49:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,8 +59,9 @@ private:
 
    typedef CtiPointManager Inherited;
 
-   void refreshReasonabilityLimits(LONG pntID);
-   void refreshPointLimits(LONG pntID);
+   void refreshReasonabilityLimits(LONG pntID, LONG paoID);
+   void refreshPointLimits(LONG pntID, LONG paoID);
+   void processPointDynamicData(LONG pntID);
 
 protected:
 
@@ -71,7 +72,7 @@ public:
    CtiPointClientManager();
 
    virtual ~CtiPointClientManager();
-   virtual void refreshList(BOOL (*fn)(CtiPoint *,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0);
+   virtual void refreshList(BOOL (*fn)(CtiPoint *,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
 
    void DumpList(void);
    virtual void DeleteList(void);
