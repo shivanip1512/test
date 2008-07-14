@@ -12,7 +12,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-public class RolodexGroupProvider extends FullyBinningDeviceGroupProviderBase<Character> {
+public class RolodexGroupProvider extends BinningDeviceGroupProviderBase<Character> {
     private PaoDao paoDao;
 
     @Override
@@ -39,6 +39,11 @@ public class RolodexGroupProvider extends FullyBinningDeviceGroupProviderBase<Ch
         sql.append("where upper(SUBSTRING(ypo.PAOName, 1, 1)) = ");
         sql.appendQuotedString(bin);
         return sql.toString();
+    }
+    
+    @Override
+    protected String getAllBinnedDeviceSqlSelect() {
+        return "SELECT ypo.paobjectid FROM YukonPaObject ypo";
     }
     
     @Override

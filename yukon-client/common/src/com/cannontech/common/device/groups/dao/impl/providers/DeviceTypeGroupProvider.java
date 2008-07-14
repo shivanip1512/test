@@ -12,7 +12,7 @@ import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
 
-public class DeviceTypeGroupProvider extends FullyBinningDeviceGroupProviderBase<String> {
+public class DeviceTypeGroupProvider extends BinningDeviceGroupProviderBase<String> {
     private PaoDao paoDao;
     
     @Override
@@ -41,6 +41,15 @@ public class DeviceTypeGroupProvider extends FullyBinningDeviceGroupProviderBase
         sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
         sql.append("WHERE ypo.type = ");
         sql.appendQuotedString(bin);
+        return sql.toString();
+    }
+    
+    @Override
+    protected String getAllBinnedDeviceSqlSelect() {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        sql.append("SELECT ypo.paobjectid");
+        sql.append("FROM DeviceMeterGroup d");
+        sql.append("JOIN YukonPaObject ypo ON (d.deviceid = ypo.paobjectid)");
         return sql.toString();
     }
 

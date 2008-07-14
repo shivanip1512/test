@@ -16,6 +16,17 @@ import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
+/**
+ * This provides support for creating "binning" dynamic device groups. A binning
+ * device group is one that sorts a subset of all devices into a single level of sub groups
+ * (or bins). For example, the Rolodex dynamic group sorts all of the devices into
+ * bins according to the first character of their PAO Name. 
+ * 
+ * By having the provider extend this class, the implementer only needs to write a few simple
+ * methods.
+ *
+ * @param <T> The type that represents a bin, usually a String
+ */
 public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProviderBase {
     private SimpleJdbcOperations jdbcTemplate;
     private PaoGroupsWrapper paoGroupsWrapper;
@@ -80,10 +91,27 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
        return binnedDeviceGroup;
    };
     
+    /**
+     * This determines the String that will be used to display the group.
+     * For some groups, using a primary key id for the bin will work best, in
+     * which case this method will have to look up an appropriate name for 
+     * the id.
+     * 
+     * @param bin
+     * @return
+     */
     protected String getGroupName(T bin) {
         return bin.toString();
     }
 
+    /**
+     * This must return a list of all bins. There should be no duplicates.
+     * This information could be static if all of the bins are always known 
+     * ahead of time. But more likely this information would be queried 
+     * from the database (possibly with a "select distinct" type query) 
+     * every time it is called.
+     * @return
+     */
     protected abstract List<T> getAllBins();
 
     @Override
@@ -177,6 +205,17 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
 	    }
     }
 	
+	/**
+	 * This method should return an SQL select statement as a String that selects 
+	 * a single column that represents the PAObjectId of every device within the 
+	 * given bin.
+	 * 
+	 * Example:
+	 *   SELECT ypo.paobjectId from YukonPaobject ypo where ...
+	 * 
+	 * @param bin The bin underwhich the returned paobjectids should exist
+	 * @return a valid SQL select statement
+	 */
 	protected abstract String getChildSqlSelectForBin(T bin);
 
     protected String getChildWhereForBin(T bin, String identifier) {
@@ -184,6 +223,12 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         return whereString;
     } 
 	
+	/**
+	 * This method should return an SQL select statement as a String that selects
+	 * a single column that represents the PAObjectId of every device within every
+	 * bin. This may be every device in the system or it could be a subset.
+	 * @return
+	 */
 	protected abstract String getAllBinnedDeviceSqlSelect();
 
 	protected String getAllBinnedDeviceSqlWhere(String identifier) {
