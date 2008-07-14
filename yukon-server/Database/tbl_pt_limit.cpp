@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_limit.cpp-arc  $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/07/14 14:49:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -91,14 +91,17 @@ CtiTablePointLimit& CtiTablePointLimit::setLowLimit(DOUBLE d)
    return *this;
 }
 
-void CtiTablePointLimit::getSQL(string &sql, LONG pointID)
+void CtiTablePointLimit::getSQL(string &sql, LONG pointID, LONG paoID)
 {
-
    sql = "select pointid, limitnumber, highlimit, lowlimit, limitduration from pointlimits";
 
    if(pointID != 0)
    {
       sql += " where pointid = " + CtiNumStr(pointID);
+   }
+   else if(paoID != 0)
+   {
+       sql += " where pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
    }
 }
 

@@ -240,8 +240,7 @@ portentry.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		prot_emetcon.h dev_mct4xx.h dev_mct.h dev_carrier.h \
 		dev_dlcbase.h tbl_route.h tbl_carrier.h tbl_metergrp.h \
 		vcomdefs.h tbl_loadprofile.h tbl_dv_mctiedport.h pt_numeric.h \
-		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
-		config_data_mct.h
+		tbl_pt_unit.h tbl_unitmeasure.h config_data_mct.h
 porter.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h color.h cparms.h rwutil.h ctitime.h \
 		boost_time.h configkey.h configval.h queues.h dsm2.h mutex.h \
@@ -345,13 +344,12 @@ portfield.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		dllyukon.h dev_mct.h dev_carrier.h dev_dlcbase.h tbl_route.h \
 		tbl_carrier.h prot_emetcon.h tbl_loadprofile.h \
 		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_limit.h dev_sentinel.h \
-		prot_ansi_sentinel.h dev_mark_v.h prot_transdata.h \
-		transdata_application.h transdata_tracker.h \
-		transdata_datalink.h prot_ymodem.h transdata_data.h msg_cmd.h \
-		msg_trace.h pilserver.h server_b.h con_mgr.h cmdopts.h \
-		argkey.h argval.h mgr_point.h slctpnt.h mgr_route.h \
-		repeaterrole.h mgr_config.h port_udp.h prot_711.h
+		tbl_unitmeasure.h dev_sentinel.h prot_ansi_sentinel.h \
+		dev_mark_v.h prot_transdata.h transdata_application.h \
+		transdata_tracker.h transdata_datalink.h prot_ymodem.h \
+		transdata_data.h msg_cmd.h msg_trace.h pilserver.h server_b.h \
+		con_mgr.h cmdopts.h argkey.h argval.h mgr_point.h slctpnt.h \
+		mgr_route.h repeaterrole.h mgr_config.h port_udp.h prot_711.h
 portfill.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h cparms.h rwutil.h ctitime.h boost_time.h \
 		configkey.h configval.h queues.h dsm2.h mutex.h guard.h \
@@ -419,13 +417,12 @@ portgw.obj:	yukon.h precompiled.h ctidbgmem.h connection.h dlldefs.h \
 		tbl_dv_ied.h gateway.h pending_stat_operation.h \
 		dev_grp_energypro.h dev_grp.h msg_lmcontrolhistory.h \
 		pt_status.h tbl_pt_status.h pt_analog.h pt_numeric.h \
-		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_limit.h \
-		tbl_pt_analog.h tbl_dv_expresscom.h vcomdefs.h mgr_port.h \
-		port_base.h tbl_port_base.h critical_section.h \
-		tbl_port_statistics.h slctprt.h mgr_route.h repeaterrole.h \
-		portdecl.h dsm2err.h porter.h devicetypes.h portglob.h \
-		tcpsup.h statistics.h ctidate.h thread_monitor.h \
-		thread_register_data.h
+		tbl_pt_unit.h tbl_unitmeasure.h tbl_pt_analog.h \
+		tbl_dv_expresscom.h vcomdefs.h mgr_port.h port_base.h \
+		tbl_port_base.h critical_section.h tbl_port_statistics.h \
+		slctprt.h mgr_route.h repeaterrole.h portdecl.h dsm2err.h \
+		porter.h devicetypes.h portglob.h tcpsup.h statistics.h \
+		ctidate.h thread_monitor.h thread_register_data.h
 portload.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		types.h cticalls.h queues.h dsm2.h mutex.h guard.h numstr.h \
 		clrdump.h cticonnect.h netports.h dsm2err.h device.h \
@@ -585,10 +582,9 @@ porttime.obj:	yukon.h precompiled.h ctidbgmem.h os2_2w32.h dlldefs.h \
 		dev_dlcbase.h tbl_route.h tbl_carrier.h prot_emetcon.h \
 		tbl_metergrp.h vcomdefs.h tbl_loadprofile.h \
 		tbl_dv_mctiedport.h pt_numeric.h tbl_pt_unit.h \
-		tbl_unitmeasure.h tbl_pt_limit.h config_data_mct.h \
-		mgr_route.h repeaterrole.h thread_monitor.h \
-		thread_register_data.h prot_welco.h prot_lmi.h prot_seriesv.h \
-		verification_objects.h
+		tbl_unitmeasure.h config_data_mct.h mgr_route.h \
+		repeaterrole.h thread_monitor.h thread_register_data.h \
+		prot_welco.h prot_lmi.h prot_seriesv.h verification_objects.h
 portverify.obj:	yukon.h precompiled.h ctidbgmem.h boost_time.h \
 		mgr_port.h dlldefs.h smartmap.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
@@ -730,5 +726,6 @@ systemmsgthread.obj:	yukon.h precompiled.h ctidbgmem.h cmdparse.h \
 		tbl_pt_property.h tbl_pt_trigger.h slctdev.h smartmap.h \
 		mgr_port.h port_base.h tbl_port_base.h xfer.h dialup.h \
 		critical_section.h tbl_port_statistics.h slctprt.h
+test_port_queue.obj:	queues.h types.h
 traceset.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h
 #ENDUPDATE#

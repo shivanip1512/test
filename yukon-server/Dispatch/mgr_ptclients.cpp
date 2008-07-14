@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2008/07/14 14:49:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -130,36 +130,51 @@ void ApplyInitialDynamicConditions(const long key, CtiPointSPtr pTempPoint, void
     return;
 }
 
-
-void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void *arg, LONG pntID, LONG paoID)
+//This gives the point its initial data. We should not need a mutex for this.
+void CtiPointClientManager::processPointDynamicData(LONG pntID)
 {
     CtiPointSPtr pTempPoint;
 
-    Inherited::LockGuard  guard(Inherited::getMux());
+    //Lets be smart about handling a single point.
+    pTempPoint = getEqual(pntID);
+    if(pTempPoint)
+    {
+        ApplyInitialDynamicConditions(0,pTempPoint,NULL);
 
-    Inherited::refreshList(testFunc, arg, pntID, paoID);                // Load all points in the system
+        //This will probably always be true, but why not check.
+        if(findNonUpdatedDynamicData(0,pTempPoint,NULL))
+        {
+            RefreshDynamicData(pntID);
+            ApplyInsertNonUpdatedDynamicData(0, pTempPoint, NULL);
+        }
+    }
+}
+
+//Points cannot actually load by PAO, but it is close.
+void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void *arg, LONG pntID, LONG paoID, CtiPointType_t pntType)
+{
+    Inherited::refreshList(testFunc, arg, pntID, paoID, pntType);                // Load all points in the system
     Inherited::refreshAlarming(pntID, paoID);
-    refreshReasonabilityLimits(pntID);
-    refreshPointLimits(pntID);
+    refreshReasonabilityLimits(pntID, paoID);
+    refreshPointLimits(pntID, paoID);
 
     if(pntID != 0)
     {
-        //Lets be smart about handling a single point.
-        pTempPoint = getEqual(pntID);
-        if(pTempPoint)
-        {
-            ApplyInitialDynamicConditions(0,pTempPoint,NULL);
+        processPointDynamicData(pntID);
+    }
+    else if(paoID != 0)
+    {
+        vector<Inherited::ptr_type> points;
+        Inherited::getEqualByPAO(paoID, points);
 
-            //This will probably always be true, but why not check.
-            if(findNonUpdatedDynamicData(0,pTempPoint,NULL))
-            {
-                RefreshDynamicData(pntID);
-                ApplyInsertNonUpdatedDynamicData(0, pTempPoint, NULL);
-            }
+        for(int i = 0; i < points.size(); i++)
+        {
+            processPointDynamicData(points[i]->getPointID());
         }
     }
     else
     {
+        CtiPointSPtr pTempPoint;
         Inherited::apply(ApplyInitialDynamicConditions, NULL);     // Make sure everyone has been initialized with Dynamic data.
         if((pTempPoint = Inherited::find(findNonUpdatedDynamicData, NULL))) // If there is at least one nonupdated dynamic entry.
         {
@@ -605,7 +620,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
 }
 
 //Grab reasonability limits from TBL_UOM
-void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID)
+void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID)
 {
     LockGuard  guard(getMux());
 
@@ -626,6 +641,11 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID)
     {
         sql += " AND pointid = " + CtiNumStr(pntID);
         _reasonabilityLimits.erase(pntID);
+    }
+    else if(paoID)
+    {
+        //This assumes it is an ADD, an update needs to do an erase here!
+        sql += " AND pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
     }
     else
     {
@@ -662,7 +682,7 @@ void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID)
 }
 
 
-void CtiPointClientManager::refreshPointLimits(LONG pntID)
+void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID)
 {
     LONG        lTemp = 0;
     CtiTablePointLimit limitTable;
@@ -686,7 +706,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID)
         limitTable.setLimitNumber(1);
         _limits.erase(limitTable);
     }
-    else
+    else if(paoID != 0)
     {
         _limits.clear();
     }
@@ -695,7 +715,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID)
         CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Limits" << endl;
     }
     /* Go after the point limits! */
-    CtiTablePointLimit().getSQL( sql, pntID );
+    CtiTablePointLimit().getSQL( sql, pntID, paoID );
 
     rdr = ExecuteQuery( conn, sql );
 

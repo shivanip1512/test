@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.120 $
-* DATE         :  $Date: 2008/07/08 22:54:57 $
+* REVISION     :  $Revision: 1.121 $
+* DATE         :  $Date: 2008/07/14 14:49:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1614,7 +1614,7 @@ INT RefreshPorterRTDB(void *ptr)
             }
             else
             {
-                PorterPointManager.refreshList(isPoint, NULL, pChg->getId(), 0);
+                PorterPointManager.refreshList(isPoint, NULL, pChg->getId(), 0, resolvePointType(pChg->getObjectType()));
 
                 if( getDebugLevel() & DEBUGLEVEL_MGR_POINT )
                 {

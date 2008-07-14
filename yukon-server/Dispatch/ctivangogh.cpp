@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.186 $
-* DATE         :  $Date: 2008/06/30 15:24:28 $
+* REVISION     :  $Revision: 1.187 $
+* DATE         :  $Date: 2008/07/14 14:49:54 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -4839,7 +4839,7 @@ void CtiVanGogh::loadRTDB(bool force, CtiMessage *pMsg)
                 {
                     if(pChg != NULL && (pChg->getTypeOfChange() == ChangeTypeUpdate || pChg->getTypeOfChange() == ChangeTypeAdd))
                     {
-                        PointMgr.refreshList(isPoint, NULL, pChg->getId());
+                        PointMgr.refreshList(isPoint, NULL, pChg->getId(), 0, resolvePointType(pChg->getObjectType()) );
                         TriggerMgr.refreshList(pChg->getId(), PointMgr);
                     }
                     else if(pChg != NULL && pChg->getTypeOfChange() == ChangeTypeDelete)
@@ -6371,33 +6371,62 @@ void CtiVanGogh::adjustDeviceDisableTags(LONG id, bool dbchange, string user)
                  *  as disabled for X because of device.
                  */
 
-                CtiPointManager::spiterator itr = PointMgr.begin();//Where is the exclusion here?
-                CtiPointManager::spiterator end = PointMgr.end();
-
-                for( ; itr != end; itr++ )
+                if(id != 0)
                 {
-                    CtiPointSPtr pPoint = itr->second;
+                    vector<CtiPointManager::ptr_type> points;
+                    PointMgr.getEqualByPAO(id, points);
+                    
+                    CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(id);
+                    CtiDeviceBaseLite &dLite = *dliteit;
 
-                    if(id != 0 && pPoint->getDeviceID() != id) continue;    // Let's skip devices which DID NOT CHANGE!
-
-                    if(pPoint->getDeviceID() > 0)
+                    for(int i = 0; i < points.size() && dliteit != _deviceLiteSet.end() ; i++)
                     {
-                        CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(pPoint->getDeviceID());
+                        CtiPointSPtr pPoint = points[i];
 
-                        if( dliteit != _deviceLiteSet.end() )   // We do know this device..
+                        bool devicedifferent;
+
+                        UINT setmask = 0;
+                        setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
+                        setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
+
+                        ablementPoint(pPoint, devicedifferent, setmask, tagmask, user, *pMulti);
+
+                        if(devicedifferent && !dbchange)
                         {
-                            bool devicedifferent;
-                            CtiDeviceBaseLite &dLite = *dliteit;
-
-                            UINT setmask = 0;
-                            setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
-                            setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
-
-                            ablementPoint(pPoint, devicedifferent, setmask, tagmask, user, *pMulti);
-
-                            if(devicedifferent && !dbchange)
+                            devicesupdated.insert( pPoint->getDeviceID() );  // Relying on the fact that only one may be in there!
+                        }
+                    }
+                }
+                else
+                {
+                    CtiPointManager::spiterator itr = PointMgr.begin();//Where is the exclusion here?
+                    CtiPointManager::spiterator end = PointMgr.end();
+    
+                    for( ; itr != end; itr++ )
+                    {
+                        CtiPointSPtr pPoint = itr->second;
+    
+                        //if(id != 0 && pPoint->getDeviceID() != id) continue;    // Let's skip devices which DID NOT CHANGE!
+    
+                        if(pPoint->getDeviceID() > 0)
+                        {
+                            CtiDeviceLiteSet_t::iterator dliteit = deviceLiteFind(pPoint->getDeviceID());
+    
+                            if( dliteit != _deviceLiteSet.end() )   // We do know this device..
                             {
-                                devicesupdated.insert( pPoint->getDeviceID() );  // Relying on the fact that only one may be in there!
+                                bool devicedifferent;
+                                CtiDeviceBaseLite &dLite = *dliteit;
+    
+                                UINT setmask = 0;
+                                setmask |= (dLite.getDisableFlag() == "Y" ? TAG_DISABLE_DEVICE_BY_DEVICE : 0 );
+                                setmask |= (dLite.getControlInhibitFlag() == "Y" ? TAG_DISABLE_CONTROL_BY_DEVICE : 0 );
+    
+                                ablementPoint(pPoint, devicedifferent, setmask, tagmask, user, *pMulti);
+    
+                                if(devicedifferent && !dbchange)
+                                {
+                                    devicesupdated.insert( pPoint->getDeviceID() );  // Relying on the fact that only one may be in there!
+                                }
                             }
                         }
                     }

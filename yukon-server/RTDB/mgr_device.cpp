@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.96 $
-* DATE         :  $Date: 2008/06/10 21:47:14 $
+* REVISION     :  $Revision: 1.97 $
+* DATE         :  $Date: 2008/07/14 14:49:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -737,7 +737,7 @@ void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*r
         else
         {
             // We were given an id.  We can use that to reduce our workload.
-            refreshList(Factory, removeFunc, d, paoID);
+            refreshList(Factory, removeFunc, d, paoID, resolvePAOType(category, devicetype));
         }
     }
     else
@@ -748,7 +748,7 @@ void CtiDeviceManager::refresh(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*r
 }
 
 
-void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceSPtr&,void*), void *arg, LONG paoID)
+void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool (*removeFunc)(CtiDeviceSPtr&,void*), void *arg, LONG paoID, LONG deviceType)
 {
     CtiDeviceSPtr pTempCtiDevice;
     bool rowFound = false;
@@ -786,6 +786,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                 CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -824,6 +825,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     }
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -861,6 +863,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     }
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -896,6 +899,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -930,6 +934,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     }
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -968,6 +973,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1003,6 +1009,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     }
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1038,6 +1045,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
                     // JESS
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1075,6 +1083,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1114,6 +1123,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1151,6 +1161,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1223,6 +1234,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1264,6 +1276,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
 
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1298,6 +1311,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     }
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1334,6 +1348,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     }
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();
@@ -1368,7 +1383,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     }
 
 
-                    if(!_includeScanInfo)       // These are not scannable items..
+                    if(!_includeScanInfo && deviceType != TYPEMCT410)       // These are not scannable items..
                     {
                         start = start.now();
                         {
@@ -1801,6 +1816,7 @@ void CtiDeviceManager::refreshList(CtiDeviceBase* (*Factory)(RWDBReader &), bool
                     }
 
                     start = start.now();
+                    if( deviceType != TYPEMCT410 )
                     {
                         RWDBConnection conn = getConnection();
                         RWDBDatabase db = getDatabase();

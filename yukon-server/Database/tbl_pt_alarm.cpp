@@ -10,8 +10,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DATABASE/tbl_pt_alarm.cpp-arc  $
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/07/14 14:49:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -324,6 +324,29 @@ RWDBStatus CtiTablePointAlarming::Update()
     return deleter.execute( conn ).status();
 }*/
 
+//This SQL is only proper when we assume some things about alarmstates
+void CtiTablePointAlarming::getSQL(string &sql, LONG pointID, LONG paoID)
+{
+
+   sql = "select pointid, alarmstates, excludenotifystates, notifyonacknowledge,"
+         " recipientid, notificationgroupid from pointalarming";
+
+   if(pointID != 0)
+   {
+      sql += " where pointid = " + CtiNumStr(pointID);
+   }
+   else
+   {
+       sql += " where alarmstates != ''";
+   }
+
+   if(paoID != 0)
+   {
+       sql += " AND pointid in (select pointid from point where paobjectid = " + CtiNumStr(paoID) + ")";
+   }
+}
+
+/*
 void CtiTablePointAlarming::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBSelector &selector)
 {
     keyTable = db.table( getTableName().c_str() );
@@ -338,6 +361,7 @@ void CtiTablePointAlarming::getSQL(RWDBDatabase &db,  RWDBTable &keyTable, RWDBS
 
     selector.from(keyTable);
 }
+*/
 
 void CtiTablePointAlarming::DecodeDatabaseReader(RWDBReader& rdr)
 {

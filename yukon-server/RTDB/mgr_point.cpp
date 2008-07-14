@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.51 $
-* DATE         :  $Date: 2008/06/30 15:24:29 $
+* REVISION     :  $Revision: 1.52 $
+* DATE         :  $Date: 2008/07/14 14:49:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -108,7 +108,7 @@ ApplyInvalidateNotUpdated(const long key, CtiPointSPtr pPoint, void* d)
 }
 
 
-void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *arg, LONG pntID, LONG paoID)
+void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *arg, LONG pntID, LONG paoID, CtiPointType_t pntType)
 {
     ptr_type pTempCtiPoint;
     bool     rowFound = false;
@@ -141,147 +141,180 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
             RWDBTable      keyTable;
             RWDBReader     rdr;
 
-            start = start.now();
-            if(DebugLevel & 0x00010000)
+            if(pntType == InvalidPointType || pntType == SystemPointType)
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Points" << endl;
+                
+                start = start.now();
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for System Points" << endl;
+                }
+                /* Go after the system defined points! */
+                CtiPointBase().getSQL( db, keyTable, selector );
+                // Make sure I pick up only those devices which are System devices.
+                selector.where( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("SYSTEM") && selector.where());
+                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
+                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+    
+                rdr = selector.reader(conn);
+                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+                refreshPoints(rowFound, rdr, testFunc, arg);
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for System Points" << endl;
+                }
+                if((stop = stop.now()).seconds() - start.seconds() > 5 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for System Devices " << endl;
+                }
             }
-            /* Go after the system defined points! */
-            CtiPointBase().getSQL( db, keyTable, selector );
-            // Make sure I pick up only those devices which are System devices.
-            selector.where( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("SYSTEM") && selector.where());
-            if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
 
-            rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+            if(pntType == InvalidPointType || pntType == StatusOutputPointType ||
+               pntType == StatusPointType )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                start = start.now();
+                selector = conn.database().selector();    // Clear the selector.
+    
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Status/Control" << endl;
+                }
+                /* Go after the status points! */
+                CtiPointStatus().getSQL( db, keyTable, selector );
+    
+                selector.where( ( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("STATUS") ||
+                                  rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCSTATUS")) && selector.where());
+    
+                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
+                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+    
+                rdr = selector.reader(conn);
+                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+                refreshPoints(rowFound, rdr, testFunc, arg);
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
+                }
+                if((stop = stop.now()).seconds() - start.seconds() > 5 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Status/Control " << endl;
+                }
             }
-            refreshPoints(rowFound, rdr, testFunc, arg);
-            if(DebugLevel & 0x00010000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for System Points" << endl;
-            }
-            if((stop = stop.now()).seconds() - start.seconds() > 5 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for System Devices " << endl;
-            }
-            start = start.now();
-            selector = conn.database().selector();    // Clear the selector.
 
-            if(DebugLevel & 0x00010000)
+            if(pntType == InvalidPointType || pntType == AnalogOutputPointType ||
+               pntType == AnalogPointType )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Status/Control" << endl;
+                start = start.now();
+                selector = conn.database().selector();    // Clear the selector.
+    
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Analogs" << endl;
+                }
+                /* Go after the analog points! */
+                CtiPointAnalog().getSQL( db, keyTable, selector );
+                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
+                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+    
+                rdr = selector.reader(conn);
+                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+                refreshPoints(rowFound, rdr, testFunc, arg);
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
+                }
+                if((stop = stop.now()).seconds() - start.seconds() > 5 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Analogs " << endl;
+                }
             }
-            /* Go after the status points! */
-            CtiPointStatus().getSQL( db, keyTable, selector );
 
-            selector.where( ( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("STATUS") ||
-                              rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCSTATUS")) && selector.where());
+            if(pntType == InvalidPointType || pntType == DemandAccumulatorPointType ||
+               pntType == PulseAccumulatorPointType )
+            {
+                start = start.now();
+                string sql;
+                selector = conn.database().selector();    // Clear the selector.
+    
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Accum" << endl;
+                }
+                /* Go after the accumulator points! */
+                CtiPointAccumulator().getSQL(sql, pntID, paoID);
+    
+                rdr = ExecuteQuery( conn, sql );
+                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(rdr.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << sql << endl;
+                }
+                /*CtiPointAccumulator().getSQL( db, keyTable, selector );
+                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
+                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+    
+                rdr = selector.reader(conn);
+                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                } 
+                */ 
+                refreshPoints(rowFound, rdr, testFunc, arg);
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Accum" << endl;
+                }
+                if((stop = stop.now()).seconds() - start.seconds() > 5 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Accumulators " << endl;
+                }
+            }
 
-            if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-
-            rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+            if(pntType == InvalidPointType || pntType == CalculatedPointType ||
+               pntType == CalculatedStatusPointType )
             {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-            }
-            refreshPoints(rowFound, rdr, testFunc, arg);
-            if(DebugLevel & 0x00010000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Done Looking for Status/Control" << endl;
-            }
-            if((stop = stop.now()).seconds() - start.seconds() > 5 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Status/Control " << endl;
-            }
-            start = start.now();
-            selector = conn.database().selector();    // Clear the selector.
-
-            if(DebugLevel & 0x00010000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Analogs" << endl;
-            }
-            /* Go after the analog points! */
-            CtiPointAnalog().getSQL( db, keyTable, selector );
-            if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-
-            rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-            }
-            refreshPoints(rowFound, rdr, testFunc, arg);
-            if(DebugLevel & 0x00010000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Analogs" << endl;
-            }
-            if((stop = stop.now()).seconds() - start.seconds() > 5 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Analogs " << endl;
-            }
-            start = start.now();
-            selector = conn.database().selector();    // Clear the selector.
-
-            if(DebugLevel & 0x00010000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for Accum" << endl;
-            }
-            /* Go after the accumulator points! */
-            CtiPointAccumulator().getSQL( db, keyTable, selector );
-            if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-
-            rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-            }
-            refreshPoints(rowFound, rdr, testFunc, arg);
-            if(DebugLevel & 0x00010000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for Accum" << endl;
-            }
-            if((stop = stop.now()).seconds() - start.seconds() > 5 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Accumulators " << endl;
-            }
-            start = start.now();
-            selector = conn.database().selector();    // Clear the selector.
-
-            if(DebugLevel & 0x00010000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CALC" << endl;
-            }
-            /* Go after the calc points! */
-            CtiPointNumeric().getSQL( db, keyTable, selector );
-
-            selector.where( ( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCULATED") ||
-                              rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCANALOG")) && selector.where());
-            if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
-            if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
-
-            rdr = selector.reader(conn);
-            if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
-            }
-            refreshPoints(rowFound, rdr, testFunc, arg);
-            if(DebugLevel & 0x00010000)
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for CALC" << endl;
-            }
-            if((stop = stop.now()).seconds() - start.seconds() > 5 )
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Calc points " << endl;
+                start = start.now();
+                selector = conn.database().selector();    // Clear the selector.
+    
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "Looking for CALC" << endl;
+                }
+                /* Go after the calc points! */
+                CtiPointNumeric().getSQL( db, keyTable, selector );
+    
+                selector.where( ( rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCULATED") ||
+                                  rwdbUpper(keyTable["pointtype"]) == RWDBExpr("CALCANALOG")) && selector.where());
+                if(pntID != 0) selector.where( keyTable["pointid"] == RWDBExpr( pntID ) && selector.where() );
+                if(paoID != 0) selector.where( keyTable["paobjectid"] == RWDBExpr( paoID ) && selector.where() );
+    
+                rdr = selector.reader(conn);
+                if(DebugLevel & 0x00010000 || _smartMap.setErrorCode(selector.status().errorCode()) != RWDBStatus::ok)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << selector.asString() << endl;
+                }
+                refreshPoints(rowFound, rdr, testFunc, arg);
+                if(DebugLevel & 0x00010000)
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout); dout << "DONE Looking for CALC" << endl;
+                }
+                if((stop = stop.now()).seconds() - start.seconds() > 5 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << stop.seconds() - start.seconds() << " seconds for Calc points " << endl;
+                }
             }
 
             // Now I need to check for any Point removals based upon the
@@ -329,7 +362,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
     }
 }
 
-
+//This is meant to load a list of point id's at once, not a single pao.
 void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
 {
     {
@@ -930,6 +963,7 @@ bool CtiPointManager::orphan(long pid)
     return retVal;
 }
 
+//Load based on PAO assumes it is in add!
 void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
 {
     LockGuard  guard(getMux());
@@ -941,22 +975,19 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
     RWDBSelector   selector = conn.database().selector();
     RWDBTable      keyTable;
     RWDBReader     rdr;
+    string         sql;
     CtiTime start, stop;
 
     start = start.now();
-    CtiTablePointAlarming::getSQL( db, keyTable, selector );
+    CtiTablePointAlarming::getSQL(sql, pntID, paoID);
 
-    if(pntID) selector.where( keyTable["pointid"] == pntID && selector.where() );
-    //If we are doing a single point, always reload. We only do all points
-    if(!pntID) selector.where(keyTable["alarmstates"] != "" && selector.where());
-
-    rdr = selector.reader( conn );
+    rdr = ExecuteQuery( conn, sql );
 
     if(_smartMap.setErrorCode(rdr.status().errorCode()) != RWDBStatus::ok)
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
         dout << CtiTime() << " **** Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
-        dout << selector.asString() << endl;
+        dout << sql << endl;
     }
 
     LONG pID;
@@ -987,6 +1018,15 @@ void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
         {
             pPt->getProperties()->resetTable();
         }
+    }
+    if(paoID)
+    {
+        RWDBSelector paoSelector = conn.database().selector();
+        RWDBTable pointTable = db.table("point");
+        paoSelector << pointTable["pointid"];
+        paoSelector.from(pointTable);
+        paoSelector.where(pointTable["paobjectid"] == paoID);
+        selector.where(keyTable["pointid"].in(paoSelector) && selector.where());
     }
 
     attribRdr = attributeSelector.reader( conn );

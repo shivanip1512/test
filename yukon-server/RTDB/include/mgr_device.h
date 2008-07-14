@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.30 $
- * DATE         :  $Date: 2007/11/21 19:55:47 $
+ * REVISION     :  $Revision: 1.31 $
+ * DATE         :  $Date: 2008/07/14 14:49:55 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -69,7 +69,7 @@ private:
     void refreshScanRates(LONG id = 0);
     void refreshDeviceWindows(LONG id = 0);
 
-    void refreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceSPtr&,void*) = isNotADevice, void *d = NULL, LONG paoID = 0);
+    void refreshList(CtiDeviceBase* (*Factory)(RWDBReader &) = DeviceFactory, bool (*removeFunc)(CtiDeviceSPtr&,void*) = isNotADevice, void *d = NULL, LONG paoID = 0, long deviceType = 0 );
     bool refreshDeviceByPao(CtiDeviceSPtr pDev, LONG paoID);
     void refreshExclusions(LONG id = 0);
     void refreshIONMeterGroups(LONG paoID = 0);
