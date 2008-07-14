@@ -146,8 +146,8 @@
         Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
     ]]></entry>
     <entry key="yukon.common.device.bulk.massChangeResults.progressLabel">Progress</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.successLabel">Successfully Updated</entry>
-    <entry key="yukon.common.device.bulk.massChangeResults.processingExceptionLabel">Failed To Process</entry>
+    <entry key="yukon.common.device.bulk.massChangeResults.successLabel">Successfully Changed</entry>
+    <entry key="yukon.common.device.bulk.massChangeResults.processingExceptionLabel">Failed To Change</entry>
     
     <entry key="yukon.common.device.bulk.massChangeResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
     <entry key="yukon.common.device.bulk.massChangeResults.processingExceptionErrorListLabel">View Failure Reasons</entry>
