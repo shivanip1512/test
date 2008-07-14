@@ -45,10 +45,22 @@ public class Contactable {
             String tzString = _contactableBase.getContactableCustomer().getTimeZone();
             return TimeZone.getTimeZone(tzString);
         } catch (UnknownCustomerException e) {
-            return getYukonUserContext().getTimeZone();
+            return DaoFactory.getAuthDao().getUserTimeZone(getLiteYukonUser());
         }
     }
 
+    /** Helper method to getTimeZone().  The LiteYukonUser object is supplied as the default yukonUser to use
+     *  if the parent customer is unknown (such that it throws an UnknownCustomerException).
+     * @return
+     */
+    private TimeZone getTimeZone(LiteYukonUser liteYukonUser) {
+        try {
+            String tzString = _contactableBase.getContactableCustomer().getTimeZone();
+            return TimeZone.getTimeZone(tzString);
+        } catch (UnknownCustomerException e) {
+            return DaoFactory.getAuthDao().getUserTimeZone(liteYukonUser);
+        }
+    }
     /**
      * Returns an appropriate YukonUserContext object of the parent customer of this object. 
      * The yukon user component will be looked up from the getContactableCustomer().
@@ -57,6 +69,18 @@ public class Contactable {
      * 
      */
     public YukonUserContext getYukonUserContext() {
+        LiteYukonUser yukonUser = getLiteYukonUser();
+        TimeZone timeZone = getTimeZone(yukonUser);
+        SimpleYukonUserContext userContext = new SimpleYukonUserContext(yukonUser, Locale.getDefault(), timeZone, ThemeUtils.getDefaultThemeName());
+
+        return userContext;
+    }
+    
+    /**
+     * Returns the liteYukonUser component which is looked up from the getContactableCustomer().
+     * @return
+     */
+    private LiteYukonUser getLiteYukonUser() {
         LiteYukonUser yukonUser = null;
         try {
             LiteCICustomer customer = _contactableBase.getContactableCustomer();
@@ -68,13 +92,8 @@ public class Contactable {
             userID = energyCompany.getUserID();
             yukonUser = DaoFactory.getYukonUserDao().getLiteYukonUser(userID);
         }
-        
-        TimeZone timeZone = getTimeZone();
-        SimpleYukonUserContext userContext = new SimpleYukonUserContext(yukonUser, Locale.getDefault(), timeZone, ThemeUtils.getDefaultThemeName());
-
-        return userContext;
+        return yukonUser;
     }
-    
     /**
      * Determines the appropriate LiteEnergyCompany by first finding the parent
      * customer. When the parent customer cannot be found, the default energy
