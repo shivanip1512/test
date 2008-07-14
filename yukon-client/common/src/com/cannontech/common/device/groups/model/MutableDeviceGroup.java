@@ -1,5 +1,7 @@
 package com.cannontech.common.device.groups.model;
 
+import org.apache.commons.lang.Validate;
+
 import com.cannontech.common.device.groups.dao.DeviceGroupType;
 
 /**
@@ -30,6 +32,11 @@ public abstract class MutableDeviceGroup extends DeviceGroup {
     }
 
     public void setParent(DeviceGroup parent) {
+        
+        if (parent != null) {
+            Validate.isTrue(!parent.isDescendantOf(this),"Cannot set parent to descendant group.");
+        }
+        
         this.parent = parent;
         clearNameCache();
     }

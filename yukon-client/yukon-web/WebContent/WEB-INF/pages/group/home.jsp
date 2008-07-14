@@ -225,7 +225,7 @@
                                                                     id="groupsEditorMoveGroupTree"
                                                                     treeAttributes="{}"
                                                                     triggerElement="moveGroupLink"
-                                                                    dataJson="${modifiableGroupsDataJson}"
+                                                                    dataJson="${modifiableNoChildrenGroupsDataJson}"
                                                                     title="${moveGroupPopupTitle}"
                                                                     width="432"
                                                                     height="600" />
@@ -263,7 +263,7 @@
                                                             id="copyContentsToGroupTree"
                                                             treeAttributes="{}"
                                                             triggerElement="copyContentsToGroupLink"
-                                                            dataJson="${modifiableGroupsDataJson}"
+                                                            dataJson="${modifiableNoChildrenGroupsDataJson}"
                                                             title="${copyContentsPopupTitle}"
                                                             width="432"
                                                             height="600" />

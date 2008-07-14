@@ -10,7 +10,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
@@ -122,7 +121,6 @@ public class GroupEditorController extends MultiActionController {
             group = rootGroup;
         }
         mav.addObject("group", group);
-        mav.addObject("selectedGroup", StringEscapeUtils.escapeHtml(group.getFullName()));
         
         // all groups
         List<DeviceGroup> groups = deviceGroupDao.getAllGroups();
@@ -131,7 +129,7 @@ public class GroupEditorController extends MultiActionController {
         // Create a list of groups the current group could move to excluding the
         // current group itself, any descendant groups of the current group and
         // any groups that are not modifiable
-        List<DeviceGroup> moveGroups = getMoveGroups(groups, group);
+        final List<DeviceGroup> moveGroups = getMoveGroups(groups, group);
         mav.addObject("moveGroups", moveGroups);
         
         // copy to groups
@@ -200,14 +198,28 @@ public class GroupEditorController extends MultiActionController {
         mav.addObject("allGroupsDataJson", allGroupsDataJson);
         
         
-        // MODIFIABLE GROUPS TREE JSON
-        DeviceGroupHierarchy modifiableGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new ModifiableDeviceGroupPredicate());
+        // MODIFIABLE NO-CHILDREN GROUPS TREE JSON
+        Predicate<DeviceGroup> noChildrenPredicate = new Predicate<DeviceGroup>() {
+            
+            @Override
+            public boolean evaluate(DeviceGroup deviceGroup) {
+                
+                return moveGroups.contains(deviceGroup);
+            };
+        };
         
-        ExtTreeNode modifiableGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(modifiableGroupHierarchy, "Groups", null);
         
-        JSONObject modifiableGroupsJsonObj = new JSONObject(modifiableGroupsRoot.toMap());
-        String modifiableGroupsDataJson = modifiableGroupsJsonObj.toString();
-        mav.addObject("modifiableGroupsDataJson", modifiableGroupsDataJson);
+        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
+        predicates.add(new ModifiableDeviceGroupPredicate());
+        predicates.add(noChildrenPredicate);
+        
+        DeviceGroupHierarchy modifiableNoChildrenGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, predicates);
+        
+        ExtTreeNode modifiableNoChildrenGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(modifiableNoChildrenGroupHierarchy, "Groups", null);
+        
+        JSONObject modifiableNoChildrenGroupsJsonObj = new JSONObject(modifiableNoChildrenGroupsRoot.toMap());
+        String modifiableNoChildrenGroupsDataJson = modifiableNoChildrenGroupsJsonObj.toString();
+        mav.addObject("modifiableNoChildrenGroupsDataJson", modifiableNoChildrenGroupsDataJson);
         
         // DEVICE COLLECTION
         DeviceCollection deviceCollection = deviceGroupCollectionHelper.buildDeviceCollection(selectedDeviceGroup);
@@ -420,7 +432,7 @@ public class GroupEditorController extends MultiActionController {
         
         // Ext tree JSON
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
+        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, Collections.singletonList(new NonHiddenDeviceGroupPredicate()));
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         class DisableCurrentGroup implements NodeAttributeSettingCallback {

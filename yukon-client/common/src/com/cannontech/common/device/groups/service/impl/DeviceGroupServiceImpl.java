@@ -143,11 +143,15 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     }
 
     public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, Predicate<DeviceGroup> deviceGroupPredicate) {
+        return getDeviceGroupHierarchy(root, Collections.singletonList(deviceGroupPredicate));
+    }
+    
+    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, List<? extends Predicate<DeviceGroup>> deviceGroupPredicates) {
 
         DeviceGroupHierarchy hierarchy = new DeviceGroupHierarchy();
         hierarchy.setGroup(root);
 
-        setChildHierarchy(hierarchy, deviceGroupPredicate);
+        setChildHierarchy(hierarchy, deviceGroupPredicates);
 
         return hierarchy;
     }
@@ -156,18 +160,26 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
      * Helper method to recursively set child hierarchy
      * @param hierarchy - parent hierarchy to set children on
      */
-    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate) {
+    private void setChildHierarchy(DeviceGroupHierarchy hierarchy, List<? extends Predicate<DeviceGroup>> deviceGroupPredicates) {
 
         List<DeviceGroupHierarchy> childGroupList = new ArrayList<DeviceGroupHierarchy>();
         List<? extends DeviceGroup> childGroups = deviceGroupDao.getChildGroups(hierarchy.getGroup());
         for (DeviceGroup childGroup : childGroups) {
             
-            if (deviceGroupPredicate.evaluate(childGroup)) {
+            boolean passesPredicates = true;
+            for (Predicate<DeviceGroup> predicate : deviceGroupPredicates) {
+                if (!predicate.evaluate(childGroup)) {
+                    passesPredicates = false;
+                    break;
+                }
+            }
+            
+            if (passesPredicates) {
             
                 DeviceGroupHierarchy childHierarchy = new DeviceGroupHierarchy();
                 childHierarchy.setGroup(childGroup);
     
-                setChildHierarchy(childHierarchy, deviceGroupPredicate);
+                setChildHierarchy(childHierarchy, deviceGroupPredicates);
     
                 childGroupList.add(childHierarchy);
             }
