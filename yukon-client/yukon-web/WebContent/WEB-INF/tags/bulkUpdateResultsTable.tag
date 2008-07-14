@@ -17,6 +17,9 @@
             var completedLines = data['completedLines'];
             
             var percentDone = Math.round((completedLines / lineCount) * 100);
+            if (lineCount == 0) {
+                percentDone = 100;
+            }
             
             $('completedLines${resultsId}').innerHTML = data['completedLines']; 
             

@@ -30,6 +30,9 @@
                 var completedItems = data['completedItems'];
                 
                 var percentDone = Math.round((completedItems / totalItems) * 100);
+                if (totalItems == 0) {
+                    percentDone = 100;
+                }
                 
                 $('completedItems${result.key}').innerHTML = data['completedItems']; 
                 
