@@ -59,6 +59,7 @@ import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.core.dynamic.AsyncDynamicDataSource;
 import com.cannontech.database.DatabaseTypes;
 import com.cannontech.database.Transaction;
+import com.cannontech.database.cache.DefaultDatabaseCache;
 import com.cannontech.database.data.device.DeviceBase;
 import com.cannontech.database.data.device.DeviceTypesFuncs;
 import com.cannontech.database.data.device.lm.LMScenario;
@@ -2029,72 +2030,58 @@ private int getVisibleEditorFrames()
 	{
 		int count = 0;
 		for( int i = 0; i < getInternalEditorFrames().length; i++ )
-			if( ((JTreeEditorFrame)getInternalEditorFrames()[i]).isVisible() )
+			if( getInternalEditorFrames()[i].isVisible() )
 				count++;
 		
 		return count;
 	}
 	
 }
-/**
- * Insert the method's description here.
+
+/*
+ * Handles incoming database change messages.
  */
-//com.cannontech.database.data.device.devicemetergroup.DeviceMeterGroupBase is not handled in this method???
-// I dont think this will be a problem
-public void handleDBChangeMsg( com.cannontech.message.dispatch.message.DBChangeMsg msg,
-				com.cannontech.database.data.lite.LiteBase liteBase )
-{
+public void handleDBChangeMsg( DBChangeMsg msg, LiteBase liteBase ) {
 	//see if the message originated from us
-	if( !(msg.getSource().equals(
-				CtiUtilities.DEFAULT_MSG_SOURCE) ) )
-	{
+	if( !(msg.getSource().equals(CtiUtilities.DEFAULT_MSG_SOURCE) ) ) {
 
-		StringBuffer txtMsg = new StringBuffer( 
-			( msg.getTypeOfChange() == msg.CHANGE_TYPE_ADD ? "ADD" :
-				(msg.getTypeOfChange() == msg.CHANGE_TYPE_DELETE ? "DELETE" :
-					(msg.getTypeOfChange() == msg.CHANGE_TYPE_UPDATE ? "UPDATE" : ""))) +
-			" Database Change Message received from: " + msg.getUserName() + " at " + msg.getSource());
+		StringBuffer txtMsg = new StringBuffer(
+            (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_ADD ? "ADD" :
+		    (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE ? "DELETE" :
+		    (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE ? "UPDATE" : ""))) 
+		    + " Database Change Message received from: " + msg.getUserName() + " at " + msg.getSource());
 
-			synchronized( getInternalEditorFrames() )
-			{
-				for( int i = 0; i < getInternalEditorFrames().length; i++ )
-				{
-					//be sure we have a owner for each editor frame
-					if( getInternalEditorFrames()[i].getOwnerNode() != null )
-					{						
-						PropertyPanel current = (PropertyPanel)getEditorFrame(getInternalEditorFrames()[i].getOwnerNode()).getContentPane();
-
-						//handle the GUI change in a seperate location
-						new DBChangeGUIHandler( current, txtMsg ).handleGUIChange( msg ); 
-
-					}
+		synchronized( getInternalEditorFrames() ) {
+			for( int i = 0; i < getInternalEditorFrames().length; i++ ) {
+				//Be sure we have an owner tree node for each editor frame.
+				if( getInternalEditorFrames()[i].getOwnerNode() != null ) {						
+					PropertyPanel current = (PropertyPanel)getEditorFrame(getInternalEditorFrames()[i].getOwnerNode()).getContentPane();
+					//handle the GUI change in a seperate location
+					DBChangeGUIHandler changeGUIHandler = new DBChangeGUIHandler( current, txtMsg );
+					changeGUIHandler.handleGUIChange( msg );
 				}
-
-			} //end of synchronize block
-
-			/*
-			 * If we get an id of zero, then refresh the whole thing including cache.
-			 */	
-			if(msg.getId() == DBChangeMsg.RELOAD_ALL)
-			{
-				//refresh the cache and the connections state
-				com.cannontech.database.cache.DefaultDatabaseCache.getInstance().releaseAllCache();
-					
-				//do the actual refresh of the tree
-				getTreeViewPanel().refresh();	
 			}
-			else
-				//tell our tree we may need to change the display
-				updateTreePanel( liteBase, msg.getTypeOfChange() );
+		}
+
+		//If we get an id of zero, then refresh the whole thing including cache.
+		if(msg.getId() == DBChangeMsg.RELOAD_ALL) {
+			//refresh the cache and the connections state
+			DefaultDatabaseCache.getInstance().releaseAllCache();
+				
+			//do the actual refresh of the tree
+			getTreeViewPanel().refresh();	
+		} else {
+			//tell our tree we may need to change the display
+			updateTreePanel( liteBase, msg.getTypeOfChange() );
+		}
 
 		//display a messge on the message panel telling us about this event
-		fireMessage( new MessageEvent( DatabaseEditor.this, 
-			txtMsg.toString(), MessageEvent.INFORMATION_MESSAGE) );
+		fireMessage( new MessageEvent( DatabaseEditor.this, txtMsg.toString(), MessageEvent.INFORMATION_MESSAGE) );
+	} else {
+		CTILogger.info("DBChange Message received that originated from ourself, doing nothing.");
 	}
-	else
-		com.cannontech.clientutils.CTILogger.info("DBChange Message received that originated from ourself, doing nothing.");
-
 }
+
 /**
  * Called whenever the part throws an exception.
  * @param exception java.lang.Throwable
@@ -3179,9 +3166,8 @@ private boolean updateDBPersistent(com.cannontech.database.db.DBPersistent objec
      */
     private void updateTreePanel(com.cannontech.database.data.lite.LiteBase lBase, int changeType) {
         getTreeViewPanel().processDBChange(changeType, lBase);
-       
-       //have the try 'ask' for Focus
-       getTreeViewPanel().getTree().requestFocus();
+        getTreeViewPanel().getTree().invalidate();
+        getTreeViewPanel().getTree().validate();
     }
 
 /**
