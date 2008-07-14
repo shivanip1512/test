@@ -212,6 +212,7 @@
                                 <cti:msg var="moveGroupPopupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.title"/>
                                 <cti:msg var="moveGroupPopupSubmitButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.submitButtonText"/>
                                 <cti:msg var="moveGroupPopupCancelButtonText" key="yukon.web.deviceGroups.editor.operationsContainer.moveGroupPopup.cancelButtonText"/>
+                                <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
                                 
                                 <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                                 
@@ -228,7 +229,8 @@
                                                                     dataJson="${modifiableNoChildrenGroupsDataJson}"
                                                                     title="${moveGroupPopupTitle}"
                                                                     width="432"
-                                                                    height="600" />
+                                                                    height="600"
+                                                                    noSelectionAlertText="${noGroupSelectedAlertText}" />
                             </form>
                             </div>
                             
@@ -250,6 +252,7 @@
                         <cti:msg var="copyContentsPopupTitle" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.title"/>
                         <cti:msg var="copyContentsPopupSubmitText" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.submitButtonText"/>
                         <cti:msg var="copyContentsPopupCancelText" key="yukon.web.deviceGroups.editor.operationsContainer.copyContents.popupTree.cancelButtonText"/>
+                        <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
                         
                         <input type="hidden" name="groupName" value="${fn:escapeXml(group.fullName)}">
                         
@@ -266,7 +269,8 @@
                                                             dataJson="${modifiableNoChildrenGroupsDataJson}"
                                                             title="${copyContentsPopupTitle}"
                                                             width="432"
-                                                            height="600" />
+                                                            height="600"
+                                                            noSelectionAlertText="${noGroupSelectedAlertText}" />
                     </form>
                     </div>
 					

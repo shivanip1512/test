@@ -22,7 +22,18 @@
         	}
         	
         	Event.observe (window, 'load', selectCommand);
-        	
+    
+            function validateGroupIsSelected(btn, alertText) {
+        
+                if ($('groupName').value == '') {
+                    alert(alertText);
+                    return false;
+                }
+                
+                btn.disable();
+                return true;
+            }
+        
         </script>
 	
     	<c:if test="${errorMsg != null}">
@@ -80,7 +91,8 @@
                   
                   
             <%-- EXECUTE BUTTON --%>
-            <tags:slowInput myFormId="groupCommanderForm" label="Execute" labelBusy="Execute" />
+            <cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
+            <input type="submit" name="submitGroupCommanderForm" value="Execute" onclick="return validateGroupIsSelected(this, '${noGroupSelectedAlertText}');">
             
             <br><br>
             <span class="largeBoldLabel">Recent Results: </span> 

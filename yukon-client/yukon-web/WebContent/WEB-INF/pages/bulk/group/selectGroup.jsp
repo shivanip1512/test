@@ -57,12 +57,14 @@
     
     <script type="text/javascript">
     
-        function validateGroupIsSelected(alertText) {
+        function validateGroupIsSelected(btn, alertText) {
     
             if ($('groupName').value == '') {
                 alert(alertText);
                 return false;
             }
+            
+            btn.disable();
             return true;
         }
     
@@ -93,7 +95,7 @@
                                                 treeAttributes="{'border':true}" />
                             
             <%-- ADD/REMOVE BUTTON --%>
-            <input type="submit" name="addRemoveButton" value="${buttonText}" onclick="return validateGroupIsSelected('${noDeviceGroupSelectedAlertText}');">
+            <input type="submit" name="addRemoveButton" value="${buttonText}" onclick="return validateGroupIsSelected(this, '${noDeviceGroupSelectedAlertText}');">
     
         </form>
     

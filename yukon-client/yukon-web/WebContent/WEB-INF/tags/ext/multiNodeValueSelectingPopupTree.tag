@@ -19,7 +19,7 @@
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="width" required="true" type="java.lang.Integer"%>
 <%@ attribute name="height" required="true" type="java.lang.Integer"%>
-
+<%@ attribute name="noSelectionAlertText" required="false" type="java.lang.String"%>
 
 <%-- SELECTION HANDLER CODE --%>
 <script type="text/javascript">
@@ -68,13 +68,14 @@
     // then call submit callback that will do whatever application specific function t wants with the values
     function setNodeValues_${id}() {
         
-        if (nodeValues_${id}.length > 0) {
-            
-            $('${fieldId}').value = nodeValues_${id}.join(',');
-            
-            ${submitCallback}
+        if (nodeValues_${id}.length == 0 && '${noSelectionAlertText}' != '') {
+        
+            alert('${noSelectionAlertText}');
+            return false;
         }
         
+        $('${fieldId}').value = nodeValues_${id}.join(',');
+        ${submitCallback}
         closeWindow_${id}();
     }
     

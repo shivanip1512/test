@@ -19,6 +19,7 @@
 <%@ attribute name="title" required="true" type="java.lang.String"%>
 <%@ attribute name="width" required="true" type="java.lang.Integer"%>
 <%@ attribute name="height" required="true" type="java.lang.Integer"%>
+<%@ attribute name="noSelectionAlertText" required="false" type="java.lang.String"%>
 
 
 <%-- DEVICE GROUP SELECTION HANDLER CODE --%>
@@ -47,6 +48,12 @@
     }
     
     function submitNodeSelection_${id}() {
+    
+        if (selectedNodeId_${id} == null && '${noSelectionAlertText}' != '') {
+            
+            alert('${noSelectionAlertText}');
+            return false;
+        }
         
         closeWindow_${id}();
         

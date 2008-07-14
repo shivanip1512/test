@@ -24,6 +24,7 @@
 <cti:msg key="yukon.web.deviceGroups.widget.groupTree.title" var="addDeviceTitle"/>
 <cti:msg key="yukon.web.deviceGroups.widget.groupTree.submitButtonText" var="submitText"/>
 <cti:msg key="yukon.web.deviceGroups.widget.groupTree.closeButtonText" var="closeText"/>
+<cti:msg var="noGroupSelectedAlertText" key="yukon.common.device.bulk.deviceSelection.selectDevicesByGroupTree.noGroupSelectedAlertText" />
 
 <input type="button" id="showPopupButton" value="${addDeviceTitle}"/>
 
@@ -40,5 +41,6 @@
                                     dataJson="${groupDataJson}"
                                     title="${addDeviceTitle}"
                                     width="432"
-                                    height="600" />
+                                    height="600"
+                                    noSelectionAlertText="${noGroupSelectedAlertText}" />
                                                     
