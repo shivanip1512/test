@@ -6,7 +6,7 @@
 
 <entry key="yukon.web.deviceGroups.widget.groupTree.rootName">Groups</entry>
 
-<entry key="yukon.web.deviceGroups.widget.groupTree.title">Select Groups</entry>
+<entry key="yukon.web.deviceGroups.widget.groupTree.title">Add to Groups</entry>
 <entry key="yukon.web.deviceGroups.widget.groupTree.submitButtonText">Add Device To Selected Groups</entry>
 <entry key="yukon.web.deviceGroups.widget.groupTree.closeButtonText">Cancel</entry>
 
