@@ -100,7 +100,14 @@ for( int i = 0; i < items.length; i++ )
                     </a>
                 </cti:checkProperty>
 		<% } else { %>
-				<input type="checkbox" name="cti_chkbxPoints" value="<%=item.getItemID()%>"/>
+				<cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
+                    <a href="/editor/pointBase.jsf?parentId=<%=item.getParentID()%>&itemid=<%=item.getItemID()%>" class="editImg">
+                        <img class="rAlign editImg" src="/editor/images/edit_item.gif"/>
+                    </a>
+                    <a href="/editor/deleteBasePoint.jsf?value=<%=item.getItemID()%>" class="editImg">
+                        <img class="rAlign editImg" src="/editor/images/delete_item.gif"/>
+                    </a>
+                </cti:checkProperty>
 		<% }  %>
 		<% if( CBCUtils.isController( item ) ) { %>
             <cti:checkProperty property="CBCSettingsRole.CBC_DATABASE_EDIT">
