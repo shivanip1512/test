@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -220,9 +221,12 @@ public class ProfileWidget extends WidgetControllerBase {
         // email
         mav.addObject("email", getUserEmail(userContext));
 
-        // Checks to see if the meter is readable
-        Set<Attribute> existingAttributes = attributeService.getAllExistingAttributes(meter);
-        boolean isReadable = meterReadService.isReadable(meter, existingAttributes, userContext.getYukonUser());
+        // Checks to see if the meter is readable for load profile attributes
+        Set<Attribute> lpAttributes = new HashSet<Attribute>();
+        lpAttributes.add(BuiltInAttribute.LOAD_PROFILE);
+        lpAttributes.add(BuiltInAttribute.VOLTAGE_PROFILE);
+        
+        boolean isReadable = meterReadService.isReadable(meter, lpAttributes, userContext.getYukonUser());
         mav.addObject("isReadable", isReadable);
         
         // pending requests
