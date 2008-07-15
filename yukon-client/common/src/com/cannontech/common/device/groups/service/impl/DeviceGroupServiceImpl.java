@@ -154,12 +154,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     
     public DeviceGroupHierarchy getFilteredDeviceGroupHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate) {
         
-        DeviceGroupHierarchy filteredHierarchy = new DeviceGroupHierarchy();
-        filteredHierarchy.setGroup(hierarchy.getGroup());
-        
-        setChildHierarchy(filteredHierarchy, deviceGroupPredicate);
-        
-        return filteredHierarchy;
+        return getDeviceGroupHierarchy(hierarchy.getGroup(), deviceGroupPredicate);
     }
 
     /**
