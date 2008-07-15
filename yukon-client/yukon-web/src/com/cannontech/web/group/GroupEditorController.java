@@ -36,6 +36,7 @@ import com.cannontech.common.device.groups.util.YukonDeviceToIdMapper;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.predicate.AggregateAndPredicate;
 import com.cannontech.common.util.predicate.NullPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
@@ -208,12 +209,13 @@ public class GroupEditorController extends MultiActionController {
             };
         };
         
+        List<Predicate<DeviceGroup>> predicatesToCheck = new ArrayList<Predicate<DeviceGroup>>();
+        predicatesToCheck.add(new ModifiableDeviceGroupPredicate());
+        predicatesToCheck.add(noChildrenPredicate);
         
-        List<Predicate<DeviceGroup>> predicates = new ArrayList<Predicate<DeviceGroup>>();
-        predicates.add(new ModifiableDeviceGroupPredicate());
-        predicates.add(noChildrenPredicate);
+        AggregateAndPredicate<DeviceGroup> modifiableNoChildrenPredicate = new AggregateAndPredicate<DeviceGroup>(predicatesToCheck);
         
-        DeviceGroupHierarchy modifiableNoChildrenGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, predicates);
+        DeviceGroupHierarchy modifiableNoChildrenGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, modifiableNoChildrenPredicate);
         
         ExtTreeNode modifiableNoChildrenGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(modifiableNoChildrenGroupHierarchy, "Groups", null);
         
@@ -432,7 +434,7 @@ public class GroupEditorController extends MultiActionController {
         
         // Ext tree JSON
         DeviceGroup rootGroup = deviceGroupService.getRootGroup();
-        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, Collections.singletonList(new NonHiddenDeviceGroupPredicate()));
+        DeviceGroupHierarchy groupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         class DisableCurrentGroup implements NodeAttributeSettingCallback {
