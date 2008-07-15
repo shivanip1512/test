@@ -37,7 +37,6 @@ import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.MapQueue;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.predicate.AggregateAndPredicate;
-import com.cannontech.common.util.predicate.NullPredicate;
 import com.cannontech.common.util.predicate.Predicate;
 import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.web.bulk.model.DeviceCollectionFactory;
@@ -171,16 +170,8 @@ public class GroupEditorController extends MultiActionController {
             mav.addObject("deviceIdsInGroup", StringUtils.join(deviceIdList, ","));
         }
         
-        // ALL GROUPS TREE JSON
-        Predicate<DeviceGroup> deviceGroupPredicate;
-        boolean showAll = ServletRequestUtils.getBooleanParameter(request, "showAll", false);
-        if (showAll) {
-            deviceGroupPredicate = new NullPredicate<DeviceGroup>();
-        } else {
-            deviceGroupPredicate = new NonHiddenDeviceGroupPredicate();
-            
-        }
-        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, deviceGroupPredicate);
+        // ALL GROUPS HIERARCHY
+        DeviceGroupHierarchy allGroupsGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, new NonHiddenDeviceGroupPredicate());
         
         // NodeAttributeSettingCallback to highlight node fo selected group
         final DeviceGroup selectedDeviceGroup = group;
@@ -192,6 +183,7 @@ public class GroupEditorController extends MultiActionController {
             }
         }
         
+        // ALL GROUPS TREE JSON
         ExtTreeNode allGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(allGroupsGroupHierarchy, "Groups", new HighlightSelectedGroup());
         
         JSONObject allGroupsJsonObj = new JSONObject(allGroupsRoot.toMap());
@@ -199,7 +191,7 @@ public class GroupEditorController extends MultiActionController {
         mav.addObject("allGroupsDataJson", allGroupsDataJson);
         
         
-        // MODIFIABLE NO-CHILDREN GROUPS TREE JSON
+        // MODIFIABLE NO-CHILDREN HIERARCHY
         Predicate<DeviceGroup> noChildrenPredicate = new Predicate<DeviceGroup>() {
             
             @Override
@@ -214,9 +206,9 @@ public class GroupEditorController extends MultiActionController {
         predicatesToCheck.add(noChildrenPredicate);
         
         AggregateAndPredicate<DeviceGroup> modifiableNoChildrenPredicate = new AggregateAndPredicate<DeviceGroup>(predicatesToCheck);
+        DeviceGroupHierarchy modifiableNoChildrenGroupHierarchy = deviceGroupService.getFilteredDeviceGroupHierarchy(allGroupsGroupHierarchy, modifiableNoChildrenPredicate);
         
-        DeviceGroupHierarchy modifiableNoChildrenGroupHierarchy = deviceGroupService.getDeviceGroupHierarchy(rootGroup, modifiableNoChildrenPredicate);
-        
+        // MODIFIABLE NO-CHILDREN GROUPS TREE JSON
         ExtTreeNode modifiableNoChildrenGroupsRoot = DeviceGroupTreeUtils.makeDeviceGroupExtTree(modifiableNoChildrenGroupHierarchy, "Groups", null);
         
         JSONObject modifiableNoChildrenGroupsJsonObj = new JSONObject(modifiableNoChildrenGroupsRoot.toMap());

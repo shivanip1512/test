@@ -93,5 +93,13 @@ public interface DeviceGroupService {
      * @return
      */
     public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, Predicate<DeviceGroup> predicate);
+    
+    /**
+     * Given an existing hierarchy, filters out groups that do not pass predicate and returns new hierarchy.
+     * @param hierarchy
+     * @param deviceGroupPredicate
+     * @return
+     */
+    public DeviceGroupHierarchy getFilteredDeviceGroupHierarchy(DeviceGroupHierarchy hierarchy, Predicate<DeviceGroup> deviceGroupPredicate);
 
 }
