@@ -168,19 +168,44 @@ public class ThermostatScheduleDaoImpl implements ThermostatScheduleDao {
 
     @Override
     public List<ScheduleDropDownItem> getSavedThermostatSchedulesByAccountId(
-            int accountId) {
+            int accountId, HardwareType type) {
 
+    	LiteStarsEnergyCompany customerAccountEC = ecMappingDao.getCustomerAccountEC(accountId);
+		int deviceTypeId = YukonListEntryHelper.getListEntryId(
+				customerAccountEC, 
+				YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE, 
+				type.getDefinitionId());
+    	
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ScheduleId, ScheduleName");
         sql.append("FROM LMThermostatSchedule");
         sql.append("WHERE AccountId = ?");
+        sql.append("AND ThermostatTypeId = ?");
         sql.append("ORDER BY ScheduleName");
 
         List<ScheduleDropDownItem> items = simpleJdbcTemplate.query(sql.toString(),
                                                                     new ScheduleDropDownItemMapper(),
-                                                                    accountId);
+                                                                    accountId,
+                                                                    deviceTypeId);
 
         return items;
+    }
+    
+    @Override
+    public List<ScheduleDropDownItem> getSavedThermostatSchedulesByAccountId(
+    		int accountId) {
+    	
+    	SqlStatementBuilder sql = new SqlStatementBuilder();
+    	sql.append("SELECT ScheduleId, ScheduleName");
+    	sql.append("FROM LMThermostatSchedule");
+    	sql.append("WHERE AccountId = ?");
+    	sql.append("ORDER BY ScheduleName");
+    	
+    	List<ScheduleDropDownItem> items = simpleJdbcTemplate.query(sql.toString(),
+    			new ScheduleDropDownItemMapper(),
+    			accountId);
+    	
+    	return items;
     }
 
     @Override

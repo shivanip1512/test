@@ -304,9 +304,12 @@ public class ThermostatScheduleController extends AbstractThermostatController {
 
         accountCheckerService.checkInventory(user, 
                                              thermostatIds.toArray(new Integer[thermostatIds.size()]));
+
+        Thermostat thermostat = inventoryDao.getThermostatById(thermostatIds.get(0));
+        HardwareType type = thermostat.getType();
         
         int accountId = account.getAccountId();
-        List<ScheduleDropDownItem> schedules = thermostatScheduleDao.getSavedThermostatSchedulesByAccountId(accountId);
+        List<ScheduleDropDownItem> schedules = thermostatScheduleDao.getSavedThermostatSchedulesByAccountId(accountId, type);
         map.addAttribute("schedules", schedules);
 
         return "consumer/savedSchedules.jsp";

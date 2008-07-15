@@ -37,12 +37,21 @@ public interface ThermostatScheduleDao {
     public ThermostatSchedule getThermostatScheduleById(int scheduleId, int accountId);
 
     /**
+     * Method to get a list of currently saved schedules for an account and thermostat type
+     * @param accountId - Id of account to get schedules for
+     * @param type - Type of thermostat to get schedules for
+     * @return List of schedules
+     */
+    public List<ScheduleDropDownItem> getSavedThermostatSchedulesByAccountId(
+            int accountId, HardwareType type);
+
+    /**
      * Method to get a list of currently saved schedules for an account
      * @param accountId - Id of account to get schedules for
      * @return List of schedules
      */
     public List<ScheduleDropDownItem> getSavedThermostatSchedulesByAccountId(
-            int accountId);
+    		int accountId);
 
     /**
      * Method to save a thermostat schedule
