@@ -66,6 +66,10 @@ public class ContactController extends AbstractConsumerController {
             int entryID = entry.getEntryID();
             ContactNotificationOption option = new ContactNotificationOption(entryID);
             String text = entry.getEntryText();
+            if("(none)".equalsIgnoreCase(text)) {
+            	// do not put the '(none)' option into the list
+            	break;
+            }
             String code = MessageCodeGenerator.generateCode("yukon.dr.consumer.contact",
                                                             text);
             YukonMessageSourceResolvable message = new YukonMessageSourceResolvable(code);
