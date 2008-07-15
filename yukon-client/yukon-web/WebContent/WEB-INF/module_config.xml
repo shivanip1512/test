@@ -54,13 +54,6 @@
         <option id="bulkImporter">
           <link>/spring/amr/bulkimporter/home</link>
           <requireProperty value="operator.MeteringRole.IMPORTER_ENABLED"/>
-          <sublinks>
-            <option></option>
-            <option></option>
-            <option></option>
-            <option></option>
-            <option></option>
-          </sublinks>
         </option>
 
         <option id="metering">
