@@ -1,7 +1,6 @@
 package com.cannontech.common.device.groups.service;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Set;
 
 import com.cannontech.common.device.YukonDevice;
@@ -94,7 +93,5 @@ public interface DeviceGroupService {
      * @return
      */
     public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, Predicate<DeviceGroup> predicate);
-    
-    public DeviceGroupHierarchy getDeviceGroupHierarchy(DeviceGroup root, List<? extends Predicate<DeviceGroup>> predicates);
 
 }
