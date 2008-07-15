@@ -303,9 +303,8 @@ public class AuthDaoImpl implements AuthDao {
         String timeZoneStr = getRolePropertyValue( user, WebClientRole.DEFAULT_TIMEZONE);
         
         if (StringUtils.isNotBlank(timeZoneStr)) {
-            timeZone = TimeZone.getTimeZone(timeZoneStr);
             try {
-                CtiUtilities.validate(timeZone, timeZoneStr);
+                timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
             } catch (BadConfigurationException e) {
                 throw new BadConfigurationException (e.getMessage() + ".  Invalid value in WebClientRole Default TimeZone property.");
             }

@@ -2,6 +2,7 @@ package com.cannontech.notif.outputs;
 
 import java.util.*;
 
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.NotificationTypeChecker;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.*;
@@ -43,24 +44,12 @@ public class Contactable {
     public TimeZone getTimeZone() {
         try {
             String tzString = _contactableBase.getContactableCustomer().getTimeZone();
-            return TimeZone.getTimeZone(tzString);
+            return CtiUtilities.getValidTimeZone(tzString);
         } catch (UnknownCustomerException e) {
             return DaoFactory.getAuthDao().getUserTimeZone(getLiteYukonUser());
         }
     }
 
-    /** Helper method to getTimeZone().  The LiteYukonUser object is supplied as the default yukonUser to use
-     *  if the parent customer is unknown (such that it throws an UnknownCustomerException).
-     * @return
-     */
-    private TimeZone getTimeZone(LiteYukonUser liteYukonUser) {
-        try {
-            String tzString = _contactableBase.getContactableCustomer().getTimeZone();
-            return TimeZone.getTimeZone(tzString);
-        } catch (UnknownCustomerException e) {
-            return DaoFactory.getAuthDao().getUserTimeZone(liteYukonUser);
-        }
-    }
     /**
      * Returns an appropriate YukonUserContext object of the parent customer of this object. 
      * The yukon user component will be looked up from the getContactableCustomer().
@@ -70,7 +59,7 @@ public class Contactable {
      */
     public YukonUserContext getYukonUserContext() {
         LiteYukonUser yukonUser = getLiteYukonUser();
-        TimeZone timeZone = getTimeZone(yukonUser);
+        TimeZone timeZone = getTimeZone();
         SimpleYukonUserContext userContext = new SimpleYukonUserContext(yukonUser, Locale.getDefault(), timeZone, ThemeUtils.getDefaultThemeName());
 
         return userContext;

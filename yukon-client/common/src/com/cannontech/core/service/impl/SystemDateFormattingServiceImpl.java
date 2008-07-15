@@ -24,15 +24,14 @@ public class SystemDateFormattingServiceImpl implements SystemDateFormattingServ
         
         String timeZoneStr = roleDao.getGlobalPropertyValue(ConfigurationRole.SYSTEM_TIMEZONE);
 
-        if (StringUtils.isBlank(timeZoneStr))   //Default to the system timezone if blank
-            timeZone = TimeZone.getDefault();
-        else {  //Get the TimeZone from timeZoneStr
-            timeZone = TimeZone.getTimeZone(timeZoneStr);
+        if (StringUtils.isNotBlank(timeZoneStr)) {   //Get the TimeZone from timeZoneStr
             try {
-                CtiUtilities.validate(timeZone, timeZoneStr);
+                timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
             } catch (BadConfigurationException e) {
                 throw new BadConfigurationException (e.getMessage() + ".  Invalid value in ConfigurationRole System TimeZone property");
             }
+        } else {    //Default to the system timezone if blank
+            timeZone = TimeZone.getDefault();
         }
         return timeZone;
     }

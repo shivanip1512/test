@@ -1802,19 +1802,19 @@ public static double convertTemperature(double temperature, String fromUnit, Str
         }
     }
      
-     /**
-      * Compares the timeZone is the correctly generated timeZone from timeZoneStr
-      * Throws BadConfigurationException if TimeZone ID does not match the timeZoneStr 
-      * @param timeZone
-      * @param timeZoneStr
-      * @return
-      */
-     public static void validate(TimeZone timeZone, String timeZoneStr) throws BadConfigurationException {
-         //Verify the timezone ID is the same as the timeZoneStr to validate valid string was used (GMT is returned by default).
-         if (!timeZone.getID().equals(timeZoneStr)) {// Invalid TimeZone string
-             throw new BadConfigurationException("Invalid TimeZone Id value: " + timeZoneStr);
-         }
-     }
+    /**
+     * Method to return a valid Timezone from timeZoneStr
+     * Throws BadConfigurationException if TimeZone ID does not match the timeZoneStr 
+     * @param timeZoneStr
+     * @return
+     */
+     public static TimeZone getValidTimeZone(String timeZoneStr) { 
+         TimeZone timeZone = TimeZone.getTimeZone(timeZoneStr); 
+         if (!timeZone.getID().equals(timeZoneStr)) { 
+             throw new BadConfigurationException("Invalid TimeZone Id value: " + timeZoneStr); 
+         } 
+         return timeZone; 
+    }
 }
 
 
