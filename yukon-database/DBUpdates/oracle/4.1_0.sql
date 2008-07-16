@@ -779,6 +779,20 @@ FROM (SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId
       LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId; 
 /* End YUK-6107 */
 
+/* Start YUK-5748 */
+INSERT INTO Command 
+VALUES (-143, 
+        'putconfig xcom extended tier ?"tier" rate ?"rate" cmd ?"cmd" display 3 timeout 600 delay 5432', 
+        'Thermostat Extended Tier Message', 
+        'ExpresscomSerial'); 
+
+INSERT INTO DeviceTypeCommand 
+VALUES (-723, -143, 'ExpresscomSerial', 24, 'Y', -1); 
+
+INSERT INTO DeviceTypeCommand 
+VALUES (-724, -143, 'Expresscom Group', 24, 'Y', -1); 
+/* End YUK-5748 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */

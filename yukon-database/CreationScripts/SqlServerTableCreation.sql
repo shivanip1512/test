@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     6/25/2008 9:18:33 AM                         */
+/* Created on:     7/16/2008 11:37:46 AM                        */
 /*==============================================================*/
 
 
@@ -4557,6 +4557,7 @@ insert into command values(-140, 'getstatus freeze', 'Read the freeze timestamp,
 
 insert into command values(-141, 'putconfig emetcon freeze day ?''Day of month (0-31)''', 'Set meter to freeze on X day of month (use 0 for disable).', 'MCT-410IL'); 
 insert into command values(-142, 'getconfig freeze', 'Read freeze config from meter and enable scheduled freeze procesing in Yukon.', 'MCT-410IL'); 
+INSERT INTO Command VALUES(-143, 'putconfig xcom extended tier ?"tier" rate ?"rate" cmd ?"cmd" display 3 timeout 600 delay 5432', 'Thermostat Extended Tier Message', 'ExpresscomSerial'); 
 
 /*==============================================================*/
 /* Table: CommandGroup                                          */
@@ -6709,6 +6710,8 @@ INSERT INTO DeviceTypeCommand VALUES (-719, -142, 'MCT-410FL', 35, 'N', -1);
 INSERT INTO DeviceTypeCommand VALUES (-720, -142, 'MCT-410GL', 35, 'N', -1); 
 INSERT INTO DeviceTypeCommand VALUES (-721, -142, 'MCT-410IL', 35, 'N', -1); 
 INSERT INTO DeviceTypeCommand VALUES (-722, -140, 'MCT-470', 33, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-723, -143, 'ExpresscomSerial', 24, 'Y', -1); 
+INSERT INTO DeviceTypeCommand VALUES (-724, -143, 'Expresscom Group', 24, 'Y', -1); 
 
 
 /*==============================================================*/
