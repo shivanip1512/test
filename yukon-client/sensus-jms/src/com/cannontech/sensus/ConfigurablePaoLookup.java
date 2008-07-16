@@ -1,39 +1,65 @@
 package com.cannontech.sensus;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.springframework.dao.IncorrectResultSizeDataAccessException;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
 import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.database.data.pao.DeviceClasses;
 
 public class ConfigurablePaoLookup implements YukonDeviceLookup {
-    private Map<Integer, Integer> paoMapping;
-    private PaoDao paoDao;
-    private Logger log = YukonLogManager.getLogger(ConfigurablePaoLookup.class);
+	private Map<Integer, Integer> paoMapping = new HashMap<Integer, Integer>();
+	private PaoDao paoDao;
+	private Logger log = YukonLogManager.getLogger(ConfigurablePaoLookup.class);
+	private SimpleJdbcTemplate simpleJdbcTemplate;
+	
+	public void setPaoMapping(Map<Integer, Integer> paoMapping) {
+		this.paoMapping.putAll(paoMapping);
+	}
 
-    public void setPaoMapping(Map<Integer, Integer> paoMapping) {
-        this.paoMapping = paoMapping;
-    }
+	@SuppressWarnings("unchecked")
+	public synchronized LiteYukonPAObject getDeviceForRepId(int repId) {
+		Integer paoId = paoMapping.get(repId);
 
-    public LiteYukonPAObject getDeviceForRepId(int repId) {
-        Integer paoId = paoMapping.get(repId);
-        if (paoId == null) {
-            return null;
-        }
-        LiteYukonPAObject yukonPAObject = paoDao.getLiteYukonPAO(paoId);
-        if (yukonPAObject == null) {
-            log.warn("PAO Id '" + paoId + "' could not be found. ");
-        }
-        return yukonPAObject;
-    }
+		if (paoId == null) {
+			SqlStatementBuilder sql = new SqlStatementBuilder();
+			sql.append("select da.deviceid from deviceaddress da, yukonpaobject ypa");
+			sql.append("where ypa.paobjectid = da.deviceid and ypa.paoclass = ");
+			sql.append("'", DeviceClasses.STRING_CLASS_GRID, "' and da.masteraddress = ?");
+			try {
+				int devId = simpleJdbcTemplate.queryForInt(sql.toString(), repId);
+				paoMapping.put(repId, devId); 	// Add it to our map to avoid the select next time.
+				paoId = devId;
+			} catch (IncorrectResultSizeDataAccessException e) {
+				log.warn("Zero or non-unique DB entries for gridadvisor serial address: " + repId, e);
+				return null;
+			}
+		}
 
-    public boolean isDeviceConfigured(int repId) {
-        return paoMapping.containsKey(repId);
-    }
+		LiteYukonPAObject yukonPAObject = paoDao.getLiteYukonPAO(paoId);
 
-    public void setPaoDao(PaoDao paoDao) {
-    	this.paoDao = paoDao;
-    }
+		if (yukonPAObject == null) {
+			log.warn("Yukon PAO Object not configured, and could not be found for repId: " + repId + ".");
+		}
+
+		return yukonPAObject;
+	}
+
+	public boolean isDeviceConfigured(int repId) {
+		return paoMapping.containsKey(repId);
+	}
+
+	public void setPaoDao(PaoDao paoDao) {
+		this.paoDao = paoDao;
+	}
+	
+	public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+		this.simpleJdbcTemplate = simpleJdbcTemplate;
+	}
 }
