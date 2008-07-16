@@ -8,6 +8,7 @@ import java.util.Vector;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonUserDao;
@@ -45,8 +46,7 @@ public final class CustomerDaoImpl implements CustomerDao {
      */
     public List<LiteContact> getAllContacts(int customerID_) {
         synchronized (databaseCache) {
-            LiteCustomer customer = (LiteCustomer) databaseCache
-                    .getACustomerByCustomerID(customerID_);
+            LiteCustomer customer = databaseCache.getACustomerByCustomerID(customerID_);
             Vector<LiteContact> allContacts = new Vector<LiteContact>(5); // guess capacity
             if (customer != null) {
                 int primCntctID = customer.getPrimaryContactID();
@@ -71,8 +71,7 @@ public final class CustomerDaoImpl implements CustomerDao {
      */
     public LiteContact getPrimaryContact(int customerID_) {
         synchronized (databaseCache) {
-            LiteCustomer customer = (LiteCustomer) databaseCache
-                    .getACustomerByCustomerID(customerID_);
+            LiteCustomer customer = databaseCache.getACustomerByCustomerID(customerID_);
             if (customer != null) {
                 int primCntctID = customer.getPrimaryContactID();
                 LiteContact liteContact = contactDao.getContact(primCntctID);
@@ -84,17 +83,18 @@ public final class CustomerDaoImpl implements CustomerDao {
     }
 
     public LiteCustomer getLiteCustomer(int customerId) {
-
-        StringBuilder sql = new StringBuilder("SELECT c.*, ectam.EnergyCompanyId");
-        sql.append(" FROM Customer c, CustomerAccount ca, ECToAccountMapping ectam");
-        sql.append(" WHERE ectam.AccountId = ca.AccountId");
-        sql.append(" AND ca.CustomerId = c.CustomerId");
-        sql.append(" AND c.CustomerId = ?");
-
-        LiteCustomer customer = simpleJdbcTemplate.queryForObject(sql.toString(),
+        final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
+        sqlBuilder.append(" SELECT c.*, ectam.EnergyCompanyId, ci.* ");
+        sqlBuilder.append(" FROM CustomerAccount ca, ECToAccountMapping ectam, "); 
+        sqlBuilder.append("     Customer c LEFT OUTER JOIN CICustomerBase ci ON c.CustomerID = ci.CustomerID ");
+        sqlBuilder.append(" WHERE ectam.AccountId = ca.AccountId ");
+        sqlBuilder.append( "AND ca.CustomerId = c.CustomerId ");
+        sqlBuilder.append(" AND c.CustomerId = ? ");
+        final String sql = sqlBuilder.toString();
+        
+        LiteCustomer customer = simpleJdbcTemplate.queryForObject(sql,
                                                                   new CustomerRowMapper(),
                                                                   customerId);
-
         
         List<LiteContact> additionalContacts = contactDao.getAdditionalContactsForCustomer(customerId);
         customer.setAdditionalContacts(additionalContacts);
@@ -158,7 +158,7 @@ public final class CustomerDaoImpl implements CustomerDao {
         synchronized (databaseCache) {
             List<LiteCustomer> allCustomers = databaseCache.getAllCustomers();
             for (int i = 0; i < allCustomers.size(); i++) {
-                LiteCustomer lc = (LiteCustomer) allCustomers.get(i);
+                LiteCustomer lc = allCustomers.get(i);
                 if (lc.getEnergyCompanyID() == energyCompanyID)
                     liteCustomers.add(lc);
             }
@@ -200,27 +200,31 @@ public final class CustomerDaoImpl implements CustomerDao {
         public LiteCustomer mapRow(ResultSet rs, int rowNum)
                 throws SQLException {
 
-            int customerId = rs.getInt("CustomerId");
-            int primaryContactId = rs.getInt("PrimaryContactId");
-            int customerTypeId = rs.getInt("CustomerTypeId");
-            String timezone = rs.getString("TimeZone");
-            String customerNumber = rs.getString("CustomerNumber");
-            int rateScheduleId = rs.getInt("RateScheduleId");
-            String altTrackNumber = rs.getString("AltTrackNum");
-            String temperatureUnit = rs.getString("TemperatureUnit");
-            int energyCompanyId = rs.getInt("energyCompanyId");
+            final int customerId = rs.getInt("CustomerId");
+            final int customerTypeId = rs.getInt("CustomerTypeId");
+            final boolean isCICustomer = customerTypeId == CustomerTypes.CUSTOMER_CI;
 
-            LiteCustomer customer = new LiteCustomer(customerId);
-            customer.setPrimaryContactID(primaryContactId);
+            final LiteCustomer customer = (isCICustomer) ? 
+                    new LiteCICustomer(customerId) : new LiteCustomer(customerId);
+                    
+            customer.setPrimaryContactID(rs.getInt("PrimaryContactId"));
             customer.setCustomerTypeID(customerTypeId);
-            customer.setTimeZone(timezone);
-            customer.setCustomerNumber(customerNumber);
-            customer.setRateScheduleID(rateScheduleId);
-            customer.setTemperatureUnit(temperatureUnit);
-            customer.setAltTrackingNumber(altTrackNumber);
-            customer.setEnergyCompanyID(energyCompanyId);
+            customer.setTimeZone(rs.getString("TimeZone"));
+            customer.setCustomerNumber(rs.getString("CustomerNumber"));
+            customer.setRateScheduleID(rs.getInt("RateScheduleId"));
+            customer.setTemperatureUnit(rs.getString("TemperatureUnit"));
+            customer.setAltTrackingNumber(rs.getString("AltTrackNum"));
+            customer.setEnergyCompanyID(rs.getInt("energyCompanyId"));
             
-            return customer;
+            if (!isCICustomer) return customer;
+            
+            final LiteCICustomer ciCustomer = (LiteCICustomer) customer;
+            ciCustomer.setMainAddressID(rs.getInt("MainAddressID"));            
+            ciCustomer.setCompanyName(rs.getString("CompanyName"));   
+            ciCustomer.setDemandLevel(rs.getDouble("CustomerDemandLevel"));
+            ciCustomer.setCurtailAmount(rs.getDouble("CurtailAmount"));
+            ciCustomer.setCICustType(rs.getInt("CICustType"));
+            return ciCustomer;
         }
         
     }
