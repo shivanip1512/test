@@ -26,7 +26,8 @@ public class LMGroupExpressCom extends com.cannontech.database.db.DBPersistent
 	{ 
 		"RouteID", "SerialNumber", "ServiceProviderID", "GeoID",
 		"SubstationID", "FeederID", "ZipID", "UserID",
-		"ProgramID", "SplinterID", "AddressUsage", "RelayUsage"
+		"ProgramID", "SplinterID", "AddressUsage", "RelayUsage",
+		"ProtocolPriority"
 	};
 
 	public static final String CONSTRAINT_COLUMNS[] = { "LMGroupID" };
@@ -214,7 +215,6 @@ public final static boolean isAddressUsed( java.sql.Connection conn, int addID )
  */
 public final static void purgeUnusedAddresses( java.sql.Connection conn )
 {
-	int retVal = 0;
 	java.sql.PreparedStatement pstmt = null;
 		
 	try
@@ -274,7 +274,8 @@ public void retrieve() throws java.sql.SQLException
 		setProgramID( (Integer) results[8] );
 		setSplinterID( (Integer) results[9] );
 		setAddressUsage( (String) results[10] );
-		setRelayUsage( (String) results[11] );		
+		setRelayUsage( (String) results[11] );	
+		setProtocolPriority((Integer) results[12]);
 	}
 	else
 		throw new Error(getClass() + " - Incorrect Number of results retrieved");
@@ -390,7 +391,7 @@ public void update() throws java.sql.SQLException
 		getSerialNumber(), getServiceProviderID(), getGeoID(),
 		getSubstationID(), getFeederID(), getZipID(), 
 		getUserID(), getProgramID(), getSplinterID(),
-		getAddressUsage(), getRelayUsage() };
+		getAddressUsage(), getRelayUsage(), getProtocolPriority()};
 
 	Object constraintValues[] = { getLmGroupID() };
 
