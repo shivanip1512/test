@@ -313,7 +313,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
             
             if (hwFile != null && hwFile.length() > 4){
                 hwFileName = hwFile.getName();
-                logFileName = hwFileName.substring(0, custFileName.length()-4)+"-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
+                logFileName = hwFileName.substring(0, hwFileName.length()-4)+"-"+StarsUtils.starsDateFormat.format(now) + "_" + StarsUtils.starsTimeFormat.format(now) + ".log";
                 if(preScan){
                     logFileName = "Prescan-"+logFileName;
                 }
