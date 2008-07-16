@@ -52,6 +52,9 @@ public class BillingFile extends java.util.Observable implements Runnable
 			char argDel = '=';
 			BillingFile billingFile = new BillingFile();
 			
+			//Default the billingEndDate for command line use to tomorrow (midnight tonight).  May be overridden by command arg "end"
+			billingFile.getBillingDefaults().setEndDate(ServletUtil.getTomorrow());
+			
 			for ( int i = 0; i < args.length; i++)
 			{
 				if( i == 0)	//first loop through, verify the char '=' is our delimiter, else try ':'
