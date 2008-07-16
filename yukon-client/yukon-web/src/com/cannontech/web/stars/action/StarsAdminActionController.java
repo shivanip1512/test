@@ -15,7 +15,7 @@ public abstract class StarsAdminActionController extends AbstractBaseActionContr
         String redirect = ServletRequestUtils.getStringParameter(request, ServletUtils.ATT_REDIRECT);
         
         if (redirect == null) {
-            redirect = request.getContextPath() + "/operator/Admin/AdminTest.jsp";
+            redirect = request.getContextPath() + "/operator/Admin/ConfigEnergyCompany.jsp";
         }
         
         return redirect;
