@@ -313,7 +313,7 @@ AND (cast(SeasonStartMonth AS VARCHAR(2)) + '/' +
           cast(datepart(year,getdate()) AS VARCHAR(4))) <= getdate()
 AND (cast(SeasonEndMonth AS VARCHAR(2)) + '/' + 
           cast(SeasonEndDay AS VARCHAR(2)) + '/' + 
-          cast(datepart(year,getdate()) AS VARCHAR(4))) > getdate();
+          cast(datepart(year,getdate()) AS VARCHAR(4))) > getdate()
 go
 
 /*==============================================================*/
@@ -322,7 +322,7 @@ go
 create view CBCConfiguration2_View as
 SELECT YP.PAOName AS CBCName, D.* 
 FROM DynamicCCTwoWayCBC D, YukonPAObject YP
-WHERE YP.PAObjectId = D.DeviceId;
+WHERE YP.PAObjectId = D.DeviceId
 go
 
 /*==============================================================*/
@@ -335,7 +335,7 @@ FROM Point P
 JOIN YukonPAObject YP ON YP.PAObjectId = P.PAObjectId AND YP.Type like 'CBC 702%'
 LEFT OUTER JOIN DynamicPointDispatch PD ON PD.PointId = P.PointId
 LEFT OUTER JOIN PointUnit PU ON PU.PointId = P.PointId
-LEFT OUTER JOIN UnitMeasure UOM ON UOM.UOMId = PU.UOMId;
+LEFT OUTER JOIN UnitMeasure UOM ON UOM.UOMId = PU.UOMId
 go
 
 /*==============================================================*/
@@ -526,25 +526,25 @@ FROM (SELECT OP.LogId AS OId, MIN(aaa.confid) AS CId
                        AND (EL2.Text LIKE 'Var: %') AND (EL3.NextAId IS NULL)
                        GROUP BY EL.LogId) AAA ON OP.LogId = AAA.OpId
       GROUP BY OP.LogId) OpConf 
-      INNER JOIN CCEventLog EL ON EL.LogId = OpConf.OId 
-      LEFT OUTER JOIN CCEventLog EL2 ON EL2.LogId = OpConf.CId 
-      INNER JOIN Point ON Point.PointId = EL.PointId 
-      INNER JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId 
-      INNER JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId 
-      INNER JOIN YukonPAObject YP1 ON YP1.PAObjectId = EL.FeederId 
-      INNER JOIN YukonPAObject YP2 ON YP2.PAObjectId = EL.SubId 
-      INNER JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId 
-      LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId 
-      LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
-      INNER JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId 
-      LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
-      LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
-                       FROM DynamicPAOInfo 
-                       WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId 
-      LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId  
-      LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId 
-      LEFT OUTER JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
-      LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId;
+INNER JOIN CCEventLog EL ON EL.LogId = OpConf.OId 
+LEFT OUTER JOIN CCEventLog EL2 ON EL2.LogId = OpConf.CId 
+INNER JOIN Point ON Point.PointId = EL.PointId 
+INNER JOIN DynamicCCCapBank ON DynamicCCCapBank.CapBankId = Point.PAObjectId 
+INNER JOIN YukonPAObject YP ON YP.PAObjectId = DynamicCCCapBank.CapBankId 
+INNER JOIN YukonPAObject YP1 ON YP1.PAObjectId = EL.FeederId 
+INNER JOIN YukonPAObject YP2 ON YP2.PAObjectId = EL.SubId 
+INNER JOIN CapBank CB ON CB.DeviceId = DynamicCCCapBank.CapBankId 
+LEFT OUTER JOIN DeviceDirectCommSettings DDCS ON DDCS.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN DeviceAddress DA ON DA.DeviceId = CB.ControlDeviceId 
+INNER JOIN YukonPAObject YP3 ON YP3.PAObjectId = CB.ControlDeviceId 
+LEFT OUTER JOIN DeviceCBC CBC ON CBC.DeviceId = CB.ControlDeviceId 
+LEFT OUTER JOIN (SELECT EntryId, PAObjectId, Owner, InfoKey, Value, UpdateTime
+                 FROM DynamicPAOInfo 
+                 WHERE (InfoKey LIKE '%udp ip%')) P ON P.PAObjectId = CB.ControlDeviceId 
+LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId  
+LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId =  SSL.SubstationBusId 
+LEFT OUTER JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
+LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId
 go
 /* @end-block */
 /* End YUK-5630 */

@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/16/2008 2:00:34 PM                         */
+/* Created on:     7/16/2008 3:41:08 PM                         */
 /*==============================================================*/
 
 
@@ -12148,7 +12148,7 @@ go
 create view CBCConfiguration2_View as
 SELECT YP.PAOName AS CBCName, D.* 
 FROM DynamicCCTwoWayCBC D, YukonPAObject YP
-WHERE YP.PAObjectId = D.DeviceId;
+WHERE YP.PAObjectId = D.DeviceId
 go
 
 /*==============================================================*/
@@ -12162,7 +12162,7 @@ FROM Point P
 JOIN YukonPAObject YP ON YP.PAObjectId = P.PAObjectId AND YP.Type like 'CBC 702%'
 LEFT OUTER JOIN DynamicPointDispatch PD ON PD.PointId = P.PointId
 LEFT OUTER JOIN PointUnit PU ON PU.PointId = P.PointId
-LEFT OUTER JOIN UnitMeasure UOM ON UOM.UOMId = PU.UOMId;
+LEFT OUTER JOIN UnitMeasure UOM ON UOM.UOMId = PU.UOMId
 go
 
 /*==============================================================*/
