@@ -98,7 +98,7 @@
                                 
                                 <div>
                                     <span style="margin-right: 0.5em;"><input type="submit" value="Submit"></input></span>
-                                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
+                                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='ConfigEnergyCompany.jsp'">
                                 </div>
                         
                             </form>

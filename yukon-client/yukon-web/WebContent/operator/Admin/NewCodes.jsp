@@ -2,7 +2,7 @@
 <%
 	String referer = request.getParameter("referer");
 	if (referer == null) {
-		response.sendRedirect("AdminTest.jsp"); return;
+		response.sendRedirect("ConfigEnergyCompany.jsp"); return;
 	}
 	
 	if (referer.equalsIgnoreCase("ServiceCompany.jsp")) {

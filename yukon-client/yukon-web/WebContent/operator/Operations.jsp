@@ -267,7 +267,7 @@
 		
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"> 
 	            <tags:sectionLink>
-	            	<a href="Admin/AdminTest.jsp">Config Energy Company</a>
+	            	<a href="Admin/ConfigEnergyCompany.jsp">Config Energy Company</a>
 	            </tags:sectionLink>
 			</cti:checkProperty>
 			<cti:checkProperty property="operator.AdministratorRole.ADMIN_MANAGE_MEMBERS"> 

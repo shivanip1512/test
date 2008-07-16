@@ -178,7 +178,7 @@
 
       <links>
         <option id="configEnergyCompany">
-          <link>/operator/Admin/AdminTest.jsp</link>
+          <link>/operator/Admin/ConfigEnergyCompany.jsp</link>
           <requireProperty value="operator.AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY"/>
         </option>
 

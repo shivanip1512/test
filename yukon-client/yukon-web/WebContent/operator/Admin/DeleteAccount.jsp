@@ -67,7 +67,7 @@ function validate(form) {
               <table width="600" border="0" cellspacing="0" cellpadding="5" align="center">
                 <tr> 
                   <td align="center"> 
-                    <input type="button" name="Back" value="Back" onclick="location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="location.href='ConfigEnergyCompany.jsp'">
                   </td>
                 </tr>
               </table>

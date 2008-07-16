@@ -810,7 +810,7 @@ function updateMessageCode(input) {
                     <input type="button" name="Reset" value="Reset" onclick="location.reload()" <%= viewOnly %>>
                   </td>
                   <td width="75" align="right"> 
-                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='ConfigEnergyCompany.jsp'">
                   </td>
                 </tr>
               </table>

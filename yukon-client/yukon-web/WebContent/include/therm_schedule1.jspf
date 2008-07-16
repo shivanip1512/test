@@ -515,7 +515,7 @@ function init() {
                   </td>
 <% if (isRecommended) { %>
                   <td width="15%" align = "right" class = "TableCell" > 
-                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
+                    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='ConfigEnergyCompany.jsp'">
                   </td>
 <% } %>
                 </tr>
