@@ -793,6 +793,14 @@ INSERT INTO DeviceTypeCommand
 VALUES (-724, -143, 'Expresscom Group', 24, 'Y', -1); 
 /* End YUK-5748 */
 
+/* Start YUK-5757 */ 
+INSERT INTO YukonListEntry 
+VALUES (1065, 1005, -1, 'ExpressStat Utility Pro', 1314); 
+
+INSERT INTO YukonListEntry 
+VALUES (1224, 1019, 0, 'Circulate', 2504);  
+/* End YUK-5757 */
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /*   Automatically gets inserted from build script            */
