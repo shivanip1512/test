@@ -576,7 +576,7 @@
     </bean>
     
     <bean id="verifyRolesAndPropertiesTagPrototype" class="com.cannontech.web.util.VerifyRolesAndPropertiesTag">
-        <property name="authDao" ref="authDao"/>
+        <property name="descriptionService" ref="roleAndPropertyDescriptionService"/>
     </bean>
     
     <bean id="trendWidgetCachingParameterGrabber" abstract="true">
@@ -732,6 +732,20 @@
     	<property name="location">
     		<value>/WEB-INF/friendlyExceptions.properties</value>
     	</property>
+    </bean>
+    
+    <bean id="urlAccessChecker" class="com.cannontech.web.login.access.UrlAccessCheckerImpl">
+        <property name="descriptionParser">
+            <bean class="com.cannontech.web.login.access.UrlAccessDescriptionParserImpl"/>
+        </property>
+        <property name="urlAccessDescriptions">
+            <list>
+                <!-- DO NOT REMOVE -->
+                <value>ALLOW|/**|WebClientRole.ROLEID</value> 
+                <value>DENY|/**|*</value> 
+                <!-- DO NOT REMOVE -->
+            </list>
+        </property>    
     </bean>
 
     <bean id="loginService"

@@ -10,6 +10,10 @@
        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-2.5.xsd">
     
+  <bean id="roleAndPropertyDescriptionService" class="com.cannontech.core.service.impl.RoleAndPropertyDescriptionServiceImpl">
+    <property name="authDao" ref="authDao"/>
+  </bean>  
+    
   <bean id="emailService" class="com.cannontech.tools.email.impl.EmailServiceImpl">
     <property name="roleDao" ref="roleDao"/>
   </bean>

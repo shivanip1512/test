@@ -4,12 +4,10 @@ import java.io.IOException;
 
 import javax.servlet.jsp.JspException;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.dao.AuthDao;
-import com.cannontech.util.ReflectivePropertySearcher;
+import com.cannontech.core.service.RoleAndPropertyDescriptionService;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 /**
@@ -36,66 +34,21 @@ import com.cannontech.web.taglib.YukonTagSupport;
  */
 @Configurable("verifyRolesAndPropertiesTagPrototype")
 public class VerifyRolesAndPropertiesTag extends YukonTagSupport {
-    
-    private static final String ROLEID_SUFFIX = ".ROLEID";
 
     private String value;
     
     // injected dependencies
-    private AuthDao authDao;
+    private RoleAndPropertyDescriptionService descriptionService;
     
     @Override
     public void doTag() throws JspException, IOException {
-        ReflectivePropertySearcher roleProperty = ReflectivePropertySearcher.getRoleProperty();
-        // split value
-        String[] valueArray = value.split("[\\s,\\n]+");
-        for (String classOrFieldName : valueArray) {
-            classOrFieldName = classOrFieldName.trim();
-            if (classOrFieldName.isEmpty()) continue;
-            
-            // check if it is inverted
-            boolean inverted = false;
-            if (classOrFieldName.startsWith("!")) {
-                classOrFieldName = classOrFieldName.substring(1);
-                inverted = true;
-            }
-            // see if it is a role
-            try {
-                String roleIdFqn = classOrFieldName;
-                if (!classOrFieldName.endsWith(ROLEID_SUFFIX)) {
-                    roleIdFqn += ROLEID_SUFFIX;
-                }
-                int intForFQN = roleProperty.getIntForName(roleIdFqn);
-                boolean hasRole = authDao.checkRole(getYukonUser(), intForFQN);
-                if (hasRole != inverted) {
-                    return;
-                }
-                
-                continue;
-                
-            } catch (IllegalArgumentException e) {
-            }
-            
-            // not a role, check if it is a property
-            try {
-                String propertyIdFqn = classOrFieldName;
-                int intForFQN = roleProperty.getIntForName(propertyIdFqn);
-                boolean hasProperty = authDao.checkRoleProperty(getYukonUser(), intForFQN);
-                if (hasProperty != inverted) {
-                    return;
-                }
-                
-                continue;
-
-            } catch (IllegalArgumentException ignore) { }
-            
-            // if we get here, we must not have a valid role or property
-            throw new IllegalArgumentException("Can't recognize: " + classOrFieldName);
+        
+        boolean checkIfAtLeaseOneExists = descriptionService.checkIfAtLeaseOneExists(value, getYukonUser());
+        if (!checkIfAtLeaseOneExists) {
+            throw new NotAuthorizedException("Missing a required role or property to view this page: " + value);
         }
-        // if we get here, nothing matched
-        throw new NotAuthorizedException("Missing a required role or property to view this page: " + StringUtils.join(valueArray));
     }
-    
+
     public void setValue(String value) {
         this.value = value;
     }
@@ -103,9 +56,10 @@ public class VerifyRolesAndPropertiesTag extends YukonTagSupport {
     public String getValue() {
         return value;
     }
-    
-    public void setAuthDao(AuthDao authDao) {
-        this.authDao = authDao;
+
+    public void setDescriptionService(
+            RoleAndPropertyDescriptionService descriptionService) {
+        this.descriptionService = descriptionService;
     }
 
 }

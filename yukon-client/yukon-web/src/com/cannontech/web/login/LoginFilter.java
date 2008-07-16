@@ -11,6 +11,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.AntPathMatcher;
@@ -23,21 +24,25 @@ import org.springframework.web.util.UrlPathHelper;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
 import com.cannontech.common.exception.NotLoggedInException;
+import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.login.access.UrlAccessChecker;
 import com.cannontech.web.util.YukonUserContextResolver;
 
 public class LoginFilter implements Filter {
-    private Logger log = YukonLogManager.getLogger(LoginFilter.class);
     private static final String[] excludedFilePaths;
     private static final String[] excludedRedirectedPaths;
+    private final Logger log = YukonLogManager.getLogger(getClass());
+    private final PathMatcher pathMatcher = new AntPathMatcher();
+    private final UrlPathHelper urlPathHelper = new UrlPathHelper();
+
     private WebApplicationContext context;
     private YukonUserContextResolver userContextResolver;
     private List<LoginRequestHandler> loginRequestHandlers;
-    private PathMatcher pathMatcher = new AntPathMatcher();
-    private UrlPathHelper urlPathHelper = new UrlPathHelper();
-
+    private UrlAccessChecker urlAccessChecker;
+    
     static {
         // setup ant-style paths that should be processed even if the 
         // user is not logged in
@@ -79,6 +84,13 @@ public class LoginFilter implements Filter {
         boolean loggedIn = isLoggedIn(request);
         if (loggedIn) {
             attachYukonUserContext(request);
+            
+            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(request);
+            if (!hasUrlAccess) {
+                handleInvalidUrlAccess(request, response);
+                return;
+            }
+            
             chain.doFilter(req, resp);
             return;
         }
@@ -98,6 +110,13 @@ public class LoginFilter implements Filter {
 
             log.debug("Proceeding with request after successful handler login");
             attachYukonUserContext(request);
+            
+            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(request);
+            if (!hasUrlAccess) {
+                handleInvalidUrlAccess(request, response);
+                return;
+            }
+            
             // FilterChain.doFilter() cannot be in a try/catch, it would break the ErrorHelperFilter
             chain.doFilter(req, resp);
             return;
@@ -141,6 +160,22 @@ public class LoginFilter implements Filter {
         return encodedNavUrl;
     }
 
+    private  void handleInvalidUrlAccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        boolean isLoggedIn = isLoggedIn(request);
+        if (isLoggedIn) {
+            LiteYukonUser user = ServletUtil.getYukonUser(request);
+            log.error("Invalid URL Access for User " + user.getUsername());
+            
+            // Remove the session before hitting the LoginFilter again.
+            HttpSession session = request.getSession(false);
+            if (session != null) session.invalidate();
+        }
+        
+        String location = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
+        String safeLocation = ServletUtil.createSafeRedirectUrl(request, location);
+        response.sendRedirect(safeLocation);
+    }
+    
     private void sendLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException{
         String navUrl = getRedirectedFrom(request);
         String redirectURL = LoginController.LOGIN_URL + "?" + LoginController.REDIRECTED_FROM + "=" + navUrl;
@@ -172,6 +207,7 @@ public class LoginFilter implements Filter {
         context = WebApplicationContextUtils.getWebApplicationContext(filterConfig.getServletContext());
         userContextResolver = (YukonUserContextResolver) context.getBean("userContextResolver", YukonUserContextResolver.class);
         loginRequestHandlers = (List<LoginRequestHandler>) context.getBean("loginRequestHandlers", List.class);
+        urlAccessChecker = (UrlAccessChecker) context.getBean("urlAccessChecker", UrlAccessChecker.class);
     }
 
     @Override

@@ -55,9 +55,9 @@ public class YukonLoginController extends MultiActionController {
             redirect = ServletUtil.createSafeRedirectUrl(request, referer);
             
             if(redirect.contains("?")){
-            	redirect = redirect + "&failed=true";
+            	redirect = redirect + "&" + LoginController.FAILED_LOGIN_PARAM;
             } else {
-            	redirect = redirect + "?failed=true";
+            	redirect = redirect + "?" + LoginController.FAILED_LOGIN_PARAM;
             }
         }
         return new ModelAndView("redirect:" + redirect);
