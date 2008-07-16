@@ -2987,6 +2987,7 @@ public class LiteStarsEnergyCompany extends LiteBase {
         boolean hasEpro = false;
         boolean hasComm = false;
         boolean hasPump = false;
+        boolean hasUPro = false;
         
         YukonSelectionList devTypeList = getYukonSelectionList(YukonSelectionListDefs.YUK_LIST_NAME_DEVICE_TYPE);
         for (int i = 0; i < devTypeList.getYukonListEntries().size(); i++) {
@@ -2999,6 +3000,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
                 hasComm = true;
             else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP)
                 hasPump = true;
+            else if (entry.getYukonDefID() == YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_UTILITYPRO)
+                hasUPro = true;
         }
         
         StarsDefaultThermostatSchedules starsDftThermSchedules = new StarsDefaultThermostatSchedules();
@@ -3021,6 +3024,11 @@ public class LiteStarsEnergyCompany extends LiteBase {
         if (hasPump) {
             StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
                     getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP), this );
+            starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
+        }
+        if (hasUPro) {
+            StarsThermostatProgram starsThermProg = StarsLiteFactory.createStarsThermostatProgram(
+                    getDefaultThermostatSchedule(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_UTILITYPRO), this );
             starsDftThermSchedules.addStarsThermostatProgram( starsThermProg );
         }
         

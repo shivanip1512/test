@@ -122,6 +122,21 @@
                                                         <cti:msg key="yukon.dr.consumer.thermostat.mode" />
                                                     </td>
                                                 </tr>
+                                                <!-- Utility Pro has an extra mode setting -->
+                                                <c:choose>
+                                                    <c:when test="${thermostat.type == 'EXPRESSSTAT_UTILITY_PRO'}">
+                                                        <tr>
+                                                            <td class="arrow"><img id="autoArrowMode" src="${arrow}" <c:if test="${eventMode != 'AUTO'}">style="display: none;" </c:if>>&nbsp;</td>
+                                                            <td class="clickable subItem" onClick="setMode('AUTO')">
+                                                                <cti:msg key="yukon.dr.consumer.thermostat.mode.AUTO" />
+                                                            </td>
+                                                        </tr>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <!-- place holder for javascript -->
+                                                        <tr><td><span id="autoArrowMode"></span></td></tr>
+                                                    </c:otherwise>
+                                                </c:choose>
                                                 <tr>
                                                     <td class="arrow"><img id="coolArrow" src="${arrow}" <c:if test="${eventMode != 'COOL'}">style="display: none;" </c:if>></td>
                                                     <td class="clickable subItem" onClick="setMode('COOL')">
@@ -175,6 +190,22 @@
                                                         <cti:msg key="yukon.dr.consumer.thermostat.fan.AUTO" />
                                                     </td>
                                                 </tr>
+                                                
+                                                <!-- Utility Pro has an extra fan mode setting -->
+                                                <c:choose>
+                                                    <c:when test="${thermostat.type == 'EXPRESSSTAT_UTILITY_PRO'}">
+                                                        <tr>
+                                                            <td class="arrow"><img id="circulateArrow" src="${arrow}" <c:if test="${eventFanState != 'CIRCULATE'}">style="display: none;" </c:if>>&nbsp;</td>
+                                                            <td class="clickable subItem" onClick="setFan('circulateArrow', 'CIRCULATE')">
+                                                                <cti:msg key="yukon.dr.consumer.thermostat.fan.CIRCULATE" />
+                                                            </td>
+                                                        </tr>
+                                                    </c:when>
+                                                    <c:otherwise>
+                                                        <tr><td><span id="circulateArrow"></span></td></tr>
+                                                    </c:otherwise>
+                                                </c:choose>
+                                                
                                                 <tr>
                                                     <td class="arrow"><img id="onArrow" src="${arrow}" <c:if test="${eventFanState != 'ON'}">style="display: none;" </c:if>></td>
                                                     <td class="clickable subItem" onClick="setFan('onArrow', 'ON')">

@@ -19,6 +19,7 @@ public enum HardwareType {
     SA_305(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA305), 
     SA_SIMPLE(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_SA_SIMPLE), 
     EXPRESSSTAT_HEAT_PUMP(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP), 
+    EXPRESSSTAT_UTILITY_PRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_UTILITYPRO), 
     ENERGYPRO(YukonListEntryTypes.YUK_DEF_ID_DEV_TYPE_ENERGYPRO);
 
     // this key prefix can be found in the following file:

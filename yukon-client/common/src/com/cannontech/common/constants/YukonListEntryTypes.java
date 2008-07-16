@@ -60,6 +60,7 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_DEV_TYPE_LCR_5000_VCOM		= 1311;
 	public static final int YUK_DEF_ID_DEV_TYPE_SA_SIMPLE			= 1312;
     public static final int YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_HEATPUMP= 1313;
+    public static final int YUK_DEF_ID_DEV_TYPE_EXPRESSSTAT_UTILITYPRO = 1314;
 	public static final int YUK_DEF_ID_DEV_TYPE_ENERGYPRO			= 3100;
 	public static final int YUK_DEF_ID_APP_CAT_DEFAULT				= 1400;
 	public static final int YUK_DEF_ID_APP_CAT_AIR_CONDITIONER		= 1401;
@@ -132,7 +133,8 @@ public interface YukonListEntryTypes
 	public static final int YUK_DEF_ID_FAN_STAT_DEFAULT				= 2501;
 	public static final int YUK_DEF_ID_FAN_STAT_AUTO				= 2502;
 	public static final int YUK_DEF_ID_FAN_STAT_ON					= 2503;
-	public static final int YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO		= 2701;
+	public static final int YUK_DEF_ID_FAN_STAT_CIRCULATE           = 2504;
+    public static final int YUK_DEF_ID_INV_SEARCH_BY_SERIAL_NO		= 2701;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_ACCT_NO		= 2702;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_PHONE_NO		= 2703;
 	public static final int YUK_DEF_ID_INV_SEARCH_BY_LAST_NAME		= 2704;

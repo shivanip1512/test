@@ -91,9 +91,11 @@
               <% if (errorMsg != null) out.write("<span class=\"ErrorMsg\">* " + errorMsg + "</span><br>"); %>
               <% if (confirmMsg != null) out.write("<span class=\"ConfirmMsg\">* " + confirmMsg + "</span><br>"); %>
               <% if (thermoType.compareTo(StarsThermostatTypes.EXPRESSSTAT_HEATPUMP.toString()) == 0) { %>
-              		<%@ include file="../../../include/therm_manual_emheat.jspf" %>
+                    <%@ include file="../../../include/therm_manual_emheat.jspf" %>
+              <% } else if (thermoType.compareTo(StarsThermostatTypes.EXPRESSSTAT_UTILITYPRO.toString()) == 0) { %>
+                    <%@ include file="../../../include/therm_manual_utilitypro.jspf" %>
               <% } else { %>
-              	<%@ include file="../../../include/therm_manual2.jspf" %>
+                  	<%@ include file="../../../include/therm_manual2.jspf" %>
               <% } %>
 			  <p align="center" class="MainText">
 			    <%@ include file="../../../include/copyright.jsp" %>

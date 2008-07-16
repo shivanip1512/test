@@ -76,8 +76,8 @@ public class UpdateThermostatManualOptionAction implements ActionBase {
 	            option.setTemperature( Integer.parseInt(req.getParameter("tempField")) );
             option.setHold( Boolean.valueOf(req.getParameter("hold")).booleanValue() );
             if (req.getParameter("mode").length() > 0)
-	            option.setMode( StarsThermoModeSettings.valueOf(req.getParameter("mode")) );
-	        if (req.getParameter("fan").length() > 0)
+                option.setMode( StarsThermoModeSettings.valueOf(req.getParameter("mode")) );
+            if (req.getParameter("fan").length() > 0)
 	            option.setFan( StarsThermoFanSettings.valueOf(req.getParameter("fan")) );
             
             StarsOperation operation = new StarsOperation();

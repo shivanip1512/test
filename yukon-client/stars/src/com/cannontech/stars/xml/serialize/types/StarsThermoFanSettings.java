@@ -45,6 +45,16 @@ public class StarsThermoFanSettings implements java.io.Serializable {
     **/
     public static final StarsThermoFanSettings ON = new StarsThermoFanSettings(ON_TYPE, "On");
 
+    /**
+     * The Circulate type
+    **/
+    public static final int CIRCULATE_TYPE = 2;
+
+    /**
+     * The instance of the Circulate type
+    **/
+    public static final StarsThermoFanSettings CIRCULATE = new StarsThermoFanSettings(CIRCULATE_TYPE, "Circulate");
+
     private static java.util.Hashtable _memberTable = init();
 
     private int type = -1;
@@ -90,6 +100,7 @@ public class StarsThermoFanSettings implements java.io.Serializable {
     {
         Hashtable members = new Hashtable();
         members.put("Auto", AUTO);
+        members.put("Circulate", CIRCULATE);
         members.put("On", ON);
         return members;
     } //-- java.util.Hashtable init() 

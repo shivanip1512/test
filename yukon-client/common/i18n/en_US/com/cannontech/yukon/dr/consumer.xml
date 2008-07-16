@@ -100,6 +100,7 @@
     <entry key="yukon.dr.consumer.thermostat.arrow">/WebConfig/yukon/Icons/triangle-right.gif</entry>
     <entry key="yukon.dr.consumer.thermostat.hold">Hold</entry>
     <entry key="yukon.dr.consumer.thermostat.mode">MODE</entry>
+    <entry key="yukon.dr.consumer.thermostat.mode.AUTO">Auto</entry>
     <entry key="yukon.dr.consumer.thermostat.mode.COOL">Cool</entry>
     <entry key="yukon.dr.consumer.thermostat.mode.HEAT">Heat</entry>
     <entry key="yukon.dr.consumer.thermostat.mode.EMERGENCY_HEAT">Emergency Heat</entry>
@@ -107,6 +108,7 @@
     <entry key="yukon.dr.consumer.thermostat.mode.DEFAULT">Default</entry>
     <entry key="yukon.dr.consumer.thermostat.fan">FAN</entry>
     <entry key="yukon.dr.consumer.thermostat.fan.AUTO">Auto</entry>
+    <entry key="yukon.dr.consumer.thermostat.fan.CIRCULATE">Circulate</entry>
     <entry key="yukon.dr.consumer.thermostat.fan.ON">On</entry>
     <entry key="yukon.dr.consumer.thermostat.fan.DEFAULT">Default</entry>
     <entry key="yukon.dr.consumer.thermostat.unitMode">Mode:</entry>

@@ -1,0 +1,547 @@
+<%@ page import="com.cannontech.core.dao.DaoFactory" %>
+<%@ page import="com.cannontech.database.data.lite.LiteCustomer" %>
+
+<%
+/* Required predefined variables:
+ * thermoProgram: StarsThermostatProgram
+ * invID: int
+ * invIDs: int[]
+ * allTherm: boolean
+ * thermNoStr: String
+ * accountInfo: StarsCustAccountInformation
+ */
+	boolean isOperator = StarsUtils.isOperator(user.getYukonUser());
+	boolean isRecommended = (invID < 0);
+	
+	String thermType = request.getParameter("type");
+	
+	StarsThermostatProgram dftThermoProgram = null;
+	if (!isRecommended) {
+		for (int i = 0; i < dftThermoSchedules.getStarsThermostatProgramCount(); i++) {
+			if (dftThermoSchedules.getStarsThermostatProgram(i).getThermostatType().getType() == StarsThermostatTypes.EXPRESSSTAT_HEATPUMP_TYPE) {
+				dftThermoProgram = dftThermoSchedules.getStarsThermostatProgram(i);
+				break;
+			}
+		}
+	}
+	else {
+		dftThermoProgram = StarsDatabaseCache.getInstance().getDefaultEnergyCompany().getStarsDefaultThermostatSchedules().getStarsThermostatProgram(0);
+	}
+	
+	StarsThermoDaySettings daySetting = null;
+	if (request.getParameter("day") != null)
+		daySetting = StarsThermoDaySettings.valueOf(request.getParameter("day"));
+	if (daySetting == null) {
+		if (!isRecommended) {
+			daySetting = ServletUtils.getCurrentDay();
+			if (ServletUtils.isWeekday(daySetting))
+				daySetting = StarsThermoDaySettings.WEEKDAY;
+		}
+		else
+			daySetting = StarsThermoDaySettings.WEEKDAY;
+	}
+	
+	StarsThermoModeSettings modeSetting = null;
+	if (request.getParameter("mode") != null)
+		modeSetting = StarsThermoModeSettings.valueOf(request.getParameter("mode"));
+	if (modeSetting == null)
+		modeSetting = StarsThermoModeSettings.COOL;
+	
+	boolean isCooling = (modeSetting.getType() == StarsThermoModeSettings.COOL_TYPE);
+	String visibleC = isCooling ? "visible" : "hidden";
+	String visibleH = isCooling ? "hidden" : "visible";
+    
+    String tempUnit = "F";
+    LiteCustomer customer = null;
+    if(accountInfo != null)
+    {
+	    int customerId = accountInfo.getStarsCustomerAccount().getCustomerID();
+	   	customer = DaoFactory.getCustomerDao().getLiteCustomer(customerId);
+	   	tempUnit = customer.getTemperatureUnit();
+	}
+	    
+    if (request.getParameter("tempUnit") != null) {
+        String tempTemperatureUnit = request.getParameter("tempUnit");
+        // update database
+        if(customer != null)
+        	ServletUtils.updateCustomerTemperatureUnit(customer, tempTemperatureUnit);
+        tempUnit = tempTemperatureUnit;
+    }
+	
+	StarsThermostatSchedule coolSched = null;
+	StarsThermostatSchedule heatSched = null;
+	StarsThermostatSchedule schedule = null;
+	StarsThermostatSchedule dftSchedule = null;
+	
+	if (thermoProgram != null) {
+		for (int i = 0; i < thermoProgram.getStarsThermostatSeasonCount(); i++) {
+			StarsThermostatSeason season = thermoProgram.getStarsThermostatSeason(i);
+			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
+				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
+						coolSched = season.getStarsThermostatSchedule(j);
+						break;
+					}
+				}
+			}
+			else {
+				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
+						heatSched = season.getStarsThermostatSchedule(j);
+						break;
+					}
+				}
+			}
+		}
+		if (isCooling)
+			schedule = coolSched;
+		else
+			schedule = heatSched;
+	}
+	
+	if (dftThermoProgram != null) {
+		for (int i = 0; i < dftThermoProgram.getStarsThermostatSeasonCount(); i++) {
+			StarsThermostatSeason season = dftThermoProgram.getStarsThermostatSeason(i);
+			if (season.getMode().getType() == StarsThermoModeSettings.COOL_TYPE) {
+				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
+						StarsThermostatSchedule sched = season.getStarsThermostatSchedule(j);
+						if (coolSched == null) coolSched = sched;
+						if (isCooling) dftSchedule = sched;
+						break;
+					}
+				}
+			}
+			else {
+				for (int j = 0; j < season.getStarsThermostatScheduleCount(); j++) {
+					if (season.getStarsThermostatSchedule(j).getDay().getType() == daySetting.getType()) {
+						StarsThermostatSchedule sched = season.getStarsThermostatSchedule(j);
+						if (heatSched == null) heatSched = sched;
+						if (!isCooling) dftSchedule = sched;
+						break;
+					}
+				}
+			}
+		}
+		if (schedule == null) schedule = dftSchedule;
+	}
+%>
+
+<script language="JavaScript" src ="<%= request.getContextPath() %>/JavaScript/nav_menu.js">
+</script>
+<script language="JavaScript" src ="<%= request.getContextPath() %>/JavaScript/drag.js">
+</script>
+<script language="JavaScript" src ="<%= request.getContextPath() %>/JavaScript/thermostat2.js">
+</script>
+<script language="JavaScript" src ="<%= request.getContextPath() %>/JavaScript/temp_conversion.js">
+</script>
+<script language = "JavaScript">
+// Set global variable in thermostat2.js
+thermMode = '<%= isCooling ? "C" : "H" %>';
+tempUnit = '<%= tempUnit %>';
+
+function switchSettings(day, mode, thermType) {
+	location.href = "<%= request.getRequestURI() %>?<%= thermNoStr %>&day=" + day + "&mode=" + mode + "&type=" + thermType;
+}
+
+function setToDefault() {
+	var form = document.form1;
+	form.time1.value = "<%= ampmTimeFormat.format(dftSchedule.getTime1().toDate()) %>";
+	form.time2.value = "<%= ampmTimeFormat.format(dftSchedule.getTime2().toDate()) %>";
+	form.time3.value = "<%= ampmTimeFormat.format(dftSchedule.getTime3().toDate()) %>";
+	form.time4.value = "<%= ampmTimeFormat.format(dftSchedule.getTime4().toDate()) %>";
+	
+	var temp1C, temp1H, temp2C, temp2H, temp3C, temp3H, temp4C, temp4H;
+	if (<%= isCooling %>) {
+		temp1C = <%= dftSchedule.getTemperature1() %>;
+		temp2C = <%= dftSchedule.getTemperature2() %>;
+		temp3C = <%= dftSchedule.getTemperature3() %>;
+		temp4C = <%= dftSchedule.getTemperature4() %>;
+		temp1H = temp2H = temp3H = temp4H = null;
+	}
+	else {
+		temp1H = <%= dftSchedule.getTemperature1() %>;
+		temp2H = <%= dftSchedule.getTemperature2() %>;
+		temp3H = <%= dftSchedule.getTemperature3() %>;
+		temp4H = <%= dftSchedule.getTemperature4() %>;
+		temp1C = temp2C = temp3C = temp4C = null;
+	}
+	
+	updateLayout(
+		<%= dftSchedule.getTime1().getHour() %>,<%= dftSchedule.getTime1().getMinute() %>,temp1C,temp1H,
+		<%= dftSchedule.getTime2().getHour() %>,<%= dftSchedule.getTime2().getMinute() %>,temp2C,temp2H,
+		<%= dftSchedule.getTime3().getHour() %>,<%= dftSchedule.getTime3().getMinute() %>,temp3C,temp3H,
+		<%= dftSchedule.getTime4().getHour() %>,<%= dftSchedule.getTime4().getMinute() %>,temp4C,temp4H
+	);
+}
+
+function saveSchedule() {
+	if (isContentChanged() && confirm("Would you like to save the changes you made first?")) {
+		var form = document.form1;
+<%
+	int lastSlashPos = request.getRequestURI().lastIndexOf("/");
+%>
+		form.REDIRECT.value = "<%= request.getRequestURI().substring(0, lastSlashPos)%>/SavedSchedules.jsp?<%= thermNoStr %>";
+		form.submit();
+	}
+	else {
+		location.href = "SavedSchedules.jsp?<%= thermNoStr %>"
+	}
+}
+
+function init() {
+	updateLayout(
+		<%= schedule.getTime1().getHour() %>,<%= schedule.getTime1().getMinute() %>,<%= coolSched.getTemperature1() %>,<%= heatSched.getTemperature1() %>,
+		<%= schedule.getTime2().getHour() %>,<%= schedule.getTime2().getMinute() %>,<%= coolSched.getTemperature2() %>,<%= heatSched.getTemperature2() %>,
+		<%= schedule.getTime3().getHour() %>,<%= schedule.getTime3().getMinute() %>,<%= coolSched.getTemperature3() %>,<%= heatSched.getTemperature3() %>,
+		<%= schedule.getTime4().getHour() %>,<%= schedule.getTime4().getMinute() %>,<%= coolSched.getTemperature4() %>,<%= heatSched.getTemperature4() %>
+	);
+	document.getElementById('MovingLayer1').style.display = ""; //not sure why these aren't "block"
+	document.getElementById('MovingLayer2').style.display = "";
+	document.getElementById('MovingLayer3').style.display = "";
+	document.getElementById('MovingLayer4').style.display = "";
+	
+	if (document.getElementById('Default') != null) {
+<% if (isOperator) { %>
+		document.getElementById('Default').value = '<cti:getProperty propertyid="<%= ConsumerInfoRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
+<% } else { %>
+		document.getElementById('Default').value = '<cti:getProperty propertyid="<%= ResidentialCustomerRole.WEB_TEXT_RECOMMENDED_SETTINGS_BUTTON %>"/>';
+<% } %>
+	}
+}
+</script>
+
+			<form name="form1" method="POST" action="<%= request.getContextPath() %>/servlet/<%= (isRecommended)?"StarsAdmin":"SOAPClient" %>">
+			  <input type="hidden" name="action" value="UpdateThermostatSchedule">
+			  <input type="hidden" name="InvID" value="<%= invID %>">
+<% for (int i = 0; i < invIDs.length; i++) { %>
+			  <input type="hidden" name="InvIDs" value="<%= invIDs[i] %>">
+<% } %>
+			  <input type="hidden" name="type" value="<%= StarsThermostatTypes.EXPRESSSTAT_HEATPUMP.toString() %>">
+			  <input type="hidden" name="day" value="<%= daySetting.toString() %>">
+			  <input type="hidden" name="mode" value="<%= modeSetting.toString() %>">
+			  <input type="hidden" name="REDIRECT" value="<%= request.getRequestURI() %>?<%= thermNoStr %>&day=<%= daySetting.toString() %>&mode=<%= modeSetting.toString() %>&type=<%=thermType %>">
+			  <input type="hidden" name="REFERRER" value="<%= request.getRequestURI() %>?<%= thermNoStr %>&day=<%= daySetting.toString() %>&mode=<%= modeSetting.toString() %>&type=<%=thermType %>">
+              <input type="hidden" name="<%= ServletUtils.CONFIRM_ON_MESSAGE_PAGE %>">
+              <input type="hidden" name="temp1" id="temp1">
+              <input type="hidden" name="temp2" id="temp2">
+              <input type="hidden" name="temp3" id="temp3">
+              <input type="hidden" name="temp4" id="temp4">
+<%	if (allTherm) { %>
+              <table width="80%" border="0" cellspacing="0" cellpadding="0">
+                <tr> 
+                    <td align="right" class="MainText"><a href="AllTherm.jsp" class="Link1">Change 
+                      Selected Thermostats</a></td>
+                </tr>
+              </table>
+<%	} %>
+              <table width="80%" border="1" cellspacing = "0" cellpadding = "2">
+                <tr> 
+                    <td align = "center"  valign = "bottom" class = "Background"> 
+                      <table width="478" border="0" height="8" valign = "bottom" >
+                        <tr> 
+                          <td class = "TableCell1" align = "left" width="54%"> 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.WEEKDAY_TYPE) { %>
+                            <b><span class="Header2">Weekday</span></b> 
+                            <% } else { %>
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.WEEKDAY.toString() %>', '<%= modeSetting.toString() %>', '<%= thermType %>')">Weekday</span> 
+                            <% } %>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.SATURDAY_TYPE) { %>
+                            <b><span class="Header2">Saturday</span> </b>
+                            <% } else { %>
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.SATURDAY.toString() %>', '<%= modeSetting.toString() %>', '<%= thermType %>')">Saturday</span> 
+                            <% } %>
+                            &nbsp;&nbsp; 
+                            <% if (daySetting.getType() == StarsThermoDaySettings.SUNDAY_TYPE) { %>
+                            <b><span class="Header2">Sunday</span></b> 
+                            <% } else { %>
+                            <span class="Clickable" onclick="if (warnUnsavedChanges()) switchSettings('<%= StarsThermoDaySettings.SUNDAY.toString() %>', '<%= modeSetting.toString() %>', '<%= thermType %>')">Sunday</span> 
+                            <% } %>
+                          <td class = "Background" align = "right" width="46%"> 
+<%
+	String visible = (daySetting.getType() == StarsThermoDaySettings.WEEKDAY_TYPE)? "visible" : "hidden";
+	String checked = (String) session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_APPLY_TO_WEEKEND);
+	if (checked == null || isRecommended) checked = "";
+%>
+                            <span style="visibility:<%= visible %>"> 
+                            <input type="checkbox" name="ApplyToWeekend" value="true" <%= checked %> onclick="setContentChanged(true)">
+                            <span class="TableCell1">Apply settings to Saturday 
+                            and Sunday </span></span> 
+                        </tr>
+                      </table>
+                    </td>
+                </tr>
+                <tr> 
+                    <td align = "center"> 
+                    <noscript>
+                    <div class = "TableCell" align = "left">
+                      This page requires that JavaScript be enabled in your browser.</div>
+                    </div>
+                    </noscript>
+                    
+<% if (!isRecommended) { %>
+                      <table width="478" border="0">
+                        <tr> 
+                          <td class = "TableCell" width="71%" height="4" align = "center" valign="middle" > 
+                            <div align="left"> 
+                              1) Select Cooling or Heating.<br>
+                              2) Slide thermometers to change start times.<br>
+                              3) Adjust your cooling or heating temperatures.<br>
+<%
+	String instrLink = (isOperator)? DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ConsumerInfoRole.WEB_LINK_THERM_INSTRUCTIONS) :
+			DaoFactory.getAuthDao().getRolePropertyValue(lYukonUser, ResidentialCustomerRole.WEB_LINK_THERM_INSTRUCTIONS);
+	if (StarsUtils.forceNotNone(instrLink).length() == 0) {
+%>
+                              <a class="Link1" href="Instructions.jsp" onclick="return warnUnsavedChanges()">Click 
+                              for hints and details</a>.
+<%
+	}
+	else {
+%>
+                              <a class="Link1" href="<%= instrLink %>" target="instructions">Click 
+                              for hints and details</a>.
+<%
+	}
+%>
+                            </div>
+                          </td>
+                          <td class = "TableCell" width="29%" height="4" align = "left" valign="top" > 
+                            <i>Make temporary adjustments to your heating and 
+                            cooling system<a class="Link1" href="Thermostat.jsp?<%= thermNoStr %>"> 
+                            here</a>.</i> </td>
+                        </tr>
+                      </table>
+<% } %>
+                      <table width="175" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td width="68"> 
+                            <div align="right"><span class="TableCell"><font color="#003366">Cooling</font> 
+                              <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif"> 
+                              </span> </div>
+                          </td>
+                          <td width="31"><span class="TableCell"> 
+                            <input type="radio" name="radiobutton" value="radiobutton" <% if (isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.COOL.toString() %>', '<%= thermType %>')"<% } %>>
+                            </span></td>
+						  <td width="20"> 
+                            <input type="radio" name="radiobutton" value="radiobutton" <% if (!isCooling) { %>checked<% } else { %>onclick="if (warnUnsavedChanges()) switchSettings('<%= daySetting.toString() %>', '<%= StarsThermoModeSettings.HEAT.toString() %>', '<%= thermType %>')"<% } %>>
+                          </td>
+                          <td width="56"><img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif"> 
+                            <span class="TableCell"><font color="#FF0000">Heating</font></span></td>
+                        </tr>
+                      </table>
+                      <table width="478" height="186" background="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/TempBG2.gif" style="background-repeat: no-repeat" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td width="50">
+                            <div id="MovingLayer1" style="position:relative; width:30px; height:162px; left:0px; z-index:1; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,getRightBound(1),getLeftBound(1),'showTimeWake()','horizontal','MovingLayer1');setContentChanged(true);">
+                              <table border="0">
+                                <tr align="center"> 
+                                  <td colspan="2"> 
+                                    <div id="tempdisp1" class="TableCell2""></div>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermW.gif" width="16" height="131"> 
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="50%"> 
+                                    <div id="div1C" align="left" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow1C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(1)','vertical','div1C');setContentChanged(true);"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow1C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                    </div>
+                                  </td>
+                                  <td width="50%"> 
+                                    <div id="div1H" align="right" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow1H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(1)','vertical','div1H');setContentChanged(true);"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow1H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          </td>
+                          <td width="50">
+                            <div id="MovingLayer2" style="position:relative; width:30px; height:162px; left:0px; z-index:2; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,getRightBound(2),getLeftBound(2),'showTimeLeave()','horizontal','MovingLayer2');setContentChanged(true);"> 
+                              <table border="0">
+                                <tr align="center"> 
+                                  <td colspan="2"> 
+                                    <div id="tempdisp2" class="TableCell2"></div>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermL.gif" width="16" height="131"> 
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="50%"> 
+                                    <div id="div2C" align="left" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow2C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(2)','vertical','div2C');setContentChanged(true);"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow2C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                    </div>
+                                  </td>
+                                  <td width="50%"> 
+                                    <div id="div2H" align="right" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow2H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(2)','vertical','div2H');setContentChanged(true);"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow2H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          </td>
+                          <td width="50">
+                            <div id="MovingLayer3" style="position:relative; width:30px; height:162px; left:0px; z-index:3; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,getRightBound(3),getLeftBound(3),'showTimeReturn()','horizontal','MovingLayer3');setContentChanged(true);"> 
+                              <table border="0">
+                                <tr align="center"> 
+                                  <td colspan="2"> 
+                                    <div id="tempdisp3" class="TableCell2"></div>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermR.gif" width="16" height="131"> 
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="50%"> 
+                                    <div id="div3C" align="left" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow3C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(3)','vertical','div3C');setContentChanged(true);"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow3C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                    </div>
+                                  </td>
+                                  <td width="50%"> 
+                                    <div id="div3H" align="right" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow3H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(3)','vertical','div3H');setContentChanged(true);"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow3H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          </td>
+                          <td width="50">
+                            <div id="MovingLayer4" style="position:relative; width:30px; height:162px; left:0px; z-index:4; top:5px; display:none" onMouseDown = "beginDrag(event,0,0,getRightBound(4),getLeftBound(4),'showTimeSleep()','horizontal','MovingLayer4');setContentChanged(true);"> 
+                              <table border="0">
+                                <tr align="center"> 
+                                  <td colspan="2"> 
+                                    <div id="tempdisp4" class="TableCell2"></div>
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td align="center" colspan="2"> <img src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/ThermS.gif" width="16" height="131"> 
+                                  </td>
+                                </tr>
+                                <tr> 
+                                  <td width="50%"> 
+                                    <div id="div4C" align="left" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow4C" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/BlueArrow.gif" <% if (isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(4)','vertical','div4C');setContentChanged(true);"<% } %> style="visibility:<%= visibleC %>"><br>
+                                      <img id="arrow4C_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowL.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleH %>"> 
+                                    </div>
+                                  </td>
+                                  <td width="50%"> 
+                                    <div id="div4H" align="right" style="position:relative; left:0px; top:-115px"> 
+                                      <img id="arrow4H" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/RedArrow.gif" <% if (!isCooling) { %>onmousedown="beginDrag(event,arrowTopBnd,arrowBottomBnd,0,0,'handleUpdateTemp(4)','vertical','div4H');setContentChanged(true);"<% } %> style="visibility:<%= visibleH %>"><br>
+                                      <img id="arrow4H_Gray" src="<%= request.getContextPath() %>/WebConfig/yukon/ThermImages/GrayArrowR.gif" width="10" height="10" style="position:relative; top:-15px; visibility:<%= visibleC %>"> 
+                                    </div>
+                                  </td>
+                                </tr>
+                              </table>
+                            </div>
+                          </td>
+                          <td>&nbsp;</td>
+                        </tr>
+                      </table>
+                      <table width="100%" border="0" height="27">
+                        <tr>
+					  	  <td width="10%">&nbsp;</td> 
+                          <td class = "TableCell" align = "left" width="15%"><span class = "SubtitleHeader">Wake (W)</span></td>
+                          <td width="10%">&nbsp;</td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "SubtitleHeader">Leave (L)</span></td>
+                          <td width="10%">&nbsp;</td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "SubtitleHeader">Return (R)</span></td>
+                          <td width="10%">&nbsp;</td>
+						  <td class = "TableCell" align = "left" width="15%"><span class = "SubtitleHeader">Sleep (S)</span></td>
+                        </tr>
+                        <tr> 
+                          <td class = "TableCell" width="10%">
+                            <div align="right">Start At:</div>
+                          </td>
+						  <td class = "TableCell" width="15%">  
+                            <input id="time1" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime1().toDate()) %>" name="time1" onchange="setContentChanged(true);timeChange(this,1);">
+                          </td>
+                          <td class = "TableCell" width="10%">
+                            <div align="right">Start At: </div>
+                          </td>
+						  <td class = "TableCell" width="15%"> 
+                            <input id="time2" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime2().toDate()) %>" name="time2" onchange="setContentChanged(true);timeChange(this,2);">
+                          </td>
+                          <td class = "TableCell" width="10%">
+                            <div align="right">Start At: </div>
+                          </td>
+						  <td class = "TableCell" width="15%"> 
+                            <input id="time3" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime3().toDate()) %>" name="time3" onchange="setContentChanged(true);timeChange(this,3);">
+                          </td>
+                          <td class = "TableCell" width="10%">
+                            <div align="right">Start At: </div>
+                          </td>
+						  <td class = "TableCell" width="15%"> 
+                            <input id="time4" type="text" size="8" value="<%= ampmTimeFormat.format(schedule.getTime4().toDate()) %>" name="time4" onchange="setContentChanged(true);timeChange(this,4);">
+                          </td>
+                        </tr>
+                        <tr>
+                          <td class = "TableCell" width="10%">
+                            <div align="right">Temp:</div>
+                          </td>
+                          <td class = "TableCell" width="15%">  
+                            <input id="tempin1" type="text" size="3" value="" name="tempin1" onchange="setContentChanged(true);tempChange(1);">&deg;<%= tempUnit %>
+                          </td>
+                          <td class = "TableCell" width="10%">
+                            <div align="right">Temp: </div>
+                          </td>
+                          <td class = "TableCell" width="15%"> 
+                            <input id="tempin2" type="text" size="3" value="" name="tempin2" onchange="setContentChanged(true);tempChange(2);">&deg;<%= tempUnit %>
+                          </td>
+                          <td class = "TableCell" width="10%">
+                            <div align="right">Temp: </div>
+                          </td>
+                          <td class = "TableCell" width="15%"> 
+                            <input id="tempin3" type="text" size="3" value="" name="tempin3" onchange="setContentChanged(true);tempChange(3);">&deg;<%= tempUnit %>
+                          </td>
+                          <td class = "TableCell" width="10%">
+                            <div align="right">Temp: </div>
+                          </td>
+                          <td class = "TableCell" width="15%"> 
+                            <input id="tempin4" type="text" size="3" value="" name="tempin4" onchange="setContentChanged(true);tempChange(4);">&deg;<%= tempUnit %>
+                          </td>
+                        </tr>
+                      </table>
+                  </td>
+                </tr>
+                <tr><td class="TableCell" align="right">Mode: 
+<% if ( tempUnit.equals("C") ) { %>
+                C&deg; | <a href="<%=com.cannontech.util.ServletUtil.tweakHTMLRequestURI(request, "tempUnit", "F") %>">F&deg;</a>
+<% } else { %>
+                <a href="<%=com.cannontech.util.ServletUtil.tweakHTMLRequestURI(request, "tempUnit", "C") %>">C&deg;</a> | F&deg;
+<% } %>
+                </td></tr>
+              </table><br>
+              <table width="80%" border="0" cellpadding="5">
+                <tr>
+                  <td width="85%" align = "center" class = "TableCell"> 
+                    <input type="submit" name="Submit" value="Submit">
+<% if (!isRecommended) { %>
+<% if (!allTherm) { %>
+                    <input type="button" value="Save/Apply Schedule" onclick="saveSchedule()">
+                    <p>
+<% } %>
+                    <input type="button" id="Default" value="Recommended Settings" onclick="setToDefault();setContentChanged(true);">
+<% } %>
+                  </td>
+<% if (isRecommended) { %>
+				  <td width="15%" align = "right" class = "TableCell">
+				    <input type="button" name="Back" value="Back" onclick="if (warnUnsavedChanges()) location.href='AdminTest.jsp'">
+				  </td>
+<% } %>
+                </tr>
+              </table>
+            </form>

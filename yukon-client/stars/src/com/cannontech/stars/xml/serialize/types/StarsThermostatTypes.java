@@ -2,7 +2,7 @@
  * This class was automatically generated with 
  * <a href="http://castor.exolab.org">Castor 0.9.3.9+</a>, using an
  * XML Schema.
- * $Id: StarsThermostatTypes.java,v 1.33 2007/05/15 16:33:16 jdayton Exp $
+ * $Id: StarsThermostatTypes.java,v 1.34 2008/07/16 16:22:11 mkruse Exp $
  */
 
 package com.cannontech.stars.xml.serialize.types;
@@ -16,7 +16,7 @@ import java.util.Hashtable;
 /**
  * 
  * 
- * @version $Revision: 1.33 $ $Date: 2007/05/15 16:33:16 $
+ * @version $Revision: 1.34 $ $Date: 2008/07/16 16:22:11 $
 **/
 public class StarsThermostatTypes implements java.io.Serializable {
 
@@ -66,9 +66,19 @@ public class StarsThermostatTypes implements java.io.Serializable {
     public static final StarsThermostatTypes EXPRESSSTAT_HEATPUMP = new StarsThermostatTypes(EXPRESSSTAT_HEATPUMP_TYPE, "ExpressStat Heat Pump");
 
     /**
+     * The Commercial type
+    **/
+    public static final int EXPRESSSTAT_UTILITYPRO_TYPE = 4;
+    
+    /**
+     * The instance of the Commercial type
+    **/
+    public static final StarsThermostatTypes EXPRESSSTAT_UTILITYPRO = new StarsThermostatTypes(EXPRESSSTAT_UTILITYPRO_TYPE, "ExpressStat Utility Pro");
+    
+    /**
      * The total number of thermostat types in the system
      */
-    public static final int NUMBER_OF_THERMO_TYPES = 4;
+    public static final int NUMBER_OF_THERMO_TYPES = 5;
     
     private static java.util.Hashtable _memberTable = init();
 
@@ -118,6 +128,7 @@ public class StarsThermostatTypes implements java.io.Serializable {
         members.put("EnergyPro", ENERGYPRO);
         members.put("Commercial", COMMERCIAL);
         members.put("ExpressStat Heat Pump", EXPRESSSTAT_HEATPUMP);
+        members.put("ExpressStat Utility Pro", EXPRESSSTAT_UTILITYPRO);        		
         return members;
     } //-- java.util.Hashtable init() 
 

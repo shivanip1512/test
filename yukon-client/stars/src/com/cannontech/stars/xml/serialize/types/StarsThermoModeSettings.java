@@ -75,7 +75,7 @@ public class StarsThermoModeSettings implements java.io.Serializable {
     **/
     public static final StarsThermoModeSettings EMHEAT = new StarsThermoModeSettings(EMHEAT_TYPE, "EmHeat");
 
-    private static java.util.Hashtable _memberTable = init();
+    private static Hashtable<String, StarsThermoModeSettings> _memberTable = init();
 
     private int type = -1;
 
@@ -116,9 +116,9 @@ public class StarsThermoModeSettings implements java.io.Serializable {
 
     /**
     **/
-    private static java.util.Hashtable init()
+    private static Hashtable<String, StarsThermoModeSettings> init()
     {
-        Hashtable members = new Hashtable();
+        Hashtable<String, StarsThermoModeSettings> members = new Hashtable<String, StarsThermoModeSettings>();
         members.put("Heat", HEAT);
         members.put("Cool", COOL);
         members.put("Off", OFF);

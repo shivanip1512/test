@@ -10,6 +10,7 @@ import com.cannontech.stars.dr.hardware.model.ListEntryEnum;
 public enum ThermostatFanState implements ListEntryEnum {
     DEFAULT(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_DEFAULT, "default"), 
     AUTO(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_AUTO, "auto"), 
+    CIRCULATE(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_CIRCULATE, "circulate"),
     ON(YukonListEntryTypes.YUK_DEF_ID_FAN_STAT_ON, "on");
 
     // this key prefix can be found in the following file:
