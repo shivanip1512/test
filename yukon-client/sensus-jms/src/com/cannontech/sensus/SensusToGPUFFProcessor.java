@@ -23,12 +23,18 @@ public class SensusToGPUFFProcessor extends SensusMessageHandlerBase {
 
 		log.debug("Processing message for repId=" + repId + ": " + message);
 
-		boolean fault = false;
+		boolean fault;
 		boolean event = message.isStatusEventTransBit();
 		Date toi = message.getTimestampOfIntercept();
 		boolean no60 = message.isStatusNo60HzOrUnderLineCurrent();
 		float lastBatteryVoltage = message.getLastTxBatteryVoltage();
 
+        if ((message.isStatusEventTransBit() || isIgnoreEventBit()) && message.getLastEvent().isPopulated()) {
+            fault = message.getLastEvent().isFaultDetected();
+        } else {
+            fault = message.isStatusLatchedFault();
+        }
+		
 		GPUFFProtocol prot = new GPUFFProtocol();
 		prot.setDeviceType(GPUFFProtocol.DEVICE_TYPE_SENSUSFCI);
 		prot.setSerialNumber(repId);
