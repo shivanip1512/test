@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
 <c:url var="commentsUrl" value="/capcontrol/capcontrolcomments.jsp?paoID="/>
 
@@ -15,7 +16,7 @@
                     <a href="javascript:void(0);" 
                        class="optDeselect"
                        onmouseover="changeOptionStyle(this);"
-                       onclick="cClick(); executeCommand('${paoId}','${cmdHolder.cmdId}', '${cmdHolder.commandName}', '${controlType}', '${isReasonRequired}');">${cmdHolder.commandName}</a>
+                       onclick="cClick(); executeCommand('${paoId}','${cmdHolder.cmdId}', '${cmdHolder.commandName}', '${controlType}', '${isReasonRequired}', <cti:getProperty property='CBCSettingsRole.CONTROL_WARNING'/>);" >${cmdHolder.commandName}</a>
                 </td>
             </tr>    
         </c:forEach>

@@ -40,9 +40,20 @@ function executeCapBankResetOpCount(paoId) {
 }
 
 function executeCommand(paoId, cmdId, commandName, controlType, reasonRequired) {
+    executeCommand(paoId, cmdId, commandName, controlType, reasonRequired, false);
+}
+
+function executeCommand(paoId, cmdId, commandName, controlType, reasonRequired, warn) {
     var isReasonRequired = eval(reasonRequired);
     if (!isReasonRequired) {
-        executeCommandController(paoId, cmdId, commandName, controlType);
+        if(warn){
+            var yes = confirm('Are you sure you want to exectute the command '+commandName+'?');
+            if(yes){
+                executeCommandController(paoId, cmdId, commandName, controlType);
+            }
+        } else {
+            executeCommandController(paoId, cmdId, commandName, controlType);
+        }
         return;
     }
 
