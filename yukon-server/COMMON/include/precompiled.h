@@ -1,7 +1,7 @@
 /*
  * Every source file should include this file.
  *
- * This header file exists to precompile large header files that never change. 
+ * This header file exists to precompile large header files that never change.
  * Add any headers here that you want precompiled.
  */
 #ifndef __PRECOMPILED_H__
@@ -9,9 +9,10 @@
 
 #pragma warning( disable : 4786)
 
-#include <winsock2.h>
-#include <windows.h>
+#define _WIN32_WINNT 0x0500
 
+#include <windows.h>
+#include <winsock2.h>
 
 #include <stdlib.h>
 #include <stdio.h>
