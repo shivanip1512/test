@@ -60,8 +60,6 @@ import com.cannontech.database.data.pao.DeviceTypes;
 import com.cannontech.database.data.pao.PAOGroups;
 import com.cannontech.database.data.pao.YukonPAObject;
 import com.cannontech.database.data.point.PointBase;
-import com.cannontech.database.data.point.PointTypes;
-import com.cannontech.database.db.CTIDbChange;
 import com.cannontech.database.db.DBPersistent;
 import com.cannontech.database.db.device.DeviceMeterGroup;
 import com.cannontech.database.db.device.DeviceRoutes;
@@ -70,7 +68,6 @@ import com.cannontech.database.db.importer.ImportFail;
 import com.cannontech.database.db.importer.ImportPendingComm;
 import com.cannontech.device.range.DeviceAddressRange;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
-import com.cannontech.message.dispatch.message.Multi;
 import com.cannontech.message.porter.message.Request;
 import com.cannontech.message.porter.message.Return;
 import com.cannontech.message.util.Message;
@@ -372,17 +369,17 @@ public void runImport(List<ImportData> imps) {
             errorMsg.add(error);
         }
         else if(template400SeriesBase instanceof MCT430S4 && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430S4, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT430LG address ("+address+").  ";
+            String error = "Has an incorrect MCT430S4 address ("+address+").  ";
             log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
         else if(template400SeriesBase instanceof MCT430A && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430A, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT430EL address ("+address+").  ";
+            String error = "Has an incorrect MCT430A address ("+address+").  ";
             log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
         else if(template400SeriesBase instanceof MCT430SL && !DeviceAddressRange.isValidRange(DeviceTypes.MCT430SL, Long.parseLong(address))) {
-            String error = "Has an incorrect MCT430IN address ("+address+").  ";
+            String error = "Has an incorrect MCT430SL address ("+address+").  ";
             log.error(logMsgPrefix + error);
             errorMsg.add(error);
         }
@@ -533,7 +530,7 @@ public void runImport(List<ImportData> imps) {
             log.error("Unable to import or update device with address " + address + " and name " + name + ".");
 		}
 		else if( updateDeviceID != null) {
-            LiteYukonPAObject liteYukonPaobject = new LiteYukonPAObject(updateDeviceID);
+            LiteYukonPAObject liteYukonPaobject = DaoFactory.getPaoDao().getLiteYukonPAO(updateDeviceID);
             YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);
 			boolean updateTransaction = false;
 			
@@ -580,10 +577,14 @@ public void runImport(List<ImportData> imps) {
 				}
                 successCounter++;
             } catch (PersistenceException e) {
+                log.error(e);
                 GregorianCalendar now = new GregorianCalendar();
-                String errors = errorMsg.remove(0);
-                for (String error : errorMsg) {
-                    errors += "<br>" + error;
+                String errors = "Database update for DeviceId " + updateDeviceID + " failed. (PersistenceException)";
+                if(!errorMsg.isEmpty()) {
+                    errors = errorMsg.remove(0);
+                    for (String error : errorMsg) {
+                        errors += "<br>" + error;
+                    }
                 }
                 currentFailure = new ImportFail(address, name, routeName, 
                                                 meterNumber, collectionGrp, altGrp, templateName, 
@@ -656,15 +657,24 @@ public void runImport(List<ImportData> imps) {
 				successCounter++;
 			}
 			catch( TransactionException e ) {
-				e.printStackTrace();
+				log.error(e);
 				StringBuffer tempErrorMsg = new StringBuffer(e.toString());
 				currentFailure = new ImportFail(address, name, routeName, 
                                                 meterNumber, collectionGrp, altGrp, 
                                                 templateName, tempErrorMsg.toString(), now.getTime(), 
                                                 billGrp, substationName, ImportFuncs.FAIL_DATABASE);
 				failures.add(currentFailure);
-				log.error(current400Series.getPAOType() + " with name " + name + " failed on INSERT into database.");
-			}
+				log.error(current400Series.getPAOType() + " with name " + name + " failed on INSERT into database (ImportPendingComm). ");
+			} catch( PersistenceException e ) {
+			    log.error(e);
+                StringBuffer tempErrorMsg = new StringBuffer(e.toString());
+                currentFailure = new ImportFail(address, name, routeName, 
+                                                meterNumber, collectionGrp, altGrp, 
+                                                templateName, tempErrorMsg.toString(), now.getTime(), 
+                                                billGrp, substationName, ImportFuncs.FAIL_DATABASE);
+                failures.add(currentFailure);
+                log.error(current400Series.getPAOType() + " with name " + name + " failed on INSERT into database. (objectsToAdd)");
+            }
 			finally {
 				try {
 					if( conn != null ) {
@@ -673,7 +683,7 @@ public void runImport(List<ImportData> imps) {
 					}
 				}
 				catch( java.sql.SQLException e ) {
-					e.printStackTrace();
+					log.error(e);
 				}
 			}
 		}
@@ -685,7 +695,7 @@ public void runImport(List<ImportData> imps) {
 		ImportFuncs.flushImportTable(imps, conn);
 	}
 	catch( java.sql.SQLException e ) {
-		e.printStackTrace();
+		log.error(e);
 		log.error("PREVIOUSLY USED IMPORT ENTRIES NOT REMOVED: THEY WOULD NOT DELETE!!!");
 	}
 	finally {
@@ -696,7 +706,7 @@ public void runImport(List<ImportData> imps) {
 			}
 		}
 		catch( java.sql.SQLException e ) {
-			e.printStackTrace();
+			log.error(e);
 		}
 	}
 	
@@ -712,7 +722,7 @@ public void runImport(List<ImportData> imps) {
 		ImportFuncs.storeFailures(successVector, failures, conn);
 	}
 	catch( java.sql.SQLException e ) {
-		e.printStackTrace();
+		log.error(e);
 		log.error("FAILURES NOT RECORDED: THEY WOULD NOT INSERT!!!");
 	}
 	finally {
@@ -723,7 +733,7 @@ public void runImport(List<ImportData> imps) {
 			}
 		}
 		catch( java.sql.SQLException e ) {
-			e.printStackTrace();
+		    log.error(e);
 		}
 	}
 	DBFuncs.writeTotalSuccess(successCounter);
