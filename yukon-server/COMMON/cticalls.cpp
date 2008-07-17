@@ -1027,57 +1027,23 @@ APIRET IM_EX_CTIBASE CTISetMaxFH          (ULONG ulFH)
 #endif
 }
 
-APIRET IM_EX_CTIBASE CTISetPriority  (ULONG   ulScope,
-                                      ULONG   ulPriClass,
-                                      LONG    lPriDelta,
-                                      ULONG   ulID
-                                     )
+APIRET IM_EX_CTIBASE CTISetPriority( ULONG ulPriClass, int tPri )
 {
-#if __OS2__
-   return(DosSetPriority    (ulScope,
-                             ulPriClass,
-                             lPriDelta,
-                             ulID));
-#elif defined(_WIN32)
-
-    // Make some priority decisions for the poor OS/2 programmers.
-    int tPri;
-
-    if(lPriDelta < -10)
+    /*
+    if(ulPriClass)
     {
-        tPri = THREAD_PRIORITY_LOWEST;
-    }
-    else if(lPriDelta < 0)
-    {
-        tPri = THREAD_PRIORITY_BELOW_NORMAL;
-    }
-    else if(lPriDelta == 0)
-    {
-        tPri = THREAD_PRIORITY_NORMAL;
-    }
-    else if(lPriDelta < 30)
-    {
-        tPri = THREAD_PRIORITY_ABOVE_NORMAL;
-    }
-    else if(lPriDelta < 32)
-    {
-        tPri = THREAD_PRIORITY_HIGHEST;
+        if(!SetPriorityClass(GetCurrentProcess(), ulPriClass))
+        {
+            DWORD lerror = GetLastError();
+            printf("Error in CTISetPriority %d\n", lerror);
+            return(1);
+        }
     }
 
-    if(ulPriClass == 0) ulPriClass = GetPriorityClass(GetCurrentProcess());
+    return !SetThreadPriority((HANDLE)GetCurrentThread(), tPri);
+    */
 
-    if(SetPriorityClass(GetCurrentProcess(), ulPriClass) )
-    {
-        return(!SetThreadPriority((HANDLE)GetCurrentThread(), tPri));
-    }
-   else
-   {
-        DWORD lerror = GetLastError();
-        printf("Error in CTISetPriority %d\n", lerror);
-      return(1);
-   }
-
-#endif
+    return 0;
 }
 
 APIRET IM_EX_CTIBASE CTICreatePipe   (

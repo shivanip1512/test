@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/ctivangogh.cpp-arc  $
-* REVISION     :  $Revision: 1.187 $
-* DATE         :  $Date: 2008/07/14 14:49:54 $
+* REVISION     :  $Revision: 1.188 $
+* DATE         :  $Date: 2008/07/17 20:32:55 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -369,7 +369,7 @@ void CtiVanGogh::VGMainThread()
         ConnThread_.start();
 
         // SetThreadPriority(GetCurrentThread(), THREAD_PRIORITY_ABOVE_NORMAL);
-        CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+        CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
         for(;!bQuit;)
         {
@@ -662,7 +662,7 @@ void CtiVanGogh::VGConnectionHandlerThread()
 
 
     /* Up this threads priority a notch over the other procs */
-    CTISetPriority (PRTYS_THREAD, PRTYC_NOCHANGE, -10, 0);
+    CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_BELOW_NORMAL);
 
     /*
      *  Wait for Main to get listener up and ready to go.
@@ -2692,7 +2692,7 @@ int CtiVanGogh::processControlMessage(CtiLMControlHistoryMsg *pMsg)
                         pData->setMessagePriority( pData->getMessagePriority() + 1 );
                         MainQueue_.putQueue(pData);
                     }
-        
+
                     if(pMsg->getRawState() == CONTROLLED && pMsg->getControlDuration() > 0)
                     {
                         // Present the restore as a delayed update to dispatch.  Note that the order of opened and closed have reversed
@@ -6536,7 +6536,7 @@ int CtiVanGogh::checkNumericReasonability(CtiPointDataMsg *pData, CtiMultiWrappe
 
     try
     {
-        
+
         if(highLimit != lowLimit &&       // They must be different.
            highLimit >  lowLimit )
         {

@@ -211,7 +211,7 @@ APIRET   IM_EX_CTIBASE CTIGetDateTime        (PDATETIME dt);
 APIRET   IM_EX_CTIBASE CTISetDateTime        (PDATETIME dt);
 APIRET   IM_EX_CTIBASE CTISetMaxFH           (ULONG ulFH);
 
-APIRET   IM_EX_CTIBASE CTISetPriority        (ULONG ulScope, ULONG ulPriClass, LONG lPriDelta, ULONG ulID);
+APIRET   IM_EX_CTIBASE CTISetPriority        (ULONG ulPriClass, int tPri);
 
 DWORD    IM_EX_CTIBASE CurrentTID(VOID);
 DWORD    IM_EX_CTIBASE CurrentPID(VOID);
