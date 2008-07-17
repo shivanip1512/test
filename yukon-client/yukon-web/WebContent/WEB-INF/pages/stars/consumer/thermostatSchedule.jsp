@@ -8,6 +8,10 @@
 <cti:standardPage module="consumer" page="thermostatSchedule">
     <cti:standardMenu/>
     
+    <!-- Add language specific time formatter -->
+    <cti:msg var="timeFormatter" key="yukon.common.timeFormatter" />
+    <cti:includeScript link="${timeFormatter}"/>
+
     <cti:includeCss link="/WebConfig/yukon/CannonStyle.css"/>
     
     <cti:includeScript link="/JavaScript/nav_menu.js" />
@@ -19,8 +23,6 @@
     <cti:msg var="noScheduleName" key="yukon.dr.consumer.thermostatSchedule.noScheduleName" />
     <c:set var="isCooling" value="${mode == 'COOL'}" />
     
-    <!-- Add language specific time formatter -->
-    <tags:timeFormatter locale="${localeString}"></tags:timeFormatter>
     
 <script type="text/javascript">
 
