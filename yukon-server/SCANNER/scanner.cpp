@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/SCANNER/scanner.cpp-arc  $
-* REVISION     :  $Revision: 1.70 $
-* DATE         :  $Date: 2008/05/14 19:24:25 $
+* REVISION     :  $Revision: 1.71 $
+* DATE         :  $Date: 2008/07/17 20:53:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -349,7 +349,7 @@ INT ScannerMainFunction (INT argc, CHAR **argv)
     setConsoleTitle(CompileInfo);
 
     /* Give us a tiny attitude */
-    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_NORMAL);
 
     /* check for various flags */
     if(argc > 1)
@@ -715,7 +715,7 @@ VOID ResultThread (VOID *Arg)
 
 
     // I want an attitude!
-    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     int TracePrint (PBYTE, INT);
 
@@ -801,7 +801,7 @@ VOID ResultThread (VOID *Arg)
         {
             LastPorterInTime = LastPorterInTime.now();
 
-            CtiDeviceManager::LockGuard guard(ScannerDeviceManager.getMux());
+            CtiDeviceManager::coll_type::reader_lock_guard_t guard(ScannerDeviceManager.getLock());
 
             // Find the device..
             LONG id = InMessage->TargetID;
@@ -912,7 +912,7 @@ VOID NexusThread (VOID *Arg)
     INMESS      *InMessage = NULL;
 
     // I want an attitude!
-    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     /* perform the wait loop forever */
     for(;!ScannerQuit;)
@@ -1026,7 +1026,6 @@ CtiTime TimeOfNextRemoteScan()
     CtiTime            nextRemoteScanTime(YUKONEOT);
     CtiTime            TimeNow;
 
-    CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
     ScannerDeviceManager.apply(applyAnalyzeNextRemoteScan, (void*)&nextRemoteScanTime);
 
     /* Do not let this get out of hand, check once a minute if nothing else is looking */
@@ -1077,7 +1076,6 @@ CtiTime TimeOfNextLPScan( void )
 {
     CtiTime         nextLPScanTime(YUKONEOT);
 
-    CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
     ScannerDeviceManager.apply(applyAnalyzeNextLPScan, (void*)&nextLPScanTime);
 
     return nextLPScanTime;
@@ -1110,7 +1108,6 @@ CtiTime TimeOfNextWindow( void )
 {
     CtiTime nextWindow(YUKONEOT);
 
-    CtiDeviceManager::LockGuard  dev_guard(ScannerDeviceManager.getMux());       // Protect our iteration!
     ScannerDeviceManager.apply(applyAnalyzeNextWindow, (void*)&nextWindow);
 
     return nextWindow;
@@ -1190,7 +1187,7 @@ void LoadScannableDevices(void *ptr)
     InitScannerGlobals();      // Go fetch from the environmant
     ResetBreakAlloc();         // Make certain the debug library does not break us.
 
-    CtiDeviceManager::LockGuard guard(ScannerDeviceManager.getMux());
+    CtiDeviceManager::coll_type::writer_lock_guard_t guard(ScannerDeviceManager.getLock());
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1382,7 +1379,8 @@ void DispatchMsgHandlerThread(VOID *Arg)
                                 {
                                     CtiDeviceSPtr device;
                                     CtiDeviceSingle   *deviceSingle = NULL;
-                                    CtiDeviceManager::LockGuard guard(ScannerDeviceManager.getMux());
+                                    //  I don't think we need this here - getEqual() is muxed, and what we really want is a device-level mux
+                                    //CtiDeviceManager::LockGuard guard(ScannerDeviceManager.getMux());
 
                                     if( (device = ScannerDeviceManager.getEqual( deviceId )) )
                                     {

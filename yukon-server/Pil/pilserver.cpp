@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.104 $
-* DATE         :  $Date: 2008/07/08 22:56:59 $
+* REVISION     :  $Revision: 1.105 $
+* DATE         :  $Date: 2008/07/17 20:53:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -184,7 +184,7 @@ void CtiPILServer::mainThread()
     }
 
     /* Give us a tiny attitude */
-    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     /*
      *  MAIN: The main PIL loop lives here for all time!
@@ -198,16 +198,14 @@ void CtiPILServer::mainThread()
             {
                 MsgPtr = *(_groupQueue.begin());
                 _groupQueue.erase(_groupQueue.begin());
+
+                MsgPtr->setMessageTime(CtiTime::now());
             }
             else
             {
                 // Blocks for 500 ms or until a queue entry exists
                 MsgPtr = MainQueue_.getQueue(500);
             }
-
-            //  add a group queue that's also interrogated and is at least one-for-one with the main queue...
-            //    but only priority-wise
-            //  maybe re-inserts into its own queue to maintain priority... ?
 
             try
             {
@@ -528,7 +526,7 @@ void CtiPILServer::resultThread()
     }
 
     /* Give us a tiny attitude */
-    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+    CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_HIGHEST);
 
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
@@ -738,7 +736,7 @@ void CtiPILServer::nexusThread()
     }
 
     /* Give us a tiny attitude */
-    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+    CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_HIGHEST);
 
     SetThreadName(-1, "PILNexus ");
 
@@ -850,7 +848,7 @@ void CtiPILServer::nexusWriteThread()
     SetThreadName(-1, "PILNxsWrt");
 
     /* Give us a tiny attitude */
-    CTISetPriority(PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+    CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_HIGHEST);
 
     /* perform the wait loop forever */
     for( ; !bServerClosing ; )
@@ -1742,7 +1740,6 @@ void ReportMessagePriority( CtiMessage *MsgPtr, CtiDeviceManager *&DeviceManager
 {
     if(MsgPtr->isA() == MSG_PCREQUEST)
     {
-        CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
         CtiDeviceSPtr DeviceRecord = DeviceManager->getEqual(((CtiRequestMsg*)MsgPtr)->DeviceId());
         if(DeviceRecord)
         {
@@ -1779,7 +1776,7 @@ INT CtiPILServer::analyzeAutoRole(CtiRequestMsg& Req, CtiCommandParser &parse, l
 {
     INT status = NORMAL;
     int i;
-    CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
+    CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
     // CtiRouteManager::LockGuard rte_guard(RouteManager->getMux());
 
     CtiDeviceSPtr pRepeaterToRole = DeviceManager->getEqual(Req.DeviceId());    // This is our repeater we are curious about!
@@ -1858,7 +1855,7 @@ INT CtiPILServer::analyzePointGroup(CtiRequestMsg& Req, CtiCommandParser &parse,
 {
     INT status = NORMAL;
     int i;
-    CtiDeviceManager::LockGuard dev_guard(DeviceManager->getMux());
+    CtiDeviceManager::coll_type::reader_lock_guard_t guard(DeviceManager->getLock());  //  I don't think we need this, but I'm leaving it until we prove that out
 
     CtiDeviceSPtr ptGroup = DeviceManager->getEqual(Req.DeviceId());    // This is our repeater we are curious about!
 

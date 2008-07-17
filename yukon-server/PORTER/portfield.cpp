@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.218 $
-* DATE         :  $Date: 2008/06/25 17:08:42 $
+* REVISION     :  $Revision: 1.219 $
+* DATE         :  $Date: 2008/07/17 20:53:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -221,7 +221,7 @@ VOID PortThread(void *pid)
     SetThreadName(-1, thread_name.c_str());
 
     /* make it clear who is the boss */
-    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     // Let the threads get up and running....
     WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L);
@@ -849,7 +849,7 @@ INT EstablishConnection(CtiPortSPtr Port, INMESS *InMessage, OUTMESS *OutMessage
     // This check tries to correct the status of the "LastConnectedDevice" so that log happens if needed.
     if(oldConnUID > 0 && oldConnUID != Device->getUniqueIdentifier())
     {
-        CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+        CtiDeviceManager::coll_type::reader_lock_guard_t dev_guard(DeviceManager.getLock());       // Protect our iteration!
         CtiDeviceSPtr pOldConnectedDevice = DeviceManager.getEqual(LastConnectedDevice);
         if(pOldConnectedDevice)
         {
@@ -3926,7 +3926,7 @@ bool ShuffleQueue( CtiPortSPtr shPort, OUTMESS *&OutMessage, CtiDeviceSPtr &devi
             // We cannot be executed, we should look for another CONTROL queue entry.. We are still protected by mux...
             INT qEnt = 0;
             {
-                CtiLockGuard< CtiMutex >  find_dev_guard(DeviceManager.getMux());
+                CtiDeviceManager::coll_type::reader_lock_guard_t find_dev_guard(DeviceManager.getLock());
                 qEnt = SearchQueue( Port->getPortQueueHandle(), NULL, findExclusionFreeOutMessage, false );
             }
 
@@ -4310,7 +4310,7 @@ INT GetWork(CtiPortSPtr Port, CtiOutMessage *&OutMessage, ULONG &QueEntries)
      */
     if( Port->getQueueSlot() == 0 )
     {
-        CtiLockGuard< CtiMutex >  find_dev_guard(DeviceManager.getMux());
+        CtiDeviceManager::coll_type::reader_lock_guard_t find_dev_guard(DeviceManager.getLock());
         Port->setQueueSlot( Port->searchQueue( NULL, findExclusionFreeOutMessage, false ) );
     }
 

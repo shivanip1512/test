@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.121 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.122 $
+* DATE         :  $Date: 2008/07/17 20:53:13 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -847,7 +847,7 @@ INT PorterMainFunction (INT argc, CHAR **argv)
     CTISetMaxFH (200);
 
     /* make it clear who is just about the boss */
-    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 0, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_NORMAL);
 
     /* LOGON TO HARDLOCK */
 #ifdef HARDLOCK
@@ -1339,10 +1339,7 @@ VOID APIENTRY PorterCleanUp (ULONG Reason)
     }
 
 
-    {
-        CtiPortManager::LockGuard prt_guard(PortManager.getMux()); // Protect our destruction!
-        PortManager.haltLogs();
-    }
+    PortManager.haltLogs();
 
     Sleep(3000);
 
@@ -1480,14 +1477,14 @@ INT RefreshPorterRTDB(void *ptr)
             }
         }
 
-        CtiPortManager::LockGuard  guard(PortManager.getMux());
+        CtiPortManager::coll_type::writer_lock_guard_t guard(PortManager.getLock());
         PortManager.RefreshList();
         // PortManager.DumpList();
     }
 
     if(!PorterQuit && (pChg == NULL || (resolvePAOCategory(pChg->getCategory()) == PAO_CATEGORY_DEVICE) ) )
     {
-        CtiDeviceManager::LockGuard  guard(DeviceManager.getMux());
+        CtiDeviceManager::coll_type::writer_lock_guard_t guard(DeviceManager.getLock());
 
         LONG chgid = 0;
         string catstr;
@@ -1511,7 +1508,7 @@ INT RefreshPorterRTDB(void *ptr)
         }
         else
         {
-            CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+            CtiDeviceManager::coll_type::writer_lock_guard_t guard(DeviceManager.getLock());
             CtiDeviceSPtr pDev = DeviceManager.getEqual( chgid );
             if( pDev )
             {
@@ -1657,9 +1654,10 @@ INT RefreshPorterRTDB(void *ptr)
 
     /* see if we need to start process's for queuing */
     {
-        CtiDeviceManager::LockGuard  guard(DeviceManager.getMux());        // Protect our iteration!
+        //  since find() is protected, I don't think we need this
+        //CtiDeviceManager::coll_type::reader guard(DeviceManager.getLock());
 
-        if(!(_queueCCU711Thread.isValid()) && DeviceManager.find(findCCU711, NULL))
+        if(!(_queueCCU711Thread.isValid()) && DeviceManager.contains(findCCU711, NULL))
         {
             _queueCCU711Thread = rwMakeThreadFunction( QueueThread, (void*)NULL );
             _queueCCU711Thread.start();

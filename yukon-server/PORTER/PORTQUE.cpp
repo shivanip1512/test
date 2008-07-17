@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.63 $
-* DATE         :  $Date: 2008/06/13 13:39:49 $
+* REVISION     :  $Revision: 1.64 $
+* DATE         :  $Date: 2008/07/17 20:53:14 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -148,7 +148,12 @@ void blitzNexusFromCCUQueue(CtiDeviceSPtr Device, CtiConnect *&Nexus)
 
 static void applyBuildLGrpQ(const long unusedid, CtiDeviceSPtr Dev, void *usprtid)
 {
-    bool foreignCCU = (gForeignCCUPorts.find(Dev->getPortID()) != gForeignCCUPorts.end());
+    bool foreignCCU = false;
+
+    if( !gForeignCCUPorts.empty() )
+    {
+        foreignCCU = (gForeignCCUPorts.find(Dev->getPortID()) != gForeignCCUPorts.end());
+    }
 
     if(!foreignCCU && !Dev->isInhibited())
     {
@@ -256,7 +261,7 @@ VOID QueueThread (VOID *Arg)
     };
 
     /* make it clear who isn't the boss */
-    CTISetPriority(PRTYS_THREAD, PRTYC_REGULAR, -10, 0);
+    CTISetPriority(PRTYC_REGULAR, THREAD_PRIORITY_BELOW_NORMAL);
 
     for( ;PorterQuit != TRUE; )
     {
@@ -285,7 +290,7 @@ VOID QueueThread (VOID *Arg)
         }
 
         {
-            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
+            CtiPortManager::coll_type::reader_lock_guard_t guard(PortManager.getLock());  // this applyFunc Writes to the PortManager queues!
             DeviceManager.apply(applyBuildLGrpQ,NULL);
         }
     }
@@ -1305,7 +1310,7 @@ VOID KickerThread (VOID *Arg)
     CtiTime lastTickleTime, lastReportTime;
 
     /* make it clear who isn't the boss */
-    CTISetPriority(PRTYS_THREAD, PRTYC_REGULAR, -15, 0);
+    CTISetPriority(PRTYC_REGULAR, THREAD_PRIORITY_LOWEST);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -1332,7 +1337,7 @@ VOID KickerThread (VOID *Arg)
         /* loop through and check if we need to do any RCOLQ's */
 
         {
-            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager!
+            CtiPortManager::coll_type::reader_lock_guard_t guard(PortManager.getLock());  // this applyFunc Writes to the PortManager queues!
             DeviceManager.apply( applyKick, NULL );
         }
 
