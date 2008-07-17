@@ -5046,7 +5046,7 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         }
         if(!(token = CmdStr.match("cents")).empty())
         {
-            _cmd["xccharegecents"] = CtiParseValue(TRUE);
+            _cmd["xcchargecents"] = CtiParseValue(TRUE);
         }
         if(!(token = CmdStr.match(str_quoted_token)).empty())
         {
