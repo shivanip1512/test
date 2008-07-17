@@ -541,6 +541,24 @@ public class GroupEditorController extends MultiActionController {
             && !toParentGroup.isDescendantOf(fromGroup)
             ) {
             
+            List<DeviceGroup> parentsGroupChildGroups = deviceGroupDao.getChildGroups(toParentGroup);
+            List<String> parentsGroupChildGroupNames = new ArrayList<String>();
+            for (DeviceGroup d : parentsGroupChildGroups) {
+                parentsGroupChildGroupNames.add(d.getName());
+            }
+            
+            List<DeviceGroup> fromGroupChildGroups = deviceGroupDao.getChildGroups(fromGroup);
+            for (DeviceGroup d : fromGroupChildGroups) {
+                
+                if (parentsGroupChildGroupNames.contains(d.getName())) {
+                    
+                    mav.addObject("errorMessage", "Group '" + d.getName() + "' already exists in group '" +
+                                  toParentGroup.getName() + "'. Please rename the group using a unique name and try again.");
+                    mav.addObject("groupName", groupName);
+                    return mav;
+                }
+            }
+            
             // make copies of contents (devices and child groups and their devices) to parent group
             copyDeviceGroupService.copyGroupAndDevicesToGroup(fromGroup, toParentGroup);
         
