@@ -803,6 +803,7 @@ go
 drop view CCINVENTORY_VIEW;
 go
 
+/* @start-block */
 create view CCINVENTORY_VIEW (Region, SubName, FeederName, subId, substationid, fdrId, CBCName, cbcId, capbankname, bankId, CapBankSize, Sequence, ControlStatus, SWMfgr, SWType, ControlType, Protocol, IPADDRESS, SlaveAddress, LAT, LON, DriveDirection, OpCenter, TA) as
 SELECT yp4.paoname AS Region, yp3.PAOName AS SubName, yp2.PAOName AS FeederName, yp3.PAObjectID AS subId, ssl.substationid AS substationid, yp2.PAObjectID AS fdrId, 
                       yp.PAOName AS CBCName, yp.PAObjectID AS cbcId, yp1.PAOName AS capBankName, yp1.PAObjectID AS bankId, cb.BANKSIZE AS CapBankSize, 
@@ -828,10 +829,12 @@ FROM CAPBANK cb INNER JOIN
                       DeviceCBC cbc ON cbc.DEVICEID = cb.CONTROLDEVICEID INNER JOIN
                       capbankadditional capa on capa.deviceid = cb.deviceid
 go
+/* @end-block */
 
 drop view CCOPERATIONS_VIEW;
 go
 
+/* @start-block */
 create view CCOPERATIONS_VIEW (cbcName, capbankname, opTime, operation, confTime, confStatus, feederName, feederId, subName, subBusId, substationid, region, BANKSIZE, protocol, ipAddress, serialNum, SlaveAddress, kvarAfter, kvarChange, kvarBefore) as
 SELECT 
       yp3.PAOName AS cbcName, yp.PAOName AS capbankname, el.DateTime AS opTime, el.Text AS operation, 
@@ -877,6 +880,7 @@ GROUP BY op.LogID) OpConf INNER JOIN
         ccsubareaassignment as csa on csa.substationbusid = ssl.substationid left outer join 
         YukonPAObject AS yp4 ON yp4.paobjectid = csa.areaid
 go
+/* @end-block */
 
 /* Start YUK-4730 */
 if exists (select 1
@@ -1246,8 +1250,11 @@ insert into devicetypecommand values(-705, -139, 'MCT-410IL', 32, 'N', -1);
 /* End YUK-4860 */
 
 /* Start YUK-4859, YUK-5197, YUK-5630 */
-IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCCAP_INVENTORY_VIEW]'))
-DROP VIEW [CCCAP_INVENTORY_VIEW];
+IF  EXISTS (select 1
+            from  sysobjects
+            where  id = object_id('CCCAP_INVENTORY_VIEW')
+            and   type = 'V')
+	DROP VIEW [CCCAP_INVENTORY_VIEW];
 go
 /* End YUK-4859, YUK-5197, YUK-5630 */
 
@@ -1669,15 +1676,34 @@ go
 /* End YUK-5332 */
 
 /* Start YUK-5312 */
-DROP INDEX [INDX_CCRTEEPRTWIN_PWNID_PSID] ON [CCurtEEParticipantWindow];
+IF EXISTS (SELECT name
+           FROM sysindexes
+           WHERE name = 'INDX_CCRTEEPRTWIN_PWNID_PSID')
+    DROP INDEX CCurtEEParticipantWindow.INDX_CCRTEEPRTWIN_PWNID_PSID
 go
-DROP INDEX [INDX_CCURTEEPRWIN] ON [CCurtEEPricingWindow];
+
+IF EXISTS (SELECT name
+           FROM sysindexes
+           WHERE name = 'INDX_CCURTEEPRWIN')
+DROP INDEX CCurtEEPricingWindow.INDX_CCURTEEPRWIN
 go
-DROP INDEX [INDX_CCURTGROUP_ECID_GRPNM] ON [CCurtGroup];
+
+IF EXISTS (SELECT name
+           FROM sysindexes
+           WHERE name = 'INDX_CCURTGROUP_ECID_GRPNM')
+    DROP INDEX CCurtGroup.INDX_CCURTGROUP_ECID_GRPNM
 go
-DROP INDEX [INDX_CCRTGRPCSTNOTIF_GID_CID] ON [CCurtGroupCustomerNotif];
+
+IF EXISTS (SELECT name
+           FROM sysindexes
+           WHERE name = 'INDX_CCRTGRPCSTNOTIF_GID_CID')
+    DROP INDEX CCurtGroupCustomerNotif.INDX_CCRTGRPCSTNOTIF_GID_CID
 go
-DROP INDEX [INDX_CCURTPRGGRP_GRPID_PRGID] ON [CCurtProgramGroup];
+
+IF EXISTS (SELECT name
+           FROM sysindexes
+           WHERE name = 'INDX_CCURTPRGGRP_GRPID_PRGID')
+    DROP INDEX CCurtProgramGroup.INDX_CCURTPRGGRP_GRPID_PRGID
 go
 
 ALTER TABLE [ActivityLog]
@@ -1769,8 +1795,12 @@ go
 /* End YUK-5312 */
 
 /* Start YUK-5330 */
-DROP INDEX [Indx_RouteDevID] ON [Route];
+IF EXISTS (SELECT name 
+           FROM sysindexes 
+           WHERE name = 'Indx_RouteDevID') 
+	DROP INDEX Route.Indx_RouteDevID
 go
+
 CREATE UNIQUE NONCLUSTERED INDEX [Indx_RouteDevID] ON [Route] 
 (
 	[DeviceID] ASC,
@@ -1778,7 +1808,10 @@ CREATE UNIQUE NONCLUSTERED INDEX [Indx_RouteDevID] ON [Route]
 );
 go
 
-DROP INDEX [Indx_STATEGRP_Nme] ON [STATEGROUP];
+IF EXISTS (SELECT name 
+           FROM sysindexes 
+           WHERE name = 'Indx_STATEGRP_Nme')
+	DROP INDEX STATEGROUP.Indx_STATEGRP_Nme;
 go
 CREATE UNIQUE NONCLUSTERED INDEX [Indx_STATEGRP_Nme] ON [STATEGROUP] 
 (
@@ -2449,7 +2482,7 @@ go
 IF NOT EXISTS(SELECT * 
               FROM INFORMATION_SCHEMA.COLUMNS
               WHERE TABLE_NAME = 'dynamicCCFeeder' AND COLUMN_NAME = 'retryIndex')
-ALTER TABLE DynamicCCFeeder ADD retryIndex NUMERIC;
+	ALTER TABLE DynamicCCFeeder ADD retryIndex NUMERIC;
 go
 /* @end-block */
 
@@ -2467,12 +2500,13 @@ INSERT INTO YukonRoleProperty VALUES(-100013, -1000, 'Three Phase', 'false', 'di
 
 /* Start YUK-6107 */
 if exists (select 1 
-            from sysobjects 
+           from sysobjects 
            where id = object_id('CCOperations_View') 
-            and type = 'V') 
+           and type = 'V') 
    drop view CCOperations_View 
 go 
 
+/* @start-block */
 create view CCOperations_View as 
 SELECT YP3.PAOName AS CBCName, YP.PAOName AS CapBankName, YP.PAObjectId AS CapBankId, 
        EL.DateTime AS OpTime, EL.Text AS Operation, EL2.DateTime AS ConfTime, EL2.Text AS ConfStatus, 
@@ -2519,7 +2553,8 @@ LEFT OUTER JOIN CCSubstationSubbusList SSL ON SSL.SubstationBusId = EL.SubId
 LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SSL.SubstationBusId 
 LEFT OUTER JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
 LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId 
-go 
+go
+/* @end-block */
 /* End YUK-6107 */
 
 

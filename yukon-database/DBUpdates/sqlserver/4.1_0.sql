@@ -691,8 +691,11 @@ WHERE RoleDescription = 'Administrator privilages.'
 
 /* Start YUK-5630 */
 /* @start-block */
-IF  EXISTS (SELECT * FROM sys.views WHERE object_id = OBJECT_ID(N'[CCCAP_INVENTORY_VIEW]'))
-DROP VIEW [CCCAP_INVENTORY_VIEW];
+IF exists (SELECT 1
+           FROM  SysObjects
+           WHERE  Id = Object_Id('CCCAP_INVENTORY_VIEW')
+           AND   type = 'V')
+	DROP VIEW [CCCAP_INVENTORY_VIEW];
 go
 /* @end-block */
 /* End YUK-5630 */
@@ -870,13 +873,16 @@ INSERT INTO YukonRoleProperty VALUES(-40203,-400,'Enrollment per Device','false'
 /* End YUK-6059 */
 
 /* Start YUK-6107 */
+/* @start-block */
 if exists (select 1 
-            from sysobjects 
+           from sysobjects 
            where id = object_id('CCOperations_View') 
-            and type = 'V') 
+           and type = 'V') 
    drop view CCOperations_View 
 go 
+/* @end-block */
 
+/* @start-block */
 create view CCOperations_View as 
 SELECT YP3.PAOName AS CBCName, YP.PAOName AS CapBankName, YP.PAObjectId AS CapBankId, 
        EL.DateTime AS OpTime, EL.Text AS Operation, EL2.DateTime AS ConfTime, EL2.Text AS ConfStatus, 
@@ -924,6 +930,7 @@ LEFT OUTER JOIN YukonPAObject YP5 ON YP5.PAObjectId = SSL.SubstationBusId
 LEFT OUTER JOIN CCSubAreaAssignment CSA ON CSA.SubstationBusId = SSL.SubstationId 
 LEFT OUTER JOIN YukonPAObject YP4 ON YP4.PAObjectId = CSA.AreaId 
 go 
+/* @end-block */
 /* End YUK-6107 */
 
 /* Start YUK-5748 */
