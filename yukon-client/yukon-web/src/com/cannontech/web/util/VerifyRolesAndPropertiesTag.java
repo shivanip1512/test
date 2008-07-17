@@ -7,7 +7,7 @@ import javax.servlet.jsp.JspException;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.cannontech.common.exception.NotAuthorizedException;
-import com.cannontech.core.service.RoleAndPropertyDescriptionService;
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 /**

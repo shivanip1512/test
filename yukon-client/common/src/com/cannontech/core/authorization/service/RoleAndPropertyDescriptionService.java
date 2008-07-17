@@ -1,16 +1,31 @@
-package com.cannontech.core.service.impl;
+package com.cannontech.core.authorization.service;
 
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.AuthDao;
-import com.cannontech.core.service.RoleAndPropertyDescriptionService;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ReflectivePropertySearcher;
 
-public class RoleAndPropertyDescriptionServiceImpl implements RoleAndPropertyDescriptionService {
+public class RoleAndPropertyDescriptionService {
     private static final String ROLEID_SUFFIX = ".ROLEID";
     private final ReflectivePropertySearcher propertySearcher = ReflectivePropertySearcher.getRoleProperty();
     private AuthDao authDao;
 
-    @Override
+    /**
+     * This will check that the user has the given roles
+     * or has a true value for the given role properties.
+     * Roles and properties are specified as a comma-separated
+     * list of partially qualified class and field names. 
+     * Roles can be specified as simply the name of the class
+     * or the class name followed by a ".ROLEID". Properties
+     * will always be specified in a "ClassName.FIELD_CONSTANT"
+     * manner. "Partially qualified" refers to the fact that
+     * the leading part of the fully qualified class name
+     * may be dropped as described in the ReflectivePropertySearcher.
+     * 
+     * This works in an OR fashion. If the user passes any
+     * of the role or property checks a boolean value of
+     * true is returned.
+     */
     public boolean checkIfAtLeaseOneExists(final String rolePropDescription, 
             final LiteYukonUser user) {
         

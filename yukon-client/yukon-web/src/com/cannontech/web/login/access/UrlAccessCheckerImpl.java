@@ -9,8 +9,9 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.util.PathMatcher;
 import org.springframework.web.util.UrlPathHelper;
 
-import com.cannontech.common.util.Checker;
+import com.cannontech.core.authorization.support.AllowDeny;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.checker.UserChecker;
 import com.cannontech.util.ServletUtil;
 
 public class UrlAccessCheckerImpl implements UrlAccessChecker,InitializingBean {
@@ -27,27 +28,26 @@ public class UrlAccessCheckerImpl implements UrlAccessChecker,InitializingBean {
     
     @Override
     public boolean hasUrlAccess(HttpServletRequest request) {
-        final LiteYukonUser user = ServletUtil.getYukonUser(request);
-        final String path = urlPathHelper.getPathWithinApplication(request);
-
-        try {
-            for (final UrlAccess urlAccess : urlAccessList) {
-                if (isUrlPathMatch(path, urlAccess)) {
-                    if (isRoleIdMatch(urlAccess.getRoleIdChecker(), user)) {
-                        boolean hasUrlAccess = urlAccess.getType().equals(AccessType.ALLOW);
-                        return hasUrlAccess;
-                    }
+        LiteYukonUser user = ServletUtil.getYukonUser(request);
+        String urlPath = urlPathHelper.getPathWithinApplication(request);
+        return hasUrlAccess(urlPath, user);
+    }
+    
+    @Override
+    public boolean hasUrlAccess(final String urlPath, final LiteYukonUser user) {
+        for (final UrlAccess urlAccess : urlAccessList) {
+            if (isUrlPathMatch(urlPath, urlAccess)) {
+                if (isRoleIdMatch(urlAccess.getUserChecker(), user)) {
+                    boolean hasUrlAccess = urlAccess.getType().equals(AllowDeny.ALLOW);
+                    return hasUrlAccess;
                 }
             }
-        } catch (ParseUrlAccessException e) {
-            throw new RuntimeException(e);
         }
-
         return false;
     }
     
-    private boolean isRoleIdMatch(Checker<LiteYukonUser> roleIdChecker, LiteYukonUser user) {
-        boolean isRoleIdMatch = roleIdChecker.check(user);
+    private boolean isRoleIdMatch(UserChecker userChecker, LiteYukonUser user) {
+        boolean isRoleIdMatch = userChecker.check(user);
         return isRoleIdMatch;
     }
     

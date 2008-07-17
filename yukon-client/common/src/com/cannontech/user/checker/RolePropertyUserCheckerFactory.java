@@ -4,6 +4,7 @@ import org.apache.commons.lang.BooleanUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.core.authorization.service.RoleAndPropertyDescriptionService;
 import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.util.ReflectivePropertySearcher;
@@ -16,9 +17,30 @@ import com.cannontech.util.ReflectivePropertySearcher;
  * and to check the value of a boolean role property).
  */
 public class RolePropertyUserCheckerFactory {
+    private static final UserCheckerBase nullChecker = new NullUserChecker();
     private AuthDao authDao;
     private ReflectivePropertySearcher propertySearcher;
-    private static UserCheckerBase nullChecker = new NullUserChecker();
+    private RoleAndPropertyDescriptionService descriptionService;
+    
+    /**
+     * @see RoleAndPropertyDescriptionService.checkIfAtLeaseOneExists()
+     * @param descriptions of RoleID's and RoleProperty's
+     *        to base the UserChecker on
+     * @return an UserChecker
+     */
+    public UserChecker createRoleAndPropertyDescriptionChecker(final String descriptions) {
+        UserChecker checker = new UserCheckerBase() {
+            @Override
+            public boolean check(LiteYukonUser user) {
+                if (user == null) return false;
+
+                boolean isValidCheck = 
+                    descriptionService.checkIfAtLeaseOneExists(descriptions, user);
+                return isValidCheck;
+            }
+        };
+        return checker;
+    }
     
     /**
      * Create a UserChecker that will return true if the
@@ -32,6 +54,7 @@ public class RolePropertyUserCheckerFactory {
         }
         final int roleId = propertySearcher.getIntForName(role);
         UserCheckerBase checker = new UserCheckerBase() {
+            @Override
             public boolean check(LiteYukonUser user) {
                 if (user == null) {
                     return false;
@@ -52,6 +75,7 @@ public class RolePropertyUserCheckerFactory {
         final int propertyId = propertySearcher.getIntForName(property);
         
         UserCheckerBase checker = new UserCheckerBase() {
+            @Override
             public boolean check(LiteYukonUser user) {
                 return getBooleanForRoleProperty(propertyId, user);
             };
@@ -68,6 +92,7 @@ public class RolePropertyUserCheckerFactory {
     public UserChecker createPropertyChecker(final int propertyId) {
         
         UserCheckerBase checker = new UserCheckerBase() {
+            @Override
             public boolean check(LiteYukonUser user) {
                 return getBooleanForRoleProperty(propertyId, user);
             };
@@ -85,6 +110,7 @@ public class RolePropertyUserCheckerFactory {
         final int propertyId = propertySearcher.getIntForName(property);
         
         UserCheckerBase checker = new UserCheckerBase() {
+            @Override
             public boolean check(LiteYukonUser user) {
                 return !getBooleanForRoleProperty(propertyId, user);
             };
@@ -110,6 +136,10 @@ public class RolePropertyUserCheckerFactory {
     public void setPropertySearcher(ReflectivePropertySearcher propertySearcher) {
         this.propertySearcher = propertySearcher;
     }
-
+    
+    public void setDescriptionService(
+            RoleAndPropertyDescriptionService descriptionService) {
+        this.descriptionService = descriptionService;
+    }
 
 }

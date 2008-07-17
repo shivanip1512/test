@@ -11,7 +11,6 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
 import org.springframework.util.AntPathMatcher;
@@ -23,8 +22,8 @@ import org.springframework.web.util.UrlPathHelper;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.LoginController;
+import com.cannontech.common.exception.NotAuthorizedException;
 import com.cannontech.common.exception.NotLoggedInException;
-import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.servlet.YukonUserContextUtils;
 import com.cannontech.user.YukonUserContext;
 import com.cannontech.util.ServletUtil;
@@ -81,24 +80,21 @@ public class LoginFilter implements Filter {
         final HttpServletRequest request = (HttpServletRequest) req;
         final HttpServletResponse response = (HttpServletResponse) resp;
         
+        boolean excludedRequest = isExcludedRequest(request, excludedFilePaths);
+        if (excludedRequest) {
+            log.debug("Proceeding with request that passes exclusion filter");
+            attachYukonUserContext(request); //try to attach, but may not be logged in.
+            chain.doFilter(req, resp);
+            return;
+        }
+        
         boolean loggedIn = isLoggedIn(request);
         if (loggedIn) {
             attachYukonUserContext(request);
             
             boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(request);
-            if (!hasUrlAccess) {
-                handleInvalidUrlAccess(request, response);
-                return;
-            }
+            if (!hasUrlAccess) handleInvalidUrlAccess();
             
-            chain.doFilter(req, resp);
-            return;
-        }
-
-        boolean excludedRequest = isExcludedRequest(request, excludedFilePaths);
-        if (excludedRequest) {
-            log.debug("Proceeding with request that passes exclusion filter");
-            attachYukonUserContext(request); //try to attach, but may not be logged in.
             chain.doFilter(req, resp);
             return;
         }
@@ -112,10 +108,7 @@ public class LoginFilter implements Filter {
             attachYukonUserContext(request);
             
             boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(request);
-            if (!hasUrlAccess) {
-                handleInvalidUrlAccess(request, response);
-                return;
-            }
+            if (!hasUrlAccess) handleInvalidUrlAccess();
             
             // FilterChain.doFilter() cannot be in a try/catch, it would break the ErrorHelperFilter
             chain.doFilter(req, resp);
@@ -160,20 +153,8 @@ public class LoginFilter implements Filter {
         return encodedNavUrl;
     }
 
-    private  void handleInvalidUrlAccess(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        boolean isLoggedIn = isLoggedIn(request);
-        if (isLoggedIn) {
-            LiteYukonUser user = ServletUtil.getYukonUser(request);
-            log.error("Invalid URL Access for User " + user.getUsername());
-            
-            // Remove the session before hitting the LoginFilter again.
-            HttpSession session = request.getSession(false);
-            if (session != null) session.invalidate();
-        }
-        
-        String location = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
-        String safeLocation = ServletUtil.createSafeRedirectUrl(request, location);
-        response.sendRedirect(safeLocation);
+    private  void handleInvalidUrlAccess() {
+        throw new NotAuthorizedException("Invalid page access for user.");
     }
     
     private void sendLoginRedirect(HttpServletRequest request, HttpServletResponse response) throws IOException{

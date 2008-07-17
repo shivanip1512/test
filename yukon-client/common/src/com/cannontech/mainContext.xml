@@ -106,11 +106,6 @@
        <constructor-arg value="SECONDS"/>
        <constructor-arg><bean class="java.util.concurrent.LinkedBlockingQueue"/></constructor-arg>
     </bean>
-
-    <bean id="rolePropertyUserCheckerFactory" class="com.cannontech.user.checker.RolePropertyUserCheckerFactory">
-      <property name="authDao" ref="authDao"/>
-      <property name="propertySearcher"><bean class="com.cannontech.util.ReflectivePropertySearcher" factory-method="getRoleProperty"/></property>
-    </bean>
     
     <bean id="timeSource" class="com.cannontech.common.util.TimeSourceImpl"/>
 

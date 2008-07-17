@@ -736,11 +736,12 @@
     
     <bean id="urlAccessChecker" class="com.cannontech.web.login.access.UrlAccessCheckerImpl">
         <property name="descriptionParser">
-            <bean class="com.cannontech.web.login.access.UrlAccessDescriptionParserImpl"/>
+            <bean class="com.cannontech.web.login.access.UrlAccessDescriptionParser"/>
         </property>
         <property name="urlAccessDescriptions">
             <list>
                 <!-- DO NOT REMOVE -->
+                <value>ALLOW|/remote/**|DBEditorRole.ROLEID</value>
                 <value>ALLOW|/**|WebClientRole.ROLEID</value> 
                 <value>DENY|/**|*</value> 
                 <!-- DO NOT REMOVE -->

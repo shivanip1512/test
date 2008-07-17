@@ -12,11 +12,13 @@ import com.cannontech.core.dao.AuthDao;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.roles.application.WebClientRole;
 import com.cannontech.util.ServletUtil;
+import com.cannontech.web.login.access.UrlAccessChecker;
 
 public class YukonLoginController extends MultiActionController {
     private LoginService loginService;
     private AuthDao authDao;
     private LoginCookieHelper loginCookieHelper;
+    private UrlAccessChecker urlAccessChecker;
     
     public ModelAndView view(final HttpServletRequest request, final HttpServletResponse response) throws Exception {
         final ModelAndView mav = new ModelAndView();
@@ -34,6 +36,8 @@ public class YukonLoginController extends MultiActionController {
 
         boolean success = loginService.login(request, username, password);
         if (success) {
+            LiteYukonUser user = ServletUtil.getYukonUser(request);
+
             if (createRememberMeCookie) {
                 String value = loginCookieHelper.createCookieValue(username, password);
                 ServletUtil.createCookie(request, response, LoginController.REMEMBER_ME_COOKIE, value);
@@ -42,9 +46,13 @@ public class YukonLoginController extends MultiActionController {
             if (redirectedFrom != null && !redirectedFrom.equals("")) {
                 redirect = redirectedFrom;
             } else {
-                LiteYukonUser user = ServletUtil.getYukonUser(request);
                 String homeUrl = authDao.getRolePropertyValue(user, WebClientRole.HOME_URL);
                 redirect = ServletUtil.createSafeUrl(request, homeUrl);
+            }
+            
+            boolean hasUrlAccess = urlAccessChecker.hasUrlAccess(redirect, user);
+            if (!hasUrlAccess) {
+                redirect = LoginController.LOGIN_URL + "?" + LoginController.INVALID_URL_ACCESS_PARAM;
             }
         } else {
             ServletUtil.deleteAllCookies(request, response);
@@ -95,4 +103,8 @@ public class YukonLoginController extends MultiActionController {
         this.authDao = authDao;
     }
 
+    public void setUrlAccessChecker(UrlAccessChecker urlAccessChecker) {
+        this.urlAccessChecker = urlAccessChecker;
+    }
+    
 }
