@@ -6,12 +6,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.cannontech.amr.errors.model.DeviceErrorDescription;
 import com.cannontech.amr.meter.dao.MeterDao;
 import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
-import com.cannontech.common.device.outagestate.OutageState;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 import com.cannontech.util.ServletUtil;
@@ -61,30 +59,11 @@ public class MeterInformationWidget extends WidgetControllerBase {
         Meter meter = meterDao.getForId(deviceId);
         LiteYukonUser user = ServletUtil.getYukonUser(request);
         CommandResultHolder result = commandRequestExecutor.execute(meter, "ping", user);
-        mav.addObject("state", getOutageState(result));
-
         mav.addObject("isRead", true);
 
-        mav.addObject("errorsExist", result.isErrorsExist());
-        
         mav.addObject("result", result);
         
         return mav;
-    }
-    
-    private OutageState getOutageState(CommandResultHolder result) {
-        if( result.getErrors().isEmpty())
-            return OutageState.RESTORED;
-
-        for(DeviceErrorDescription deviceError: result.getErrors()) {
-            if( deviceError.getErrorCode() == 1 || 
-                deviceError.getErrorCode() == 17 || 
-                deviceError.getErrorCode() == 74 || 
-                deviceError.getErrorCode() == 0 ) {
-                return OutageState.RESTORED;
-            }
-        }
-        return OutageState.OUTAGE;
     }
     
     private ModelAndView getMeterInformationModelAndView(int deviceId) {

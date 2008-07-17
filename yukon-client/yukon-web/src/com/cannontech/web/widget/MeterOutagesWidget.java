@@ -23,7 +23,6 @@ import com.cannontech.common.device.attribute.model.Attribute;
 import com.cannontech.common.device.attribute.model.BuiltInAttribute;
 import com.cannontech.common.device.attribute.service.AttributeService;
 import com.cannontech.common.device.commands.CommandResultHolder;
-import com.cannontech.common.device.outagestate.OutageState;
 import com.cannontech.common.util.TimeUtil;
 import com.cannontech.core.dynamic.PointValueHolder;
 import com.cannontech.core.service.PointFormattingService;
@@ -145,8 +144,6 @@ public class MeterOutagesWidget extends WidgetControllerBase {
 
         mav.addObject("isRead", true);
 
-        mav.addObject("errorsExist", result.isErrorsExist());
-        
         mav.addObject("result", result);
         
         boolean readable = meterReadService.isReadable(meter, allExistingAttributes, userContext.getYukonUser());
@@ -161,7 +158,6 @@ public class MeterOutagesWidget extends WidgetControllerBase {
         mav.addObject("device", meter);
         mav.addObject("attribute", BuiltInAttribute.BLINK_COUNT);
         mav.addObject("isRead", false);
-        mav.addObject("state", OutageState.UNKNOWN);
         
         mav.addObject("isBlinkConfigured", allExistingAttributes.contains(BuiltInAttribute.BLINK_COUNT) );
         mav.addObject("isOutageSupported", attributeService.isAttributeSupported(meter, BuiltInAttribute.OUTAGE_LOG) );
