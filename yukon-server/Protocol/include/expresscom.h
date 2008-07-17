@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2008/05/09 22:00:32 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/07/17 19:30:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -207,8 +207,8 @@ private:
     INT thermostatSetStateTwoSetpoint(UINT loadMask = 0x01, bool temporary = true, bool restore = false, int timeout_min = 0, int setcoolpoint = -1, int setheatpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
     INT thermostatSetState(UINT loadmask = 0x01, bool temporary = true, bool restore = false, int timeout_min = -1, int setpoint = -1, BYTE fanstate = 0x00, BYTE sysstate = 0x00, USHORT delay = 0);
     INT updateUtilityUsage(CtiCommandParser &parse);
-    INT updateUtilityInformation( BYTE chan, string name, string currency, BOOL chargedollars, SHORT presentusage,
-                                  SHORT pastusage, SHORT presentcharge, SHORT pastcharge, SHORT deleteid);
+    INT updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage, 
+                                  BOOL currencyInCents, string optionalString);
     INT dataMessageBlock(BYTE priority, BOOL hourFlag, BOOL deleteFlag, BOOL clearFlag, BYTE timePeriod, string str);
     INT disableContractorMode(bool enableFlag);
     INT configuration(BYTE configNumber, BYTE length, PBYTE data);

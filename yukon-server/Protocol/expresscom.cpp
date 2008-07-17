@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.49 $
-* DATE         :  $Date: 2008/06/11 14:59:18 $
+* REVISION     :  $Revision: 1.50 $
+* DATE         :  $Date: 2008/07/17 19:30:04 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -1425,14 +1425,10 @@ INT CtiProtocolExpresscom::assemblePutConfig(CtiCommandParser &parse, CtiOutMess
     else if (parse.isKeyValid("xcutilinfo"))
     {
         status = updateUtilityInformation(parse.getiValue("xcutilchan", 0),
-                                          parse.getsValue("xcparametername"),
-                                          parse.getsValue("xccurrency"),
-                                          (bool)parse.getiValue("xcchargedollars"),
-                                          parse.getiValue("xcpresentusage", -1),
-                                          parse.getiValue("xcpastusage", -1),
-                                          parse.getiValue("xcpresentcharge", -1),
-                                          parse.getiValue("xcpastcharge", -1), 
-                                          parse.getiValue("xcdeleteid", -1) );
+                                          (bool)parse.getiValue("xcdisplaycost"),
+                                          (bool)parse.getiValue("xcdisplayusage"),
+                                          (bool)parse.getiValue("xcchargecents"),
+                                          parse.getsValue("xcoptionalstring") );
 
     }
     else if(parse.isKeyValid("xccold"))
@@ -1478,19 +1474,23 @@ INT CtiProtocolExpresscom::assemblePutStatus(CtiCommandParser &parse, CtiOutMess
 INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
 {
     INT status = NoError;
-    INT numChans = parse.getiValue("xcnumutilchans", 0);
+    INT numUsageValues = parse.getiValue("xcnumutilvalues", 0);
     _message.push_back( mtUpdateUtilityUsage );
-    _message.push_back( numChans );
+    _message.push_back( numUsageValues );
 
-    for (int chanIndex = 0; chanIndex < numChans; chanIndex++)
+
+    for (int chanIndex = 0; chanIndex < numUsageValues; chanIndex++)
     {
-        string chan("xcchan_" + CtiNumStr(chanIndex));
+        string chan("xcchan_" +  CtiNumStr(chanIndex));
+        string chanBucket("xcchanbucket_" +  CtiNumStr(chanIndex));
         string chanValue("xcchanvalue_" + CtiNumStr(chanIndex));
 
         BYTE chanNum = parse.getiValue(chan, 0);
+        BYTE bucket = parse.getiValue(chanBucket, 0);
         USHORT chanVal = parse.getdValue(chanValue, 0);
 
         _message.push_back(LOBYTE(chanNum));
+        _message.push_back(LOBYTE(bucket));
 
         _message.push_back( HIBYTE(chanVal) );
         _message.push_back( LOBYTE(chanVal) );
@@ -1502,8 +1502,8 @@ INT CtiProtocolExpresscom::updateUtilityUsage(CtiCommandParser &parse )
 }
 
 
-INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, string name, string currency, BOOL chargedollars, SHORT presentusage,
-                                                     SHORT pastusage, SHORT presentcharge, SHORT pastcharge, SHORT deleteid)
+INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, BOOL displayCost, BOOL displayUsage, 
+                                                     BOOL currencyInCents, string optionalString)
 {
     INT status = NoError;
     BYTE config = 0x00;
@@ -1518,85 +1518,33 @@ INT CtiProtocolExpresscom::updateUtilityInformation( BYTE chan, string name, str
     _message.push_back( chan );
 
     size_t configpos = _message.size();
-    _message.push_back(config);
 
-    if (deleteid > 0) 
+    if (displayCost > 0) 
     {
-        config |= 0x08;
-        _message.push_back(deleteid);
-
+        config |= 0x01;
     }
-    else if(!name.empty())
+    if(displayUsage > 0)
     {
         config |= 0x02;
-        _message.push_back(name.length());
-        for (int i = 0; i < 20; i++) //limit of 20 bytes.
-        {
-            if (i < name.length())
-                _message.push_back(name.data()[i] );
-            else
-                i = 20;
-        }
     }
-    else if(!currency.empty())
+    if(currencyInCents > 0)
     {
         config |= 0x04;
-        _message.push_back(currency.length());
-        for (int i = 0; i < 10; i++) //limit of 10 bytes.
-        {
-            if (i < currency.length())
-                _message.push_back(currency.data()[i] );
-            else
-                i = 10;
-        }
     }
-    else
+    _message.push_back(config);
+
+    if (optionalString.length() > 0)
     {
-        size_t utilflagpos = _message.size();
-        _message.push_back(utilFlags);
-        
-
-        //need to know currency
-        if (presentusage > 0)
+        int length = optionalString.length();
+        if (length > 20)
+            length = 20;
+        _message.push_back(length);
+        for(int i = 0; i < length; i++)
         {
-            config |= 0x01;
-            utilFlags |= 0x01;
-            _message.push_back(HIBYTE(presentusage));
-            _message.push_back(LOBYTE(presentusage));
+            _message.push_back( optionalString[i] );
         }
-        if (pastusage > 0)
-        {
-            config |= 0x01;
-            utilFlags |= 0x02;
-            _message.push_back(HIBYTE(pastusage));
-            _message.push_back(LOBYTE(pastusage));
-        }
-        if (presentcharge > 0)
-        {
-            config |= 0x01;
-            utilFlags |= 0x04;
-            if (chargedollars) 
-                utilFlags |= 0x10;
-            else
-                utilFlags |= 0x20;
-            _message.push_back(HIBYTE(presentcharge));
-            _message.push_back(LOBYTE(presentcharge));
-        }
-        if (pastcharge > 0)
-        {
-            config |= 0x01;
-            utilFlags |= 0x08;
-            if (chargedollars) 
-                utilFlags |= 0x10;
-            else
-                utilFlags |= 0x20;
-            _message.push_back(HIBYTE(pastcharge));
-            _message.push_back(LOBYTE(pastcharge));
-        }
-        _message[utilflagpos] = utilFlags;
     }
 
-    _message[configpos] = config;
 
     _message[sizepos] = _message.size() - sizepos - 1; //The size byte is not counted in the size
 

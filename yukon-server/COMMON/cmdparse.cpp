@@ -5029,71 +5029,30 @@ void  CtiCommandParser::doParsePutConfigExpresscom(const string &_CmdStr)
         if(!(token = CmdStr.match("chan " + str_num)).empty())
         {
             str = token.match(re_num);
-            int chan = atoi(str.c_str());
+            int chan = atoi(str.c_str()) - 1;
 
             _cmd["xcutilchan"] = CtiParseValue( chan );
         }
-        if(!(token = CmdStr.match("delete " + str_num)).empty())
+        _cmd["xcdisplaycost"] = CtiParseValue(FALSE);
+        _cmd["xcdisplayusage"] = CtiParseValue(FALSE);
+        _cmd["xcchargecents"] = CtiParseValue(FALSE);
+        if(!(token = CmdStr.match("cost")).empty())
         {
-            str = token.match(re_num);
-            int deleteid = atoi(str.c_str());
-
-            _cmd["xcdeleteid"] = CtiParseValue( deleteid );
+            _cmd["xcdisplaycost"] = CtiParseValue(TRUE);
         }
-        if(!(token = CmdStr.match("name " + str_quoted_token)).empty())
+        if(!(token = CmdStr.match("usage")).empty())
+        {
+            _cmd["xcdisplayusage"] = CtiParseValue(TRUE);
+        }
+        if(!(token = CmdStr.match("cents")).empty())
+        {
+            _cmd["xccharegecents"] = CtiParseValue(TRUE);
+        }
+        if(!(token = CmdStr.match(str_quoted_token)).empty())
         {
             if(!(str = token.match(str_quoted_token)).empty())
             {
-                _cmd["xcparametername"] = CtiParseValue(str.substr(1, str.length() - 2));
-            }
-        }
-
-        if(!(token = CmdStr.match("currency " + str_quoted_token)).empty())
-        {
-            if(!(str = token.match(str_quoted_token)).empty())
-            {
-                _cmd["xccurrency"] = CtiParseValue(str.substr(1, str.length() - 2));
-            }
-        }
-        if (CmdStr.contains(" present ") || CmdStr.contains(" past "))
-        {
-            _cmd["xcutilflags"] = CtiParseValue( TRUE );
-            if(!(token = CmdStr.match(" present usage " + str_num)).empty())
-            {
-                str = token.match(re_num);
-                int usage = atoi(str.c_str());
-
-                _cmd["xcpresentusage"] = CtiParseValue( usage );
-            }
-            if(!(token = CmdStr.match(" past usage " + str_num)).empty())
-            {
-                str = token.match(re_num);
-                int usage = atoi(str.c_str());
-
-                _cmd["xcpastusage"] = CtiParseValue( usage );
-            }
-            if(!(token = CmdStr.match(" present charge " + str_num)).empty())
-            {
-                str = token.match(re_num);
-                int charge = atoi(str.c_str());
-
-                _cmd["xcpresentcharge"] = CtiParseValue( charge );
-                if(!(token = CmdStr.match(" cents ")).empty())
-                    _cmd["xcchargedollars"] = CtiParseValue(FALSE);
-                else
-                    _cmd["xcchargedollars"] = CtiParseValue(TRUE);
-
-            }
-            if(!(token = CmdStr.match(" past charge " + str_num)).empty())
-            {
-                str = token.match(re_num);
-                int charge = atoi(str.c_str());
-
-                _cmd["xcpastcharge"] = CtiParseValue( charge );
-                if(!(token = CmdStr.match(" cents ")).empty())
-                    _cmd["xcchargedollars"] = CtiParseValue(FALSE);
-                else
-                    _cmd["xcchargedollars"] = CtiParseValue(TRUE);
+                _cmd["xcoptionalstring"] = CtiParseValue(str.substr(1, str.length() - 2));
             }
         }
     }
@@ -5872,23 +5831,45 @@ void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
     CtiString   valStr;
     CtiString   token;
     INT ch;
+    INT bucket;
     float val;
     int chanIndex = 0;
 
+    
     CtiTokenizer   tok(CmdStr);
     {
-        //putconfig utility usage chanNum:chanVal, chanNum:chanVal, chanNum:chanVal
+        //putconfig utility usage chanNum:past usage:Val, chanNum:present usage:Val, chanNum:past cost:Val, 
+        // chanNum:present cost:Val,
+        
         token = tok(",");
         while(!token.empty())
         {
-            ch  = 0x0;
+            ch = 0x0;
+            bucket = 0x0;
             val = 0x0;
 
             CtiTokenizer   tok1(token);   //chanNum:chanVal, chanNum:chanVal
             temp = tok1(":");
             if(!(str = temp.match(re_num)).empty())
             {
-                ch = atoi(str.c_str());
+                ch = atoi(str.c_str()) - 1;
+            }
+            temp = tok1(":");
+            if(temp.contains("past usage"))
+            {
+                bucket = 0x00;
+            }
+            else if(temp.contains("present usage"))
+            {
+                bucket = 0x01;
+            }
+            else if(temp.contains("past cost"))
+            {
+                bucket = 0x02;
+            }
+            else if(temp.contains("present cost"))
+            {
+                bucket = 0x03;
             }
 
             temp = tok1(":");
@@ -5898,16 +5879,18 @@ void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
                 val = atof(valStr.c_str());
             }
 
-
             CtiString chan("xcchan_" + CtiNumStr(chanIndex));
+            CtiString chanBucket("xcchanbucket_" + CtiNumStr(chanIndex));
             CtiString chanValue("xcchanvalue_" + CtiNumStr(chanIndex));
 
             _cmd[chan]        = CtiParseValue(ch);
+            _cmd[chanBucket]      = CtiParseValue(bucket);
             _cmd[chanValue]   = CtiParseValue(val);
 #if 0
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << chan << " " << (int)ch << endl;
+                dout << bucket << " " << (int)bucket << endl;
                 dout << chanValue << " " << (float)val << endl;
             }
 #endif
@@ -5915,7 +5898,7 @@ void CtiCommandParser::doParsePutConfigUtilityUsage(const string &_CmdStr)
             token = tok(",");
 
         }
-        _cmd["xcnumutilchans"] = CtiParseValue(chanIndex);
+        _cmd["xcnumutilvalues"] = CtiParseValue(chanIndex);
     }
 
 
