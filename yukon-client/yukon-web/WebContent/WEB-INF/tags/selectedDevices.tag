@@ -10,5 +10,7 @@
 <%-- I18N TEXT --%>
 <cti:msg var="linkLabel" key="yukon.common.device.bulk.selectedDevicesPopup.linkLabel" />
 
+<c:set value="${deviceCollection.deviceCount}" var="deviceCount"/>
+
 ${linkLabel}: 
-${deviceCollection.deviceCount} <c:if test="${deviceCollection.deviceCount > 0}"><tags:selectedDevicesPopup  deviceCollection="${deviceCollection}" /></c:if>
+${deviceCount} <c:if test="${deviceCount > 0}"><tags:selectedDevicesPopup  deviceCollection="${deviceCollection}" /></c:if>

@@ -3,6 +3,7 @@ package com.cannontech.web.group;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -164,7 +165,8 @@ public class GroupEditorController extends MultiActionController {
         if (groupModifiable) {
             if (deviceList == null) {
                 // it might have been loaded in the showImmediately block, if not we can load a slimmer version
-                deviceList = deviceGroupDao.getChildDevices(group);
+                Set<YukonDevice> childDevices = deviceGroupDao.getChildDevices(group);
+                deviceList = new ArrayList<YukonDevice>(childDevices);
             }
             List<Integer> deviceIdList = new MappingList<YukonDevice, Integer>(deviceList, new YukonDeviceToIdMapper());
             mav.addObject("deviceIdsInGroup", StringUtils.join(deviceIdList, ","));
