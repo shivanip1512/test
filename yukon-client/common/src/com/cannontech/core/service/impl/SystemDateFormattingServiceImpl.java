@@ -7,6 +7,7 @@ import java.util.TimeZone;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.exception.BadConfigurationException;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.RoleDao;
@@ -27,11 +28,13 @@ public class SystemDateFormattingServiceImpl implements SystemDateFormattingServ
         if (StringUtils.isNotBlank(timeZoneStr)) {   //Get the TimeZone from timeZoneStr
             try {
                 timeZone = CtiUtilities.getValidTimeZone(timeZoneStr);
+                CTILogger.debug("Configuration Role System TimeZone found: " + timeZone.getDisplayName());
             } catch (BadConfigurationException e) {
                 throw new BadConfigurationException (e.getMessage() + ".  Invalid value in ConfigurationRole System TimeZone property");
             }
         } else {    //Default to the system timezone if blank
             timeZone = TimeZone.getDefault();
+            CTILogger.debug("TimeZone not defined; System TimeZone will be used: " + timeZone.getDisplayName());
         }
         return timeZone;
     }
