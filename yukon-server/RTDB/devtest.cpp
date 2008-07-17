@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/devtest.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2005/12/20 17:20:25 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/07/17 20:27:22 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -59,7 +59,7 @@ void main(int argc, char** argv)
 
         DebugLevel = origDBL;
 
-        Manager.dumpList();
+        Manager.test_dumpList();
 
         Sleep(500);
     }
