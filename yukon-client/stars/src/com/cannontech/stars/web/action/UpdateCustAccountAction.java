@@ -8,6 +8,7 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DaoFactory;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
@@ -141,11 +142,11 @@ public class UpdateCustAccountAction implements ActionBase {
             
             for(int j = 0; j < primContact.getContactNotificationCount(); j++)
 			{
-				if(((ContactNotification)primContact.getContactNotification(j)).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
+				if(primContact.getContactNotification(j).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_HOME_PHONE)
 					homeIndex = j;
-				else if(((ContactNotification)primContact.getContactNotification(j)).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)
+				else if(primContact.getContactNotification(j).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_WORK_PHONE)
 					workIndex = j;
-				else if(((ContactNotification)primContact.getContactNotification(j)).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
+				else if(primContact.getContactNotification(j).getNotifCatID() == YukonListEntryTypes.YUK_ENTRY_ID_EMAIL)
 					emailIndex = j;
 			}
 
@@ -307,12 +308,9 @@ public class UpdateCustAccountAction implements ActionBase {
 		throws WebClientException
 	{
 		java.sql.Connection conn = null;
-		boolean autoCommit = true;
     	
 		try {
 			conn = com.cannontech.database.PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-			autoCommit = conn.getAutoCommit();
-			conn.setAutoCommit( false );
     		
 			/* Update customer account */
 			LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
@@ -559,8 +557,6 @@ public class UpdateCustAccountAction implements ActionBase {
                 custAcctChanged = true;
 			}
 			
-			conn.commit();
-			
 			if (primContChanged) ServerUtils.handleDBChange( litePrimContact, DBChangeMsg.CHANGE_TYPE_UPDATE );
 			//if (ciCustChanged || altCustFieldChanged) ServerUtils.handleDBChange( liteCustomer, DBChangeMsg.CHANGE_TYPE_UPDATE );
 			/*this had been commented out.  Looks like Yao took this out in '03.  Why?  I think this might account for 
@@ -568,22 +564,10 @@ public class UpdateCustAccountAction implements ActionBase {
             if (ciCustChanged || altCustFieldChanged || custAcctChanged) ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		}
 		catch (java.sql.SQLException e) {
-			System.out.println(e.getMessage());
-            try {
-				if (conn != null) conn.rollback();
-			}
-			catch (java.sql.SQLException e2) {}
-    		
-			throw new WebClientException( "Failed to update the customer account information", e );
-		}
-		finally {
-			try {
-				if (conn != null) {
-					conn.setAutoCommit( autoCommit );
-					conn.close();
-				}
-			}
-			catch (java.sql.SQLException e) {}
+		    CTILogger.error(e);
+		    throw new WebClientException( "Failed to update the customer account information", e );
+		} finally {
+		    SqlUtils.close(conn);
 		}
 	}
 }
