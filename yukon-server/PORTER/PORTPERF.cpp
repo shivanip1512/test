@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.46 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.47 $
+* DATE         :  $Date: 2008/07/17 21:01:10 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,8 +121,7 @@ VOID PerfUpdateThread (PVOID Arg)
     LONG delay;
 
     /* set the priority of this guy high */
-    // CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
-    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     try
     {
@@ -325,13 +324,13 @@ void statisticsNewAttempt(long paoportid, long devicepaoid, long targetpaoid, in
     {
         CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
         CtiStatTuple tup;
-    
+
         tup.action = CtiStatTuple::Attempt;
         tup.paoportid = paoportid;
         tup.devicepaoid = devicepaoid;
         tup.targetpaoid = targetpaoid;
         tup.result = result;
-    
+
         statCol.push_back(tup);
     }
     else if( gConfigParms.getValueAsULong("STATISTICS_DEBUGLEVEL", 0, 16) & STATISTICS_REPORT_ON_MSGFLAGS )
@@ -394,7 +393,7 @@ void statisticsNewCompletion(long paoportid, long devicepaoid, long targetpaoid,
         messageFlags &= ~MessageFlag_StatisticsRequested;
         CtiLockGuard<CtiMutex> guard(gDeviceStatColMux);
         CtiStatTuple tup;
-    
+
         tup.action = CtiStatTuple::Completion;
         tup.paoportid = paoportid;
         tup.devicepaoid = devicepaoid;
