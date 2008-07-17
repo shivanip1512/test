@@ -373,10 +373,16 @@ YukonUserContext userContext = YukonUserContextUtils.getYukonUserContext(pageCon
                 </td>
                                 
                 <td width="94" class="TableCell">
-                <font color="<%= LCUtils.getFgColor(grp) %>">
-                <div name = "grpstatus" class="lm_tip_cell" onMouseOver="itemid=<%= grp.getYukonID() %>;menuAppear(event, 'groupMenu')" onMouseOut="menuDisappear(event, 'groupMenu')" >
-                	<%= LCUtils.getGroupValueAt(grp, GroupTableModel.GROUP_STATE, userContext) %>
-                </div></font></td>
+                    <font color="<%= LCUtils.getFgColor(grp) %>">
+                        <div 
+                            name="grpstatus" 
+                            class="lm_tip_cell" 
+                            onMouseOver="itemid=<%= grp.getYukonID() %>;groupMenuAppear(event, 'groupMenu', <%= grp.getDisableFlag() %>)" 
+                            onMouseOut="menuDisappear(event, 'groupMenu')" >
+                        	   <%= LCUtils.getGroupValueAt(grp, GroupTableModel.GROUP_STATE, userContext) %>
+                        </div>
+                    </font>
+                </td>
 				<%pageContext.setAttribute("groupStartTime", LCUtils.getGroupValueAt(grp, GroupTableModel.TIME, userContext));%>
                 <td width="134" class="TableCell" align="center">
                     <%= LCUtils.getGroupValueAt(grp, GroupTableModel.TIME, userContext) %>

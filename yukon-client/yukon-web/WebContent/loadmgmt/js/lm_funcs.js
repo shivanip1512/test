@@ -319,6 +319,91 @@ function menuAppear(event, divId)
 	element.style.visibility = 'visible';
 }
 
+function groupMenuAppear(event, divId, disabled) {
+	var currentMenu = document.getElementById(divId);
+	
+	currentMenu.onmouseout = function (e)
+	{
+	  var relatedTarget = null;
+	  if( e )
+	  {
+	    relatedTarget = e.relatedTarget;
+	    // work around Gecko Linux only bug where related target is null
+	    // when clicking on menu links or when right clicking and moving
+	    // into a context menu.
+	    
+	    if (navigator.product == 'Gecko' && navigator.platform.indexOf('Linux') != -1 && !relatedTarget)
+	    {
+	      relatedTarget = e.originalTarget;
+	    }
+	  }
+	  else if (window.event)
+	  {
+	    relatedTarget = window.event.toElement;
+	  }
+
+	  if (elementContains(this, relatedTarget))
+	  {
+	    return false;
+	  }
+
+	  this.style.visibility = 'hidden';
+	  return false;
+	};
+	
+	currentMenu.onclick = function (e)
+	{
+		if (window.event)
+		{
+			window.event.cancelBubble = true;
+	    	window.event.returnValue = false;
+		}
+	
+		this.style.visibility = 'hidden';
+		return false;
+	};
+
+
+	var source;
+	if (window.event)
+	{
+		source = window.event.srcElement;
+	}
+	else
+	{
+		source = event.target;
+	}
+
+	var element = document.getElementById(divId);
+	coordx = parseInt(source.offsetLeft, 10);
+	coordy = parseInt(source.offsetTop, 10) + parseInt(source.offsetHeight, 10) + 0;
+	
+	while (source.offsetParent)
+	{
+		source = source.offsetParent;
+		coordx = coordx + parseInt(source.offsetLeft, 10);
+		coordy = coordy + parseInt(source.offsetTop, 10);
+	}
+	
+	element.style.left = coordx + 'px';
+	element.style.top = coordy + 'px';
+	element.style.visibility = 'visible';
+	
+	if(disabled) {
+	   $('ShedID').hide();
+	   $('RestoreID').hide();
+	   $('TrueCycID').hide();
+	   $('SmartCycID').hide();
+	   $('ConfirmGrpID').hide();
+	} else {
+	   $('ShedID').show();
+	   $('RestoreID').show();
+	   $('TrueCycID').show();
+	   $('SmartCycID').show();
+	   $('ConfirmGrpID').show();
+	}
+}
+
 function checkAll( chkAll, fields)
 {
 	for (i = 0; i < fields.length; i++)
