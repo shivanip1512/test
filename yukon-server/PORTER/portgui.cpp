@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/portgui.cpp-arc  $
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/07/17 20:52:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -168,7 +168,7 @@ VOID GUIConnectionThread (VOID *Arg)
 
 
    /* make it clear who is boss */
-   CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
+   CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
    /* Now sit and wait for something to come in on this instance */
    for(;;)

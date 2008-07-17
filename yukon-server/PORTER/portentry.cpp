@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.57 $
-* DATE         :  $Date: 2008/07/08 22:56:59 $
+* REVISION     :  $Revision: 1.58 $
+* DATE         :  $Date: 2008/07/17 20:52:15 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -217,7 +217,7 @@ VOID ConnectionThread (VOID *Arg)
     list< OUTMESS* >  outList;
 
     /* make it clear who is the boss */
-    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     {
         CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -517,7 +517,7 @@ VOID RouterThread (VOID *TPNumber)
 
 
     /* make it clear who is the boss */
-    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 30, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     /* Initialize the local memory for those remotes we know about */
     {

@@ -7,8 +7,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.18 $
-* DATE         :  $Date: 2007/02/22 17:46:42 $
+* REVISION     :  $Revision: 1.19 $
+* DATE         :  $Date: 2008/07/17 20:52:15 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -22,7 +22,7 @@
 #include "port_base.h"
 #include "port_pool_out.h"
 #include "portdecl.h"
-#include "portglob.h"    
+#include "portglob.h"
 
 using namespace std;
 
@@ -51,7 +51,7 @@ VOID PortPoolDialoutThread(void *pid)
     CtiDeviceSPtr  Device;
 
     /* make it clear who is the boss */
-    CTISetPriority (PRTYS_THREAD, PRTYC_TIMECRITICAL, 31, 0);
+    CTISetPriority(PRTYC_TIMECRITICAL, THREAD_PRIORITY_HIGHEST);
 
     if(!ParentPort)
     {

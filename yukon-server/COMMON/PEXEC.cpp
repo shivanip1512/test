@@ -196,7 +196,7 @@ VOID ReturnThread (VOID *Arg)
    ULONG  BytesRead;
 
    /* Up this threads priority a notch over the main proc */
-   CTISetPriority (PRTYS_THREAD, PRTYC_NOCHANGE, 10, 0);
+   CTISetPriority(PRTYC_NOCHANGE, THREAD_PRIORITY_ABOVE_NORMAL);
 
    if(PorterNexus.NexusState == CTINEXUS_STATE_NULL)
       PortPipeInit (WAIT);
