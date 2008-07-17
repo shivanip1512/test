@@ -50,7 +50,7 @@ public interface DeviceGroupProvider {
      * @param group - The device group that the devices must be a descendant of
      * @return - A list of device IDs (the order is arbitrary)
      */
-    public List<Integer> getDeviceIds(DeviceGroup group);
+    public Set<Integer> getDeviceIds(DeviceGroup group);
     
     /**
      * Returns a list of the YukonDevices for each device that is a descendant of the given
@@ -60,7 +60,7 @@ public interface DeviceGroupProvider {
      * @param group
      * @return - A list of YukonDevices (the order is arbitrary)
      */
-    public List<YukonDevice> getDevices(DeviceGroup group);
+    public Set<YukonDevice> getDevices(DeviceGroup group);
     
     /**
      * This method gets a count of all of the devices that are a descendant of the
@@ -150,7 +150,7 @@ public interface DeviceGroupProvider {
      * @param group - The device group that the returned devices must be children of
      * @return - An unmodifiable list of YukonDevices (the order is arbitrary)
      */
-    public List<YukonDevice> getChildDevices(DeviceGroup group);
+    public Set<YukonDevice> getChildDevices(DeviceGroup group);
     
     /**
      * Tests if the device is a child of deviceGroup. The following should be true

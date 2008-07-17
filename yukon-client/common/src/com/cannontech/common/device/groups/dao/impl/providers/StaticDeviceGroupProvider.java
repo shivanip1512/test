@@ -14,15 +14,18 @@ import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
+import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.ObjectMapper;
+import com.cannontech.common.util.SqlStatementBuilder;
 
-public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
+public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     @Override
-    public List<YukonDevice> getChildDevices(DeviceGroup group) {
+    public Set<YukonDevice> getChildDevices(DeviceGroup group) {
         StoredDeviceGroup sdg = getStoredGroup(group);
         List<YukonDevice> childDevices = deviceGroupMemberEditorDao.getChildDevices(sdg);
-        return Collections.unmodifiableList(childDevices);
+        return Collections.unmodifiableSet(new HashSet<YukonDevice>(childDevices));
     }
 
     @Override
@@ -64,6 +67,34 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderBase {
                             " WHERE DEVICEGROUPID = " + 
                             sdg.getId() + ") ";
         return whereString;
+    }
+    
+    @Override
+    public String getDeviceGroupSqlWhereClause(DeviceGroup group,
+            String identifier) {
+        SqlStatementBuilder sql = new SqlStatementBuilder();
+        // find all static groups
+        StoredDeviceGroup sdg = getStoredGroup(group);
+        List<StoredDeviceGroup> staticGroups = deviceGroupEditorDao.getStaticGroups(sdg);
+
+        // build one SQL to handle
+        List<Integer> idList = new MappingList<StoredDeviceGroup, Integer>(staticGroups, new ObjectMapper<StoredDeviceGroup, Integer>() {
+            public Integer map(StoredDeviceGroup from) {
+                return from.getId();
+            }
+        });
+        
+        sql.append(identifier, "in (select yukonpaoid from devicegroupmember where devicegroupid in (", idList, "))");
+        
+        // no add in the dynamic ones by delegating back to main
+        // now get the non static ones
+        List<StoredDeviceGroup> nonStaticGroups = deviceGroupEditorDao.getNonStaticGroups(sdg);
+        for (StoredDeviceGroup nonStaticGroup : nonStaticGroups) {
+            String whereFragment = getMainDelegator().getDeviceGroupSqlWhereClause(nonStaticGroup, identifier);
+            sql.append("OR", whereFragment);
+        }
+
+        return sql.toString();
     }
     
     private StoredDeviceGroup getStoredGroup(DeviceGroup group) {

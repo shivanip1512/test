@@ -12,8 +12,10 @@ import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.Validate;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Required;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -24,6 +26,7 @@ import com.cannontech.core.dao.NotFoundException;
 
 public class DeviceGroupServiceImpl implements DeviceGroupService {
     private DeviceGroupProviderDao deviceGroupDao;
+    private Logger log = YukonLogManager.getLogger(DeviceGroupServiceImpl.class);
     
     public String getDeviceGroupSqlWhereClause(Collection<? extends DeviceGroup> groups, String identifier) {
 
@@ -67,7 +70,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
             groups = removeDuplicates(groups); // doesn't touch passed in collection
             Set<Integer> deviceIds = new HashSet<Integer>();
             for (DeviceGroup group: groups) {
-                List<Integer> groupDeviceIds = deviceGroupDao.getDeviceIds(group);
+                Set<Integer> groupDeviceIds = deviceGroupDao.getDeviceIds(group);
                 deviceIds.addAll(groupDeviceIds);
             }
             return deviceIds;
@@ -83,7 +86,7 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
             groups = removeDuplicates(groups); // doesn't touch passed in collection
             Set<YukonDevice> devices = new HashSet<YukonDevice>();
             for (DeviceGroup group: groups) {
-                List<YukonDevice> groupDevices = deviceGroupDao.getDevices(group);
+                Set<YukonDevice> groupDevices = deviceGroupDao.getDevices(group);
                 devices.addAll(groupDevices);
             }
             return devices;
@@ -92,11 +95,15 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
     
     @Override
     public int getDeviceCount(Collection<? extends DeviceGroup> groups) {
-        int result = 0;
-        for (DeviceGroup group: groups) {
-            result += deviceGroupDao.getDeviceCount(group);
+        if (groups.isEmpty()) {
+            return 0;
+        } else if (groups.size() == 1) {
+            return deviceGroupDao.getDeviceCount(groups.iterator().next());
+        } else {
+            // this is not very efficient, but we don't have an easier way
+            log.debug("getting device count on " + groups.size() + " groups, this is the slow way");
+            return getDeviceIds(groups).size();
         }
-        return result;
     }
 
     public DeviceGroup resolveGroupName(String groupName) {

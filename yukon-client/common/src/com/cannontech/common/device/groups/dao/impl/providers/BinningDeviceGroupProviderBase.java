@@ -1,6 +1,7 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -14,7 +15,6 @@ import com.cannontech.common.device.groups.model.MutableDeviceGroup;
 import com.cannontech.common.util.MappingList;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.common.util.SqlStatementBuilder;
-import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 /**
  * This provides support for creating "binning" dynamic device groups. A binning
@@ -27,37 +27,36 @@ import com.cannontech.database.data.pao.PaoGroupsWrapper;
  *
  * @param <T> The type that represents a bin, usually a String
  */
-public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProviderBase {
+public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProviderSqlBase {
     private SimpleJdbcOperations jdbcTemplate;
-    private PaoGroupsWrapper paoGroupsWrapper;
     
     @Override
-    public List<YukonDevice> getChildDevices(DeviceGroup group) {
+    public Set<YukonDevice> getChildDevices(DeviceGroup group) {
         
         if (group instanceof BinningDeviceGroupProviderBase.BinnedDeviceGroup) {
             
             BinnedDeviceGroup binnedDeviceGroup = (BinnedDeviceGroup) group;
             
-            List<YukonDevice> devices = getDevicesInBin(binnedDeviceGroup.bin);
+            Set<YukonDevice> devices = getDevicesInBin(binnedDeviceGroup.bin);
             
-            return Collections.unmodifiableList(devices);
+            return Collections.unmodifiableSet(devices);
         }
         
         // this must be our parent group
-        return Collections.emptyList();
+        return Collections.emptySet();
     }
 
-    protected List<YukonDevice> getDevicesInBin(T bin) {
+    protected Set<YukonDevice> getDevicesInBin(T bin) {
         SqlStatementBuilder sql = new SqlStatementBuilder();
         sql.append("SELECT ypo.paobjectid, ypo.type");
         sql.append("FROM YukonPaObject ypo");
         sql.append("WHERE ");
         sql.append(getChildWhereForBin(bin, "ypo.paobjectid"));
         
-        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        YukonDeviceRowMapper mapper = new YukonDeviceRowMapper(getPaoGroupsWrapper());
         List<YukonDevice> devices = jdbcTemplate.query(sql.toString(), mapper);
         
-        return devices;
+        return new HashSet<YukonDevice>(devices);
     }
 
    @Override
@@ -255,12 +254,4 @@ public abstract class BinningDeviceGroupProviderBase<T> extends DeviceGroupProvi
         return jdbcTemplate;
     }
     
-    @Autowired
-    public final void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
-        this.paoGroupsWrapper = paoGroupsWrapper;
-    }
-    
-    public PaoGroupsWrapper getPaoGroupsWrapper() {
-        return paoGroupsWrapper;
-    }
 }

@@ -29,7 +29,7 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     private Map<String, DeviceGroup> systemGroupCache = new CaseInsensitiveMap<DeviceGroup>();
 
 
-    public List<YukonDevice> getChildDevices(DeviceGroup group) {
+    public Set<YukonDevice> getChildDevices(DeviceGroup group) {
         return getProvider(group).getChildDevices(group);
     }
     
@@ -49,11 +49,11 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
         return getProvider(group).getChildDeviceGroupSqlWhereClause(group, identifier);
     }
 
-    public List<Integer> getDeviceIds(DeviceGroup group) {
+    public Set<Integer> getDeviceIds(DeviceGroup group) {
         return getProvider(group).getDeviceIds(group);
     }
 
-    public List<YukonDevice> getDevices(DeviceGroup group) {
+    public Set<YukonDevice> getDevices(DeviceGroup group) {
         return getProvider(group).getDevices(group);
     }
 

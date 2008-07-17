@@ -2,6 +2,7 @@ package com.cannontech.common.device.groups.service;
 
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Set;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
@@ -104,7 +105,7 @@ public class DeviceGroupTreeFactory {
             }
         }
         if (includeDevices) {
-            List<YukonDevice> childDevices = deviceGroupDao.getChildDevices(deviceGroup);
+            Set<YukonDevice> childDevices = deviceGroupDao.getChildDevices(deviceGroup);
             for (YukonDevice child : childDevices) {
                 DefaultMutableTreeNode childNode = new DefaultMutableTreeNode(child);
                 node.add(childNode);

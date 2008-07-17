@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.util.MappingList;
+import com.cannontech.common.util.MappingSet;
 import com.cannontech.common.util.ObjectMapper;
 import com.cannontech.core.dao.NotFoundException;
 
@@ -30,7 +30,7 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     
     private DeviceGroupProviderDao mainDelegator;
     
-    public abstract List<YukonDevice> getChildDevices(DeviceGroup group);
+    public abstract Set<YukonDevice> getChildDevices(DeviceGroup group);
     
     public abstract String getChildDeviceGroupSqlWhereClause(DeviceGroup group, String identifier);
 
@@ -84,12 +84,13 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
     }
     
     public int getDeviceCount(DeviceGroup group) {
+        // correct, but slow
         return getDevices(group).size();
     }
 
-    public List<Integer> getDeviceIds(DeviceGroup group) {
-        List<YukonDevice> devices = getDevices(group);
-        List<Integer> idList = new MappingList<YukonDevice, Integer>(devices, new ObjectMapper<YukonDevice, Integer>() {
+    public Set<Integer> getDeviceIds(DeviceGroup group) {
+        Set<YukonDevice> devices = getDevices(group);
+        Set<Integer> idList = new MappingSet<YukonDevice, Integer>(devices, new ObjectMapper<YukonDevice, Integer>() {
             public Integer map(YukonDevice from) {
                 return from.getDeviceId();
             }
@@ -97,21 +98,21 @@ public abstract class DeviceGroupProviderBase implements DeviceGroupProvider {
         return idList;
     }
 
-    public List<YukonDevice> getDevices(DeviceGroup group) {
+    public Set<YukonDevice> getDevices(DeviceGroup group) {
         // we should consider rewriting this using getDeviceGroupSqlWhereClause()
-        List<YukonDevice> deviceList = new ArrayList<YukonDevice>();
+        Set<YukonDevice> deviceSet = new HashSet<YukonDevice>();
 
         // Get child devices
-        List<YukonDevice> childDeviceList = getChildDevices(group);
-        deviceList.addAll(childDeviceList);
+        Set<YukonDevice> childDeviceList = getChildDevices(group);
+        deviceSet.addAll(childDeviceList);
         
         // Get child group's devices
         List<? extends DeviceGroup> childGroups = getChildGroups(group);
         for (DeviceGroup childGroup : childGroups) {
-            List<YukonDevice> devices = mainDelegator.getDevices(childGroup);
-            deviceList.addAll(devices);
+            Set<YukonDevice> devices = mainDelegator.getDevices(childGroup);
+            deviceSet.addAll(devices);
         }
-        return deviceList;
+        return deviceSet;
     }
     
     public List<DeviceGroup> getGroups(DeviceGroup group) {
