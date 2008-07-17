@@ -58,6 +58,28 @@ bool CtiCriticalSection::acquire(unsigned long ignored_arg_millis)
 
 
 /*-----------------------------------------------------------------------------
+    tryAcquire
+
+    Attempts to acquire the mux.
+-----------------------------------------------------------------------------*/
+bool CtiCriticalSection::tryAcquire()
+{
+#ifdef _WINDOWS
+#ifdef _DEBUG
+    if( TryEnterCriticalSection(&_critical_section) )
+    {
+        _threadID = (int) _critical_section.OwningThread;
+        return true;
+    }
+    return false;
+#else
+    return TryEnterCriticalSection(&_critical_section);
+#endif
+#endif
+}
+
+
+/*-----------------------------------------------------------------------------
     release
 
     Releases the mux.
