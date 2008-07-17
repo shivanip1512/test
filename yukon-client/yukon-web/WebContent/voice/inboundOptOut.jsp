@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <vxml version="2.0">
 
-<%@ include file="../user/ConsumerStat/stat/include/StarsHeader.jsp" %>
+<%@ include file="include/StarsHeader.jsp" %>
 
 <%
 

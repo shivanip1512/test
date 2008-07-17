@@ -64,12 +64,7 @@ public class ConfigLMHardwareController extends StarsInventoryActionController {
                     session.setAttribute( ServletUtils.ATT_CONFIRM_MESSAGE, "Hardware configuration sent out successfully." );
                 }
             }
-            /*
-            session.setAttribute( ServletUtils.ATT_REDIRECT2, redirect );
-            session.setAttribute( ServletUtils.ATT_REFERRER2, referer );
-            redirect = referer = req.getContextPath() +
-                    (StarsUtils.isOperator(user)? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
-        */}
+        }
         catch (WebClientException e) {
             CTILogger.error( e.getMessage(), e );
             session.setAttribute(ServletUtils.ATT_ERROR_MESSAGE, e.getMessage());

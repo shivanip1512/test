@@ -10,7 +10,6 @@ import org.springframework.web.servlet.mvc.Controller;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.stars.util.ServletUtils;
-import com.cannontech.stars.util.StarsUtils;
 import com.cannontech.stars.util.WebClientException;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.stars.web.action.ActionBase;
@@ -119,8 +118,7 @@ public class SOAPClientController implements Controller {
         if (request.getParameter(ServletUtils.CONFIRM_ON_MESSAGE_PAGE) != null) {
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REDIRECT, destURL );
             session.setAttribute( ServletUtils.ATT_MSG_PAGE_REFERRER, errorURL );
-            destURL = errorURL = request.getContextPath() +
-                    (StarsUtils.isOperator(user.getYukonUser())? "/operator/Admin/Message.jsp" : "/user/ConsumerStat/stat/Message.jsp");
+            destURL = errorURL = request.getContextPath() + "/operator/Admin/Message.jsp";
             
             Integer delay = null;
             try {
@@ -250,16 +248,8 @@ public class SOAPClientController implements Controller {
         else if (action.equalsIgnoreCase("UpdateContacts")) {
             clientAction = new UpdateContactsAction();
             //needed for residential access to contacts
-            if(referer.indexOf("/stat/Contacts.jsp") != -1)
-            {
-                if (destURL == null) destURL = request.getContextPath() + "/user/ConsumerStat/stat/Contacts.jsp";
-                if (errorURL == null) errorURL = request.getContextPath() + "/user/ConsumerStat/stat/General.jsp";                  
-            }
-            else
-            {
-                if (destURL == null) destURL = request.getContextPath() + "/operator/Consumer/Contacts.jsp";
-                if (errorURL == null) errorURL = request.getContextPath() + "/operator/Consumer/Contacts.jsp";      
-            }
+            if (destURL == null) destURL = request.getContextPath() + "/operator/Consumer/Contacts.jsp";
+            if (errorURL == null) errorURL = request.getContextPath() + "/operator/Consumer/Contacts.jsp";      
         }
         else if (action.equalsIgnoreCase("DeleteCustAccount")) {
             clientAction = new DeleteCustAccountAction();
