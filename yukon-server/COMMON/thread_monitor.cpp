@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.25 $
-* DATE         :  $Date: 2007/06/25 19:00:09 $
+* REVISION     :  $Revision: 1.26 $
+* DATE         :  $Date: 2008/07/17 20:22:29 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002, 2003, 2004 Cannon Technologies Inc. All rights reserved.
 *---------------------------------------------------------------------------------------------*/
@@ -115,9 +115,9 @@ void CtiThreadMonitor::run( void )
 
     messageOut( "ts", "Monitor Startup" );
 
-	SetThreadName(-1, "ThreadMon");
-    
-	while( !isSet(CtiThread::SHUTDOWN) )
+    SetThreadName(-1, "ThreadMon");
+
+    while( !isSet(CtiThread::SHUTDOWN) )
     {
         sleep( snooze );
 
@@ -357,7 +357,7 @@ void CtiThreadMonitor::processExtraCommands( void )
 //===========================================================================================================
 // we'll print out the data we have for all the threads we're watching
 //===========================================================================================================
-
+/*
 void CtiThreadMonitor::dump( void )
 {
     //if we only operate on a copy, we can't explode if someone changes the map
@@ -379,7 +379,7 @@ void CtiThreadMonitor::dump( void )
       }
    }
 }
-
+*/
 //===========================================================================================================
 // each thread that reports to us will give us info (at least initially) that looks like the regdata
 // we're trying hard to keep from anyone sending us illegal data, so we check for an id of zero before we

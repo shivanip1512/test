@@ -9,8 +9,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.19 $
-* DATE         :  $Date: 2006/07/27 18:38:17 $
+* REVISION     :  $Revision: 1.20 $
+* DATE         :  $Date: 2008/07/17 20:22:29 $
 *
 * Copyright (c) 1999, 2000, 2001, 2002 Cannon Technologies Inc. All rights reserved.
 *----------------------------------------------------------------------------------*/
@@ -44,7 +44,7 @@ public:
 
 //   void tickle( const CtiThreadRegData *in );
    void tickle( CtiThreadRegData *in );
-   void dump( void );
+//   void dump( void );
 
    enum State//These are considered internal states, who cares what the point value is, I dont deal with that!!!
    {
