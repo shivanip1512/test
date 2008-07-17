@@ -7,11 +7,15 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.5 $
-* DATE         :  $Date: 2008/07/08 22:54:57 $
+* REVISION     :  $Revision: 1.6 $
+* DATE         :  $Date: 2008/07/17 20:51:52 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.6  2008/07/17 20:51:52  mfisher
+* YUK-6188 PIL to Porter group submission is very slow
+* Added readers/writer lock
+*
 * Revision 1.5  2008/07/08 22:54:57  mfisher
 * YUK-6077 Several lists in PIL and Porter are not sorted
 * YUK-6113 Large group reads block out higher-priority commands
@@ -427,7 +431,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
 
 void SystemMsgThread::getPorts(vector<CtiPortManager::ptr_type> &ports)
 {
-    CtiLockGuard<CtiMutex> guard(_pPortManager->getMux());
+    CtiPortManager::coll_type::reader_lock_guard_t guard(_pPortManager->getLock());
     CtiPortManager::spiterator iter = _pPortManager->begin();
     CtiPortManager::spiterator end = _pPortManager->end();
 

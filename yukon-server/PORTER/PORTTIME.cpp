@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTTIME.cpp-arc  $
-* REVISION     :  $Revision: 1.50 $
-* DATE         :  $Date: 2008/03/31 20:41:31 $
+* REVISION     :  $Revision: 1.51 $
+* DATE         :  $Date: 2008/07/17 20:51:52 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -208,7 +208,7 @@ static void apply710TimeSync(const long unusedid, CtiDeviceSPtr RemoteRecord, vo
 
         try
         {
-            CtiRouteManager::LockGuard guard(RouteManager.getMux());
+            CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
             CtiRouteManager::spiterator rte_itr;
 
             //  Walk down the routes for this ccu and pick out the time sync ("default") routes
@@ -664,23 +664,23 @@ static void applyPortSendTime(const long unusedid, CtiPortSPtr PortRecord, void 
             else
             {
                 /* Broadcast ccu does not exist on this port */
-                CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
+                CtiPortManager::coll_type::reader_lock_guard_t guard(PortManager.getLock());  // this applyFunc Writes to the PortManager queues!
                 DeviceManager.apply(apply711TimeSync, (void*)PortRecord->getPortID());
             }
         }
         else
         {
             /* we need to walk through and generate to 710's on this port */
-            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
+            CtiPortManager::coll_type::reader_lock_guard_t guard(PortManager.getLock());  // this applyFunc Writes to the PortManager queues!
             DeviceManager.apply(apply710TimeSync, (void*)PortRecord->getPortID());
         }
 
         {
             /* Now check for Anything not covered by above */
-            CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
+            CtiPortManager::coll_type::reader_lock_guard_t guard(PortManager.getLock());  // this applyFunc Writes to the PortManager queues!
             DeviceManager.apply(applyDeviceTimeSync, (void*)PortRecord->getPortID());
 
-            CtiDeviceManager::LockGuard dvguard(DeviceManager.getMux());                // Deadlock avoidance!
+            CtiDeviceManager::coll_type::reader_lock_guard_t dvguard(DeviceManager.getLock());  // Deadlock avoidance!
             RouteManager.apply(applyMCT400TimeSync, (void*)PortRecord->getPortID());
         }
     }
