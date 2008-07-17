@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_point.h-arc  $
-* REVISION     :  $Revision: 1.23 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.24 $
+* DATE         :  $Date: 2008/07/17 20:26:39 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -81,12 +81,14 @@ protected:
     virtual void removePoint(ptr_type pTempCtiPoint);
     void refreshAlarming(LONG pntID = 0, LONG paoID = 0);
 
+    coll_type::lock_t &getLock();
+
 public:
 
     CtiPointManager();
     virtual ~CtiPointManager();
 
-    virtual void refreshListByPAO(const vector<long> &paoids, BOOL (*fn)(CtiPointBase*,void*) = isPoint, void *d = NULL);
+    virtual void refreshListByPAO(const std::vector<long> &paoids, BOOL (*fn)(CtiPointBase*,void*) = isPoint, void *d = NULL);
     virtual void refreshList(BOOL (*fn)(CtiPointBase*,void*) = isPoint, void *d = NULL, LONG pntID = 0, LONG paoID = 0, CtiPointType_t pntType = InvalidPointType);
 
     virtual void DumpList(void);
@@ -98,7 +100,7 @@ public:
     ptr_type getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type);
     ptr_type getEqual(LONG Pt);
     ptr_type getEqualByName(LONG pao, string pname);
-    void     getEqualByPAO(long pao, vector<ptr_type> &points);
+    void     getEqualByPAO(long pao, std::vector<ptr_type> &points);
     long     getPAOIdForPointId(long pointid);
 
     bool orphan(long pid);
@@ -107,11 +109,6 @@ public:
     spiterator end();
 
     size_t entries();
-
-    CtiMutex & getMux()
-    {
-        return _smartMap.getMux();
-    }
 };
 
 class Test_CtiPointManager : public CtiPointManager

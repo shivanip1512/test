@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/DISPATCH/mgr_ptclients.cpp-arc  $
-* REVISION     :  $Revision: 1.32 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.33 $
+* DATE         :  $Date: 2008/07/17 20:26:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -181,7 +181,7 @@ void CtiPointClientManager::refreshList(BOOL (*testFunc)(CtiPoint *,void*), void
             RefreshDynamicData(pntID);
             Inherited::apply(ApplyInsertNonUpdatedDynamicData, NULL);
         }
-    }  
+    }
 }
 
 
@@ -191,7 +191,7 @@ void CtiPointClientManager::DumpList(void)
     CtiPointSPtr p;
     try
     {
-        LockGuard  guard(getMux());
+        coll_type::reader_lock_guard_t guard(getLock());
 
         spiterator itr = Inherited::begin();
         spiterator end = Inherited::end();
@@ -339,7 +339,7 @@ int CtiPointClientManager::RemoveConnectionManager(CtiServer::ptr_type CM)
 
     // OK, now I walk the list of points looking at each one's list to remove the CM
     {
-        LockGuard  guard(getMux());
+        coll_type::writer_lock_guard_t guard(getLock());
         ConnectionMgrPointMap::iterator conIter = _conMgrPointMap.find(CM->hash(*CM.get()));
 
         if( conIter != _conMgrPointMap.end() && conIter->second.size() > 0 )
@@ -373,7 +373,7 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
     CtiTime   closeTime(YUKONEOT);
 
     {
-        LockGuard  guard(getMux());
+        coll_type::reader_lock_guard_t guard(getLock());
         spiterator itr = Inherited::begin();
         spiterator end = Inherited::end();
 
@@ -400,7 +400,7 @@ CtiTime CtiPointClientManager::findNextNearestArchivalTime()
 void CtiPointClientManager::scanForArchival(const CtiTime &Now, CtiFIFOQueue<CtiTableRawPointHistory> &Que)
 {
     {
-        LockGuard  guard(getMux());
+        coll_type::writer_lock_guard_t guard(getLock());
         spiterator itr = Inherited::begin();
         spiterator end = Inherited::end();
 
@@ -470,7 +470,7 @@ void CtiPointClientManager::storeDirtyRecords()
 
             conn.beginTransaction(dyndisp.c_str());
 
-            LockGuard  guard(getMux());
+            coll_type::writer_lock_guard_t guard(getLock());
             spiterator itr = Inherited::begin();
             spiterator end = Inherited::end();
 
@@ -528,7 +528,7 @@ CtiPointClientManager::~CtiPointClientManager()
 
 void CtiPointClientManager::DeleteList(void)
 {
-    LockGuard  guard(getMux());
+    coll_type::writer_lock_guard_t guard(getLock());
 
     _conMgrPointMap.clear();
     _pointConnectionMap.clear();
@@ -545,7 +545,7 @@ void CtiPointClientManager::DeleteList(void)
  */
 void CtiPointClientManager::RefreshDynamicData(LONG id)
 {
-    LockGuard  guard(getMux());
+    coll_type::writer_lock_guard_t guard(getLock());
 
     LONG lTemp = 0;
     CtiPointSPtr pTempPoint;
@@ -622,7 +622,7 @@ void CtiPointClientManager::RefreshDynamicData(LONG id)
 //Grab reasonability limits from TBL_UOM
 void CtiPointClientManager::refreshReasonabilityLimits(LONG pntID, LONG paoID)
 {
-    LockGuard  guard(getMux());
+    coll_type::writer_lock_guard_t guard(getLock());
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -688,7 +688,7 @@ void CtiPointClientManager::refreshPointLimits(LONG pntID, LONG paoID)
     CtiTablePointLimit limitTable;
     string sql;
 
-    LockGuard guard(getMux());
+    coll_type::writer_lock_guard_t guard(getLock());
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -772,7 +772,7 @@ CtiPointClientManager::PointMap CtiPointClientManager::getRegistrationMap(LONG m
 bool CtiPointClientManager::hasReasonabilityLimits(LONG pointid)
 {
     bool retVal = false;
-    LockGuard guard(getMux());
+    coll_type::reader_lock_guard_t guard(getLock());
 
     if(!_reasonabilityLimits.empty())
     {
@@ -790,7 +790,7 @@ bool CtiPointClientManager::hasReasonabilityLimits(LONG pointid)
 pair<DOUBLE, DOUBLE> CtiPointClientManager::getReasonabilityLimits(LONG pointID)
 {
     pair<DOUBLE, DOUBLE> retVal(0,0);
-    LockGuard guard(getMux());
+    coll_type::reader_lock_guard_t guard(getLock());
 
     if(!_reasonabilityLimits.empty())
     {
@@ -807,7 +807,7 @@ pair<DOUBLE, DOUBLE> CtiPointClientManager::getReasonabilityLimits(LONG pointID)
 
 CtiTablePointLimit CtiPointClientManager::getPointLimit(LONG pointID, LONG limitNum)
 {
-    LockGuard guard(getMux());
+    coll_type::reader_lock_guard_t guard(getLock());
 
     CtiTablePointLimit retVal;
     retVal.setPointID(pointID);
@@ -818,14 +818,14 @@ CtiTablePointLimit CtiPointClientManager::getPointLimit(LONG pointID, LONG limit
     {
         retVal = *iter;
     }
-    
+
     return retVal;
 }
 
 bool CtiPointClientManager::pointHasConnection(LONG pointID, const CtiServer::ptr_type &Conn)
 {
     bool retVal = false;
-    LockGuard guard(getMux());
+    coll_type::reader_lock_guard_t guard(getLock());
 
     PointConnectionMap::iterator iter = _pointConnectionMap.find(pointID);
     if(iter != _pointConnectionMap.end())

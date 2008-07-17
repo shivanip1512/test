@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_route.cpp-arc  $
-* REVISION     :  $Revision: 1.24 $
-* DATE         :  $Date: 2006/08/29 19:23:44 $
+* REVISION     :  $Revision: 1.25 $
+* DATE         :  $Date: 2008/07/17 20:26:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -508,7 +508,7 @@ CtiRouteManager::spiterator CtiRouteManager::nextPos(CtiRouteManager::spiterator
 
 bool CtiRouteManager::buildRoleVector( long id, CtiRequestMsg& Req, list< CtiMessage* > &retList, vector< CtiDeviceRepeaterRole > & roleVector )
 {
-    CtiLockGuard< CtiMutex > guard(_smartMap.getMux());
+    coll_type::reader_lock_guard_t guard(getLock());
     spiterator itr_rte;
 
     int rolenum = 1;

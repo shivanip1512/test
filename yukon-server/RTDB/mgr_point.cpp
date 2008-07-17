@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_point.cpp-arc  $
-* REVISION     :  $Revision: 1.52 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.53 $
+* DATE         :  $Date: 2008/07/17 20:26:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -117,6 +117,7 @@ void CtiPointManager::refreshList(BOOL (*testFunc)(CtiPointBase*,void*), void *a
 
     try
     {
+        coll_type::writer_lock_guard_t guard(getLock());
 
         {   // Make sure all objects that that store results
             CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
@@ -477,23 +478,19 @@ void CtiPointManager::refreshListByPAO(const vector<long> &paoids, BOOL (*testFu
 
 void CtiPointManager::DumpList(void)
 {
-    CtiPointSPtr p;
     try
     {
-        LockGuard  guard(getMux());
+        coll_type::reader_lock_guard_t guard(getLock());
 
-        spiterator itr;
+        spiterator itr, itr_end = end();
 
-        for( itr = begin(); itr != end(); itr++)
+        for( itr = begin(); itr != itr_end; itr++)
         {
-            p = itr->second;
+            itr->second->DumpData();
 
             {
-                p->DumpData();
-                {
-                    CtiLockGuard<CtiLogger> doubt_guard(dout);
-                    dout << endl;
-                }
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << endl;
             }
         }
     }
@@ -593,10 +590,10 @@ CtiPointBase* PointFactory(RWDBReader &rdr)
 
 void CtiPointManager::refreshPoints(bool &rowFound, RWDBReader& rdr, BOOL (*testFunc)(CtiPointBase*,void*), void *arg)
 {
-    LONG        lTemp = 0;
+    LONG     lTemp = 0;
     ptr_type Point;
 
-    LockGuard  guard(getMux());
+    coll_type::writer_lock_guard_t guard(getLock());
 
     while( rdr() )
     {
@@ -669,6 +666,8 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
 {
     ptr_type p, pRet;
 
+    bool loadPAO = false;
+
     std::transform(pname.begin(), pname.end(), pname.begin(), tolower);
 
     if(_smartMap.entries() == 0)
@@ -679,97 +678,34 @@ CtiPointManager::ptr_type CtiPointManager::getEqualByName(LONG pao, string pname
         }
     }
 
-    LockGuard  guard(getMux());
-    spiterator itr;
+    {
+        coll_type::reader_lock_guard_t guard(getLock());
 
-    if( !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end()) )
+        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
+    }
+
+    if( loadPAO )
     {
         refreshList(isPoint, NULL, 0, pao);
     }
 
-    for(itr = begin(); itr != end(); itr++)
     {
-        p = (itr->second);
+        coll_type::reader_lock_guard_t guard(getLock());
+        spiterator itr = begin(), itr_end = end();
 
-        string ptname = p->getName();
-        std::transform(ptname.begin(), ptname.end(), ptname.begin(), ::tolower);
-
-        if(ptname == pname)
+        for( ; itr != itr_end; itr++ )
         {
-            if(p->getUpdatedFlag())
+            p = (itr->second);
+
+            string ptname = p->getName();
+            std::transform(ptname.begin(), ptname.end(), ptname.begin(), ::tolower);
+
+            if(ptname == pname)
             {
-                pRet = p;
-                break;
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
-            }
-        }
-    }
-
-    return pRet;
-}
-
-
-void CtiPointManager::getEqualByPAO(long pao, vector<ptr_type> &points)
-{
-    ptr_type p;
-    ptr_type pRet;
-
-    LockGuard  guard(getMux());
-
-    if( !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end()) )
-    {
-        refreshList(isPoint, NULL, 0, pao);
-    }
-
-    multimap<long, long>::const_iterator itr         = _pao_pointids.lower_bound(pao),
-                                         lower_bound = _pao_pointids.upper_bound(pao);
-
-    for( ; itr != lower_bound; itr++ )
-    {
-        ptr_type p = getEqual(itr->second);
-
-        if( p )  points.push_back(p);
-    }
-}
-
-
-CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type)
-{
-    ptr_type p;
-    ptr_type pRet;
-
-    LockGuard  guard(getMux());
-
-    if( !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end()) )
-    {
-        if( DebugLevel & 0x00010000 )
-        {
-            CtiLockGuard<CtiLogger> doubt_guard(dout);
-            dout << CtiTime() << " refreshing points for paoid " << pao << endl;
-        }
-
-        refreshList(isPoint, NULL, 0, pao);
-    }
-
-    multimap<pao_offset_t, long>::const_iterator type_itr, upper_bound;
-
-    type_itr    = _type_offsets.lower_bound(pao_offset_t(pao, Offset));
-    upper_bound = _type_offsets.upper_bound(pao_offset_t(pao, Offset));
-
-    for( ; type_itr != upper_bound; type_itr++ )
-    {
-        if( (p = getEqual(type_itr->second)) && (p->getType() == Type) /* && p->getDeviceID() == pao */ )
-        {
-            //  make sure we don't return any pseudo status points
-            if( !(p->getType() == StatusPointType && p->isPseudoPoint()) )
-            {
-                if( p->getUpdatedFlag() )
+                if(p->getUpdatedFlag())
                 {
                     pRet = p;
+                    break;
                 }
                 else
                 {
@@ -783,32 +719,133 @@ CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offs
     return pRet;
 }
 
+
+void CtiPointManager::getEqualByPAO(long pao, vector<ptr_type> &points)
+{
+    ptr_type p;
+    ptr_type pRet;
+
+    bool loadPAO = false;
+
+    {
+        coll_type::reader_lock_guard_t guard(getLock());
+
+        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
+    }
+
+    if( loadPAO )
+    {
+        refreshList(isPoint, NULL, 0, pao);
+    }
+
+    {
+        coll_type::reader_lock_guard_t guard(getLock());
+
+        multimap<long, long>::const_iterator itr         = _pao_pointids.lower_bound(pao),
+                                             lower_bound = _pao_pointids.upper_bound(pao);
+
+        for( ; itr != lower_bound; itr++ )
+        {
+            ptr_type p = getEqual(itr->second);
+
+            if( p )  points.push_back(p);
+        }
+    }
+}
+
+
+CtiPointManager::ptr_type CtiPointManager::getOffsetTypeEqual(LONG pao, INT Offset, CtiPointType_t Type)
+{
+    ptr_type p;
+    ptr_type pRet;
+
+    bool loadPAO = false;
+
+    {
+        coll_type::reader_lock_guard_t guard(getLock());
+
+        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
+    }
+
+    if( loadPAO )
+    {
+        if( DebugLevel & 0x00010000 )
+        {
+            CtiLockGuard<CtiLogger> doubt_guard(dout);
+            dout << CtiTime() << " refreshing points for paoid " << pao << endl;
+        }
+
+        refreshList(isPoint, NULL, 0, pao);
+    }
+
+    {
+        coll_type::reader_lock_guard_t guard(getLock());
+
+        multimap<pao_offset_t, long>::const_iterator type_itr, upper_bound;
+
+        type_itr    = _type_offsets.lower_bound(pao_offset_t(pao, Offset));
+        upper_bound = _type_offsets.upper_bound(pao_offset_t(pao, Offset));
+
+        for( ; type_itr != upper_bound; type_itr++ )
+        {
+            if( (p = getEqual(type_itr->second)) && (p->getType() == Type) /* && p->getDeviceID() == pao */ )
+            {
+                //  make sure we don't return any pseudo status points
+                if( !(p->getType() == StatusPointType && p->isPseudoPoint()) )
+                {
+                    if( p->getUpdatedFlag() )
+                    {
+                        pRet = p;
+                    }
+                    else
+                    {
+                        CtiLockGuard<CtiLogger> doubt_guard(dout);
+                        dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
+                    }
+                }
+            }
+        }
+    }
+
+    return pRet;
+}
+
 CtiPointManager::ptr_type CtiPointManager::getControlOffsetEqual(LONG pao, INT Offset)
 {
     ptr_type p;
     ptr_type pRet;
 
-    LockGuard  guard(getMux());
+    bool loadPAO = false;
 
-    if( !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end()) )
+    {
+        coll_type::reader_lock_guard_t guard(getLock());
+
+        loadPAO = !_all_paoids_loaded && (_paoids_loaded.find(pao) == _paoids_loaded.end());
+    }
+
+    if( loadPAO )
     {
         refreshList(isPoint, NULL, 0, pao);
     }
 
-    std::map<pao_offset_t, long>::const_iterator control_itr = _control_offsets.find(pao_offset_t(pao, Offset));
-
-    if( control_itr != _control_offsets.end() )
     {
-        if( p = getEqual(control_itr->second) /* && p->getDeviceID() == pao */ )
+        coll_type::reader_lock_guard_t guard(getLock());
+
+        std::map<pao_offset_t, long>::const_iterator control_itr = _control_offsets.find(pao_offset_t(pao, Offset));
+
+        if( control_itr != _control_offsets.end() )
         {
-            if( p->getUpdatedFlag() )
+            if( p = getEqual(control_itr->second) /* && p->getDeviceID() == pao */ )
             {
-                pRet = p;
-            }
-            else
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
+                if( p->getUpdatedFlag() )
+                {
+                    pRet = p;
+                }
+                else
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " " << p->getName() << " point is non-updated" << endl;
+                }
             }
         }
     }
@@ -860,6 +897,8 @@ CtiPointManager::~CtiPointManager()
 
 void CtiPointManager::ClearList(void)
 {
+    coll_type::writer_lock_guard_t guard(getLock());
+
     _smartMap.removeAll(NULL, 0);
 
     _pao_pointids.clear();
@@ -934,6 +973,12 @@ void CtiPointManager::updatePointMaps( const CtiPointBase &point, long old_pao, 
 }
 
 
+CtiPointManager::coll_type::lock_t &CtiPointManager::getLock()
+{
+    return _smartMap.getLock();
+}
+
+
 void CtiPointManager::removePoint(ptr_type pTempCtiPoint)
 {
     if( pTempCtiPoint )
@@ -966,7 +1011,7 @@ bool CtiPointManager::orphan(long pid)
 //Load based on PAO assumes it is in add!
 void CtiPointManager::refreshAlarming(LONG pntID, LONG paoID)
 {
-    LockGuard  guard(getMux());
+    coll_type::writer_lock_guard_t guard(getLock());
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -1065,16 +1110,10 @@ void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
         int trycount = 0;
 
         #if 1
-        LockGuard guard(getMux(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock());
 
         while(!guard.isAcquired())
         {
-            {
-                CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock point mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << " Faddr: 0x" << applyFun << endl;
-            }
-            guard.tryAcquire(30000);
-
             if(trycount++ > 6)
             {
                 {
@@ -1084,6 +1123,12 @@ void CtiPointManager::apply(void (*applyFun)(const long, ptr_type, void*), void*
                 }
                 break;
             }
+
+            {
+                CtiLockGuard<CtiLogger> doubt_guard(dout);
+                dout << CtiTime() << " **** Checkpoint: Unable to lock point mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << applyFun << endl;
+            }
+            guard.tryAcquire(30000);
         }
         #endif
 
@@ -1103,9 +1148,9 @@ CtiPointManager::ptr_type CtiPointManager::find(bool (*findFun)(const long, cons
     try
     {
         int trycount = 0;
-        LockGuard gaurd(getMux(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock(), 30000);
 
-        while(!gaurd.isAcquired())
+        while(!guard.isAcquired())
         {
             if(trycount++ > 6)
             {
@@ -1116,11 +1161,13 @@ CtiPointManager::ptr_type CtiPointManager::find(bool (*findFun)(const long, cons
                 }
                 break;
             }
+
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << " Faddr: 0x" << findFun << endl;
+                dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << findFun << endl;
             }
-            gaurd.tryAcquire(30000);
+
+            guard.tryAcquire(30000);
         }
 
         p = _smartMap.find(findFun, d);

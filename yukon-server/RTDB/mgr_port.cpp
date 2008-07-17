@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_port.cpp-arc  $
-* REVISION     :  $Revision: 1.33 $
-* DATE         :  $Date: 2007/10/30 15:40:06 $
+* REVISION     :  $Revision: 1.34 $
+* DATE         :  $Date: 2008/07/17 20:26:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -389,15 +389,15 @@ void CtiPortManager::apply(void (*applyFun)(const long, ptr_type, void*), void* 
     {
         int trycount = 0;
 
-        LockGuard gaurd(getMux(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock(), 30000);
 
-        while(!gaurd.isAcquired())
+        while(!guard.isAcquired())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << endl;
+                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << endl;
             }
-            gaurd.tryAcquire(30000);
+            guard.tryAcquire(30000);
 
             if(trycount++ > 6)
             {
@@ -430,15 +430,15 @@ CtiPortManager::ptr_type CtiPortManager::find(bool (*findFun)(const long, ptr_ty
     try
     {
         int trycount=0;
-        LockGuard gaurd(getMux(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock(), 30000);
 
-        while(!gaurd.isAcquired())
+        while(!guard.isAcquired())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << endl;
+                dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << endl;
             }
-            gaurd.tryAcquire(30000);
+            guard.tryAcquire(30000);
 
             if(trycount++ > 6)
             {
@@ -475,15 +475,15 @@ void CtiPortManager::DumpList(void)
 {
     try
     {
-        LockGuard gaurd(getMux(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock(), 30000);
 
-        while(!gaurd.isAcquired())
+        while(!guard.isAcquired())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            gaurd.tryAcquire(30000);
+            guard.tryAcquire(30000);
         }
 
         spiterator itr, itr_end = end();
@@ -705,15 +705,15 @@ bool CtiPortManager::mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTableP
 
     try
     {
-        LockGuard gaurd(getMux(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock(), 30000);
 
-        while(!gaurd.isAcquired())
+        while(!guard.isAcquired())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            gaurd.tryAcquire(30000);
+            guard.tryAcquire(30000);
         }
 
 
@@ -829,7 +829,7 @@ bool CtiPortManager::removePortExclusionBlocks(ptr_type anxiousPort)
         if(anxiousPort)
         {
             apply( applyRemoveProhibit, (void*)anxiousPort.get());   // Remove prohibit mark from any port.
-            anxiousPort->setExecuting(false);                               // Mark ourselves as executing!
+            anxiousPort->setExecuting(false);
         }
     }
     catch(...)
@@ -847,15 +847,15 @@ void CtiPortManager::refreshExclusions(LONG id)
     LONG     lTemp = 0;
     ptr_type pTempPort;
 
-    LockGuard gaurd(getMux(), 30000);
+    coll_type::writer_lock_guard_t guard(getLock(), 30000);
 
-    while(!gaurd.isAcquired())
+    while(!guard.isAcquired())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint: Unable to lock port mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        gaurd.tryAcquire(30000);
+        guard.tryAcquire(30000);
     }
 
     // Reset everyone's Updated flag.

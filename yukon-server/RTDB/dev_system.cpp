@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_system.cpp-arc  $
-* REVISION     :  $Revision: 1.31 $
-* DATE         :  $Date: 2007/02/22 22:15:53 $
+* REVISION     :  $Revision: 1.32 $
+* DATE         :  $Date: 2008/07/17 20:29:42 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -497,7 +497,7 @@ INT CtiDeviceSystem::ExecuteRequest(CtiRequestMsg *pReq, CtiCommandParser &parse
         }
         else        // OK, we need to hit each and every default route in the system...
         {
-            CtiRouteManager::LockGuard guard(_routeMgr->getMux());
+            CtiRouteManager::coll_type::reader_lock_guard_t guard(_routeMgr->getLock());
 
             if(_routeMgr->empty())
             {

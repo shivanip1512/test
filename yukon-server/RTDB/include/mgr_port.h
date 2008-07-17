@@ -12,8 +12,8 @@
  *
  * PVCS KEYWORDS:
  * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_port.h-arc  $
- * REVISION     :  $Revision: 1.14 $
- * DATE         :  $Date: 2004/11/17 17:30:51 $
+ * REVISION     :  $Revision: 1.15 $
+ * DATE         :  $Date: 2008/07/17 20:26:39 $
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -74,9 +74,9 @@ public:
     spiterator begin();
     spiterator end();
 
-    CtiMutex & getMux()
+    coll_type::lock_t &getLock()
     {
-        return _smartMap.getMux();
+        return _smartMap.getLock();
     }
 
     bool mayPortExecuteExclusionFree(ptr_type anxiousPort, CtiTablePaoExclusion &portexclusion);

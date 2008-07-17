@@ -116,12 +116,5 @@ clean:
 
 
 #UPDATE#
-test_calc.obj:	yukon.h precompiled.h ctidbgmem.h calc.h ctiqueues.h \
-		calccomponent.h ctitime.h dlldefs.h ctidate.h logger.h \
-		thread.h mutex.h guard.h numstr.h clrdump.h CtiPCPtrQueue.h \
-		utility.h queues.h types.h sorted_vector.h pointstore.h \
-		hashkey.h hash_functions.h rtdb.h dllbase.h os2_2w32.h \
-		cticalls.h dsm2.h cticonnect.h netports.h pointdefs.h \
-		regression.h tbl_pt_limit.h dbmemobject.h dbaccess.h sema.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h
+test_calc.obj:	calc.h calccomponent.h pointstore.h
 #ENDUPDATE#

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTCONF.cpp-arc  $
-* REVISION     :  $Revision: 1.12 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.13 $
+* DATE         :  $Date: 2008/07/17 20:32:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -659,7 +659,7 @@ VSend (VSTRUCT *VSt,
 #else
 
          {
-            CtiRouteManager::LockGuard  guard(RouteManager.getMux());        // Protect our iteration!
+            CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
 
             CtiRouteManager::spiterator   rte_itr;
 

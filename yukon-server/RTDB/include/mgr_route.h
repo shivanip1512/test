@@ -12,8 +12,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/INCLUDE/mgr_route.h-arc  $
-* REVISION     :  $Revision: 1.11 $
-* DATE         :  $Date: 2006/02/27 23:58:33 $
+* REVISION     :  $Revision: 1.12 $
+* DATE         :  $Date: 2008/07/17 20:26:39 $
 *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
  * All Rights Reserved
@@ -72,9 +72,9 @@ public:
 
     static spiterator nextPos(spiterator &my_itr); // This is to overcome MS's flaw in the STL.  We MUST use this method in binaries other than this DLL.
 
-    CtiMutex& getMux()
+    coll_type::lock_t &getLock()
     {
-        return _smartMap.getMux();
+        return _smartMap.getLock();
     }
 
     bool empty() const;

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTFILL.cpp-arc  $
-* REVISION     :  $Revision: 1.22 $
-* DATE         :  $Date: 2007/07/23 15:36:40 $
+* REVISION     :  $Revision: 1.23 $
+* DATE         :  $Date: 2008/07/17 20:32:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -106,7 +106,7 @@ static void applySendFiller(const long unusedid, CtiPortSPtr Port, void *uid)
     {
         if( !Port->isInhibited() )
         {
-            CtiRouteManager::LockGuard  guard(RouteManager.getMux());        // Protect our iteration!
+            CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
             CtiRouteManager::spiterator   rte_itr;
 
             for(rte_itr = RouteManager.begin() ; !PorterQuit && rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr) )
@@ -204,7 +204,7 @@ static void applySendFillerPage(const long unusedid, CtiPortSPtr Port, void *uid
         {
             /*Scan ports */
             // RWRecursiveLock<RWMutexLock>::LockGuard  dev_guard(DeviceManager.getMux());
-            CtiRouteManager::LockGuard  guard(RouteManager.getMux());        // Protect our iteration!
+            CtiRouteManager::coll_type::reader_lock_guard_t guard(RouteManager.getLock());
             CtiRouteManager::spiterator   rte_itr;
 
             for(rte_itr = RouteManager.begin() ; !PorterQuit && rte_itr != RouteManager.end(); CtiRouteManager::nextPos(rte_itr) )

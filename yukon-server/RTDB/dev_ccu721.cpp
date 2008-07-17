@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:     $
-* REVISION     :  $Revision: 1.7 $
-* DATE         :  $Date: 2008/06/13 13:39:49 $
+* REVISION     :  $Revision: 1.8 $
+* DATE         :  $Date: 2008/07/17 20:29:42 $
 *
 * Copyright (c) 2006 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -222,7 +222,7 @@ bool CCU721::buildCommand(CtiOutMessage *&OutMessage, Commands command)
 
                 CtiRouteManager::spiterator itr;
 
-                CtiRouteManager::LockGuard guard(_routeMgr->getMux());
+                CtiRouteManager::coll_type::reader_lock_guard_t guard(_routeMgr->getLock());
 
                 if( !_routeMgr->empty() )
                 {

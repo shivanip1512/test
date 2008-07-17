@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/mgr_device.cpp-arc  $
-* REVISION     :  $Revision: 1.97 $
-* DATE         :  $Date: 2008/07/14 14:49:55 $
+* REVISION     :  $Revision: 1.98 $
+* DATE         :  $Date: 2008/07/17 20:26:39 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -238,7 +238,7 @@ static void applyClearMacroDeviceList(const long unusedkey, CtiDeviceSPtr Device
         ((CtiDeviceMacro *)(Device.get()))->clearDeviceList();
 }
 
-void CtiDeviceManager::dumpList(void)
+void CtiDeviceManager::test_dumpList(void)
 {
     CtiDeviceBase *p = NULL;
     try
@@ -336,9 +336,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port
 {
     ptr_type p;
 
-    LockGuard  dev_guard(getMux());
+    coll_type::reader_lock_guard_t guard(getLock());
 
-    if(_smartMap.entries() == 0)
+    if(_smartMap.empty())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -346,9 +346,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteEqual (LONG Port
         }
     }
 
-    spiterator itr;
+    spiterator itr, itr_end = end();
 
-    for(itr = begin(); itr != end(); itr++)
+    for(itr = begin(); itr != itr_end; itr++)
     {
         p = itr->second;
 
@@ -367,9 +367,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteTypeEqual (LONG 
 {
     ptr_type p;
 
-    LockGuard  dev_guard(getMux());
+    coll_type::reader_lock_guard_t guard(getLock());
 
-    if(_smartMap.entries() == 0)
+    if(_smartMap.empty())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -377,9 +377,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortRemoteTypeEqual (LONG 
         }
     }
 
-    spiterator itr;
+    spiterator itr, itr_end = end();
 
-    for(itr = begin(); itr != end(); itr++)
+    for(itr = begin(); itr != itr_end; itr++)
     {
         p = itr->second;
 
@@ -398,9 +398,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortMasterSlaveTypeEqual (
 {
     ptr_type p;
 
-    LockGuard  dev_guard(getMux());
+    coll_type::reader_lock_guard_t guard(getLock());
 
-    if(_smartMap.entries() == 0)
+    if(_smartMap.empty())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -408,9 +408,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetPortMasterSlaveTypeEqual (
         }
     }
 
-    spiterator itr;
+    spiterator itr, itr_end = end();
 
-    for(itr = begin(); itr != end(); itr++)
+    for(itr = begin(); itr != itr_end; itr++)
     {
         p = itr->second;
 
@@ -461,7 +461,7 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const string 
 
     std::transform(cmpname.begin(), cmpname.end(), cmpname.begin(), ::tolower);
 
-    if(_smartMap.entries() == 0)
+    if(_smartMap.empty())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
@@ -469,15 +469,14 @@ CtiDeviceManager::ptr_type CtiDeviceManager::RemoteGetEqualbyName (const string 
         }
     }
 
-    spiterator itr;
+    spiterator itr, itr_end = end();
 
-    for(itr = begin(); itr != end(); itr++)
+    for(itr = begin(); itr != itr_end; itr++)
     {
         p = (itr->second);
 
         devname = p->getName();
         std::transform(devname.begin(), devname.end(), devname.begin(), ::tolower);
-
 
         if( devname == cmpname )
         {
@@ -528,7 +527,7 @@ void CtiDeviceManager::refreshScanRates(LONG id)
     LONG lTemp = 0;
     CtiDeviceBase* pTempCtiDevice = NULL;
 
-    LockGuard  dev_guard(getMux());       // Protect our iteration!
+    coll_type::writer_lock_guard_t guard(getLock());
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -571,9 +570,9 @@ void CtiDeviceManager::refreshScanRates(LONG id)
         }
         else
         {
-            spiterator itr;
+            spiterator itr, itr_end = end();
 
-            for(itr = begin(); itr != end(); itr++)
+            for(itr = begin(); itr != itr_end; itr++)
             {
                 pTempCtiDevice = (itr->second).get();
                 if(pTempCtiDevice) pTempCtiDevice->invalidateScanRates();     // Mark all Scan Rate elements as needing refresh..
@@ -625,9 +624,7 @@ void CtiDeviceManager::refreshDeviceWindows(LONG id)
     LONG        lTemp = 0;
     CtiDeviceBase*   pTempCtiDevice = NULL;
 
-    LockGuard  dev_guard(getMux());       // Protect our iteration!
-
-    spiterator itr;
+    coll_type::writer_lock_guard_t guard(getLock());
 
     CtiLockGuard<CtiSemaphore> cg(gDBAccessSema);
     RWDBConnection conn = getConnection();
@@ -1981,7 +1978,8 @@ bool CtiDeviceManager::mayDeviceExecuteExclusionFree(CtiDeviceSPtr anxiousDevice
     {
         if(anxiousDevice)
         {
-            LockGuard  dev_guard(getMux());
+            coll_type::reader_lock_guard_t guard(getLock());
+
             CtiTime now;
 
             // Make sure no other device out there has begun executing and doesn't want us to until they are done.
@@ -2163,7 +2161,8 @@ bool CtiDeviceManager::removeInfiniteExclusion(CtiDeviceSPtr anxiousDevice)
 {
     bool bstatus = false;
 
-    LockGuard  dev_guard(getMux());
+    //  I don't think we need this - apply() locks us instead
+    //coll_type::writer_lock_guard_t guard(getLock());
 
     try
     {
@@ -2188,7 +2187,7 @@ void CtiDeviceManager::refreshExclusions(LONG id)
     LONG        lTemp = 0;
     CtiDeviceSPtr   pTempCtiDevice;
 
-    LockGuard  dev_guard(getMux());       // Protect our iteration!
+    coll_type::writer_lock_guard_t guard(getLock());
 
     spiterator itr;
 
@@ -2880,6 +2879,10 @@ CtiDeviceManager::spiterator CtiDeviceManager::end()
 {
     return _smartMap.getMap().end();
 }
+CtiDeviceManager::coll_type::lock_t &CtiDeviceManager::getLock()
+{
+    return _smartMap.getLock();
+}
 
 void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void* d)
 {
@@ -2888,15 +2891,15 @@ void CtiDeviceManager::apply(void (*applyFun)(const long, ptr_type, void*), void
         int trycount = 0;
 
         #if 1
-        LockGuard gaurd(getMux(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock());
 
-        while(!gaurd.isAcquired())
+        while(!guard.isAcquired())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << " Faddr: 0x" << applyFun << endl;
+                dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << applyFun << endl;
             }
-            gaurd.tryAcquire(30000);
+            guard.tryAcquire(30000);
 
             if(trycount++ > 6)
             {
@@ -2924,15 +2927,15 @@ int CtiDeviceManager::select(bool (*selectFun)(const long, ptr_type, void*), voi
     ptr_type p;
     spiterator itr;
 
-    LockGuard gaurd(getMux(), 30000);
+    coll_type::reader_lock_guard_t guard(getLock(), 30000);
 
-    while(!gaurd.isAcquired())
+    while(!guard.isAcquired())
     {
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " **** Checkpoint: Unable to lock device manager mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
         }
-        gaurd.tryAcquire(30000);
+        guard.tryAcquire(30000);
     }
 
     for(itr = begin(); itr != end(); itr++)
@@ -2953,9 +2956,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, co
     try
     {
         int trycount = 0;
-        LockGuard gaurd(getMux(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock(), 30000);
 
-        while(!gaurd.isAcquired())
+        while(!guard.isAcquired())
         {
             if(trycount++ > 6)
             {
@@ -2968,9 +2971,9 @@ CtiDeviceManager::ptr_type CtiDeviceManager::find(bool (*findFun)(const long, co
             }
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
-                dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << getMux().lastAcquiredByTID() << " Faddr: 0x" << findFun << endl;
+                dout << CtiTime() << " **** Checkpoint: Unable to lock device mutex.  Will retry. **** " << __FILE__ << " (" << __LINE__ << ") Last Acquired By TID: " << static_cast<string>(getLock()) << " Faddr: 0x" << findFun << endl;
             }
-            gaurd.tryAcquire(30000);
+            guard.tryAcquire(30000);
         }
 
         p = _smartMap.find(findFun, d);
@@ -2990,15 +2993,15 @@ bool CtiDeviceManager::contains(bool (*findFun)(const long, const ptr_type &, vo
 
     try
     {
-        LockGuard gaurd(getMux(), 30000);
+        coll_type::reader_lock_guard_t guard(getLock(), 30000);
 
-        while(!gaurd.isAcquired())
+        while(!guard.isAcquired())
         {
             {
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " **** Checkpoint: Unable to lock device manager mutex **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            gaurd.tryAcquire(30000);
+            guard.tryAcquire(30000);
         }
 
         spiterator itr;

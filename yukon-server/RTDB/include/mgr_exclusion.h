@@ -9,10 +9,14 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.3 $
-* DATE         :  $Date: 2004/05/10 21:35:51 $
+* REVISION     :  $Revision: 1.4 $
+* DATE         :  $Date: 2008/07/17 20:26:39 $
 * HISTORY      :
 * $Log: mgr_exclusion.h,v $
+* Revision 1.4  2008/07/17 20:26:39  mfisher
+* YUK-6188 PIL to Porter group submission is very slow
+* Added readers/writer lock
+*
 * Revision 1.3  2004/05/10 21:35:51  cplender
 * Exclusions a'la GRE are a bit closer here.  The proximity exclusions should work ok now.
 *
@@ -51,14 +55,14 @@ protected:
 
 private:
 
+    CtiExclusionManager(const CtiExclusionManager& aRef)
+    {
+        //*this = aRef;
+    }
+
 public:
 
     CtiExclusionManager() {}
-
-    CtiExclusionManager(const CtiExclusionManager& aRef)
-    {
-        *this = aRef;
-    }
 
     virtual ~CtiExclusionManager() {}
 

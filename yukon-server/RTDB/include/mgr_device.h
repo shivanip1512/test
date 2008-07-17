@@ -11,8 +11,8 @@
  *
  *
  * PVCS KEYWORDS:
- * REVISION     :  $Revision: 1.31 $
- * DATE         :  $Date: 2008/07/14 14:49:55 $
+ * REVISION     :  $Revision: 1.32 $
+ * DATE         :  $Date: 2008/07/17 20:26:39 $
  *
  *
  * (c) 1999 Cannon Technologies Inc. Wayzata Minnesota
@@ -87,10 +87,7 @@ public:
     spiterator begin();
     spiterator end();
 
-    CtiMutex & getMux()
-    {
-        return _smartMap.getMux();
-    }
+    coll_type::lock_t &getLock();
 
     int getErrorCode() const { return _dberrorcode; };
     int setErrorCode(int ec)
@@ -113,7 +110,7 @@ public:
     void refreshGroupHierarchy(LONG paoID = 0);
     void writeDynamicPaoInfo(void);
 
-    void dumpList(void);
+    void test_dumpList(void);
     void deleteList(void);
 
     ptr_type getEqual(LONG Remote);

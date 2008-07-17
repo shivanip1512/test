@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/RIPPLE.cpp-arc  $
-* REVISION     :  $Revision: 1.38 $
-* DATE         :  $Date: 2007/11/01 15:44:25 $
+* REVISION     :  $Revision: 1.39 $
+* DATE         :  $Date: 2008/07/17 20:32:11 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -882,7 +882,7 @@ bool ResetLCUsForControl(CtiDeviceSPtr splcu)
         }
     }
 
-    CtiDeviceManager::LockGuard  dev_guard(DeviceManager.getMux());       // Protect our iteration!
+    CtiDeviceManager::coll_type::reader_lock_guard_t dev_guard(DeviceManager.getLock());       // Protect our iteration!
 
     /* Scan through all of them looking for one still transmitting */
     WasTrx = DeviceManager.find(findWasTrxLCU, (void*)splcu->getPortID());
@@ -1427,7 +1427,7 @@ INT QueueForScan( CtiDeviceSPtr splcu, bool mayqueuescans )
     }
     else if(lcu->isGlobalLCU())
     {
-        CtiPortManager::LockGuard portlock(PortManager.getMux());       // this applyFunc Writes to the PortManager queues!
+        CtiPortManager::coll_type::reader_lock_guard_t portlock(PortManager.getLock());       // this applyFunc Writes to the PortManager queues!
         QueueAllForScan(splcu, mayqueuescans);        // A bit recursive, but not really too bad.
     }
 

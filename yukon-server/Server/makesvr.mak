@@ -98,15 +98,16 @@ id_svr.obj:    id_svr.cpp include\id_svr.h id_vinfo.h
 con_mgr.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h collectable.h \
 		con_mgr.h connection.h exchange.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
-		cticonnect.h netports.h logger.h thread.h ctitime.h \
-		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h message.h \
+		cticonnect.h netports.h logger.h thread.h CtiPCPtrQueue.h \
+		utility.h ctitime.h queues.h sorted_vector.h message.h \
 		rwutil.h boost_time.h msg_multi.h msg_pdata.h pointdefs.h \
 		pointtypes.h msg_ptreg.h msg_reg.h queue.h cparms.h \
 		configkey.h configval.h ctibase.h ctinexus.h \
 		msg_server_resp.h msg_cmd.h
 ctique.obj:	yukon.h precompiled.h ctidbgmem.h
 dlldbmemmgr.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h utility.h \
-		ctitime.h queues.h types.h numstr.h sorted_vector.h
+		ctitime.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		sorted_vector.h
 executor.obj:	yukon.h precompiled.h ctidbgmem.h executor.h message.h \
 		collectable.h dlldefs.h rwutil.h ctitime.h boost_time.h \
 		con_mgr.h connection.h exchange.h dllbase.h os2_2w32.h \
@@ -121,13 +122,13 @@ executorfactory.obj:	yukon.h precompiled.h ctidbgmem.h \
 exe_cmd.obj:	yukon.h precompiled.h ctidbgmem.h dlldefs.h con_mgr.h \
 		connection.h exchange.h dllbase.h os2_2w32.h types.h \
 		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
-		cticonnect.h netports.h logger.h thread.h ctitime.h \
-		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h message.h \
+		cticonnect.h netports.h logger.h thread.h CtiPCPtrQueue.h \
+		utility.h ctitime.h queues.h sorted_vector.h message.h \
 		collectable.h rwutil.h boost_time.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h ctibase.h ctinexus.h \
 		server_b.h cmdopts.h argkey.h argval.h critical_Section.h \
-		smartmap.h hashkey.h hash_functions.h msg_cmd.h exe_cmd.h \
+		smartmap.h readers_writer_lock.h msg_cmd.h exe_cmd.h \
 		executor.h
 exe_reg.obj:	yukon.h precompiled.h ctidbgmem.h message.h collectable.h \
 		dlldefs.h rwutil.h ctitime.h boost_time.h exe_reg.h \
@@ -139,20 +140,20 @@ exe_reg.obj:	yukon.h precompiled.h ctidbgmem.h message.h collectable.h \
 		msg_reg.h queue.h cparms.h configkey.h configval.h ctibase.h \
 		ctinexus.h con_mgr_vg.h vgexe_factory.h exe_ptchg.h \
 		executorfactory.h exe_cmd.h msg_cmd.h server_b.h cmdopts.h \
-		argkey.h argval.h critical_Section.h smartmap.h hashkey.h \
-		hash_functions.h
+		argkey.h argval.h critical_Section.h smartmap.h \
+		readers_writer_lock.h
 id_svr.obj:	yukon.h precompiled.h ctidbgmem.h utility.h ctitime.h \
-		dlldefs.h queues.h types.h numstr.h sorted_vector.h id_svr.h \
-		id_vinfo.h
+		dlldefs.h queues.h cticalls.h os2_2w32.h types.h numstr.h \
+		sorted_vector.h id_svr.h id_vinfo.h
 precompiled.obj:	yukon.h precompiled.h ctidbgmem.h
 server_b.obj:	yukon.h precompiled.h ctidbgmem.h server_b.h con_mgr.h \
 		connection.h dlldefs.h exchange.h dllbase.h os2_2w32.h \
 		types.h cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
-		cticonnect.h netports.h logger.h thread.h ctitime.h \
-		CtiPCPtrQueue.h utility.h queues.h sorted_vector.h message.h \
+		cticonnect.h netports.h logger.h thread.h CtiPCPtrQueue.h \
+		utility.h ctitime.h queues.h sorted_vector.h message.h \
 		collectable.h rwutil.h boost_time.h msg_multi.h msg_pdata.h \
 		pointdefs.h pointtypes.h msg_ptreg.h msg_reg.h queue.h \
 		cparms.h configkey.h configval.h ctibase.h ctinexus.h \
 		cmdopts.h argkey.h argval.h critical_Section.h smartmap.h \
-		hashkey.h hash_functions.h executor.h msg_cmd.h
+		readers_writer_lock.h executor.h msg_cmd.h
 #ENDUPDATE#

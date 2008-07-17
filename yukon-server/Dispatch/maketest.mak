@@ -114,12 +114,6 @@ clean:
 
 ######################################################################################
 #UPDATE#
-test_signalmanager.obj:	yukon.h precompiled.h ctidbgmem.h \
-		tbl_pt_alarm.h dlldefs.h dllbase.h os2_2w32.h types.h \
-		cticalls.h dsm2.h mutex.h guard.h numstr.h clrdump.h \
-		cticonnect.h netports.h dbmemobject.h dbaccess.h sema.h \
-		resolvers.h pointtypes.h db_entry_defines.h desolvers.h \
-		signalmanager.h msg_signal.h message.h collectable.h rwutil.h \
-		ctitime.h boost_time.h msg_multi.h msg_pdata.h pointdefs.h
+test_signalmanager.obj:	signalmanager.h
 #ENDUPDATE#
 

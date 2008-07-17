@@ -26,34 +26,35 @@
 #include <functional>
 #include <map>
 
-#include "boost/shared_ptr.hpp"
+#include <rw/thr/rwlock.h>
 
+#include "boost/shared_ptr.hpp"
 using boost::shared_ptr;
 
 #include "dllbase.h"
 #include "dlldefs.h"
-#include "hashkey.h"
-#include "logger.h"
-#include "mutex.h"
 
-using std::map;
-using std::pair;
-
+#include "readers_writer_lock.h"
 
 template < class T >
 class IM_EX_CTIBASE CtiSmartMap
 {
 public:
 
-    typedef std::map< long, shared_ptr< T > >                coll_type;              // This is the collection type!
-    typedef coll_type::value_type                       val_type;
-    typedef coll_type::iterator                         spiterator;
-    typedef std::pair<spiterator, bool>                      insert_pair;
-    typedef shared_ptr< T >                             ptr_type;
+    typedef std::map< long, shared_ptr< T > >   coll_type;     // This is the collection type!
+    typedef coll_type::value_type               val_type;
+    typedef coll_type::iterator                 spiterator;
+    typedef std::pair<spiterator, bool>         insert_pair;
+    typedef shared_ptr< T >                     ptr_type;
+
+    typedef Cti::readers_writer_lock_t          lock_t;
+    typedef lock_t::reader_lock_guard_t         reader_lock_guard_t;
+    typedef lock_t::writer_lock_guard_t         writer_lock_guard_t;
 
 protected:
 
-    mutable CtiMutex _mux;
+    mutable lock_t _lock;
+
     // This is a keyed Mapping which does not allow duplicates!
     coll_type _map;
 
@@ -61,21 +62,22 @@ protected:
 
 public:
 
-
     CtiSmartMap() {}
 
     virtual ~CtiSmartMap()
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
+        writer_lock_guard_t guard(_lock);
+
         _map.clear();                   // The shared_ptrs are deleted when all references are de-scoped.
     }
 
     void apply(void (*applyFun)(const long, ptr_type, void*), void* d)
     {
-        CtiLockGuard< CtiMutex >  gaurd(_mux);
-        spiterator itr;
+        reader_lock_guard_t guard(_lock);
 
-        for(itr = _map.begin(); itr != _map.end(); ++itr)
+        spiterator itr, itr_end = _map.end();
+
+        for(itr = _map.begin(); itr != itr_end; ++itr)
         {
             val_type vp = *itr;
             applyFun( vp.first, vp.second, d);
@@ -90,12 +92,14 @@ public:
     vector< long > select(bool (*selectFun)(const long, ptr_type, void*), void* d )
     {
         int count = 0;
-        CtiLockGuard< CtiMutex >  gaurd(_mux);
-        spiterator itr;
+
+        reader_lock_guard_t guard(_lock);
+
+        spiterator itr, itr_end = _map.end();
 
         vector< long > local_coll;
 
-        for(itr = _map.begin(); itr != _map.end(); ++itr)
+        for(itr = _map.begin(); itr != itr_end; ++itr)
         {
             val_type vp = *itr;
             if(selectFun( vp.first, vp.second, d))
@@ -120,14 +124,15 @@ public:
 
     insert_pair insert(long key, T* val)
     {
-        shared_ptr< T > storeval(val);
-        CtiLockGuard< CtiMutex > gaurd(_mux);
-        return _map.insert( val_type(key, storeval) );
+        writer_lock_guard_t guard(_lock);
+
+        return _map.insert( val_type(key, shared_ptr< T >(val)) );
     }
 
-    insert_pair insert(long key, shared_ptr< T > storeval)
+    insert_pair insert(long key, shared_ptr< T > &storeval)
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
+        writer_lock_guard_t guard(_lock);
+
         return _map.insert( val_type(key, storeval) );
     }
 
@@ -141,8 +146,10 @@ public:
 
     ptr_type find(long key)
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
+
+        reader_lock_guard_t guard(_lock);
+
         spiterator itr = _map.find( key );
 
         if( itr != _map.end() )
@@ -155,11 +162,13 @@ public:
 
     ptr_type find(bool (*testFun)(T&, void*),void* d)
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
-        spiterator itr;
 
-        for(itr = _map.begin(); itr != _map.end(); ++itr)
+        reader_lock_guard_t guard(_lock);
+
+        spiterator itr, itr_end = _map.end();
+
+        for(itr = _map.begin(); itr != itr_end; ++itr)
         {
             if(testFun(itr->second, d))
             {
@@ -173,11 +182,13 @@ public:
 
     ptr_type find(bool (*testFun)(ptr_type&, void*),void* d)
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
-        spiterator itr;
 
-        for(itr = _map.begin(); itr != _map.end(); ++itr)
+        reader_lock_guard_t guard(_lock);
+
+        spiterator itr, itr_end = _map.end();
+
+        for(itr = _map.begin(); itr != itr_end; ++itr)
         {
             if(testFun(itr->second, d))
             {
@@ -191,11 +202,13 @@ public:
 
     ptr_type find(bool (*testFun)(const long, const ptr_type &, void*),void* d)
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
-        spiterator itr;
 
-        for(itr = _map.begin(); itr != _map.end(); ++itr)
+        reader_lock_guard_t guard(_lock);
+
+        spiterator itr, itr_end = _map.end();
+
+        for(itr = _map.begin(); itr != itr_end; ++itr)
         {
             if(testFun(itr->first, itr->second, d))
             {
@@ -209,11 +222,13 @@ public:
 
     ptr_type remove(bool (*testFun)(ptr_type&, void*), void* d)        // Removes first match which return bool true on testFun
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
-        spiterator itr;
 
-        for(itr = _map.begin(); itr != _map.end(); ++itr)
+        writer_lock_guard_t guard(_lock);
+
+        spiterator itr, itr_end = _map.end();
+
+        for(itr = _map.begin(); itr != itr_end; ++itr)
         {
             if(testFun)
             {
@@ -237,15 +252,18 @@ public:
 
     void removeAll(bool (*testFun)(ptr_type&, void*), void* d)        // Removes ALL that match this function
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
-        while(remove(testFun, d));
-        return;
+        writer_lock_guard_t guard(_lock);
+
+        while(remove(testFun, d))
+            ;
     }
 
     ptr_type remove(long key)
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
         ptr_type retRef;
+
+        writer_lock_guard_t guard(_lock);
+
         spiterator itr = _map.find( key );
 
         if( itr != _map.end() )
@@ -259,13 +277,15 @@ public:
 
     size_t entries() const
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
+        reader_lock_guard_t guard(_lock);
+
         return _map.size();
     }
 
     bool empty() const
     {
-        CtiLockGuard< CtiMutex > gaurd(_mux);
+        reader_lock_guard_t guard(_lock);
+
         return _map.empty();
     }
 
@@ -281,14 +301,14 @@ public:
         _dberrorcode = 0;      // Only set it if there was an error (don't re-set it)
     }
 
-    map< long, shared_ptr< T > > & getMap()
+    std::map< long, shared_ptr< T > > &getMap()
     {
         return _map;
     }
 
-    CtiMutex & getMux()
+    lock_t &getLock()
     {
-        return _mux;
+        return _lock;
     }
 };
 
