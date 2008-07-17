@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
-import com.cannontech.common.device.commands.CommandRequestRoute;
 import com.cannontech.common.device.commands.CommandRequestRouteExecutor;
+import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.impl.CommandCompletionException;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.database.data.activity.ActivityLogActions;
@@ -121,12 +121,10 @@ public class ThermostatServiceImpl implements ThermostatService {
         String command = this.buildManualEventCommand(thermostat, event);
 
         // Send command to thermostat
+        CommandResultHolder resultHolder;
         try {
             int routeId = thermostat.getRouteId();
-            CommandRequestRoute commandRequest = new CommandRequestRoute();
-            commandRequest.setCommand(command);
-            commandRequest.setRouteId(routeId);
-            commandRequestExecutor.execute(commandRequest, yukonUser);
+			resultHolder = commandRequestExecutor.execute(routeId, command, yukonUser);
         } catch (CommandCompletionException e) {
             logger.error("Thermostat manual event failed.", e);
             return ThermostatManualEventResult.CONSUMER_MANUAL_ERROR;
@@ -148,9 +146,10 @@ public class ThermostatServiceImpl implements ThermostatService {
                                     account.getAccountId(),
                                     account.getCustomerId());
 
-        return ThermostatManualEventResult.CONSUMER_MANUAL_SUCCESS;
+        return (resultHolder.isErrorsExist()) ? ThermostatManualEventResult.CONSUMER_MANUAL_ERROR
+				: ThermostatManualEventResult.CONSUMER_MANUAL_SUCCESS;
 
-    }
+	}
 
     @Override
     public ThermostatSchedule getThermostatSchedule(Thermostat thermostat,
@@ -236,12 +235,11 @@ public class ThermostatServiceImpl implements ThermostatService {
                                                                        applyToAll);
 
         // Send command to thermostat
+        CommandResultHolder resultHolder;
         try {
             int routeId = thermostat.getRouteId();
-            CommandRequestRoute commandRequest = new CommandRequestRoute();
-            commandRequest.setCommand(updateScheduleCommand);
-            commandRequest.setRouteId(routeId);
-            commandRequestExecutor.execute(commandRequest, yukonUser);
+			resultHolder = commandRequestExecutor.execute(
+					routeId, updateScheduleCommand, yukonUser);
         } catch (CommandCompletionException e) {
             logger.error("Failed to update thermostat schedule.", e);
             return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR;
@@ -275,7 +273,8 @@ public class ThermostatServiceImpl implements ThermostatService {
 
         customerEventDao.save(event);
 
-        return ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_SUCCESS;
+        return (resultHolder.isErrorsExist()) ? ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_ERROR
+				: ThermostatScheduleUpdateResult.CONSUMER_UPDATE_SCHEDULE_SUCCESS;
 
     }
 

@@ -18,7 +18,7 @@ public interface CommandRequestExecutor<T> {
      * @param user - User executing the command
      * @return Results of executing command
      * @throws CommandCompletionException
-     * @throws PaoAuthorizationException - When user doesn't have permissing to
+     * @throws PaoAuthorizationException - When user doesn't have permission to
      *             execute the command
      */
     public CommandResultHolder execute(T command, LiteYukonUser user)
@@ -31,7 +31,7 @@ public interface CommandRequestExecutor<T> {
      * @param user - User executing the commands
      * @return Results of executing commands
      * @throws CommandCompletionException
-     * @throws PaoAuthorizationException - When user doesn't have permissing to
+     * @throws PaoAuthorizationException - When user doesn't have permission to
      *             execute the commands
      */
     public CommandResultHolder execute(List<T> commands, LiteYukonUser user)
@@ -43,7 +43,7 @@ public interface CommandRequestExecutor<T> {
      * @param commands - Commands to execute
      * @param callback - Callback which will be called as the commands execute
      * @param user - User executing the commands
-     * @throws PaoAuthorizationException - When user doesn't have permissing to
+     * @throws PaoAuthorizationException - When user doesn't have permission to
      *             execute the commands
      */
     public void execute(List<T> commands, CommandCompletionCallback<? super T> callback,
