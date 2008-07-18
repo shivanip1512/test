@@ -424,6 +424,9 @@
                 <entry key="BULKRESULT">
                     <ref local="bulkResultBackingService"/>
                 </entry>
+                <entry key="ROUTELOCATE">
+                    <ref local="routeLocateBackingService"/>
+                </entry>
                 <entry key="COMMANDER">
                     <ref local="commanderUpdateBackingService"/>
                 </entry>
@@ -498,6 +501,12 @@
     
     <bean id="bulkResultBackingService" class="com.cannontech.web.updater.bulk.BulkResultBackingService">
         <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
+        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+    </bean>
+    
+    <bean id="routeLocateBackingService" class="com.cannontech.web.updater.routeLocate.RouteLocateBackingService">
+        <property name="routeLocateResultsCache" ref="routeLocateResultsCache" />
         <property name="templateProcessorFactory" ref="templateProcessorFactory" />
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
     </bean>

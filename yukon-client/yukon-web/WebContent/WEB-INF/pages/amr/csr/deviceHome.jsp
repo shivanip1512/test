@@ -119,6 +119,23 @@
 						</c:url>
 						<a href="${commanderUrl}">Manual Commander</a>
 						<br>
+                        
+                        <!-- Actions: Locate Route -->
+                        <c:url var="routeLocateUrl" value="/spring/csr/routeLocate/home">
+                            <c:param name="collectionType" value="idList" />
+                            <c:param name="idList.ids" value="${deviceId}" />
+                        </c:url>
+                        <a href="${routeLocateUrl}">Locate Route</a>
+                        <br>
+                        
+                        <!-- Actions: Other Collection actions -->
+                        <c:url var="collectionActionsUrl" value="/spring/bulk/collectionActions">
+                            <c:param name="collectionType" value="idList" />
+                            <c:param name="idList.ids" value="${deviceId}" />
+                        </c:url>
+                        <a href="${collectionActionsUrl}">Other Actions...</a>
+                        <br>
+                        
 					</cti:checkRole>
                     
                     <c:url var="commanderUrl" value="/spring/moveInMoveOut/moveInMoveOut">

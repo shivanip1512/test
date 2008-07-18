@@ -81,6 +81,8 @@
     <entry key="yukon.common.device.bulk.collectionActions.sendCommandDescription">Issue a command to multiple devices.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massChangeLabel">Mass Change</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massChangeDescription">Change same value on multiple devices.</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.routeLocateLabel">Locate Route</entry>
+    <entry key="yukon.common.device.bulk.collectionActions.routeLocateDescription">Find route that devices respond on.</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massDeleteLabel">Mass Delete</entry>
     <entry key="yukon.common.device.bulk.collectionActions.massDeleteDescription">Delete multiple devices.</entry>
     

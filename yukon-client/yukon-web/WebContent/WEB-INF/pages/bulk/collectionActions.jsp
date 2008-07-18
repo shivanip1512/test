@@ -44,6 +44,8 @@
         <cti:msg var="sendCommandDescription" key="yukon.common.device.bulk.collectionActions.sendCommandDescription"/>
         <cti:msg var="massChangeLabel" key="yukon.common.device.bulk.collectionActions.massChangeLabel"/>
         <cti:msg var="massChangeDescription" key="yukon.common.device.bulk.collectionActions.massChangeDescription"/>
+        <cti:msg var="routeLocateLabel" key="yukon.common.device.bulk.collectionActions.routeLocateLabel"/>
+        <cti:msg var="routeLocateDescription" key="yukon.common.device.bulk.collectionActions.routeLocateDescription"/>
         <cti:msg var="massDeleteLabel" key="yukon.common.device.bulk.collectionActions.massDeleteLabel"/>
         <cti:msg var="massDeleteDescription" key="yukon.common.device.bulk.collectionActions.massDeleteDescription"/>
         
@@ -95,10 +97,21 @@
                 <td>${massChangeDescription}</td>
             </tr>
             
+            <%-- LOCATE ROUTE --%>
+            <tr>
+                <td>
+                    <form id="routeLocateForm" method="get" action="/spring/csr/routeLocate/home">
+                        <cti:deviceCollection deviceCollection="${deviceCollection}" />
+                        <input type="submit" id="routeLocateButton" value="${routeLocateLabel}" style="width:140px;"/>
+                    </form>
+                </td>
+                <td>${routeLocateDescription}</td>
+            </tr>
+            
             <%-- MASS DELETE --%>
             <tr>
                 <td>
-                    <form id="massDeleteForm" method="post" action="/spring/bulk/massChange/massDelete">
+                    <form id="massDeleteForm" method="get" action="/spring/bulk/massChange/massDelete">
                         <cti:deviceCollection deviceCollection="${deviceCollection}" />
                         <input type="submit" id="massDeleteButton" value="${massDeleteLabel}" style="width:140px;"/>
                     </form>

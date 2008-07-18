@@ -548,3 +548,28 @@ div.sectionContainer .sectionContainer_content {
     padding: 3px;
 }
 
+.okGreen {
+    color:#006633;
+}
+
+.errorRed {
+    color:#CC0000;
+}
+
+.subtleGray {
+    color:#777777;
+}
+
+div.progressBarBorder {
+    height:12px; width:100px; border:1px solid black; padding:0px; background-color:#CCCCCC;
+}
+div.progressBarInner {
+    height: 10px; width: 0px; padding:1px; overflow:hidden; background-color:#006633;
+}
+span.progressBarPercentComplete {
+    padding-left:6px;padding-right:10px;display:inline;font-size:11px;
+}
+span.progressBarCompletedCount {
+    font-size:11px;display:inline;
+}
+

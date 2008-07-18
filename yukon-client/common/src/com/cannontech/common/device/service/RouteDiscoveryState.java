@@ -8,7 +8,7 @@ import com.cannontech.database.data.lite.LiteYukonUser;
 public class RouteDiscoveryState {
 
     private List<Integer> routeIds;
-    private int routeIdx;
+    private int routeIdx = 0;
     private int attemptCount;
     private LiteYukonUser user;
     private SimpleCallback<Integer> routeFoundCallback;
@@ -22,8 +22,11 @@ public class RouteDiscoveryState {
     public int getRouteIdx() {
         return routeIdx;
     }
-    public void setRouteIdx(int routeIdx) {
-        this.routeIdx = routeIdx;
+    public void incrementRoute() {
+        routeIdx++;
+    }
+    public boolean isRoutesRemaining() {
+        return getRouteIdx() < getRouteIds().size();
     }
     public int getAttemptCount() {
         return attemptCount;

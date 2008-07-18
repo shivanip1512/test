@@ -211,4 +211,16 @@
     <bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl" lazy-init="true">
     </bean>
     
+    <bean id="routeLocateResultsCache" class="com.cannontech.common.util.RecentResultsCache"/>
+    
+    <bean id="routeLocateExecutor" class="com.cannontech.common.device.routeLocate.impl.RouteLocateExecutorImpl">
+        <property name="routeDiscoveryService" ref="routeDiscoveryService" />
+        <property name="temporaryDeviceGroupService" ref="temporaryDeviceGroupService" />
+        <property name="paoDao" ref="paoDao" />
+        <property name="deviceUpdateService" ref="deviceUpdateService" />
+        <property name="routeLocateResultsCache" ref="routeLocateResultsCache" />
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
+        <property name="deviceGroupCollectionHelper" ref="deviceGroupCollectionHelper" />
+    </bean>
+    
 </beans>
