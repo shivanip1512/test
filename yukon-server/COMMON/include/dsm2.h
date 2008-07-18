@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/DSM2.H-arc  $
-* REVISION     :  $Revision: 1.42 $
-* DATE         :  $Date: 2008/06/25 21:12:44 $
+* REVISION     :  $Revision: 1.43 $
+* DATE         :  $Date: 2008/07/18 19:45:16 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -979,12 +979,12 @@ public:
 
     bool operator>(const INMESS &rhs) const
     {
-       return Priority < rhs.Priority; // Bigger is sorted first in terms of priority.
+       return Priority > rhs.Priority;
     }
 
     bool operator<(const INMESS &rhs) const
     {
-       return Priority > rhs.Priority; // Bigger is sorted first in terms of priority.
+       return Priority < rhs.Priority;
     }
 };
 
