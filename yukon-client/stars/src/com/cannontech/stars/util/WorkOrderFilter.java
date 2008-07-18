@@ -1,9 +1,17 @@
 package com.cannontech.stars.util;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Comparator;
 
+import javax.sql.DataSource;
+
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntryTypes;
+import com.cannontech.database.SqlUtils;
 import com.cannontech.database.data.customer.CustomerTypes;
 import com.cannontech.database.data.lite.LiteAddress;
 import com.cannontech.database.data.lite.LiteCICustomer;
@@ -13,9 +21,12 @@ import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
+import com.cannontech.spring.YukonSpringHook;
 
 public class WorkOrderFilter extends AbstractFilter<LiteWorkOrderBase> {
-
+    private final DataSource dataSource = YukonSpringHook.getBean("yukonDataSource", DataSource.class);
+    private final Logger log = YukonLogManager.getLogger(getClass());
+    
     @Override
     protected boolean doFilterCheck(LiteWorkOrderBase workOrderBase, FilterWrapper filter) {
         final int filterTypeId = Integer.parseInt(filter.getFilterTypeID());
@@ -75,6 +86,20 @@ public class WorkOrderFilter extends AbstractFilter<LiteWorkOrderBase> {
         } else {
             //Dates were specified so we look at the event type to see if it matches the status filter
             final WorkOrderBase workOrderBaseHeavy = (WorkOrderBase) StarsLiteFactory.createDBPersistent(workOrderBase);
+            Connection conn = null;
+
+            try {
+                conn = dataSource.getConnection();
+                workOrderBaseHeavy.setDbConnection(conn);
+                workOrderBaseHeavy.retrieve();
+            } catch (SQLException e) {
+                log.error(e);
+                return false;
+            } finally {
+                SqlUtils.close(conn);
+            }
+            
+            
             final ArrayList<EventWorkOrder> eventWorkOrderList = workOrderBaseHeavy.getEventWorkOrders();
             for (final EventWorkOrder eventWorkOrder : eventWorkOrderList) {
                 boolean addWorkOrder = false;
