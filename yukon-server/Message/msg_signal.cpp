@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.14 $
-* DATE         :  $Date: 2006/05/04 22:42:36 $
+* REVISION     :  $Revision: 1.15 $
+* DATE         :  $Date: 2008/07/18 20:33:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -85,7 +85,7 @@ void CtiSignalMsg::saveGuts(RWvostream &aStream) const
 {
     Inherited::saveGuts(aStream);
 
-    aStream << getId() << getLogType() << getSignalCategory() << getText() << getAdditionalInfo() << getTags() << getCondition() << getSignalMillis();
+    aStream << getId() << getLogType() << getSignalCategory() << getText() << getAdditionalInfo() << getTags() << getCondition() << getSignalMillis() << getPointValue();
 }
 
 void CtiSignalMsg::restoreGuts(RWvistream& aStream)
@@ -94,7 +94,7 @@ void CtiSignalMsg::restoreGuts(RWvistream& aStream)
 
     Inherited::restoreGuts(aStream);
 
-    aStream >> _id >> _logType >> _signalCategory >> _text >> _additional >> _tags >> _condition >> millis;
+    aStream >> _id >> _logType >> _signalCategory >> _text >> _additional >> _tags >> _condition >> millis >> _point_value;
 
     setSignalMillis(millis);
 }
