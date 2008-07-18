@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PIL/pilserver.cpp-arc  $
-* REVISION     :  $Revision: 1.105 $
-* DATE         :  $Date: 2008/07/17 20:53:13 $
+* REVISION     :  $Revision: 1.106 $
+* DATE         :  $Date: 2008/07/18 21:07:33 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -20,6 +20,7 @@
 #include <iostream>
 #include <vector>
 #include <boost/regex.hpp>
+#include <boost/bind.hpp>
 
 #include <rw/toolpro/winsock.h>
 #include <rw/thr/thrfunc.h>
@@ -80,6 +81,8 @@ CtiPILExecutorFactory   ExecFactory;
 /* Define the return nexus handle */
 DLLEXPORT CtiLocalConnect<OUTMESS, INMESS> PilToPorter; //Pil handles this one
 DLLEXPORT CtiFIFOQueue< CtiMessage > PorterSystemMessageQueue;
+
+bool user_message_id_equal(const INMESS &in, int user_message_id);
 
 static vector< CtiPointDataMsg > pdMsgCol;
 static bool findShedDeviceGroupControl(const long key, CtiDeviceSPtr otherdevice, void *vptrControlParent);
@@ -983,6 +986,8 @@ int CtiPILServer::executeRequest(CtiRequestMsg *pReq)
                     itr++;
                 }
             }
+
+            _inQueue.erase_if(boost::bind(user_message_id_equal, _1, user_message_id));
         }
 
         //This message is a system request for porter, send it to the porter system thread, not a device.
@@ -2026,5 +2031,11 @@ int CtiPILServer::reportClientRequests(CtiDeviceSPtr &Dev, const CtiCommandParse
     }
 
     return status;
+}
+
+
+bool user_message_id_equal(const INMESS &in, int user_message_id)
+{
+    return in.Return.UserID == user_message_id;
 }
 

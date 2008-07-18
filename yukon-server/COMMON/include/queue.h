@@ -183,8 +183,7 @@ public:
                 dataAvailable.wait(scoped_lock);
             }
 
-            data = *(getCollection().begin());
-            pval = data.dataPointer;
+            pval = (getCollection().begin())->dataPointer;
             getCollection().erase(getCollection().begin());
 
             // cerr << "Number of entries " << getCollection().entries() << endl;
@@ -218,15 +217,13 @@ public:
                     // thread must have been signalled AND mutex reacquired to reach here OR RW_THR_TIMEOUT
                     if(wRes == true && !getCollection().empty())
                     {
-                        data = *(getCollection().begin());
-                        pval = data.dataPointer;
+                        pval = (getCollection().begin())->dataPointer;
                         getCollection().erase(getCollection().begin());
                     }
                 }
                 else
                 {
-                    data = *(getCollection().begin());
-                    pval = data.dataPointer;
+                    pval = (getCollection().begin())->dataPointer;
                     getCollection().erase(getCollection().begin());
                 }
             }
@@ -331,6 +328,30 @@ public:
         operand_for_each(getCollection().begin(),getCollection().end(),fn,d);
     }
 
+    template<class Op>
+    void erase_if(Op pred)
+    {
+        lock_t scoped_lock(mux, xt_eot);
+        if(_col && !_col->empty())
+        {
+            queue_t::iterator itr     = _col->begin(),
+                              itr_end = _col->end();
+
+            while( itr != itr_end )
+            {
+                if( itr->dataPointer && pred(*(itr->dataPointer)) )
+                {
+                    delete itr->dataPointer;
+                    itr = _col->erase(itr);
+                }
+                else
+                {
+                    itr++;
+                }
+            }
+        }
+    }
+
     void resetCollection()
     {
         try
@@ -384,10 +405,8 @@ public:
             {
                 while(!_col->empty())
                 {
-                    data = *(_col->begin());
-                    T *pval = data.dataPointer;
+                    delete (_col->begin())->dataPointer;
                     _col->erase(_col->begin());
-                    delete pval;
                 }
             }
         }
