@@ -74,6 +74,7 @@ import com.cannontech.roles.operator.WorkOrderRole;
 import com.cannontech.roles.yukon.AuthenticationRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -323,11 +324,14 @@ public class StarsAdminUtil {
 		// Delete all appliances in the category
 		com.cannontech.database.db.stars.appliance.ApplianceBase.deleteAppliancesByCategory( appCatID );
 		
+        final StarsCustAccountInformationDao starsCustAccountInformationDao = 
+            YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+		
         List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
 			LiteStarsEnergyCompany company = descendants.get(i);
 			
-            List<LiteStarsCustAccountInformation> accounts = company.getAllCustAccountInformation();
+            List<LiteStarsCustAccountInformation> accounts = starsCustAccountInformationDao.getAll(company.getEnergyCompanyID());
 			for (int j = 0; j < accounts.size(); j++) {
 				LiteStarsCustAccountInformation liteAcctInfo = accounts.get(j);
 				
@@ -519,11 +523,14 @@ public class StarsAdminUtil {
 		// set SubstationID = 0 for all sites using this substation
 		com.cannontech.database.db.stars.customer.SiteInformation.resetSubstation( subID );
 		
+        StarsCustAccountInformationDao starsCustAccountInformationDao = 
+            YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+		
         List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 		for (int i = 0; i < descendants.size(); i++) {
 			LiteStarsEnergyCompany company = descendants.get(i);
 			
-            List<LiteStarsCustAccountInformation> accounts = company.getAllCustAccountInformation();
+            List<LiteStarsCustAccountInformation> accounts = starsCustAccountInformationDao.getAll(company.getEnergyCompanyID());
 			for (int j = 0; j < accounts.size(); j++) {
 				LiteStarsCustAccountInformation liteAcctInfo = accounts.get(j);
 				if (liteAcctInfo.getSiteInformation().getSubstationID() == subID) {

@@ -12,6 +12,7 @@
 <%@ page import="com.cannontech.common.util.CtiUtilities" %>
 <%@ page import="com.cannontech.common.version.VersionTools" %>
 <%@ page import="com.cannontech.database.PoolManager" %>
+<%@ page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"%>
 <%@ page import="com.cannontech.yukon.IDatabaseCache"%>
 <%@ page import="com.cannontech.database.cache.DefaultDatabaseCache"%>
 <%@ page import="com.cannontech.database.cache.StarsDatabaseCache"%>
@@ -30,6 +31,7 @@
 <%@ page import="com.cannontech.roles.operator.InventoryRole" %>
 <%@ page import="com.cannontech.roles.operator.WorkOrderRole" %>
 <%@ page import="com.cannontech.roles.yukon.EnergyCompanyRole" %>
+<%@ page import="com.cannontech.stars.core.dao.StarsCustAccountInformationDao"%>
 <%@ page import="com.cannontech.stars.util.ECUtils" %> 
 <%@ page import="com.cannontech.stars.util.InventoryUtils" %> 
 <%@ page import="com.cannontech.stars.util.ServletUtils" %>
@@ -55,7 +57,8 @@
 <%@page import="com.cannontech.database.data.lite.LiteCustomer"%>
 <%@page import="com.cannontech.database.Transaction"%>
 <%@page import="com.cannontech.database.TransactionException"%>
-<jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
+
+<%@page import="com.cannontech.stars.core.dao.StarsCustAccountInformationDao"%><jsp:directive.page import="com.cannontech.stars.dr.hardware.service.LMHardwareControlInformationService"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation"/>
 <jsp:directive.page import="com.cannontech.database.data.lite.stars.LiteStarsAppliance"/>
 
@@ -63,6 +66,7 @@
 <script language="JavaScript" type="text/javascript"  src="/JavaScript/yukonGeneral.js"></script>
  
 <%
+    final StarsCustAccountInformationDao starsCustAccountInformationDao = YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
     final DateFormattingService dateFormattingService = YukonSpringHook.getBean("dateFormattingService", DateFormattingService.class);
     final AuthDao authDao = YukonSpringHook.getBean("authDao", AuthDao.class);
     
@@ -221,9 +225,9 @@
             
             // New enrollment, opt out, and control history tracking
             //-------------------------------------------------------------------------------
-            LMHardwareControlInformationService lmHardwareControlInformationService = YukonSpringHook.getBean("lmHardwareControlInformationService", LMHardwareControlInformationService.class);
+            final LMHardwareControlInformationService lmHardwareControlInformationService = YukonSpringHook.getBean("lmHardwareControlInformationService", LMHardwareControlInformationService.class);
             
-            LiteStarsCustAccountInformation currentLiteAcctInfo = liteEC.getBriefCustAccountInfo(account.getAccountID(), true);
+            LiteStarsCustAccountInformation currentLiteAcctInfo = starsCustAccountInformationDao.getById(account.getAccountID(), liteEC.getEnergyCompanyID());
             List<LiteStarsAppliance> currentAppList = currentLiteAcctInfo.getAppliances();
             partialOptOutMap = new HashMap<Integer, List<Integer>>();
             for(int x = 0; x < currentAppList.size(); x++) {

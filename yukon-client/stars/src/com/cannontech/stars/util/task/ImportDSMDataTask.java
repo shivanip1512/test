@@ -49,6 +49,8 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -225,6 +227,9 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 	private Map<Integer,Object[]> loadTypeMap = null;	// Map from DSM load_id (Integer) to Object[] {DSM load type (String), STARS appliance category ID (Integer)}
 	private Hashtable functionTable = null;	// Map from SA205 slot#5 code (Integer) to functions on each relay (String[])
 	private ArrayList programTable = null;	// Array of Object[] {SA205 function (String), STARS appliance category ID (Integer), STARS program ID (Integer)}
+	
+	private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
+	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
 	
 	public ImportDSMDataTask(LiteStarsEnergyCompany energyCompany, File importDir) {
 		this.energyCompany = energyCompany;
@@ -1298,7 +1303,7 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				if (!(pk.mapid.equalsIgnoreCase("STOCK") || pk.mappage.equalsIgnoreCase("STOCK") || pk.mapsection.equalsIgnoreCase("STOCK"))) {
 					Integer acctID = (Integer) getCustomerMap().get(pk);
 					if (acctID != null)
-						liteAcctInfo = member.getBriefCustAccountInfo( acctID.intValue(), true );
+    					liteAcctInfo = starsCustAccountInformationDao.getById(acctID.intValue(), member.getEnergyCompanyID());
 					else
 					{
 						importLog.println(errorLocation + ": unable to find customer record for \"" + pk.toString() + "\", add receiver to the warehouse.");
@@ -1624,7 +1629,8 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 					continue;
 				}
 				
-				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo( acctID.intValue(), true );
+				LiteStarsCustAccountInformation liteAcctInfo = 
+				    starsCustAccountInformationDao.getById(acctID.intValue(), member.getEnergyCompanyID());
 				
 				StarsCreateAppliance app = new StarsCreateAppliance();
 				app.setApplianceCategoryID( appCatDft.getApplianceCategoryID() );
@@ -1803,7 +1809,6 @@ public class ImportDSMDataTask extends TimeConsumingTask {
 				}
 				
 				LiteStarsAppliance liteApp = CreateApplianceAction.createAppliance( app, liteAcctInfo, member );
-				if (liteApp.getProgramID() > 0) member.reloadCustAccountInformation( liteAcctInfo );
 				numCtrlLoadImported++;
 			}
 			

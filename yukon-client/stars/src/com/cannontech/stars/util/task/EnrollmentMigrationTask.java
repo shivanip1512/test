@@ -9,6 +9,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
 import com.cannontech.stars.dr.hardware.model.LMHardwareControlGroup;
 import com.cannontech.stars.util.InventoryUtils;
@@ -29,7 +30,8 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
 		this.energyCompany = energyCompany;
 	}
 
-	public String getProgressMsg() {
+	@Override
+    public String getProgressMsg() {
 		if (status != STATUS_NOT_INIT) {
 		    return getImportProgress();
 		}
@@ -48,7 +50,10 @@ public class EnrollmentMigrationTask extends TimeConsumingTask {
              * we don't want to load ALL accounts all at once
 			 */
             //TODO: Should pull the db transactions out of the loops.  Will speed things up and is much cleaner.
-            List<LiteStarsCustAccountInformation> custAcctInfoList = energyCompany.getAllCustAccountInformation();
+            StarsCustAccountInformationDao starsCustAccountInformationDao = 
+                YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+            
+            List<LiteStarsCustAccountInformation> custAcctInfoList = starsCustAccountInformationDao.getAll(energyCompany.getEnergyCompanyID());
             for(LiteStarsCustAccountInformation liteAcctInformation : custAcctInfoList) {
                 LiteStarsCustAccountInformation extendedAcctInformation = energyCompany.limitedExtendCustAccountInfo(liteAcctInformation);
                 List<LiteStarsAppliance> appList = extendedAcctInformation.getAppliances();

@@ -1,8 +1,10 @@
 package com.cannontech.web.stars.action.admin;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,8 +65,7 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
             if (newAppCat) {
                 appCat.setEnergyCompanyID( energyCompany.getEnergyCompanyID() );
 
-                appCat = (com.cannontech.database.data.stars.appliance.ApplianceCategory)
-                Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
+                appCat = Transaction.createTransaction( Transaction.INSERT, appCat ).execute();
 
                 liteAppCat = (LiteApplianceCategory) StarsLiteFactory.createLite( appCat.getApplianceCategory() );
                 energyCompany.addApplianceCategory( liteAppCat );
@@ -83,8 +84,7 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
                 appCat.setApplianceCategoryID( new Integer(appCatID) );
                 appCatDB.setWebConfigurationID( new Integer(liteAppCat.getWebConfigurationID()) );
 
-                appCat = (com.cannontech.database.data.stars.appliance.ApplianceCategory)
-                Transaction.createTransaction( Transaction.UPDATE, appCat ).execute();
+                appCat = Transaction.createTransaction( Transaction.UPDATE, appCat ).execute();
 
                 StarsLiteFactory.setLiteApplianceCategory( liteAppCat, appCat.getApplianceCategory() );
                 LiteWebConfiguration liteConfig = this.starsDatabaseCache.getWebConfiguration( appCat.getWebConfiguration().getConfigurationID().intValue() );
@@ -158,8 +158,7 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
                     if (liteProg != null) {
                         pubProg.setProgramID( new Integer(liteProg.getProgramID()) );
                         pubProg.getLMProgramWebPublishing().setWebSettingsID( new Integer(liteProg.getWebSettingsID()) );
-                        pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
-                        Transaction.createTransaction( Transaction.UPDATE, pubProg ).execute();
+                        pubProg = Transaction.createTransaction( Transaction.UPDATE, pubProg ).execute();
 
                         liteProg.setChanceOfControlID( pubProg.getLMProgramWebPublishing().getChanceOfControlID().intValue() );
                         liteProg.setProgramOrder( pubProg.getLMProgramWebPublishing().getProgramOrder().intValue() );
@@ -168,8 +167,7 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
                         StarsLiteFactory.setLiteWebConfiguration( liteCfg, pubProg.getWebConfiguration() );
                     }
                     else {
-                        pubProg = (com.cannontech.database.data.stars.LMProgramWebPublishing)
-                        Transaction.createTransaction( Transaction.INSERT, pubProg ).execute();
+                        pubProg = Transaction.createTransaction( Transaction.INSERT, pubProg ).execute();
                         liteProg = (LiteLMProgramWebPublishing) StarsLiteFactory.createLite( pubProg.getLMProgramWebPublishing() );
                         energyCompany.addProgram( liteProg, liteAppCat );
 
@@ -180,6 +178,9 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
             }
 
             // Delete the rest of published programs
+            
+            final Map<Integer, List<LiteStarsCustAccountInformation>> ecToAccountsMap = createEcToAccountsMap(descendants);
+            
             for (int i = 0; i < pubProgList.size(); i++) {
                 LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) pubProgList.get(i);
 
@@ -192,7 +193,7 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
                 for (int j = 0; j < descendants.size(); j++) {
                     LiteStarsEnergyCompany company = descendants.get(j);
 
-                    List<LiteStarsCustAccountInformation> accounts = company.getAllCustAccountInformation();
+                    List<LiteStarsCustAccountInformation> accounts = ecToAccountsMap.get(company.getEnergyCompanyID());
                     for (int k = 0; k < accounts.size(); k++) {
                         LiteStarsCustAccountInformation liteAcctInfo = accounts.get(k);
 
@@ -206,6 +207,8 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
                             }
                         }
 
+                        
+                        //TODO - remove for loops calling getPrograms() getProgramHistory()
                         List<LiteStarsLMProgram> programs = liteAcctInfo.getPrograms();
                         for (int l = 0; l < programs.size(); l++) {
                             if (programs.get(l).getProgramID() == liteProg.getProgramID()) {
@@ -248,6 +251,19 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
         
         String redirect = this.getRedirect(request);
         response.sendRedirect(redirect);
+    }
+    
+    private Map<Integer, List<LiteStarsCustAccountInformation>> createEcToAccountsMap(List<LiteStarsEnergyCompany> descendants) {
+        final Map<Integer, List<LiteStarsCustAccountInformation>> resultMap =
+            new HashMap<Integer, List<LiteStarsCustAccountInformation>>(descendants.size());
+        
+        for (final LiteStarsEnergyCompany energyCompany : descendants) {
+            Integer energyCompanyId = energyCompany.getEnergyCompanyID();
+            List<LiteStarsCustAccountInformation> accounts = starsCustAccountInformationDao.getAll(energyCompanyId);
+            resultMap.put(energyCompanyId, accounts);
+        }
+        
+        return resultMap;
     }
 
 }

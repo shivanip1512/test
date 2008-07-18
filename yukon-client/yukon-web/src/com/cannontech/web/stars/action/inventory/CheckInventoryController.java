@@ -167,8 +167,9 @@ public class CheckInventoryController extends StarsInventoryActionController {
     
                     StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
                     session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-                    LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(
-                                                                                                           starsAcctInfo.getStarsCustomerAccount().getAccountID(), true );
+                    LiteStarsCustAccountInformation liteAcctInfo =
+                        starsCustAccountInformationDao.getById(starsAcctInfo.getStarsCustomerAccount().getAccountID(),
+                                                               energyCompany.getEnergyCompanyID());
     
                     try {
                         liteInv = CreateLMHardwareAction.addInventory( createHw, liteAcctInfo, energyCompany );

@@ -126,16 +126,11 @@ public class SearchWorkOrderController extends StarsWorkorderActionController {
                     liteAcctInfo = (LiteStarsCustAccountInformation) accounts.get(i);
                     liteStarsEnergyCompany = defaultEnergyCompany;
                 }
-                
-                if (liteAcctInfo.isExtended()) {
-                    for(int j = 0; j < liteAcctInfo.getServiceRequestHistory().size(); j++)
-                        liteWorkOrderList.add(liteStarsEnergyCompany.getWorkOrderBase(liteAcctInfo.getServiceRequestHistory().get(j).intValue(), true));
-                }
-                else {
-                    int[] woIDs = WorkOrderBase.searchByAccountID( liteAcctInfo.getAccountID() );
-                    for (int j = 0; j < woIDs.length; j++)
-                        liteWorkOrderList.add(liteStarsEnergyCompany.getWorkOrderBase(woIDs[j], true));
-                }
+
+                int[] woIDs = WorkOrderBase.searchByAccountID( liteAcctInfo.getAccountID() );
+                for (int j = 0; j < woIDs.length; j++) {
+                    liteWorkOrderList.add(liteStarsEnergyCompany.getWorkOrderBase(woIDs[j], true));
+                }    
             }
         }
         return liteWorkOrderList;

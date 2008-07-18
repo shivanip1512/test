@@ -17,6 +17,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.i18n.YukonMessageSourceResolvable;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutRequest;
@@ -50,6 +51,7 @@ public class OptOutServiceImpl implements OptOutService {
     private DateFormattingService dateFormattingService;
     private ECMappingDao ecMappingDao;
     private OptOutNotificationService optOutNotificationService;
+    private StarsCustAccountInformationDao starsCustAccountInformationDao;
     
     @Override
     public MessageSourceResolvable processOptOutRequest(CustomerAccount customerAccount,
@@ -122,6 +124,12 @@ public class OptOutServiceImpl implements OptOutService {
         this.optOutNotificationService = optOutNotificationService;
     }
     
+    @Autowired
+    public void setStarsCustAccountInformationDao(
+            StarsCustAccountInformationDao starsCustAccountInformationDao) {
+        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
+    }
+    
     @Deprecated
     private final class OptOutAction {
         private final ProgramOptOutAction action = new ProgramOptOutAction();
@@ -138,7 +146,8 @@ public class OptOutServiceImpl implements OptOutService {
             LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
             
             LiteStarsCustAccountInformation liteAcctInfo = 
-                energyCompany.getCustAccountInformation(customerAccount.getAccountId(), true);
+                starsCustAccountInformationDao.getById(customerAccount.getAccountId(),
+                                                       energyCompany.getEnergyCompanyID());
             
             StarsCustAccountInformation starsAcctInfo = 
                 energyCompany.getStarsCustAccountInformation(liteAcctInfo);

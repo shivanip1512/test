@@ -18,14 +18,18 @@ import com.cannontech.database.data.lite.LiteCICustomer;
 import com.cannontech.database.data.lite.LiteContact;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteFactory;
+import com.cannontech.database.data.lite.LiteTypes;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.user.YukonUser;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -60,7 +64,7 @@ import com.cannontech.user.UserUtils;
  */
 
 public class NewCustAccountAction implements ActionBase {
-
+    
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
@@ -521,9 +525,12 @@ public class NewCustAccountAction implements ActionBase {
 				new LiteCustomer( customerDB.getCustomerID().intValue() );
 			ServerUtils.handleDBChange(liteCustomer, DBChangeMsg.CHANGE_TYPE_ADD);
 			
-			LiteStarsCustAccountInformation liteAcctInfo = energyCompany.addCustAccountInformation( account );
+		    final StarsCustAccountInformationDao starsCustAccountInformationDao = 
+		        YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+		    
+			LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(account.getCustomerAccount().getAccountID(),
+			                                                                                      energyCompany.getEnergyCompanyID());
 			ServerUtils.handleDBChange( liteAcctInfo, DBChangeMsg.CHANGE_TYPE_ADD );
-			
             return liteAcctInfo;
 		}
 		catch (CommandExecutionException e) {

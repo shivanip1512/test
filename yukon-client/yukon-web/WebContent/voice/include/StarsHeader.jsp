@@ -138,7 +138,7 @@
         session.setAttribute(ServletUtils.TRANSIENT_ATT_CUSTOMER_ACCOUNT_INFO, accountInfo);
         
 		account = accountInfo.getStarsCustomerAccount();
-		liteAcctInfo = liteEC.getBriefCustAccountInfo(account.getAccountID(), true);
+		liteAcctInfo = liteEC.getCustAccountInformation(account.getAccountID(), true);
 		propAddr = account.getStreetAddress();
 		siteInfo = account.getStarsSiteInformation();
 		billAddr = account.getBillingAddress();

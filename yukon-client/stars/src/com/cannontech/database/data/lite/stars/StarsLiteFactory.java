@@ -39,6 +39,7 @@ import com.cannontech.database.db.stars.appliance.ApplianceDualStageAirCond;
 import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.event.dao.LMHardwareEventDao;
 import com.cannontech.stars.util.InventoryUtils;
 import com.cannontech.stars.util.OptOutEventQueue;
@@ -2612,7 +2613,12 @@ public class StarsLiteFactory {
 		starsEvent.setDuration( event.getPeriod() );
 		starsEvent.setNotes( "" );
 		
-		LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation( event.getAccountID(), true );
+		final StarsCustAccountInformationDao starsCustAccountInformationDao =
+		    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+		
+		LiteStarsCustAccountInformation liteAcctInfo = 
+		    starsCustAccountInformationDao.getById(event.getAccountID(), energyCompany.getEnergyCompanyID());
+		
 		if (event.getInventoryID() != 0) {
 			for (int i = 0; i < liteAcctInfo.getAppliances().size(); i++) {
 				LiteStarsAppliance liteApp = (LiteStarsAppliance) liteAcctInfo.getAppliances().get(i);

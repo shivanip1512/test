@@ -39,8 +39,9 @@ public class ConfirmCheckController extends StarsInventoryActionController {
         if (referer.indexOf("Wizard") < 0) {
             StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
                     session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-            LiteStarsCustAccountInformation liteAcctInfo = energyCompany.getCustAccountInformation(
-                    starsAcctInfo.getStarsCustomerAccount().getAccountID(), true );
+            LiteStarsCustAccountInformation liteAcctInfo = 
+                starsCustAccountInformationDao.getById(starsAcctInfo.getStarsCustomerAccount().getAccountID(),
+                                                       energyCompany.getEnergyCompanyID());
             
             if (invNo == null) {
                 StarsCreateLMHardware createHw = new StarsCreateLMHardware();

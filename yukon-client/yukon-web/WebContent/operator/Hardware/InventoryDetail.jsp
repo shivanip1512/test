@@ -502,8 +502,8 @@ function revealLog() {
                                 </td>
                               </tr>
 <%if (liteInv.getAccountID() > 0) {
-                LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteInv.getAccountID(),
-                                                                                              true);
+                LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(liteInv.getAccountID(),
+                                                                                              liteEC.getEnergyCompanyID());
                 LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
                 LiteContact liteContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer()
                                                                               .getPrimaryContactID());

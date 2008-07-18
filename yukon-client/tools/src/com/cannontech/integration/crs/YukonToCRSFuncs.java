@@ -46,6 +46,8 @@ import com.cannontech.database.db.stars.integration.Failure_SwitchReplacement;
 import com.cannontech.database.db.stars.integration.SwitchReplacement;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.xml.serialize.StarsAppliance;
 import com.cannontech.stars.xml.serialize.StarsCustAccountInformation;
@@ -472,7 +474,12 @@ public class YukonToCRSFuncs
 			meterHardwareBase.setEnergyCompanyID(liteStarsEnergyCompany.getEnergyCompanyID());
 			meterHardwareBase = (MeterHardwareBase)Transaction.createTransaction(Transaction.INSERT, meterHardwareBase).execute();
 			
-			LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEnergyCompany.getBriefCustAccountInfo(accountID.intValue(), true);
+			final StarsCustAccountInformationDao starsCustAccountInformationDao =
+			    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+			
+			LiteStarsCustAccountInformation liteStarsCustAcctInfo = 
+			    starsCustAccountInformationDao.getById(accountID, liteStarsEnergyCompany.getEnergyCompanyID());
+			
             StarsCustAccountInformation starsCustAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true);
 			LiteInventoryBase liteInvBase = new LiteInventoryBase();
 			StarsLiteFactory.setLiteInventoryBase(liteInvBase, meterHardwareBase.getInventoryBase());
@@ -514,9 +521,10 @@ public class YukonToCRSFuncs
 	{
 		LiteStarsCustAccountInformation liteStarsCustAcctInfo = null;
         StarsCustAccountInformation starsCustAcctInfo = null;
-        if( airCond.charValue() == 'Y' || waterHeater.charValue() == 'Y' )
-        {
-            liteStarsCustAcctInfo = liteStarsEnergyCompany.getBriefCustAccountInfo(accountID.intValue(), true);
+        if( airCond.charValue() == 'Y' || waterHeater.charValue() == 'Y' ) {
+            final StarsCustAccountInformationDao starsCustAccountInformationDao =
+                YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+            liteStarsCustAcctInfo = starsCustAccountInformationDao.getById(accountID, liteStarsEnergyCompany.getEnergyCompanyID());
             starsCustAcctInfo = liteStarsEnergyCompany.getStarsCustAccountInformation(accountID.intValue(), true);
         }
 

@@ -17,6 +17,7 @@ import com.cannontech.core.dao.YukonListDao;
 import com.cannontech.core.dao.YukonUserDao;
 import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.web.login.LoginService;
@@ -32,6 +33,7 @@ public abstract class AbstractBaseActionController implements Controller {
     protected RoleDao roleDao;
     protected YukonListDao yukonListDao;
     protected LoginService loginService;
+    protected StarsCustAccountInformationDao starsCustAccountInformationDao;
     
     public void setLoginService(LoginService loginService) {
         this.loginService = loginService;
@@ -84,6 +86,11 @@ public abstract class AbstractBaseActionController implements Controller {
 
     public void setYukonListDao(final YukonListDao yukonListDao) {
         this.yukonListDao = yukonListDao;
+    }
+    
+    public void setStarsCustAccountInformationDao(
+            StarsCustAccountInformationDao starsCustAccountInformationDao) {
+        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
     
 }

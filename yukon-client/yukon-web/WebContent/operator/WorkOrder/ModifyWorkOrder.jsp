@@ -383,7 +383,7 @@ function sendWorkOrder() {
                     <td width="300" valign="top" bgcolor="#FFFFFF"> 
 <%
 	if (liteOrder.getAccountID() > 0) {
-		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteOrder.getAccountID(), true);
+		LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(liteOrder.getAccountID(), liteEC.getEnergyCompanyID());
 		LiteCustomerAccount liteAccount = liteAcctInfo.getCustomerAccount();
 		LiteContact liteContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 		LiteAccountSite liteAcctSite = liteAcctInfo.getAccountSite();

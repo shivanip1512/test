@@ -1,33 +1,41 @@
 package com.cannontech.database.data.lite.stars;
 
-import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-import java.util.Vector;
 
-import com.cannontech.clientutils.CTILogger;
-import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.database.PoolManager;
-import com.cannontech.database.cache.DefaultDatabaseCache;
+import org.apache.log4j.Logger;
+
+import com.cannontech.clientutils.YukonLogManager;
+import com.cannontech.core.dao.CustomerDao;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteBase;
 import com.cannontech.database.data.lite.LiteCustomer;
 import com.cannontech.database.data.lite.LiteTypes;
+import com.cannontech.database.data.stars.hardware.LMThermostatSchedule;
 import com.cannontech.database.db.customer.CICustomerBase;
-import com.cannontech.database.db.stars.appliance.ApplianceBase;
-import com.cannontech.database.db.stars.hardware.InventoryBase;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.LMProgramWebPublishingDao;
+import com.cannontech.stars.core.dao.StarsApplianceDao;
+import com.cannontech.stars.dr.hardware.dao.InventoryBaseDao;
+import com.cannontech.stars.xml.StarsFactory;
 import com.cannontech.stars.xml.serialize.StarsCallReport;
-import com.cannontech.yukon.IDatabaseCache;
 
 /**
  * @author yao
  *
- * To change this generated comment edit the template variable "typecomment":
- * Window>Preferences>Java>Templates.
- * To enable and disable the creation of type comments go to
- * Window>Preferences>Java>Code Generation.
  */
 public class LiteStarsCustAccountInformation extends LiteBase {
-
+    private static final Logger log = YukonLogManager.getLogger(LiteStarsCustAccountInformation.class);
+    private final StarsApplianceDao starsApplianceDao = YukonSpringHook.getBean("starsApplianceDao", StarsApplianceDao.class);
+    private final InventoryBaseDao inventoryBaseDao = YukonSpringHook.getBean("inventoryBaseDao", InventoryBaseDao.class);
+    private final LMProgramWebPublishingDao lmProgramWebPublishingDao =
+        YukonSpringHook.getBean("lmProgramWebPublishingDao", LMProgramWebPublishingDao.class);
+    private final CustomerDao customerDao = YukonSpringHook.getBean("customerDao", CustomerDao.class); 
+    
+    private final int energyCompanyId;
+    
 	private LiteCustomerAccount customerAccount = null;
 	private LiteCustomer customer = null;
 	private LiteAccountSite accountSite = null;
@@ -41,17 +49,10 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	private List<Integer> serviceRequestHistory = null;	// List of IDs of LiteWorkOrderBase
 	private List<LiteLMThermostatSchedule> thermostatSchedules = null;	// List of LiteLMThermostatSchedule
 	
-	private boolean extended = false;
-	
-	public LiteStarsCustAccountInformation() {
-		super();
-		setLiteType( LiteTypes.STARS_CUST_ACCOUNT_INFO );
-	}
-	
-	public LiteStarsCustAccountInformation(int accountID) {
-		super();
+	public LiteStarsCustAccountInformation(int accountID, int energyCompanyId) {
 		setAccountID( accountID );
 		setLiteType( LiteTypes.STARS_CUST_ACCOUNT_INFO );
+		this.energyCompanyId = energyCompanyId;
 	}
 	
 	public int getAccountID() {
@@ -79,35 +80,15 @@ public class LiteStarsCustAccountInformation extends LiteBase {
     {
         return CICustomerBase.getCompanyNameFromDB(customerID);
     }
-	
+    
 	/**
 	 * Returns the appliances.
 	 * @return ArrayList
 	 */
-	public List<LiteStarsAppliance> getAppliances() {
-		if (appliances == null)
-        {
-            if( getCustomerAccount() != null)   //Must already have at least the base objects loaded
-            {
-                Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-                try {
-                    Vector<Integer> applianceIDS = ApplianceBase.getApplianceIDs( new Integer(getAccountID()), conn );
-                    appliances = new ArrayList<LiteStarsAppliance>(applianceIDS.size());
-                    for (int i = 0; i < applianceIDS.size(); i++)
-                    {
-                        LiteStarsAppliance liteStarsApp = new LiteStarsAppliance(applianceIDS.get(i).intValue());
-                        appliances.add(liteStarsApp);
-                    }
-                }
-                catch( java.sql.SQLException e ) {
-                    CTILogger.error( e.getMessage(), e );
-                }
-                finally {
-                    try {
-                        if (conn != null) conn.close();
-                    }
-                    catch (java.sql.SQLException e) {}
-                }
+	public synchronized List<LiteStarsAppliance> getAppliances() {
+		if (appliances == null) {
+            if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
+                appliances = starsApplianceDao.getByAccountId(getAccountID(), energyCompanyId);
             }
         }
 		return appliances;
@@ -117,9 +98,13 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the callReportHistory.
 	 * @return ArrayList
 	 */
-	public List<StarsCallReport> getCallReportHistory() {
-		if (callReportHistory == null)
-			callReportHistory = new ArrayList<StarsCallReport>();
+	public synchronized List<StarsCallReport> getCallReportHistory() {
+	    if (callReportHistory == null) {
+	        if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
+	            StarsCallReport[] calls = StarsFactory.getStarsCallReports(getAccountID());
+	            if (calls != null) callReportHistory = Arrays.asList(calls);  
+	        }
+	    }    
 		return callReportHistory;
 	}
 
@@ -135,29 +120,12 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the inventorys.
 	 * @return ArrayList
 	 */
-	public List<Integer> getInventories() {
-		if (inventories == null)
-        {
-            if( getCustomerAccount() != null)   //Must already have at least the base objects loaded
-            {
-                Connection conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-                try {
-                    Vector<Integer> inventoryIDS = InventoryBase.getInventoryIDs(new Integer(getAccountID()), conn);
-                    inventories = new ArrayList<Integer>(inventoryIDS.size());
-                    for (int i = 0; i < inventoryIDS.size(); i++)
-                        inventories.add(inventoryIDS.get(i));
-                }
-                catch( java.sql.SQLException e ) {
-                    CTILogger.error( e.getMessage(), e );
-                }
-                finally {
-                    try {
-                        if (conn != null) conn.close();
-                    }
-                    catch (java.sql.SQLException e) {}
-                }
+	public synchronized List<Integer> getInventories() {
+		if (inventories == null) {
+            if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
+                inventories = inventoryBaseDao.getInventoryIdsByAccountId(getAccountID());
             }
-        }
+		}    
 		return inventories;
 	}
 
@@ -165,9 +133,10 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the programs.
 	 * @return ArrayList
 	 */
-	public List<LiteStarsLMProgram> getPrograms() {
-		if (programs == null)
-			programs = new ArrayList<LiteStarsLMProgram>();
+	public synchronized List<LiteStarsLMProgram> getPrograms() {
+		if (programs == null) {
+			programs = lmProgramWebPublishingDao.getPrograms(this, energyCompanyId);
+		}	
 		return programs;
 	}
 
@@ -175,9 +144,18 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the serviceRequestHistory.
 	 * @return ArrayList
 	 */
-	public List<Integer> getServiceRequestHistory() {
-		if (serviceRequestHistory == null)
-			serviceRequestHistory = new ArrayList<Integer>();
+	public synchronized List<Integer> getServiceRequestHistory() {
+		if (serviceRequestHistory == null) {
+		    if (getCustomerAccount() != null) { //Must already have at least the base objects loaded
+	            int[] orderIDs = com.cannontech.database.db.stars.report.WorkOrderBase.searchByAccountID(getAccountID());
+	            if (orderIDs != null) {
+	                serviceRequestHistory = new ArrayList<Integer>();
+	                for (int orderId : orderIDs) {
+	                    serviceRequestHistory.add(orderId);
+	                }
+	            }
+		    }
+		}
 		return serviceRequestHistory;
 	}
 
@@ -241,8 +219,11 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the customer.
 	 * @return LiteCustomer
 	 */
-	public LiteCustomer getCustomer() {
-		return customer;
+	public synchronized LiteCustomer getCustomer() {
+		if (customer == null) {
+		    customer = customerDao.getLiteCustomer(getCustomerAccount().getCustomerID());
+		}
+	    return customer;
 	}
 
 	/**
@@ -281,7 +262,16 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	 * Returns the customerResidence.
 	 * @return LiteCustomerResidence
 	 */
-	public LiteCustomerResidence getCustomerResidence() {
+	public synchronized LiteCustomerResidence getCustomerResidence() {
+	    if (customerResidence == null) {
+	        if (getCustomerAccount() != null) {   //Must already have at least the base objects loaded
+	            com.cannontech.database.db.stars.customer.CustomerResidence residence =
+	                com.cannontech.database.db.stars.customer.CustomerResidence.getCustomerResidence(getAccountSite().getAccountSiteID());
+	            if (residence != null) {
+	                customerResidence = (LiteCustomerResidence) StarsLiteFactory.createLite(residence);
+	            }
+	        }
+	    }
 		return customerResidence;
 	}
 
@@ -294,27 +284,11 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	}
 
 	/**
-	 * Returns the extended.
-	 * @return boolean
-	 */
-	public boolean isExtended() {
-		return extended;
-	}
-
-	/**
-	 * Sets the extended.
-	 * @param extended The extended to set
-	 */
-	public void setExtended(boolean extended) {
-		this.extended = extended;
-	}
-
-	/**
 	 * @return
 	 */
-	public List<LiteLMProgramEvent> getProgramHistory() {
+	public synchronized List<LiteLMProgramEvent> getProgramHistory() {
 		if (programHistory == null)
-			programHistory = new ArrayList<LiteLMProgramEvent>();
+			programHistory = lmProgramWebPublishingDao.getProgramHistory(getAccountID(), energyCompanyId);
 		return programHistory;
 	}
 
@@ -328,9 +302,28 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 	/**
 	 * @return
 	 */
-	public List<LiteLMThermostatSchedule> getThermostatSchedules() {
-		if (thermostatSchedules == null)
+	public synchronized List<LiteLMThermostatSchedule> getThermostatSchedules() {
+		if (thermostatSchedules == null) {
 			thermostatSchedules = new ArrayList<LiteLMThermostatSchedule>();
+            com.cannontech.database.db.stars.hardware.LMThermostatSchedule[] schedules =
+                com.cannontech.database.db.stars.hardware.LMThermostatSchedule.getAllThermostatSchedules(getAccountID());
+            if (schedules != null) {
+                for (int i = 0; i < schedules.length; i++) {
+                    if (schedules[i].getInventoryID().intValue() == 0) {
+                        try {
+                            LMThermostatSchedule schedule = new LMThermostatSchedule();
+                            schedule.setScheduleID( schedules[i].getScheduleID() );
+                            schedule = Transaction.createTransaction( Transaction.RETRIEVE, schedule ).execute();
+
+                            LiteLMThermostatSchedule liteSchedule = StarsLiteFactory.createLiteLMThermostatSchedule( schedule );
+                            thermostatSchedules.add( liteSchedule );
+                        } catch (TransactionException e) {
+                            log.error(e);
+                        }
+                    }
+                }
+            }
+		}	
 		return thermostatSchedules;
 	}
 
@@ -341,83 +334,4 @@ public class LiteStarsCustAccountInformation extends LiteBase {
 		thermostatSchedules = list;
 	}
     
-    public void retrieveLiteStarsCustAccountInfo() throws java.sql.SQLException {
-
-        java.sql.Connection conn = null;
-        java.sql.PreparedStatement stmt = null;
-        java.sql.ResultSet rset = null;
-        
-        try {
-            conn = PoolManager.getInstance().getConnection( CtiUtilities.getDatabaseAlias() );
-            
-            String sql = "SELECT ac.AccountID, ac.AccountSiteID, ac.AccountNumber, ac.CustomerID, ac.BillingAddressID, ac.AccountNotes, " + //1-6 
-                        " acs.SiteInformationID, acs.SiteNumber, acs.StreetAddressID, acs.PropertyNotes, acs.CustAtHome, acs.CustomerStatus, " + //7-12
-                        " si.Feeder, si.Pole, si.TransformerSize, si.ServiceVoltage, si.SubstationID " + //13-17
-//                        " sub.SubstationName, sub.RouteID, " + //18-19
-//                        " ba.LocationAddress1, ba.LocationAddress2, ba.CityName, ba.StateCode, ba.ZipCode, ba.County, " + //20-25
-//                        " sa.LocationAddress1, sa.LocationAddress2, sa.CityName, sa.StateCode, sa.ZipCode, sa.County, " + //26-31                        
-//                        " c.primarycontactid, c.customertypeid, c.timezone, c.customernumber, c.ratescheduleid, c.alttracknum, c.temperatureunit, " + //32-38 
-//                        " cont.contfirstname, cont.contlastname, cont.loginid, cont.addressid " + //39-42
-                        " FROM CustomerAccount ac, AccountSite acs, SiteInformation si " +
-//                        " , Substation sub customer c, contact cont, Address ba, Address sa, ECToAccountMapping map " +
-                        " WHERE ac.accountid = ? " +
-                        " AND ac.AccountSiteID = acs.AccountSiteID " + 
-                        " AND acs.SiteInformationID = si.SiteID";
-//                        " AND si.SubstationID = sub.SubstationID ";
-//                        " AND map.AccountID = ac.AccountID " + 
-//                        " and ac.customerid = c.customerid " + 
-//                        " and c.primarycontactid = cont.contactid " + 
-//                        " AND ac.BillingAddressID = ba.AddressID " +
-//                        " AND acs.StreetAddressID = sa.AddressID " +  
-
-            
-            stmt = conn.prepareStatement(sql);
-            stmt.setInt( 1, getAccountID() );
-            rset = stmt.executeQuery();
-            
-            while (rset.next())
-            {
-                customerAccount = new LiteCustomerAccount();
-                customerAccount.setAccountID( getAccountID() );
-                customerAccount.setAccountSiteID( rset.getInt(2));
-                customerAccount.setAccountNumber( rset.getString(3));
-                customerAccount.setCustomerID( rset.getInt(4) );
-                customerAccount.setBillingAddressID( rset.getInt(5));
-                customerAccount.setAccountNotes( rset.getString(6) );
-
-                accountSite = new LiteAccountSite();
-                accountSite.setAccountSiteID( customerAccount.getAccountSiteID());
-                accountSite.setSiteInformationID( rset.getInt(7) );
-                accountSite.setSiteNumber( rset.getString(8) );
-                accountSite.setStreetAddressID( rset.getInt(9) );
-                accountSite.setPropertyNotes( rset.getString(10));
-                accountSite.setCustAtHome( rset.getString(11));
-                accountSite.setCustStatus( rset.getString(12) );
-
-                siteInformation = new LiteSiteInformation();
-                siteInformation.setSiteID( accountSite.getAccountSiteID() );
-                siteInformation.setFeeder( rset.getString(13) );
-                siteInformation.setPole( rset.getString(14));
-                siteInformation.setTransformerSize( rset.getString(15) );
-                siteInformation.setServiceVoltage( rset.getString(16) );
-                siteInformation.setSubstationID( rset.getInt(17) );
-             
-                IDatabaseCache cache = DefaultDatabaseCache.getInstance();
-                synchronized (cache) {
-                    customer =  ( (LiteCustomer)cache.getACustomerByCustomerID(customerAccount.getCustomerID()) );
-                }
-            }
-        }
-        catch( java.sql.SQLException e ) {
-            CTILogger.error( e.getMessage(), e );
-        }
-        finally {
-            try {
-                if (rset != null) rset.close();
-                if (stmt != null) stmt.close();
-                if (conn != null) conn.close();
-            }
-            catch (java.sql.SQLException e) {}
-        }
-    }
 }

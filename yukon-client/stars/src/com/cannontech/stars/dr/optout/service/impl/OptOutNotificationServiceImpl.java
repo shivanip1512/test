@@ -25,6 +25,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.i18n.YukonUserContextMessageSourceResolver;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationService;
 import com.cannontech.stars.dr.optout.service.OptOutNotificationUtil;
@@ -43,6 +44,7 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     private final Logger logger = YukonLogManager.getLogger(OptOutNotificationServiceImpl.class);
     private YukonUserContextMessageSourceResolver messageSourceResolver;
     private DateFormattingService dateFormattingService;
+    private StarsCustAccountInformationDao starsCustAccountInformationDao;
     
     @Override
     public void sendNotification(final CustomerAccount customerAccount,  
@@ -114,7 +116,8 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
                                                                         holder.yukonUserContext);
         
         LiteStarsCustAccountInformation liteAcctInfo = 
-            holder.energyCompany.getCustAccountInformation(holder.customerAccount.getAccountId(), true);
+            starsCustAccountInformationDao.getById(holder.customerAccount.getAccountId(),
+                                                   holder.energyCompany.getEnergyCompanyID());
 
         List<Integer> inventoryIdList = holder.request.getInventoryIdList();
         List<LiteStarsLMHardware> hardwares;
@@ -165,6 +168,12 @@ public class OptOutNotificationServiceImpl implements OptOutNotificationService 
     public void setDateFormattingService(
             DateFormattingService dateFormattingService) {
         this.dateFormattingService = dateFormattingService;
+    }
+    
+    @Autowired
+    public void setStarsCustAccountInformationDao(
+            StarsCustAccountInformationDao starsCustAccountInformationDao) {
+        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
     
 }

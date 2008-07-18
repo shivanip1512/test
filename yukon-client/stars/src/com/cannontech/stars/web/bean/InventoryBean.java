@@ -3,15 +3,12 @@ package com.cannontech.stars.web.bean;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.common.util.Pair;
@@ -27,10 +24,10 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.pao.PAOGroups;
-import com.cannontech.database.db.stars.appliance.ApplianceBase;
-import com.cannontech.database.db.stars.customer.CustomerAccount;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.roles.operator.AdministratorRole;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.AbstractFilter;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.FilterWrapper;
@@ -89,6 +86,9 @@ public class InventoryBean {
     private boolean overHardwareDisplayLimit = false;
 	private boolean differentOrigin = true;
     private boolean checkInvenForAccount = false;
+    
+    private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
+        YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
     
 	/**
 	 * Comparator of serial # and device names. Serial # is always "less than"
@@ -540,7 +540,8 @@ public class InventoryBean {
                     htmlBuf.append("General Inventory");
 			}
 			else {
-				LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo( liteInv.getAccountID(), true );
+				LiteStarsCustAccountInformation liteAcctInfo = 
+				    starsCustAccountInformationDao.getById(liteInv.getAccountID(), member.getEnergyCompanyID());
 				LiteContact liteCont = DaoFactory.getContactDao().getContact( liteAcctInfo.getCustomer().getPrimaryContactID() );
 				LiteAddress liteAddr = member.getAddress( liteAcctInfo.getAccountSite().getStreetAddressID() );
             	

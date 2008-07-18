@@ -27,6 +27,7 @@ import com.cannontech.roles.consumer.ResidentialCustomerRole;
 import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.stars.core.dao.ECMappingDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
 import com.cannontech.stars.dr.controlhistory.model.ControlHistory;
 import com.cannontech.stars.dr.controlhistory.service.ControlHistoryService;
@@ -58,6 +59,7 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     private LMHardwareControlGroupDao lmHardwareControlGroupDao;
     private ControlHistoryService controlHistoryService;
     private ECMappingDao ecMappingDao;
+    private StarsCustAccountInformationDao starsCustAccountInformationDao;
 
     @Override
     public ProgramEnrollmentResult applyEnrollmentRequests(final CustomerAccount customerAccount,
@@ -68,7 +70,8 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
 
         LiteStarsEnergyCompany energyCompany = ecMappingDao.getCustomerAccountEC(customerAccount);
         LiteStarsCustAccountInformation liteCustomerAccount = 
-            energyCompany.getCustAccountInformation(customerAccountId, true);
+            starsCustAccountInformationDao.getById(customerAccountId, 
+                                                   energyCompany.getEnergyCompanyID());
 
         String progEnrBefore = toProgramNameString(liteCustomerAccount.getPrograms(), "(None)");
 
@@ -254,6 +257,12 @@ public class ProgramEnrollmentServiceImpl implements ProgramEnrollmentService {
     @Autowired
     public void setEcMappingDao(ECMappingDao ecMappingDao) {
         this.ecMappingDao = ecMappingDao;
+    }
+    
+    @Autowired
+    public void setStarsCustAccountInformationDao(
+            StarsCustAccountInformationDao starsCustAccountInformationDao) {
+        this.starsCustAccountInformationDao = starsCustAccountInformationDao;
     }
 
 }

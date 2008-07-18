@@ -122,8 +122,9 @@ public class MeterProfileSaveController extends StarsInventoryActionController {
             
             StarsCustAccountInformation starsAcctInfo = (StarsCustAccountInformation)
                     session.getAttribute(ServletUtils.TRANSIENT_ATT_LEADING + ServletUtils.ATT_CUSTOMER_ACCOUNT_INFO);
-            LiteStarsCustAccountInformation liteAcctInfo = mBean.getEnergyCompany().getCustAccountInformation(
-                    starsAcctInfo.getStarsCustomerAccount().getAccountID(), true );
+            LiteStarsCustAccountInformation liteAcctInfo = 
+                starsCustAccountInformationDao.getById(starsAcctInfo.getStarsCustomerAccount().getAccountID(),
+                                                       mBean.getEnergyCompany().getEnergyCompanyID());
             
             if (isNew) 
             {

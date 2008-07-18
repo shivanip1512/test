@@ -1,7 +1,6 @@
 package com.cannontech.stars.core.service.impl;
 
 import com.cannontech.database.data.lite.stars.LiteInventoryBase;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.stars.core.service.StarsCacheService;
 import com.cannontech.stars.dr.account.model.CustomerAccount;
@@ -15,15 +14,6 @@ public class StarsCacheServiceImpl implements StarsCacheService {
         
         LiteInventoryBase liteInventoryBase = energyCompany.getInventory(inventoryBase.getInventoryId(), false);
         updateInventoryModel(inventoryBase, liteInventoryBase);
-        
-        if (customerAccount.getAccountId() != 0) {
-            updateInventoryCustomerAccount(energyCompany, customerAccount);
-        }
-    }
-    
-    private void updateInventoryCustomerAccount(final LiteStarsEnergyCompany energyCompany, final CustomerAccount customerAccount) {
-        final LiteStarsCustAccountInformation accountInformation = energyCompany.getCustAccountInformation(customerAccount.getAccountId(), false);
-        if (accountInformation != null) energyCompany.deleteCustAccountInformation(accountInformation);
     }
     
     private void updateInventoryModel(final InventoryBase inventoryBase, final LiteInventoryBase liteInventoryBase) {

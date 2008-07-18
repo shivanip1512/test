@@ -13,8 +13,8 @@
     <bean id="starsDatabaseCache"
         class="com.cannontech.database.cache.StarsDatabaseCache"
         init-method="init">
-        <property name="asyncDynamicDataSource"
-            ref="asyncDynamicDataSource" />
+        <property name="asyncDynamicDataSource" ref="asyncDynamicDataSource" />
+        <property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
     </bean>
 
     <bean id="accountCheckerService" class="com.cannontech.stars.core.service.impl.AccountCheckerServiceImpl"/>
@@ -49,6 +49,12 @@
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
         <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
     </bean>
+
+    <bean id="starsCustAccountInformationDao" class="com.cannontech.stars.core.dao.impl.StarsCustAccountInformationDaoImpl"/>
+
+    <bean id="starsApplianceDao" class="com.cannontech.stars.core.dao.impl.StarsApplianceDaoImpl"/>
+
+    <bean id="lmProgramWebPublishingDao" class="com.cannontech.stars.core.dao.impl.LMProgramWebPublishingDaoImpl"/>
 
     <bean id="accountSiteDao" class="com.cannontech.stars.dr.account.dao.impl.AccountSiteDaoImpl"/>
     
@@ -94,11 +100,6 @@
     </bean>
 
     <bean id="inventoryBaseDao" class="com.cannontech.stars.dr.hardware.dao.impl.InventoryBaseDaoImpl"/>
-
-    <bean id="ecSearchDao"
-        class="com.cannontech.stars.core.dao.impl.ECSearchDaoImpl">
-        <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
-    </bean>
     
     <bean id="starsRowCountDao" class="com.cannontech.stars.core.dao.impl.StarsRowCountDaoImpl">
         <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate"/>

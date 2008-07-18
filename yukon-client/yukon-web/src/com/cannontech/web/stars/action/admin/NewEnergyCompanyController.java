@@ -148,7 +148,6 @@ public class NewEnergyCompanyController extends StarsAdminActionController {
                     stmt.execute();
 
                     LiteStarsEnergyCompany newCompany = new LiteStarsEnergyCompany( company );
-                    newCompany.setAccountsLoaded( true );
                     newCompany.setInventoryLoaded( true );
                     newCompany.setWorkOrdersLoaded( true );
 

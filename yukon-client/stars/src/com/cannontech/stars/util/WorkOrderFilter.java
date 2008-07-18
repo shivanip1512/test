@@ -22,9 +22,12 @@ import com.cannontech.database.data.lite.stars.StarsLiteFactory;
 import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 
 public class WorkOrderFilter extends AbstractFilter<LiteWorkOrderBase> {
     private final DataSource dataSource = YukonSpringHook.getBean("yukonDataSource", DataSource.class);
+    private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
+        YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
     private final Logger log = YukonLogManager.getLogger(getClass());
     
     @Override
@@ -125,7 +128,8 @@ public class WorkOrderFilter extends AbstractFilter<LiteWorkOrderBase> {
     }
     
     private boolean filterByCustomerType(final LiteWorkOrderBase workOrderBase, final int filterId) {
-        LiteStarsCustAccountInformation liteCustAcctInfo = getEnergyCompany().getBriefCustAccountInfo(workOrderBase.getAccountID(), true);
+        LiteStarsCustAccountInformation liteCustAcctInfo = 
+            starsCustAccountInformationDao.getById(workOrderBase.getAccountID(), getEnergyCompany().getEnergyCompanyID());
         LiteCustomer customer = liteCustAcctInfo.getCustomer();
 
         boolean match = false;
@@ -166,7 +170,8 @@ public class WorkOrderFilter extends AbstractFilter<LiteWorkOrderBase> {
     }
     
     private boolean filterByServiceCompanyCodes(final LiteWorkOrderBase workOrderBase, final FilterWrapper filter) {
-        LiteStarsCustAccountInformation liteCustAcctInfo = getEnergyCompany().getBriefCustAccountInfo(workOrderBase.getAccountID(), true);
+        LiteStarsCustAccountInformation liteCustAcctInfo = 
+            starsCustAccountInformationDao.getById(workOrderBase.getAccountID(), getEnergyCompany().getEnergyCompanyID());
         LiteAddress liteAddr = getEnergyCompany().getAddress(liteCustAcctInfo.getAccountSite().getStreetAddressID());
         
         //The filterText is formatted "Label: value".  By parsing for the last space char we can get just the value.

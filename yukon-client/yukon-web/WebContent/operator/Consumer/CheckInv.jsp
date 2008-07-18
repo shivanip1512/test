@@ -164,7 +164,7 @@
 <%
 	}
 	else {
-		LiteStarsCustAccountInformation liteAcctInfo = liteEC.getBriefCustAccountInfo(liteInv.getAccountID(), true);
+		LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(liteInv.getAccountID(), liteEC.getEnergyCompanyID());
 		LiteContact liteContact = DaoFactory.getContactDao().getContact(liteAcctInfo.getCustomer().getPrimaryContactID());
 		LiteAddress liteAddr = liteEC.getAddress(liteAcctInfo.getAccountSite().getStreetAddressID());
 		

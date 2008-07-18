@@ -21,6 +21,8 @@ import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.database.db.stars.report.WorkOrderBase;
 import com.cannontech.servlet.YukonUserContextUtils;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.WebClientException;
@@ -48,6 +50,9 @@ import com.cannontech.user.YukonUserContext;
  * Window>Preferences>Java>Code Generation.
  */
 public class UpdateServiceRequestAction implements ActionBase {
+    private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
+        YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+    
 	/**
 	 * @see com.cannontech.stars.web.action.ActionBase#build(HttpServletRequest, HttpSession)
 	 */
@@ -95,7 +100,8 @@ public class UpdateServiceRequestAction implements ActionBase {
         	StarsUpdateServiceRequest updateOrder = reqOper.getStarsUpdateServiceRequest();
         	LiteWorkOrderBase liteOrder = liteStarsEC.getWorkOrderBase( updateOrder.getOrderID(), true );
 
-        	LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getBriefCustAccountInfo(liteOrder.getAccountID(), true);
+        	LiteStarsCustAccountInformation liteAcctInfo = 
+        	    starsCustAccountInformationDao.getById(liteOrder.getAccountID(), liteStarsEC.getEnergyCompanyID());
 
         	if (updateOrder.getOrderNumber() != null &&
         		!updateOrder.getOrderNumber().equals( liteOrder.getOrderNumber() ) &&
@@ -106,25 +112,10 @@ public class UpdateServiceRequestAction implements ActionBase {
 				return SOAPUtil.buildSOAPMessage( respOper );
         	}
         	
-/*			int statusPending = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_PENDING).getEntryID();
-			int statusScheduled = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_SCHEDULED).getEntryID();
-			int statusCompleted = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_COMPLETED).getEntryID();
-			int statusCancelled = energyCompany.getYukonListEntry(YukonListEntryTypes.YUK_DEF_ID_SERV_STAT_CANCELLED).getEntryID();
-		
-			if (liteOrder.getCurrentStateID() == statusCompleted ||
-				liteOrder.getCurrentStateID() == statusCancelled ||
-				liteOrder.getCurrentStateID() == statusScheduled && updateOrder.getCurrentState().getEntryID() == statusPending)
-			{
-				// If the current state is not "upgraded" (in the order of
-				// pending -> scheduled -> completed or cancelled), then reset it.
-
-				updateOrder.getCurrentState().setEntryID( liteOrder.getCurrentStateID() );
-			}*/
-        	
 			com.cannontech.database.data.stars.report.WorkOrderBase order = (com.cannontech.database.data.stars.report.WorkOrderBase) StarsLiteFactory.createDBPersistent( liteOrder );
 			StarsFactory.setWorkOrderBase( order, updateOrder );
         	
-        	order = (com.cannontech.database.data.stars.report.WorkOrderBase) Transaction.createTransaction( Transaction.UPDATE, order ).execute();
+        	order = Transaction.createTransaction( Transaction.UPDATE, order ).execute();
         	//compare with old liteOrder before updating the liteOrder too.
         	if( liteOrder.getCurrentStateID() != updateOrder.getCurrentState().getEntryID())
 			{	//New event!

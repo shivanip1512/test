@@ -23,6 +23,8 @@ import com.cannontech.database.data.stars.event.EventWorkOrder;
 import com.cannontech.database.data.stars.report.WorkOrderBase;
 import com.cannontech.database.db.stars.integration.SAMToCRS_PTJ;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
+import com.cannontech.spring.YukonSpringHook;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.EventUtils;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
@@ -47,6 +49,9 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
 	ArrayList<String> failedWorkOrderMessages = new ArrayList<String>();
 	int numSuccess = 0, numFailure = 0;
 
+	private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
+	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
+	
 	public ManipulateWorkOrderTask(LiteYukonUser liteYukonuser, List<LiteWorkOrderBase> workOrderList, Integer changeServiceCompanyID, Integer changeServiceStatusID, Integer changeServiceTypeID, HttpServletRequest req) {
 		this.liteYukonUser = liteYukonuser;
 		this.selectedWorkOrders = workOrderList;
@@ -138,7 +143,8 @@ public class ManipulateWorkOrderTask extends TimeConsumingTask {
     					if ( VersionTools.crsPtjIntegrationExists())
     					{
     						LiteStarsEnergyCompany liteStarsEC = StarsDatabaseCache.getInstance().getEnergyCompany(workOrderBase.getEnergyCompanyID());
-    						LiteStarsCustAccountInformation liteStarsCustAcctInfo = liteStarsEC.getBriefCustAccountInfo(workOrderBase.getWorkOrderBase().getAccountID().intValue(), true);
+    						LiteStarsCustAccountInformation liteStarsCustAcctInfo =
+    						    starsCustAccountInformationDao.getById(workOrderBase.getWorkOrderBase().getAccountID(), liteStarsEC.getEnergyCompanyID());
     						SAMToCRS_PTJ.handleCRSIntegration(listEntry.getYukonDefID(), workOrderBase, liteStarsCustAcctInfo, liteStarsEC, liteYukonUser.getUserID(), null);
     					}
                     }

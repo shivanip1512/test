@@ -13,6 +13,7 @@
         <property name="yukonListDao" ref="yukonListDao"/>
         <property name="yukonUserDao" ref="yukonUserDao"/>
         <property name="loginService" ref="loginService"/>
+        <property name="starsCustAccountInformationDao" ref="starsCustAccountInformationDao"/>
     </bean>
 
     <bean id="adminDeleteCustomerAccounts" class="com.cannontech.web.stars.action.admin.DeleteCustomerAccountsController" 

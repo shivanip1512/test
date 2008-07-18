@@ -18,6 +18,8 @@ public interface InventoryBaseDao {
     public Map<Integer, InventoryBase> getByIds(List<Integer> inventoryIdList);
     
     public List<InventoryBase> getByAccountId(int accountId);
+    
+    public List<Integer> getInventoryIdsByAccountId(int accountId);
 
     public List<InventoryBase> getDRInventoryByAccountId(int accountId);
     

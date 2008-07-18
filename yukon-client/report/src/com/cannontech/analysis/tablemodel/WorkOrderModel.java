@@ -6,8 +6,6 @@
  */
 package com.cannontech.analysis.tablemodel;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,8 +21,6 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
-import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
@@ -37,10 +33,7 @@ import com.cannontech.analysis.data.stars.WorkOrder;
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
-import com.cannontech.common.util.ChunkingSqlTemplate;
 import com.cannontech.common.util.CtiUtilities;
-import com.cannontech.common.util.SqlGenerator;
-import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.PoolManager;
 import com.cannontech.database.cache.StarsDatabaseCache;
@@ -57,7 +50,6 @@ import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWorkOrderBase;
 import com.cannontech.roles.operator.WorkOrderRole;
-import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.util.StarsUtils;
 
@@ -173,16 +165,13 @@ public class WorkOrderModel extends ReportModelBase {
 	
 	private final String ATT_SEARCH_COL = "SearchColumn";
 	
-	private HashMap accountIDToMeterNumberMap = null;
 	private Map<LiteInventoryBase, String> liteInvBaseToMeterNumberMap = new HashMap<LiteInventoryBase, String>();
 	public static final SimpleDateFormat dateFormatter = new SimpleDateFormat("MM/dd/yyyy HH:mm");
 
-	private SimpleJdbcTemplate simpleJdbcTemplate = YukonSpringHook.getBean("simpleJdbcTemplate", SimpleJdbcTemplate.class);
+	private WorkOrderHelper workOrderHelper;
 	
-	public static final Comparator workOrderCmptor = new Comparator() {
-		public int compare(Object o1, Object o2) {
-			WorkOrder wo1 = (WorkOrder) o1;
-			WorkOrder wo2 = (WorkOrder) o2;
+	private static final Comparator<WorkOrder> workOrderCmptor = new Comparator<WorkOrder>() {
+		public int compare(WorkOrder wo1, WorkOrder wo2) {
 			
 			if (wo1.getLiteWorkOrderBase().getEnergyCompanyID() != wo2.getLiteWorkOrderBase().getEnergyCompanyID())
 				return wo1.getLiteWorkOrderBase().getEnergyCompanyID() - wo2.getLiteWorkOrderBase().getEnergyCompanyID();
@@ -220,47 +209,6 @@ public class WorkOrderModel extends ReportModelBase {
 			// If order numbers are the same, compare order IDs
 			if (result == 0) result = lOrder1.getOrderID() - lOrder2.getOrderID();
 			
-			/*if (result == 0) {
-				// If order IDs are the same, compare serial numbers as numeric values
-				String serialNo1 = CtiUtilities.STRING_NONE;
-				String serialNo2 = CtiUtilities.STRING_NONE;
-				
-				Long sn1 = null;
-				Long sn2 = null;
-				LiteInventoryBase invBase = ec.getInventoryBrief(wo1.getInventoryID(), true);
-				if( invBase instanceof LiteStarsLMHardware)
-				{
-					try {
-						if (wo1.getInventoryID() > 0) {
-							serialNo1 = ((LiteStarsLMHardware) invBase).getManufacturerSerialNumber();
-							sn1 = Long.valueOf( serialNo1 );
-						}
-					}
-					catch (NumberFormatException e) {}
-				}
-				invBase = ec.getInventoryBrief(wo2.getInventoryID(), true);
-				if( invBase instanceof LiteStarsLMHardware)
-				{
-					try {
-						if (wo2.getInventoryID() > 0) {
-							serialNo2 = ((LiteStarsLMHardware) invBase).getManufacturerSerialNumber();
-							sn2 = Long.valueOf( serialNo2 );
-						}
-					}
-					catch (NumberFormatException e) {}
-				}
-					if (sn1 != null && sn2 != null) {
-						result = sn1.compareTo( sn2 );
-						if (result == 0) result = serialNo1.compareTo( serialNo2 );
-					}
-					else if (sn1 != null && sn2 == null)
-						return -1;
-					else if (sn1 == null && sn2 != null)
-						return 1;
-					else
-						result = serialNo1.compareTo( serialNo2 );
-			}*/
-			
 			return result;
 		}
 	};
@@ -284,6 +232,13 @@ public class WorkOrderModel extends ReportModelBase {
 		setSearchColumn( searchColumn );
 	}
 
+	public synchronized WorkOrderHelper getWorkOrderHelper() {
+	    if (workOrderHelper == null) {
+	        workOrderHelper = new WorkOrderHelper();
+	    }
+        return workOrderHelper;
+    }
+	
 	/**
 	 * @return
 	 */
@@ -340,272 +295,25 @@ public class WorkOrderModel extends ReportModelBase {
 		serviceStatus = integer;
 	}
 
-	/**
-	 * Build a mapping of AccountID(Integer):String).
-	 * @return String an Sqlstatement
-	 */
-	/*public HashMap getAccountIDToMeterNumberMap() throws java.sql.SQLException
-	{
-		if (accountIDToMeterNumberMap == null )
-		{
-			String sql = "";
-			if (getOrderID() != null) {
-				sql = "SELECT inv.AccountID, dmg.MeterNumber" +
-					" FROM WorkOrderBase wo, InventoryBase inv, DeviceMeterGroup dmg" +
-					" WHERE wo.OrderID = " + getOrderID() + 
-					" AND wo.AccountID = inv.AccountID" +
-					" AND inv.DeviceID > 0 " + 
-					" AND inv.DeviceID = dmg.DeviceID" +
-					" ORDER BY inv.InventoryID";
-			}
-			else if (getAccountID() != null) {
-				sql =  "SELECT inv.AccountID, dmg.MeterNumber" +
-					" FROM InventoryBase inv, DeviceMeterGroup dmg" +
-					" WHERE inv.AccountID = " + getAccountID() + 
-					" AND inv.DeviceID > 0 " + 
-					" AND inv.DeviceID = dmg.DeviceID" +
-					" ORDER BY inv.InventoryID";
-			}
-			else {
-				sql = "SELECT inv.AccountID, dmg.MeterNumber" +
-					" FROM InventoryBase inv, DeviceMeterGroup dmg, ECToInventoryMapping map" +
-					" WHERE inv.DeviceID > 0 " +
-					" AND inv.DeviceID = dmg.DeviceID " +
-					" AND inv.InventoryID = map.InventoryID";
-				if (getEnergyCompanyID() != null) 
-					sql += " AND map.EnergyCompanyID = " + getEnergyCompanyID().intValue() + " ";
-
-				sql += " ORDER BY inv.InventoryID";
-			}		
-			CTILogger.info( sql );
-	
-			java.sql.Connection conn = null;
-			java.sql.PreparedStatement pstmt = null;
-			java.sql.ResultSet rset = null;
-			
-			try {
-				conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-				
-				if( conn == null ) {
-					CTILogger.error(getClass() + ":  Error getting database connection.");
-					return null;
-				}
-				
-				pstmt = conn.prepareStatement( sql );
-				rset = pstmt.executeQuery();
-				accountIDToMeterNumberMap = new HashMap();
-				while (rset.next()) {
-					Integer accountID = new Integer(rset.getInt(1));
-					String meterNumber = rset.getString(2);
-					if (accountIDToMeterNumberMap.get( accountID ) == null)
-						accountIDToMeterNumberMap.put(accountID, meterNumber);
-				}
-				
-				CTILogger.info( "AccountID:MeterNumber records collected from database: " + accountIDToMeterNumberMap.size());
-			}
-			finally {
-				try {
-					if (pstmt != null) pstmt.close();
-					if (conn != null) conn.close();
-					if (rset != null) rset.close();
-				}
-				catch (java.sql.SQLException e) {
-					CTILogger.error( e.getMessage(), e );
-				}
-			}
-		}
-		
-		return accountIDToMeterNumberMap;
-	}*/
-
 	private void setLiteInvToMeterNumberMap(Map<LiteInventoryBase, String> liteInvBaseToMeterNumberMap) {
 	    this.liteInvBaseToMeterNumberMap = liteInvBaseToMeterNumberMap;
 	}
 	
-	/**
-	 * Build a mapping of LiteInvBase:String).
-	 * @return String an Sqlstatement
-	 */
-	public Map<LiteInventoryBase, String> getLiteInvToMeterNumberMap()
-	{
-		if( liteInvBaseToMeterNumberMap == null)
-			liteInvBaseToMeterNumberMap = new HashMap<LiteInventoryBase, String>();
-		return liteInvBaseToMeterNumberMap;
+	private Map<LiteInventoryBase, String> getLiteInvBaseToMeterNumberMap() {
+        if (liteInvBaseToMeterNumberMap == null) {
+            liteInvBaseToMeterNumberMap = new HashMap<LiteInventoryBase, String>();
+        }
+        return liteInvBaseToMeterNumberMap;
+    }
+	
+	public String getLiteInvToMeterNumber(LiteInventoryBase liteInventoryBase) {
+	    String meterNumber = getLiteInvBaseToMeterNumberMap().get(liteInventoryBase);
+	    String result = (meterNumber != null) ? meterNumber : CtiUtilities.STRING_NONE;
+	    return result;
 	}
 
-	private Map<LiteInventoryBase, String> getInventoryMeterNumbers(List<LiteInventoryBase> liteInvBaseList) {
-	    final Map<Integer, LiteInventoryBase> inventoryMap = new HashMap<Integer, LiteInventoryBase>(liteInvBaseList.size());
-	    final List<Integer> nonZeroDeviceIdList = new ArrayList<Integer>();
-	    final List<Integer> zeroDeviceIdList = new ArrayList<Integer>();
-	    
-	    /* Populate the inventoryMap with InventoryID to LiteInventoryBase Object, and sort
-	     * the LiteInventoryBase Objects by the DeviceID value into separate lists. 
-	     */
-	    for (final LiteInventoryBase inventoryBase : liteInvBaseList) {
-	        if (!(inventoryBase instanceof LiteStarsLMHardware)) continue;
-	        
-	        int inventoryId = inventoryBase.getInventoryID(); 
-	        int deviceId = inventoryBase.getDeviceID();
-	        
-	        if (deviceId > 0) {
-	            nonZeroDeviceIdList.add(inventoryId);
-	        } else {
-	            zeroDeviceIdList.add(inventoryId);
-	        }
-	        
-	        inventoryMap.put(inventoryId, inventoryBase);
-	    }
-	    
-	    // Temporary holder for generating the result Map<LiteInventoryBase, String>
-	    class Holder {
-	        LiteInventoryBase inventory;
-	        String meterNumber;
-	    }
-	    
-	    final ParameterizedRowMapper<Holder> holderRowMapper = new ParameterizedRowMapper<Holder>() {
-            @Override
-            public Holder mapRow(ResultSet rs, int rowNum) throws SQLException {
-                int inventoryId = rs.getInt(1);
-                LiteInventoryBase inventory = inventoryMap.get(inventoryId);
-                String meterNumber = rs.getString(2);
-                
-                Holder holder = new Holder();
-                holder.inventory = inventory;
-                holder.meterNumber = meterNumber;
-                return holder;
-            }
-	    };
-	    
-	    // Run SQL for Inventory that contain non-zero DeviceID's.
-	    final ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
-	    List<Holder> list1 = template.query(new SqlGenerator<Integer>() {
-            @Override
-            public String generate(List<Integer> subList) {
-                final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-                sqlBuilder.append(" SELECT inv.InventoryID,dmg.MeterNumber ");
-                sqlBuilder.append(" FROM InventoryBase inv, DeviceMeterGroup dmg ");
-                sqlBuilder.append(" WHERE INV.INVENTORYID IN (");
-                sqlBuilder.append(subList);
-                sqlBuilder.append(") AND INV.DEVICEID = DMG.DEVICEID ");
-                sqlBuilder.append(" ORDER BY inv.InventoryID");
-                String sql = sqlBuilder.toString();
-                return sql;
-            }
-	        
-	    }, nonZeroDeviceIdList, holderRowMapper);
-	    
-	    // Run SQL for Inventory that have DeviceID of zero.
-	    List<Holder> list2 = template.query(new SqlGenerator<Integer>() {
-	        @Override
-	        public String generate(List<Integer> subList) {
-	            final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
-	            sqlBuilder.append("SELECT MAP.LMHARDWAREINVENTORYID,MHB.MeterNumber ");
-	            sqlBuilder.append(" FROM MeterHardwareBase mhb, lmhardwaretometermapping map "); 
-	            sqlBuilder.append(" WHERE MAP.LMHARDWAREINVENTORYID IN ("); 
-	            sqlBuilder.append(subList);    
-	            sqlBuilder.append(") and mhb.inventoryid = map.meterinventoryid ");
-	            String sql = sqlBuilder.toString();
-	            return sql;
-	        }
-	        
-	    }, zeroDeviceIdList, holderRowMapper);
-	    
-	    final List<Holder> holderList = new ArrayList<Holder>(list1.size() + list2.size());
-	    holderList.addAll(list1);
-	    holderList.addAll(list2);
-	    
-	    final Map<LiteInventoryBase, String> meterNumberMap = new HashMap<LiteInventoryBase, String>(holderList.size());
-	    
-	    for (final Holder holder : holderList) {
-	        LiteInventoryBase key = holder.inventory;
-	        String value = holder.meterNumber;
-	        meterNumberMap.put(key, value);
-	    }
-	    
-	    // Place empty Strings as values for any keys that don't exist in the meterNumberMap
-	    for (Integer inventoryId : inventoryMap.keySet()) {
-	        String meterNumber = meterNumberMap.get(inventoryId);
-	        
-	        if (meterNumber != null) continue;
-	        
-	        LiteInventoryBase inventoryBase = inventoryMap.get(inventoryId);
-	        meterNumberMap.put(inventoryBase, CtiUtilities.STRING_NONE);
-	    }
-	    
-	    return meterNumberMap;
-	}
-	
-	/**
-	 * Returns the MeterNumber string for liteInvBase.  Retrieves the meterNumber and updates
-	 *  the map if it is not already in the map. 
-	 * (Integer):String).
-	 * @return String an Sqlstatement
-	 */
-	public synchronized String getInventoryMeterNumber(LiteInventoryBase liteInvBase)
-	{
-		String meterNumber = getLiteInvToMeterNumberMap().get(liteInvBase);
-		if( meterNumber == null)
-		{
-			String sql = "";
-			if( liteInvBase.getDeviceID() > 0)	//Must have a Yukon DeviceMeterGroup meternumber.
-			{
-				sql = " SELECT dmg.MeterNumber " +
-				" FROM InventoryBase inv, DeviceMeterGroup dmg " +
-				" WHERE INV.INVENTORYID = " + liteInvBase.getInventoryID() +
-				" AND INV.DEVICEID = DMG.DEVICEID " +
-				" ORDER BY inv.InventoryID";
-			}
-			else //Not sure where the meterNumber is but lets check to LMHardwareToMeterMapping table
-			{
-				sql = "SELECT MHB.MeterNumber " +
-				" FROM MeterHardwareBase mhb, lmhardwaretometermapping map " + 
-				" WHERE MAP.LMHARDWAREINVENTORYID = " + liteInvBase.getInventoryID() + 
-				" and mhb.inventoryid = map.meterinventoryid ";	
-			}
-			CTILogger.info( sql );
-			
-			java.sql.Connection conn = null;
-			java.sql.PreparedStatement pstmt = null;
-			java.sql.ResultSet rset = null;
-			
-			try {
-				conn = PoolManager.getInstance().getConnection(CtiUtilities.getDatabaseAlias());
-				
-				if( conn == null ) {
-					CTILogger.error(getClass() + ":  Error getting database connection.");
-					return null;
-				}
-				
-				pstmt = conn.prepareStatement( sql );
-				rset = pstmt.executeQuery();
-                if (rset.next())
-					meterNumber = rset.getString(1);
-                else
-                    meterNumber = CtiUtilities.STRING_NONE; //default it to nothing so we don't look for it again!
-                
-				getLiteInvToMeterNumberMap().put(liteInvBase, meterNumber);
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			finally {
-				try {
-					if (pstmt != null) pstmt.close();
-					if (conn != null) conn.close();
-					if (rset != null) rset.close();
-				}
-				catch (java.sql.SQLException e) {
-					CTILogger.error( e.getMessage(), e );
-				}
-			}
-		}
-		return meterNumber;
-	}
 	@Override
 	public void collectData() {
-		
-		//Reset all objects, new data being collected!
-//		setData(null);  //perform this in loadData(...)
-		
 	    if (getEnergyCompanyID() == null) return;
 
 	    LiteStarsEnergyCompany ec = StarsDatabaseCache.getInstance().getEnergyCompany( getEnergyCompanyID().intValue());
@@ -616,10 +324,11 @@ public class WorkOrderModel extends ReportModelBase {
 	        if (liteOrder != null) woList.add( liteOrder );
 	    }
 	    else if (getAccountID() != null) {
-	        LiteStarsCustAccountInformation liteAcctInfo = ec.getCustAccountInformation( getAccountID().intValue(), true );
+	        Map<Integer, LiteStarsCustAccountInformation> accountMap = getWorkOrderHelper().getAccountMap(getEnergyCompanyID());
+	        LiteStarsCustAccountInformation liteAcctInfo = accountMap.get(getAccountID());
 	        if (liteAcctInfo != null) {
 	            for (int j = 0; j < liteAcctInfo.getServiceRequestHistory().size(); j++) {
-	                Integer orderID = (Integer) liteAcctInfo.getServiceRequestHistory().get(j);
+	                Integer orderID = liteAcctInfo.getServiceRequestHistory().get(j);
 	                woList.add( ec.getWorkOrderBase(orderID.intValue(), true) );
 	            }
 	        }
@@ -631,18 +340,18 @@ public class WorkOrderModel extends ReportModelBase {
 	    }
 
 	    if (getServiceStatus() != null && getServiceStatus().intValue() > 0) {
-	        Iterator it = woList.iterator();
+	        Iterator<LiteWorkOrderBase> it = woList.iterator();
 	        while (it.hasNext()) {
-	            LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) it.next();
+	            LiteWorkOrderBase liteOrder = it.next();
 	            if (liteOrder.getCurrentStateID() != getServiceStatus().intValue())
 	                it.remove();
 	        }
 	    }
 
 	    if (getSearchColumn() != SEARCH_COL_NONE) {
-	        Iterator it = woList.iterator();
+	        Iterator<LiteWorkOrderBase> it = woList.iterator();
 	        while (it.hasNext()) {
-	            LiteWorkOrderBase liteOrder = (LiteWorkOrderBase) it.next();
+	            LiteWorkOrderBase liteOrder = it.next();
 
 	            long timestamp = 0;
 	            if (getSearchColumn() == SEARCH_COL_DATE_REPORTED)
@@ -670,6 +379,10 @@ public class WorkOrderModel extends ReportModelBase {
        
         CTILogger.info("Reporting Data Loading for " + woList.size() + " Work Orders.");
         
+        final Integer energyCompanyId = liteStarsEC.getEnergyCompanyID();
+        
+        final Map<Integer, LiteStarsCustAccountInformation> accountMap = getWorkOrderHelper().getAccountMap(energyCompanyId);
+        
         final List<LiteInventoryBase> meterInventoryList = new ArrayList<LiteInventoryBase>();
         
         JdbcTemplate jdbcTemplate = new JdbcTemplate(PoolManager.getYukonDataSource());
@@ -685,15 +398,14 @@ public class WorkOrderModel extends ReportModelBase {
                     int accountId = workOrder.getAccountID();
                     if (accountId == 0) continue;
                     
-                    LiteStarsCustAccountInformation accountInfo = liteStarsEC.getBriefCustAccountInfo(accountId, true);
-                    for (int x = 0; x < accountInfo.getInventories().size(); x++) {
-                        Integer inventoryId = accountInfo.getInventories().get(x);
+                    LiteStarsCustAccountInformation accountInfo = accountMap.get(accountId);
+                    for (Integer inventoryId : accountInfo.getInventories()) {
                         LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(inventoryId, true);
                         meterInventoryList.add(liteInvBase);
                     }
                 }
 
-                final Map<LiteInventoryBase, String> meterNumberMap = getInventoryMeterNumbers(meterInventoryList);
+                final Map<LiteInventoryBase, String> meterNumberMap = getWorkOrderHelper().getInventoryMeterNumbers(meterInventoryList);
                 setLiteInvToMeterNumberMap(meterNumberMap);
             }
         });
@@ -706,7 +418,7 @@ public class WorkOrderModel extends ReportModelBase {
 				getData().add( wo );
 			}
 			else {
-				LiteStarsCustAccountInformation liteAcctInfo = liteStarsEC.getBriefCustAccountInfo( liteOrder.getAccountID(), true );
+				LiteStarsCustAccountInformation liteAcctInfo = accountMap.get(liteOrder.getAccountID());
 				
 				if (liteAcctInfo.getInventories().size() == 0) {
 					WorkOrder wo = new WorkOrder( liteOrder);
@@ -724,14 +436,14 @@ public class WorkOrderModel extends ReportModelBase {
 							WorkOrder wo = new WorkOrder( liteOrder , liteInvBase);
 							getData().add(wo);	//add to the begining
 							
-                            String meterNumber = getLiteInvToMeterNumberMap().get(liteInvBase);
+                            String meterNumber = getLiteInvToMeterNumber(liteInvBase);
                             if (!meterNumber.equalsIgnoreCase(CtiUtilities.STRING_NONE));
                                 ignoreMeterNumbers.add(meterNumber);
 						}
                     }
                     //Second loop through and find anything that is not LiteStarsLMHardware, forcing other types to be last in the list.
                     for (int k = 0; k < liteAcctInfo.getInventories().size(); k++) {
-                        int invID = ((Integer) liteAcctInfo.getInventories().get(k)).intValue();
+                        int invID = liteAcctInfo.getInventories().get(k).intValue();
                         LiteInventoryBase liteInvBase = liteStarsEC.getInventoryBrief(invID, true);
                         /*
                          * TODO: Now that non yukon meters have been removed from cache, need to make sure
@@ -778,9 +490,12 @@ public class WorkOrderModel extends ReportModelBase {
 		    LiteStarsEnergyCompany liteStarsEnergyCompany = starsCache.getEnergyCompany(liteWorkOrder.getEnergyCompanyID());
 		    energyContactIdSet.add(liteStarsEnergyCompany.getPrimaryContactID());
 		    
+		    final Map<Integer, LiteStarsCustAccountInformation> currentAccountMap =
+		        getWorkOrderHelper().getAccountMap(liteStarsEnergyCompany.getEnergyCompanyID());
+		    
 		    int accountId = liteWorkOrder.getAccountID();
 		    if (accountId > 0) {
-		        LiteStarsCustAccountInformation lAcctInfo = liteStarsEnergyCompany.getBriefCustAccountInfo(accountId, true );
+		        LiteStarsCustAccountInformation lAcctInfo = currentAccountMap.get(accountId);
 		        if (lAcctInfo != null) {
 		            int contactId = lAcctInfo.getCustomer().getPrimaryContactID();
 		            contactIdSet.add(contactId);
@@ -805,7 +520,7 @@ public class WorkOrderModel extends ReportModelBase {
 		final Map<Integer, LiteAddress> addressMap = DaoFactory.getAddressDao().getAddresses(new ArrayList<Integer>(addressIdSet));
 		
 		/* Round 2 - build AdditionalInformation objects and attach them to the WorkOrder
-		 *           when getAttribute() is called the WorkOrder will contain any it needs in memory. 
+		 *           when getAttribute() is called the WorkOrder will contain anything it needs in memory. 
 		 */
 		for (final Object o : workOrderList) {
 		    if (!(o instanceof WorkOrder)) continue;
@@ -821,9 +536,12 @@ public class WorkOrderModel extends ReportModelBase {
 		    LiteAddress energyCompanyAddress = addressMap.get(energyCompanyConact.getAddressID());
 		    info.setEnergyCompanyAddress(energyCompanyAddress);
 
+		    final Map<Integer, LiteStarsCustAccountInformation> currentAccountMap =
+		        getWorkOrderHelper().getAccountMap(liteStarsEnergyCompany.getEnergyCompanyID());
+		    
 		    int accountId = liteWorkOrder.getAccountID();
 		    if (accountId > 0) {
-		        LiteStarsCustAccountInformation lAcctInfo = liteStarsEnergyCompany.getBriefCustAccountInfo(accountId, true );
+		        LiteStarsCustAccountInformation lAcctInfo = currentAccountMap.get(accountId);
 		        if (lAcctInfo != null) {
 		            int addressId = lAcctInfo.getAccountSite().getStreetAddressID();
 		            LiteAddress address = addressMap.get(addressId);
@@ -857,7 +575,10 @@ public class WorkOrderModel extends ReportModelBase {
 			LiteContact liteContact = null;
 			LiteAddress liteAddress = null;
 			if (lOrder.getAccountID() > 0) {
-				lAcctInfo = ec.getBriefCustAccountInfo( lOrder.getAccountID(), true );
+			    Map<Integer, LiteStarsCustAccountInformation> accountMap = 
+			        getWorkOrderHelper().getAccountMap(ec.getEnergyCompanyID());
+				
+			    lAcctInfo = accountMap.get(lOrder.getAccountID());
 				liteContact = wo.getAdditionalInformation().getContact();
 				liteAddress = wo.getAdditionalInformation().getAddress();
 			}
@@ -1032,7 +753,7 @@ public class WorkOrderModel extends ReportModelBase {
 						if( liteInvBase instanceof LiteMeterHardwareBase)
 							return ((LiteMeterHardwareBase)liteInvBase).getMeterNumber();
                         
-						String meterNumber = getLiteInvToMeterNumberMap().get(liteInvBase);
+						String meterNumber = getLiteInvToMeterNumber(liteInvBase);
 						return (meterNumber.equalsIgnoreCase(CtiUtilities.STRING_NONE) ? null : meterNumber);
 					}
 					return "";

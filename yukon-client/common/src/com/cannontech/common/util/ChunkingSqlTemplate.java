@@ -1,6 +1,7 @@
 package com.cannontech.common.util;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
@@ -16,16 +17,19 @@ public class ChunkingSqlTemplate<E> {
         this.simpleJdbcTemplate = simpleJdbcTemplate;
     }
     
-    public <R> List<R> query(SqlGenerator<E> sqlGenerator, List<E> input, ParameterizedRowMapper<R> rowMapper, Object... args) {
-        final List<R> resultList = new ArrayList<R>(input.size());
+    public <R> List<R> query(final SqlGenerator<E> sqlGenerator, final Collection<E> input, 
+                 final ParameterizedRowMapper<R> rowMapper, final Object... args) {
+        
+        final List<E> tempInputList = new ArrayList<E>(input);
+        final List<R> resultList = new ArrayList<R>(tempInputList.size());
         final List<String> queryList = new ArrayList<String>();
         
-        int inputSize = input.size();
+        int inputSize = tempInputList.size();
         for (int start = 0; start < inputSize; start += chunkSize ) {
             int nextToIndex = start + chunkSize;
             int toIndex = (inputSize < nextToIndex) ? inputSize : nextToIndex;
             
-            List<E> subList = input.subList(start, toIndex);
+            List<E> subList = tempInputList.subList(start, toIndex);
             String query = sqlGenerator.generate(subList);
             queryList.add(query);
         }

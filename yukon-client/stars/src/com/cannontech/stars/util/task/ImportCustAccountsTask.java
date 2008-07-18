@@ -6,9 +6,24 @@
  */
 package com.cannontech.stars.util.task;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.FilenameFilter;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.SortedSet;
+import java.util.TreeMap;
+import java.util.TreeSet;
 
 import org.apache.commons.lang.StringUtils;
 
@@ -36,7 +51,7 @@ import com.cannontech.database.data.lite.stars.LiteStarsLMHardware;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.spring.YukonSpringHook;
-import com.cannontech.stars.dr.hardware.dao.LMHardwareControlGroupDao;
+import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -53,9 +68,6 @@ import com.cannontech.user.UserUtils;
  * Window>Preferences>Java>Code Generation>Code and Comments
  */
 public class ImportCustAccountsTask extends TimeConsumingTask {
-
-    private EnergyCompanyDao energyCompanyDao = (EnergyCompanyDao) YukonSpringHook.getBean("energyCompanyDao");
-    
 	private static final String LINE_SEPARATOR = System.getProperty( "line.separator" );
 	
 	// Generic import file column names
@@ -183,6 +195,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
     
     private Map hwLines;
 	private Map custLines;
+	
+	private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
+	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
 
 	public ImportCustAccountsTask() {
 		
@@ -724,7 +739,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 							if (acctNo == null) {
 								LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( deviceType.getEntryID(), hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
 								if (liteHw != null && liteHw.getAccountID() > 0)
-									acctNo = energyCompany.getBriefCustAccountInfo( liteHw.getAccountID(), true ).getCustomerAccount().getAccountNumber();
+    								acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyID()).getCustomerAccount().getAccountNumber();
 							}
 							
 							if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
@@ -1015,7 +1030,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 						if (acctNo == null) {
 							LiteStarsLMHardware liteHw = energyCompany.searchForLMHardware( deviceType.getEntryID(), hwFields[ImportManagerUtil.IDX_SERIAL_NO] );
 							if (liteHw != null && liteHw.getAccountID() > 0)
-								acctNo = energyCompany.getBriefCustAccountInfo( liteHw.getAccountID(), true ).getCustomerAccount().getAccountNumber();
+    							acctNo = starsCustAccountInformationDao.getById(liteHw.getAccountID(), energyCompany.getEnergyCompanyID()).getCustomerAccount().getAccountNumber();
 						}
 						
 						if (hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {

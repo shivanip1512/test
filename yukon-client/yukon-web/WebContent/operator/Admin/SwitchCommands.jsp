@@ -178,7 +178,7 @@ function validate(form) {
 			SwitchCommandQueue.SwitchCommand cmd = (SwitchCommandQueue.SwitchCommand) entry.getValue();
 			String accountNo = "(none)";
 			if (cmd.getAccountID() > 0)
-				accountNo = company.getBriefCustAccountInfo(cmd.getAccountID(), true).getCustomerAccount().getAccountNumber();
+				accountNo = starsCustAccountInformationDao.getById(cmd.getAccountID(), company.getEnergyCompanyID()).getCustomerAccount().getAccountNumber();
 %>
                 <tr> 
                   <td width="5%" class="TableCell"> 

@@ -169,7 +169,7 @@ function navPage()
                     }
                 }
                 
-                LiteStarsCustAccountInformation liteAcctInfo = member.getBriefCustAccountInfo(resp.getStarsBriefCustAccountInfo(i).getAccountID(), true);
+                LiteStarsCustAccountInformation liteAcctInfo = starsCustAccountInformationDao.getById(resp.getStarsBriefCustAccountInfo(i).getAccountID(), member.getEnergyCompanyID());
 				if (liteAcctInfo == null) continue;
 				
 				LiteCustomer customer = liteAcctInfo.getCustomer();

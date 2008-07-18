@@ -64,6 +64,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         rowMapper = InventoryBaseDaoImpl.createRowMapper();
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean add(final InventoryBase inventoryBase) {
         int nextValue = nextValueHelper.getNextValue("InventoryBase");
@@ -86,6 +87,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         return result;
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean remove(final InventoryBase inventoryBase) {
         int rowsAffected = simpleJdbcTemplate.update(removeSql, inventoryBase.getInventoryId());
@@ -93,6 +95,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         return result;
     }
     
+    @Override
     @Transactional(readOnly = false, propagation = Propagation.REQUIRED)
     public boolean update(final InventoryBase inventoryBase) {
         int rowsAffected = simpleJdbcTemplate.update(updateSql, inventoryBase.getAccountId(),
@@ -112,12 +115,14 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         return result;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public InventoryBase getById(final int inventoryId) throws DataAccessException {
         InventoryBase inventoryBase = simpleJdbcTemplate.queryForObject(selectByIdSql, rowMapper, inventoryId);
         return inventoryBase;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public Map<Integer, InventoryBase> getByIds(List<Integer> inventoryIdList) {
         ChunkingSqlTemplate<Integer> template = new ChunkingSqlTemplate<Integer>(simpleJdbcTemplate);
@@ -144,12 +149,29 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         return resultMap;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getByAccountId(final int accountId) {
         List<InventoryBase> list = simpleJdbcTemplate.query(selectByAccountIdSql, rowMapper, accountId);
         return list;
     }
     
+    @Override
+    @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
+    public List<Integer> getInventoryIdsByAccountId(int accountId) {
+        final String sql = "SELECT InventoryID FROM InventoryBase WHERE AccountID = ?";
+        final ParameterizedRowMapper<Integer> idRowMapper = new ParameterizedRowMapper<Integer>() {
+            @Override
+            public Integer mapRow(ResultSet rs, int rowNum) throws SQLException {
+                return rs.getInt("InventoryID");
+            }
+        };
+        
+        List<Integer> inventoryIdList = simpleJdbcTemplate.query(sql, idRowMapper, accountId);
+        return inventoryIdList;
+    }
+    
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getDRInventoryByAccountId(int accountId) {
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();
@@ -165,6 +187,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         return list;
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getByInstallationCompanyId(final int companyId) {
         try {
@@ -175,6 +198,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         }
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getByCategoryId(final int categoryId) {
         try {
@@ -185,6 +209,7 @@ public class InventoryBaseDaoImpl implements InventoryBaseDao {
         }
     }
     
+    @Override
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<InventoryBase> getAll() {
         try {

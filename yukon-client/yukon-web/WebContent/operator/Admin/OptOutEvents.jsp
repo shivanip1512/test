@@ -99,8 +99,18 @@ function selectAccount(accountID, memberID) {
 		if (member != null && !company.equals(member)) continue;
 		
 		OptOutEventQueue.OptOutEvent[] events = OptOutEventQueue.getInstance().getOptOutEvents(company.getLiteID());
+        
+        final Set<Integer> accountIds = new HashSet<Integer>();
+        for (final OptOutEventQueue.OptOutEvent event : events) {
+            int accountId = event.getAccountID();
+            accountIds.add(accountId);
+        }
+        
+        final Map<Integer, LiteStarsCustAccountInformation> accountMap =
+            starsCustAccountInformationDao.getByIds(accountIds, company.getEnergyCompanyID());
+        
 		for (int j = 0; j < events.length; j++) {
-			LiteCustomerAccount liteAccount = company.getBriefCustAccountInfo(events[j].getAccountID(), true).getCustomerAccount();
+			LiteCustomerAccount liteAccount = accountMap.get(events[j].getAccountID()).getCustomerAccount();
 			String serialNo = "----";
 			if (events[j].getInventoryID() > 0)
 				serialNo = ((LiteStarsLMHardware) company.getInventoryBrief(events[j].getInventoryID(), true)).getManufacturerSerialNumber();
