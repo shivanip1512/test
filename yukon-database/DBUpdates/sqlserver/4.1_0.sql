@@ -935,10 +935,7 @@ go
 
 /* Start YUK-5748 */
 INSERT INTO Command 
-VALUES (-143, 
-        'putconfig xcom extended tier ?"tier" rate ?"rate" cmd ?"cmd" display 3 timeout 600 delay 5432', 
-        'Thermostat Extended Tier Message', 
-        'ExpresscomSerial'); 
+VALUES(-143, 'putconfig xcom extended tier ?''tier'' rate ?''rate'' cmd ?''cmd'' display 3 timeout 600 delay 5432', 'Thermostat Extended Tier Message', 'ExpresscomSerial'); 
 
 INSERT INTO DeviceTypeCommand 
 VALUES (-723, -143, 'ExpresscomSerial', 24, 'Y', -1); 
