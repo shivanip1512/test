@@ -76,6 +76,9 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
         // find all static groups
         StoredDeviceGroup sdg = getStoredGroup(group);
         List<StoredDeviceGroup> staticGroups = deviceGroupEditorDao.getStaticGroups(sdg);
+        
+        // add in this group to ensure that its direct children are included
+        staticGroups.add(sdg); 
 
         // build one SQL to handle
         List<Integer> idList = new MappingList<StoredDeviceGroup, Integer>(staticGroups, new ObjectMapper<StoredDeviceGroup, Integer>() {
@@ -86,8 +89,7 @@ public class StaticDeviceGroupProvider extends DeviceGroupProviderSqlBase {
         
         sql.append(identifier, "in (select yukonpaoid from devicegroupmember where devicegroupid in (", idList, "))");
         
-        // no add in the dynamic ones by delegating back to main
-        // now get the non static ones
+        // now handle the dynamic ones by delegating back to main
         List<StoredDeviceGroup> nonStaticGroups = deviceGroupEditorDao.getNonStaticGroups(sdg);
         for (StoredDeviceGroup nonStaticGroup : nonStaticGroups) {
             String whereFragment = getMainDelegator().getDeviceGroupSqlWhereClause(nonStaticGroup, identifier);
