@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTPERF.cpp-arc  $
-* REVISION     :  $Revision: 1.47 $
-* DATE         :  $Date: 2008/07/17 21:01:10 $
+* REVISION     :  $Revision: 1.48 $
+* DATE         :  $Date: 2008/07/18 19:43:23 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -186,6 +186,7 @@ VOID PerfUpdateThread (PVOID Arg)
 
         {
             CtiLockGuard<CtiMutex> guard(gDeviceStatMapMux);
+            delete_assoc_container(gDeviceStatMap);
             gDeviceStatMap.clear();
         }
     }
@@ -228,9 +229,9 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
         {
             try
             {
-                CtiStatistics dStats(paoId);
+                CtiStatistics *dStats = new CtiStatistics(paoId);
                 // We need to load it up, and/or then insert it!
-                if(dStats.Restore() == RWDBStatus::ok)
+                if(dStats->Restore() == RWDBStatus::ok)
                 {
                     pair< CtiStatisticsMap_t::iterator, bool > resultpair;
 
@@ -243,8 +244,12 @@ CtiStatisticsIterator_t statisticsPaoFind(const LONG paoId)
                     }
                     else
                     {
-                        CtiLockGuard<CtiLogger> doubt_guard(dout);
-                        dout << CtiTime() << " **** UNX Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        delete dStats;
+
+                        {
+                            CtiLockGuard<CtiLogger> doubt_guard(dout);
+                            dout << CtiTime() << " **** UNX Checkpoint **** " << __FILE__ << " (" << __LINE__ << ")" << endl;
+                        }
                     }
                 }
             }
@@ -292,15 +297,13 @@ void statisticsProcessNewRequest(long paoportid, long devicepaoid, long targetpa
 
             if( dStatItr != gDeviceStatMap.end() )
             {
-                CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementRequest( CtiTime() );
+                dStatItr->second->incrementRequest( CtiTime() );
             }
             dStatItr = statisticsPaoFind( devicepaoid );
 
             if( dStatItr != gDeviceStatMap.end() )
             {
-                CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementRequest( CtiTime() );
+                dStatItr->second->incrementRequest( CtiTime() );
             }
 
             if(statisticsDoTargetId( devicepaoid, targetpaoid ))
@@ -309,8 +312,7 @@ void statisticsProcessNewRequest(long paoportid, long devicepaoid, long targetpa
 
                 if( dStatItr != gDeviceStatMap.end() )
                 {
-                    CtiStatistics &dStats = (*dStatItr).second;
-                    dStats.incrementRequest( CtiTime() );
+                    dStatItr->second->incrementRequest( CtiTime() );
                 }
             }
         }
@@ -355,11 +357,9 @@ void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpa
 
             if( dStatItr != gDeviceStatMap.end() )
             {
-                CtiStatistics &dStats = (*dStatItr).second;
-
-                if(dStats.resolveFailType(result) == CtiStatistics::CommErrors)
+                if(dStatItr->second->resolveFailType(result) == CtiStatistics::CommErrors)
                 {
-                    dStats.incrementAttempts( CtiTime(), result );
+                    dStatItr->second->incrementAttempts( CtiTime(), result );
                 }
             }
 
@@ -367,8 +367,7 @@ void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpa
 
             if( dStatItr != gDeviceStatMap.end() )
             {
-                CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementAttempts( CtiTime(), result );
+                dStatItr->second->incrementAttempts( CtiTime(), result );
             }
 
             if(statisticsDoTargetId( devicepaoid, targetpaoid ))
@@ -377,8 +376,7 @@ void statisticsProcessNewAttempt(long paoportid, long devicepaoid, long targetpa
 
                 if( dStatItr != gDeviceStatMap.end() )
                 {
-                    CtiStatistics &dStats = (*dStatItr).second;
-                    dStats.incrementAttempts( CtiTime(), result );
+                    dStatItr->second->incrementAttempts( CtiTime(), result );
                 }
             }
         }
@@ -424,16 +422,14 @@ void statisticsProcessNewCompletion(long paoportid, long devicepaoid, long targe
 
             if( dStatItr != gDeviceStatMap.end() )
             {
-                CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementCompletion( CtiTime(), result );
+                dStatItr->second->incrementCompletion( CtiTime(), result );
             }
 
             dStatItr = statisticsPaoFind( devicepaoid );
 
             if( dStatItr != gDeviceStatMap.end() )
             {
-                CtiStatistics &dStats = (*dStatItr).second;
-                dStats.incrementCompletion( CtiTime(), result );
+                dStatItr->second->incrementCompletion( CtiTime(), result );
             }
 
             if(statisticsDoTargetId( devicepaoid, targetpaoid ))
@@ -442,8 +438,7 @@ void statisticsProcessNewCompletion(long paoportid, long devicepaoid, long targe
 
                 if( dStatItr != gDeviceStatMap.end() )
                 {
-                    CtiStatistics &dStats = (*dStatItr).second;
-                    dStats.incrementCompletion( CtiTime(), result );
+                    dStatItr->second->incrementCompletion( CtiTime(), result );
                 }
             }
         }
@@ -462,9 +457,9 @@ void statisticsRecord()
                 CtiLockGuard<CtiLogger> doubt_guard(dout);
                 dout << CtiTime() << " Start statisticsRecord() " << __FILE__ << " (" << __LINE__ << ")" << endl;
             }
-            std::vector< CtiStatistics > dirtyStatCol( gDeviceStatMap.size() );
-            std::vector< CtiStatistics >::iterator dirtyStatItr;
-            CtiStatisticsIterator_t dstatitr;
+            std::vector< CtiStatistics * > dirtyStatCol;
+            std::vector< CtiStatistics * >::iterator dirtyStatItr;
+            CtiStatisticsIterator_t dStatItr;
 
             int cnt = 0;
             {
@@ -476,14 +471,13 @@ void statisticsRecord()
                     dout << CtiTime() << " statisticsRecord() acquired exclusion object " << __FILE__ << " (" << __LINE__ << ")" << endl;
                 }
 
-                for(dstatitr = gDeviceStatMap.begin(); dstatitr != gDeviceStatMap.end(); dstatitr++)
+                for(dStatItr = gDeviceStatMap.begin(); dStatItr != gDeviceStatMap.end(); dStatItr++)
                 {
-                    CtiStatistics &dStats = (*dstatitr).second;
-                    if(dStats.isDirty())
+                    if(dStatItr->second && dStatItr->second->isDirty())
                     {
                         cnt++;
-                        dirtyStatCol.push_back(dStats);     // Copy and insert!
-                        dStats.resetDirty();                // It has been cleaned up now...
+                        dirtyStatCol.push_back(CTIDBG_new CtiStatistics(*(dStatItr->second)));
+                        dStatItr->second->resetDirty();                // It has been cleaned up now...
                     }
                 }
 
@@ -507,8 +501,7 @@ void statisticsRecord()
                     conn.beginTransaction();
                     for(dirtyStatItr = dirtyStatCol.begin(); dirtyStatItr != dirtyStatCol.end(); dirtyStatItr++)
                     {
-                        CtiStatistics &dStats = *dirtyStatItr;
-                        dbstat = dStats.Update(conn);
+                        dbstat = (*dirtyStatItr)->Update(conn);
                     }
                     conn.commitTransaction();
 
@@ -517,18 +510,18 @@ void statisticsRecord()
                         conn.beginTransaction();
                         for(dirtyStatItr = dirtyStatCol.begin(); dirtyStatItr != dirtyStatCol.end(); dirtyStatItr++)
                         {
-                            CtiStatistics &dStats = *dirtyStatItr;
-                            dbstat = dStats.InsertDaily(conn);
+                            dbstat = (*dirtyStatItr)->InsertDaily(conn);
                         }
                         conn.commitTransaction();
 
                         conn.beginTransaction();
                         {
-                            CtiStatistics &dStats = *(dirtyStatCol.begin());
-                            dStats.PruneDaily(conn);
+                            CtiStatistics::PruneDaily(conn);
                         }
                         conn.commitTransaction();
                     }
+
+                    delete_container(dirtyStatCol);
                 }
             }
 
@@ -614,21 +607,19 @@ void statisticsReport( CtiDeviceSPtr pDevice )
         int esystem;
         double compratio;
 
-        CtiStatistics &dStats = (*dStatItr).second;
-
         for(int i = 0; i < CtiStatistics::FinalCounterBin; i++)
         {
             if(pDevice->getDevicePointOffsetTypeEqual(STATISTICS_OFFSET_COMPLETIONRATIO, AnalogPointType))
             {
-                req     = dStats.get( i, CtiStatistics::Requests);
+                req   = dStatItr->second->get( i, CtiStatistics::Requests);
             }
 
-            cmp     = dStats.get( i, CtiStatistics::Completions);
-            att     = dStats.get( i, CtiStatistics::Attempts);
-            ecomm   = dStats.get( i, CtiStatistics::CommErrors);
-            eprot   = dStats.get( i, CtiStatistics::ProtocolErrors);
-            esystem = dStats.get( i, CtiStatistics::SystemErrors);
-            compratio = dStats.getCompletionRatio( i );
+            cmp       = dStatItr->second->get( i, CtiStatistics::Completions);
+            att       = dStatItr->second->get( i, CtiStatistics::Attempts);
+            ecomm     = dStatItr->second->get( i, CtiStatistics::CommErrors);
+            eprot     = dStatItr->second->get( i, CtiStatistics::ProtocolErrors);
+            esystem   = dStatItr->second->get( i, CtiStatistics::SystemErrors);
+            compratio = dStatItr->second->getCompletionRatio( i );
         }
     }
 }

@@ -8,8 +8,8 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.13 $
-* DATE         :  $Date: 2007/06/29 19:17:26 $
+* REVISION     :  $Revision: 1.14 $
+* DATE         :  $Date: 2008/07/18 19:43:23 $
 *
 * Copyright (c) 2002 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -121,7 +121,7 @@ public:
     RWDBStatus::ErrorCode Insert();
     RWDBStatus::ErrorCode Restore();
     RWDBStatus::ErrorCode InsertDaily(RWDBConnection &conn);
-    RWDBStatus::ErrorCode PruneDaily(RWDBConnection &conn);
+    static RWDBStatus::ErrorCode PruneDaily(RWDBConnection &conn);
     int resolveStatisticsType(const string& rwsTemp) const;
     void computeHourInterval(int hournumber, pair<CtiTime, CtiTime> &myinterval);
     void computeDailyInterval(pair<CtiTime, CtiTime> &myinterval);
