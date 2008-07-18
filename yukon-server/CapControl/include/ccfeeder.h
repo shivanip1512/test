@@ -324,7 +324,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     CtiCCFeeder& setLastVoltPointTime(const CtiTime& lastpointupdate);
     CtiCCFeeder& setRetryIndex(LONG value);
 
-    CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution);
+    CtiCCCapBank* findCapBankToChangeVars(DOUBLE kvarSolution, CtiMultiMsg_vec& pointChanges);
     bool checkForMaxKvar( long, long );
     bool removeMaxKvar( long bankId );
     CtiRequestMsg* createIncreaseVarRequest(CtiCCCapBank* capBank, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, 
@@ -372,7 +372,7 @@ RWDECLARE_COLLECTABLE( CtiCCFeeder )
     void fillOutBusOptimizedInfo(BOOL peakTimeFlag);
     BOOL attemptToResendControl(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime);
     BOOL checkForAndPerformVerificationSendRetry(const CtiTime& currentDateTime, CtiMultiMsg_vec& pointChanges, CtiMultiMsg_vec& ccEvents, CtiMultiMsg_vec& pilMessages, LONG maxConfirmTime, LONG sendRetries);
-    BOOL checkMaxDailyOpCountExceeded();
+    BOOL checkMaxDailyOpCountExceeded(CtiMultiMsg_vec &pointChanges);
     BOOL voltControlBankSelectProcess(CtiCCMonitorPoint* point, CtiMultiMsg_vec &pointChanges, CtiMultiMsg_vec &ccEvents, CtiMultiMsg_vec& pilMessages);
     void updatePointResponsePreOpValues(CtiCCCapBank* capBank);
     void updatePointResponseDeltas();

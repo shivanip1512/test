@@ -154,6 +154,9 @@ public:
     const string& getAfterVarsString() const;
     const string& getPercentChangeString() const;
     BOOL getSendAllCommandFlag() const;
+    const CtiTime& getIgnoreReasonTimeUpdated() const;
+    const CtiTime& getIgnoreIndicatorTimeUpdated() const;
+    const CtiTime& getUnsolicitedChangeTimeUpdated() const;
     BOOL getUnsolicitedPendingFlag() const;
 
 
@@ -235,6 +238,10 @@ public:
     CtiCCCapBank& setAfterVarsString(const string& after);
     CtiCCCapBank& setPercentChangeString(const string& percent);
     CtiCCCapBank& setSendAllCommandFlag(BOOL flag);
+    CtiCCCapBank& setIgnoreReasonCounter(INT counter);
+    CtiCCCapBank& setIgnoreReasonTimeUpdated(const CtiTime& timestamp);
+    CtiCCCapBank& setIgnoreIndicatorTimeUpdated(const CtiTime& timestamp);
+    CtiCCCapBank& setUnsolicitedChangeTimeUpdated(const CtiTime& timestamp);
     CtiCCCapBank& setUnsolicitedPendingFlag(BOOL flag);
 
     CtiCCCapBank& setVCtrlIndex(int vCtrlIndex);
@@ -370,7 +377,7 @@ private:
     BOOL _porterRetFailFlag;
     BOOL _unsolicitedPendingFlag;
     
-    CtiCCTwoWayPoints *_twoWayPoints;
+    CtiCCTwoWayPoints* _twoWayPoints;
     string _ipAddress;
     LONG _udpPortNumber;
     LONG _reportedCBCLastControlReason;
@@ -385,6 +392,9 @@ private:
     LONG _controlStatusQuality;
 
     BOOL _sendAllCommandFlag;
+    CtiTime _ignoreReasonTimeUpdated;
+    CtiTime _ignoreIndicatorTimeUpdated;
+    CtiTime _unsolicitedChangeTimeUpdated;
 
     CtiCCOperationStats _operationStats;
     CtiCCConfirmationStats _confirmationStats;

@@ -52,7 +52,7 @@ CtiCCCapBank::CtiCCCapBank(RWDBReader& rdr)
 CtiCCCapBank::CtiCCCapBank(const CtiCCCapBank& cap)  
 {
     operator=(cap);
-    _twoWayPoints = NULL;
+    //_twoWayPoints = NULL;
 }
 
 /*---------------------------------------------------------------------------
@@ -80,11 +80,20 @@ CtiCCCapBank::~CtiCCCapBank()
         }
         _pointResponses.clear();
     }
-    if (_twoWayPoints != NULL) 
+    try
     {
-        delete _twoWayPoints;
-        _twoWayPoints = NULL;
-    } 
+        if (_twoWayPoints != NULL) 
+        {
+            delete _twoWayPoints;
+            _twoWayPoints = NULL;
+        }
+    }
+    catch (...)
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Caught '...' in: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+     
 }
 CtiCCTwoWayPoints* CtiCCCapBank::getTwoWayPoints()
 {
@@ -206,7 +215,22 @@ LONG CtiCCCapBank::getIgnoredReason() const
 {
     return _ignoreReason;
 }
- 
+
+const CtiTime& CtiCCCapBank::getIgnoreReasonTimeUpdated() const
+{
+    return _ignoreReasonTimeUpdated;
+}
+
+const CtiTime& CtiCCCapBank::getIgnoreIndicatorTimeUpdated() const
+{
+    return _ignoreIndicatorTimeUpdated;
+}
+
+const CtiTime& CtiCCCapBank::getUnsolicitedChangeTimeUpdated() const
+{
+    return _unsolicitedChangeTimeUpdated;
+}
+
 const string& CtiCCCapBank::getBeforeVarsString() const
 {
     return _sBeforeVars;
@@ -1593,6 +1617,21 @@ CtiCCCapBank& CtiCCCapBank::setIgnoredReason(LONG value)
     return *this;
 
 }
+CtiCCCapBank& CtiCCCapBank::setIgnoreReasonTimeUpdated(const CtiTime& timestamp)
+{
+    _ignoreReasonTimeUpdated = timestamp;
+    return *this;
+}
+CtiCCCapBank& CtiCCCapBank::setIgnoreIndicatorTimeUpdated(const CtiTime& timestamp)
+{
+    _ignoreIndicatorTimeUpdated = timestamp;
+    return *this;
+}
+CtiCCCapBank& CtiCCCapBank::setUnsolicitedChangeTimeUpdated(const CtiTime& timestamp)
+{
+    _unsolicitedChangeTimeUpdated = timestamp;
+    return *this;
+}
 
 CtiCCCapBank& CtiCCCapBank::setBeforeVarsString(const string& before)
 {
@@ -1629,7 +1668,6 @@ CtiCCCapBank& CtiCCCapBank::setSendAllCommandFlag(BOOL flag)
     _sendAllCommandFlag = flag;
     return *this;
 }
-
 
 BOOL CtiCCCapBank::updateVerificationState(void)
 {
@@ -2252,7 +2290,10 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _unsolicitedPendingFlag = right._unsolicitedPendingFlag;
 
         _sendAllCommandFlag = right._sendAllCommandFlag;
-        
+        _ignoreReasonTimeUpdated = right._ignoreReasonTimeUpdated;
+        _ignoreIndicatorTimeUpdated = right._ignoreIndicatorTimeUpdated;
+        _unsolicitedChangeTimeUpdated = right._unsolicitedChangeTimeUpdated;
+
         _ipAddress = right._ipAddress;
         _udpPortNumber = right._udpPortNumber;
         _reportedCBCLastControlReason = right._reportedCBCLastControlReason;
@@ -2267,8 +2308,14 @@ CtiCCCapBank& CtiCCCapBank::operator=(const CtiCCCapBank& right)
         _ovuvSituationFlag = right._ovuvSituationFlag;
 
         _operationStats = right._operationStats;
+        if (right._twoWayPoints != NULL)
+        {
+            _twoWayPoints = new CtiCCTwoWayPoints(*right._twoWayPoints);
 
-
+        }
+        else
+            _twoWayPoints = NULL;
+        
     }
     return *this;
 }
@@ -2376,6 +2423,9 @@ void CtiCCCapBank::restore(RWDBReader& rdr)
     setPercentChangeString("none");
 
     _sendAllCommandFlag = FALSE;
+    setIgnoreReasonTimeUpdated(gInvalidCtiTime);
+    setIgnoreIndicatorTimeUpdated(gInvalidCtiTime);
+    setUnsolicitedChangeTimeUpdated(gInvalidCtiTime);
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;
 

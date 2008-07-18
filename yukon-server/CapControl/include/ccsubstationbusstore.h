@@ -275,12 +275,17 @@ public:
     
 
     list <CC_DBRELOAD_INFO> getDBReloadList() { return _reloadList; };
+    list <CtiCCCapBankPtr> getUnsolicitedCapBankList() {return _unsolicitedCapBanks;};
     void insertDBReloadList(CC_DBRELOAD_INFO x);
     void checkDBReloadList();
     void addSubstationObjectsToList(list <LONG> *subBusIds, CtiMultiMsg_vec &modifiedSubsList);
     void addSubBusObjectsToList(list <LONG> *subBusIds, CtiMultiMsg_vec &modifiedSubsList);
     void updateSubstationObjectList(LONG substationId, CtiMultiMsg_vec &modifiedStationsList);
     void clearDBReloadList();
+    void insertUnsolicitedCapBankList(CtiCCCapBankPtr x);
+    void removeCapbankFromUnsolicitedCapBankList(CtiCCCapBankPtr x);
+    void clearUnsolicitedCapBankList();
+    void checkUnsolicitedList();
     void setRegMask(LONG mask);
     LONG getRegMask(void);
 
@@ -363,6 +368,7 @@ private:
 
     void doResetThr();
     void doAMFMThr();
+    BOOL deleteCapControlMaps();
 
     CtiCCSubstationBus_vec  *_ccSubstationBuses;
     CtiCCState_vec  *_ccCapBankStates;
@@ -430,14 +436,14 @@ private:
     map< long, long > _substation_specialarea_map; 
     map< long, long > _substation_area_map; 
     map< long, long > _subbus_substation_map; 
-    map< long, long > _feeder_area_map; 
     map< long, long > _feeder_subbus_map; 
-    map< long, long > _capbank_area_map;
     map< long, long > _capbank_subbus_map;
     map< long, long > _capbank_feeder_map;
     map< long, long > _cbc_capbank_map;
 
     multimap< long, long > _altsub_sub_idmap;
+
+    list <CtiCCCapBankPtr> _unsolicitedCapBanks;
 
     list <CC_DBRELOAD_INFO> _reloadList;
     list <long> _orphanedCapBanks;

@@ -52,7 +52,9 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
     _lastControlDigitalId = 0;
     _lastControlDigital = 0;
     _lastControlAnalogId = 0;
-    _lastControlAnalog = 0;
+    _lastControlAnalog = 0;   
+    _lastControlTemperatureId = 0;
+    _lastControlTemperature = 0;
     _ovConditionId = 0;
     _ovCondition = 0;
     _uvConditionId = 0;
@@ -119,6 +121,8 @@ CtiCCTwoWayPoints::CtiCCTwoWayPoints(LONG paoid)
 
     _ovuvCountResetDate = gInvalidCtiTime;
     _lastOvUvDateTime = gInvalidCtiTime;
+
+    _lastControlReason = 0;
 
     _insertDynamicDataFlag = TRUE;
     _dirty = TRUE;

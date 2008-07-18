@@ -61,12 +61,7 @@ CtiCCStrategy::~CtiCCStrategy()
     {
         delete_container(_todc);
         _todc.clear();
-    }
-}
-
-BOOL CtiCCStrategy::isDirty() const
-{
-    return _dirty;
+    } 
 }
 
 //Members inherited from RWCollectable

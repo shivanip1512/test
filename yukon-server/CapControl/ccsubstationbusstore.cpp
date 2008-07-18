@@ -98,6 +98,7 @@ CtiCCSubstationBusStore::CtiCCSubstationBusStore() : _isvalid(FALSE), _reregiste
     _reloadList.clear();
     _orphanedCapBanks.clear();
     _orphanedFeeders.clear();
+    _unsolicitedCapBanks.clear();
 
     _linkStatusPointId = 0;
     _linkStatusFlag = OPENED;
@@ -743,6 +744,99 @@ void CtiCCSubstationBusStore::dumpAllDynamicData()
     }*/
 }
 
+
+
+BOOL CtiCCSubstationBusStore::deleteCapControlMaps()
+{
+    BOOL wasAlreadyRunning = false;
+    RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
+    try
+    {
+        map <long, CtiCCStrategyPtr>::iterator iter = _strategyid_strategy_map.begin();
+        while (iter != _strategyid_strategy_map.end())
+        {
+            CtiCCStrategyPtr strat = iter->second;
+            iter++;
+            if (strat != NULL)
+            {
+                delete strat;
+            }
+        }
+
+        _strategyid_strategy_map.clear();
+
+        _unsolicitedCapBanks.clear();
+        while (!_orphanedFeeders.empty())
+        {
+            long feederId = _orphanedFeeders.front();
+            _orphanedFeeders.pop_front();
+            CtiCCFeederPtr feeder = findFeederByPAObjectID(feederId);
+            if (feeder != NULL)
+            {
+                delete feeder;
+            }
+        }
+
+        while (!_orphanedCapBanks.empty())
+        {
+            long capId = _orphanedCapBanks.front();
+            _orphanedCapBanks.pop_front();
+
+            CtiCCCapBankPtr cap = findCapBankByPAObjectID(capId);
+            if (cap != NULL)
+            {
+                delete cap;
+            }
+        }
+                if ( _ccSubstationBuses->size() > 0 )
+        {
+            dumpAllDynamicData();
+            wasAlreadyRunning = true;
+        }
+        delete_container( *_ccSubstationBuses );
+        _ccSubstationBuses->clear();
+        delete_container( *_ccSubstations );
+        _ccSubstations->clear();
+        delete_container( *_ccCapBankStates );
+        _ccCapBankStates->clear();
+        delete_container(*_ccGeoAreas);
+        _ccGeoAreas->clear();     
+        delete_container(*_ccSpecialAreas);
+        _ccSpecialAreas->clear();
+
+        _paobject_area_map.clear();
+        _paobject_specialarea_map.clear();
+        _paobject_substation_map.clear();
+        _paobject_subbus_map.clear();
+        _paobject_feeder_map.clear();
+        _paobject_capbank_map.clear();
+        _pointid_area_map.clear();
+        _pointid_specialarea_map.clear();
+        _pointid_subbus_map.clear();
+        _pointid_station_map.clear();
+        _pointid_feeder_map.clear();
+        _pointid_capbank_map.clear();
+        _substation_area_map.clear();
+
+        _subbus_substation_map.clear();
+        _substation_specialarea_map.clear();
+        _feeder_subbus_map.clear();
+        _capbank_subbus_map.clear();
+        _capbank_feeder_map.clear();
+        _altsub_sub_idmap.clear();
+        _cbc_capbank_map.clear();
+
+
+    }
+    catch( ... )
+    {
+        CtiLockGuard<CtiLogger> logger_guard(dout);
+        dout << CtiTime() << " - Exception clearing old data for reload. Location: " << __FILE__ << " at:" << __LINE__ << endl;
+    }
+    return wasAlreadyRunning;
+}
+
+
 /*---------------------------------------------------------------------------
     reset
 
@@ -815,88 +909,8 @@ void CtiCCSubstationBusStore::reset()
                 dout << CtiTime() << " - Resetting substation buses from database..." << endl;
             }
             RWRecursiveLock<RWMutexLock>::LockGuard  guard(mutex());
-            try
-            {
-                map <long, CtiCCStrategyPtr>::iterator iter = _strategyid_strategy_map.begin();
-                while (iter != _strategyid_strategy_map.end())
-                {
-                    CtiCCStrategyPtr strat = iter->second;
-                    iter++;
-                    if (strat != NULL)
-                    {
-                        delete strat;
-                    }
-                }
 
-                _strategyid_strategy_map.clear();
-
-                _paobject_area_map.clear();
-                _paobject_specialarea_map.clear();
-                _paobject_substation_map.clear();
-
-                while (!_orphanedFeeders.empty())
-                {
-                    long feederId = _orphanedFeeders.front();
-                    _orphanedFeeders.pop_front();
-                    CtiCCFeederPtr feeder = findFeederByPAObjectID(feederId);
-                    if (feeder != NULL)
-                    {
-                        delete feeder;
-                    }
-                }
-
-                while (!_orphanedCapBanks.empty())
-                {
-                    long capId = _orphanedCapBanks.front();
-                    _orphanedCapBanks.pop_front();
-
-                    CtiCCCapBankPtr cap = findCapBankByPAObjectID(capId);
-                    if (cap != NULL)
-                    {
-                        delete cap;
-                    }
-                }
-
-                _paobject_subbus_map.clear();
-                _paobject_feeder_map.clear();
-                _paobject_capbank_map.clear();
-                _pointid_area_map.clear();
-                _pointid_specialarea_map.clear();
-                _pointid_subbus_map.clear();
-                _pointid_station_map.clear();
-                _pointid_feeder_map.clear();
-                _pointid_capbank_map.clear();
-                _substation_area_map.clear();
-
-                _subbus_substation_map.clear();
-                _substation_specialarea_map.clear();
-                _feeder_subbus_map.clear();
-                _capbank_subbus_map.clear();
-                _capbank_feeder_map.clear();
-                _altsub_sub_idmap.clear();
-                _cbc_capbank_map.clear();
-
-                if ( _ccSubstationBuses->size() > 0 )
-                {
-                    dumpAllDynamicData();
-                    wasAlreadyRunning = true;
-                }
-                delete_container(*_ccSubstationBuses);
-                _ccSubstationBuses->clear();
-                delete_container(*_ccSubstations);
-                _ccSubstations->clear();
-                delete_container(*_ccCapBankStates);
-                _ccCapBankStates->clear();
-                delete_container(*_ccGeoAreas);
-                _ccGeoAreas->clear();
-                delete_container(*_ccSpecialAreas);
-                _ccSpecialAreas->clear();
-            }
-            catch( ... )
-            {
-                CtiLockGuard<CtiLogger> logger_guard(dout);
-                dout << CtiTime() << " - Exception clearing old data for reload. Location: " << __FILE__ << " at:" << __LINE__ << endl;
-            }
+            wasAlreadyRunning = deleteCapControlMaps();
 
             //reCalculateCapBankOperationStatsFromDatabase( );
 
@@ -2816,7 +2830,7 @@ void CtiCCSubstationBusStore::resetDailyOperations()
             additional += currentSubstationBus->getPAOName();
 
             if (currentSubstationBus->getDailyOperationsAnalogPointId() > 0)
-                CtiCapController::getInstance()->sendMessageToDispatch(new CtiSignalMsg(currentSubstationBus->getDailyOperationsAnalogPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control",
+                pointChanges.push_back(new CtiSignalMsg(currentSubstationBus->getDailyOperationsAnalogPointId(),0,text,additional,CapControlLogType,SignalEvent, "cap control",
                                                                                         0,0,0, currentSubstationBus->getCurrentDailyOperations() ));
             {
                 CtiLockGuard<CtiLogger> logger_guard(dout);
@@ -2871,6 +2885,8 @@ void CtiCCSubstationBusStore::resetDailyOperations()
         multiPointMsg->resetTime(); // CGP 5/21/04 Update its time to current time.
         CtiCapController::getInstance()->sendMessageToDispatch(multiPointMsg);
     }
+    else
+        delete multiPointMsg;
 
 }
 
@@ -5920,9 +5936,15 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                             if (currentCCSubstationBus->getUsePhaseData())
                             {
                                 if (currentCCSubstationBus->getPhaseBId() > 0)
+                                {
                                     pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getPhaseBId(), currentCCSubstationBus));
+                                    currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getPhaseBId());
+                                }
                                 if (currentCCSubstationBus->getPhaseCId() > 0)
+                                {
                                     pointid_subbus_map->insert(make_pair(currentCCSubstationBus->getPhaseCId(), currentCCSubstationBus));
+                                    currentCCSubstationBus->getPointIds()->push_back(currentCCSubstationBus->getPhaseCId());
+                                }
 
                             }
 
@@ -5933,7 +5955,7 @@ void CtiCCSubstationBusStore::reloadSubBusFromDatabase(long subBusId, map< long,
                             }
 
 
-
+                            
                                 //cCSubstationBuses->push_back(currentCCSubstationBus);
 
                         }
@@ -10075,8 +10097,9 @@ void CtiCCSubstationBusStore::checkDBReloadList()
                 delete executor;
                 executor = f.createExecutor(new CtiCCSpecialAreasMsg(*_ccSpecialAreas));
                 executor->Execute();
-                delete executor;
-                if (modifiedSubsList.size() > 0 || (msgSubsBitMask & CtiCCSubstationsMsg::AllSubsSent) )
+                delete executor; 
+                if (modifiedSubsList.size() > 0 || (msgSubsBitMask & CtiCCSubstationsMsg::AllSubsSent) ||
+                    modifiedStationsList.size() > 0 )
                 {
                     if (msgSubsBitMask & CtiCCSubstationsMsg::AllSubsSent)
                         executor = f.createExecutor(new CtiCCSubstationsMsg(*_ccSubstations, msgSubsBitMask));
@@ -10244,6 +10267,51 @@ void CtiCCSubstationBusStore::clearDBReloadList()
         _reloadList.clear();
     }
 }
+
+void CtiCCSubstationBusStore::insertUnsolicitedCapBankList(CtiCCCapBankPtr x)
+{
+    if (!list_contains(_unsolicitedCapBanks, x))
+    {
+        _unsolicitedCapBanks.push_back(x);
+    }
+} 
+
+void CtiCCSubstationBusStore::removeCapbankFromUnsolicitedCapBankList(CtiCCCapBankPtr x)
+{
+    _unsolicitedCapBanks.remove(x);
+}
+
+void CtiCCSubstationBusStore::clearUnsolicitedCapBankList()
+{
+    if (!_unsolicitedCapBanks.empty())
+    { 
+        _unsolicitedCapBanks.clear();
+    }
+}
+
+
+void CtiCCSubstationBusStore::checkUnsolicitedList()
+{
+    list <CtiCCCapBankPtr> tempList = getUnsolicitedCapBankList();
+    list <CtiCCCapBankPtr>::iterator listIter; 
+    for (listIter = tempList.begin(); listIter != tempList.end(); listIter++)
+    {
+        CtiCCCapBankPtr currentCapBank = *listIter;
+
+        if (currentCapBank->getUnsolicitedChangeTimeUpdated().seconds() >= CtiTime().seconds() - 2)
+        {  
+            CtiCCFeederPtr currentFeeder = findFeederByPAObjectID(currentCapBank->getParentId());
+            if (currentFeeder == NULL)
+                continue;
+            CtiCCSubstationBusPtr currentSubstationBus = findSubBusByPAObjectID(currentFeeder->getParentId());
+            if (currentSubstationBus == NULL)
+                continue;
+            
+            CtiCapController::getInstance()->handleUnsolicitedMessaging(currentCapBank, currentFeeder, currentSubstationBus, currentCapBank->getTwoWayPoints());
+        }
+    }
+}
+
 
 void CtiCCSubstationBusStore::insertItemsIntoMap(int mapType, long* first, long* second)
 {

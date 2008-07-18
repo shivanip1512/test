@@ -3254,13 +3254,13 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
                     }
                     iterations++;
                 }
                 if( capBank != NULL )
                 {
-                    currentFeeder->checkMaxDailyOpCountExceeded();
+                    currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                     if (!currentFeeder->getDisableFlag())
                     {
@@ -3381,13 +3381,13 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
                     }
                     iterations++;
                 }
                 if( capBank != NULL )
                 {
-                    currentFeeder->checkMaxDailyOpCountExceeded();
+                    currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                     if (!currentFeeder->getDisableFlag())
                     {
@@ -3491,14 +3491,14 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
                     }
                     iterations++;
                 }
 
                 if( capBank != NULL )
                 {
-                    currentFeeder->checkMaxDailyOpCountExceeded();
+                    currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                     if (!currentFeeder->getDisableFlag())
                     {
@@ -3608,14 +3608,14 @@ void CtiCCSubstationBus::regularSubstationBusControl(DOUBLE lagLevel, DOUBLE lea
                         !currentFeeder->getWaiveControlFlag() &&
                         currentDateTime.seconds() >= currentFeeder->getLastOperationTime().seconds() + currentFeeder->getControlDelayTime() )
                     {
-                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
+                        capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
                     }
                     iterations++;
                 }
 
                 if( capBank != NULL )
                 {
-                    currentFeeder->checkMaxDailyOpCountExceeded();
+                    currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                     if (!currentFeeder->getDisableFlag())
                     {
@@ -3783,7 +3783,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                             {
                                 setKVARSolution(-1);
                             }
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
                         }
                         else
                         {
@@ -3793,7 +3793,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     }
                     if( capBank != NULL )
                     {
-                        currentFeeder->checkMaxDailyOpCountExceeded();
+                        currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                         if (!currentFeeder->getDisableFlag())
                         {
@@ -3907,7 +3907,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                             {
                                 setKVARSolution(1);
                             }
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
                         }
                         else
                         {
@@ -3917,7 +3917,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     }
                     if( capBank != NULL )
                     {
-                        currentFeeder->checkMaxDailyOpCountExceeded();
+                        currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                         if (!currentFeeder->getDisableFlag())
                         {
@@ -4012,7 +4012,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
                         }
                         else
                         {
@@ -4022,7 +4022,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     }
                     if( capBank != NULL )
                     {
-                        currentFeeder->checkMaxDailyOpCountExceeded();
+                        currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                         if (!currentFeeder->getDisableFlag())
                         {
@@ -4133,7 +4133,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                         if ((!_IGNORE_NOT_NORMAL_FLAG || currentFeeder->getCurrentVarPointQuality() == NormalQuality) &&
                             currentFeeder->getCurrentVarLoadPointId() > 0)
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution());
+                            capBank = currentFeeder->findCapBankToChangeVars(getKVARSolution(), pointChanges);
                         }
                         else
                         {
@@ -4143,7 +4143,7 @@ void CtiCCSubstationBus::optimizedSubstationBusControl(DOUBLE lagLevel, DOUBLE l
                     }
                     if( capBank != NULL )
                     {
-                        currentFeeder->checkMaxDailyOpCountExceeded();
+                        currentFeeder->checkMaxDailyOpCountExceeded(pointChanges);
 
                         if (!currentFeeder->getDisableFlag())
                         {
@@ -4716,7 +4716,9 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
     BOOL vResult = FALSE; //fail
 
 
-    if (getUsePhaseData() && !getTotalizedControlFlag() )
+    if ((stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::IndividualFeederControlMethod) &&
+         stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::BusOptimizedFeederControlMethod) ) &&
+        getUsePhaseData() && !getTotalizedControlFlag()  ) 
     {
         returnBoolean = capBankVerificationPerPhaseStatusUpdate(pointChanges, ccEvents);
     }
@@ -4822,7 +4824,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
                                            additional = string("Feeder: ");
                                            additional += currentFeeder->getPAOName();
 
-                                           currentCapBank->setControlStatusQuality(CC_Fail);
+                                           if (currentCapBank->getControlStatusQuality() != CC_CommFail) 
+                                               currentCapBank->setControlStatusQuality(CC_Fail);
                                        }
                                        else if( minConfirmPercent != 0 )
                                        {
@@ -4954,8 +4957,8 @@ BOOL CtiCCSubstationBus::capBankVerificationStatusUpdate(CtiMultiMsg_vec& pointC
 
                                            additional = string("Feeder: ");
                                            additional += currentFeeder->getPAOName();
-
-                                           currentCapBank->setControlStatusQuality(CC_Fail);
+                                           if (currentCapBank->getControlStatusQuality() != CC_CommFail) 
+                                               currentCapBank->setControlStatusQuality(CC_Fail);
                                        }
                                        else if( minConfirmPercent != 0 )
                                        {
@@ -6970,8 +6973,9 @@ BOOL CtiCCSubstationBus::isVerificationAlreadyControlled()
                                                                    totalizedControlFlag) )
                 {
                     returnBoolean = TRUE;
+                    break;
                 }
-                break;
+                
             }
         }
         else
@@ -7143,7 +7147,7 @@ BOOL CtiCCSubstationBus::isPastMaxConfirmTime(const CtiTime& currentDateTime)
             for(LONG i=0;i<_ccfeeders.size();i++)
             {
                 CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                if( currentCCFeeder->getRecentlyControlledFlag() &&
+                if( (currentCCFeeder->getRecentlyControlledFlag()  || currentCCFeeder->getPerformingVerificationFlag()) &&
                     currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),getControlSendRetries()) )
                 {
                     returnBoolean = TRUE;
@@ -7163,7 +7167,7 @@ BOOL CtiCCSubstationBus::isPastMaxConfirmTime(const CtiTime& currentDateTime)
             for(LONG i=0;i<_ccfeeders.size();i++)
             {
                 CtiCCFeeder* currentCCFeeder = (CtiCCFeeder*)_ccfeeders.at(i);
-                if( currentCCFeeder->getRecentlyControlledFlag() &&
+                if( (currentCCFeeder->getRecentlyControlledFlag() || currentCCFeeder->getPerformingVerificationFlag()) &&
                     currentCCFeeder->isPastMaxConfirmTime(currentDateTime,getMaxConfirmTime(),sendRetries) )
                 {
                     returnBoolean = TRUE;
@@ -9713,7 +9717,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
                     {
                         try
                         {
-                            capBank = currentFeeder->findCapBankToChangeVars(-1);  //close
+                            capBank = currentFeeder->findCapBankToChangeVars(-1, pointChanges);  //close 
                         }
                         catch(...)
                         {
@@ -9835,7 +9839,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::checkForAndProvideNeededTimeOfDayControl
 
                             try
                             {
-                                capBank = currentFeeder->findCapBankToChangeVars(1);  //open
+                                capBank = currentFeeder->findCapBankToChangeVars(1, pointChanges);  //open 
                             }
                             catch(...)
                             {
@@ -10470,6 +10474,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
         _paodescription = right._paodescription;
         _disableflag = right._disableflag;
         _parentId = right._parentId;
+        _parentName = right._parentName;
         _strategyId = right._strategyId;
         _strategyName = right._strategyName;
         _controlmethod = right._controlmethod;
@@ -10599,6 +10604,7 @@ CtiCCSubstationBus& CtiCCSubstationBus::operator=(const CtiCCSubstationBus& righ
             _ccfeeders.push_back(((CtiCCFeeder*)right._ccfeeders.at(i))->replicate());
         }
 
+        delete_container(_todControls);
         _todControls.clear();
         for(i=0;i<right._todControls.size();i++)
         {
@@ -10823,6 +10829,7 @@ void CtiCCSubstationBus::restore(RWDBReader& rdr)
     setLastWattPointTime(gInvalidCtiTime);
     setLastVoltPointTime(gInvalidCtiTime);
 
+    setParentName("none");
 }
 
 void CtiCCSubstationBus::setStrategyValues(CtiCCStrategyPtr strategy)
@@ -10939,7 +10946,9 @@ void CtiCCSubstationBus::setDynamicData(RWDBReader& rdr)
         {
             setSendMoreTimeControlledCommandsFlag(FALSE);
         }
-        figureNextCheckTime();
+        if (!stringCompareIgnoreCase(_controlmethod,CtiCCSubstationBus::TimeOfDayMethod)||
+            _likeDayControlFlag)
+            figureNextCheckTime();
         if (_voltReductionControlId <= 0 )
         {
             setVoltReductionFlag(FALSE);

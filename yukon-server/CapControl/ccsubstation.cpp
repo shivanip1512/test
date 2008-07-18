@@ -242,12 +242,7 @@ void CtiCCSubstation::restore(RWDBReader& rdr)
     _disableflag = (tempBoolString=="y"?TRUE:FALSE);
 
     rdr["voltreductionpointid"] >> _voltReductionControlId;
-    if (_voltReductionControlId <= 0)
-    {
-        setVoltReductionFlag(FALSE);
-    }
-
-
+    
     setOvUvDisabledFlag(FALSE);
     setVoltReductionFlag(FALSE);
     setPFactor(0);

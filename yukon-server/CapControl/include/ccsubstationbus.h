@@ -597,10 +597,6 @@ RWDECLARE_COLLECTABLE( CtiCCSubstationBus )
     //vector <long> _multipleMonitorPoints;
     std::vector <CtiCCMonitorPointPtr> _multipleMonitorPoints;
 
-
-    std::map <long, CtiCCMonitorPointPtr> _mpid_mp_map;
-    std::map <long, CtiCCPointResponsePtr> _cbid_prmap_map;
-
     bool checkForRateOfChange(const CtiRegression& reg, const CtiRegression& regA, const CtiRegression& regB, const CtiRegression& regC);
     CtiRegression regression;
     CtiRegression regressionA;

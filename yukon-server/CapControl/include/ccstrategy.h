@@ -122,7 +122,6 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
 
     void setTimeAndCloseValues(RWDBReader& rdr);
 
-    BOOL isDirty() const;
 
     //Members inherited from RWCollectable
     void restoreGuts(RWvistream& );
@@ -134,20 +133,6 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     int operator!=(const CtiCCStrategy& right) const;
 
     CtiCCStrategy* replicate() const;
-
-    //Possible control methods
-    /*static const string SubstationBusControlMethod;
-    static const string IndividualFeederControlMethod;
-    static const string BusOptimizedFeederControlMethod;
-    static const string ManualOnlyControlMethod;
-
-    static const string KVARControlUnits;
-    static const string PF_BY_KVARControlUnits;
-    static const string PF_BY_KQControlUnits;
-    */
-    //static int PeakState;
-    //static int OffPeakState;
-
 
     private:
 
@@ -181,15 +166,6 @@ RWDECLARE_COLLECTABLE( CtiCCStrategy )
     BOOL _likeDayFallBack;
 
     CtiTODC_SVector _todc;
-
-
-
-    //don't stream
-    BOOL _insertDynamicDataFlag;
-    BOOL _dirty;
-
-    std::list <LONG> _subBusList;
-    std::list <LONG> _feederList;
 
     void restore(RWDBReader& rdr);
 };
