@@ -5394,15 +5394,20 @@ ULONG CtiLMProgramDirect::estimateOffTime(ULONG proposed_gear, ULONG start, ULON
     }
     else if( method == CtiLMProgramDirectGear::RotationMethod.c_str() )
     {
-        long send_rate = cur_gear->getMethodRate();
-        long shed_time = cur_gear->getMethodPeriod();
-        long number_of_groups = getLMProgramDirectGroups().size();
-        long number_of_groups_to_take = cur_gear->getMethodRateCount();
 
-        long implied_period = (number_of_groups / number_of_groups_to_take) * send_rate;
-        double implied_percent = (double) shed_time / (double) implied_period;
+        LONG sendRate = cur_gear->getMethodRate();
+        LONG shedTime = cur_gear->getMethodPeriod();
+        LONG numberOfGroups = getLMProgramDirectGroups().size();
+        LONG numberOfGroupsToTake = cur_gear->getMethodRateCount();
 
-        return control_time * implied_percent;
+        if( numberOfGroupsToTake == 0 )
+        {
+            numberOfGroupsToTake = numberOfGroups;
+        }
+        LONG impliedPeriod = (numberOfGroups / numberOfGroupsToTake) * sendRate;
+        DOUBLE impliedPercent = (DOUBLE) shedTime / (DOUBLE) impliedPeriod;
+
+        return control_time * impliedPercent;
     }
     else if( method == CtiLMProgramDirectGear::ThermostatRampingMethod.c_str() )
     {
