@@ -56,6 +56,10 @@
 
     <bean id="lmProgramWebPublishingDao" class="com.cannontech.stars.core.dao.impl.LMProgramWebPublishingDaoImpl"/>
 
+    <bean id="starsInventoryBaseDao" class="com.cannontech.stars.core.dao.impl.StarsInventoryBaseDaoImpl">
+        <property name="starsDatabaseCache" ref="starsDatabaseCache"/>
+    </bean>
+
     <bean id="accountSiteDao" class="com.cannontech.stars.dr.account.dao.impl.AccountSiteDaoImpl"/>
     
     <bean id="starsDaoAdvice" class="com.cannontech.stars.dr.advice.StarsDaoAdvice"/>

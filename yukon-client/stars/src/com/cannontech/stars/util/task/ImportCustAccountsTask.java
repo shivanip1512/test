@@ -52,6 +52,7 @@ import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.roles.yukon.ConfigurationRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.util.ImportProblem;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.StarsUtils;
@@ -198,7 +199,9 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 	
 	private final StarsCustAccountInformationDao starsCustAccountInformationDao = 
 	    YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
-
+	private final StarsInventoryBaseDao starsInventoryBaseDao = 
+	    YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
+	
 	public ImportCustAccountsTask() {
 		
 	}
@@ -699,8 +702,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 								if(ImportManagerUtil.isValidLocationForImport(energyCompany, true) && 
                                         hwFields[ImportManagerUtil.IDX_HARDWARE_ACTION].equalsIgnoreCase("REMOVE")) {
                                     for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-                                        int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
-                                        LiteInventoryBase lInv = energyCompany.getInventoryBrief( invID, true );
+                                        int invID = liteAcctInfo.getInventories().get(i);
+                                        LiteInventoryBase lInv = starsInventoryBaseDao.getById(invID,
+                                                                                               energyCompany.getEnergyCompanyID(),
+                                                                                               true);
                                         if (lInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)lInv).getManufacturerSerialNumber().equals(hwFields[ImportManagerUtil.IDX_SERIAL_NO])) {
                                             liteInv = lInv;
                                             break;
@@ -1330,8 +1335,10 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
 		ImportProblem problem = new ImportProblem();
 		
 		for (int i = 0; i < liteAcctInfo.getInventories().size(); i++) {
-			int invID = ((Integer) liteAcctInfo.getInventories().get(i)).intValue();
-			LiteInventoryBase lInv = energyCompany.getInventoryBrief( invID, true );
+			int invID = liteAcctInfo.getInventories().get(i);
+			LiteInventoryBase lInv = starsInventoryBaseDao.getById(invID,
+			                                                       energyCompany.getEnergyCompanyID(),
+			                                                       true);
 			if (lInv instanceof LiteStarsLMHardware && ((LiteStarsLMHardware)lInv).getManufacturerSerialNumber().equals(hwFields[ImportManagerUtil.IDX_SERIAL_NO])) {
 				liteInv = lInv;
 				break;

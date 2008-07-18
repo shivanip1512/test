@@ -15,12 +15,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 import java.util.Vector;
-import java.util.concurrent.CountDownLatch;
-
-import org.apache.log4j.Logger;
 
 import com.cannontech.clientutils.CTILogger;
-import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionList;
@@ -55,7 +51,6 @@ import com.cannontech.database.db.customer.Customer;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.customer.CustomerAccount;
-import com.cannontech.database.db.stars.hardware.MeterHardwareBase;
 import com.cannontech.database.db.stars.hardware.Warehouse;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.operator.AdministratorRole;
@@ -63,6 +58,7 @@ import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.roles.yukon.EnergyCompanyRole;
 import com.cannontech.spring.YukonSpringHook;
 import com.cannontech.stars.core.dao.StarsCustAccountInformationDao;
+import com.cannontech.stars.core.dao.StarsInventoryBaseDao;
 import com.cannontech.stars.core.dao.StarsRowCountDao;
 import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.InventoryUtils;
@@ -104,7 +100,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     
     public static final int FAKE_LIST_ID = -9999;   // Magic number for YukonSelectionList ID, used for substation and service company list
     public static final int INVALID_ROUTE_ID = -1;  // Mark that a valid default route id is not found, and prevent futher attempts
-    private EnergyCompanyLatch energyCompanyLatch = new EnergyCompanyLatch();
     
     private static final String[] OPERATOR_SELECTION_LISTS = {
         YukonSelectionListDefs.YUK_LIST_NAME_SEARCH_TYPE,
@@ -168,12 +163,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
         YukonSelectionListDefs.YUK_LIST_NAME_CI_CUST_TYPE
     };
     
-    public EnergyCompanyLatch getEnergyCompanyLatch(){
-        return energyCompanyLatch;
-    }
-    
-    private Logger logger = YukonLogManager.getLogger(LiteStarsEnergyCompany.class);
-    
     private String name = null;
     private int primaryContactID = CtiUtilities.NONE_ZERO_ID;
     private int userID = com.cannontech.user.UserUtils.USER_DEFAULT_ID;
@@ -217,6 +206,8 @@ public class LiteStarsEnergyCompany extends LiteBase {
 
     private final AddressDao addressDao = YukonSpringHook.getBean("addressDao", AddressDao.class);
     private final StarsRowCountDao starsRowCountDao = YukonSpringHook.getBean("starsRowCountDao", StarsRowCountDao.class);
+    private final StarsInventoryBaseDao starsInventoryBaseDao = 
+        YukonSpringHook.getBean("starsInventoryBaseDao", StarsInventoryBaseDao.class);
     private final StarsCustAccountInformationDao starsCustAccountInformationDao =
         YukonSpringHook.getBean("starsCustAccountInformationDao", StarsCustAccountInformationDao.class);
  
@@ -574,8 +565,6 @@ public class LiteStarsEnergyCompany extends LiteBase {
     }
     
     public void clearInventory() {
-        energyCompanyLatch.resetInventoryLatch();
-                
         // If the inventory loading task is alive, cancel it first
         TimeConsumingTask loadInvTask = ProgressChecker.getTask( loadInvTaskID );
         if (loadInvTask != null) loadInvTask.cancel();
@@ -1434,70 +1423,26 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return null;
     }
     
-    public LiteInventoryBase getInventoryBrief(int inventoryID, boolean autoLoad) {
-        LiteInventoryBase liteInv = getInventoryMap().get( new Integer(inventoryID) );
+    public synchronized LiteInventoryBase getInventoryBrief(int inventoryID, boolean autoLoad) {
+        LiteInventoryBase liteInv = getInventoryMap().get(inventoryID);
         /*
          * Should never return for non-Yukon meters.  Will always go to the db.
          */
         if (liteInv != null) return liteInv;
         
         if (autoLoad) {
-            try {
-                com.cannontech.database.db.stars.hardware.InventoryBase invDB =
-                        new com.cannontech.database.db.stars.hardware.InventoryBase();
-                invDB.setInventoryID( new Integer(inventoryID) );
-                invDB = Transaction.createTransaction( Transaction.RETRIEVE, invDB ).execute();
-                
-                if (InventoryUtils.isLMHardware( invDB.getCategoryID().intValue() )) {
-                    com.cannontech.database.db.stars.hardware.LMHardwareBase hwDB =
-                            new com.cannontech.database.db.stars.hardware.LMHardwareBase();
-                    hwDB.setInventoryID( invDB.getInventoryID() );
-                    
-                    hwDB = Transaction.createTransaction( Transaction.RETRIEVE, hwDB ).execute();
-                    
-                    com.cannontech.database.data.stars.hardware.LMHardwareBase hardware =
-                            new com.cannontech.database.data.stars.hardware.LMHardwareBase();
-                    hardware.setInventoryBase( invDB );
-                    hardware.setLMHardwareBase( hwDB );
-                    
-                    liteInv = new LiteStarsLMHardware();
-                    StarsLiteFactory.setLiteStarsLMHardware( (LiteStarsLMHardware)liteInv, hardware );
-                }
-                /*
-                 * Should always get here for a non yukon meter.  They are not loaded into cache
-                 * with other inventory.
-                 */
-                else if (InventoryUtils.isNonYukonMeter( invDB.getCategoryID().intValue()))
-                {
-                    MeterHardwareBase mhbDB = new MeterHardwareBase();
-                    mhbDB.setInventoryID( invDB.getInventoryID() );
-                    
-                    mhbDB = Transaction.createTransaction( Transaction.RETRIEVE, mhbDB ).execute();
-                    
-                    com.cannontech.database.data.stars.hardware.MeterHardwareBase hardware =
-                            new com.cannontech.database.data.stars.hardware.MeterHardwareBase();
-                    hardware.setInventoryBase( invDB );
-                    hardware.setMeterHardwareBase( mhbDB );
-                    
-                    liteInv = new LiteMeterHardwareBase();
-                    StarsLiteFactory.setLiteMeterHardwareBase( (LiteMeterHardwareBase)liteInv, hardware );
-                }
-                else {
-                    liteInv = new LiteInventoryBase();
-                    StarsLiteFactory.setLiteInventoryBase( liteInv, invDB );
-                }
-                
-                addInventory( liteInv );
-                return liteInv;
-            } catch (TransactionException e) {
-                CTILogger.error(e.getMessage(), e);
-            }
+            liteInv = starsInventoryBaseDao.getById(inventoryID,
+                                                    getEnergyCompanyID(),
+                                                    true);
+            
+            if (liteInv != null) addInventory( liteInv );
+            return liteInv;
         }
         
         return null;
     }
     
-    public LiteInventoryBase getInventory(int inventoryID, boolean autoLoad) {
+    public synchronized LiteInventoryBase getInventory(int inventoryID, boolean autoLoad) {
         LiteInventoryBase liteInv = getInventoryBrief(inventoryID, autoLoad);
         
         if (liteInv != null && !liteInv.isExtended())
@@ -3137,175 +3082,4 @@ public class LiteStarsEnergyCompany extends LiteBase {
         return accountList;
     }
     
-    public class EnergyCompanyLatch {
-        private CountDownLatch energyCompanyLatch = new CountDownLatch(3);
-        private CountDownLatch accountsLatch = new CountDownLatch(1);
-        private CountDownLatch inventoryLatch = new CountDownLatch(1);
-        private CountDownLatch workOrderLatch = new CountDownLatch(1);
-        
-        /** 
-         * This function blocks until the energy company CountDownLatch 
-         * has reached zero or is interrupted.
-         *
-         * @throws InterruptedException
-         */
-        public void awaitEnergyCompany() throws InterruptedException{
-            energyCompanyLatch.await();
-        }
-        
-        /**
-          * Checks to see if the energy company has been fully loaded.
-          *  
-          * @return boolean
-          */
-        public boolean isLoadedEnergyCompany() {
-            if (energyCompanyLatch.getCount() == 0){
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Sets all the latches to there initial values.
-         *  
-         */
-        public void resetAllLatches() {
-           energyCompanyLatch = new CountDownLatch(3);
-           accountsLatch = new CountDownLatch(1);
-           inventoryLatch = new CountDownLatch(1);
-           workOrderLatch = new CountDownLatch(1);
-        }
-
-        /** 
-         * This function blocks until the accounts CountDownLatch 
-         * has reached zero or is interrupted.
-         *
-         * @throws InterruptedException
-         */
-        public void awaitAccounts() throws InterruptedException{
-            accountsLatch.await();
-        }
-        
-        /**
-         * This function counts down the accounts CountDownLatch and also the 
-         * energy company CountDownLatch
-         */
-        public void countDownAccounts() {
-            accountsLatch.countDown();
-            energyCompanyLatch.countDown();
-            logger.debug("Accounts Latch Decremented for energyCompanyId " + getEnergyCompanyID());
-        }
-        
-        /**
-         * Checks to see if the accounts for the given energy company
-         * has been loaded.
-         *  
-         * @return boolean
-         */
-        public boolean isLoadedAccounts() {
-            if (accountsLatch.getCount() == 0){
-                return true;
-            }
-            return false;
-        }
-
-        /**
-         * Sets the account latch to its initial value and increments
-         * the energy company latch.
-         *  
-         */
-        public void resetAccountLatch() {
-            accountsLatch = new CountDownLatch(1);
-            int initialCount = ((Long)energyCompanyLatch.getCount()).intValue();          
-            energyCompanyLatch = new CountDownLatch(initialCount + 1);
-        }
-        
-        /** 
-         * This function blocks until the inventory CountDownLatch 
-         * has reached zero or is interrupted.
-         *
-         * @throws InterruptedException
-         */
-        public void awaitInventory() throws InterruptedException{
-            inventoryLatch.await();
-        }
-       
-        /**
-         * This function counts down the inventory CountDownLatch and also the 
-         * energy company CountDownLatch
-         */
-        public void countDownInventory() {
-            inventoryLatch.countDown();
-            energyCompanyLatch.countDown();
-            logger.debug("Inventory Latch Decremented for energyCompanyId " + getEnergyCompanyID());
-        }
-        
-        /**
-         * Checks to see if the inventory for the given energy company
-         * has been loaded.
-         *  
-         * @return boolean
-         */
-        public boolean isLoadedInventory() {
-            if (inventoryLatch.getCount() == 0){
-                return true;
-            }
-            return false;
-        }
-        
-        /**
-         * Sets the account latch to its initial value and increments
-         * the energy company latch.
-         *  
-         */
-        public void resetInventoryLatch() {
-            inventoryLatch = new CountDownLatch(1);
-            int initialCount = ((Long)energyCompanyLatch.getCount()).intValue();          
-            energyCompanyLatch = new CountDownLatch(initialCount + 1);
-        }
-        
-        /** 
-         * This function blocks until the work order CountDownLatch 
-         * has reached zero or is interrupted.
-         *
-         * @throws InterruptedException
-         */
-        public void awaitWorkOrder() throws InterruptedException{
-            workOrderLatch.await();
-        }
-        
-        /**
-         * This function counts down the work order CountDownLatch and also the 
-         * energy company CountDownLatch
-         */
-        public void countDownWorkOrder() {
-            workOrderLatch.countDown();
-            energyCompanyLatch.countDown();
-            logger.debug("Work Order Latch Decremented for energyCompanyId " + getEnergyCompanyID());
-        }
-        
-        /**
-         * Checks to see if the work order for the given energy company
-         * has been loaded.
-         *  
-         * @return boolean
-         */
-        public boolean isLoadedWorkOrder() {
-            if (workOrderLatch.getCount() == 0){
-                return true;
-            }
-            return false;
-        }
-        
-        /**
-         * Sets the account latch to its initial value and increments
-         * the energy company latch.
-         *  
-         */
-        public void resetWorkOrderLatch() {
-            workOrderLatch = new CountDownLatch(1);
-            int initialCount = ((Long)energyCompanyLatch.getCount()).intValue();          
-            energyCompanyLatch = new CountDownLatch(initialCount + 1);
-        }
-    }
 }

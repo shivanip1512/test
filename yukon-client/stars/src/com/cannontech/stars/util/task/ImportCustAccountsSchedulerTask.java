@@ -11,7 +11,6 @@ import com.cannontech.database.cache.StarsDatabaseCache;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.jobs.support.YukonTask;
 import com.cannontech.user.YukonUserContext;
-import com.sun.corba.se.impl.orbutil.threadpool.TimeoutException;
 
 public class ImportCustAccountsSchedulerTask implements YukonTask {
 
@@ -25,16 +24,12 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
     public void start() {
             try {
                 startTask();
-            } catch (TimeoutException e) {
-                logger.error(e);
-            } catch (InterruptedException e) {
-                logger.error(e);
             } catch (NotFoundException e){
                 logger.error(e);
             }
     }
     
-    private void startTask() throws TimeoutException, InterruptedException{
+    private void startTask() {
         logger.info("Starting cust account task.");
         
         StarsDatabaseCache starsDbCacheInstance = StarsDatabaseCache.getInstance();
@@ -42,7 +37,6 @@ public class ImportCustAccountsSchedulerTask implements YukonTask {
         LiteStarsEnergyCompany liteStarsEnergyCompany = null;
         if(energyCompanyId != null){
             liteStarsEnergyCompany = starsDbCacheInstance.getEnergyCompany(energyCompanyId);
-            liteStarsEnergyCompany.getEnergyCompanyLatch().awaitInventory();
         } else {
             throw new NotFoundException("energyCompanyID was not found during the import customer process");
         }
