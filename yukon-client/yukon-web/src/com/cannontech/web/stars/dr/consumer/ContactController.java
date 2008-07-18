@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import com.cannontech.common.constants.YukonListEntry;
 import com.cannontech.common.constants.YukonSelectionList;
 import com.cannontech.common.constants.YukonSelectionListDefs;
+import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.ContactDao;
 import com.cannontech.core.dao.CustomerDao;
 import com.cannontech.core.dao.YukonListDao;
@@ -66,9 +67,9 @@ public class ContactController extends AbstractConsumerController {
             int entryID = entry.getEntryID();
             ContactNotificationOption option = new ContactNotificationOption(entryID);
             String text = entry.getEntryText();
-            if("(none)".equalsIgnoreCase(text)) {
+            if (CtiUtilities.STRING_NONE.equalsIgnoreCase(text)) {
             	// do not put the '(none)' option into the list
-            	break;
+                continue;
             }
             String code = MessageCodeGenerator.generateCode("yukon.dr.consumer.contact",
                                                             text);
