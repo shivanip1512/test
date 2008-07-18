@@ -750,7 +750,7 @@
         <property name="urlAccessDescriptions">
             <list>
                 <!-- DO NOT REMOVE -->
-                <value>ALLOW|/remote/**|DBEditorRole.ROLEID,TDCRole.ROLEID,CommanderRole.ROLEID</value>
+                <value>ALLOW|/remote/**|DBEditorRole.ROLEID,TDCRole.ROLEID,CommanderRole.ROLEID,EsubEditorRole.ROLEID,TrendingRole.ROLEID</value>
                 <value>ALLOW|/**|WebClientRole.ROLEID</value> 
                 <value>DENY|/**|*</value> 
                 <!-- DO NOT REMOVE -->
