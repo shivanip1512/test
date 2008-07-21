@@ -1,5 +1,7 @@
 package com.cannontech.message.dispatch.message;
 
+import org.apache.commons.lang.StringUtils;
+
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.database.db.point.SystemLog;
 import com.cannontech.yukon.IServerConnection;
@@ -57,7 +59,7 @@ public class SystemLogHelper {
     public void log(int signalPointID, String action, String description, String username, int logType) {
         Signal sig = new Signal();
         sig.setPointID(signalPointID);
-        sig.setDescription(description);
+        sig.setDescription(StringUtils.abbreviate(description, 120));
         sig.setAction(action);
         sig.setLogType(logType);
         if( username != null)

@@ -1002,11 +1002,7 @@ public class Multispeak implements MessageListener {
     }
     
     private void logMSPActivity(String method, String description, String userName) {
-        String limitedDesc = description;
-        if( description.length()> 120)
-            limitedDesc = description.substring(0, 117) +  "...";
-        getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, limitedDesc, userName, SystemLog.TYPE_MULTISPEAK);
-
+        getSystemLogHelper().log(PointTypes.SYS_PID_MULTISPEAK, method, description, userName, SystemLog.TYPE_MULTISPEAK);
         CTILogger.debug("MSP Activity (Method: " + method +  " - " + description + ")");
     }
     
