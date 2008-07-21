@@ -1395,13 +1395,13 @@ public class Multispeak implements MessageListener {
         String newPaoName = getPaoNameFromMspMeter(mspMeter, paoAlias, currentPaoName);
         
         if( newPaoName == null) {
-            logString = "; PAOName(" + paoAliasStr + ") No Change - MSP " + paoAliasStr + " is empty.";
+            logString = "PAOName(" + paoAliasStr + ")No Change - MSP " + paoAliasStr + " is empty;";
         } else if (currentPaoName.equalsIgnoreCase(newPaoName)) {
-            logString = "; PAOName(" + paoAliasStr + ") No change in value.";
+            logString = "PAOName(" + paoAliasStr + ")No Change;";
         } else {
             newPaoName = getNewPaoName(newPaoName);
             yukonPaobject.setPAOName(newPaoName);
-            logString = "PAOName(" + paoAliasStr + ")(OLD:" + currentPaoName + " NEW:" + newPaoName + ").";
+            logString = "PAOName(" + paoAliasStr + ")(" + currentPaoName + " to " + newPaoName + ");";
         }
         
         //Update MeterNumber
@@ -1411,7 +1411,7 @@ public class Multispeak implements MessageListener {
         if (!currentMeterNumber.equalsIgnoreCase(newMeterNumber)) {
             DeviceMeterGroup deviceMeterGroup = ((MCTBase)yukonPaobject).getDeviceMeterGroup();
             deviceMeterGroup.setMeterNumber(newMeterNumber);
-            logString += " (MeterNumber - OLD:" + currentMeterNumber + " NEW:" + newMeterNumber + ").";
+            logString += "(MeterNo-" + currentMeterNumber + " to " + newMeterNumber + ");";
         }
 
         //Update Address
@@ -1421,7 +1421,7 @@ public class Multispeak implements MessageListener {
         if (!currentAddress.equalsIgnoreCase(newAddress)) {
             DeviceCarrierSettings deviceCarrierSettings = ((MCTBase)yukonPaobject).getDeviceCarrierSettings();
             deviceCarrierSettings.setAddress(Integer.valueOf(newAddress));
-            logString += " (Address - OLD:" + currentAddress + " NEW:" + newAddress + ").";
+            logString += "(Addr-" + currentAddress + " to " + newAddress + ");";
         }
         
         //Enable the meter
@@ -1429,7 +1429,7 @@ public class Multispeak implements MessageListener {
         //Update the meter
         dbPersistentDao.performDBChange(yukonPaobject, Transaction.UPDATE);
         logMSPActivity("MeterAddNotification",
-                       "MeterNumber(" + meter.getMeterNumber()+ ") - Meter Enabled; " + logString,
+                       "MeterNo(" + meter.getMeterNumber()+ ");Enabled;" + logString,
                        mspVendor.getCompanyName());
 
         changeDeviceType(mspMeter, meter, mspVendor, "MeterAddNotification");
