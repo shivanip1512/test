@@ -2214,6 +2214,14 @@ bool findRequestIDMatch(void *rid, PQUEUEENT d)
     return(d->Request == requestID);
 }
 
+bool findExpiredOutMessage(void *rid, PQUEUEENT d)
+{
+    CtiTime *now = (CtiTime*)rid;
+    OUTMESS *om = (OUTMESS*)d->Data;
+
+    return(om->ExpirationTime != 0 && om->ExpirationTime < now->seconds());
+}
+
 void cleanupOutMessages(void *unusedptr, void* d)
 {
     OUTMESS *OutMessage = (OUTMESS *)d;

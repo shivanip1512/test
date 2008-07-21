@@ -7,11 +7,17 @@
 * Author: Corey G. Plender
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.72 $
-* DATE         :  $Date: 2007/07/10 21:03:19 $
+* REVISION     :  $Revision: 1.73 $
+* DATE         :  $Date: 2008/07/21 20:38:26 $
 *
 * HISTORY      :
 * $Log: port_base.cpp,v $
+* Revision 1.73  2008/07/21 20:38:26  jotteson
+* YUK-4556 CCU queue backs up and returns no error when uninitialized
+* Added expiration functionality regardless of port's state.
+* Added 24 hour default expiration.
+* Modified Cancellation and Expiration to return error and update statistics.
+*
 * Revision 1.72  2007/07/10 21:03:19  mfisher
 * changed project identification to use new build labels (compileinfo_t)
 *
@@ -1727,13 +1733,21 @@ void CtiPort::addDeviceQueuedWork(long deviceID, int workCount)
         _criticalSection.acquire();
         if( (iter = _queuedWork.find(deviceID)) != _queuedWork.end() )
         {
-            iter->second = workCount;
+            if(workCount > 0)
+            {
+                iter->second = workCount;
+            }
         }
         else
         {
             if( workCount > 0 )
             {
                 map< LONG, int >::value_type insertVal(deviceID, workCount);
+                _queuedWork.insert(insertVal);
+            }
+            else if(workCount == -1) // -1 means I exist, but 0 count. This device is registering.
+            {
+                map< LONG, int >::value_type insertVal(deviceID, 0);
                 _queuedWork.insert(insertVal);
             }
         }

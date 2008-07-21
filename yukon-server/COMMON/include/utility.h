@@ -7,8 +7,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/common/INCLUDE/utility.h-arc  $
-* REVISION     :  $Revision: 1.48 $
-* DATE         :  $Date: 2008/07/08 22:56:58 $
+* REVISION     :  $Revision: 1.49 $
+* DATE         :  $Date: 2008/07/21 20:38:27 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -212,6 +212,7 @@ IM_EX_CTIBASE LONG    ResetBreakAlloc();
 
 IM_EX_CTIBASE bool findLPRequestEntries(void *om, PQUEUEENT d);
 IM_EX_CTIBASE bool findRequestIDMatch(void *rid, PQUEUEENT d);
+IM_EX_CTIBASE bool findExpiredOutMessage(void *rid, PQUEUEENT d);
 IM_EX_CTIBASE void cleanupOutMessages(void *unusedptr, void* d);
 
 IM_EX_CTIBASE string explainTags(const unsigned tags);

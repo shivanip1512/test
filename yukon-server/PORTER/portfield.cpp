@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.219 $
-* DATE         :  $Date: 2008/07/17 20:53:13 $
+* REVISION     :  $Revision: 1.220 $
+* DATE         :  $Date: 2008/07/21 20:38:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -103,6 +103,7 @@
 #include "dev_ied.h"
 #include "dev_schlum.h"
 #include "dev_remote.h"
+#include "device_queue_interface.h"
 #include "dev_kv2.h"
 #include "dev_mct.h"  //  for the test addresses
 #include "dev_sentinel.h"
@@ -181,7 +182,8 @@ static INT OutMessageRequeueOnExclusionFail(CtiPortSPtr &Port, OUTMESS *&OutMess
 CtiOutMessage *GetLGRippleGroupAreaBitMatch(CtiPortSPtr Port, CtiOutMessage *&OutMessage);
 BOOL searchFuncForRippleOutMessage(void *firstOM, void* om);
 bool processCommResult(INT CommResult, LONG DeviceID, LONG TargetID, bool RetryGTZero, CtiDeviceSPtr &Device);
-
+void getNextExpirationTime(LONG timesPerDay, CtiTime &time);
+UINT purgeExpiredQueueEntries(CtiPortSPtr port);
 
 //  we are Porter
 using namespace Cti;
@@ -193,7 +195,7 @@ VOID PortThread(void *pid)
 {
     INT            status;
 
-    CtiTime         nowTime;
+    CtiTime         nowTime, nextExpireTime;
     ULONG          i, j;
     ULONG          BytesWritten;
     INMESS         InMessage;
@@ -204,6 +206,7 @@ VOID PortThread(void *pid)
     LONG           portid = (LONG)pid;      // NASTY CAST HERE!!!
 
     bool           profiling = (portid == gConfigParms.getValueAsULong("PORTER_PORT_PROFILING"));
+    LONG           expirationRate = gConfigParms.getValueAsULong("QUEUE_EXPIRE_TIMES_PER_DAY", 0);
     DWORD          ticks;
 
     CtiDeviceSPtr  Device;
@@ -225,6 +228,8 @@ VOID PortThread(void *pid)
 
     // Let the threads get up and running....
     WaitForSingleObject(hPorterEvents[P_QUIT_EVENT], 2500L);
+
+    getNextExpirationTime(expirationRate, nextExpireTime);
 
     if( !Port )
     {
@@ -253,6 +258,18 @@ VOID PortThread(void *pid)
             {
                 PorterQuit = TRUE;
                 continue;
+            }
+
+            if( nowTime > nextExpireTime )
+            {
+                int entries = purgeExpiredQueueEntries(Port);
+                getNextExpirationTime(expirationRate, nextExpireTime);
+
+                if( entries > 0 )
+                {
+                    CtiLockGuard<CtiLogger> doubt_guard(dout);
+                    dout << CtiTime() << " Port "  << Port->getName() << " purged " << CtiNumStr(entries) << " expired OM's " << endl;
+                }
             }
 
             if( Port->isInhibited() )
@@ -4538,4 +4555,84 @@ bool isTimedOut( const CtiTime &start_time, const unsigned int &duration_seconds
 {
     CtiTime now;
     return now > start_time + duration_seconds;
+}
+
+//Returns the next time expiration should be checked. Expiration always occurs at
+//23:04:00.
+void getNextExpirationTime(LONG timesPerDay, CtiTime &time)
+{
+    CtiTime now;
+    LONG secondsBetweenExpiration = 24*60*60;//seconds in a day.
+    if( timesPerDay > 0 )
+    {
+        secondsBetweenExpiration = secondsBetweenExpiration/timesPerDay;
+        if( secondsBetweenExpiration <= 0 )
+        {
+            secondsBetweenExpiration = 1;
+        }
+    }
+
+    time = CtiTime(23, 04, 0); //The default is 11:04 PM
+
+    //We need to move our time back, once we are < now, add one time interval.
+    if( time > now )
+    {
+        while( time > now )
+        {
+            time.addSeconds(-1*secondsBetweenExpiration);
+        }
+
+        time.addSeconds(secondsBetweenExpiration);
+    }
+    else if( time <= now )
+    {
+        while( time <= now )
+        {
+            time.addSeconds(secondsBetweenExpiration);
+        }
+    }
+}
+
+UINT purgeExpiredQueueEntries(CtiPortSPtr port)
+{
+    extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
+
+    int entries = 0;
+    CtiDeviceSPtr tempDev;
+    CtiTime now;
+    Cti::DeviceQueueInterface *queueInterface;
+    if( port )
+    {
+        entries = CleanQueue(port->getPortQueueHandle(), (void *)&now, findExpiredOutMessage, cleanupOrphanOutMessages);
+
+        vector<long> queuedDevices = port->getQueuedWorkDevices();
+
+        vector<long>::iterator devIter;
+        for( devIter = queuedDevices.begin(); devIter!= queuedDevices.end(); devIter++ )
+        {
+            tempDev = DeviceManager.getEqual(*devIter);
+
+            if( tempDev )
+            {
+                queueInterface = tempDev->getDeviceQueueHandler();
+
+                if( queueInterface != NULL )
+                {
+                    list<void*> omList;
+                    queueInterface->retrieveQueueEntries(findExpiredOutMessage, (void *)&now, omList);
+                    entries += omList.size();
+                    list<void*>::iterator iter = omList.begin();
+                    for(; iter!= omList.end(); )
+                    {
+                        OUTMESS *tempOM = (OUTMESS *)*iter;
+                        tempOM->Request.MacroOffset = 0;//No resubmitting this request, it is dead!
+                        SendError( tempOM, ErrorQueuePurged );
+                        iter = omList.erase(omList.begin());
+                    }
+                }
+            }
+        }
+    }
+
+    return entries;
 }

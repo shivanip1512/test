@@ -1176,9 +1176,10 @@ IM_EX_CTIBASE INT SearchQueue (HCTIQUEUE     QueueHandle,
  *  Returns the number of purged queue entries.
  */
 IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
-                              void *ptr,
+                              void *findFuncPtr,
                               bool (*myFindFunc)(void*, PQUEUEENT),
-                              void (*myCleanFunc)(void*, void*))
+                              void (*myCleanFunc)(void*, void*),
+                              void *cleanFuncPtr)
 {
     INT purgecnt = 0;
     PQUEUEENT Entry;
@@ -1202,10 +1203,10 @@ IM_EX_CTIBASE INT CleanQueue( HCTIQUEUE QueueHandle,
                     Entry = Entry->Next;        // Hang on to the next guy, so we can continue;
                     try
                     {
-                        if( (*myFindFunc)(ptr, DeleteEntry) )
+                        if( (*myFindFunc)(findFuncPtr, DeleteEntry) )
                         {
                             purgecnt++;
-                            (*myCleanFunc)( ptr, DeleteEntry->Data);         // Call the cleanup function.  It better delete the data
+                            (*myCleanFunc)( cleanFuncPtr, DeleteEntry->Data);         // Call the cleanup function.  It better delete the data
                             RemoveQueueEntry(QueueHandle, DeleteEntry, Previous);     // No longer linked.
                         }
                         else

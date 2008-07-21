@@ -7,11 +7,17 @@
 * Author: Jess Otteson
 *
 * CVS KEYWORDS:
-* REVISION     :  $Revision: 1.6 $
-* DATE         :  $Date: 2008/07/17 20:51:52 $
+* REVISION     :  $Revision: 1.7 $
+* DATE         :  $Date: 2008/07/21 20:38:27 $
 *
 * HISTORY      :
 * $Log: systemmsgthread.cpp,v $
+* Revision 1.7  2008/07/21 20:38:27  jotteson
+* YUK-4556 CCU queue backs up and returns no error when uninitialized
+* Added expiration functionality regardless of port's state.
+* Added 24 hour default expiration.
+* Modified Cancellation and Expiration to return error and update statistics.
+*
 * Revision 1.6  2008/07/17 20:51:52  mfisher
 * YUK-6188 PIL to Porter group submission is very slow
 * Added readers/writer lock
@@ -56,6 +62,8 @@
 #include "systemmsgthread.h"
 #include "queues.h"
 #include "port_base.h"
+#include "portdecl.h"
+#include <list>
 
 static LARGE_INTEGER perfFrequency;
 using namespace std;
@@ -345,6 +353,8 @@ void SystemMsgThread::executeRequestCount(CtiRequestMsg *msg, CtiCommandParser &
 
 void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser &parse)
 {
+    extern void cleanupOrphanOutMessages(void *unusedptr, void* d);
+
     unsigned int entries = 0;
     string resultString;
     ULONG requestID = msg->OptionsField();
@@ -378,7 +388,7 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
                     if( port->getWorkCount(requestID) > 0 )
                     {
                         // Here we are trying to save the horrors of CleanQueue from being called without cause.
-                        entries += CleanQueue(port->getPortQueueHandle(), (void *)requestID, findRequestIDMatch, cleanupOutMessages);
+                        entries += CleanQueue(port->getPortQueueHandle(), (void *)requestID, findRequestIDMatch, cleanupOrphanOutMessages);
                     }
 
                     queuedDevices = port->getQueuedWorkDevices();
@@ -394,8 +404,17 @@ void SystemMsgThread::executeCancelRequest(CtiRequestMsg *msg, CtiCommandParser 
 
                             if( queueInterface != NULL )
                             {
-                                queueInterface->cancelRequest(requestID, count);
-                                entries += count;
+                                list<void*> omList;
+                                queueInterface->retrieveQueueEntries(findRequestIDMatch, (void *)requestID, omList);
+                                entries += omList.size();
+                                list<void*>::iterator iter = omList.begin();
+                                for(; iter!= omList.end(); )
+                                {
+                                    OUTMESS *tempOM = (OUTMESS *)*iter;
+                                    tempOM->Request.MacroOffset = 0;//No resubmitting this request, it is dead!
+                                    SendError( tempOM, ErrorQueuePurged );
+                                    iter = omList.erase(omList.begin());
+                                }
                             }
                         }
                     }

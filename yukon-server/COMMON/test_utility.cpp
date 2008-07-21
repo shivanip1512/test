@@ -1,13 +1,15 @@
 #define BOOST_AUTO_TEST_MAIN "Test utility.h"
 
+#include "yukon.h"
 #include <boost/test/auto_unit_test.hpp>
 #include <boost/test/unit_test.hpp>
+using boost::unit_test_framework::test_suite;
 
-#include "utility.h"
 #include <vector>
 #include <map>
-
-using boost::unit_test_framework::test_suite;
+#include "utility.h"
+#include "dsm2.h"
+#include "queues.h"
 
 struct test_wrapper
 {
@@ -143,3 +145,27 @@ BOOST_AUTO_UNIT_TEST(test_in_place_trim)
     BOOST_CHECK_EQUAL(test, "I am a right-justified string.");
 }
 
+BOOST_AUTO_UNIT_TEST(test_find_expired_om)
+{
+    QUEUEENT ent;
+    PQUEUEENT queEnt = &ent;
+    OUTMESS outMessage;
+    CtiTime futureTime, historicalTime, nowTime;
+
+    futureTime = nowTime;
+    historicalTime = nowTime;
+    futureTime.addSeconds(1);
+    historicalTime.addSeconds(-1);
+
+    queEnt->Data = (void *)&outMessage;
+    outMessage.ExpirationTime = 0;
+    BOOST_CHECK(!findExpiredOutMessage((void *)&nowTime, queEnt));
+    BOOST_CHECK(!findExpiredOutMessage((void *)&futureTime, queEnt));
+    BOOST_CHECK(!findExpiredOutMessage((void *)&historicalTime, queEnt));
+
+    outMessage.ExpirationTime = nowTime.seconds();
+    BOOST_CHECK(!findExpiredOutMessage((void *)&nowTime, queEnt));
+    //Future Time is greater than expiration, we are expired!
+    BOOST_CHECK(findExpiredOutMessage((void *)&futureTime, queEnt));
+    BOOST_CHECK(!findExpiredOutMessage((void *)&historicalTime, queEnt));
+}

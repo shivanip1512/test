@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive$
-* REVISION     :  $Revision: 1.58 $
-* DATE         :  $Date: 2008/07/17 20:52:15 $
+* REVISION     :  $Revision: 1.59 $
+* DATE         :  $Date: 2008/07/21 20:38:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -399,6 +399,8 @@ VOID ConnectionThread (VOID *Arg)
  *-----------------------------------------------------------------------------*/
 INT PorterEntryPoint(OUTMESS *&OutMessage)
 {
+    //Expiration default is 1 day.
+    static UINT defaultExpirationSeconds = gConfigParms.getValueAsULong("DEFAULT_EXPIRATION_SECONDS", 86400);
     INT status = NORMAL;
 
     if((status = ValidateOutMessage(OutMessage)) != NORMAL)
@@ -409,6 +411,11 @@ INT PorterEntryPoint(OUTMESS *&OutMessage)
     if((status = ValidatePort(OutMessage)) != NORMAL)
     {
         return status;
+    }
+
+    if(OutMessage->ExpirationTime == 0)
+    {
+        OutMessage->ExpirationTime = CtiTime().seconds() + defaultExpirationSeconds;
     }
 
 #if 0           // 20020611 CGP.. Thin kagain small man.

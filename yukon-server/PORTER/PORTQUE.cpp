@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/PORTQUE.cpp-arc  $
-* REVISION     :  $Revision: 1.64 $
-* DATE         :  $Date: 2008/07/17 20:53:14 $
+* REVISION     :  $Revision: 1.65 $
+* DATE         :  $Date: 2008/07/21 20:38:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2004,6 +2004,7 @@ void cleanupOrphanOutMessages(void *unusedptr, void* d)
         dout << CtiTime() << " OutMessage being cleaned up. " << endl;
     }
 
+    OutMessage->Request.MacroOffset = 0; //Do not resend this on macro route!
     SendError( OutMessage, ErrorQueuePurged );
     // delete OutMessage;
 

@@ -6,8 +6,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/PORTER/porter.cpp-arc  $
-* REVISION     :  $Revision: 1.122 $
-* DATE         :  $Date: 2008/07/17 20:53:13 $
+* REVISION     :  $Revision: 1.123 $
+* DATE         :  $Date: 2008/07/21 20:38:26 $
 *
 * Copyright (c) 1999, 2000, 2001 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -325,6 +325,19 @@ static void applyPortShares(const long unusedid, CtiPortSPtr ptPort, void *unuse
         {
             CtiLockGuard<CtiLogger> doubt_guard(dout);
             dout << CtiTime() << " Error initializing shared port for " << ptPort->getName() << endl;
+        }
+    }
+}
+
+static void applyQueuedDevicePortMatchup(const long unusedid, CtiDeviceSPtr RemoteDevice, void *portPtr)
+{
+    if(RemoteDevice->getDeviceQueueHandler() != NULL && portPtr != NULL)
+    {
+        CtiPortManager *portMgrPtr = (CtiPortManager*)portPtr;
+        CtiPortSPtr port = portMgrPtr->PortGetEqual(RemoteDevice->getPortID());
+        if(port)
+        {
+            port->addDeviceQueuedWork(RemoteDevice->getID(), -1);
         }
     }
 }
@@ -1505,10 +1518,10 @@ INT RefreshPorterRTDB(void *ptr)
             attachPointManagerToDevices(&DeviceManager, &PorterPointManager);
             ConfigManager.initialize(DeviceManager);
             DeviceManager.refreshGroupHierarchy();
+            DeviceManager.apply(applyQueuedDevicePortMatchup, &PortManager);
         }
         else
         {
-            CtiDeviceManager::coll_type::writer_lock_guard_t guard(DeviceManager.getLock());
             CtiDeviceSPtr pDev = DeviceManager.getEqual( chgid );
             if( pDev )
             {
@@ -1517,7 +1530,17 @@ INT RefreshPorterRTDB(void *ptr)
 
                 if( pDev->isGroup() ) //Doing this call here saves us a tiny bit of time! yay!
                 {
+                    CtiDeviceManager::coll_type::writer_lock_guard_t guard(DeviceManager.getLock());
                     DeviceManager.refreshGroupHierarchy(chgid);
+                }
+
+                if(pDev->getDeviceQueueHandler() != NULL)
+                {
+                    CtiPortSPtr port = PortManager.PortGetEqual(pDev->getPortID());
+                    if(port)
+                    {
+                        port->addDeviceQueuedWork(pDev->getID(), -1);
+                    }
                 }
 
                 if( pDev->getType() == TYPE_TAPTERM )
