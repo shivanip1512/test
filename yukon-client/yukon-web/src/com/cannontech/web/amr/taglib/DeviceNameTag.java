@@ -35,31 +35,37 @@ public class DeviceNameTag extends YukonTagSupport {
         
         String formattedName = null;
         if (deviceIdSet) {
-            
-            try {
-                Meter meter = meterDao.getForId(deviceId);
-                device = meter;
-                formattedName = meterDao.getFormattedDeviceName(meter);
-            } catch (NotFoundException e) {
-                // device is not a meter
-                try {
-                    LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
-                    formattedName = pao.getPaoName();
-                } catch (NotFoundException e1) {
-                    throw new JspException("deviceId: " + deviceId + " is not a valid deviceId", e1);
-                }
-            }
+            formattedName = getDeviceName(deviceId);
             
         } else {
-            deviceId = device.getDeviceId();
-            Meter meter = meterDao.getForYukonDevice(device);
-            formattedName = meterDao.getFormattedDeviceName(meter);
+            formattedName = getDeviceName(device.getDeviceId());
         }
 
         JspWriter out = getJspContext().getOut();
         out.print("<span class=\"deviceNameTagSpan\" title=\"deviceId: " + deviceId + "\">");
         out.print(formattedName);
         out.print("</span>");
+    }
+    
+    private String getDeviceName(int deviceId) throws JspException{
+        
+        String formattedName = null;
+        
+        try {
+            Meter meter = meterDao.getForId(deviceId);
+            device = meter;
+            formattedName = meterDao.getFormattedDeviceName(meter);
+        } catch (NotFoundException e) {
+            // device is not a meter
+            try {
+                LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
+                formattedName = pao.getPaoName();
+            } catch (NotFoundException e1) {
+                throw new JspException("deviceId: " + deviceId + " is not a valid deviceId", e1);
+            }
+        }
+        
+        return formattedName;
     }
     
     public int getDeviceId() {

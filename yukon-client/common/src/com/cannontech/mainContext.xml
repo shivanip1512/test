@@ -130,7 +130,9 @@
                <value>classpath:com/cannontech/yukon/common/device/bulk</value>
                <value>classpath:com/cannontech/yukon/common/device/commander</value>
                <value>classpath:com/cannontech/yukon/common/device/group</value>
-               <value>classpath:com/cannontech/yukon/common/device/routeLocate</value>
+               <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateHome</value>
+               <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateResults</value>
+               <value>classpath:com/cannontech/yukon/web/modules/amr/routeLocateSettings</value>
                <value>classpath:com/cannontech/yukon/web/deviceGroups</value>
                <value>classpath:com/cannontech/yukon/dr/appliance</value>
                <value>classpath:com/cannontech/yukon/dr/consumer</value>

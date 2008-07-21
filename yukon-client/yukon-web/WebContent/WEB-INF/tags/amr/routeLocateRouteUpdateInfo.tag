@@ -4,5 +4,5 @@
 <%@ attribute name="oldRouteName" required="false" type="java.lang.String"%>
 
 <div class="okGreen">
-    <cti:msg key="yukon.common.device.routeLocate.settings.updateInfo.newRouteName" /> ${newRouteName}
+    <cti:msg key="yukon.web.modules.amr.routeLocateSettings.updateInfo.newRouteName" /> ${newRouteName}
 </div>

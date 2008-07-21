@@ -148,6 +148,9 @@
         Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
     ]]></entry>
     <entry key="yukon.common.device.bulk.massChangeResults.progressLabel">Progress</entry>
+    <entry key="yukon.common.device.bulk.massChangeResults.inProgress">In Progress...</entry>
+    <entry key="yukon.common.device.bulk.massChangeResults.complete">Complete.</entry>
+    
     <entry key="yukon.common.device.bulk.massChangeResults.successLabel">Successfully Changed</entry>
     <entry key="yukon.common.device.bulk.massChangeResults.processingExceptionLabel">Failed To Change</entry>
     
@@ -267,6 +270,9 @@
         Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
     ]]></entry>
     <entry key="yukon.common.device.bulk.updateResults.progressLabel">Progress</entry>
+    <entry key="yukon.common.device.bulk.updateResults.inProgress">In Progress...</entry>
+    <entry key="yukon.common.device.bulk.updateResults.complete">Complete.</entry>
+    
     <entry key="yukon.common.device.bulk.updateResults.successLabel">Successfully Updated</entry>
     <entry key="yukon.common.device.bulk.updateResults.processingExceptionLabel">Failed To Update</entry>
     
@@ -362,7 +368,11 @@
     <entry key="yukon.common.device.bulk.importResults.noteText"><![CDATA[
         Progress is updated every 10 seconds. Processing will continue if you wish to navigate away from this page at any time.<br>You can return to this results page by following a link within the "Recent Bulk Operations" section of the main Bulk Operations page.
     ]]></entry>
+    
     <entry key="yukon.common.device.bulk.importResults.progressLabel">Progress</entry>
+    <entry key="yukon.common.device.bulk.importResults.inProgress">In Progress...</entry>
+    <entry key="yukon.common.device.bulk.importResults.complete">Complete.</entry>
+    
     <entry key="yukon.common.device.bulk.importResults.successLabel">Successfully Imported</entry>
     <entry key="yukon.common.device.bulk.importResults.processingExceptionLabel">Failed To Import</entry>
     
@@ -382,51 +392,5 @@
     <entry key="yukon.common.device.bulk.fileUpload.error.noFile">No file provided.</entry>
     <entry key="yukon.common.device.bulk.fileUpload.error.emptyFile">Empty file.</entry>
     <entry key="yukon.common.device.bulk.fileUpload.error.duplicateColumn">File contains multiple {0} columns.</entry>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    <!-- OLD - delete eventually -->
-    <!-- ******************************************************************************************************************** -->
-    <!-- ******************************************************************************************************************** -->
-    
-    <!-- Bulk actions -->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.DELETE_DEVICES">Delete Devices</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.DELETE_DEVICES.description">Delete Devices</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.CHANGE_TYPE">Change Device type</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.CHANGE_TYPE.description">Change type to {0}</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.UPDATE_ROUTE">Update Route</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.UPDATE_ROUTE.description">Update Route to {0}</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.ENABLE_DISABLE_DEVICES">Enable/Disable Devices</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.ENABLE_DISABLE_DEVICES.description">{0} Devices</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.EDIT_DEVICES">Edit Devices</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.EDIT_DEVICES.description">Manual Device Edit</entry>-->
-    
-    <!--  bulkActions.jsp -->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.title">Bulk Actions</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.selectType">Select the new type for the devices:</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.selectRoute">Select the new route for the devices:</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.enableDisable">Choose whether to enable or disable the devices:</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.enable">Enable</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.disable">Disable</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.bulkAction.doAction">Do Action</entry>-->
-    
-    <!--  currentBulkProcesses.jsp -->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.title">Current Bulk Processes</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.action">Process description</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.collection">Objects being processed</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.user">User</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.start">Started</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.total">Total</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.success">Successful</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.fail">Unsuccessful</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.complete">Complete</entry>-->
-    <!-- <entry key="yukon.common.device.bulk.currentBulkProcesses.remove">Remove Result</entry>-->
-    
     
 </properties>

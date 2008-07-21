@@ -4,9 +4,9 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr" %>
 
-<cti:msg var="pageTitle" key="yukon.common.device.routeLocate.settings.pageTitle"/>
+<cti:msg var="pageTitle" key="yukon.web.modules.amr.routeLocateSettings.pageTitle"/>
 
-<cti:standardPage title="${pageTitle}" module="amr">
+<cti:standardPage page="routeLocateSettings" module="amr">
 
     <cti:standardMenu menuSelection="" />
     
@@ -32,14 +32,14 @@
         <c:url var="routeLocateHomeUrl" value="/spring/csr/routeLocate/home">
             <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
         </c:url>
-        <cti:msg var="routeLocateHomePageTitle" key="yukon.common.device.routeLocate.home.pageTitle"/>
+        <cti:msg var="routeLocateHomePageTitle" key="yukon.web.modules.amr.routeLocateHome.pageTitle"/>
         <cti:crumbLink url="${routeLocateHomeUrl}" title="${routeLocateHomePageTitle}" />
         
         <%-- results --%>
         <c:url var="routeLocateResultsUrl" value="/spring/csr/routeLocate/results">
             <c:param name="resultId" value="${resultId}" />
         </c:url>
-        <cti:msg var="routeLocateResultsPageTitle" key="yukon.common.device.routeLocate.results.pageTitle"/>
+        <cti:msg var="routeLocateResultsPageTitle" key="yukon.web.modules.amr.routeLocateResults.pageTitle"/>
         <cti:crumbLink url="${routeLocateResultsUrl}" title="${routeLocateResultsPageTitle}" />
         
         <%-- settings --%>
@@ -72,13 +72,13 @@
     
     <div style="padding-left:12px;">
 
-    <cti:msg var="boxTitle" key="yukon.common.device.routeLocate.settings.boxTitle"/>
+    <cti:msg var="boxTitle" key="yukon.web.modules.amr.routeLocateSettings.boxTitle"/>
         
     <%-- misc table text --%>
-    <cti:msg var="updateButtonText" key="yukon.common.device.routeLocate.settings.tableText.updateButtonText" />
-    <cti:msg var="noRouteFound" key="yukon.common.device.routeLocate.settings.tableText.noRouteFound" />
-    <cti:msg var="currentRoute" key="yukon.common.device.routeLocate.settings.tableText.currentRoute" />
-    <cti:msg var="hasNoRoute" key="yukon.common.device.routeLocate.settings.tableText.hasNoRoute" />
+    <cti:msg var="updateButtonText" key="yukon.web.modules.amr.routeLocateSettings.tableText.updateButtonText" />
+    <cti:msg var="noRouteFound" key="yukon.web.modules.amr.routeLocateSettings.tableText.noRouteFound" />
+    <cti:msg var="currentRoute" key="yukon.web.modules.amr.routeLocateSettings.tableText.currentRoute" />
+    <cti:msg var="hasNoRoute" key="yukon.web.modules.amr.routeLocateSettings.tableText.hasNoRoute" />
     
     <%-- FOUND ROUTES TABLE --%>
     <table>
@@ -86,7 +86,7 @@
             <td style="padding-right:16px;"><h3 >Found Routes</h3></td>
             <td>
                 <c:if test="${fn:length(foundRoutes) > 0}">
-                    <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.routeLocate.results.collectionActionOnDevicesLabel" class="small">
+                    <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocate.results.collectionActionOnDevicesLabel" class="small">
                         <cti:mapParam value="${result.successDeviceCollection.collectionParameters}"/>
                     </cti:link>
                     <tags:selectedDevicesPopup deviceCollection="${result.successDeviceCollection}" />
@@ -99,10 +99,10 @@
     
         <%-- found routes header --%>
         <tr>
-            <th><cti:msg key="yukon.common.device.routeLocate.settings.tableHeader.deviceName" /></th>
-            <th><cti:msg key="yukon.common.device.routeLocate.settings.tableHeader.currentRoute" /></th>
-            <th><cti:msg key="yukon.common.device.routeLocate.settings.tableHeader.foundOnRoute" /></th>
-            <th><cti:msg key="yukon.common.device.routeLocate.settings.tableHeader.update" /></th>
+            <th><cti:msg key="yukon.web.modules.amr.routeLocateSettings.tableHeader.deviceName" /></th>
+            <th><cti:msg key="yukon.web.modules.amr.routeLocateSettings.tableHeader.currentRoute" /></th>
+            <th><cti:msg key="yukon.web.modules.amr.routeLocateSettings.tableHeader.foundOnRoute" /></th>
+            <th><cti:msg key="yukon.web.modules.amr.routeLocateSettings.tableHeader.update" /></th>
         </tr>
         
         <c:if test="${fn:length(foundRoutes) < 1}">
@@ -163,7 +163,7 @@
             <td style="padding-right:16px;"><h3 >Not Found</h3></td>
             <td>
                 <c:if test="${fn:length(notFoundRoutes) > 0}">
-                    <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.routeLocate.results.collectionActionOnDevicesLabel" class="small">
+                    <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocate.results.collectionActionOnDevicesLabel" class="small">
                         <cti:mapParam value="${result.failureDeviceCollection.collectionParameters}"/>
                     </cti:link>
                     <tags:selectedDevicesPopup deviceCollection="${result.failureDeviceCollection}" />
@@ -176,8 +176,8 @@
     
         <%-- found routes header --%>
         <tr>
-            <th><cti:msg key="yukon.common.device.routeLocate.settings.tableHeader.deviceName" /></th>
-            <th><cti:msg key="yukon.common.device.routeLocate.settings.tableHeader.currentRoute" /></th>
+            <th><cti:msg key="yukon.web.modules.amr.routeLocateSettings.tableHeader.deviceName" /></th>
+            <th><cti:msg key="yukon.web.modules.amr.routeLocateSettings.tableHeader.currentRoute" /></th>
         </tr>
         
         <c:if test="${fn:length(notFoundRoutes) < 1}">

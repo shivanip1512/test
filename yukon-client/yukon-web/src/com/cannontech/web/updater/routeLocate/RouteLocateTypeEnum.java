@@ -2,39 +2,34 @@ package com.cannontech.web.updater.routeLocate;
 
 import com.cannontech.common.device.routeLocate.RouteLocateResult;
 import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.web.updater.ResultAccessor;
 
 
 public enum RouteLocateTypeEnum {
 
-    COMPLETED_COUNT(new RouteLocateValueAccessor() {
+    COMPLETED_COUNT(new ResultAccessor<RouteLocateResult>() {
         public Object getValue(RouteLocateResult routeLocateResult) {
             return routeLocateResult.getCompletedDeviceRouteLocations().size();
         }
     }),
     
-    LOCATED_COUNT(new RouteLocateValueAccessor() {
+    LOCATED_COUNT(new ResultAccessor<RouteLocateResult>() {
         public Object getValue(RouteLocateResult routeLocateResult) {
             return routeLocateResult.getLocatedCount();
         }
     }),
     
-    NOT_FOUND_COUNT(new RouteLocateValueAccessor() {
+    NOT_FOUND_COUNT(new ResultAccessor<RouteLocateResult>() {
         public Object getValue(RouteLocateResult routeLocateResult) {
             return routeLocateResult.getNotFoundCount();
         }
     }),
     
-    START_TIME(new RouteLocateValueAccessor() {
-        public Object getValue(RouteLocateResult routeLocateResult) {
-            return routeLocateResult.getStartTime();
-        }
-    }),
-    
-    STOP_TIME(new RouteLocateValueAccessor() {
+    STOP_TIME(new ResultAccessor<RouteLocateResult>() {
         public Object getValue(RouteLocateResult routeLocateResult) {
             
             
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.routeLocate.home.recentRouteLocateResults.STOP_TIME");
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.STOP_TIME");
             resolvableTemplate.addData("stopTime", routeLocateResult.getStopTime());
             
             boolean finished = false;
@@ -47,10 +42,10 @@ public enum RouteLocateTypeEnum {
         }
     }),
     
-    IS_COMPLETE(new RouteLocateValueAccessor() {
+    IS_COMPLETE(new ResultAccessor<RouteLocateResult>() {
         public Object getValue(RouteLocateResult routeLocateResult) {
             
-            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.routeLocate.home.recentRouteLocateResults.IS_COMPLETE");
+            ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.IS_COMPLETE");
             resolvableTemplate.addData("isComplete", routeLocateResult.isComplete());
             
             return resolvableTemplate;
@@ -59,9 +54,9 @@ public enum RouteLocateTypeEnum {
     
     ;
     
-    private RouteLocateValueAccessor routeLocateValueAccessor;
+    private ResultAccessor<RouteLocateResult> routeLocateValueAccessor;
     
-    RouteLocateTypeEnum(RouteLocateValueAccessor routeLocateValueAccessor) {
+    RouteLocateTypeEnum(ResultAccessor<RouteLocateResult> routeLocateValueAccessor) {
 
         this.routeLocateValueAccessor = routeLocateValueAccessor;
     }

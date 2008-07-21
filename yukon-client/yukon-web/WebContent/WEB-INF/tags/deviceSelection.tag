@@ -1,6 +1,7 @@
 <%@ tag  dynamic-attributes="extraInputs" %>
 <%@ attribute name="action" required="true" type="java.lang.String"%>
 <%@ attribute name="groupDataJson" required="true" type="java.lang.String"%>
+<%@ attribute name="pickerConstraint" required="false" type="java.lang.String"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
@@ -76,7 +77,7 @@
             </form>
             
             <cti:msg var="selectDevicesLabel" key="yukon.common.device.bulk.deviceSelection.selectDevices" />
-            <cti:multiPaoPicker paoIdField="deviceIds" finalTriggerAction="selectDevices" selectionLinkName="Select Devices" asButton="true">${selectDevicesLabel}</cti:multiPaoPicker>
+            <cti:multiPaoPicker constraint="${pickerConstraint}" paoIdField="deviceIds" finalTriggerAction="selectDevices" selectionLinkName="Select Devices" asButton="true">${selectDevicesLabel}</cti:multiPaoPicker>
         </td>
         
         <td>

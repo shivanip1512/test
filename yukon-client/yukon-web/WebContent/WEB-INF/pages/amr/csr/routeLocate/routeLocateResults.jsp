@@ -2,9 +2,9 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:msg var="pageTitle" key="yukon.common.device.routeLocate.results.pageTitle"/>
+<cti:msg var="pageTitle" key="yukon.web.modules.amr.routeLocateResults.pageTitle"/>
 
-<cti:standardPage title="${pageTitle}" module="amr">
+<cti:standardPage page="routeLocateResults" module="amr">
 
     <cti:standardMenu menuSelection="" />
     
@@ -30,7 +30,7 @@
         <c:url var="routeLocateHomeUrl" value="/spring/csr/routeLocate/home">
             <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
         </c:url>
-        <cti:msg var="routeLocateHomePageTitle" key="yukon.common.device.routeLocate.home.pageTitle"/>
+        <cti:msg var="routeLocateHomePageTitle" key="yukon.web.modules.amr.routeLocateHome.pageTitle"/>
         <cti:crumbLink url="${routeLocateHomeUrl}" title="${routeLocateHomePageTitle}" />
         
         <%-- results --%>
@@ -40,34 +40,12 @@
     
     <script type="text/javascript">
     
-        function updateProgress(deviceCount) {
-    
-            return function(data) {
-            
-                var completedCount = data['completedCount'];
-                
-                // update progress bar
-                var percentDone = Math.round((completedCount / deviceCount) * 100);
-                if (deviceCount == 0) {
-                    percentDone = 100;
-                }
-                
-                $('completedCount').innerHTML = completedCount; 
-                $('progressInner').style.width = percentDone + 'px';
-                $('percentComplete').innerHTML = percentDone + '%';  
-                
-                if (completedCount < deviceCount) {
-                    $('progressDescription').innerHTML = 'Running...   ';
-                }
-                else {
-                    $('progressDescription').innerHTML = 'Complete.   ';
-                }
-                
-                // enable set routes button?
-                if (percentDone == 100) {
+        function enableButton(deviceCount, totalCount) {
+            if (deviceCount == totalCount) {
+                try {
                     $('setViewRoutesButton').disabled = false;
-                }
-            };
+                } catch(e) {}
+            }
         }
         
         function slowInput(buttonObj) {
@@ -83,20 +61,48 @@
 
     <c:choose>
         <c:when test="${result.autoUpdateRoute}">
-            <c:set var="noteTextKey" value="yukon.common.device.routeLocate.results.noteTextAutoSetEnabled"/>
+            <c:set var="noteTextKey" value="yukon.web.modules.amr.routeLocateResults.noteTextAutoSetEnabled"/>
         </c:when>
         <c:otherwise>
-            <c:set var="noteTextKey" value="yukon.common.device.routeLocate.results.noteTextAutoSetDisabled"/>
+            <c:set var="noteTextKey" value="yukon.web.modules.amr.routeLocateResults.noteTextAutoSetDisabled"/>
         </c:otherwise>
     </c:choose>
-    <tags:bulkActionContainer titleKey="yukon.common.device.routeLocate.results.boxTitle"
-                                noteLabelKey="yukon.common.device.routeLocate.results.noteLabel"
+    <tags:bulkActionContainer titleKey="yukon.web.modules.amr.routeLocateResults.boxTitle"
+                                noteLabelKey="yukon.web.modules.amr.routeLocateResults.noteLabel"
                                 noteTextKey="${noteTextKey}"
                                 deviceCollection="${result.deviceCollection}">
         
         
-        <%-- PROGRESS --%>
-        <span class="normalBoldLabel"><cti:msg key="yukon.common.device.routeLocate.results.progressLabel" />:</span>
+        
+        <tags:bulkResultProgress labelKey="yukon.web.modules.amr.routeLocateResults.progressLabel" 
+                                inProgressKey="yukon.web.modules.amr.routeLocateResults.inProgress" 
+                                completeKey="yukon.web.modules.amr.routeLocateResults.complete"
+                                totalCount="${deviceCount}" 
+                                updateKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT"
+                                updateCallback="enableButton">
+                                
+            <%-- set/view routes --%>
+            <br>
+            <form action="<c:url value="/spring/csr/routeLocate/routeSettings" />" method="get">
+                <input type="hidden" name="resultId" value="${resultId}">
+                
+                <c:choose>
+                    <c:when test="${result.autoUpdateRoute}">
+                        <cti:msg var="viewRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.viewRoutesButtonLabel" />
+                        <input type="submit" id="setViewRoutesButton" value="${viewRoutesButtonLabel}" onclick="slowInput(this);" <c:if test="${not result.complete}">disabled</c:if>>
+                    </c:when>
+                    <c:otherwise>
+                        <cti:msg var="setRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonLabel" />
+                        <input type="submit" id="setViewRoutesButton" value="${setRoutesButtonLabel}" onclick="slowInput(this);" <c:if test="${not result.complete}">disabled</c:if>>
+                    </c:otherwise>
+                </c:choose>
+                <img id="waitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
+            </form>
+                                
+        </tags:bulkResultProgress>
+        
+        <%-- PROGRESS 
+        <span class="normalBoldLabel"><cti:msg key="yukon.web.modules.amr.routeLocateResults.progressLabel" />:</span>
         
         <span id="progressDescription"></span>
                 
@@ -118,18 +124,17 @@
                 </tr>
             </table>
             
-            <%-- set/view routes --%>
             <br>
             <form action="<c:url value="/spring/csr/routeLocate/routeSettings" />" method="get">
                 <input type="hidden" name="resultId" value="${resultId}">
                 
                 <c:choose>
                     <c:when test="${result.autoUpdateRoute}">
-                        <cti:msg var="viewRoutesButtonLabel" key="yukon.common.device.routeLocate.results.viewRoutesButtonLabel" />
+                        <cti:msg var="viewRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.viewRoutesButtonLabel" />
                         <input type="submit" id="setViewRoutesButton" value="${viewRoutesButtonLabel}" onclick="slowInput(this);" disabled>
                     </c:when>
                     <c:otherwise>
-                        <cti:msg var="setRoutesButtonLabel" key="yukon.common.device.routeLocate.results.setRoutesButtonLabel" />
+                        <cti:msg var="setRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonLabel" />
                         <input type="submit" id="setViewRoutesButton" value="${setRoutesButtonLabel}" onclick="slowInput(this);" disabled>
                     </c:otherwise>
                 </c:choose>
@@ -137,19 +142,19 @@
             </form>
             
         </div>
-        
+        --%>
         
         
         
         
         <%-- SUCCESS --%>
         <br>
-        <div class="normalBoldLabel"><cti:msg key="yukon.common.device.routeLocate.results.successLabel" />: <span class="okGreen"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/LOCATED_COUNT"/></span></div>
+        <div class="normalBoldLabel"><cti:msg key="yukon.web.modules.amr.routeLocateResults.successLabel" />: <span class="okGreen"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/LOCATED_COUNT"/></span></div>
         
         <div style="padding:10px;">
         
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.routeLocate.results.collectionActionOnDevicesLabel" class="small">
+            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${result.successDeviceCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.successDeviceCollection}" />
@@ -159,12 +164,12 @@
         
         <%-- FAILURE --%>
         <br>
-        <div class="normalBoldLabel"><cti:msg key="yukon.common.device.routeLocate.results.failureLabel" />: <span class="errorRed"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/NOT_FOUND_COUNT"/></span></div>
+        <div class="normalBoldLabel"><cti:msg key="yukon.web.modules.amr.routeLocateResults.failureLabel" />: <span class="errorRed"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/NOT_FOUND_COUNT"/></span></div>
         
         <div style="padding:10px;">
         
             <%-- device collection action --%>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.routeLocate.results.collectionActionOnDevicesLabel" class="small">
+            <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel" class="small">
                 <cti:mapParam value="${result.failureDeviceCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.failureDeviceCollection}" />
@@ -172,8 +177,5 @@
         </div>
                     
     </tags:bulkActionContainer>
-    
-    <%-- DATA UPDATER --%>
-    <cti:dataUpdaterCallback function="updateProgress(${deviceCount})" initialize="true" completedCount="ROUTELOCATE/${resultId}/COMPLETED_COUNT" />
     
  </cti:standardPage>

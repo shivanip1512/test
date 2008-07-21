@@ -8,47 +8,21 @@
 
     <cti:standardMenu menuSelection="devicegroups|commander"/>
 
-	<%-- BREAD CRUMBS --%>
-	<cti:breadCrumbs>
+    <%-- BREAD CRUMBS --%>
+    <cti:breadCrumbs>
     
-	    <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
+        <cti:crumbLink url="/operator/Operations.jsp" title="Operations Home" />
         
         <%-- commander from location --%>
         <cti:crumbLink url="/spring/group/commander/resultList" title="All Results" />
         
         <%-- this result --%>
-	    &gt; Command Executing
-	
+        &gt; Command Executing
+    
     </cti:breadCrumbs>
     
     <script type="text/javascript">
         
-        function updateProgress(totalItems) {
-    
-            return function(data) {
-            
-                var completedItems = data['completedItems'];
-                
-                var percentDone = Math.round((completedItems / totalItems) * 100);
-                if (totalItems == 0) {
-                    percentDone = 100;
-                }
-                
-                $('completedItems${result.key}').innerHTML = data['completedItems']; 
-                
-                $('progressInner${result.key}').style.width = percentDone + 'px';
-                $('percentComplete${result.key}').innerHTML = percentDone + '%';  
-                
-                if (completedItems < totalItems) {
-                    $('progressDescription${result.key}').innerHTML = 'In Progress...   ';
-                }
-                else {
-                    $('progressDescription${result.key}').innerHTML = 'Complete.   ';
-                }
-    
-            };
-        }
-    
         function refreshResults(kind, theDiv) {
 
             if (theDiv.visible()) {
@@ -96,44 +70,29 @@
         </table>
 
         <%-- PROGRESS --%>
-        <span class="normalBoldLabel">Progress: </span><span id="progressDescription${result.key}">In Progress...</span>
-        
-        <div style="padding:10px;">
-            <table cellpadding="0px" border="0px">
-                <tr>
-                    <td>
-                        <div id="progressBorder${result.key}" style="height:12px; width:100px; border:1px solid black; padding:0px; background-color:#CCCCCC;" align="left">
-                            <div id="progressInner${result.key}" style="height: 10px; width: 0px; padding:1px; overflow:hidden; background-color:#006633; ">
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span id="percentComplete${result.key}" style="padding-left:6px;padding-right:10px;display:inline;font-size:11px;">0%</span>
-                    </td>
-                    <td>
-                        <span style="font-size:11px;display:inline;"><span id="completedItems${result.key}"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/COMPLETED_ITEMS"/></span>/${result.deviceCollection.deviceCount}</span>
-                    </td>
-                </tr>
-            </table>
-            
+        <tags:bulkResultProgress labelKey="yukon.common.device.commander.results.progressLabel" 
+                                inProgressKey="yukon.common.device.commander.results.inProgress" 
+                                completeKey="yukon.common.device.commander.results.complete"
+                                totalCount="${result.deviceCollection.deviceCount}" 
+                                updateKey="COMMANDER/${result.key}/COMPLETED_ITEMS">
+                                
             <%-- device collection action --%>
             <br>
             <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
                 <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
-           
-        </div>
-    
-    
+                                
+        </tags:bulkResultProgress>
+        
         <%-- SUCCESS --%>
         <br>
         <div class="normalBoldLabel">Successfully Executed: <span style="color:#006633;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span></div>
         
-    	<div style="padding:10px;">
+        <div style="padding:10px;">
         
-    	   <%-- device collection action --%>
-           <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
+            <%-- device collection action --%>
+            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
                 <cti:mapParam value="${result.successCollection.collectionParameters}"/>
             </cti:link>
             <tags:selectedDevicesPopup deviceCollection="${result.successCollection}" />
@@ -157,6 +116,7 @@
             <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
                 <cti:mapParam value="${result.failureCollection.collectionParameters}"/>
             </cti:link>
+            <tags:selectedDevicesPopup deviceCollection="${result.failureCollection}" />
             
             <%-- errors list --%>
             <div style="height:8px;"></div>
@@ -168,7 +128,6 @@
         </jsp:body>
         
     </tags:boxContainer>
-	
-    <cti:dataUpdaterCallback function="updateProgress(${result.deviceCollection.deviceCount})" initialize="true" completedItems="COMMANDER/${result.key}/COMPLETED_ITEMS" />
+    
     
 </cti:standardPage>

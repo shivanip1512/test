@@ -499,19 +499,32 @@
         <property name="formattingService" ref="capBankFormattingService"/>
     </bean>
     
-    <bean id="bulkResultBackingService" class="com.cannontech.web.updater.bulk.BulkResultBackingService">
-        <property name="recentBulkOperationResultsCache" ref="recentBulkOperationResultsCache" />
-        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
-        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
-    </bean>
+    
+    
+    
+    
+    
     
     <bean id="routeLocateBackingService" class="com.cannontech.web.updater.routeLocate.RouteLocateBackingService">
-        <property name="routeLocateResultsCache" ref="routeLocateResultsCache" />
         <property name="templateProcessorFactory" ref="templateProcessorFactory" />
         <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="resultsCache" ref="routeLocateResultsCache" />
     </bean>
     
-    <bean id="commanderUpdateBackingService" class="com.cannontech.web.updater.commander.GroupCommandResultBackingService"/>
+    <bean id="commanderUpdateBackingService" class="com.cannontech.web.updater.commander.GroupCommandResultBackingService">
+        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="groupCommandExecutor" ref="groupCommandExecutor" />
+    </bean>
+    
+    <bean id="bulkResultBackingService" class="com.cannontech.web.updater.bulk.BulkResultBackingService">
+        <property name="templateProcessorFactory" ref="templateProcessorFactory" />
+        <property name="messageSourceResolver" ref="yukonUserContextMessageSourceResolver" />
+        <property name="resultsCache" ref="recentBulkOperationResultsCache" />
+    </bean>
+    
+    
+    
     
     <bean id="abstractFormattingService" class="com.cannontech.web.updater.capcontrol.AbstractFormattingService"
           abstract="true">

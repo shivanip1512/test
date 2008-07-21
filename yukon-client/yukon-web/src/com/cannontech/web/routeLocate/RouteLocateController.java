@@ -178,12 +178,6 @@ public class RouteLocateController extends BulkControllerBase {
             }
         }
         
-        List<List<DeviceRouteLocation>> deviceLists = new ArrayList<List<DeviceRouteLocation>>();
-        deviceLists.add(foundRoutes);
-        deviceLists.add(notFoundRoutes);
-        
-        mav.addObject("deviceLists", deviceLists);
-        
         mav.addObject("foundRoutes", foundRoutes);
         mav.addObject("notFoundRoutes", notFoundRoutes);
         

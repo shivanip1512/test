@@ -3,9 +3,9 @@
 <%@ taglib prefix="amr" tagdir="/WEB-INF/tags/amr"%>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags"%>
 
-<cti:msg var="pageTitle" key="yukon.common.device.routeLocate.home.pageTitle" />
+<cti:msg var="pageTitle" key="yukon.web.modules.amr.routeLocateHome.pageTitle" />
 
-<cti:standardPage title="${pageTitle}" module="amr">
+<cti:standardPage page="routeLocateHome" module="amr">
 
     <cti:standardMenu menuSelection="" />
     
@@ -40,9 +40,9 @@
     <h2>${pageTitle}</h2>
     <br>
                 
-    <tags:bulkActionContainer   titleKey="yukon.common.device.routeLocate.home.boxTitle" 
-                                noteLabelKey="yukon.common.device.routeLocate.home.noteLabel"
-                                noteTextKey="yukon.common.device.routeLocate.home.noteText"
+    <tags:bulkActionContainer   titleKey="yukon.web.modules.amr.routeLocateHome.boxTitle" 
+                                noteLabelKey="yukon.web.modules.amr.routeLocateHome.noteLabel"
+                                noteTextKey="yukon.web.modules.amr.routeLocateHome.noteText"
                                 deviceCollection="${deviceCollection}">
         
         <%-- ERROR MSG --%>
@@ -56,7 +56,7 @@
             <cti:deviceCollection deviceCollection="${deviceCollection}" />
             
             <%-- AUTO UPDATE OPTION --%>
-            <label><input type="checkbox" name="autoUpdateRoute" <c:if test="${autoUpdateRoute}">checked</c:if>> <cti:msg key="yukon.common.device.routeLocate.home.autoUpdateRouteText"/></label><br>
+            <label><input type="checkbox" name="autoUpdateRoute" <c:if test="${autoUpdateRoute}">checked</c:if>> <cti:msg key="yukon.web.modules.amr.routeLocateHome.autoUpdateRouteText"/></label><br>
             <br>
                     
             <%-- ROUTE OPTIONS --%>
@@ -72,7 +72,7 @@
             
             <%-- LOCATE BUTTON --%>
             <br><br>
-            <cti:msg var="locateButtonLabel" key="yukon.common.device.routeLocate.home.locateButton"/>
+            <cti:msg var="locateButtonLabel" key="yukon.web.modules.amr.routeLocateHome.locateButton"/>
             <tags:slowInput myFormId="executeLocateForm" labelBusy="${locateButtonLabel}" label="${locateButtonLabel}" />
     
         </form>
@@ -83,20 +83,20 @@
     <c:if test="${not empty routeLocateResultsList}">
     
         <br>
-        <cti:msg var="recentRouteLocateOperationsHeaderTitle" key="yukon.common.device.routeLocate.home.recentRouteLocateResults.header"/>
+        <cti:msg var="recentRouteLocateOperationsHeaderTitle" key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.header"/>
         <tags:boxContainer title="${recentRouteLocateOperationsHeaderTitle}" id="recentRouteLocateOperationsContainer" hideEnabled="false">
         
-            <cti:msg var="performNewActionLinkTitle" key="yukon.common.device.routeLocate.home.recentRouteLocateResults.performNewActionLinkTitle"/>
+            <cti:msg var="performNewActionLinkTitle" key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.performNewActionLinkTitle"/>
             
             <div style="width:75%">
             <table class="compactResultsTable" style="vertial-align:bottom;border-width:40px;">
     
                 <tr>
-                    <th><cti:msg key="yukon.common.device.routeLocate.home.recentRouteLocateResults.updateTime"/></th>
-                    <th style="text-align:right;"><cti:msg key="yukon.common.device.routeLocate.home.recentRouteLocateResults.located"/></th>
-                    <th style="text-align:right;"><cti:msg key="yukon.common.device.routeLocate.home.recentRouteLocateResults.notLocated"/></th>
-                    <th style="text-align:right;"><cti:msg key="yukon.common.device.routeLocate.home.recentRouteLocateResults.resultsDetail"/></th>
-                    <th style="text-align:right;"><cti:msg key="yukon.common.device.routeLocate.home.recentRouteLocateResults.status"/></th>
+                    <th><cti:msg key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.updateTime"/></th>
+                    <th style="text-align:right;"><cti:msg key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.located"/></th>
+                    <th style="text-align:right;"><cti:msg key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.notLocated"/></th>
+                    <th style="text-align:right;"><cti:msg key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.resultsDetail"/></th>
+                    <th style="text-align:right;"><cti:msg key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.status"/></th>
                 </tr>
             
                 <c:forEach var="b" items="${routeLocateResultsList}" varStatus="resultStatus">
@@ -145,7 +145,7 @@
                         </c:url>
                 
                         <td align="right">
-                            <a href="${resultDetailUrl}"><cti:msg key="yukon.common.device.routeLocate.home.recentRouteLocateResults.detailLink"/></a>
+                            <a href="${resultDetailUrl}"><cti:msg key="yukon.web.modules.amr.routeLocateHome.recentRouteLocateResults.detailLink"/></a>
                         </td>
                         
                         <%-- COMPLETE? --%>

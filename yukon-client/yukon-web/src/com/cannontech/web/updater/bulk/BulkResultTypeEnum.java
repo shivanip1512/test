@@ -2,30 +2,31 @@ package com.cannontech.web.updater.bulk;
 
 import com.cannontech.common.bulk.service.BulkOperationCallbackResults;
 import com.cannontech.common.util.ResolvableTemplate;
+import com.cannontech.web.updater.ResultAccessor;
 
 
 public enum BulkResultTypeEnum {
 
-    SUCCESS_COUNT(new BulkResultValueAccessor() {
+    SUCCESS_COUNT(new ResultAccessor<BulkOperationCallbackResults<?>>() {
         public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             return bulkOperationCallbackResults.getSuccessCount();
         }
     }),
     
-    PROCESSING_EXCEPTION_COUNT(new BulkResultValueAccessor() {
+    PROCESSING_EXCEPTION_COUNT(new ResultAccessor<BulkOperationCallbackResults<?>>() {
         public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             return bulkOperationCallbackResults.getProcessingExceptionCount();
         }
     }),
     
-    COMPLETED_LINES(new BulkResultValueAccessor() {
+    COMPLETED_LINES(new ResultAccessor<BulkOperationCallbackResults<?>>() {
         public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             
             return (bulkOperationCallbackResults.getSuccessCount() + bulkOperationCallbackResults.getProcessingExceptionCount());
         }
     }),
     
-    STOP_TIME(new BulkResultValueAccessor() {
+    STOP_TIME(new ResultAccessor<BulkOperationCallbackResults<?>>() {
         public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             
             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.STOP_TIME");
@@ -41,7 +42,7 @@ public enum BulkResultTypeEnum {
         }
     }),
     
-    IS_COMPLETE(new BulkResultValueAccessor() {
+    IS_COMPLETE(new ResultAccessor<BulkOperationCallbackResults<?>>() {
         public Object getValue(BulkOperationCallbackResults<?> bulkOperationCallbackResults) {
             
             ResolvableTemplate resolvableTemplate = new ResolvableTemplate("yukon.common.device.bulk.bulkHome.recentBulkOperations.IS_COMPLETE");
@@ -53,9 +54,9 @@ public enum BulkResultTypeEnum {
     
     ;
     
-    private BulkResultValueAccessor bulkResultValueAccessor;
+    private ResultAccessor<BulkOperationCallbackResults<?>> bulkResultValueAccessor;
     
-    BulkResultTypeEnum(BulkResultValueAccessor bulkResultValueAccessor) {
+    BulkResultTypeEnum(ResultAccessor<BulkOperationCallbackResults<?>> bulkResultValueAccessor) {
 
         this.bulkResultValueAccessor = bulkResultValueAccessor;
     }
