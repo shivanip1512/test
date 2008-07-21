@@ -78,7 +78,6 @@ public class CsrController extends MultiActionController {
     public ModelAndView search(HttpServletRequest request, HttpServletResponse response)
             throws ServletException {
 
-        ModelAndView mav = new ModelAndView("deviceSelection.jsp");
 
         // Set the request url and parameters as a session attribute
         String url = request.getRequestURL().toString();
@@ -125,14 +124,16 @@ public class CsrController extends MultiActionController {
                                                                 count);
         
 
-        // Forward to device home page if only one result is found
+        ModelAndView mav;
+        // Redirect to device home page if only one result is found
         if (results.getResultCount() == 1) {
-            mav.setViewName("deviceHome.jsp");
+            mav = new ModelAndView("redirect:/spring/csr/home");
 
             ExtendedMeter meter = results.getResultList().get(0);
             mav.addObject("deviceId", meter.getDeviceId());
 
         } else {
+            mav = new ModelAndView("deviceSelection.jsp");
             // Create a device collection (only used to generate a link)
             DeviceCollection deviceGroupCollection = filterCollectionHelper.createDeviceGroupCollection(queryFilter, orderBy);
             
