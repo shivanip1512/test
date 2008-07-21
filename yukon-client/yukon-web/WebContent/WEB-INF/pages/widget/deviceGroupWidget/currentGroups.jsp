@@ -8,6 +8,9 @@
         <c:when test="${not empty currentGroups}">
 <table style="width: 100%">
             <c:forEach var="group" items="${currentGroups}">
+            
+                <c:if test="${not group.hidden}">
+            
                 <tr class="<tags:alternateRow odd="" even="altRow"/>">
                     <td style="border: none">
                        <c:url value="/spring/group/editor/home" var="groupEditorUrl">
@@ -29,6 +32,8 @@
                         </c:choose>
                     </td>
                 </tr>
+                
+                </c:if>
             </c:forEach>
 </table>
         </c:when>
