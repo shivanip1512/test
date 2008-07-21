@@ -125,7 +125,6 @@ public class ProgramDaoImpl implements ProgramDao {
     }
     
     @Override
-    @SuppressWarnings("unchecked")
     @Transactional(readOnly = true, propagation = Propagation.SUPPORTS)
     public List<Integer> getGroupIdsByProgramId(final int programId) {
         final SqlStatementBuilder sqlBuilder = new SqlStatementBuilder();

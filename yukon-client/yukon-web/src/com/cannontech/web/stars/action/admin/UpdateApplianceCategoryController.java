@@ -1,10 +1,6 @@
 package com.cannontech.web.stars.action.admin;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -16,15 +12,10 @@ import com.cannontech.clientutils.CTILogger;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.stars.LiteApplianceCategory;
-import com.cannontech.database.data.lite.stars.LiteLMProgramEvent;
 import com.cannontech.database.data.lite.stars.LiteLMProgramWebPublishing;
-import com.cannontech.database.data.lite.stars.LiteStarsAppliance;
-import com.cannontech.database.data.lite.stars.LiteStarsCustAccountInformation;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
-import com.cannontech.database.data.lite.stars.LiteStarsLMProgram;
 import com.cannontech.database.data.lite.stars.LiteWebConfiguration;
 import com.cannontech.database.data.lite.stars.StarsLiteFactory;
-import com.cannontech.stars.util.ECUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
 import com.cannontech.web.stars.action.StarsAdminActionController;
@@ -37,8 +28,6 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
     public void doAction(final HttpServletRequest request, final HttpServletResponse response, 
             final HttpSession session, final StarsYukonUser user,
                 final LiteStarsEnergyCompany energyCompany) throws Exception {
-        
-        List<LiteStarsEnergyCompany> descendants = ECUtils.getAllDescendants( energyCompany );
 
         try {
             int appCatID = ServletRequestUtils.getIntParameter(request,"AppCatID");
@@ -178,9 +167,6 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
             }
 
             // Delete the rest of published programs
-            
-            final Map<Integer, List<LiteStarsCustAccountInformation>> ecToAccountsMap = createEcToAccountsMap(descendants);
-            
             for (int i = 0; i < pubProgList.size(); i++) {
                 LiteLMProgramWebPublishing liteProg = (LiteLMProgramWebPublishing) pubProgList.get(i);
 
@@ -189,41 +175,6 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
 
                 // Set ProgramID = 0 for all appliances assigned to this program
                 com.cannontech.database.db.stars.appliance.ApplianceBase.resetAppliancesByProgram( liteProg.getProgramID() );
-
-                for (int j = 0; j < descendants.size(); j++) {
-                    LiteStarsEnergyCompany company = descendants.get(j);
-
-                    List<LiteStarsCustAccountInformation> accounts = ecToAccountsMap.get(company.getEnergyCompanyID());
-                    for (int k = 0; k < accounts.size(); k++) {
-                        LiteStarsCustAccountInformation liteAcctInfo = accounts.get(k);
-
-                        for (int l = 0; l < liteAcctInfo.getAppliances().size(); l++) {
-                            LiteStarsAppliance liteApp = liteAcctInfo.getAppliances().get(l);
-                            if (liteApp.getProgramID() == liteProg.getProgramID()) {
-                                liteApp.setProgramID( 0 );
-                                liteApp.setInventoryID( 0 );
-                                liteApp.setAddressingGroupID( 0 );
-                                liteApp.setLoadNumber( 0 );
-                            }
-                        }
-
-                        
-                        //TODO - remove for loops calling getPrograms() getProgramHistory()
-                        List<LiteStarsLMProgram> programs = liteAcctInfo.getPrograms();
-                        for (int l = 0; l < programs.size(); l++) {
-                            if (programs.get(l).getProgramID() == liteProg.getProgramID()) {
-                                programs.remove(l);
-                                break;
-                            }
-                        }
-
-                        Iterator it = liteAcctInfo.getProgramHistory().iterator();
-                        while (it.hasNext()) {
-                            if (((LiteLMProgramEvent) it.next()).getProgramID() == liteProg.getProgramID())
-                                it.remove();
-                        }
-                    }
-                }
 
                 com.cannontech.database.data.stars.LMProgramWebPublishing pubProg =
                     new com.cannontech.database.data.stars.LMProgramWebPublishing();
@@ -251,19 +202,6 @@ public class UpdateApplianceCategoryController extends StarsAdminActionControlle
         
         String redirect = this.getRedirect(request);
         response.sendRedirect(redirect);
-    }
-    
-    private Map<Integer, List<LiteStarsCustAccountInformation>> createEcToAccountsMap(List<LiteStarsEnergyCompany> descendants) {
-        final Map<Integer, List<LiteStarsCustAccountInformation>> resultMap =
-            new HashMap<Integer, List<LiteStarsCustAccountInformation>>(descendants.size());
-        
-        for (final LiteStarsEnergyCompany energyCompany : descendants) {
-            Integer energyCompanyId = energyCompany.getEnergyCompanyID();
-            List<LiteStarsCustAccountInformation> accounts = starsCustAccountInformationDao.getAll(energyCompanyId);
-            resultMap.put(energyCompanyId, accounts);
-        }
-        
-        return resultMap;
     }
 
 }
