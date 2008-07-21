@@ -106,7 +106,7 @@ bool CtiLMProgramConstraintChecker::checkSeason(ULONG proposed_start_from_1901,
     {
         if( !CtiSeasonManager::getInstance().isInSeason(startDate, _lm_program.getSeasonScheduleId()) )
         {
-            string result = "The program is not allowed to run outside of its' prescribed season schedule. ";
+            string result = "The program is not allowed to run outside of its prescribed season schedule. ";
             result += CtiTime(startTime).asString();
             result += " is not in a season in schedule id: ";
             result += CtiNumStr(_lm_program.getSeasonScheduleId());
