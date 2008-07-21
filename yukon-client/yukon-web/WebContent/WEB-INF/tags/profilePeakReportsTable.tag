@@ -43,7 +43,6 @@
                         <th>
                             Peak Day Total Usage
                         </th>
-                        <th>Daily Usage</th>
                     </tr>
                         <c:if test="${! empty preResult}">
                             <c:choose>
@@ -61,16 +60,11 @@
                                         <td>
                                             ${preResult.usage} kWH
                                         </td>
-                                        <td>
-                                            <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${prePeriodStartDate}" stopDate="${prePeriodStopDate}">
-                                                Report
-                                            </cti:simpleReportLinkFromNameTag>
-                                        </td>
                                     </tr>
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td colspan="5">
+                                        <td colspan="4">
                                         There was an error reading the meter<br>
                                         <c:forEach items="${preResult.errors}" var="error">
                                             <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">
@@ -100,16 +94,11 @@
                                         <td>
                                             ${postResult.usage} kWH
                                         </td>
-                                        <td>
-                                            <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${postPeriodStartDate}" stopDate="${postPeriodStopDate}">
-                                               Report
-                                            </cti:simpleReportLinkFromNameTag>
-                                        </td>
                                     </tr>
                                 </c:when>
                                 <c:otherwise>
                                     <tr>
-                                        <td colspan="5">
+                                        <td colspan="4">
                                         There was an error reading the meter<br>
                                         <c:forEach items="${postResult.errors}" var="error">
                                             <tags:hideReveal title="${error.description} (${error.errorCode})" showInitially="false">

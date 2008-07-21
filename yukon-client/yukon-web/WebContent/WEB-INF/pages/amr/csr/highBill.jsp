@@ -273,6 +273,15 @@
                 |
                 <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${preStartDateMillis}" stopDate="${preStopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
                 
+                <%-- daily usage links --%>
+                <br>
+                <div class="smallBoldLabel" style="display:inline;">Daily Usage Report: </div>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preRangeStartDate}" stopDate="${preRangeStopDate}">HTML</cti:simpleReportLinkFromNameTag>
+                |
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preRangeStartDate}" stopDate="${preRangeStopDate}">CSV</cti:simpleReportLinkFromNameTag>
+                |
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${preRangeStartDate}" stopDate="${preReangeStopDate}">PDF</cti:simpleReportLinkFromNameTag>
+                
             </c:if>
             
             <%-- POST CHART  --%>
@@ -320,6 +329,16 @@
                 <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="csvView" pointId="${pointId}" startDate="${postStartDateMillis}" stopDate="${postStopDateMillis}">CSV</cti:simpleReportLinkFromNameTag>
                 |
                 <cti:simpleReportLinkFromNameTag definitionName="rawPointHistoryDefinition" viewType="pdfView" pointId="${pointId}" startDate="${postStartDateMillis}" stopDate="${postStopDateMillis}">PDF</cti:simpleReportLinkFromNameTag>
+                
+                <%-- daily usage links --%>
+                <br>
+                <div class="smallBoldLabel" style="display:inline;">Daily Usage Report: </div>
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="htmlView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${postRangeStartDate}" stopDate="${postRangeStopDate}">HTML</cti:simpleReportLinkFromNameTag>
+                |
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="csvView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${postRangeStartDate}" stopDate="${postRangeStopDate}">CSV</cti:simpleReportLinkFromNameTag>
+                |
+                <cti:simpleReportLinkFromNameTag definitionName="dailyUsageDefinition" viewType="pdfView" module="amr" showMenu="true" menuSelection="deviceselection" pointId="${pointId}" startDate="${postRangeStartDate}" stopDate="${postRangeStopDate}">PDF</cti:simpleReportLinkFromNameTag>
+                
                 
             </c:if>
         </tags:sectionContainer>
