@@ -422,6 +422,16 @@ public class ObjectMapperFactoryImplTest extends TestCase {
         public YukonDevice getYukonDeviceObjectByName(String name) {
             throw new UnsupportedOperationException("Method not implemented");
         }
+        
+        @Override
+        public String getFormattedName(int deviceId) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
+        
+        @Override
+        public String getFormattedName(YukonDevice device) {
+            throw new UnsupportedOperationException("Method not implemented");
+        }
 
     }
 
