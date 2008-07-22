@@ -42,26 +42,25 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
     
     private void doNextDiscoveryRequest(final YukonDevice device, final RouteDiscoveryState state) {
         
-        final boolean debugEnabled = log.isDebugEnabled();
+        final String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ")";
         
         // NO MORE ROUTES
         if (!state.isRoutesRemaining()) {
-
-            if (debugEnabled) {
-                log.debug("No more routes to attempt ping on for device '" + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ").");
-            }
+            
+            log.debug("No remaining routes. " + deviceLogStr);
             
             // run callback with null routeId parameter
             scheduledExecutor.schedule(new Runnable() {
                 
                 @Override
                 public void run() {
-            
+                    
                     try {
                         state.getRouteFoundCallback().handle(null);
-                        log.debug("++++ HANDLE (null) IDX="+state.getRouteIdx()+"  '" + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ").");
+                        log.debug("No remaining routes, running callback with null. " + deviceLogStr);
+                        
                     } catch (Exception e) {
-                        log.warn("Caught exception on result handler", e);
+                        log.error("Running callback with null (due to no remaining routes) failed. " + deviceLogStr, e);
                     }
                 }
             }, 1, TimeUnit.SECONDS);
@@ -89,15 +88,14 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                             int errorCode = error.getErrorCode();
                             int currentAttemptCount = state.getAttemptCount();
                             int currentRouteId = state.getRouteIds().get(state.getRouteIdx());
+                            int currentDeviceId = command.getDevice().getDeviceId();
+                            String routeLogStr = " ROUTE: " + paoDao.getYukonPAOName(currentRouteId) + "' (" + currentRouteId + ")";
+                            String deviceLogStr = " DEVICE: " + paoDao.getYukonPAOName(currentDeviceId) + "' (" + currentDeviceId + ")";
 
                             try {
 
                                 // log that ping failed
-                                if (debugEnabled) {
-                                    log.debug("Ping on route '" + paoDao.getYukonPAOName(currentRouteId) + "' (" + currentRouteId + ") " +
-                                             "for device '" + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ") " +
-                                    "failed. ");
-                                }
+                                log.debug("Ping failed." + routeLogStr + deviceLogStr);
 
                                 // error 54 means device does not exist, which likely means porter hasn't
                                 // recieved the dbupdate msg for it yet, will try same route again
@@ -106,11 +104,8 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                                     state.setAttemptCount(currentAttemptCount + 1);
 
                                     // log intent to retry on same reoute
-                                    if (debugEnabled) {
-                                        log.debug("Attempted to ping on route '" + paoDao.getYukonPAOName(currentRouteId) + "' (" + currentRouteId + ") " +
-                                                 "for device '" + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ") but got errorCode 54 - device \"does not exist\". " +
-                                                 "Going to attempt ping on same route again. This was attempt #" + currentAttemptCount + ".");
-                                    }
+                                    log.debug("Got error 54 (no device) during ping." + routeLogStr + deviceLogStr +
+                                              ". Will attempt ping on same route again. This was attempt #" + currentAttemptCount + ".");
                                 }
 
                                 // could not ping device on this route, try next route
@@ -118,21 +113,15 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
                                     // log intent to try next route due to excessive error 54
                                     if (errorCode == 54) {
-                                        if (debugEnabled) {
-                                            log.debug("Attempted to ping on route '" + paoDao.getYukonPAOName(currentRouteId) + "' (" + currentRouteId + ") " +
-                                                     "for device '" + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ") but got errorCode 54 - device \"does not exist\". " +
-                                                     "The device still does not exists after " + currentAttemptCount + " attempts, something might be wrong. Moving on to next route.");
-
-                                        }
+                                        log.debug("Got error 54 (no device) during ping." + routeLogStr + deviceLogStr +
+                                                  ". The device still does not exists after " + currentAttemptCount + " attempts, something might be wrong. Moving on to next route.");
                                     }
 
                                     // setup state to ping next route
                                     state.setAttemptCount(1);
                                     state.incrementRoute();
 
-                                    if (debugEnabled) {
-                                        log.debug("Will attempt ping on next route for device '" + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ").");
-                                    }
+                                    log.debug("Will attempt ping on next route." + routeLogStr + deviceLogStr);
                                 }
 
                                 // run next request
@@ -140,15 +129,13 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
 
                             } catch (Exception e) {
                                 
-                               //TODO send null? 
-                                // should probably send back something that identifies this as an
-                                // error processing rather than a "not found" condition
+                                log.error("doNextDiscoveryRequest failed." + routeLogStr + deviceLogStr, e);
+                                
                                 try{
                                     state.getRouteFoundCallback().handle(null);
                                 } catch (Exception ex) {
-                                    log.error("Error occured running state callback due to error.", e);
+                                    log.error("Running callback with null (due to doNextDiscoveryRequest error) failed." + routeLogStr + deviceLogStr, e);
                                 }
-                                log.error("+++ Error running route callback receivedLastError (route not found).", e);
                             }
 
                         }
@@ -156,31 +143,29 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                         @Override
                         public void receivedLastResultString(CommandRequestRouteAndDevice command, String value) {
 
+                            int foundRouteId = command.getRouteId();
+                            int foundDeviceId = command.getDevice().getDeviceId();
+                            String routeLogStr = " ROUTE: " + paoDao.getYukonPAOName(foundRouteId) + "' (" + foundRouteId + ")";
+                            String deviceLogStr = " DEVICE: " +paoDao.getYukonPAOName(foundDeviceId) + "' (" + foundDeviceId + ")";
+                            
                             // route found! run routeFoundCallback
                             try {
 
-                                int foundRouteId = command.getRouteId();
-                                int foundDeviceId = command.getDevice().getDeviceId();
-
                                 // log route found
-                                if (debugEnabled) {
-                                    log.debug("Ping successful on route '" + paoDao.getYukonPAOName(foundRouteId) + "' (" + foundRouteId + ") " +
-                                             "for device '" + paoDao.getYukonPAOName(foundDeviceId) + "' (" + foundDeviceId + "). " +
-                                             "Calling callback " + state.getRouteFoundCallback() + ".");
-                                }
+                                log.debug("Ping successful." + routeLogStr + deviceLogStr +
+                                          ". Running route found callback " + state.getRouteFoundCallback() + ".");
 
                                 state.getRouteFoundCallback().handle(foundRouteId);
-                                log.debug("++++ HANDLE ("+foundRouteId+") IDX="+state.getRouteIdx()+"  '" + paoDao.getYukonPAOName(device.getDeviceId()) + "' (" + device.getDeviceId() + ").");
 
                             } catch (Exception e) {
                                 
-                                //TODO send null? 
+                                log.error("Route found callback failed, will run callback with null." + routeLogStr + deviceLogStr, e);
+                                
                                 try{
                                     state.getRouteFoundCallback().handle(null);
                                 } catch (Exception ex) {
-                                    log.error("Error occured running state callback due to error.", e);
+                                    log.error("Running callback with null (due to route found callback error) failed."  + routeLogStr + deviceLogStr, e);
                                 }
-                                log.error("+++ Error running route callback receivedLastResultString (found route).", e);
                             }
                         }
 
@@ -191,22 +176,25 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                         commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, state.getUser());
                     } catch (PaoAuthorizationException e) {
                         
-                        //TODO send null? 
+                        log.error("User not authorized to run command for device. " + deviceLogStr, e);
+                        
                         try{
+                            log.debug("Caught PaoAuthorizationException, running callback with null. " + deviceLogStr, e);
                             state.getRouteFoundCallback().handle(null);
                         } catch (Exception ex) {
-                            log.error("Error occured running state callback due to error.", e);
+                            log.error("Running callback with null (due to PaoAuthorizationException) failed. " + deviceLogStr, e);
                         }
-                        log.error("User not authorized to run command: " + e.getMessage());
+                        
                     } catch (Exception e) {
                         
-                        //TODO send null? 
+                        log.error("Unknown exception caught while executing route discovery. " + deviceLogStr, e);
+                        
                         try{
+                            log.debug("Caught unknown Exception, running callback with null. " + deviceLogStr, e);
                             state.getRouteFoundCallback().handle(null);
                         } catch (Exception ex) {
-                            log.error("Error occured running state callback due to error.", e);
+                            log.error("Running callback with null (due to unknown Exception) failed. " + deviceLogStr, e);
                         }
-                        log.error("Unknown exception caught while executing route discovery", e);
                     }
 
                 }
