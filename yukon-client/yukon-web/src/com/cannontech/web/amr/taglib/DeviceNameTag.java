@@ -6,19 +6,17 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 
 import org.springframework.beans.factory.annotation.Configurable;
+import org.springframework.beans.factory.annotation.Required;
 
-import com.cannontech.amr.meter.dao.MeterDao;
-import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.YukonDevice;
+import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.NotFoundException;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.web.taglib.YukonTagSupport;
 
 @Configurable("deviceNameTagPrototype")
 public class DeviceNameTag extends YukonTagSupport {
-    private MeterDao meterDao;
-    private PaoDao paoDao = null;
+    
+    private DeviceDao deviceDao; 
     private int deviceId = 0;
     private boolean deviceIdSet = false;
     private YukonDevice device = null;
@@ -34,38 +32,24 @@ public class DeviceNameTag extends YukonTagSupport {
         }
         
         String formattedName = null;
-        if (deviceIdSet) {
-            formattedName = getDeviceName(deviceId);
+        try{
+        
+            if (deviceIdSet) {
+                formattedName = deviceDao.getFormattedName(getDeviceId());
+                
+            } else {
+                formattedName = deviceDao.getFormattedName(getDevice());
+                deviceId = device.getDeviceId();
+            }
             
-        } else {
-            formattedName = getDeviceName(device.getDeviceId());
+        } catch (NotFoundException e) {
+            throw new JspException("deviceId: " + deviceId + " is not a valid deviceId", e);
         }
 
         JspWriter out = getJspContext().getOut();
         out.print("<span class=\"deviceNameTagSpan\" title=\"deviceId: " + deviceId + "\">");
         out.print(formattedName);
         out.print("</span>");
-    }
-    
-    private String getDeviceName(int deviceId) throws JspException{
-        
-        String formattedName = null;
-        
-        try {
-            Meter meter = meterDao.getForId(deviceId);
-            device = meter;
-            formattedName = meterDao.getFormattedDeviceName(meter);
-        } catch (NotFoundException e) {
-            // device is not a meter
-            try {
-                LiteYukonPAObject pao = paoDao.getLiteYukonPAO(deviceId);
-                formattedName = pao.getPaoName();
-            } catch (NotFoundException e1) {
-                throw new JspException("deviceId: " + deviceId + " is not a valid deviceId", e1);
-            }
-        }
-        
-        return formattedName;
     }
     
     public int getDeviceId() {
@@ -82,12 +66,8 @@ public class DeviceNameTag extends YukonTagSupport {
         this.device = device;
     }
     
-    public void setMeterDao(MeterDao meterDao) {
-        this.meterDao = meterDao;
+    @Required
+    public void setDeviceDao(DeviceDao deviceDao) {
+        this.deviceDao = deviceDao;
     }
-
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
-
 }

@@ -2,12 +2,11 @@
 <%--  completedItems and totalItems as parameters after they have been used to update the bar --%>
 <%@ attribute name="updateKey" required="true" type="java.lang.String"%>
 <%@ attribute name="totalCount" required="true" type="java.lang.Integer"%>
-<%@ attribute name="updateCallback" required="false" type="java.lang.String"%>
 
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
     
-<cti:includeScript link="/JavaScript/updateableProgressBar.js"/>
+<cti:includeScript link="/JavaScript/bulkProgress.js"/>
 <cti:uniqueIdentifier var="pbarId" prefix="pbar_"/>
         
 <table cellpadding="0px" border="0px">
@@ -27,4 +26,4 @@
     </tr>
 </table>
 
-<cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount}, '${updateCallback}')" initialize="true" completedCount="${updateKey}" />
+<cti:dataUpdaterCallback function="updateProgressBar('${pbarId}', ${totalCount})" initialize="true" completedCount="${updateKey}" />

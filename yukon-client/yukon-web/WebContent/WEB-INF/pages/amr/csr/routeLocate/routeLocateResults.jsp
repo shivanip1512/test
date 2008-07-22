@@ -40,12 +40,16 @@
     
     <script type="text/javascript">
     
-        function enableButton(deviceCount, totalCount) {
-            if (deviceCount == totalCount) {
-                try {
+        function enableButton(totalCount) {
+
+            return function(data) {
+            
+                var completedCount = data['completedCount'];
+                
+                if (completedCount == totalCount) {
                     $('setViewRoutesButton').disabled = false;
-                } catch(e) {}
-            }
+                }
+            };
         }
         
         function slowInput(buttonObj) {
@@ -78,8 +82,7 @@
                                 inProgressKey="yukon.web.modules.amr.routeLocateResults.inProgress" 
                                 completeKey="yukon.web.modules.amr.routeLocateResults.complete"
                                 totalCount="${deviceCount}" 
-                                updateKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT"
-                                updateCallback="enableButton">
+                                updateKey="ROUTELOCATE/${resultId}/COMPLETED_COUNT">
                                 
             <%-- set/view routes --%>
             <br>
@@ -100,52 +103,6 @@
             </form>
                                 
         </tags:bulkResultProgress>
-        
-        <%-- PROGRESS 
-        <span class="normalBoldLabel"><cti:msg key="yukon.web.modules.amr.routeLocateResults.progressLabel" />:</span>
-        
-        <span id="progressDescription"></span>
-                
-        <div style="padding:10px;">
-            <table cellpadding="0px" border="0px">
-                <tr>
-                    <td>
-                        <div id="progressBorder" class="progressBarBorder" align="left">
-                            <div id="progressInner" class="progressBarInner">
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span id="percentComplete" class="progressBarPercentComplete">0%</span>
-                    </td>
-                    <td>
-                        <span class="progressBarCompletedCount"><span id="completedCount"></span>/${deviceCount}</span>
-                    </td>
-                </tr>
-            </table>
-            
-            <br>
-            <form action="<c:url value="/spring/csr/routeLocate/routeSettings" />" method="get">
-                <input type="hidden" name="resultId" value="${resultId}">
-                
-                <c:choose>
-                    <c:when test="${result.autoUpdateRoute}">
-                        <cti:msg var="viewRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.viewRoutesButtonLabel" />
-                        <input type="submit" id="setViewRoutesButton" value="${viewRoutesButtonLabel}" onclick="slowInput(this);" disabled>
-                    </c:when>
-                    <c:otherwise>
-                        <cti:msg var="setRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonLabel" />
-                        <input type="submit" id="setViewRoutesButton" value="${setRoutesButtonLabel}" onclick="slowInput(this);" disabled>
-                    </c:otherwise>
-                </c:choose>
-                <img id="waitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
-            </form>
-            
-        </div>
-        --%>
-        
-        
-        
         
         <%-- SUCCESS --%>
         <br>
@@ -177,5 +134,7 @@
         </div>
                     
     </tags:bulkActionContainer>
+    
+    <cti:dataUpdaterCallback function="enableButton(${totalCount})" initialize="true" completedCount="ROUTELOCATE/${resultId}/COMPLETED_COUNT" />
     
  </cti:standardPage>

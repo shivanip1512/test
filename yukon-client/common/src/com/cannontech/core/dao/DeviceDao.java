@@ -133,4 +133,20 @@ public interface DeviceDao {
      * @param newMeterNumber
      */
     public void changeMeterNumber(YukonDevice device, String newMeterNumber);
+    
+    /**
+     * Method to get the name of a device. If device is a Meter, meterDao
+     * is used to get formatted name. PaoName oterwise.
+     * @param device
+     * @return
+     */
+    public String getFormattedName(YukonDevice device);
+    
+    /**
+     * Method to get the name of a device. If device is a Meter, meterDao
+     * is used to get formatted name. PaoName oterwise.
+     * @param deviceId
+     * @return
+     */
+    public String getFormattedName(int deviceId);
 }

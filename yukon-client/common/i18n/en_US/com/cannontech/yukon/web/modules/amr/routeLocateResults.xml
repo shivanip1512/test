@@ -22,11 +22,8 @@
     <entry key="yukon.web.modules.amr.routeLocateResults.failureLabel">Route Not Found</entry>
     <entry key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel">Choose New Operation For These Devices</entry>
     
-    <entry key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonLabel">Go To Set Routes Page</entry>
+    <entry key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonLabel">Set Routes</entry>
     <entry key="yukon.web.modules.amr.routeLocateResults.viewRoutesButtonLabel">View Routes</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonDisabledText">Still Locating...</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonEnabledText">Go To Route Set Page</entry>
-    <entry key="yukon.web.modules.amr.routeLocateResults.autoSetRouteEnabledText">Automatic route updating is enabled.</entry>
     
     
 </properties>

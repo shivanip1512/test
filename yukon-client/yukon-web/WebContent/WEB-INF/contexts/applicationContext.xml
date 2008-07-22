@@ -571,8 +571,7 @@
     </bean>
 
     <bean id="deviceNameTagPrototype" class="com.cannontech.web.amr.taglib.DeviceNameTag">
-        <property name="meterDao" ref="meterDao"/>
-        <property name="paoDao" ref="paoDao" />
+        <property name="deviceDao" ref="deviceDao"/>
     </bean>
 
     <bean id="dataUpdaterCallbackTagPrototype" class="com.cannontech.web.updater.DataUpdaterCallbackTag">

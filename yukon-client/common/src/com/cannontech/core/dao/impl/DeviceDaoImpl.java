@@ -7,10 +7,13 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.RowMapper;
 
+import com.cannontech.amr.meter.dao.MeterDao;
+import com.cannontech.amr.meter.model.Meter;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
+import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.Transaction;
 import com.cannontech.database.data.lite.LiteDeviceMeterNumber;
@@ -44,6 +47,7 @@ public final class DeviceDaoImpl implements DeviceDao, InitializingBean {
     private IDatabaseCache databaseCache;
     private DBPersistentDao dbPersistantDao;
     private PaoGroupsWrapper paoGroupsWrapper;
+    private MeterDao meterDao;
         
 /**
  * PointFuncs constructor comment.
@@ -289,6 +293,29 @@ public void changeMeterNumber(YukonDevice device, String newMeterNumber) {
     processDeviceUpdateDBChange(device);
 }
 
+public String getFormattedName(YukonDevice device) {
+    
+    if (device instanceof Meter) {
+        return meterDao.getFormattedDeviceName((Meter)device);
+    }
+    
+    LiteYukonPAObject paoObj = paoDao.getLiteYukonPAO(device.getDeviceId());
+    return paoObj.getPaoName();
+}
+
+public String getFormattedName(int deviceId) {
+    
+    try {
+        Meter meter = meterDao.getForId(deviceId);
+        return meterDao.getFormattedDeviceName(meter);
+        
+    } catch (NotFoundException e) {
+        
+        LiteYukonPAObject paoObj = paoDao.getLiteYukonPAO(deviceId);
+        return paoObj.getPaoName();
+    }
+}
+
 private void processDeviceUpdateDBChange(YukonDevice device) {
 
     DBChangeMsg msg = new DBChangeMsg(device.getDeviceId(),
@@ -322,4 +349,8 @@ public void setPaoGroupsWrapper(PaoGroupsWrapper paoGroupsWrapper) {
     this.paoGroupsWrapper = paoGroupsWrapper;
 }
 
+@Required
+public void setMeterDao(MeterDao meterDao) {
+    this.meterDao = meterDao;
+}
 }
