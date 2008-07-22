@@ -1,7 +1,9 @@
 package com.cannontech.web.bulk;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
@@ -25,6 +27,7 @@ import com.cannontech.common.util.RecentResultsCache;
 import com.cannontech.common.util.ReverseList;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.database.data.lite.LiteYukonPAObject;
+import com.cannontech.tools.csv.CSVReader;
 import com.cannontech.tools.csv.CSVWriter;
 import com.cannontech.util.ServletUtil;
 
@@ -117,6 +120,14 @@ public class BulkController extends BulkControllerBase {
         String resultsId = ServletRequestUtils.getRequiredStringParameter(request, "resultsId");
         BulkOperationCallbackResults<?> bulkUpdateOperationResults = recentResultsCache.getResult(resultsId);
         
+        // header row
+        InputStreamReader inputStreamReader = new InputStreamReader(bulkUpdateOperationResults.getBulkFileInfo().getFileResource().getInputStream());
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        CSVReader csvReader = new CSVReader(reader);
+        String[] headerRow = csvReader.readNext();
+        csvReader.close();
+         
+        // failed lines
         List<String[]> fileLines = (List<String[]>)bulkUpdateOperationResults.getProcesingExceptionObjects();
         
         response.setContentType("text/csv");
@@ -127,6 +138,7 @@ public class BulkController extends BulkControllerBase {
         Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream));
         CSVWriter csvWriter = new CSVWriter(writer);
         
+        csvWriter.writeNext(headerRow);
         for (String[] line : fileLines) {
             csvWriter.writeNext(line);
         }
