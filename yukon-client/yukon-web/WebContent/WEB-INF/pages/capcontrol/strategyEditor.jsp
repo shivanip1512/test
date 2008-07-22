@@ -124,40 +124,40 @@
                         <f:selectItems value="#{capControlForm.controlMethods}"/>
                     </x:selectOneMenu>
 	
-                    <x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Control_Interval" value="Analysis Interval: " title="How often the system should check to determine the need for control"/>
-                    <x:selectOneMenu rendered="#{!capControlForm.timeOfDay}" id="Control_Interval" disabled="#{!capControlForm.editingCBCStrategy}"
+                    <x:outputLabel for="Control_Interval" value="Analysis Interval: " title="How often the system should check to determine the need for control"/>
+                    <x:selectOneMenu id="Control_Interval" disabled="#{!capControlForm.editingCBCStrategy}"
                         value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlInterval}" >
                         <f:selectItem itemLabel="(On New Data Only)" itemValue="0"/>
                         <f:selectItems value="#{capControlForm.timeInterval}"/>
                     </x:selectOneMenu>
             
-                    <x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Max_Confirm_Time" value="Max Confirm Time: " title="How much time the system waits until the control is considered successful"/>
-                    <x:selectOneMenu rendered="#{!capControlForm.timeOfDay}" id="Max_Confirm_Time" disabled="#{!capControlForm.editingCBCStrategy}"
+                    <x:outputLabel for="Max_Confirm_Time" value="Max Confirm Time: " title="How much time the system waits until the control is considered successful"/>
+                    <x:selectOneMenu id="Max_Confirm_Time" disabled="#{!capControlForm.editingCBCStrategy}"
                         value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].minResponseTime}" >
                         <f:selectItem itemLabel="(none)" itemValue="0"/>
                         <f:selectItems value="#{capControlForm.timeInterval}"/>
                     </x:selectOneMenu>
             
-                    <x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Pass_Percent" value="Pass Percent: " title="This amount of change or higher is considered to be a successful control"/>
+                    <x:outputLabel for="Pass_Percent" value="Pass Percent: " title="This amount of change or higher is considered to be a successful control"/>
                     <x:panelGroup>
-	                    <x:inputText rendered="#{!capControlForm.timeOfDay}" id="Pass_Percent" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
+	                    <x:inputText id="Pass_Percent" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
 	                        value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].minConfirmPercent}">
 	                        <f:validateLongRange minimum="0" maximum="100" />
 	                    </x:inputText>
-	                    <x:outputText rendered="#{!capControlForm.timeOfDay}" id="PassPercLab" value="%"/>
+	                    <x:outputText id="PassPercLab" value="%"/>
                     </x:panelGroup>
             
-                    <x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Failure_Percent" value="Failure Percent: " title="This amount of change or lower is considered to be a failed control"/>
+                    <x:outputLabel for="Failure_Percent" value="Failure Percent: " title="This amount of change or lower is considered to be a failed control"/>
                     <x:panelGroup>
-	                    <x:inputText rendered="#{!capControlForm.timeOfDay}" id="Failure_Percent" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
+	                    <x:inputText id="Failure_Percent" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
 	                        value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].failurePercent}">
 	                        <f:validateLongRange minimum="0" maximum="100" />
 	                    </x:inputText>
-	                    <x:outputText rendered="#{!capControlForm.timeOfDay}" id="FailPercLab" value="%"/>
+	                    <x:outputText id="FailPercLab" value="%"/>
                     </x:panelGroup>
             
-                    <x:outputLabel rendered="#{!capControlForm.timeOfDay}" for="Send_Retries" value="Send Retries: " title="How many times the control should be repeatedly sent out to the field"/>
-                    <x:inputText rendered="#{!capControlForm.timeOfDay}" id="Send_Retries" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
+                    <x:outputLabel for="Send_Retries" value="Send Retries: " title="How many times the control should be repeatedly sent out to the field"/>
+                    <x:inputText id="Send_Retries" styleClass="percentLabel" disabled="#{!capControlForm.editingCBCStrategy}" required="true"
                         value="#{capControlForm.cbcStrategiesMap[capControlForm.currentStrategyID].controlSendRetries}">
                         <f:validateLongRange minimum="0" maximum="100" />
                     </x:inputText>

@@ -453,8 +453,12 @@ public class CBCDisplay {
             NumberFormat num = NumberFormat.getNumberInstance();
             num.setMaximumFractionDigits(1);
             num.setMinimumFractionDigits(1);
-
-            if (subBus.getPeakTimeFlag().booleanValue()) {
+            
+            if(subBus.getControlMethod().equalsIgnoreCase("TimeOfDay")) {
+                return "TOD";
+            } else if (subBus.getControlMethod().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+                return CtiUtilities.STRING_NONE;
+            } else if (subBus.getPeakTimeFlag().booleanValue()) {
 
                 if (CBCUtils.isPowerFactorControlled(subBus.getControlUnits())) {
 
@@ -679,36 +683,36 @@ public class CBCDisplay {
             NumberFormat num = NumberFormat.getNumberInstance();
             num.setMaximumFractionDigits(1);
             num.setMinimumFractionDigits(1);
-
-            if (feeder.getPeakTimeFlag().booleanValue()) {
-
+            if(feeder.getControlmethod().equalsIgnoreCase("TimeOfDay")) {
+                return "TOD";
+            } else if (feeder.getControlmethod().equalsIgnoreCase(CtiUtilities.STRING_NONE)) {
+                return CtiUtilities.STRING_NONE;
+            } else if (feeder.getPeakTimeFlag().booleanValue()) {
                 if (CBCUtils.isPowerFactorControlled(feeder.getControlUnits())) {
-
-                    return CommonUtils.formatDecimalPlaces(feeder.getPeakLag()
-                                                           .doubleValue(),
-                                                           0) + "%C : " + num.format( feeder.getPeakPFSetPoint() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getPeakLead()
-                                                                                                                                                             .doubleValue(),
-                                                                                                                                                             0) + "%T";
+                    return CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
+                    + "%C : " 
+                    + num.format( feeder.getPeakPFSetPoint() ) 
+                    + " : " 
+                    + CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
+                    + "%T";
                 } else
-                    return CommonUtils.formatDecimalPlaces(feeder.getPeakLead()
-                                                           .doubleValue(),
-                                                           0) + " to " + CommonUtils.formatDecimalPlaces(feeder.getPeakLag()
-                                                                                                         .doubleValue(),
-                                                                                                         0) + " Pk";
+                    return CommonUtils.formatDecimalPlaces(feeder.getPeakLead().doubleValue(), 0) 
+                    + " to " 
+                    + CommonUtils.formatDecimalPlaces(feeder.getPeakLag().doubleValue(), 0) 
+                    + " Pk";
             } else {
                 if (CBCUtils.isPowerFactorControlled(feeder.getControlUnits())) {
-
-                    return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag()
-                                                           .doubleValue(),
-                                                           0) + "%C : " + num.format( feeder.getOffpeakPFSetPoint() ) + " : " + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead()
-                                                                                                                                                                .doubleValue(),
-                                                                                                                                                                0) + "%T";
+                    return CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
+                    + "%C : " 
+                    + num.format( feeder.getOffpeakPFSetPoint() ) 
+                    + " : " 
+                    + CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
+                    + "%T";
                 } else
-                    return CommonUtils.formatDecimalPlaces(feeder.getOffPkLead()
-                                                           .doubleValue(),
-                                                           0) + " to " + CommonUtils.formatDecimalPlaces(feeder.getOffPkLag()
-                                                                                                         .doubleValue(),
-                                                                                                         0) + " OffPk";
+                    return CommonUtils.formatDecimalPlaces(feeder.getOffPkLead().doubleValue(), 0) 
+                    + " to " 
+                    + CommonUtils.formatDecimalPlaces(feeder.getOffPkLag().doubleValue(), 0) 
+                    + " OffPk";
             }
 
         }

@@ -335,13 +335,17 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 		return stratID;
 	}
     
-    public EditorDataModel getCurrentStratModel () {
+    public EditorDataModel getCurrentStratModel() {
         if (currentStratModel == null){
             CapControlStrategy strat = getCbcStrategiesMap().get(getCurrentStrategyID());
             currentStratModel = new CapControlStrategyModel (strat);
         }
         ((CapControlStrategyModel) currentStratModel).updateModel();
         return currentStratModel;
+    }
+    
+    public String getCurrentStratName() {
+        return getCbcStrategiesMap().get(getCurrentStrategyID()).getStrategyName();
     }
     
     public void newStrategySelected (ValueChangeEvent vce) {
@@ -1682,10 +1686,23 @@ public class CapControlForm extends DBEditorForm implements ICapControlModel{
 	public void setPaoDescLabel(String string) {
 		paoDescLabel = string;
 	}
-
+	
+	/*
+	 * Remembers if the edit checkbox is checked on the startegy editor.
+	 */
 	public boolean isEditingCBCStrategy() {
 		return editingCBCStrategy;
 	}
+	
+	/*
+	 * Tells us whether or not the pao we are editing is a strategy.
+	 */
+	public boolean isEditingAStrategy() {
+        if(getDbPersistent() instanceof CapControlStrategy) {
+            return true;
+        }
+        return false;
+    }
 
 	public void setEditingCBCStrategy(boolean b) {
 		editingCBCStrategy = b;

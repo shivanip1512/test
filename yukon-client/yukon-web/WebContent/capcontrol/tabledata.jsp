@@ -8,7 +8,6 @@
 <%@ page import="com.cannontech.yukon.cbc.Feeder"%>
 <%@ page import="com.cannontech.yukon.cbc.SubBus"%>
 <%@ page import="com.cannontech.cbc.web.CBCWebUtils"%>
-<%@ page import="com.cannontech.web.navigation.CtiNavObject"%>
 <%@ page import="com.cannontech.spring.YukonSpringHook"%>
 <%@ page import="com.cannontech.cbc.cache.CapControlCache"%>
 <%@ page import="com.cannontech.util.ServletUtil"%>
@@ -39,8 +38,6 @@
 	PointDao pointDao = (PointDao)YukonSpringHook.getBean("pointDao");
 	PaoDao paoDao = (PaoDao)YukonSpringHook.getBean("paoDao");
 	DateFormattingService dateFormattingService = (DateFormattingService)YukonSpringHook.getBean("dateFormattingService");
-	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
-	String returnURL = nav.getPreviousPage();
 	
 	int MAX_DAYS_CNT = 7;	
 	String type = ParamUtil.getString(request, "type", "");
@@ -86,11 +83,9 @@
 	}
 
 %>
-
-	<cti:breadCrumbs>
-		<cti:crumbLink url="subareas.jsp" title="Home" />
-		<cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>"
-			title="Events" />
+    <cti:breadCrumbs>
+	   <cti:crumbLink url="subareas.jsp" title="Home" /> 
+	   <cti:crumbLink url="<%=ServletUtil.getFullURL(request)%>" title="Events" />
 	</cti:breadCrumbs>
 
 	<div align="left">
@@ -210,6 +205,6 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable<%=id%
 
 %>
 	<input type="button" value="Back"
-		onclick="javascript:location.href='<%=returnURL %>'">
+		onclick="javascript:history.back();">
 
 </cti:standardPage>
