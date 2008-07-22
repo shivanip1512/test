@@ -1558,7 +1558,7 @@ public class ImportCustAccountsTask extends TimeConsumingTask {
         if(automatedImport){
             importLog.println(errorStr);
         } else {
-            throw new WebClientException( "The required column '" + CUST_COLUMNS[COL_ACCOUNT_NO] + "' is missing" );
+            throw new WebClientException(errorStr);
         }
     }
     
