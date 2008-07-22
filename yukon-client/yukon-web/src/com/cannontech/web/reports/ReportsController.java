@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.bind.ServletRequestUtils;
 import org.springframework.web.servlet.ModelAndView;
@@ -185,9 +186,10 @@ public class ReportsController extends MultiActionController  {
         return null;
     }
     
-   
-
-
+    @Autowired
+    public void setSimpleReportOutputter(SimpleReportOutputter simpleReportOutputter) {
+        this.simpleReportOutputter = simpleReportOutputter;
+    }
 
     @Required
     public void setSimpleReportService(SimpleReportService simpleReportService) {
