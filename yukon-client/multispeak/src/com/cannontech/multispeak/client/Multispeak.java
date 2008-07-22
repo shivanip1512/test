@@ -727,7 +727,7 @@ public class Multispeak implements MessageListener {
                                                                  "Meter");
                 errorObjects.add(err);
                 logMSPActivity("MeterAddNotification", err.getErrorString(), mspVendor.getCompanyName());
-                ex.printStackTrace();
+                CTILogger.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
@@ -735,7 +735,7 @@ public class Multispeak implements MessageListener {
                                                                  "Meter");
                 errorObjects.add(err);
                 logMSPActivity("MeterAddNotification", err.getErrorString(), mspVendor.getCompanyName());
-                ex.printStackTrace();
+                CTILogger.error(ex);
             }
         }//end for
 
@@ -870,7 +870,7 @@ public class Multispeak implements MessageListener {
                 logMSPActivity("ServiceLocationChangedNotification",
                                "X Exception: (ServLoc:" + mspServiceLocation.getObjectID() + ")-" + ex.getMessage(),
                                mspVendor.getCompanyName());
-                ex.printStackTrace();
+                CTILogger.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspServiceLocation.getObjectID(), 
@@ -880,7 +880,7 @@ public class Multispeak implements MessageListener {
                 logMSPActivity("ServiceLocationChangedNotification",
                                "X error: (ServLoc:" + mspServiceLocation.getObjectID() + ")-" + ex.getMessage(),
                                mspVendor.getCompanyName());
-                ex.printStackTrace();
+                CTILogger.error(ex);
             }
         }
         return toErrorObject(errorObjects);
@@ -921,7 +921,7 @@ public class Multispeak implements MessageListener {
                                                                  "Meter");
                 errorObjects.add(err);
                 logMSPActivity("MeterChangedNotification", err.getErrorString(), mspVendor.getCompanyName());
-                ex.printStackTrace();
+                CTILogger.error(ex);
             } catch (Error ex) {
                 // Transactional code threw error -> rollback
                 ErrorObject err = mspObjectDao.getErrorObject(mspMeter.getMeterNo(), 
@@ -929,7 +929,7 @@ public class Multispeak implements MessageListener {
                                                                  "Meter");
                 errorObjects.add(err);
                 logMSPActivity("MeterChangedNotification", err.getErrorString(), mspVendor.getCompanyName());
-                ex.printStackTrace();
+                CTILogger.error(ex);
             }
         }//end for
 
