@@ -28,7 +28,7 @@ public class StoredDeviceGroup extends MutableDeviceGroup {
     @Override
     public boolean isEditable() {
         
-        return !permission.isHidden() && permission.isEditable();
+        return permission.isEditable();
     }
 
     @Override

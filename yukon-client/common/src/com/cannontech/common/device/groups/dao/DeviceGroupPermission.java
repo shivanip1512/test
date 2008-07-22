@@ -11,7 +11,7 @@ public enum DeviceGroupPermission {
     NOEDIT_MOD(false, true, false),
     NOEDIT_NOMOD(false, false, false),
     EDIT_MOD(true, true, false),
-    HIDDEN(true, true, true);
+    HIDDEN(false, true, true);
     
     private boolean editable;
     private boolean modifiable;
