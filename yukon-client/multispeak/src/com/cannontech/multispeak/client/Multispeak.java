@@ -1416,7 +1416,7 @@ public class Multispeak implements MessageListener {
 
         //Update Address
         String currentAddress = meter.getAddress();
-        String newAddress = mspMeter.getNameplate().getTransponderID();
+        String newAddress = mspMeter.getNameplate().getTransponderID().trim();
         
         if (!currentAddress.equalsIgnoreCase(newAddress)) {
             DeviceCarrierSettings deviceCarrierSettings = ((MCTBase)yukonPaobject).getDeviceCarrierSettings();
