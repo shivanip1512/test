@@ -8,8 +8,8 @@
 *
 * PVCS KEYWORDS:
 * ARCHIVE      :  $Archive:   Z:/SOFTWAREARCHIVES/YUKON/RTDB/dev_mct310.cpp-arc  $
-* REVISION     :  $Revision: 1.162 $
-* DATE         :  $Date: 2008/07/08 22:56:58 $
+* REVISION     :  $Revision: 1.163 $
+* DATE         :  $Date: 2008/07/23 19:02:31 $
 *
 * Copyright (c) 1999, 2000 Cannon Technologies Inc. All rights reserved.
 *-----------------------------------------------------------------------------*/
@@ -2946,7 +2946,7 @@ INT CtiDeviceMCT410::decodeGetValueLoadProfilePeakReport(INMESS *InMessage, CtiT
             {
                 case FuncRead_LLPPeakDayPos:
                 {
-                    result_string += "Peak day: " + CtiDate(CtiTime(max_demand_timestamp)).asString() + "\n";
+                    result_string += "Peak day: " + CtiDate(CtiTime(max_demand_timestamp)).asStringUSFormat() + "\n";
                     result_string += "Usage:  " + CtiNumStr(max_usage, 1) + string(" kWH\n");
                     result_string += "Demand: " + CtiNumStr(max_usage / 24, 2) + string(" kW\n");
                     result_string += "Average daily usage over range: " + CtiNumStr(avg_daily, 1) + string(" kWH\n");

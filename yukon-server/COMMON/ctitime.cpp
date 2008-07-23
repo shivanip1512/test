@@ -40,7 +40,7 @@ struct thread_tm
 
 boost::thread_specific_ptr<struct thread_tm> tm_value;
 
-ctitime_t CtiTime::maketm(CtiDate& d, unsigned hour, unsigned minute, unsigned second){
+ctitime_t CtiTime::maketm(const CtiDate& d, unsigned hour, unsigned minute, unsigned second){
     tm ctm;
     ctm.tm_sec = second;     /* seconds after the minute - [0,59] */
     ctm.tm_min = minute;     /* minutes after the hour - [0,59] */
@@ -74,7 +74,7 @@ CtiTime::CtiTime(unsigned hour, unsigned minute, unsigned second) :
   _seconds(maketm(CtiDate::now(), hour, minute, second))
 {}
 
-CtiTime::CtiTime(CtiDate& d, unsigned hour, unsigned minute, unsigned second) :
+CtiTime::CtiTime(const CtiDate& d, unsigned hour, unsigned minute, unsigned second) :
   _seconds(0)
 {
     if(d.isValid()) {

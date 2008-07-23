@@ -110,6 +110,25 @@ BOOST_AUTO_UNIT_TEST(test_ctidate_methods)
     BOOST_CHECK_EQUAL( ct5.is_pos_infinity(), true );
     BOOST_CHECK_EQUAL( ct5.isValid(), true );
 
+    string expectedResult = "11/02/2008";
+    CtiDate result(2,11,2008);
+    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
+    expectedResult = "11/01/2008";
+    result = CtiDate(1,11,2008);
+    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
+    expectedResult = "11/03/2008";
+    result = CtiDate(3,11,2008);
+    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
+    expectedResult = "03/09/2008";
+    result = CtiDate(9,3,2008);
+    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
+    expectedResult = "03/10/2008";
+    result = CtiDate(10,3,2008);
+    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
+    expectedResult = "03/08/2008";
+    result = CtiDate(8,3,2008);
+    BOOST_CHECK_EQUAL(expectedResult, result.asStringUSFormat());
+
 }
 
 

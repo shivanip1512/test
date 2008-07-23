@@ -38,7 +38,7 @@ typedef time_t ctitime_t;
 
 class IM_EX_CTIBASE CtiTime{
 private:
-    ctitime_t maketm(CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
+    ctitime_t maketm(const CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
     ctitime_t _seconds;
     
 
@@ -50,7 +50,7 @@ public:
     CtiTime(specialvalues);
     CtiTime(unsigned long s);
     CtiTime(unsigned hour, unsigned minute, unsigned int second=0);
-    CtiTime(CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
+    CtiTime(const CtiDate& d, unsigned hour = 0, unsigned minute = 0, unsigned second = 0);
     CtiTime(struct tm*);
 
     CtiTime(const CtiTime&);

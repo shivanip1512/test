@@ -77,6 +77,7 @@ public:
     bool is_pos_infinity() const;
 
     string asString() const;
+    string asStringUSFormat() const;
     string weekDayName() const;
 
     friend CtiDate IM_EX_CTIBASE operator + (const CtiDate& d, const unsigned long s);
