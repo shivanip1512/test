@@ -1,6 +1,6 @@
-<%@ page import="com.cannontech.database.data.point.*" %>
 <%@ page import="com.cannontech.util.*" %>
 <%@ page import="com.cannontech.web.util.*" %>
+<%@ page import="com.cannontech.web.editor.*" %>
 <%@ page import="com.cannontech.web.editor.point.PointForm" %>
 <%@ page import="com.cannontech.database.data.pao.PAOGroups" %>
 
@@ -29,6 +29,9 @@
 
         ptEditorForm.initItem( id );
     }
+    //This is needed because this was handled in the CBCSerlvet before entering faces pages.
+    //Since the servlet bypass, this static method will need to be called entering any faces page.
+    CapControlForm.setupFacesNavigation();
 %>
 
 

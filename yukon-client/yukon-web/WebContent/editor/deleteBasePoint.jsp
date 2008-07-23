@@ -1,7 +1,8 @@
-
 <jsp:directive.page import="com.cannontech.util.ParamUtil"/>
 <jsp:directive.page import="com.cannontech.database.data.pao.PAOGroups"/>
-<jsp:directive.page import="com.cannontech.web.util.JSFUtil"/><%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
+<jsp:directive.page import="com.cannontech.web.util.JSFUtil"/>
+<%@ page import="com.cannontech.web.editor.*" %>
+<%@ taglib uri="http://java.sun.com/jsf/html" prefix="h"%>
 <%@ taglib uri="http://java.sun.com/jsf/core" prefix="f"%>
 <%@ taglib uri="http://myfaces.apache.org/tomahawk" prefix="x"%>
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti"%>
@@ -14,6 +15,9 @@ if (value != PAOGroups.INVALID)
 {
     JSFUtil.resetBackingBean("pointDeleteForm");
 }
+//This is needed because this was handled in the CBCSerlvet before entering faces pages.
+//Since the servlet bypass, this static method will need to be called entering any faces page.
+CapControlForm.setupFacesNavigation();
 %>
 
     <x:panelLayout id="page" styleClass="pageLayout" headerClass="pageHeader"
