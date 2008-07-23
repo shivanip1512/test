@@ -21,6 +21,8 @@
     
     </cti:breadCrumbs>
     
+    <cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
+    
     <script type="text/javascript">
         
         function refreshResults(kind, theDiv) {
@@ -70,18 +72,21 @@
         </table>
 
         <%-- PROGRESS --%>
+        <c:set var="totalCount" value="${result.deviceCollection.deviceCount}" />
         <tags:bulkResultProgress labelKey="yukon.common.device.commander.results.progressLabel" 
                                 inProgressKey="yukon.common.device.commander.results.inProgress" 
                                 completeKey="yukon.common.device.commander.results.complete"
-                                totalCount="${result.deviceCollection.deviceCount}" 
+                                totalCount="${totalCount}" 
                                 updateKey="COMMANDER/${result.key}/COMPLETED_ITEMS">
                                 
             <%-- device collection action --%>
-            <br>
-            <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
-                <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
-            </cti:link>
-            <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
+            <div id="allDevicesActionsDiv" style="display:none;">
+                <br>
+                <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.allResults" class="small">
+                    <cti:mapParam value="${result.deviceCollection.collectionParameters}"/>
+                </cti:link>
+                <tags:selectedDevicesPopup deviceCollection="${result.deviceCollection}" />
+            </div>
                                 
         </tags:bulkResultProgress>
         
@@ -89,7 +94,7 @@
         <br>
         <div class="normalBoldLabel">Successfully Executed: <span style="color:#006633;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/SUCCESS_COUNT"/></span></div>
         
-        <div style="padding:10px;">
+        <div id="successActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
             <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.successResults" class="small">
@@ -110,7 +115,7 @@
         <br>
         <div class="normalBoldLabel">Failed To Execute: <span style="color:#CC0000;"><cti:dataUpdaterValue type="COMMANDER" identifier="${result.key}/FAILURE_COUNT"/></span></div>
         
-        <div style="padding:10px;">
+        <div id="errorActionsDiv" style="padding:10px;display:none;">
             
             <%-- device collection action --%>
             <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.commander.collectionActionOnDevicesLabel.failureResults" class="small">
@@ -129,5 +134,6 @@
         
     </tags:boxContainer>
     
+    <cti:dataUpdaterCallback function="showElementsOnComplete(${totalCount},['allDevicesActionsDiv','successActionsDiv','errorActionsDiv'])" initialize="true" completedCount="COMMANDER/${result.key}/COMPLETED_ITEMS" />
     
 </cti:standardPage>

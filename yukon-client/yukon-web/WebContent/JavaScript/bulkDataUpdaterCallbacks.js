@@ -34,3 +34,18 @@ function updateProgressDescription(pDescId, totalCount, completeText) {
         }
     };
 }
+
+function showElementsOnComplete(totalCount, elementsToShow) {
+    
+    return function(data) {
+
+        var completedCount = data['completedCount'];
+        
+        if (completedCount == totalCount) {
+        
+            $A(elementsToShow).each(function(el) {
+                $(el).show();
+            });
+        }
+    };
+}

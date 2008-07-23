@@ -8,7 +8,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
-<cti:includeScript link="/JavaScript/bulkProgress.js"/>
+<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 <cti:uniqueIdentifier var="pDescId" prefix="pgd_"/>
 
 <cti:msg var="bulkResultProgressLabel" key="${labelKey}" />

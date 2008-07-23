@@ -52,10 +52,10 @@
             };
         }
         
-        function slowInput(buttonObj) {
-        
+        function slowInput(buttonObj, formId) {
             buttonObj.disabled = true;
             $('waitImg').show();
+            $(formId).submit();
         }
     
     </script>
@@ -86,17 +86,17 @@
                                 
             <%-- set/view routes --%>
             <br>
-            <form action="<c:url value="/spring/csr/routeLocate/routeSettings" />" method="get">
+            <form id="routeLocateSettingsForm" action="<c:url value="/spring/csr/routeLocate/routeSettings" />" method="get">
                 <input type="hidden" name="resultId" value="${resultId}">
                 
                 <c:choose>
                     <c:when test="${result.autoUpdateRoute}">
                         <cti:msg var="viewRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.viewRoutesButtonLabel" />
-                        <input type="submit" id="setViewRoutesButton" value="${viewRoutesButtonLabel}" onclick="slowInput(this);" <c:if test="${not result.complete}">disabled</c:if>>
+                        <input type="button" id="setViewRoutesButton" value="${viewRoutesButtonLabel}" onclick="slowInput(this,'routeLocateSettingsForm');" <c:if test="${not result.complete}">disabled</c:if>>
                     </c:when>
                     <c:otherwise>
                         <cti:msg var="setRoutesButtonLabel" key="yukon.web.modules.amr.routeLocateResults.setRoutesButtonLabel" />
-                        <input type="submit" id="setViewRoutesButton" value="${setRoutesButtonLabel}" onclick="slowInput(this);" <c:if test="${not result.complete}">disabled</c:if>>
+                        <input type="button" id="setViewRoutesButton" value="${setRoutesButtonLabel}" onclick="slowInput(this,'routeLocateSettingsForm');" <c:if test="${not result.complete}">disabled</c:if>>
                     </c:otherwise>
                 </c:choose>
                 <img id="waitImg" src="<c:url value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>" style="display:none;">
@@ -108,7 +108,7 @@
         <br>
         <div class="normalBoldLabel"><cti:msg key="yukon.web.modules.amr.routeLocateResults.successLabel" />: <span class="okGreen"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/LOCATED_COUNT"/></span></div>
         
-        <div style="padding:10px;">
+        <div id="successActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
             <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel" class="small">
@@ -123,7 +123,7 @@
         <br>
         <div class="normalBoldLabel"><cti:msg key="yukon.web.modules.amr.routeLocateResults.failureLabel" />: <span class="errorRed"><cti:dataUpdaterValue type="ROUTELOCATE" identifier="${resultId}/NOT_FOUND_COUNT"/></span></div>
         
-        <div style="padding:10px;">
+        <div id="errorActionsDiv" style="padding:10px;display:none;">
         
             <%-- device collection action --%>
             <cti:link href="/spring/bulk/collectionActions" key="yukon.web.modules.amr.routeLocateResults.collectionActionOnDevicesLabel" class="small">
@@ -135,6 +135,7 @@
                     
     </tags:bulkActionContainer>
     
-    <cti:dataUpdaterCallback function="enableButton(${totalCount})" initialize="true" completedCount="ROUTELOCATE/${resultId}/COMPLETED_COUNT" />
+    <cti:dataUpdaterCallback function="enableButton(${deviceCount})" initialize="true" completedCount="ROUTELOCATE/${resultId}/COMPLETED_COUNT" />
+    <cti:dataUpdaterCallback function="showElementsOnComplete(${deviceCount},['successActionsDiv','errorActionsDiv'])" initialize="true" completedCount="ROUTELOCATE/${resultId}/COMPLETED_COUNT" />
     
  </cti:standardPage>

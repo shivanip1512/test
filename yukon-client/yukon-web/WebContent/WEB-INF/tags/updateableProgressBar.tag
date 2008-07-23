@@ -6,7 +6,7 @@
 <%@ taglib uri="http://cannontech.com/tags/cti" prefix="cti" %>
 
     
-<cti:includeScript link="/JavaScript/bulkProgress.js"/>
+<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 <cti:uniqueIdentifier var="pbarId" prefix="pbar_"/>
         
 <table cellpadding="0px" border="0px">

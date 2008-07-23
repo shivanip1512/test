@@ -3,13 +3,15 @@
 <%@ taglib prefix="tags" tagdir="/WEB-INF/tags" %>
 
 <%@ attribute name="resultsTypeMsgKey" required="true" type="java.lang.String"%>
-<%@ attribute name="lineCount" required="true" type="java.lang.Integer"%>
+<%@ attribute name="totalCount" required="true" type="java.lang.Integer"%>
 <%@ attribute name="bulkUpdateOperationResults" required="true" type="com.cannontech.common.bulk.service.BulkOperationCallbackResults"%>
 
 <c:set var="resultsId" value="${bulkUpdateOperationResults.resultsId}" />
 
-<script type="text/javascript">
+<cti:includeScript link="/JavaScript/bulkDataUpdaterCallbacks.js"/>
 
+<script type="text/javascript">
+    
     function refreshErrors(kind, theDiv) {
 
         if (theDiv.visible()) {
@@ -57,7 +59,7 @@
 <tags:bulkResultProgress labelKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.progressLabel" 
                         inProgressKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.inProgress" 
                         completeKey="yukon.common.device.bulk.${resultsTypeMsgKey}Results.complete"
-                        totalCount="${lineCount}" 
+                        totalCount="${totalCount}" 
                         updateKey="BULKRESULT/${resultsId}/COMPLETED_LINES">
                         
 </tags:bulkResultProgress>
@@ -67,7 +69,7 @@
 <br>
 <div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.successLabel" />: <span style="color:#006633;"><cti:dataUpdaterValue type="BULKRESULT" identifier="${resultsId}/SUCCESS_COUNT"/></span></div>
 
-<div style="padding:10px;">
+<div id="successActionsDiv" style="padding:10px;display:none;">
 
     <%-- device collection action --%>
     <cti:link href="/spring/bulk/collectionActions" key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.collectionActionOnDevicesLabel" class="small">
@@ -84,10 +86,7 @@
 <br>
 <div class="normalBoldLabel"><cti:msg key="yukon.common.device.bulk.${resultsTypeMsgKey}Results.processingExceptionLabel" />: <span style="color:#CC0000;"><cti:dataUpdaterValue type="BULKRESULT" identifier="${resultsId}/PROCESSING_EXCEPTION_COUNT"/></span></div>
 
-<div style="padding:10px;">
-    
-    
-    <div style="height:4px;"></div>
+<div id="errorActionsDiv" style="padding:10px;display:none;">
     
     <c:choose>
                                 
@@ -119,3 +118,5 @@
     <div id="processingErrorsDiv${resultsId}" style="display:none;"></div>
 
 </div>
+
+<cti:dataUpdaterCallback function="showElementsOnComplete(${totalCount},['successActionsDiv','errorActionsDiv'])" initialize="true" completedCount="BULKRESULT/${resultsId}/COMPLETED_LINES" />

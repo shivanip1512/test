@@ -36,7 +36,7 @@
             
            <%-- RESULTS --%>
            <tags:bulkUpdateResultsTable resultsTypeMsgKey="import"
-                                        lineCount="${bulkImportOperationResults.bulkFileInfo.lineCount}"
+                                        totalCount="${bulkImportOperationResults.bulkFileInfo.lineCount}"
                                         bulkUpdateOperationResults="${bulkImportOperationResults}" />
             
             
