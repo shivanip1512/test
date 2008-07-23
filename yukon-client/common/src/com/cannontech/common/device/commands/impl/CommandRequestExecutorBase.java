@@ -92,8 +92,6 @@ public abstract class CommandRequestExecutorBase<T> implements
                         }
                     }
 
-                    log.debug("Calling receivedResultString on " + callback + " for " + retMessage);
-
                     if (retMessage.getExpectMore() == 0) {
                         if (errorDescription != null) {
                             log.debug("Calling receivedLastError on " + callback + " for " + retMessage);
