@@ -3,6 +3,7 @@ package com.cannontech.common.device.creation.impl;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.Vector;
 
 import org.apache.commons.lang.StringUtils;
@@ -14,6 +15,9 @@ import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.creation.DeviceCreationException;
 import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
+import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
+import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.DeviceDao;
 import com.cannontech.core.dao.PaoDao;
@@ -41,11 +45,14 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     private PaoGroupsWrapper paoGroupsWrapper = null;
     private DeviceDefinitionService deviceDefinitionService = null;
     private DBPersistentDao dbPersistantDao = null;
+    private DeviceGroupEditorDao deviceGroupEditorDao = null;
+    private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
     
     @Transactional
     public YukonDevice createDeviceByTemplate(String templateName, String newDeviceName, boolean copyPoints) {
         
-        YukonDevice yukonDevice = new YukonDevice();
+        YukonDevice newYukonDevice = new YukonDevice();
+        YukonDevice templateYukonDevice = new YukonDevice();
         
         try {
 
@@ -70,16 +77,22 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
                 this.applyPoints(newDevice, points);
             }
             
-            // MAKE YukonDevice
-            yukonDevice.setDeviceId(newDeviceId);
-            yukonDevice.setType(paoGroupsWrapper.getDeviceType(newDevice.getPAOType()));
+            // MAKE new, teamplate YukonDevice
+            newYukonDevice.setDeviceId(newDeviceId);
+            newYukonDevice.setType(paoGroupsWrapper.getDeviceType(newDevice.getPAOType()));
+            
+            templateYukonDevice.setDeviceId(templateDeviceId);
+            templateYukonDevice.setType(paoGroupsWrapper.getDeviceType(templateDevice.getPAOType()));
+            
+            // add to template's device groups
+            addToTemplatesGroups(templateYukonDevice, newYukonDevice);
             
         }
         catch (TransactionException e) {
             throw new DeviceCreationException("Could not create new device.", e);
         }
         
-        return yukonDevice;
+        return newYukonDevice;
     }
     
     @Transactional
@@ -149,6 +162,16 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
         }
         
         return templateDevice;
+    }
+    
+    private void addToTemplatesGroups(YukonDevice templateDevice, YukonDevice newDevice) {
+        
+        StoredDeviceGroup rootGroup = deviceGroupEditorDao.getRootGroup();
+        Set<StoredDeviceGroup> templatesGroups = deviceGroupMemberEditorDao.getGroupMembership(rootGroup, templateDevice);
+        
+        for (StoredDeviceGroup templateGroup : templatesGroups) {
+            deviceGroupMemberEditorDao.addDevices(templateGroup, newDevice);
+        }
     }
     
     private void applyPoints(MCTBase device, List<PointBase> points) {
@@ -256,5 +279,15 @@ public class DeviceCreationServiceImpl implements DeviceCreationService {
     @Required
     public void setDbPersistantDao(DBPersistentDao dbPersistantDao) {
         this.dbPersistantDao = dbPersistantDao;
+    }
+    
+    @Required
+    public void setDeviceGroupEditorDao(DeviceGroupEditorDao deviceGroupEditorDao) {
+        this.deviceGroupEditorDao = deviceGroupEditorDao;
+    }
+    
+    @Required
+    public void setDeviceGroupMemberEditorDao(DeviceGroupMemberEditorDao deviceGroupMemberEditorDao) {
+        this.deviceGroupMemberEditorDao = deviceGroupMemberEditorDao;
     }
 }

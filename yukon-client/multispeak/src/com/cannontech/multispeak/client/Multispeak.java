@@ -32,7 +32,6 @@ import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
 import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
-import com.cannontech.common.device.groups.dao.DeviceGroupType;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
@@ -43,7 +42,6 @@ import com.cannontech.common.device.service.DeviceUpdateService;
 import com.cannontech.common.device.service.RouteDiscoveryService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
-import com.cannontech.core.dao.DuplicateException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.PaoDao;
 import com.cannontech.core.dao.PersistenceException;
@@ -839,7 +837,7 @@ public class Multispeak implements MessageListener {
                                 
                                 //Update billing cycle information
                                 String billingCycle = mspServiceLocation.getBillingCycle();
-                                updateBillingCyle(billingCycle, meter, "ServiceLocationChangedNotification", mspVendor);
+                                updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, "ServiceLocationChangedNotification", mspVendor);
                                
                             } catch (NotFoundException e) {
                                 ErrorObject err = mspObjectDao.getNotFoundErrorObject(mspServiceLocation.getObjectID(),
@@ -950,7 +948,7 @@ public class Multispeak implements MessageListener {
      * @param templatePaoName
      * @param substationName
      */
-    private void addImportData(Meter mspMeter, MultispeakVendor mspVendor, String templatePaoName, String substationName) {
+    private void createMeter(Meter mspMeter, MultispeakVendor mspVendor, String templatePaoName, String substationName) {
         
         // METER_NUMBER
         String meterNumber = mspMeter.getMeterNo().trim();
@@ -965,7 +963,7 @@ public class Multispeak implements MessageListener {
         // ROUTES
         List<Integer> routeIds = DBFuncs.getRouteIDsFromSubstationName(substationName);
         
-        // CREATE DEVICE
+        // CREATE DEVICE - new device is automatically added to template's device groups
         YukonDevice newDevice = deviceCreationService.createDeviceByTemplate(templatePaoName, paoName, true);
         
         // UPDATE DEVICE
@@ -979,26 +977,16 @@ public class Multispeak implements MessageListener {
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
         String cycleGroupName = mspServiceLocation.getBillingCycle();
         
-        if (!StringUtils.isBlank(cycleGroupName)) {
-        
-            StoredDeviceGroup groupParentFromRole = deviceGroupEditorDao.getStoredGroup(multispeakFuncs.getBillingCycleDeviceGroup());
-            
-            // in case the cycle group does not yet exist, try to add it
-            try {
-                deviceGroupEditorDao.addGroup(groupParentFromRole, DeviceGroupType.STATIC, cycleGroupName);
-            } catch (DuplicateException e) {
-            }
-            
-            String fullGroupName = groupParentFromRole.getFullName() + "/" + cycleGroupName;
-            StoredDeviceGroup billingGroup = deviceGroupEditorDao.getStoredGroup(deviceGroupService.resolveGroupName(fullGroupName));
-            
-            deviceGroupMemberEditorDao.addDevices(billingGroup, newDevice);
-        }
+        com.cannontech.amr.meter.model.Meter tempNewMeter = new com.cannontech.amr.meter.model.Meter();
+        tempNewMeter.setDeviceId(newDevice.getDeviceId());
+        tempNewMeter.setType(newDevice.getType());
+        tempNewMeter.setMeterNumber(meterNumber);
+
+        updateBillingCyle(cycleGroupName, meterNumber, newDevice, "MeterAddNotification", mspVendor);
         
         // SEND FIRST ROUTE DISCOVERY REQUEST
         SystemUserContext systemUserConext = new SystemUserContext();
         deviceUpdateService.routeDiscovery(newDevice, routeIds, systemUserConext);
-            
     }
     
     private void logMSPActivity(String method, String description, String userName) {
@@ -1036,7 +1024,7 @@ public class Multispeak implements MessageListener {
      * Adds the Meter to 'newBilling' Billing child group.  If the billing group does not already
      * exist, then a new Billing sub group is created. 
      */
-    private void updateBillingCyle(String newBilling, com.cannontech.amr.meter.model.Meter meter,
+    private void updateBillingCyle(String newBilling, String meterNumber, YukonDevice meter,
             String logActionStr, MultispeakVendor mspVendor) {
 
         boolean alreadyInGroup = false;
@@ -1053,7 +1041,7 @@ public class Multispeak implements MessageListener {
                 } else {
                     deviceGroupMemberEditorDao.removeDevices(deviceGroup, meter);
                     logMSPActivity(logActionStr,
-                                   "MeterNumber(" + meter.getMeterNumber()+ ") - Removed from Group: " + deviceGroup.getFullName() + ".",
+                                   "MeterNumber(" + meterNumber + ") - Removed from Group: " + deviceGroup.getFullName() + ".",
                                    mspVendor.getCompanyName());
                 }
             }
@@ -1062,7 +1050,7 @@ public class Multispeak implements MessageListener {
                 StoredDeviceGroup billingGroup = deviceGroupEditorDao.getGroupByName(deviceGroupParent, newBilling, true);
                 deviceGroupMemberEditorDao.addDevices(billingGroup, meter);
                 logMSPActivity(logActionStr,
-                               "MeterNumber(" + meter.getMeterNumber()+ ") - Added to Group: " + billingGroup.getFullName() + ".",
+                               "MeterNumber(" + meterNumber+ ") - Added to Group: " + billingGroup.getFullName() + ".",
                                mspVendor.getCompanyName());
             }
         }
@@ -1250,14 +1238,14 @@ public class Multispeak implements MessageListener {
         } else { //Valid template found
             //Find a valid substation
             if( mspMeter.getUtilityInfo() == null || mspMeter.getUtilityInfo().getSubstationName()== null){
-                addImportData(mspMeter, mspVendor, templateName, "");
+                createMeter(mspMeter, mspVendor, templateName, "");
             } else {
                 String substationName = mspMeter.getUtilityInfo().getSubstationName();
                 err = isValidSubstation(substationName, meterNo, mspVendor);
                 if (err != null) {
                     errorObjects.add(err);
                 } else {
-                    addImportData(mspMeter, mspVendor, templateName, substationName);
+                    createMeter(mspMeter, mspVendor, templateName, substationName);
                 }
             }
         }
@@ -1384,7 +1372,7 @@ public class Multispeak implements MessageListener {
         removeFromGroup(meter, SystemGroupEnum.INVENTORY, "MeterAddNotification", mspVendor);
     
         //update the billing group from CIS billingCyle
-        updateBillingCyle(billingCycle, meter, "MeterAddNotification", mspVendor);
+        updateBillingCyle(billingCycle, meter.getMeterNumber(), meter, "MeterAddNotification", mspVendor);
         
         LiteYukonPAObject liteYukonPaobject = paoDao.getLiteYukonPAO(meter.getDeviceId());
         YukonPAObject yukonPaobject = (YukonPAObject)dbPersistentDao.retrieveDBPersistent(liteYukonPaobject);

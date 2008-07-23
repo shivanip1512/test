@@ -206,6 +206,8 @@
         <property name="paoGroupsWrapper" ref="paoGroupsWrapper"/>
         <property name="deviceDefinitionService" ref="deviceService" />
         <property name="dbPersistantDao" ref="dbPersistentDao" />
+        <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao" />
+        <property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao" />
     </bean>
     
     <bean id="groupCommandExecutor" class="com.cannontech.common.device.commands.impl.GroupCommandExecutorImpl" lazy-init="true">
