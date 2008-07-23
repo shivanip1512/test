@@ -53,7 +53,7 @@
     
         <%-- RESULTS --%>
         <tags:bulkUpdateResultsTable    resultsTypeMsgKey="massChange"
-                                        lineCount="${deviceCollection.deviceCount}"
+                                        totalCount="${deviceCollection.deviceCount}"
                                         bulkUpdateOperationResults="${bulkUpdateOperationResults}" />
         
     

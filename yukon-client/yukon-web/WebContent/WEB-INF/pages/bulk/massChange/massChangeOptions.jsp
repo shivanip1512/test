@@ -74,7 +74,7 @@
             </c:forEach>
             
             <%-- SUBMIT --%>
-            <input type="submit" name="massChangeOptionsSubmitButton" value="Submit">
+            <tags:slowInput myFormId="massChangeOptionsForm" labelBusy="Submit" label="Submit" />
             
         </spring:nestedPath>
         </form>
