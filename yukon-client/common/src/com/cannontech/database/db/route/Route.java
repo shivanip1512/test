@@ -51,7 +51,6 @@ public void add() throws java.sql.SQLException
  */
 public void delete() throws java.sql.SQLException 
 {
-    delete("SubstationToRouteMapping", "RouteID", getRouteID()); 
 	delete( TABLE_NAME, CONSTRAINT_COLUMNS[0], getRouteID() );
 }
 /**
