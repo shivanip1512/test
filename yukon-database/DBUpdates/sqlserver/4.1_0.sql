@@ -952,6 +952,10 @@ INSERT INTO YukonListEntry
 VALUES (1224, 1019, 0, 'Circulate', 2504);  
 /* End YUK-5757 */
 
+/* Start YUK-6180 */
+INSERT INTO YukonRoleProperty 
+VALUES (-70026,-700,'Warn on control send.','false','If true the user will be asked if they are sure they want to send that command.'); 
+/* End YUK-6180 */
 
 /**************************************************************/
 /* VERSION INFO                                               */
