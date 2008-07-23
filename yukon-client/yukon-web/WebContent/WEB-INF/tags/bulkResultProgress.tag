@@ -25,4 +25,4 @@
    
 </div>
 
-<cti:dataUpdaterCallback function="updateProgressBar('${pDescId}', ${totalCount}, '${bulkResultComplete}')" initialize="true" completedCount="${updateKey}" />
+<cti:dataUpdaterCallback function="updateProgressDescription('${pDescId}', ${totalCount}, '${bulkResultComplete}')" initialize="true" completedCount="${updateKey}" />

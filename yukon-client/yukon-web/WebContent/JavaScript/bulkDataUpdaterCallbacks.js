@@ -29,7 +29,7 @@ function updateProgressDescription(pDescId, totalCount, completeText) {
         
         if (completedCount == totalCount) {
             try {
-                $('progressDescription_${bulkResultProgressId}').innerHTML = completeText;
+                $('progressDescription_' + pDescId).innerHTML = completeText;
             } catch(e) {}
         }
     };
