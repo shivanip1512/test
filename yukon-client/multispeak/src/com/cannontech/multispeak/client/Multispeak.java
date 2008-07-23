@@ -31,15 +31,12 @@ import com.cannontech.common.device.creation.DeviceCreationService;
 import com.cannontech.common.device.definition.dao.DeviceDefinitionDao;
 import com.cannontech.common.device.definition.model.DeviceDefinition;
 import com.cannontech.common.device.definition.service.DeviceDefinitionService;
-import com.cannontech.common.device.groups.dao.DeviceGroupProviderDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupEditorDao;
 import com.cannontech.common.device.groups.editor.dao.DeviceGroupMemberEditorDao;
 import com.cannontech.common.device.groups.editor.dao.SystemGroupEnum;
 import com.cannontech.common.device.groups.editor.model.StoredDeviceGroup;
 import com.cannontech.common.device.groups.model.DeviceGroup;
-import com.cannontech.common.device.groups.service.DeviceGroupService;
 import com.cannontech.common.device.service.DeviceUpdateService;
-import com.cannontech.common.device.service.RouteDiscoveryService;
 import com.cannontech.common.util.CtiUtilities;
 import com.cannontech.core.dao.DBPersistentDao;
 import com.cannontech.core.dao.NotFoundException;
@@ -100,18 +97,13 @@ public class Multispeak implements MessageListener {
     private MspObjectDao mspObjectDao;
     private DeviceGroupEditorDao deviceGroupEditorDao;
     private DeviceGroupMemberEditorDao deviceGroupMemberEditorDao;
-    private DeviceGroupProviderDao deviceGroupDao;
     private MeterDao meterDao;
     private SystemLogHelper _systemLogHelper = null;
     private TransactionTemplate transactionTemplate = null;
     private DeviceDefinitionDao deviceDefinitionDao = null;
     private DeviceDefinitionService deviceDefinitionService  = null;
     private DeviceCreationService deviceCreationService = null;
-    private DeviceGroupService deviceGroupService = null;
     private DeviceUpdateService deviceUpdateService = null;
-    private RouteDiscoveryService routeDiscoveryService = null;
-    
-    private String DEFAULT_GROUPNAME = "Default";
 
 	/** Singleton incrementor for messageIDs to send to porter connection */
 	private static long messageID = 1;
@@ -154,10 +146,6 @@ public class Multispeak implements MessageListener {
         this.deviceGroupEditorDao = deviceGroupEditorDao;
     }
     @Required
-    public void setDeviceGroupDao(DeviceGroupProviderDao deviceGroupDao) {
-        this.deviceGroupDao = deviceGroupDao;
-    }
-    @Required
     public void setMeterDao(MeterDao meterDao) {
         this.meterDao = meterDao;
     }
@@ -179,17 +167,8 @@ public class Multispeak implements MessageListener {
         this.deviceCreationService = deviceCreationService;
     }
     @Required
-    public void setDeviceGroupService(DeviceGroupService deviceGroupService) {
-        this.deviceGroupService = deviceGroupService;
-    }
-    @Required
     public void setDeviceUpdateService(DeviceUpdateService deviceUpdateService) {
         this.deviceUpdateService = deviceUpdateService;
-    }
-    @Required
-    public void setRouteDiscoveryService(
-            RouteDiscoveryService routeDiscoveryService) {
-        this.routeDiscoveryService = routeDiscoveryService;
     }
     
     /**
@@ -618,7 +597,6 @@ public class Multispeak implements MessageListener {
     public ErrorObject[] addMeterObject(final MultispeakVendor mspVendor, Meter[] addMeters) throws RemoteException{
         final List<ErrorObject> errorObjects = new ArrayList<ErrorObject>();
         final int paoAlias = multispeakFuncs.getPaoNameAlias();
-        final String paoAliasStr = MultispeakVendor.paoNameAliasStrings[paoAlias];
 
         for (final Meter mspMeter : addMeters) {
             try {
@@ -977,11 +955,6 @@ public class Multispeak implements MessageListener {
         ServiceLocation mspServiceLocation = mspObjectDao.getMspServiceLocation(meterNumber, mspVendor);
         String cycleGroupName = mspServiceLocation.getBillingCycle();
         
-        com.cannontech.amr.meter.model.Meter tempNewMeter = new com.cannontech.amr.meter.model.Meter();
-        tempNewMeter.setDeviceId(newDevice.getDeviceId());
-        tempNewMeter.setType(newDevice.getType());
-        tempNewMeter.setMeterNumber(meterNumber);
-
         updateBillingCyle(cycleGroupName, meterNumber, newDevice, "MeterAddNotification", mspVendor);
         
         // SEND FIRST ROUTE DISCOVERY REQUEST

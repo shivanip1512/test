@@ -72,16 +72,13 @@
     <property name="paoDao" ref="paoDao"/>
 	<property name="deviceGroupMemberEditorDao" ref="deviceGroupMemberEditorDao"/>
     <property name="deviceGroupEditorDao" ref="deviceGroupEditorDao"/>
-    <property name="deviceGroupDao" ref="deviceGroupDao"/>
     <property name="meterDao" ref="meterDao"/>
     <property name="mspObjectDao" ref="mspObjectDao"/>
     <property name="transactionTemplate" ref="transactionTemplate"/>
     <property name="deviceDefinitionDao" ref="deviceDefinitionDao"/>
     <property name="deviceDefinitionService" ref="deviceService"/>
     <property name="deviceCreationService" ref="deviceCreationService"/>
-    <property name="deviceGroupService" ref="deviceGroupService" />
     <property name="deviceUpdateService" ref="deviceUpdateService" />
-    <property name="routeDiscoveryService" ref="routeDiscoveryService" />
   </bean>   
   
   <bean id="multispeakDao" class="com.cannontech.multispeak.dao.impl.MultispeakDaoImpl">
