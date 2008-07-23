@@ -47,21 +47,12 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         // NO MORE ROUTES
         if (!state.isRoutesRemaining()) {
             
-            log.debug("No remaining routes. " + deviceLogStr);
-            
             // run callback with null routeId parameter
             scheduledExecutor.schedule(new Runnable() {
                 
                 @Override
                 public void run() {
-                    
-                    try {
-                        state.getRouteFoundCallback().handle(null);
-                        log.debug("No remaining routes, running callback with null. " + deviceLogStr);
-                        
-                    } catch (Exception e) {
-                        log.error("Running callback with null (due to no remaining routes) failed. " + deviceLogStr, e);
-                    }
+                    runCallbackWithNull(state, "No remaining routes.", deviceLogStr, "", null);
                 }
             }, 1, TimeUnit.SECONDS);
         
@@ -128,14 +119,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                                 doNextDiscoveryRequest(device, state);
 
                             } catch (Exception e) {
-                                
-                                log.error("doNextDiscoveryRequest failed." + routeLogStr + deviceLogStr, e);
-                                
-                                try{
-                                    state.getRouteFoundCallback().handle(null);
-                                } catch (Exception ex) {
-                                    log.error("Running callback with null (due to doNextDiscoveryRequest error) failed." + routeLogStr + deviceLogStr, e);
-                                }
+                                runCallbackWithNull(state, "doNextDiscoveryRequest failed.", deviceLogStr, routeLogStr, e);
                             }
 
                         }
@@ -158,14 +142,7 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                                 state.getRouteFoundCallback().handle(foundRouteId);
 
                             } catch (Exception e) {
-                                
-                                log.error("Route found callback failed, will run callback with null." + routeLogStr + deviceLogStr, e);
-                                
-                                try{
-                                    state.getRouteFoundCallback().handle(null);
-                                } catch (Exception ex) {
-                                    log.error("Running callback with null (due to route found callback error) failed."  + routeLogStr + deviceLogStr, e);
-                                }
+                                runCallbackWithNull(state, "Route found callback failed.", deviceLogStr, routeLogStr, e);
                             }
                         }
 
@@ -175,26 +152,10 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
                     try {
                         commandRequestRouteAndDeviceExecutor.execute(Collections.singletonList(cmdReq), callback, state.getUser());
                     } catch (PaoAuthorizationException e) {
-                        
-                        log.error("User not authorized to run command for device. " + deviceLogStr, e);
-                        
-                        try{
-                            log.debug("Caught PaoAuthorizationException, running callback with null. " + deviceLogStr, e);
-                            state.getRouteFoundCallback().handle(null);
-                        } catch (Exception ex) {
-                            log.error("Running callback with null (due to PaoAuthorizationException) failed. " + deviceLogStr, e);
-                        }
+                        runCallbackWithNull(state, "User not authorized to run command for device.", deviceLogStr, "", e);
                         
                     } catch (Exception e) {
-                        
-                        log.error("Unknown exception caught while executing route discovery. " + deviceLogStr, e);
-                        
-                        try{
-                            log.debug("Caught unknown Exception, running callback with null. " + deviceLogStr, e);
-                            state.getRouteFoundCallback().handle(null);
-                        } catch (Exception ex) {
-                            log.error("Running callback with null (due to unknown Exception) failed. " + deviceLogStr, e);
-                        }
+                        runCallbackWithNull(state, "Unknown exception.", deviceLogStr, "", e);
                     }
 
                 }
@@ -203,6 +164,18 @@ public class RouteDiscoveryServiceImpl implements RouteDiscoveryService {
         }
     }
 
+    private void runCallbackWithNull(RouteDiscoveryState state, String reasonForNull, String deviceLogStr, String routeLogStr, Exception e) {
+        
+        String callbackLogStr = " CALLBACK: " + state.getRouteFoundCallback().toString();
+        
+        try{
+            state.getRouteFoundCallback().handle(null);
+            log.debug("Ran callback with null due to: " + reasonForNull + deviceLogStr + routeLogStr + callbackLogStr, e);
+        } catch (Exception ex) {
+            log.error("Failed to run callback with null. Original reason for null callback was: " + reasonForNull + deviceLogStr + routeLogStr + callbackLogStr, ex);
+        }
+    }
+    
     @Required
     public void setCommandRequestRouteAndDeviceExecutor(
             CommandRequestRouteAndDeviceExecutor commandRequestRouteAndDeviceExecutor) {
