@@ -123,14 +123,12 @@ COL, COLGROUP, TD, TH, CAPTION
 ul, menu, dir {
   display: block;
   list-style-type: disc;
-  margin: 1em 0;
   -moz-padding-start: 40px;
 }
 
 ol {
   display: block;
   list-style-type: decimal;
-  margin: 1em 0;
   -moz-padding-start: 40px;
 }
 
