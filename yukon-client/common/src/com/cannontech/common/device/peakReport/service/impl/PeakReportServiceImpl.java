@@ -56,7 +56,7 @@ public class PeakReportServiceImpl implements PeakReportService {
         commandBuffer.append("getvalue lp peak");
         commandBuffer.append(" " + peakType.toString().toLowerCase());
         commandBuffer.append(" channel " + channel);
-        DateFormat cmdFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.PeakReport_Command);
+        DateFormat cmdFormatter = systemDateFormattingService.getSystemDateFormat(DateFormatEnum.PeakReport_DateOnly);
         commandBuffer.append(" " + cmdFormatter.format(stopDate));
         
         Calendar startDateCal = dateFormattingService.getCalendar(userContext);
@@ -149,8 +149,8 @@ public class PeakReportServiceImpl implements PeakReportService {
     
     private void setupPeakReportResultFromResultString(PeakReportResult peakResult, String resultString, int interval){
         
-        DateFormat dateFormater = systemDateFormattingService.getSystemDateFormat(SystemDateFormattingService.DateFormatEnum.PeakReport_Result);
-        
+        DateFormat dateTimeFormater = systemDateFormattingService.getSystemDateFormat(SystemDateFormattingService.DateFormatEnum.PeakReport_DateTime);
+
         try{
             
             String[] strings = resultString.split("\n");
@@ -164,12 +164,14 @@ public class PeakReportServiceImpl implements PeakReportService {
                     String rangeStartDateStr = rangeDateParts[0];
                     String rangeStopDateStr = rangeDateParts[1];
                     
-                    peakResult.setRangeStartDate(dateFormater.parse(rangeStartDateStr));
-                    peakResult.setRangeStopDate(dateFormater.parse(rangeStopDateStr));
+                    peakResult.setRangeStartDate(dateTimeFormater.parse(rangeStartDateStr));
+                    peakResult.setRangeStopDate(dateTimeFormater.parse(rangeStopDateStr));
                 }
                 
                 // peakStartDate, peakStopDate, peakValue
                 else if(s.startsWith("Peak day: ")) {
+                    
+                    DateFormat dateFormater = systemDateFormattingService.getSystemDateFormat(SystemDateFormattingService.DateFormatEnum.PeakReport_DateOnly);
                     
                     String peakRangeEndStr = s.replaceFirst("Peak day: ", "");
                     Date peakRangeEnd = dateFormater.parse(peakRangeEndStr);
@@ -181,7 +183,7 @@ public class PeakReportServiceImpl implements PeakReportService {
                 else if (s.startsWith("Peak hour: ")) {
                     
                     String peakRangeEndStr = s.replaceFirst("Peak hour: ", "");
-                    Date peakRangeEnd = dateFormater.parse(peakRangeEndStr);
+                    Date peakRangeEnd = dateTimeFormater.parse(peakRangeEndStr);
                     
                     peakResult.setPeakStopDate(peakRangeEnd);
                     
@@ -191,7 +193,7 @@ public class PeakReportServiceImpl implements PeakReportService {
                  else if (s.startsWith("Peak interval: ")) {
                     
                      String peakRangeEndStr = s.replaceFirst("Peak interval: ", "");
-                     Date peakRangeEnd = dateFormater.parse(peakRangeEndStr);
+                     Date peakRangeEnd = dateTimeFormater.parse(peakRangeEndStr);
                      
                      peakResult.setPeakStopDate(peakRangeEnd);
                     

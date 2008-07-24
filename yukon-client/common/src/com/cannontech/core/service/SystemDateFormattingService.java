@@ -10,8 +10,8 @@ import com.cannontech.common.exception.BadConfigurationException;
 public interface SystemDateFormattingService {
     
     public static enum DateFormatEnum {
-        PeakReport_Command("MM/dd/yyyy"),
-        PeakReport_Result("MM/dd/yy hh:mm:ss"),
+        PeakReport_DateOnly("MM/dd/yyyy"),
+        PeakReport_DateTime("MM/dd/yy hh:mm:ss"),
         LoadProfile("MM/dd/yyyy HH:mm");
         
         private final String formatString;
