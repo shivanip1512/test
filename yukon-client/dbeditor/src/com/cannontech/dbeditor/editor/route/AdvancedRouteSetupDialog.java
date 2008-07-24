@@ -628,7 +628,7 @@ public class AdvancedRouteSetupDialog extends javax.swing.JDialog implements Act
     public JLabel getDuplicatesLabel() {
         if( duplicatesLabel == null ){
             duplicatesLabel = new JLabel();
-            duplicatesLabel.setText("Check ccu's you want to exclude from future suggestions.");
+            duplicatesLabel.setText("Check the CCUs to exclude from future suggestions.");
         }
         return duplicatesLabel;
     }
@@ -759,7 +759,7 @@ protected javax.swing.JPanel getComponentPanel() {
         if(componentPanel == null) {
             componentPanel = new JPanel();
             componentPanel.setLayout(new java.awt.GridBagLayout());
-            componentPanel.setBorder(new TitleBorder("Fixed/Vairable bit roles on: " + myCCUName));
+            componentPanel.setBorder(new TitleBorder("Fixed/Variable bit roles on: " + myCCUName));
             componentPanel.setMinimumSize(new Dimension(500, 490));
             componentPanel.setPreferredSize(new Dimension(500, 490));
             
@@ -984,7 +984,7 @@ protected javax.swing.JPanel getComponentPanel() {
             duplicateCheckBoxPanel.setLayout(new java.awt.GridBagLayout());
             duplicateCheckBoxPanel.setMinimumSize(new Dimension(190, 200));
             duplicateCheckBoxPanel.setPreferredSize(new Dimension(190, 200));
-            duplicateCheckBoxPanel.setBorder(new TitleBorder("Other CCU's using these bit roles:"));
+            duplicateCheckBoxPanel.setBorder(new TitleBorder("Other CCUs using these bit roles:"));
             
             java.awt.GridBagConstraints constraintsCheckBox1 = new java.awt.GridBagConstraints();
             constraintsCheckBox1.gridx = 0; constraintsCheckBox1.gridy = 0;
@@ -1045,7 +1045,7 @@ protected javax.swing.JPanel getComponentPanel() {
             duplicateSuggestedCheckBoxPanel.setLayout(new java.awt.GridBagLayout());
             duplicateSuggestedCheckBoxPanel.setMinimumSize(new Dimension(190, 200));
             duplicateSuggestedCheckBoxPanel.setPreferredSize(new Dimension(190, 200));
-            duplicateSuggestedCheckBoxPanel.setBorder(new TitleBorder("CCU's using suggested bit roles:"));
+            duplicateSuggestedCheckBoxPanel.setBorder(new TitleBorder("CCUs using suggested bit roles:"));
             
             java.awt.GridBagConstraints constraintsSuggestedCheckBox1 = new java.awt.GridBagConstraints();
             constraintsSuggestedCheckBox1.gridx = 0; constraintsSuggestedCheckBox1.gridy = 0;
