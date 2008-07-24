@@ -29,7 +29,7 @@
                 <c:when test="${readable}">
     
         
-			        <div id="meterinfo" style="width: 400px">
+			        <div id="meterinfo" style="width: 600px">
 			            <ct:widget bean="meterInformationWidget"
 			                identify="false" deviceId="${deviceId}"
 			                hideEnabled="false" />

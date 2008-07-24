@@ -9,12 +9,11 @@
 	    <cti:crumbLink url="/spring/csr/search" title="Device Selection"  />
 	    <cti:crumbLink url="/spring/csr/home?deviceId=${deviceId}" title="Device Detail"  />
 	    &gt; Manual Commander
-	</cti:breadCrumbs>    
+	</cti:breadCrumbs>
 
 <style type="text/css">
 	div.scroll { font-size: 12px; 
 				 height: 350px;  
-				 width: 550px; 
 				 overflow: scroll; 
 				 border: 1px solid #CCCCCC; 
 				 text-align:left; 
@@ -38,14 +37,15 @@
 
 
 	<h2>Manual Commander</h2>
-	<br>
-    
     <tags:widgetContainer deviceId="${deviceId}" identify="false">
-    
         <table class="widgetColumns">
             <tr>
                 <td class="widgetColumnCell" valign="top">
-                
+                    <div style="width:600px;">
+                    <tags:widgetContainer deviceId="${deviceId}">
+                       <tags:widget bean="meterInformationWidget" />
+                    </tags:widgetContainer>
+                    </div>
                     <tags:boxContainer title="Execute Command" hideEnabled="false" styleClass="widgetContainer">
                         <form name="commandForm" method="POST" action="/servlet/CommanderServlet">
                 
@@ -55,9 +55,6 @@
                             <input id="referrer" type="hidden" name="REFERRER" value="/spring/amr/manualCommand/home?deviceId=${deviceId}">
                 
                             <tags:nameValueContainer altRowOn="true">
-                                <tags:nameValue name="Type">
-                                    ${deviceType}
-                                </tags:nameValue>
                                 <tags:nameValue name="Common Commands">
                                     <select name="commonCommand" onchange="loadCommanderCommand(this, 'command');">
                                         <option value="">Select a Command</option>                
@@ -68,14 +65,12 @@
                                     </select>
                                 </tags:nameValue>
                                 <tags:nameValue name="Execute Command">
-                                    <input type="text" id="command" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="40" value="${YC_BEAN.commandString}">
+                                    <input type="text" id="command" name="command" <cti:isPropertyFalse property="CommanderRole.EXECUTE_MANUAL_COMMAND">readonly</cti:isPropertyFalse> size="60" value="${YC_BEAN.commandString}">
+                                    <input type="submit" name="execute" value="Execute" onClick="disableButton(this)">                  
+                                    
                                 </tags:nameValue>
                             </tags:nameValueContainer>  
-                            
-                            <br>
-                            <input type="submit" name="execute" value="Execute" onClick="disableButton(this)">                  
-                            <br><br>
-                            
+							<br>
                             <div class="scroll">
                                 <c:out value="${YC_BEAN.resultText}" escapeXml="false"/>
                             </div>
@@ -88,15 +83,6 @@
                     </tags:boxContainer>
         
                 </td>
-                
-                <td class="widgetColumnCell" valign="top">
-                    <div style="width:600px;">
-                    <tags:widgetContainer deviceId="${deviceId}">
-                       <tags:widget bean="meterInformationWidget" />
-                    </tags:widgetContainer>
-                    </div>
-                </td>
-                
             </tr>
         </table>
     

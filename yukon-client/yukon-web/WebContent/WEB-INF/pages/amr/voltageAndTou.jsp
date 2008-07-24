@@ -19,8 +19,7 @@
     <h2>Voltage &amp; TOU</h2>
     <br>
     
-    <div style="width: 50%;">
-    
+	<div style="width:600px;">
         <%-- METER INFORMATION WIDGET --%>
         <tags:widgetContainer deviceId="${deviceId}">
            <tags:widget bean="meterInformationWidget" />
