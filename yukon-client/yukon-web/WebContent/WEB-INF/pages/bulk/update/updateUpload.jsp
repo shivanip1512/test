@@ -103,10 +103,10 @@
                     <%-- sample files --%>
                     <div class="small">
                         <div class="normalBoldLabel" style="display:inline;"><cti:msg key="yukon.common.device.bulk.updateUpload.sampleFilesLabel"/>:</div>
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File1.csv"/>" target="_blank">File 1</a>, 
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File2.csv"/>" target="_blank">File 2</a>, 
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File3.csv"/>" target="_blank">File 3</a>, 
-                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File4.csv"/>" target="_blank">File 4</a>
+                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File1.csv"/>">File 1</a>, 
+                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File2.csv"/>">File 2</a>, 
+                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File3.csv"/>">File 3</a>, 
+                        <a href="<c:url value="/WebConfig/custom/sample_bulk_files/Sample_Bulk_Update_File4.csv"/>">File 4</a>
                     </div>
                     <br>
                     

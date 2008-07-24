@@ -1114,6 +1114,10 @@
 		<extension>xsd</extension>
 		<mime-type>text/xml</mime-type>
 	</mime-mapping>
+	<mime-mapping>
+		<extension>csv</extension>
+		<mime-type>text/csv</mime-type>
+	</mime-mapping>
 
 
 	<welcome-file-list>
