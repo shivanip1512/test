@@ -160,7 +160,7 @@ public class BulkImporterUploadController extends MultiActionController  {
         List<ImportData> goodEntries = new ArrayList<ImportData>();
         boolean errorOccurred = false;
         
-        if (!dataFile.getOriginalFilename().endsWith("csv")) {
+        if (!dataFile.getOriginalFilename().toLowerCase().endsWith("csv")) {
             badMsgs.add(dataFile.getOriginalFilename()+" is not a correct csv format, fix and try again. No Meters Added.");
             errorOccurred = true;
         } else {
