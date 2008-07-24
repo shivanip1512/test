@@ -56,7 +56,7 @@
                     $('meterReadErrors').update(transport.responseText);
                     
                     $('getReportProcessImg').hide();
-                    $('getReportButton').value = 'Report';
+                    $('getReportButton').value = 'Get Report';
                     $('getReportButton').enable();
                 }
             }
