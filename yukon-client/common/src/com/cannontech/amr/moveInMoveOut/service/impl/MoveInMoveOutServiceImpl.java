@@ -316,7 +316,7 @@ public class MoveInMoveOutServiceImpl implements MoveInMoveOutService {
             DeviceEventEnum deviceEvent, LiteYukonUser liteYukonUser) {
 
         boolean autoArchivingEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(liteYukonUser,
-                                                                                         MeteringRole.AUTO_ARCHIVING_ENABLED));
+                                                                                         MeteringRole.MOVE_IN_MOVE_OUT_AUTO_ARCHIVING));
 
         if (autoArchivingEnabled) {
 
