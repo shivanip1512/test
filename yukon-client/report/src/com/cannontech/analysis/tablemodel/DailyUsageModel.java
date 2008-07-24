@@ -45,11 +45,12 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
     
     // skipping the usual format using the DailyUsageReportLayoutData so that we can get ricky
     // and display "---" for no value days for this report
-    private DecimalFormat valueFormatter = new DecimalFormat("#.### kW");
+    private DecimalFormat valueFormatter = new DecimalFormat("#.###");
     
     static public class ModelRow {
         public Date date;
         public String value;
+        public String units;
     }
     
     public void doLoadData() {
@@ -84,7 +85,10 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         	todayDay = DateUtils.truncate(d1, Calendar.DATE);
         	if(todayDay.compareTo(prevDay) > 0) {
         		
-        	    if (hourValues != null) {
+        	    // must have complete 24 hours worth of data
+        	    // hours in which there was too much/little data have not ben added
+        	    // to the hoursValues list, making the entire day "incomplete"
+        	    if (hourValues != null && hourValues.size() == 24) {
         	    
             		Double dayValue = 0.0;
             		for (Double hourVal : hourValues) {
@@ -115,22 +119,19 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         		hourTotal += pvh.getValue();
         	}
         	
-        	// calculate the "avg" hour value, add to hours list
-        	// there should be as many rph values found as there are intervals per hour
-        	// if not, create a fake hour value by dividing by what we have
+        	// hour average values will only be added to the hoursValues if there is the correct
+        	// amount of values retrieved, based on the current intervalRate
         	if (pvhList.size() > 0) {
-            
-        	    if (hourValues == null) {
-        	        hourValues = new ArrayList<Double>();
-        	    }
         	    
-        	    if (rphCount < intervalsPerHour && rphCount > 0) {
-        			hourAvg = hourTotal / (double)rphCount;
-            	}
-            	else if (intervalsPerHour > 0) {
-        			hourAvg = hourTotal / (double)intervalsPerHour;
-            	}
-            	hourValues.add(hourAvg);
+        	    if (rphCount == intervalsPerHour)  {
+        	        
+        	        if (hourValues == null) {
+                        hourValues = new ArrayList<Double>();
+                    }
+        	        
+        	        hourAvg = hourTotal / (double)intervalsPerHour;
+        	        hourValues.add(hourAvg);
+        	    }
         	}
         	
         	// advance counter
@@ -148,9 +149,11 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
             Double dayValue = dayValues.get(date);
             if (dayValue != null) {
                 row.value = valueFormatter.format(dayValues.get(date));
+                row.units = "kW";
             }
             else {
-                row.value="---";
+                row.value = "---";
+                row.units = "";
             }
             data.add(row);
         }
@@ -171,6 +174,7 @@ public class DailyUsageModel extends BareReportModelBase<DailyUsageModel.ModelRo
         info.put("Point", litePoint.getPointName() +  " (id: " + getPointId() + ")");
         info.put("Start Date", dateFormattingService.formatDate(startDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
         info.put("Stop Date", dateFormattingService.formatDate(stopDate, DateFormattingService.DateFormatEnum.BOTH, userContext));
+        info.put("Note", "Values of \"---\" indicate that there is incomplete data for that date.");
         return info;
     }
 
