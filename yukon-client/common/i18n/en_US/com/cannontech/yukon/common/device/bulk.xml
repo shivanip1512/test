@@ -393,4 +393,9 @@
     <entry key="yukon.common.device.bulk.fileUpload.error.emptyFile">Empty file.</entry>
     <entry key="yukon.common.device.bulk.fileUpload.error.duplicateColumn">File contains multiple {0} columns.</entry>
     
+    <!-- GENERAL -->
+    <!-- ******************************************************************************************************************** -->
+    <!-- ******************************************************************************************************************** -->
+    <entry key="yukon.common.device.bulk.selectedDevicesResultsLimited">Results limited to first {0} devices.</entry>
+    
 </properties>

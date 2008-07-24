@@ -36,6 +36,8 @@ import com.cannontech.util.ServletUtil;
  */
 public class BulkController extends BulkControllerBase {
 
+    private final static int MAX_SELECTED_DEVICES_DISPLAYED = 1000;
+    
     private PaoDao paoDao = null;
     private RecentResultsCache<BulkOperationCallbackResults<?>> recentResultsCache = null;
     
@@ -82,7 +84,7 @@ public class BulkController extends BulkControllerBase {
         DeviceCollection deviceCollection = this.deviceCollectionFactory.createDeviceCollection(request);
         
         List<Map<String, Object>> deviceInfoList = new ArrayList<Map<String, Object>>();
-        for (YukonDevice device : deviceCollection.getDeviceList()) {
+        for (YukonDevice device : deviceCollection.getDevices(0, MAX_SELECTED_DEVICES_DISPLAYED)) {
             
             Map<String, Object> deviceInfo = new LinkedHashMap<String, Object>();
             
@@ -96,6 +98,9 @@ public class BulkController extends BulkControllerBase {
             
         }
         
+        if (deviceCollection.getDeviceCount() > MAX_SELECTED_DEVICES_DISPLAYED) {
+            mav.addObject("resultsLimitedTo", MAX_SELECTED_DEVICES_DISPLAYED);
+        }
         mav.addObject("deviceInfoList", deviceInfoList);
         
         return mav;
