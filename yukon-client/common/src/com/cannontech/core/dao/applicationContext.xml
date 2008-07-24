@@ -116,7 +116,8 @@
     <property name="nextValueHelper" ref="nextValueHelper"/>
   </bean>
   <bean id="roleDao" class="com.cannontech.core.dao.impl.RoleDaoImpl" >
-    <property name="databaseCache" ref="databaseCache"/>        	
+    <property name="databaseCache" ref="databaseCache"/> 
+    <property name="simpleJdbcTemplate" ref="simpleJdbcTemplate" />
   </bean>
   <bean id="standaloneRoleDao" class="com.cannontech.core.dao.impl.StandaloneRoleDaoImpl" >
   	<property name="jdbcTemplate" ref="simpleJdbcTemplate"/>

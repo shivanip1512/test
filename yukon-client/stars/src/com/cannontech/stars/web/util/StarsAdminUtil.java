@@ -62,7 +62,6 @@ import com.cannontech.database.db.macro.GenericMacro;
 import com.cannontech.database.db.macro.MacroTypes;
 import com.cannontech.database.db.stars.ECToGenericMapping;
 import com.cannontech.database.db.stars.report.ServiceCompanyDesignationCode;
-import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.roles.consumer.ResidentialCustomerRole;
@@ -248,29 +247,7 @@ public class StarsAdminUtil {
     		}
         }
 	}
-	
-	public static boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyID, String newVal) throws Exception {
-		String oldVal = DaoFactory.getRoleDao().getRolePropValueGroup( group, rolePropertyID, null );
-		if (oldVal != null && oldVal.equals(newVal)) return false;
-		
-		if (oldVal != null) {
-			String sql = "UPDATE YukonGroupRole SET Value = '" + newVal + "'" +
-					" WHERE GroupID = " + group.getGroupID() +
-					" AND RoleID = " + roleID +
-					" AND RolePropertyID = " + rolePropertyID;
-			new SqlStatement( sql, CtiUtilities.getDatabaseAlias() ).execute();
-		}
-		else {
-			YukonGroupRole groupRole = new YukonGroupRole();
-			groupRole.setGroupID( new Integer(group.getGroupID()) );
-			groupRole.setRoleID( new Integer(roleID) );
-			groupRole.setRolePropertyID( new Integer(rolePropertyID) );
-			groupRole.setValue( newVal );
-			Transaction.createTransaction( Transaction.INSERT, groupRole ).execute();
-		}
-		
-		return true;
-	}
+
 	
 	public static LiteApplianceCategory createApplianceCategory(String appCatName, LiteStarsEnergyCompany energyCompany)
 		throws TransactionException
@@ -1057,19 +1034,19 @@ public class StarsAdminUtil {
 		// Modify energy company hierarchy related role properties
 		LiteYukonGroup adminGroup = energyCompany.getOperatorAdminGroup();
 		boolean adminGroupUpdated = false;
-		adminGroupUpdated |= updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING );
-		adminGroupUpdated |= updateGroupRoleProperty( adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_MANAGE_MEMBERS, CtiUtilities.TRUE_STRING );
+		adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING );
+		adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_MANAGE_MEMBERS, CtiUtilities.TRUE_STRING );
 		
 		if (adminGroupUpdated)
 			ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
 		
 		adminGroup = member.getOperatorAdminGroup();
 		String value = null;
-		if (updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING)
+		if (DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.SINGLE_ENERGY_COMPANY, CtiUtilities.FALSE_STRING)
 			|| ((value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING )) != null
-				&& updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING, value ))
+				&& DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.TRACK_HARDWARE_ADDRESSING, value ))
 			|| ((value = energyCompany.getEnergyCompanySetting( EnergyCompanyRole.OPTIONAL_PRODUCT_DEV )) != null
-				&& updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, value )))
+				&& DaoFactory.getRoleDao().updateGroupRoleProperty( adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPTIONAL_PRODUCT_DEV, value )))
 			ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );
 	}
 	

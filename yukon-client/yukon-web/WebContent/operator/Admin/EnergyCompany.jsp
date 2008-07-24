@@ -182,8 +182,7 @@ function addCustomerGroup(form) {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="25%" align="right" class="TableCell"> Company 
-                          Address:</td>
+                        <td width="25%" align="right" class="TableCell"> Company Address:</td>
                         <td width="75%" class="TableCell"> 
                           <table width="100%" border="0" cellspacing="0" cellpadding="0" class="TableCell">
                             <tr> 
@@ -276,15 +275,13 @@ function addCustomerGroup(form) {
                         </td>
                       </tr>
                       <tr> 
-                        <td width="25%" align="right" class="TableCell">Admin. Email 
-                          Sender:</td>
+                        <td width="25%" align="right" class="TableCell">Admin. Email Sender:</td>
                         <td class="TableCell"> 
                           <input type="text" name="AdminEmail" size="50" value="<%= adminEmail %>" onchange="setContentChanged(true)">
                         </td>
                       </tr>
                       <tr> 
-                        <td width="25%" align="right" class="TableCell">Opt out 
-                          Notif. Recipients:</td>
+                        <td width="25%" align="right" class="TableCell">Opt out Notif. Recipients:</td>
                         <td class="TableCell"> 
                           <input type="text" name="OptOutNotif" size="50" value="<%= optOutNotif %>" onchange="setContentChanged(true)">
                         </td>

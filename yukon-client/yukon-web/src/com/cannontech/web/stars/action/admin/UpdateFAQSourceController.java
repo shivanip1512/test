@@ -8,6 +8,7 @@ import org.springframework.web.bind.ServletRequestUtils;
 
 import com.cannontech.clientutils.CTILogger;
 import com.cannontech.common.util.CtiUtilities;
+import com.cannontech.core.dao.DaoFactory;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.stars.LiteStarsEnergyCompany;
 import com.cannontech.message.dispatch.message.DBChangeMsg;
@@ -16,7 +17,6 @@ import com.cannontech.roles.operator.ConsumerInfoRole;
 import com.cannontech.stars.util.ServerUtils;
 import com.cannontech.stars.util.ServletUtils;
 import com.cannontech.stars.web.StarsYukonUser;
-import com.cannontech.stars.web.util.StarsAdminUtil;
 import com.cannontech.web.stars.action.StarsAdminActionController;
 
 public class UpdateFAQSourceController extends StarsAdminActionController {
@@ -68,13 +68,13 @@ public class UpdateFAQSourceController extends StarsAdminActionController {
 
         for (int i = 0; i < operGroups.length; i++) {
             if (this.roleDao.getRolePropValueGroup(operGroups[i], ConsumerInfoRole.WEB_LINK_FAQ, null) != null &&
-                    StarsAdminUtil.updateGroupRoleProperty(operGroups[i], ConsumerInfoRole.ROLEID, ConsumerInfoRole.WEB_LINK_FAQ, faqLink))
+                    DaoFactory.getRoleDao().updateGroupRoleProperty(operGroups[i], ConsumerInfoRole.ROLEID, ConsumerInfoRole.WEB_LINK_FAQ, faqLink))
                 ServerUtils.handleDBChange( operGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
         }
 
         for (int i = 0; i < custGroups.length; i++) {
             if (this.roleDao.getRolePropValueGroup(custGroups[i], ResidentialCustomerRole.WEB_LINK_FAQ, null) != null &&
-                    StarsAdminUtil.updateGroupRoleProperty(custGroups[i], ResidentialCustomerRole.ROLEID, ResidentialCustomerRole.WEB_LINK_FAQ, faqLink))
+                    DaoFactory.getRoleDao().updateGroupRoleProperty(custGroups[i], ResidentialCustomerRole.ROLEID, ResidentialCustomerRole.WEB_LINK_FAQ, faqLink))
                 ServerUtils.handleDBChange( custGroups[i], DBChangeMsg.CHANGE_TYPE_UPDATE );
         }
     }

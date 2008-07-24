@@ -7,12 +7,18 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.Validate;
+import org.springframework.beans.factory.annotation.Required;
+import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.common.util.CommandExecutionException;
 import com.cannontech.core.dao.NotFoundException;
 import com.cannontech.core.dao.RoleDao;
+import com.cannontech.database.Transaction;
+import com.cannontech.database.TransactionException;
 import com.cannontech.database.data.lite.LiteYukonGroup;
 import com.cannontech.database.data.lite.LiteYukonRole;
 import com.cannontech.database.data.lite.LiteYukonRoleProperty;
+import com.cannontech.database.db.user.YukonGroupRole;
 import com.cannontech.roles.YukonGroupRoleDefs;
 import com.cannontech.yukon.IDatabaseCache;
 
@@ -23,6 +29,7 @@ import com.cannontech.yukon.IDatabaseCache;
 public class RoleDaoImpl implements RoleDao
 {
     private IDatabaseCache databaseCache;
+    private SimpleJdbcTemplate simpleJdbcTemplate;
 
 	/* (non-Javadoc)
      * @see com.cannontech.core.dao.RoleDao#getRoleProperties(int)
@@ -148,7 +155,45 @@ public class RoleDaoImpl implements RoleDao
           return null;
     }
 
+    public boolean updateGroupRoleProperty(LiteYukonGroup group, int roleID, int rolePropertyID, String newVal) 
+        throws CommandExecutionException, TransactionException {
+        
+        String oldVal = getRolePropValueGroup( group, rolePropertyID, null );
+        if (oldVal != null && oldVal.equals(newVal)) {
+            return false;
+        }
+        
+        if (newVal == null || newVal.length() < 1){
+            newVal = " ";
+        }
+        
+        if (oldVal != null) {
+            String sql = " UPDATE YukonGroupRole SET Value = ? "+
+                         " WHERE GroupID = ? "+
+                         " AND RoleID = ? "+
+                         " AND RolePropertyID = ? ";
+            simpleJdbcTemplate.update(sql, newVal, group.getGroupID(), roleID, rolePropertyID);
+            
+        } else {
+            YukonGroupRole groupRole = new YukonGroupRole();
+            groupRole.setGroupID( new Integer(group.getGroupID()) );
+            groupRole.setRoleID( new Integer(roleID) );
+            groupRole.setRolePropertyID( new Integer(rolePropertyID) );
+            groupRole.setValue( newVal );
+
+            Transaction.createTransaction( Transaction.INSERT, groupRole ).execute();
+        }
+        
+        return true;
+    }
+
     public void setDatabaseCache(IDatabaseCache databaseCache) {
         this.databaseCache = databaseCache;
     }
+
+    @Required
+    public void setSimpleJdbcTemplate(SimpleJdbcTemplate simpleJdbcTemplate) {
+        this.simpleJdbcTemplate = simpleJdbcTemplate;
+    }
+    
 }

@@ -177,7 +177,7 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
             if (operGroupIDs.equals(""))
                 throw new WebClientException( "You must select at least one operator group" );
 
-            adminGroupUpdated |= StarsAdminUtil.updateGroupRoleProperty(
+            adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty(
                                                                         adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPERATOR_GROUP_IDS, operGroupIDs );
 
             String[] custGroupNames = request.getParameter("CustomerGroup").split(",");
@@ -195,15 +195,21 @@ public class UpdateEnergyCompanyController extends StarsAdminActionController {
                 else
                     custGroupIDs += "," + String.valueOf( group.getGroupID() );
             }
+            
+            adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty(adminGroup, 
+                                                                                 EnergyCompanyRole.ROLEID, 
+                                                                                 EnergyCompanyRole.CUSTOMER_GROUP_IDS, 
+                                                                                 custGroupIDs );
 
-            adminGroupUpdated |= StarsAdminUtil.updateGroupRoleProperty(
-                                                                        adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.CUSTOMER_GROUP_IDS, custGroupIDs );
+            adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty(adminGroup, 
+                                                                                 EnergyCompanyRole.ROLEID, 
+                                                                                 EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, 
+                                                                                 request.getParameter("AdminEmail") );
 
-            adminGroupUpdated |= StarsAdminUtil.updateGroupRoleProperty(
-                                                                        adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.ADMIN_EMAIL_ADDRESS, request.getParameter("AdminEmail") );
-
-            adminGroupUpdated |= StarsAdminUtil.updateGroupRoleProperty(
-                                                                        adminGroup, EnergyCompanyRole.ROLEID, EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, request.getParameter("OptOutNotif") );
+            adminGroupUpdated |= DaoFactory.getRoleDao().updateGroupRoleProperty(adminGroup, 
+                                                                                 EnergyCompanyRole.ROLEID, 
+                                                                                 EnergyCompanyRole.OPTOUT_NOTIFICATION_RECIPIENTS, 
+                                                                                 request.getParameter("OptOutNotif") );
 
             if (adminGroupUpdated)
                 ServerUtils.handleDBChange( adminGroup, DBChangeMsg.CHANGE_TYPE_UPDATE );

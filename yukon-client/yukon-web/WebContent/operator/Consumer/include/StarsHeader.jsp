@@ -173,7 +173,7 @@
                 
                 // The default operator login for the first time, edit the device type list first!
                 com.cannontech.database.data.lite.LiteYukonGroup adminGroup = liteEC.getOperatorAdminGroup();
-                if (StarsAdminUtil.updateGroupRoleProperty(
+                if (DaoFactory.getRoleDao().updateGroupRoleProperty(
                     adminGroup, AdministratorRole.ROLEID, AdministratorRole.ADMIN_CONFIG_ENERGY_COMPANY, CtiUtilities.TRUE_STRING))
                 {
                     com.cannontech.stars.util.ServerUtils.handleDBChange(
