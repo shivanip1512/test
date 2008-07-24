@@ -119,7 +119,7 @@ public class ScheduledRepeatingJobDaoImpl extends JobDaoBase implements Schedule
         String sql = 
             "SELECT * " +
             "FROM JobScheduledRepeating jsr " +
-            "JOIN Job ON Job.jobId = jsr.jobId" +
+            "JOIN Job ON Job.jobId = jsr.jobId " +
             "WHERE Job.jobId = ?";
         ScheduledRepeatingJob job = jdbcTemplate.queryForObject(sql, mapper, id);
         
