@@ -743,7 +743,7 @@ public static boolean isDisconnectMCT( int type)
 	}
 }
 
-public final static boolean isTouCapable(int deviceType) 
+public final static boolean isTouMCT(int deviceType) 
 {
     switch(deviceType)
     {
@@ -1459,23 +1459,12 @@ public static Object changeType (String newType,
      * @param yukonDevice
      * @return
      */
-    public static boolean isDisconnectEnabled( YukonDevice yukonDevice )
+    public static boolean isDisconnectMCTOrHasCollar( YukonDevice yukonDevice )
     {
         if (isDisconnectMCT(yukonDevice.getType()) )
             return true;
         if( isMCT410(yukonDevice.getType()) )
             return DeviceMCT400Series.hasExistingDisconnectAddress(yukonDevice.getDeviceId());
-        return false;
-    }
-    
-    /**
-     * Returns true if the device can use time of use
-     * @param yukonDevice
-     * @return
-     */
-    public static boolean isTouEnabled(YukonDevice yukonDevice) {
-        if (isTouCapable(yukonDevice.getType()))
-            return true;
         return false;
     }
 }

@@ -171,30 +171,22 @@ public class CsrController extends MultiActionController {
                       Integer.valueOf(roleDao.getGlobalPropertyValue(MultispeakRole.MSP_PRIMARY_CB_VENDORID))
                              .intValue() > 0);
 
-        boolean disconnectSupported = DeviceTypesFuncs.isDisconnectEnabled(device);
+        boolean disconnectSupported = DeviceTypesFuncs.isDisconnectMCTOrHasCollar(device);
         mav.addObject("disconnectSupported", disconnectSupported);
 
         LiteYukonUser user = ServletUtil.getYukonUser(request);
 
-        boolean deviceGroupEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user,
-                                                                                       MeteringRole.DEVICE_GROUP_ENABLED));
-        mav.addObject("deviceGroupsSupported", deviceGroupEnabled);
-
-        boolean touSupported = DeviceTypesFuncs.isTouEnabled(device);
-        boolean touEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user,
-                                                                               MeteringRole.TOU_ENABLED));
-        mav.addObject("touSupported", (touSupported && touEnabled));
+        boolean touSupported = DeviceTypesFuncs.isTouMCT(device.getType());
+        mav.addObject("touSupported", touSupported);
 
         boolean moveSupported = DeviceTypesFuncs.isMCT410(device.getType());
-        boolean moveEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user,
-                                                                                MeteringRole.MOVE_IN_MOVE_OUT_ENABLED));
+        boolean moveEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.MOVE_IN_MOVE_OUT));
         mav.addObject("moveSupported", (moveSupported && moveEnabled));
 
-        boolean lpSupported = DeviceTypesFuncs.isMCT4XX(device.getType());
+        boolean lpSupported = DeviceTypesFuncs.isLoadProfile4Channel(device.getType());
         mav.addObject("lpSupported", lpSupported);
 
-        boolean lpEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user,
-                                                                              MeteringRole.PROFILE_REQUEST_ENABLED));
+        boolean lpEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.PROFILE_COLLECTION));
         mav.addObject("lpEnabled", lpEnabled);
 
         boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());

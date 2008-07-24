@@ -36,10 +36,10 @@ public class ProfileController extends MultiActionController {
         
         mav.addObject("deviceId", deviceId);
         
-        boolean lpSupported = DeviceTypesFuncs.isMCT4XX(device.getType());
+        boolean lpSupported = DeviceTypesFuncs.isLoadProfile4Channel(device.getType());
         mav.addObject("lpSupported", lpSupported);
         
-        boolean lpEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.PROFILE_REQUEST_ENABLED));
+        boolean lpEnabled = Boolean.parseBoolean(authDao.getRolePropertyValue(user, MeteringRole.PROFILE_COLLECTION));
         mav.addObject("lpEnabled", lpEnabled);
 
         boolean peakReportSupported = DeviceTypesFuncs.isMCT410(device.getType());

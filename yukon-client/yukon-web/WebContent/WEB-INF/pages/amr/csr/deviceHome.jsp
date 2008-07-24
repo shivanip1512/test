@@ -45,9 +45,7 @@
 					<ct:widget bean="accountInformationWidget" />
 				</c:if>
 
-                <c:if test="${deviceGroupsSupported}">
-                    <ct:widget bean="deviceGroupWidget" />
-                </c:if>
+                <ct:widget bean="deviceGroupWidget" />
 
 				<ct:boxContainer title="Actions" styleClass="widgetContainer">
                 
