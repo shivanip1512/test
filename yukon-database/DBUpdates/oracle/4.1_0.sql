@@ -643,7 +643,7 @@ DECLARE
     tbl_exist int;
 BEGIN
     SELECT COUNT(*) INTO tbl_exist 
-    FROM DBA_TAB_COLUMNS
+    FROM USER_TAB_COLUMNS
     WHERE table_name = 'DYNAMICCCCAPBANK'
     AND column_name = 'TWOWAYCBCLASTCONTROL';
     
@@ -667,7 +667,7 @@ DECLARE
     tbl_exist int;
 BEGIN
     SELECT COUNT(*) INTO tbl_exist 
-    FROM DBA_TAB_COLUMNS
+    FROM USER_TAB_COLUMNS
     WHERE table_name = 'DYNAMICCCFEEDER'
     AND column_name = 'RETRYINDEX';
     
