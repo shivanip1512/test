@@ -75,10 +75,10 @@
     
         values.each(function(optVal){
                                 
-            var newOpt = document.createElement("option");
-            selectElement.add(newOpt, null);
-            newOpt.value = optVal;
-            newOpt.text = optVal;
+            var newOpt = document.createElement('option');
+            newOpt.setAttribute('value', optVal);
+            newOpt.appendChild(document.createTextNode(optVal));
+            selectElement.appendChild(newOpt);
        });
     }
     
