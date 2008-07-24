@@ -217,23 +217,23 @@ public class FunctionElementEditorPanel  extends com.cannontech.common.gui.util.
         getPointSelectionPanel().refresh();
         ArrayList<String> argList = functionElement.getArgList();
         if(argList != null ) {
-            
-            functionName = argList.get(0);
-            pointID = new Integer(argList.get(1)).intValue();
-            rawState = argList.get(2);
-            
-            if( pointID != -1 && functionName != null && rawState != null)
-            {
-                getFunctionComboBox().setSelectedItem(functionName);
-                getRawStateComboBox().setSelectedIndex(new Integer(rawState).intValue());
-                LitePoint litePoint = null;
-                try {
-                    DaoFactory.getPointDao().getLitePoint(pointID);
-                }catch(NotFoundException nfe) {
-                    CTILogger.error("The point (pointId:"+ pointID + ") for this Function might have been deleted!", nfe);
-                }
-                if(litePoint != null) {
-                    getPointSelectionPanel().selectPoint(litePoint);
+            if(argList.size() >= 3) {
+                functionName = argList.get(0);
+                pointID = new Integer(argList.get(1)).intValue();
+                rawState = argList.get(2);
+                
+                if( pointID != -1 && functionName != null && rawState != null) {
+                    getFunctionComboBox().setSelectedItem(functionName);
+                    getRawStateComboBox().setSelectedIndex(new Integer(rawState).intValue());
+                    LitePoint litePoint = null;
+                    try {
+                        DaoFactory.getPointDao().getLitePoint(pointID);
+                    }catch(NotFoundException nfe) {
+                        CTILogger.error("The point (pointId:"+ pointID + ") for this Function might have been deleted!", nfe);
+                    }
+                    if(litePoint != null) {
+                        getPointSelectionPanel().selectPoint(litePoint);
+                    }
                 }
             }
         }
