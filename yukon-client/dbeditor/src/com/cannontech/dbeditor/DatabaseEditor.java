@@ -2075,8 +2075,10 @@ public void handleDBChangeMsg( DBChangeMsg msg, LiteBase liteBase ) {
 			updateTreePanel( liteBase, msg.getTypeOfChange() );
 		}
 
-		//display a messge on the message panel telling us about this event
-		fireMessage( new MessageEvent( DatabaseEditor.this, txtMsg.toString(), MessageEvent.INFORMATION_MESSAGE) );
+		//display a messge on the message panel telling us about this event...Only if its a Device Change...other wise don't bother printing out.
+		if(msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB) {
+		    fireMessage( new MessageEvent( DatabaseEditor.this, txtMsg.toString(), MessageEvent.INFORMATION_MESSAGE) );
+		}
 	} else {
 		CTILogger.info("DBChange Message received that originated from ourself, doing nothing.");
 	}

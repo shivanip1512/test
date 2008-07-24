@@ -46,27 +46,32 @@ public class DBChangeGUIHandler {
 	}
 	
 	public void handleGUIChange( DBChangeMsg msg ) {
-		LiteBase liteObject = null;
-		if( thePanel.getOriginalObjectToEdit() instanceof DBPersistent ) {
-			liteObject = LiteFactory.createLite( (DBPersistent)thePanel.getOriginalObjectToEdit() );
-		} else {
-			throw new IllegalArgumentException("Trying to handle a non DBPersitent class for a DBChange in the GUI"); 
-		}
 
-		if( liteObject.getLiteID() == msg.getId() && (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE || msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE) ) {
-			if( !isHandled(msg.getDatabase()) ) {
-				CTILogger.info("**** Unable to find matching object for the DBChangeMsg = " + msg.getDatabase() 
-                    + " and the lite object type is = " + liteObject.getLiteType() );
-				return;
-			}
-			if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB ) {
-				txtMsg.append(". Editing of '" + DaoFactory.getPaoDao().getYukonPAOName(liteObject.getLiteID()) + "/" + liteObject.toString() + "' was canceled." );
-			} else if( msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB ) {
-                txtMsg.append(". Editing of '" + DaoFactory.getPointDao().getPointName(liteObject.getLiteID()) + "/" + liteObject.toString() + "' was canceled." );
-            }else {
-				txtMsg.append(". Editing of '" + liteObject.toString() + "' was canceled.");
-			}
-			thePanel.fireCancelButtonPressed();			
-		}
+	    //Check change type first, only create lite object from panel if change type is one we care about.
+        if( (msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_DELETE || msg.getTypeOfChange() == DBChangeMsg.CHANGE_TYPE_UPDATE) ) {
+
+            LiteBase liteObject = null;
+    		if( thePanel.getOriginalObjectToEdit() instanceof DBPersistent ) {
+    			liteObject = LiteFactory.createLite( (DBPersistent)thePanel.getOriginalObjectToEdit() );
+    		} else {
+    			throw new IllegalArgumentException("Trying to handle a non DBPersitent class for a DBChange in the GUI"); 
+    		}
+
+    		if( liteObject.getLiteID() == msg.getId()) {
+    			if( !isHandled(msg.getDatabase()) ) {
+    				CTILogger.info("**** Unable to find matching object for the DBChangeMsg = " + msg.getDatabase() 
+                        + " and the lite object type is = " + liteObject.getLiteType() );
+    				return;
+    			}
+    			if( msg.getDatabase() == DBChangeMsg.CHANGE_PAO_DB ) {
+    				txtMsg.append(". Editing of '" + DaoFactory.getPaoDao().getYukonPAOName(liteObject.getLiteID()) + "/" + liteObject.toString() + "' was canceled." );
+    			} else if( msg.getDatabase() == DBChangeMsg.CHANGE_POINT_DB ) {
+                    txtMsg.append(". Editing of '" + DaoFactory.getPointDao().getPointName(liteObject.getLiteID()) + "/" + liteObject.toString() + "' was canceled." );
+                }else {
+    				txtMsg.append(". Editing of '" + liteObject.toString() + "' was canceled.");
+    			}
+    			thePanel.fireCancelButtonPressed();			
+    		}
+        }
 	}
 }
