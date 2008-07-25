@@ -49,12 +49,12 @@
     <bean id="jobScheduledExecutor"
         class="com.cannontech.common.util.ScheduledExecutorDelegate">
         <qualifier value="job"/>
-        <property name="service">
+        <constructor-arg>
             <bean class="java.util.concurrent.Executors"
                 factory-method="newScheduledThreadPool">
                 <constructor-arg value="2" />
             </bean>
-        </property>
+        </constructor-arg>
     </bean>
 
     <bean id="jobManager" class="com.cannontech.jobs.service.impl.JobManagerImpl" init-method="initialize">

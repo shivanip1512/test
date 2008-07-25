@@ -5,9 +5,18 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class ScheduledExecutorDelegate implements ScheduledExecutor {
-    private ScheduledExecutorService service;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
+@ManagedResource
+public class ScheduledExecutorDelegate extends ExecutorDelegate implements ScheduledExecutor {
+    
+    private final ScheduledExecutorService service;
+
+    public ScheduledExecutorDelegate(ScheduledExecutorService service) {
+        super(service);
+        this.service = service;
+    }
+    
     public ScheduledFuture<?> schedule(Runnable command, long delay, TimeUnit unit) {
         return service.schedule(command, delay, unit);
     }
@@ -24,18 +33,6 @@ public class ScheduledExecutorDelegate implements ScheduledExecutor {
     public ScheduledFuture<?> scheduleWithFixedDelay(Runnable command, long initialDelay,
                                                      long delay, TimeUnit unit) {
         return service.scheduleWithFixedDelay(command, initialDelay, delay, unit);
-    }
-
-    public void execute(Runnable command) {
-        service.execute(command);
-    }
-    
-    public void shutdown() {
-        service.shutdownNow();
-    }
-
-    public void setService(ScheduledExecutorService service) {
-        this.service = service;
     }
 
 }

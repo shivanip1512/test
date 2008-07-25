@@ -90,21 +90,28 @@
     
     <bean id="globalScheduledExecutor" class="com.cannontech.common.util.ScheduledExecutorDelegate" destroy-method="shutdown">
        <qualifier value="main"/>
-       <property name="service">
+       <constructor-arg>
             <bean class="java.util.concurrent.Executors"
                 factory-method="newScheduledThreadPool">
                 <constructor-arg value="2" />
             </bean>
-       </property>
+       </constructor-arg>
     </bean>
-
-    <bean id="longRunningExecutor" class="java.util.concurrent.ThreadPoolExecutor">
-       <qualifier value="longRunning"/>
-       <constructor-arg value="1"/>
-       <constructor-arg value="1"/>
-       <constructor-arg value="60"/>
-       <constructor-arg value="SECONDS"/>
-       <constructor-arg><bean class="java.util.concurrent.LinkedBlockingQueue"/></constructor-arg>
+    
+    <bean id="longRunningExecutor" class="com.cannontech.common.util.ExecutorDelegate"
+        destroy-method="shutdown">
+        <constructor-arg>
+            <bean class="java.util.concurrent.ThreadPoolExecutor">
+                <qualifier value="longRunning" />
+                <constructor-arg value="1" />
+                <constructor-arg value="1" />
+                <constructor-arg value="60" />
+                <constructor-arg value="SECONDS" />
+                <constructor-arg>
+                    <bean class="java.util.concurrent.LinkedBlockingQueue" />
+                </constructor-arg>
+            </bean>
+        </constructor-arg>
     </bean>
     
     <bean id="timeSource" class="com.cannontech.common.util.TimeSourceImpl"/>
@@ -162,6 +169,30 @@
     <bean id="yukonUserContextMessageSourceResolver" class="com.cannontech.i18n.YukonUserContextMessageSourceResolverImpl">
         <property name="themeSource" ref="mainThemeSource"/>
     </bean>
+    
+    
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
+        <property name="assembler" ref="assembler"/>
+        <property name="namingStrategy" ref="namingStrategy"/>
+        <property name="autodetect" value="true"/>
+    </bean>
+
+    <bean id="jmxAttributeSource" class="com.cannontech.spring.SmarterAnnotationJmxAttributeSource"/>
+
+    <!-- will create management interface using annotation metadata -->
+    <bean id="assembler"
+          class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+        <property name="attributeSource" ref="jmxAttributeSource"/>
+    </bean>
+
+    <!-- will pick up the ObjectName from the annotation -->
+    <bean id="namingStrategy"
+          class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+        <property name="attributeSource" ref="jmxAttributeSource"/>
+        <property name="defaultDomain" value="com.cannontech.yukon"/>
+    </bean>
+
+
     
 
 </beans>

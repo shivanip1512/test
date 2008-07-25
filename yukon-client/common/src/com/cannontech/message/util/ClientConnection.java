@@ -7,9 +7,13 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.concurrent.PriorityBlockingQueue;
+import java.util.concurrent.atomic.AtomicLong;
 
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.log4j.Logger;
+import org.springframework.jmx.export.annotation.ManagedAttribute;
+import org.springframework.jmx.export.annotation.ManagedResource;
 
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.yukon.IServerConnection;
@@ -17,6 +21,7 @@ import com.roguewave.vsj.CollectableStreamer;
 import com.roguewave.vsj.PortableInputStream;
 import com.roguewave.vsj.PortableOutputStream;
 
+@ManagedResource
 public class ClientConnection extends java.util.Observable implements Runnable, IServerConnection 
 {
 	private InputStream inStrm = null;
@@ -30,10 +35,13 @@ public class ClientConnection extends java.util.Observable implements Runnable, 
 	private InThread inThread;
 	private OutThread outThread;
 	private Thread monitorThread;
-
+	
+	private AtomicLong totalSentMessages = new AtomicLong();
+	private AtomicLong totalReceivedMessages = new AtomicLong();
+	private AtomicLong totalFiredEvents = new AtomicLong();
 
 	protected ArrayList inQueue = new ArrayList(100);
-	protected ArrayList outQueue = new ArrayList(100);
+	protected PriorityBlockingQueue<Message> outQueue = new PriorityBlockingQueue<Message>(100, new MessagePriorityComparable());
 	
 	private boolean isValid = false;
 	private boolean autoReconnect = false;
@@ -200,12 +208,14 @@ protected String getName() {
  * This method was created in VisualAge.
  * @return boolean
  */
+@ManagedAttribute
 public boolean getAutoReconnect() {
 	return this.autoReconnect;
 }
 /**
  * This method was created in VisualAge.
  */
+@ManagedAttribute
 public String getHost() {
 	return this.host;
 	}
@@ -213,6 +223,7 @@ public String getHost() {
  * Creation date: (11/28/2001 11:10:31 AM)
  * @return int
  */
+@ManagedAttribute
 public int getNumOutMessages() {
 	synchronized (outQueue) {
 		return outQueue.size();		
@@ -222,6 +233,7 @@ public int getNumOutMessages() {
  * This method was created in VisualAge.
  * @return int
  */
+@ManagedAttribute
 public int getPort() {
 	return this.port;
 }
@@ -251,6 +263,7 @@ public int getTimeToReconnect() {
  *   wanted 1 instance of this ClientConnection() active and did not want
  *   another monitorThread to be created if either connection methods were
  *   called.   -- RWN */
+@ManagedAttribute
 public boolean isMonitorThreadAlive() 
 {
 	if( monitorThread != null )
@@ -262,6 +275,7 @@ public boolean isMonitorThreadAlive()
  * This method was created in VisualAge.
  * @return boolean
  */
+@ManagedAttribute
 public boolean isValid() {
 	return isValid;
 }
@@ -510,25 +524,28 @@ public void setRegistrationMsg(Message newValue) {
  * @param o The message to write
  * @throws ConnectionException if the connection is not valid
  */
-public void write(Object o) {
-	synchronized(outQueue) {
-        if (!isValid()) {
-            throw new ConnectionException("Unable to write message (" + o + 
-                                          "), " + this + " is invalid.");
-        }
-		outQueue.add(o);
-		outQueue.notifyAll();
-	}
+public void write(Message o) {
+    Message msg = (Message) o;
+    if (!isValid()) {
+        throw new ConnectionException("Unable to write message (" + msg + 
+                                      "), " + this + " is invalid.");
+    }
+    queue(msg);
 }
 
 /**
  * Writes an object to the output queue.
  * @param o java.lang.Object
  */
-public void queue(Object o) {
-    synchronized(outQueue) {
-        outQueue.add(o);
-        outQueue.notifyAll();
+public void queue(Message o) {
+    Message msg = (Message) o;
+    outQueue.put(msg);
+    totalSentMessages.incrementAndGet();
+    if (logger.isDebugEnabled()) {
+        int size = outQueue.size();
+        if (size > 2) {
+            logger.debug("Current queue size: " + size);
+        }
     }
 }
 
@@ -553,7 +570,7 @@ public void removeMessageListener(MessageListener l) {
  * @param msg
  */
 protected void fireMessageEvent(Message msg) {
-
+    totalReceivedMessages.incrementAndGet();
 	if( msg instanceof Command && ((Command)msg).getOperation() == Command.ARE_YOU_THERE )
 	{
 		// Only instances of com.cannontech.message.util.Command should
@@ -572,16 +589,38 @@ protected void fireMessageEvent(Message msg) {
 		    logger.debug("sending MessageEvent to " + ml);
 		}
 		ml.messageReceived(e);
+		totalFiredEvents.incrementAndGet();
 	}
 }
+
+    @ManagedAttribute
+    public int getListenerCount() {
+        return messageListeners.size();
+    }
 
 	/**
 	 * @return
 	 */
+    @ManagedAttribute
 	public boolean isQueueMessages() {
 		return queueMessages;
 	}
 
+    @ManagedAttribute
+    public long getTotalFiredEvents() {
+        return totalFiredEvents.get();
+    }
+    
+    @ManagedAttribute
+    public long getTotalReceivedMessages() {
+        return totalReceivedMessages.get();
+    }
+    
+    @ManagedAttribute
+    public long getTotalSentMessages() {
+        return totalSentMessages.get();
+    }
+    
 	/**
 	 * Set this to false if you don't want the connection to queue up received messages.
 	 * @param b
