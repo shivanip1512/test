@@ -1,10 +1,13 @@
 package com.cannontech.common.device.groups.dao.impl.providers;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
@@ -13,7 +16,6 @@ import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
 import com.cannontech.common.util.SqlStatementBuilder;
 import com.cannontech.database.CollectionRowCallbackHandler;
-import com.cannontech.database.MaxCollectionResultSetExtractor;
 import com.cannontech.database.data.pao.PaoGroupsWrapper;
 
 public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase {
@@ -54,21 +56,37 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
     
     @Override
     public Set<YukonDevice> getChildDevices(DeviceGroup group) {
-        return getChildDevices(group, Integer.MAX_VALUE);
+        
+        Set<YukonDevice> deviceSet = new HashSet<YukonDevice>();
+        collectChildDevices(group, deviceSet, Integer.MAX_VALUE);
+        return deviceSet;
     }
     
     @Override
-    public Set<YukonDevice> getChildDevices(DeviceGroup group, int maxSize) {
+    public void collectChildDevices(DeviceGroup group, final Set<YukonDevice> deviceSet, final int maxSize) {
         
         String sql = deviceSql + getChildDeviceGroupSqlWhereClause(group, "ypo.paobjectId");
         
-        Set<YukonDevice> childDeviceSet = new LinkedHashSet<YukonDevice>();
-        ParameterizedRowMapper<YukonDevice> mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
-        MaxCollectionResultSetExtractor<YukonDevice> rse = new MaxCollectionResultSetExtractor<YukonDevice>(childDeviceSet, mapper, maxSize);
+        final ParameterizedRowMapper<YukonDevice> mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
+        
+        ResultSetExtractor rse = new ResultSetExtractor() {
+
+            @Override
+            public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
+                
+                int i = 0;
+                while (i < maxSize && rs.next()) {
+                    YukonDevice device = mapper.mapRow(rs, i);
+                    if (deviceSet.add(device)) {
+                        i++;
+                    }
+                }
+                return null;
+            }
+
+        };
         
         simpleJdbcTemplate.getJdbcOperations().query(sql, rse);
-        
-        return childDeviceSet;
     }
     
     @Override

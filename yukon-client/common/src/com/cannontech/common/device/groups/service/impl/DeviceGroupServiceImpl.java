@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -89,16 +90,16 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
         } else {
             
             groups = removeDuplicates(groups); // doesn't touch passed in collection
-            Set<YukonDevice> devices = new HashSet<YukonDevice>();
+            Set<YukonDevice> deviceSet = new LinkedHashSet<YukonDevice>();
             for (DeviceGroup group: groups) {
-                Set<YukonDevice> groupDevices = deviceGroupDao.getDevices(group, maxSize - devices.size());
-                devices.addAll(groupDevices);
+
+                deviceGroupDao.collectDevices(group, deviceSet, maxSize);
                 
-                if (devices.size() >= maxSize) {
+                if (deviceSet.size() >= maxSize) {
                     break;
                 }
             }
-            return devices;
+            return deviceSet;
         }        
     }
     

@@ -54,11 +54,11 @@ public class DeviceGroupProviderDaoMain implements DeviceGroupProviderDao {
     }
 
     public Set<YukonDevice> getDevices(DeviceGroup group) {
-        return getProvider(group).getDevices(group, Integer.MAX_VALUE);
+        return getProvider(group).getDevices(group);
     }
     
-    public Set<YukonDevice> getDevices(DeviceGroup group, int maxSize) {
-        return getProvider(group).getDevices(group, maxSize);
+    public void collectDevices(DeviceGroup group, Set<YukonDevice> deviceSet, int maxSize) {
+        getProvider(group).collectDevices(group, deviceSet, maxSize);
     }
 
     public int getDeviceCount(DeviceGroup group) {

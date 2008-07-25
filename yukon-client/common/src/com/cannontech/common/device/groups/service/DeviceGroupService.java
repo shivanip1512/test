@@ -60,7 +60,7 @@ public interface DeviceGroupService {
     /**
      * Returns a YukonDevice for every device contained in the DeviceGroup.
      * This method works recursively on each child group of the requested group.
-     * Only returns number of devices up to maxSize.
+     * Only returns number of devices up to maxSize. Set returned has a stable ordering.
      * @param groups
      * @param maxSize
      * @return
