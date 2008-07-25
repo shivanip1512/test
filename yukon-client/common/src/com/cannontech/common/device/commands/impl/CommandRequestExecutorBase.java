@@ -64,28 +64,33 @@ public abstract class CommandRequestExecutorBase<T> implements
         }
 
         public synchronized void messageReceived(MessageEvent e) {
+            boolean debug = log.isDebugEnabled();
             Message message = e.getMessage();
             if (message instanceof Return) {
                 Return retMessage = (Return) message;
                 long userMessageId = retMessage.getUserMessageID();
                 if (pendingUserMessageIds.containsKey(userMessageId)) {
                     T command = pendingUserMessageIds.get(userMessageId);
-                    log.debug("Got return message " + retMessage + " for my " + command + " on " + this);
-                    
-                    
+                    if (debug) {
+                        log.debug("Got return message " + retMessage + " for my " + command + " on " + this);
+                    }
                     // this is one of ours, check the status message and create an error if necessary 
                     DeviceErrorDescription errorDescription = null;
                     int status = retMessage.getStatus();
                     if (status != 0) {
                         errorDescription = deviceErrorTranslatorDao.translateErrorCode(status);
                         errorDescription.setPorter(retMessage.getResultString());
-                        log.debug("Calling receivedError on " + callback + " for " + retMessage);
+                        if (debug) {
+                            log.debug("Calling receivedError on " + callback + " for " + retMessage);
+                        }
                     }
                     Vector<?> resultVector = retMessage.getVector();
                     for (Object aResult : resultVector) {
                         if (aResult instanceof PointData) {
                             PointData pData = (PointData) aResult;
-                            log.debug("Calling receivedValue on " + callback + " for " + retMessage);
+                            if (debug) {
+                                log.debug("Calling receivedValue on " + callback + " for " + retMessage);
+                            }
                             callback.receivedValue(command, pData);
                         } else {
                             handleUnknownReturn(userMessageId, aResult);
@@ -94,7 +99,9 @@ public abstract class CommandRequestExecutorBase<T> implements
 
                     if (retMessage.getExpectMore() == 0) {
                         if (errorDescription != null) {
-                            log.debug("Calling receivedLastError on " + callback + " for " + retMessage);
+                            if (debug) {
+                                log.debug("Calling receivedLastError on " + callback + " for " + retMessage);
+                            }
                             callback.receivedLastError(command, errorDescription);
                         } else {
                             log.debug("Calling receivedLastResultString on " + callback + " for " + retMessage);
@@ -104,10 +111,14 @@ public abstract class CommandRequestExecutorBase<T> implements
                         pendingUserMessageIds.remove(userMessageId);
                     } else {
                         if (errorDescription != null) {
-                            log.debug("Calling receivedIntermediateError on " + callback + " for " + retMessage);
+                            if (debug) {
+                                log.debug("Calling receivedIntermediateError on " + callback + " for " + retMessage);
+                            }
                             callback.receivedIntermediateError(command, errorDescription);
                         } else {
-                            log.debug("Calling receivedIntermediateResultString on " + callback + " for " + retMessage);
+                            if (debug) {
+                                log.debug("Calling receivedIntermediateResultString on " + callback + " for " + retMessage);
+                            }
                             callback.receivedIntermediateResultString(command, retMessage.getResultString());
                         }
                     }
@@ -120,7 +131,9 @@ public abstract class CommandRequestExecutorBase<T> implements
                 if (pendingUserMessageIds.isEmpty()) {
                     callback.complete();
 
-                    log.debug("Removing porter message listener because pending list is empty: " + this);
+                    if (debug) {
+                        log.debug("Removing porter message listener because pending list is empty: " + this);
+                    }
                     porterConnection.removeMessageListener(this);
                 }
             }
@@ -204,7 +217,9 @@ public abstract class CommandRequestExecutorBase<T> implements
             // write requests
             for (RequestHolder requestHolder : commandRequests) {
                 porterConnection.write(requestHolder.request);
-                log.debug("Send request to porter: " + requestHolder.request);
+                if (log.isDebugEnabled()) {
+                    log.debug("Send request to porter: " + requestHolder.request);
+                }
                 nothingWritten = false;
             }
         } finally {
