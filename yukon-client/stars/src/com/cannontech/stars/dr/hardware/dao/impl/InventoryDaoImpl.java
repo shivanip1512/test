@@ -8,6 +8,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.common.constants.YukonListEntryTypes;
 import com.cannontech.common.constants.YukonSelectionListDefs;
@@ -96,6 +97,7 @@ public class InventoryDaoImpl implements InventoryDao {
     }
 
     @Override
+    @Transactional
     public void save(Thermostat thermostat) {
 
         StringBuilder sql = new StringBuilder("UPDATE InventoryBase");

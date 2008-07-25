@@ -218,8 +218,8 @@
                                     </tr>
                                     <tr> 
                                         <td colspan="4" class="subItem">
-                                            <input type="checkbox" name="hold" <c:if test="${(not runProgram) && event.holdTemperature}">checked</c:if> />
-                                            <cti:msg key="yukon.dr.consumer.thermostat.hold" />
+                                            <input id="holdCheck" type="checkbox" name="hold" <c:if test="${(not runProgram) && event.holdTemperature}">checked</c:if> />
+                                            <label for="holdCheck"><cti:msg key="yukon.dr.consumer.thermostat.hold" /></label>
                                         </td>
                                     </tr>
                                     <tr>

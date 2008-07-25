@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.cannontech.clientutils.ActivityLogger;
 import com.cannontech.clientutils.YukonLogManager;
@@ -83,6 +84,7 @@ public class ThermostatServiceImpl implements ThermostatService {
     }
 
     @Override
+    @Transactional
     public ThermostatManualEventResult executeManualEvent(
             CustomerAccount account, ThermostatManualEvent event,
             YukonUserContext userContext) {
