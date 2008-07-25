@@ -1,7 +1,7 @@
 /*==============================================================*/
 /* Database name:  YukonDatabase                                */
 /* DBMS name:      Microsoft SQL Server 2000                    */
-/* Created on:     7/23/2008 10:00:50 AM                        */
+/* Created on:     7/25/2008 2:19:50 PM                         */
 /*==============================================================*/
 
 
@@ -11312,6 +11312,9 @@ insert into YukonRole values(-211,'CI Curtailment','Operator','Operator access t
 /* Scheduler Role */
 insert into YukonRole values(-212,'Scheduler','Operator','Operator access to Scheduler'); 
 
+/* Device Actions Role */
+INSERT INTO YukonRole VALUES (-213,'Device Actions','Operator','Operator access to device actions'); 
+
 /* CI customer roles */
 insert into YukonRole values(-300,'Direct Loadcontrol','CICustomer','Customer access to commercial/industrial customer direct loadcontrol');
 insert into YukonRole values(-305,'Administrator','CICustomer','Administrator privileges.');
@@ -11601,12 +11604,13 @@ insert into YukonRoleProperty values(-20013,-200,'Edit Device Config','false','C
 insert into YukonRoleProperty values(-20014,-200,'View Device Config','true','Controls the ability to view existing device configurations');
 
 /* Operator Metering Role Properties*/
-insert into YukonRoleProperty values(-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
-insert into YukonRoleProperty values(-20204,-202,'Enable TOU','true','Allows access to TOU(Time of use) data'); 
-insert into YukonRoleProperty values(-20205,-202,'Enable Device Group','true','Allows access to change device groups for a device');  
-insert into YukonRoleProperty values(-20206,-202,'Enable Profile Request','true','Access to perform profile data request');
-insert into YukonRoleProperty values(-20207,-202,'Enable Auto Archiving','true','Allows a user to setup automatic archiving on their yukon system pertaining to the move in/move out interface');
-insert into YukonRoleProperty values(-20208,-202,'Enable Move In Move Out Wizard','true','Allows a user to calculate a readings for a meter that is being moving in or out of service');
+INSERT INTO YukonRoleProperty VALUES (-20203,-202,'Enable Bulk Importer','true','Allows access to the Bulk Importer');
+INSERT INTO YukonRoleProperty VALUES (-20206,-202,'Profile Collection','true','Controls access to submit a (past) profile collection request');
+INSERT INTO YukonRoleProperty VALUES (-20207,-202,'Move In/Move Out Auto Archiving','true','Enables automatic archiving of move in/move out transactions');
+INSERT INTO YukonRoleProperty VALUES (-20208,-202,'Move In/Move Out','true','Controls access to process a move in/move out');
+INSERT INTO YukonRoleProperty VALUES (-20209,-202,'Profile Collection Scanning','true','Controls access to start/stop scanning of profile data'); 
+INSERT INTO YukonRoleProperty VALUES (-20210,-202,'High Bill Complaint','true','Controls access to process a high bill complaint'); 
+
 
 /* Operator Esubstation Drawings Role Properties */
 insert into YukonRoleProperty values(-20600,-206,'View Drawings','true','Controls viewing of Esubstations drawings');
@@ -11700,8 +11704,19 @@ insert into YukonRoleProperty values(-21003,-210,'Addtl Order Number Label','Add
 
 insert into YukonRoleProperty values(-21100,-211,'CI Curtailment Label','CI Curtailment','The operator specific name for C&I Curtailment'); 
 
-/* Scheduler Role properties */
-insert into YukonRoleProperty values(-21200,-212,'Enable/Disable Schedule','true','Right to enable or disable a schedule'); 
+/* Scheduler Role Properties */
+INSERT INTO YukonRoleProperty VALUES (-21200,-212,'Enable/Disable Schedule','true','Right to enable or disable a schedule'); 
+
+/* Device Actions Role Properties */
+INSERT INTO YukonRoleProperty VALUES (-21300,-213,'Bulk Import Operation','true','Controls access to bulk import operations'); 
+INSERT INTO YukonRoleProperty VALUES (-21301,-213,'Bulk Update Operation','true','Controls access to bulk update operations'); 
+INSERT INTO YukonRoleProperty VALUES (-21302,-213,'Device Group Edit','true','Controls editing of Device Groups (Add/Remove Group, update name, etc.)'); 
+INSERT INTO YukonRoleProperty VALUES (-21303,-213,'Device Group Modify','true','Controls modifying contents of a Device Group (Add to/Remove from group, etc.)'); 
+INSERT INTO YukonRoleProperty VALUES (-21304,-213,'Group Commander','true','Controls access to group command actions'); 
+INSERT INTO YukonRoleProperty VALUES (-21305,-213,'Mass Change','true','Controls access mass change collection actions. Includes all Mass Change actions.to bulk update operations'); 
+INSERT INTO YukonRoleProperty VALUES (-21306,-213,'Locate Route','true','Controls access to locate route action'); 
+INSERT INTO YukonRoleProperty VALUES (-21307,-213,'Mass Delete','true','Controls access to mass delete devices action'); 
+
 
 /* CICustomer Direct Loadcontrol Role Properties */
 insert into YukonRoleProperty values(-30000,-300,'Direct Loadcontrol Label','Direct Control','The customer specific name for direct loadcontrol');

@@ -957,6 +957,36 @@ INSERT INTO YukonRoleProperty
 VALUES (-70026,-700,'Warn on control send.','false','If true the user will be asked if they are sure they want to send that command.'); 
 /* End YUK-6180 */
 
+/* Start YUK-6220 */
+/* Delete existing Enable TOU and Enable Device Group properties */
+DELETE FROM YukonUserRole WHERE RolePropertyId IN (-20204, -20205);
+DELETE FROM YukonGroupRole WHERE RolePropertyId IN (-20204, -20205);
+DELETE FROM YukonRoleProperty WHERE rolePropertyId IN (-20204, -20205);
+
+/* Update existing Role Properties */
+UPDATE YukonRoleProperty SET keyName = 'Profile Collection', description = 'Controls access to submit a (past) profile collection request' WHERE rolePropertyId = -20206; 
+UPDATE YukonRoleProperty SET keyName = 'Move In/Move Out Auto Archiving', description = 'Enables automatic archiving of move in/move out transactions' WHERE rolePropertyId = -20207; 
+UPDATE YukonRoleProperty SET keyName = 'Move In/Move Out', description = 'Controls access to process a move in/move out' WHERE rolePropertyId = -20208; 
+
+/* Adding new role properties for the Metering Role */ 
+INSERT INTO YukonRoleProperty VALUES (-20209,-202,'Profile Collection Scanning','true','Controls access to start/stop scanning of profile data'); 
+INSERT INTO YukonRoleProperty VALUES (-20210,-202,'High Bill Complaint','true','Controls access to process a high bill complaint'); 
+
+/* Adding new role Device Actions */
+INSERT INTO YukonRole VALUES (-213,'Device Actions','Operator','Operator access to device actions'); 
+
+/* Adding new role properties for the Device Actions Role */
+INSERT INTO YukonRoleProperty VALUES (-21300,-213,'Bulk Import Operation','true','Controls access to bulk import operations'); 
+INSERT INTO YukonRoleProperty VALUES (-21301,-213,'Bulk Update Operation','true','Controls access to bulk update operations'); 
+INSERT INTO YukonRoleProperty VALUES (-21302,-213,'Device Group Edit','true','Controls editing of Device Groups (Add/Remove Group, update name, etc.)'); 
+INSERT INTO YukonRoleProperty VALUES (-21303,-213,'Device Group Modify','true','Controls modifying contents of a Device Group (Add to/Remove from group, etc.)'); 
+INSERT INTO YukonRoleProperty VALUES (-21304,-213,'Group Commander','true','Controls access to group command actions'); 
+INSERT INTO YukonRoleProperty VALUES (-21305,-213,'Mass Change','true','Controls access mass change collection actions. Includes all Mass Change actions.to bulk update operations'); 
+INSERT INTO YukonRoleProperty VALUES (-21306,-213,'Locate Route','true','Controls access to locate route action'); 
+INSERT INTO YukonRoleProperty VALUES (-21307,-213,'Mass Delete','true','Controls access to mass delete devices action'); 
+/* End YUK-6220 */
+
+
 /**************************************************************/
 /* VERSION INFO                                               */
 /**************************************************************/
