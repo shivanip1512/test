@@ -15,7 +15,7 @@
 <%@ page import="com.cannontech.common.constants.LoginController"%>
 <%@ page import="com.cannontech.servlet.YukonUserContextUtils"%>
 <%@ page import="com.cannontech.user.YukonUserContext"%>
-
+<%@ page import="com.cannontech.web.navigation.CtiNavObject"%>
 <jsp:directive.page
 	import="com.cannontech.database.db.capcontrol.RecentControls" />
 <cti:standardPage title="Results" module="capcontrol">
@@ -38,6 +38,9 @@
 	PointDao pointDao = (PointDao)YukonSpringHook.getBean("pointDao");
 	PaoDao paoDao = (PaoDao)YukonSpringHook.getBean("paoDao");
 	DateFormattingService dateFormattingService = (DateFormattingService)YukonSpringHook.getBean("dateFormattingService");
+	CtiNavObject nav = (CtiNavObject) request.getSession(false).getAttribute(ServletUtil.NAVIGATE);
+    String returnURL = nav.getPreviousPageForSearch();
+	nav.getHistory().push(returnURL);
 	
 	int MAX_DAYS_CNT = 7;	
 	String type = ParamUtil.getString(request, "type", "");
@@ -205,6 +208,6 @@ Event.observe(window, 'load', function() { new CtiNonScrollTable('resTable<%=id%
 
 %>
 	<input type="button" value="Back"
-		onclick="javascript:history.back();">
+		onclick="javascript:location.href='<%=returnURL %>'">
 
 </cti:standardPage>
