@@ -23,7 +23,7 @@ public class AuthorizationServiceBase<T> implements AuthorizationService<T> {
     public boolean isAuthorized(LiteYukonUser user, Permission permission, T object) {
 
         // Iterate through each of the Authorizations in the list. If the
-        // Athorization doesn't have an authorization rule for the given user,
+        // Authorization doesn't have an authorization rule for the given user,
         // permission, and object, the Authorization is skipped. The first
         // Authorization in the list to return an 'Authorized' or 'UnAuthorized'
         // is used to determine authorization. More specific Authorizations

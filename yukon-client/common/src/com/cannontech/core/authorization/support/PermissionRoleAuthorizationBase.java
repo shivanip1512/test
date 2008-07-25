@@ -2,6 +2,7 @@ package com.cannontech.core.authorization.support;
 
 import com.cannontech.common.util.Checker;
 import com.cannontech.database.data.lite.LiteYukonUser;
+import com.cannontech.user.checker.NullUserChecker;
 import com.cannontech.user.checker.UserChecker;
 
 /**
@@ -10,8 +11,13 @@ import com.cannontech.user.checker.UserChecker;
  */
 public class PermissionRoleAuthorizationBase<T> implements Authorization<T> {
 
-    Checker<T> objectChecker = null;
-    UserChecker roleChecker = null;
+    Checker<T> objectChecker = new Checker<T>() {
+        public boolean check(T object) {
+            return true;
+        }
+        
+    };
+    UserChecker roleChecker = new NullUserChecker();
     Permission permission = null;
 
     public PermissionRoleAuthorizationBase() {

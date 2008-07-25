@@ -7,12 +7,10 @@ import org.springframework.beans.factory.annotation.Required;
 import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.commands.CommandRequestDevice;
-import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.common.device.commands.CommandRequestDeviceExecutor;
+import com.cannontech.common.device.commands.CommandResultHolder;
 import com.cannontech.core.authorization.exception.PaoAuthorizationException;
 import com.cannontech.core.authorization.service.PaoCommandAuthorizationService;
-import com.cannontech.core.dao.PaoDao;
-import com.cannontech.database.data.lite.LiteYukonPAObject;
 import com.cannontech.database.data.lite.LiteYukonUser;
 import com.cannontech.message.porter.message.Request;
 
@@ -23,15 +21,9 @@ public class CommandRequestDeviceExecutorImpl extends
         CommandRequestExecutorBase<CommandRequestDevice> implements
         CommandRequestDeviceExecutor {
 
-    private PaoDao paoDao;
     private PaoCommandAuthorizationService commandAuthorizationService;
     
     private Logger log = YukonLogManager.getLogger(CommandRequestDeviceExecutorImpl.class);
-
-    @Required
-    public void setPaoDao(PaoDao paoDao) {
-        this.paoDao = paoDao;
-    }
 
     @Required
     public void setCommandAuthorizationService(
@@ -43,11 +35,9 @@ public class CommandRequestDeviceExecutorImpl extends
             LiteYukonUser user) throws PaoAuthorizationException {
 
         String command = commandRequest.getCommand();
-        int deviceId = commandRequest.getDevice().getDeviceId();
-        LiteYukonPAObject liteYukonPAO = paoDao.getLiteYukonPAO(deviceId);
         commandAuthorizationService.verifyAuthorized(user,
                                                      command,
-                                                     liteYukonPAO);
+                                                     commandRequest.getDevice());
     }
 
     protected Request buildRequest(CommandRequestDevice commandRequest) {

@@ -79,13 +79,6 @@ public class PaoPermissionServiceImpl implements PaoPermissionService {
     }
 
     public AuthorizationResponse hasPermission(LiteYukonUser user, LiteYukonPAObject pao, Permission permission) {
-//      TODO
-    	if(permission.equals(Permission.ALLOWED_COMMAND)) {
-    		// ALLOWED_COMMAND permission are always allowed
-    		return AuthorizationResponse.AUTHORIZED;
-    	}
-    	
-
         AuthorizationResponse ret = userPaoPermissionDao.hasPermissionForPao(user, pao, permission);        
         if( ret != AuthorizationResponse.UNKNOWN)
             return ret;

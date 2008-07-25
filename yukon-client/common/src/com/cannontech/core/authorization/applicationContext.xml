@@ -235,6 +235,11 @@
         <property name="authorizationList">
         	<list>
         	
+                <!-- ALLOWED_COMMAND is always allowed -->
+                <bean class="com.cannontech.core.authorization.support.pao.PaoPermissionRoleAuthorization">
+                    <property name="permission" value="ALLOWED_COMMAND"/>
+                </bean>
+
         		<!-- Permissions from the UserPaoPermission and GroupPaoPermission db tables -->
 				<bean class="com.cannontech.core.authorization.support.pao.PaoPermissionAuthorization">
 					<property name="paoPermissionService" ref="paoPermissionService" />
