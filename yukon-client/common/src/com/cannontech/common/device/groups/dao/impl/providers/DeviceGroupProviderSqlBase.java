@@ -5,12 +5,14 @@ import java.sql.SQLException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.simple.ParameterizedRowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcTemplate;
 
+import com.cannontech.clientutils.YukonLogManager;
 import com.cannontech.common.device.YukonDevice;
 import com.cannontech.common.device.groups.editor.dao.impl.YukonDeviceRowMapper;
 import com.cannontech.common.device.groups.model.DeviceGroup;
@@ -23,6 +25,8 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
     private PaoGroupsWrapper paoGroupsWrapper;
     private String countSql;
     private String deviceSql;
+    
+    private Logger log = YukonLogManager.getLogger(DeviceGroupProviderSqlBase.class); 
     
     {
         SqlStatementBuilder countBuilder = new SqlStatementBuilder();
@@ -65,6 +69,13 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
     @Override
     public void collectChildDevices(DeviceGroup group, final Set<YukonDevice> deviceSet, final int maxSize) {
         
+        if (maxSize < Integer.MAX_VALUE) {
+            log.debug("Collecting " + (maxSize - deviceSet.size()) + " child devices from group " + group.getFullName() + ".");
+        }
+        else {
+            log.debug("Collecting all child devices from group " + group.getFullName() + ".");
+        }
+        
         String sql = deviceSql + getChildDeviceGroupSqlWhereClause(group, "ypo.paobjectId");
         
         final ParameterizedRowMapper<YukonDevice> mapper = new YukonDeviceRowMapper(paoGroupsWrapper);
@@ -75,11 +86,10 @@ public abstract class DeviceGroupProviderSqlBase extends DeviceGroupProviderBase
             public Object extractData(ResultSet rs) throws SQLException, DataAccessException {
                 
                 int i = 0;
-                while (i < maxSize && rs.next()) {
+                while (deviceSet.size() < maxSize && rs.next()) {
                     YukonDevice device = mapper.mapRow(rs, i);
-                    if (deviceSet.add(device)) {
-                        i++;
-                    }
+                    deviceSet.add(device);
+                    i++;
                 }
                 return null;
             }

@@ -22,7 +22,7 @@
 <%-- POPUP LINK --%>
 <c:url var="mag" value="/WebConfig/yukon/Icons/magnifier.gif"/>
 <c:url var="magOver" value="/WebConfig/yukon/Icons/magnifier_zoom_in.gif"/>
-<c:url var="magOverDisabled" value="/WebConfig/yukon/Icons/magnifier_zoom_in_disabled.gif"/>
+<c:url var="magOverDisabled" value="/WebConfig/yukon/Icons/indicator_arrows.gif"/>
 
 <img onclick="javascript:showSelectedDevices(this, '${id}', '${id}InnerDiv', '${selectedDevicesTableUrl}', '${mag}', '${magOverDisabled}');" title="${warning}" src="${mag}" onmouseover="javascript:this.src='${magOver}'" onmouseout="javascript:this.src='${mag}'">
 <tags:simplePopup id="${id}" title="${popupTitle}" onClose="closeSelectedDevices('${id}');">

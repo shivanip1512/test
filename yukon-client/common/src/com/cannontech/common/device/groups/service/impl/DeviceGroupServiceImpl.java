@@ -96,6 +96,9 @@ public class DeviceGroupServiceImpl implements DeviceGroupService {
                 deviceGroupDao.collectDevices(group, deviceSet, maxSize);
                 
                 if (deviceSet.size() >= maxSize) {
+                    if (deviceSet.size() > maxSize) {
+                        log.warn("Device set size (" + deviceSet.size() + ") larger than maxSize requested (" + maxSize + ").");
+                    }
                     break;
                 }
             }
